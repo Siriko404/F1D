@@ -19,7 +19,7 @@ DV: CashRatio (cols 1-6), CashRatio_lead (cols 7-12)
       atq  = Total Assets (Compustat Quarterly)
       Reference: Bates, Kahle & Stulz (2009, JF)
 Tail: One-tailed (beta > 0)
-SEs: Two-way clustered (firm, time). N=56,131 (base), 53,880 (extended).
+SEs: Firm-level clustered (Petersen 2009). N=56,131 (base), 53,880 (extended).
 DV Mean: CashRatio = 0.1660, CashRatio_lead = 0.1675
 One-SD(UncAnsMgr) effect: +0.0011 (col4, Firm FE) = 0.67% of mean; +0.0022 (col3, Ind FE) = 1.33% of mean
 
@@ -32,10 +32,10 @@ One-SD(UncAnsMgr) effect: +0.0011 (col4, Firm FE) = 0.67% of mean; +0.0022 (col3
       col6   n.s.            [Firm FE, YrQtr FE, extended, CashRatio]
       col7   +0.0028*        [Ind FE, Yr FE, basic, CashRatio_lead]
       col8   n.s.            [Firm FE, Yr FE, basic, CashRatio_lead]
-      col9   +0.0025*        [Ind FE, Yr FE, extended, CashRatio_lead]
-      col10  n.s.            [Firm FE, Yr FE, extended, CashRatio_lead]
+      col9   n.s.            [Ind FE, Yr FE, extended, CashRatio_lead]
+      col10  +0.0021*        [Firm FE, Yr FE, extended, CashRatio_lead]
       col11  +0.0026*        [Ind FE, YrQtr FE, extended, CashRatio_lead]
-      col12  n.s.            [Firm FE, YrQtr FE, extended, CashRatio_lead]
+      col12  +0.0022*        [Firm FE, YrQtr FE, extended, CashRatio_lead]
   UncPreCEO:
       col1   n.s.            [Ind FE, Yr FE, basic, CashRatio]
       col2   n.s.            [Firm FE, Yr FE, basic, CashRatio]
@@ -44,21 +44,21 @@ One-SD(UncAnsMgr) effect: +0.0011 (col4, Firm FE) = 0.67% of mean; +0.0022 (col3
       col5   n.s.            [Ind FE, YrQtr FE, extended, CashRatio]
       col6   n.s.            [Firm FE, YrQtr FE, extended, CashRatio]
       col7   n.s.            [Ind FE, Yr FE, basic, CashRatio_lead]
-      col8   +0.0027*        [Firm FE, Yr FE, basic, CashRatio_lead]
+      col8   n.s.            [Firm FE, Yr FE, basic, CashRatio_lead]
       col9   n.s.            [Ind FE, Yr FE, extended, CashRatio_lead]
       col10  n.s.            [Firm FE, Yr FE, extended, CashRatio_lead]
       col11  n.s.            [Ind FE, YrQtr FE, extended, CashRatio_lead]
       col12  n.s.            [Firm FE, YrQtr FE, extended, CashRatio_lead]
   UncAnsMgr:
-      col1   +0.0038***      [Ind FE, Yr FE, basic, CashRatio]
-      col2   +0.0033***      [Firm FE, Yr FE, basic, CashRatio]
+      col1   +0.0038**       [Ind FE, Yr FE, basic, CashRatio]
+      col2   +0.0033**       [Firm FE, Yr FE, basic, CashRatio]
       col3   +0.0072***      [Ind FE, Yr FE, extended, CashRatio]
-      col4   +0.0035***      [Firm FE, Yr FE, extended, CashRatio]
+      col4   +0.0035**       [Firm FE, Yr FE, extended, CashRatio]
       col5   +0.0046***      [Ind FE, YrQtr FE, extended, CashRatio]
       col6   +0.0034**       [Firm FE, YrQtr FE, extended, CashRatio]
       col7   n.s.            [Ind FE, Yr FE, basic, CashRatio_lead]
       col8   n.s.            [Firm FE, Yr FE, basic, CashRatio_lead]
-      col9   +0.0053***      [Ind FE, Yr FE, extended, CashRatio_lead]
+      col9   +0.0053**       [Ind FE, Yr FE, extended, CashRatio_lead]
       col10  n.s.            [Firm FE, Yr FE, extended, CashRatio_lead]
       col11  n.s.            [Ind FE, YrQtr FE, extended, CashRatio_lead]
       col12  n.s.            [Firm FE, YrQtr FE, extended, CashRatio_lead]
@@ -125,7 +125,7 @@ DV: CashRatio (2 cols)
       atq  = Total Assets (Compustat Quarterly)
       Reference: Bates, Kahle & Stulz (2009, JF)
 Tail: One-tailed for base IV (beta > 0); two-tailed for categories & interactions
-SEs: Two-way clustered (firm, time). N=67,487.
+SEs: Firm-level clustered (Petersen 2009). N=67,487.
 DV Mean: CashRatio = 0.1716
 One-SD(UncAnsMgr) interaction effect (x_Unrated): +0.0021 (col1) = 1.23% of mean
 
@@ -136,16 +136,16 @@ One-SD(UncAnsMgr) interaction effect (x_Unrated): +0.0021 (col1) = 1.23% of mean
       col1   n.s.            [Ind FE, Yr FE, CashRatio]
       col2   n.s.            [Ind FE, YrQtr FE, CashRatio]
   BelowIG:
-      col1   +0.0033**       [Ind FE, Yr FE, CashRatio]
+      col1   +0.0034***      [Ind FE, Yr FE, CashRatio]
       col2   n.s.            [Ind FE, YrQtr FE, CashRatio]
   Unrated:
-      col1   +0.0061***      [Ind FE, Yr FE, CashRatio]
+      col1   +0.0062***      [Ind FE, Yr FE, CashRatio]
       col2   n.s.            [Ind FE, YrQtr FE, CashRatio]
   MgrQAUnc_x_BelowIG:
       col1   n.s.            [Ind FE, Yr FE, CashRatio]
       col2   n.s.            [Ind FE, YrQtr FE, CashRatio]
   MgrQAUnc_x_Unrated:
-      col1   +0.0059**       [Ind FE, Yr FE, CashRatio]
+      col1   +0.0059***      [Ind FE, Yr FE, CashRatio]
       col2   +0.0064***      [Ind FE, YrQtr FE, CashRatio]
 
 ================================================================================
@@ -158,7 +158,7 @@ DV: Leverage (cols 1-6), Leverage_lead (cols 7-12)
       atq   = Total Assets (Compustat Quarterly)
       Reference: Bates, Kahle & Stulz (2009, JF); Rajan & Zingales (1995, JF)
 Tail: Two-tailed
-SEs: Two-way clustered (firm, time). N=56,131 (base), 53,880 (extended).
+SEs: Firm-level clustered (Petersen 2009). N=56,131 (base), 53,880 (extended).
 DV Mean: Leverage = 0.2307, Leverage_lead = 0.2348
 One-SD(UncAnsMgr) effect on Leverage_lead: -0.0026 (col10, Firm FE) = 1.12% of mean
 
@@ -169,12 +169,12 @@ One-SD(UncAnsMgr) effect on Leverage_lead: -0.0026 (col10, Firm FE) = 1.12% of m
       col4   n.s.            [Firm FE, Yr FE, extended, Leverage]
       col5   n.s.            [Ind FE, YrQtr FE, extended, Leverage]
       col6   n.s.            [Firm FE, YrQtr FE, extended, Leverage]
-      col7   +0.0054**       [Ind FE, Yr FE, basic, Leverage_lead]
-      col8   +0.0044*        [Firm FE, Yr FE, basic, Leverage_lead]
-      col9   +0.0056**       [Ind FE, Yr FE, extended, Leverage_lead]
-      col10  +0.0047**       [Firm FE, Yr FE, extended, Leverage_lead]
-      col11  +0.0056**       [Ind FE, YrQtr FE, extended, Leverage_lead]
-      col12  +0.0047*        [Firm FE, YrQtr FE, extended, Leverage_lead]
+      col7   n.s.            [Ind FE, Yr FE, basic, Leverage_lead]
+      col8   n.s.            [Firm FE, Yr FE, basic, Leverage_lead]
+      col9   n.s.            [Ind FE, Yr FE, extended, Leverage_lead]
+      col10  n.s.            [Firm FE, Yr FE, extended, Leverage_lead]
+      col11  n.s.            [Ind FE, YrQtr FE, extended, Leverage_lead]
+      col12  n.s.            [Firm FE, YrQtr FE, extended, Leverage_lead]
   UncPreCEO:
       col1   n.s.            [Ind FE, Yr FE, basic, Leverage]
       col2   n.s.            [Firm FE, Yr FE, basic, Leverage]
@@ -199,8 +199,8 @@ One-SD(UncAnsMgr) effect on Leverage_lead: -0.0026 (col10, Firm FE) = 1.12% of m
       col8   -0.0073**       [Firm FE, Yr FE, basic, Leverage_lead]
       col9   -0.0074**       [Ind FE, Yr FE, extended, Leverage_lead]
       col10  -0.0069**       [Firm FE, Yr FE, extended, Leverage_lead]
-      col11  n.s.            [Ind FE, YrQtr FE, extended, Leverage_lead]
-      col12  -0.0064*        [Firm FE, YrQtr FE, extended, Leverage_lead]
+      col11  -0.0049*        [Ind FE, YrQtr FE, extended, Leverage_lead]
+      col12  -0.0064**       [Firm FE, YrQtr FE, extended, Leverage_lead]
   UncPreMgr:
       col1   n.s.            [Ind FE, Yr FE, basic, Leverage]
       col2   n.s.            [Firm FE, Yr FE, basic, Leverage]
@@ -225,7 +225,7 @@ DV: DebtToCapital (cols 1-6), DebtToCapital_lead (cols 7-12)
       seqq  = Stockholders' Equity (Compustat Quarterly)
       Reference: Rajan & Zingales (1995, JF)
 Tail: Two-tailed
-SEs: Two-way clustered (firm, time). N=55,950 (base), 53,713 (extended).
+SEs: Firm-level clustered (Petersen 2009). N=55,950 (base), 53,713 (extended).
 DV Mean: DebtToCapital = 0.3384, DebtToCapital_lead = 0.3461
 One-SD(UncAnsMgr) effect on DebtToCapital_lead: -0.0063 (col9, Ind FE) = 1.82% of mean
 
@@ -236,12 +236,12 @@ One-SD(UncAnsMgr) effect on DebtToCapital_lead: -0.0063 (col9, Ind FE) = 1.82% o
       col4   n.s.            [Firm FE, Yr FE, extended, DebtToCapital]
       col5   n.s.            [Ind FE, YrQtr FE, extended, DebtToCapital]
       col6   n.s.            [Firm FE, YrQtr FE, extended, DebtToCapital]
-      col7   +0.0054**       [Ind FE, Yr FE, basic, DebtToCapital_lead]
-      col8   +0.0044*        [Firm FE, Yr FE, basic, DebtToCapital_lead]
-      col9   +0.0056**       [Ind FE, Yr FE, extended, DebtToCapital_lead]
-      col10  +0.0047**       [Firm FE, Yr FE, extended, DebtToCapital_lead]
-      col11  +0.0056**       [Ind FE, YrQtr FE, extended, DebtToCapital_lead]
-      col12  +0.0047*        [Firm FE, YrQtr FE, extended, DebtToCapital_lead]
+      col7   n.s.            [Ind FE, Yr FE, basic, DebtToCapital_lead]
+      col8   n.s.            [Firm FE, Yr FE, basic, DebtToCapital_lead]
+      col9   n.s.            [Ind FE, Yr FE, extended, DebtToCapital_lead]
+      col10  n.s.            [Firm FE, Yr FE, extended, DebtToCapital_lead]
+      col11  n.s.            [Ind FE, YrQtr FE, extended, DebtToCapital_lead]
+      col12  n.s.            [Firm FE, YrQtr FE, extended, DebtToCapital_lead]
   UncPreCEO:
       col1   n.s.            [Ind FE, Yr FE, basic, DebtToCapital]
       col2   n.s.            [Firm FE, Yr FE, basic, DebtToCapital]
@@ -262,12 +262,12 @@ One-SD(UncAnsMgr) effect on DebtToCapital_lead: -0.0063 (col9, Ind FE) = 1.82% o
       col4   n.s.            [Firm FE, Yr FE, extended, DebtToCapital]
       col5   n.s.            [Ind FE, YrQtr FE, extended, DebtToCapital]
       col6   n.s.            [Firm FE, YrQtr FE, extended, DebtToCapital]
-      col7   -0.0050*        [Ind FE, Yr FE, basic, DebtToCapital_lead]
-      col8   -0.0073**       [Firm FE, Yr FE, basic, DebtToCapital_lead]
-      col9   -0.0074**       [Ind FE, Yr FE, extended, DebtToCapital_lead]
-      col10  -0.0069**       [Firm FE, Yr FE, extended, DebtToCapital_lead]
-      col11  n.s.            [Ind FE, YrQtr FE, extended, DebtToCapital_lead]
-      col12  -0.0064*        [Firm FE, YrQtr FE, extended, DebtToCapital_lead]
+      col7   -0.0087*        [Ind FE, Yr FE, basic, DebtToCapital_lead]
+      col8   -0.0077*        [Firm FE, Yr FE, basic, DebtToCapital_lead]
+      col9   -0.0154***      [Ind FE, Yr FE, extended, DebtToCapital_lead]
+      col10  -0.0079*        [Firm FE, Yr FE, extended, DebtToCapital_lead]
+      col11  -0.0085*        [Ind FE, YrQtr FE, extended, DebtToCapital_lead]
+      col12  n.s.            [Firm FE, YrQtr FE, extended, DebtToCapital_lead]
   UncPreMgr:
       col1   n.s.            [Ind FE, Yr FE, basic, DebtToCapital]
       col2   n.s.            [Firm FE, Yr FE, basic, DebtToCapital]
@@ -361,9 +361,9 @@ DV: DeltaILLIQ (6 cols)
 Tail: One-tailed (beta > 0)
 
   UncAnsCEO:
-      col1   +0.0005**       [Ind FE, Yr FE, basic, DeltaILLIQ]
-      col2   +0.0005*        [Firm FE, Yr FE, basic, DeltaILLIQ]
-      col3   +0.0004*        [Ind FE, Yr FE, extended, DeltaILLIQ]
+      col1   n.s.            [Ind FE, Yr FE, basic, DeltaILLIQ]
+      col2   n.s.            [Firm FE, Yr FE, basic, DeltaILLIQ]
+      col3   n.s.            [Ind FE, Yr FE, extended, DeltaILLIQ]
       col4   n.s.            [Firm FE, Yr FE, extended, DeltaILLIQ]
       col5   n.s.            [Ind FE, YrQtr FE, extended, DeltaILLIQ]
       col6   n.s.            [Firm FE, YrQtr FE, extended, DeltaILLIQ]
@@ -473,7 +473,7 @@ NOTE: Level specification (algebraically equivalent to H7 delta with PreCallILLI
       col6   n.s.            [Firm FE, YrQtr FE, extended, PostCallAmihud]
       col7   n.s.            [Ind FE, Yr FE, basic, PostCallAmihud_lead1]
       col8   n.s.            [Firm FE, Yr FE, basic, PostCallAmihud_lead1]
-      col9   n.s.            [Ind FE, Yr FE, extended, PostCallAmihud_lead1]
+      col9   +0.0019***      [Ind FE, Yr FE, extended, PostCallAmihud_lead1]
       col10  n.s.            [Firm FE, Yr FE, extended, PostCallAmihud_lead1]
       col11  n.s.            [Ind FE, YrQtr FE, extended, PostCallAmihud_lead1]
       col12  n.s.            [Firm FE, YrQtr FE, extended, PostCallAmihud_lead1]
@@ -485,10 +485,10 @@ N: 55,022, 51,940, 54,622, 52,666
 DV Mean: 0.0142, 0.0144
 
   UncAnsCEO:
-      col1   +0.0018*        [Ind FE, Yr FE, basic, BGTLevel_Amihud]
-      col2   n.s.            [Firm FE, Yr FE, basic, BGTLevel_Amihud]
-      col3   +0.0018*        [Ind FE, Yr FE, extended, BGTLevel_Amihud]
-      col4   +0.0020*        [Firm FE, Yr FE, extended, BGTLevel_Amihud]
+      col1   +0.0018**       [Ind FE, Yr FE, basic, BGTLevel_Amihud]
+      col2   +0.0019**       [Firm FE, Yr FE, basic, BGTLevel_Amihud]
+      col3   +0.0018**       [Ind FE, Yr FE, extended, BGTLevel_Amihud]
+      col4   +0.0020**       [Firm FE, Yr FE, extended, BGTLevel_Amihud]
       col5   +0.0019**       [Ind FE, YrQtr FE, extended, BGTLevel_Amihud]
       col6   +0.0020**       [Firm FE, YrQtr FE, extended, BGTLevel_Amihud]
       col7   n.s.            [Ind FE, Yr FE, basic, BGTLevel_Amihud_lead1]
@@ -532,7 +532,7 @@ DV Mean: 0.0142, 0.0144
       col6   n.s.            [Firm FE, YrQtr FE, extended, BGTLevel_Amihud]
       col7   n.s.            [Ind FE, Yr FE, basic, BGTLevel_Amihud_lead1]
       col8   n.s.            [Firm FE, Yr FE, basic, BGTLevel_Amihud_lead1]
-      col9   n.s.            [Ind FE, Yr FE, extended, BGTLevel_Amihud_lead1]
+      col9   +0.0024**       [Ind FE, Yr FE, extended, BGTLevel_Amihud_lead1]
       col10  n.s.            [Firm FE, Yr FE, extended, BGTLevel_Amihud_lead1]
       col11  n.s.            [Ind FE, YrQtr FE, extended, BGTLevel_Amihud_lead1]
       col12  n.s.            [Firm FE, YrQtr FE, extended, BGTLevel_Amihud_lead1]
@@ -545,9 +545,9 @@ DV Mean: -0.0008
 
   UncAnsCEO:
       col1   n.s.            [Ind FE, Yr FE, basic, BGTDelta_Amihud]
-      col2   +0.0003***      [Firm FE, Yr FE, basic, BGTDelta_Amihud]
+      col2   n.s.            [Firm FE, Yr FE, basic, BGTDelta_Amihud]
       col3   n.s.            [Ind FE, Yr FE, extended, BGTDelta_Amihud]
-      col4   +0.0002***      [Firm FE, Yr FE, extended, BGTDelta_Amihud]
+      col4   n.s.            [Firm FE, Yr FE, extended, BGTDelta_Amihud]
       col5   n.s.            [Ind FE, YrQtr FE, extended, BGTDelta_Amihud]
       col6   n.s.            [Firm FE, YrQtr FE, extended, BGTDelta_Amihud]
       col7   n.s.            [Ind FE, Yr FE, basic, BGTDelta_Amihud_lead1]
@@ -559,19 +559,19 @@ DV Mean: -0.0008
   UncPreCEO:
       col1   n.s.            [Ind FE, Yr FE, basic, BGTDelta_Amihud]
       col2   n.s.            [Firm FE, Yr FE, basic, BGTDelta_Amihud]
-      col3   +0.0002*        [Ind FE, Yr FE, extended, BGTDelta_Amihud]
+      col3   n.s.            [Ind FE, Yr FE, extended, BGTDelta_Amihud]
       col4   n.s.            [Firm FE, Yr FE, extended, BGTDelta_Amihud]
       col5   n.s.            [Ind FE, YrQtr FE, extended, BGTDelta_Amihud]
       col6   n.s.            [Firm FE, YrQtr FE, extended, BGTDelta_Amihud]
       col7   +0.0007**       [Ind FE, Yr FE, basic, BGTDelta_Amihud_lead1]
       col8   n.s.            [Firm FE, Yr FE, basic, BGTDelta_Amihud_lead1]
-      col9   +0.0009**       [Ind FE, Yr FE, extended, BGTDelta_Amihud_lead1]
-      col10  +0.0006*        [Firm FE, Yr FE, extended, BGTDelta_Amihud_lead1]
+      col9   +0.0009***      [Ind FE, Yr FE, extended, BGTDelta_Amihud_lead1]
+      col10  n.s.            [Firm FE, Yr FE, extended, BGTDelta_Amihud_lead1]
       col11  +0.0010***      [Ind FE, YrQtr FE, extended, BGTDelta_Amihud_lead1]
       col12  +0.0007*        [Firm FE, YrQtr FE, extended, BGTDelta_Amihud_lead1]
   UncAnsMgr:
       col1   +0.0011*        [Ind FE, Yr FE, basic, BGTDelta_Amihud]
-      col2   +0.0009*        [Firm FE, Yr FE, basic, BGTDelta_Amihud]
+      col2   n.s.            [Firm FE, Yr FE, basic, BGTDelta_Amihud]
       col3   n.s.            [Ind FE, Yr FE, extended, BGTDelta_Amihud]
       col4   n.s.            [Firm FE, Yr FE, extended, BGTDelta_Amihud]
       col5   n.s.            [Ind FE, YrQtr FE, extended, BGTDelta_Amihud]
@@ -603,7 +603,7 @@ N: 55,032, 51,942, 54,663, 52,701
 DV Mean: 0.0157, 0.0160
 
   UncAnsCEO:
-      col1   +0.0009*        [Ind FE, Yr FE, basic, BGTAvg_Amihud]
+      col1   n.s.            [Ind FE, Yr FE, basic, BGTAvg_Amihud]
       col2   n.s.            [Firm FE, Yr FE, basic, BGTAvg_Amihud]
       col3   n.s.            [Ind FE, Yr FE, extended, BGTAvg_Amihud]
       col4   n.s.            [Firm FE, Yr FE, extended, BGTAvg_Amihud]
@@ -646,13 +646,13 @@ DV Mean: 0.0157, 0.0160
       col2   n.s.            [Firm FE, Yr FE, basic, BGTAvg_Amihud]
       col3   +0.0016**       [Ind FE, Yr FE, extended, BGTAvg_Amihud]
       col4   n.s.            [Firm FE, Yr FE, extended, BGTAvg_Amihud]
-      col5   +0.0009*        [Ind FE, YrQtr FE, extended, BGTAvg_Amihud]
+      col5   n.s.            [Ind FE, YrQtr FE, extended, BGTAvg_Amihud]
       col6   n.s.            [Firm FE, YrQtr FE, extended, BGTAvg_Amihud]
-      col7   +0.0010*        [Ind FE, Yr FE, basic, BGTAvg_Amihud_lead1]
-      col8   +0.0014**       [Firm FE, Yr FE, basic, BGTAvg_Amihud_lead1]
-      col9   n.s.            [Ind FE, Yr FE, extended, BGTAvg_Amihud_lead1]
+      col7   n.s.            [Ind FE, Yr FE, basic, BGTAvg_Amihud_lead1]
+      col8   n.s.            [Firm FE, Yr FE, basic, BGTAvg_Amihud_lead1]
+      col9   +0.0020*        [Ind FE, Yr FE, extended, BGTAvg_Amihud_lead1]
       col10  n.s.            [Firm FE, Yr FE, extended, BGTAvg_Amihud_lead1]
-      col11  +0.0012*        [Ind FE, YrQtr FE, extended, BGTAvg_Amihud_lead1]
+      col11  n.s.            [Ind FE, YrQtr FE, extended, BGTAvg_Amihud_lead1]
       col12  n.s.            [Firm FE, YrQtr FE, extended, BGTAvg_Amihud_lead1]
 
 ================================================================================
@@ -779,7 +779,7 @@ DV: DivPayerQ (cols 1-6), DivPayerQ_lead1 (cols 7-12)
       Secondary reference: Chetty & Saez (2005, QJE) -- firm-quarter frequency precedent
 Tail: One-tailed (beta < 0) -- uncertainty REDUCES payer probability per HP (2009) risk framing
 Estimator: LPM via PanelOLS (Timoneda 2021 for binary DV)
-SEs: Two-way clustered (firm, time) -- cluster_time on cal_yr (cols 1-4, 7-10) and cal_yr_qtr (cols 5-6, 11-12)
+SEs: Firm-level clustered (Petersen 2009)
 Sample: 88,205 Main calls, 1,884 firms; 42.35% payer rate (DivPayerQ==1); 42.90% payer rate on lead DV
 N per spec: 64,145 (base contemp), 61,535 (extended contemp), 61,359 (base lead), 60,175 (extended lead)
 Controls: lnAssets, TobinsQ, ROA, Leverage, CashRatio, Capex, sCFO, Lagged_DV (=DivPayerQ_lag)
@@ -855,17 +855,17 @@ DV: Capex (cols 1-6), Capex_lead (cols 7-12)
       atq   = Total Assets, contemporaneous (Compustat Quarterly)
       Reference: Bates, Kahle & Stulz (2009, JF)
 Tail: Two-tailed
-SEs: Two-way clustered (firm, time). N=56,114 (base), 53,864 (extended).
+SEs: Firm-level clustered (Petersen 2009). N=56,114 (base), 53,864 (extended).
 DV Mean: Capex = 0.0487, Capex_lead = 0.0481
 One-SD(UncAnsMgr) effect on Capex: +0.0006 (col3, Ind FE) = 1.24% of mean
 
   UncAnsCEO:
       col1   n.s.            [Ind FE, Yr FE, basic, Capex]
-      col2   +0.0012***      [Firm FE, Yr FE, basic, Capex]
+      col2   +0.0012**       [Firm FE, Yr FE, basic, Capex]
       col3   n.s.            [Ind FE, Yr FE, extended, Capex]
-      col4   +0.0011**       [Firm FE, Yr FE, extended, Capex]
+      col4   +0.0011*        [Firm FE, Yr FE, extended, Capex]
       col5   n.s.            [Ind FE, YrQtr FE, extended, Capex]
-      col6   +0.0010**       [Firm FE, YrQtr FE, extended, Capex]
+      col6   +0.0010*        [Firm FE, YrQtr FE, extended, Capex]
       col7   n.s.            [Ind FE, Yr FE, basic, Capex_lead]
       col8   n.s.            [Firm FE, Yr FE, basic, Capex_lead]
       col9   n.s.            [Ind FE, Yr FE, extended, Capex_lead]
@@ -888,9 +888,9 @@ One-SD(UncAnsMgr) effect on Capex: +0.0006 (col3, Ind FE) = 1.24% of mean
   UncAnsMgr:
       col1   n.s.            [Ind FE, Yr FE, basic, Capex]
       col2   n.s.            [Firm FE, Yr FE, basic, Capex]
-      col3   +0.0020***      [Ind FE, Yr FE, extended, Capex]
+      col3   +0.0020**       [Ind FE, Yr FE, extended, Capex]
       col4   n.s.            [Firm FE, Yr FE, extended, Capex]
-      col5   +0.0012*        [Ind FE, YrQtr FE, extended, Capex]
+      col5   n.s.            [Ind FE, YrQtr FE, extended, Capex]
       col6   n.s.            [Firm FE, YrQtr FE, extended, Capex]
       col7   +0.0024**       [Ind FE, Yr FE, basic, Capex_lead]
       col8   n.s.            [Firm FE, Yr FE, basic, Capex_lead]
@@ -906,9 +906,9 @@ One-SD(UncAnsMgr) effect on Capex: +0.0006 (col3, Ind FE) = 1.24% of mean
       col5   n.s.            [Ind FE, YrQtr FE, extended, Capex]
       col6   n.s.            [Firm FE, YrQtr FE, extended, Capex]
       col7   n.s.            [Ind FE, Yr FE, basic, Capex_lead]
-      col8   -0.0017*        [Firm FE, Yr FE, basic, Capex_lead]
+      col8   n.s.            [Firm FE, Yr FE, basic, Capex_lead]
       col9   n.s.            [Ind FE, Yr FE, extended, Capex_lead]
-      col10  -0.0017*        [Firm FE, Yr FE, extended, Capex_lead]
+      col10  n.s.            [Firm FE, Yr FE, extended, Capex_lead]
       col11  -0.0020*        [Ind FE, YrQtr FE, extended, Capex_lead]
       col12  n.s.            [Firm FE, YrQtr FE, extended, Capex_lead]
 
@@ -924,19 +924,19 @@ Tail: Two-tailed for all
 
   Manager_QA_Unc_c:
       col1   +0.0010**       [Ind FE, Yr FE, Capex]
-      col2   +0.0017**       [Ind FE, YrQtr FE, Capex]
-      col3   +0.0010*        [Ind FE, Yr FE, Capex_lead]
-      col4   +0.0017**       [Ind FE, YrQtr FE, Capex_lead]
+      col2   +0.0010**       [Ind FE, YrQtr FE, Capex]
+      col3   +0.0017***      [Ind FE, Yr FE, Capex_lead]
+      col4   +0.0017***      [Ind FE, YrQtr FE, Capex_lead]
   z_log_TotalSimilarity:
       col1   +0.0020***      [Ind FE, Yr FE, Capex]
-      col2   +0.0027***      [Ind FE, YrQtr FE, Capex]
-      col3   +0.0021***      [Ind FE, Yr FE, Capex_lead]
+      col2   +0.0021***      [Ind FE, YrQtr FE, Capex]
+      col3   +0.0027***      [Ind FE, Yr FE, Capex_lead]
       col4   +0.0027***      [Ind FE, YrQtr FE, Capex_lead]
   MgrQAUnc_x_zlogTSIMM:
-      col1   +0.0012*        [Ind FE, Yr FE, Capex]
-      col2   +0.0024**       [Ind FE, YrQtr FE, Capex]
-      col3   +0.0011*        [Ind FE, Yr FE, Capex_lead]
-      col4   +0.0023**       [Ind FE, YrQtr FE, Capex_lead]
+      col1   +0.0012**       [Ind FE, Yr FE, Capex]
+      col2   +0.0011**       [Ind FE, YrQtr FE, Capex]
+      col3   +0.0024***      [Ind FE, Yr FE, Capex_lead]
+      col4   +0.0023***      [Ind FE, YrQtr FE, Capex_lead]
 
 ================================================================================
 H14: SPEECH UNCERTAINTY AND BID-ASK SPREAD CHANGES
@@ -1016,8 +1016,8 @@ Tail: One-tailed (beta > 0)
 NOTE: Level specification (algebraically equivalent to H14 delta with PreCallSpread control)
 
   UncAnsCEO:
-      col1   +0.0000*        [Ind FE, Yr FE, basic, PostCallSpread]
-      col2   +0.0000*        [Firm FE, Yr FE, basic, PostCallSpread]
+      col1   n.s.            [Ind FE, Yr FE, basic, PostCallSpread]
+      col2   n.s.            [Firm FE, Yr FE, basic, PostCallSpread]
       col3   n.s.            [Ind FE, Yr FE, extended, PostCallSpread]
       col4   n.s.            [Firm FE, Yr FE, extended, PostCallSpread]
       col5   n.s.            [Ind FE, YrQtr FE, extended, PostCallSpread]
@@ -1081,17 +1081,17 @@ DV Mean: 0.0015
       col4   n.s.            [Firm FE, Yr FE, extended, BGTLevel_Spread]
       col5   n.s.            [Ind FE, YrQtr FE, extended, BGTLevel_Spread]
       col6   n.s.            [Firm FE, YrQtr FE, extended, BGTLevel_Spread]
-      col7   +0.0000***      [Ind FE, Yr FE, basic, BGTLevel_Spread_lead1]
-      col8   +0.0000***      [Firm FE, Yr FE, basic, BGTLevel_Spread_lead1]
+      col7   +0.0000**       [Ind FE, Yr FE, basic, BGTLevel_Spread_lead1]
+      col8   +0.0000**       [Firm FE, Yr FE, basic, BGTLevel_Spread_lead1]
       col9   +0.0000*        [Ind FE, Yr FE, extended, BGTLevel_Spread_lead1]
       col10  +0.0000*        [Firm FE, Yr FE, extended, BGTLevel_Spread_lead1]
-      col11  +0.0000*        [Ind FE, YrQtr FE, extended, BGTLevel_Spread_lead1]
+      col11  n.s.            [Ind FE, YrQtr FE, extended, BGTLevel_Spread_lead1]
       col12  +0.0000*        [Firm FE, YrQtr FE, extended, BGTLevel_Spread_lead1]
   UncPreCEO:
       col1   +0.0000**       [Ind FE, Yr FE, basic, BGTLevel_Spread]
-      col2   +0.0000**       [Firm FE, Yr FE, basic, BGTLevel_Spread]
+      col2   +0.0000***      [Firm FE, Yr FE, basic, BGTLevel_Spread]
       col3   n.s.            [Ind FE, Yr FE, extended, BGTLevel_Spread]
-      col4   n.s.            [Firm FE, Yr FE, extended, BGTLevel_Spread]
+      col4   +0.0000*        [Firm FE, Yr FE, extended, BGTLevel_Spread]
       col5   n.s.            [Ind FE, YrQtr FE, extended, BGTLevel_Spread]
       col6   n.s.            [Firm FE, YrQtr FE, extended, BGTLevel_Spread]
       col7   n.s.            [Ind FE, Yr FE, basic, BGTLevel_Spread_lead1]
@@ -1103,20 +1103,20 @@ DV Mean: 0.0015
   UncAnsMgr:
       col1   n.s.            [Ind FE, Yr FE, basic, BGTLevel_Spread]
       col2   n.s.            [Firm FE, Yr FE, basic, BGTLevel_Spread]
-      col3   +0.0000**       [Ind FE, Yr FE, extended, BGTLevel_Spread]
+      col3   +0.0000*        [Ind FE, Yr FE, extended, BGTLevel_Spread]
       col4   n.s.            [Firm FE, Yr FE, extended, BGTLevel_Spread]
       col5   n.s.            [Ind FE, YrQtr FE, extended, BGTLevel_Spread]
       col6   n.s.            [Firm FE, YrQtr FE, extended, BGTLevel_Spread]
       col7   n.s.            [Ind FE, Yr FE, basic, BGTLevel_Spread_lead1]
       col8   n.s.            [Firm FE, Yr FE, basic, BGTLevel_Spread_lead1]
-      col9   +0.0001**       [Ind FE, Yr FE, extended, BGTLevel_Spread_lead1]
+      col9   +0.0001***      [Ind FE, Yr FE, extended, BGTLevel_Spread_lead1]
       col10  n.s.            [Firm FE, Yr FE, extended, BGTLevel_Spread_lead1]
       col11  n.s.            [Ind FE, YrQtr FE, extended, BGTLevel_Spread_lead1]
       col12  n.s.            [Firm FE, YrQtr FE, extended, BGTLevel_Spread_lead1]
   UncPreMgr:
       col1   n.s.            [Ind FE, Yr FE, basic, BGTLevel_Spread]
       col2   n.s.            [Firm FE, Yr FE, basic, BGTLevel_Spread]
-      col3   +0.0001**       [Ind FE, Yr FE, extended, BGTLevel_Spread]
+      col3   +0.0001***      [Ind FE, Yr FE, extended, BGTLevel_Spread]
       col4   n.s.            [Firm FE, Yr FE, extended, BGTLevel_Spread]
       col5   n.s.            [Ind FE, YrQtr FE, extended, BGTLevel_Spread]
       col6   n.s.            [Firm FE, YrQtr FE, extended, BGTLevel_Spread]
@@ -1199,7 +1199,7 @@ DV Mean: 0.0015
       col4   n.s.            [Firm FE, Yr FE, extended, BGTAvg_Spread]
       col5   n.s.            [Ind FE, YrQtr FE, extended, BGTAvg_Spread]
       col6   n.s.            [Firm FE, YrQtr FE, extended, BGTAvg_Spread]
-      col7   +0.0000*        [Ind FE, Yr FE, basic, BGTAvg_Spread_lead1]
+      col7   +0.0000**       [Ind FE, Yr FE, basic, BGTAvg_Spread_lead1]
       col8   +0.0000**       [Firm FE, Yr FE, basic, BGTAvg_Spread_lead1]
       col9   n.s.            [Ind FE, Yr FE, extended, BGTAvg_Spread_lead1]
       col10  n.s.            [Firm FE, Yr FE, extended, BGTAvg_Spread_lead1]
@@ -1209,7 +1209,7 @@ DV Mean: 0.0015
       col1   +0.0000*        [Ind FE, Yr FE, basic, BGTAvg_Spread]
       col2   +0.0000**       [Firm FE, Yr FE, basic, BGTAvg_Spread]
       col3   n.s.            [Ind FE, Yr FE, extended, BGTAvg_Spread]
-      col4   +0.0000*        [Firm FE, Yr FE, extended, BGTAvg_Spread]
+      col4   +0.0000**       [Firm FE, Yr FE, extended, BGTAvg_Spread]
       col5   n.s.            [Ind FE, YrQtr FE, extended, BGTAvg_Spread]
       col6   n.s.            [Firm FE, YrQtr FE, extended, BGTAvg_Spread]
       col7   n.s.            [Ind FE, Yr FE, basic, BGTAvg_Spread_lead1]
@@ -1227,21 +1227,21 @@ DV Mean: 0.0015
       col6   n.s.            [Firm FE, YrQtr FE, extended, BGTAvg_Spread]
       col7   n.s.            [Ind FE, Yr FE, basic, BGTAvg_Spread_lead1]
       col8   n.s.            [Firm FE, Yr FE, basic, BGTAvg_Spread_lead1]
-      col9   +0.0000**       [Ind FE, Yr FE, extended, BGTAvg_Spread_lead1]
+      col9   +0.0000***      [Ind FE, Yr FE, extended, BGTAvg_Spread_lead1]
       col10  n.s.            [Firm FE, Yr FE, extended, BGTAvg_Spread_lead1]
       col11  n.s.            [Ind FE, YrQtr FE, extended, BGTAvg_Spread_lead1]
       col12  n.s.            [Firm FE, YrQtr FE, extended, BGTAvg_Spread_lead1]
   UncPreMgr:
       col1   n.s.            [Ind FE, Yr FE, basic, BGTAvg_Spread]
       col2   n.s.            [Firm FE, Yr FE, basic, BGTAvg_Spread]
-      col3   +0.0000*        [Ind FE, Yr FE, extended, BGTAvg_Spread]
+      col3   +0.0000***      [Ind FE, Yr FE, extended, BGTAvg_Spread]
       col4   n.s.            [Firm FE, Yr FE, extended, BGTAvg_Spread]
       col5   n.s.            [Ind FE, YrQtr FE, extended, BGTAvg_Spread]
       col6   n.s.            [Firm FE, YrQtr FE, extended, BGTAvg_Spread]
       col7   n.s.            [Ind FE, Yr FE, basic, BGTAvg_Spread_lead1]
       col8   n.s.            [Firm FE, Yr FE, basic, BGTAvg_Spread_lead1]
       col9   +0.0001***      [Ind FE, Yr FE, extended, BGTAvg_Spread_lead1]
-      col10  +0.0000*        [Firm FE, Yr FE, extended, BGTAvg_Spread_lead1]
+      col10  n.s.            [Firm FE, Yr FE, extended, BGTAvg_Spread_lead1]
       col11  n.s.            [Ind FE, YrQtr FE, extended, BGTAvg_Spread_lead1]
       col12  +0.0000*        [Firm FE, YrQtr FE, extended, BGTAvg_Spread_lead1]
 
@@ -1254,7 +1254,7 @@ DV: RDSales (cols 1-6), RDSales_lead (cols 7-12)
       saley = Sales/Turnover (Net), annual (Compustat Annual via Q4)
       Reference: Bates, Kahle & Stulz (2009, JF); Jiang, John & Larsen (2021, RQFA)
 Tail: Two-tailed
-SEs: Two-way clustered (firm, time). N=56,130 (base), 53,892 (extended).
+SEs: Firm-level clustered (Petersen 2009). N=56,130 (base), 53,892 (extended).
 DV Mean: RDSales = 0.0645, RDSales_lead = 0.0658
 One-SD(UncAnsMgr) effect on RDSales: +0.0112 (col3, Ind FE) = 17.4% of mean; +0.0071 (col4, Firm FE) = 11.0% of mean
 
@@ -1272,15 +1272,15 @@ One-SD(UncAnsMgr) effect on RDSales: +0.0112 (col3, Ind FE) = 17.4% of mean; +0.
       col11  n.s.            [Ind FE, YrQtr FE, extended, RDSales_lead]
       col12  n.s.            [Firm FE, YrQtr FE, extended, RDSales_lead]
   UncPreCEO:
-      col1   +0.0138*        [Ind FE, Yr FE, basic, RDSales]
+      col1   n.s.            [Ind FE, Yr FE, basic, RDSales]
       col2   n.s.            [Firm FE, Yr FE, basic, RDSales]
       col3   n.s.            [Ind FE, Yr FE, extended, RDSales]
       col4   n.s.            [Firm FE, Yr FE, extended, RDSales]
       col5   n.s.            [Ind FE, YrQtr FE, extended, RDSales]
       col6   n.s.            [Firm FE, YrQtr FE, extended, RDSales]
-      col7   +0.0181***      [Ind FE, Yr FE, basic, RDSales_lead]
+      col7   n.s.            [Ind FE, Yr FE, basic, RDSales_lead]
       col8   n.s.            [Firm FE, Yr FE, basic, RDSales_lead]
-      col9   +0.0150***      [Ind FE, Yr FE, extended, RDSales_lead]
+      col9   n.s.            [Ind FE, Yr FE, extended, RDSales_lead]
       col10  n.s.            [Firm FE, Yr FE, extended, RDSales_lead]
       col11  n.s.            [Ind FE, YrQtr FE, extended, RDSales_lead]
       col12  n.s.            [Firm FE, YrQtr FE, extended, RDSales_lead]
@@ -1459,57 +1459,57 @@ Classification: Leary & Roberts (2010, JFE). Debt issuance if delta(dlcq+dlttq)/
 Sample split: 73.1% internal, 26.9% external (at call level)
 
   UncAnsCEO:
-      col1   n.s.            [Ind FE, Yr FE, basic, ExternalFunding]
-      col2   n.s.            [Firm FE, Yr FE, basic, ExternalFunding]
-      col3   n.s.            [Ind FE, Yr FE, extended, ExternalFunding]
-      col4   n.s.            [Firm FE, Yr FE, extended, ExternalFunding]
-      col5   n.s.            [Ind FE, YrQtr FE, extended, ExternalFunding]
-      col6   n.s.            [Firm FE, YrQtr FE, extended, ExternalFunding]
-      col7   n.s.            [Ind FE, Yr FE, basic, ExternalFunding_lead]
-      col8   n.s.            [Firm FE, Yr FE, basic, ExternalFunding_lead]
-      col9   n.s.            [Ind FE, Yr FE, extended, ExternalFunding_lead]
-      col10  n.s.            [Firm FE, Yr FE, extended, ExternalFunding_lead]
-      col11  n.s.            [Ind FE, YrQtr FE, extended, ExternalFunding_lead]
-      col12  n.s.            [Firm FE, YrQtr FE, extended, ExternalFunding_lead]
+      col1   --              [Ind FE, Yr FE, basic, ExternalFunding]
+      col2   --              [Firm FE, Yr FE, basic, ExternalFunding]
+      col3   --              [Ind FE, Yr FE, extended, ExternalFunding]
+      col4   --              [Firm FE, Yr FE, extended, ExternalFunding]
+      col5   --              [Ind FE, YrQtr FE, extended, ExternalFunding]
+      col6   --              [Firm FE, YrQtr FE, extended, ExternalFunding]
+      col7   --              [Ind FE, Yr FE, basic, ExternalFunding_lead]
+      col8   --              [Firm FE, Yr FE, basic, ExternalFunding_lead]
+      col9   --              [Ind FE, Yr FE, extended, ExternalFunding_lead]
+      col10  --              [Firm FE, Yr FE, extended, ExternalFunding_lead]
+      col11  --              [Ind FE, YrQtr FE, extended, ExternalFunding_lead]
+      col12  --              [Firm FE, YrQtr FE, extended, ExternalFunding_lead]
   UncPreCEO:
-      col1   n.s.            [Ind FE, Yr FE, basic, ExternalFunding]
-      col2   n.s.            [Firm FE, Yr FE, basic, ExternalFunding]
-      col3   n.s.            [Ind FE, Yr FE, extended, ExternalFunding]
-      col4   n.s.            [Firm FE, Yr FE, extended, ExternalFunding]
-      col5   n.s.            [Ind FE, YrQtr FE, extended, ExternalFunding]
-      col6   n.s.            [Firm FE, YrQtr FE, extended, ExternalFunding]
-      col7   n.s.            [Ind FE, Yr FE, basic, ExternalFunding_lead]
-      col8   n.s.            [Firm FE, Yr FE, basic, ExternalFunding_lead]
-      col9   n.s.            [Ind FE, Yr FE, extended, ExternalFunding_lead]
-      col10  n.s.            [Firm FE, Yr FE, extended, ExternalFunding_lead]
-      col11  n.s.            [Ind FE, YrQtr FE, extended, ExternalFunding_lead]
-      col12  n.s.            [Firm FE, YrQtr FE, extended, ExternalFunding_lead]
+      col1   --              [Ind FE, Yr FE, basic, ExternalFunding]
+      col2   --              [Firm FE, Yr FE, basic, ExternalFunding]
+      col3   --              [Ind FE, Yr FE, extended, ExternalFunding]
+      col4   --              [Firm FE, Yr FE, extended, ExternalFunding]
+      col5   --              [Ind FE, YrQtr FE, extended, ExternalFunding]
+      col6   --              [Firm FE, YrQtr FE, extended, ExternalFunding]
+      col7   --              [Ind FE, Yr FE, basic, ExternalFunding_lead]
+      col8   --              [Firm FE, Yr FE, basic, ExternalFunding_lead]
+      col9   --              [Ind FE, Yr FE, extended, ExternalFunding_lead]
+      col10  --              [Firm FE, Yr FE, extended, ExternalFunding_lead]
+      col11  --              [Ind FE, YrQtr FE, extended, ExternalFunding_lead]
+      col12  --              [Firm FE, YrQtr FE, extended, ExternalFunding_lead]
   UncAnsMgr:
-      col1   n.s.            [Ind FE, Yr FE, basic, ExternalFunding]
-      col2   n.s.            [Firm FE, Yr FE, basic, ExternalFunding]
-      col3   n.s.            [Ind FE, Yr FE, extended, ExternalFunding]
-      col4   n.s.            [Firm FE, Yr FE, extended, ExternalFunding]
-      col5   n.s.            [Ind FE, YrQtr FE, extended, ExternalFunding]
-      col6   n.s.            [Firm FE, YrQtr FE, extended, ExternalFunding]
-      col7   n.s.            [Ind FE, Yr FE, basic, ExternalFunding_lead]
-      col8   n.s.            [Firm FE, Yr FE, basic, ExternalFunding_lead]
-      col9   -0.0151*        [Ind FE, Yr FE, extended, ExternalFunding_lead]
-      col10  n.s.            [Firm FE, Yr FE, extended, ExternalFunding_lead]
-      col11  n.s.            [Ind FE, YrQtr FE, extended, ExternalFunding_lead]
-      col12  n.s.            [Firm FE, YrQtr FE, extended, ExternalFunding_lead]
+      col1   --              [Ind FE, Yr FE, basic, ExternalFunding]
+      col2   --              [Firm FE, Yr FE, basic, ExternalFunding]
+      col3   --              [Ind FE, Yr FE, extended, ExternalFunding]
+      col4   --              [Firm FE, Yr FE, extended, ExternalFunding]
+      col5   --              [Ind FE, YrQtr FE, extended, ExternalFunding]
+      col6   --              [Firm FE, YrQtr FE, extended, ExternalFunding]
+      col7   --              [Ind FE, Yr FE, basic, ExternalFunding_lead]
+      col8   --              [Firm FE, Yr FE, basic, ExternalFunding_lead]
+      col9   --              [Ind FE, Yr FE, extended, ExternalFunding_lead]
+      col10  --              [Firm FE, Yr FE, extended, ExternalFunding_lead]
+      col11  --              [Ind FE, YrQtr FE, extended, ExternalFunding_lead]
+      col12  --              [Firm FE, YrQtr FE, extended, ExternalFunding_lead]
   UncPreMgr:
-      col1   n.s.            [Ind FE, Yr FE, basic, ExternalFunding]
-      col2   n.s.            [Firm FE, Yr FE, basic, ExternalFunding]
-      col3   n.s.            [Ind FE, Yr FE, extended, ExternalFunding]
-      col4   n.s.            [Firm FE, Yr FE, extended, ExternalFunding]
-      col5   n.s.            [Ind FE, YrQtr FE, extended, ExternalFunding]
-      col6   n.s.            [Firm FE, YrQtr FE, extended, ExternalFunding]
-      col7   n.s.            [Ind FE, Yr FE, basic, ExternalFunding_lead]
-      col8   n.s.            [Firm FE, Yr FE, basic, ExternalFunding_lead]
-      col9   n.s.            [Ind FE, Yr FE, extended, ExternalFunding_lead]
-      col10  n.s.            [Firm FE, Yr FE, extended, ExternalFunding_lead]
-      col11  n.s.            [Ind FE, YrQtr FE, extended, ExternalFunding_lead]
-      col12  n.s.            [Firm FE, YrQtr FE, extended, ExternalFunding_lead]
+      col1   --              [Ind FE, Yr FE, basic, ExternalFunding]
+      col2   --              [Firm FE, Yr FE, basic, ExternalFunding]
+      col3   --              [Ind FE, Yr FE, extended, ExternalFunding]
+      col4   --              [Firm FE, Yr FE, extended, ExternalFunding]
+      col5   --              [Ind FE, YrQtr FE, extended, ExternalFunding]
+      col6   --              [Firm FE, YrQtr FE, extended, ExternalFunding]
+      col7   --              [Ind FE, Yr FE, basic, ExternalFunding_lead]
+      col8   --              [Firm FE, Yr FE, basic, ExternalFunding_lead]
+      col9   --              [Ind FE, Yr FE, extended, ExternalFunding_lead]
+      col10  --              [Firm FE, Yr FE, extended, ExternalFunding_lead]
+      col11  --              [Ind FE, YrQtr FE, extended, ExternalFunding_lead]
+      col12  --              [Firm FE, YrQtr FE, extended, ExternalFunding_lead]
 
 ================================================================================
 H20: SPEECH UNCERTAINTY AND DEBT VS EQUITY CHOICE
@@ -1527,33 +1527,33 @@ Controls: Leverage EXCLUDED (bad control: shares numerator with debt issuance DV
 Sample split among external funders: 70% debt-only, 30% equity/dual
 
   UncAnsCEO:
-      col1   n.s.            [Ind FE, Yr FE, basic, DebtChoice]
-      col2   n.s.            [Firm FE, Yr FE, basic, DebtChoice]
-      col3   n.s.            [Ind FE, Yr FE, extended, DebtChoice]
-      col4   n.s.            [Firm FE, Yr FE, extended, DebtChoice]
-      col5   n.s.            [Ind FE, YrQtr FE, extended, DebtChoice]
-      col6   n.s.            [Firm FE, YrQtr FE, extended, DebtChoice]
+      col1   --              [Ind FE, Yr FE, basic, DebtChoice]
+      col2   --              [Firm FE, Yr FE, basic, DebtChoice]
+      col3   --              [Ind FE, Yr FE, extended, DebtChoice]
+      col4   --              [Firm FE, Yr FE, extended, DebtChoice]
+      col5   --              [Ind FE, YrQtr FE, extended, DebtChoice]
+      col6   --              [Firm FE, YrQtr FE, extended, DebtChoice]
   UncPreCEO:
-      col1   -0.0310*        [Ind FE, Yr FE, basic, DebtChoice]
-      col2   n.s.            [Firm FE, Yr FE, basic, DebtChoice]
-      col3   -0.0317*        [Ind FE, Yr FE, extended, DebtChoice]
-      col4   n.s.            [Firm FE, Yr FE, extended, DebtChoice]
-      col5   n.s.            [Ind FE, YrQtr FE, extended, DebtChoice]
-      col6   n.s.            [Firm FE, YrQtr FE, extended, DebtChoice]
+      col1   --              [Ind FE, Yr FE, basic, DebtChoice]
+      col2   --              [Firm FE, Yr FE, basic, DebtChoice]
+      col3   --              [Ind FE, Yr FE, extended, DebtChoice]
+      col4   --              [Firm FE, Yr FE, extended, DebtChoice]
+      col5   --              [Ind FE, YrQtr FE, extended, DebtChoice]
+      col6   --              [Firm FE, YrQtr FE, extended, DebtChoice]
   UncAnsMgr:
-      col1   +0.0456**       [Ind FE, Yr FE, basic, DebtChoice]
-      col2   n.s.            [Firm FE, Yr FE, basic, DebtChoice]
-      col3   +0.1184***      [Ind FE, Yr FE, extended, DebtChoice]
-      col4   n.s.            [Firm FE, Yr FE, extended, DebtChoice]
-      col5   +0.0443**       [Ind FE, YrQtr FE, extended, DebtChoice]
-      col6   n.s.            [Firm FE, YrQtr FE, extended, DebtChoice]
+      col1   --              [Ind FE, Yr FE, basic, DebtChoice]
+      col2   --              [Firm FE, Yr FE, basic, DebtChoice]
+      col3   --              [Ind FE, Yr FE, extended, DebtChoice]
+      col4   --              [Firm FE, Yr FE, extended, DebtChoice]
+      col5   --              [Ind FE, YrQtr FE, extended, DebtChoice]
+      col6   --              [Firm FE, YrQtr FE, extended, DebtChoice]
   UncPreMgr:
-      col1   n.s.            [Ind FE, Yr FE, basic, DebtChoice]
-      col2   n.s.            [Firm FE, Yr FE, basic, DebtChoice]
-      col3   +0.0919***      [Ind FE, Yr FE, extended, DebtChoice]
-      col4   n.s.            [Firm FE, Yr FE, extended, DebtChoice]
-      col5   n.s.            [Ind FE, YrQtr FE, extended, DebtChoice]
-      col6   n.s.            [Firm FE, YrQtr FE, extended, DebtChoice]
+      col1   --              [Ind FE, Yr FE, basic, DebtChoice]
+      col2   --              [Firm FE, Yr FE, basic, DebtChoice]
+      col3   --              [Ind FE, Yr FE, extended, DebtChoice]
+      col4   --              [Firm FE, Yr FE, extended, DebtChoice]
+      col5   --              [Ind FE, YrQtr FE, extended, DebtChoice]
+      col6   --              [Firm FE, YrQtr FE, extended, DebtChoice]
 
 ================================================================================
 H21: SPEECH UNCERTAINTY AND SEC COMMENT LETTER COUNT
@@ -1638,7 +1638,7 @@ H23: PRODUCT-MARKET COMPETITION AND UNCERTAINTY LANGUAGE
 N: 20,769, 15,882, 20,770, 15,924
 
   z(log(TSIMM)):
-      col1   +0.0090*        [Ind FE, Yr FE, QA_Uncertainty / Manager]
+      col1   +0.0090**       [Ind FE, Yr FE, QA_Uncertainty / Manager]
       col2   n.s.            [Ind FE, Yr FE, QA_Uncertainty / CEO]
       col3   +0.0297***      [Ind FE, Yr FE, Pres_Uncertainty / Manager]
       col4   +0.0304***      [Ind FE, Yr FE, Pres_Uncertainty / CEO]
@@ -1704,16 +1704,16 @@ SAMPLE SIZES (declining with lead horizon):
       col7   +0.0035***      [Ind FE, YrQtr FE, extended, Capex_lead2]
       col8   n.s.            [Firm FE, YrQtr FE, extended, Capex_lead2]
       col9   +0.0070***      [Ind FE, Yr FE, extended, Capex_lead3]
-      col10  +0.0019**       [Firm FE, Yr FE, extended, Capex_lead3]
+      col10  +0.0019*        [Firm FE, Yr FE, extended, Capex_lead3]
       col11  +0.0049***      [Ind FE, YrQtr FE, extended, Capex_lead3]
       col12  +0.0018*        [Firm FE, YrQtr FE, extended, Capex_lead3]
       col13  +0.0071***      [Ind FE, Yr FE, extended, Capex_lead4]
-      col14  +0.0016*        [Firm FE, Yr FE, extended, Capex_lead4]
+      col14  n.s.            [Firm FE, Yr FE, extended, Capex_lead4]
       col15  +0.0048***      [Ind FE, YrQtr FE, extended, Capex_lead4]
       col16  n.s.            [Firm FE, YrQtr FE, extended, Capex_lead4]
   UncPreMgr:
       col1   n.s.            [Ind FE, Yr FE, extended, Capex_lead]
-      col2   -0.0017*        [Firm FE, Yr FE, extended, Capex_lead]
+      col2   n.s.            [Firm FE, Yr FE, extended, Capex_lead]
       col3   -0.0020*        [Ind FE, YrQtr FE, extended, Capex_lead]
       col4   n.s.            [Firm FE, YrQtr FE, extended, Capex_lead]
       col5   n.s.            [Ind FE, Yr FE, extended, Capex_lead2]
@@ -1840,14 +1840,14 @@ H24: US ECONOMIC POLICY UNCERTAINTY AND CALL LANGUAGE UNCERTAINTY
 N: 73,781, 74,641, 51,348, 52,108, 73,711, 74,455, 51,352, 52,066
 
   log(US EPU)_t:
-      col1   n.s.            [Firm FE, Contemporaneous / Mgr QA]
+      col1   +0.0147**       [Firm FE, Contemporaneous / Mgr QA]
       col2   n.s.            [Firm FE, Contemporaneous / Mgr Pres]
-      col3   n.s.            [Firm FE, Contemporaneous / CEO QA]
-      col4   n.s.            [Firm FE, Contemporaneous / CEO Pres]
-      col5   n.s.            [Firm FE, Next Quarter (t+1) / Mgr QA]
-      col6   n.s.            [Firm FE, Next Quarter (t+1) / Mgr Pres]
-      col7   n.s.            [Firm FE, Next Quarter (t+1) / CEO QA]
-      col8   n.s.            [Firm FE, Next Quarter (t+1) / CEO Pres]
+      col3   +0.0138**       [Firm FE, Contemporaneous / CEO QA]
+      col4   +0.0239***      [Firm FE, Contemporaneous / CEO Pres]
+      col5   --              [Firm FE, Next Quarter (t+1) / Mgr QA]
+      col6   --              [Firm FE, Next Quarter (t+1) / Mgr Pres]
+      col7   --              [Firm FE, Next Quarter (t+1) / CEO QA]
+      col8   --              [Firm FE, Next Quarter (t+1) / CEO Pres]
 
 ================================================================================
 H24b: GLOBAL ECONOMIC POLICY UNCERTAINTY AND CALL LANGUAGE UNCERTAINTY
@@ -1855,14 +1855,14 @@ H24b: GLOBAL ECONOMIC POLICY UNCERTAINTY AND CALL LANGUAGE UNCERTAINTY
 N: 73,781, 74,641, 51,348, 52,108, 73,711, 74,455, 51,352, 52,066
 
   log(GEPU)_t:
-      col1   n.s.            [Firm FE, Contemporaneous / Mgr QA]
-      col2   n.s.            [Firm FE, Contemporaneous / Mgr Pres]
-      col3   n.s.            [Firm FE, Contemporaneous / CEO QA]
-      col4   n.s.            [Firm FE, Contemporaneous / CEO Pres]
-      col5   n.s.            [Firm FE, Next Quarter (t+1) / Mgr QA]
-      col6   n.s.            [Firm FE, Next Quarter (t+1) / Mgr Pres]
-      col7   n.s.            [Firm FE, Next Quarter (t+1) / CEO QA]
-      col8   n.s.            [Firm FE, Next Quarter (t+1) / CEO Pres]
+      col1   +0.0242**       [Firm FE, Contemporaneous / Mgr QA]
+      col2   +0.0124*        [Firm FE, Contemporaneous / Mgr Pres]
+      col3   +0.0212**       [Firm FE, Contemporaneous / CEO QA]
+      col4   +0.0309***      [Firm FE, Contemporaneous / CEO Pres]
+      col5   --              [Firm FE, Next Quarter (t+1) / Mgr QA]
+      col6   --              [Firm FE, Next Quarter (t+1) / Mgr Pres]
+      col7   --              [Firm FE, Next Quarter (t+1) / CEO QA]
+      col8   --              [Firm FE, Next Quarter (t+1) / CEO Pres]
 
 ================================================================================
 H25: GEOPOLITICAL RISK AND CALL LANGUAGE UNCERTAINTY
@@ -1874,7 +1874,7 @@ N: 73,781, 74,641, 51,348, 52,108, 73,711, 74,455, 51,352, 52,066
       col2   n.s.            [Firm FE, Contemporaneous / Mgr Pres]
       col3   n.s.            [Firm FE, Contemporaneous / CEO QA]
       col4   n.s.            [Firm FE, Contemporaneous / CEO Pres]
-      col5   n.s.            [Firm FE, Next Quarter (t+1) / Mgr QA]
-      col6   n.s.            [Firm FE, Next Quarter (t+1) / Mgr Pres]
-      col7   n.s.            [Firm FE, Next Quarter (t+1) / CEO QA]
-      col8   n.s.            [Firm FE, Next Quarter (t+1) / CEO Pres]
+      col5   --              [Firm FE, Next Quarter (t+1) / Mgr QA]
+      col6   --              [Firm FE, Next Quarter (t+1) / Mgr Pres]
+      col7   --              [Firm FE, Next Quarter (t+1) / CEO QA]
+      col8   --              [Firm FE, Next Quarter (t+1) / CEO Pres]
