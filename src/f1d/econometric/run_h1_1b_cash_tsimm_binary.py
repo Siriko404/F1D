@@ -62,7 +62,12 @@ from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
-from f1d.shared.outputs import generate_manifest, generate_attrition_table
+from f1d.shared.outputs import (
+    extract_coefs_panelols,
+    generate_attrition_table,
+    generate_manifest,
+    write_suite_spec,
+)
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
@@ -86,6 +91,24 @@ IV_CENTERED = "Manager_QA_Unc_c"  # mean-centered on Main sample
 INTERACTION = "MgrQAUnc_x_HighTSIMM"
 
 MIN_CALLS_PER_FIRM = 5
+
+# ------------------------------------------------------------------
+# Suite metadata for suite_spec.json emission (moderation, 4 cols, single DV).
+# Note: Manager_QA_Unc_c is the intermediate centered variable name (Bug 8);
+# rename to UncAnsMgr_c is deferred to Phase 7 per the plan.
+# ------------------------------------------------------------------
+SUITE_ID = "H1.1b"
+SUITE_DIR_NAME = "h1_1b_cash_tsimm_binary"
+SUITE_TITLE = "Binary Product Similarity-Moderated Speech Uncertainty and Cash Holdings"
+SUITE_CAPTION = (
+    "H1.1b: Binary Product Similarity--Moderated Speech Uncertainty and Cash Holdings"
+)
+SUITE_LABEL = "tab:h1_1b"
+SAMPLE_LABEL = "Main sample (excludes financial and utility firms)."
+HYP_DIR = "positive"  # main IV expected beta > 0; moderator + interaction two-tailed
+CLUSTERING = {"entity": True, "time": False}
+TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
+EXTENDED_ONLY_CONTROLS: List[str] = []
 
 MODEL_SPECS = [
     {"col": 1, "dv": "CashRatio", "fe": "industry",    "extra_controls": []},
@@ -694,6 +717,114 @@ def generate_report(
     print("  Saved: report_step4_H1_1b.md")
 
 
+def _write_suite_spec_json(
+    all_results: List[Dict[str, Any]],
+    out_dir: Path,
+) -> None:
+    """Emit canonical suite_spec_H1.1b.json from moderation runner state.
+
+    H1.1b structure: 4 cols = 2 FE entities x 2 time-FE granularities.
+    Binary moderator HighTSIMM; interaction MgrQAUnc_x_HighTSIMM.
+    """
+    col_metadata: List[Dict[str, Any]] = []
+    coefs_per_col: List[Dict[str, Dict[str, Any]]] = []
+
+    results_by_col = {
+        r["meta"]["col"]: r for r in all_results if r.get("meta")
+    }
+
+    for spec in MODEL_SPECS:
+        col_num = spec["col"]
+        if col_num not in results_by_col:
+            raise RuntimeError(
+                f"H1.1b spec build: missing result for col {col_num}"
+            )
+        result = results_by_col[col_num]
+        model = result["model"]
+        meta = result["meta"]
+
+        fe = spec["fe"]
+        base_fe = fe.replace("_yq", "")
+        fe_entity = "industry" if base_fe == "industry" else "firm"
+        fe_time = (
+            "calendar_year_quarter" if fe.endswith("_yq") else "calendar_year"
+        )
+
+        extra_controls = spec.get("extra_controls", [])
+        control_vars = list(CONTROLS) + list(extra_controls)
+
+        try:
+            dv_mean: Optional[float] = float(
+                model.model.dependent.dataframe.mean().iloc[0]
+            )
+        except Exception:
+            dv_mean = None
+
+        col_metadata.append(
+            {
+                "col": col_num,
+                "dv": spec["dv"],
+                "fe_entity": fe_entity,
+                "fe_time": fe_time,
+                "control_vars": control_vars,
+                "n_obs": int(meta["n_obs"]),
+                "n_firms": int(meta.get("n_firms", 0)) or None,
+                "r2": float(meta["r2"]),
+                "adj_r2": float(meta.get("adj_r2", float("nan"))),
+                "dv_mean": dv_mean,
+                "cluster_fallback": False,
+            }
+        )
+
+        iv_key_names = [IV_CENTERED, MODERATOR, INTERACTION]
+        coefs_per_col.append(
+            extract_coefs_panelols(
+                model=model,
+                key_ivs=iv_key_names,
+                all_vars=iv_key_names + control_vars,
+                hyp_dir=HYP_DIR,
+            )
+        )
+
+    header_rows = [
+        [{"label": "CashRatio", "span": len(MODEL_SPECS)}]
+    ]
+
+    paths = write_suite_spec(
+        output_dir=out_dir,
+        runner_id=SUITE_DIR_NAME,
+        sub_tables=[
+            {
+                "suite_id": SUITE_ID,
+                "dir_name": SUITE_DIR_NAME,
+                "title": SUITE_TITLE,
+                "caption": SUITE_CAPTION,
+                "label": SUITE_LABEL,
+                "col_range": [s["col"] for s in MODEL_SPECS],
+                "header_rows": header_rows,
+                "suite_type": "moderation",
+            }
+        ],
+        coefs_per_col=coefs_per_col,
+        col_metadata=col_metadata,
+        sample_label=SAMPLE_LABEL,
+        clustering=CLUSTERING,
+        tail=TAIL,
+        ivs=[
+            {"name": IV_CENTERED, "label": r"Manager\_QA\_Unc\_c", "tail": "one_pos"},
+            {"name": MODERATOR, "label": "HighTSIMM", "tail": "two"},
+            {"name": INTERACTION, "label": r"MgrQAUnc\_x\_HighTSIMM", "tail": "two"},
+        ],
+        controls={
+            "base": list(CONTROLS),
+            "extended_only": list(EXTENDED_ONLY_CONTROLS),
+        },
+        model_family="PanelOLS",
+    )
+    for path in paths:
+        print(f"  Saved: {path.name}")
+
+
 # ==============================================================================
 # Main
 # ==============================================================================
@@ -776,6 +907,7 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Save outputs
     diag_df = save_outputs(all_results, out_dir)
+    _write_suite_spec_json(all_results, out_dir)
 
     # Attrition
     tnic_matched = panel[MODERATOR_RAW].notna().sum()

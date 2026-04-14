@@ -209,16 +209,22 @@ class SuiteSpec(BaseModel):
 
     @model_validator(mode="after")
     def _iv_coefs_have_p_one(self) -> "SuiteSpec":
-        """If tail.direction is directional, every IV's per-col coef must have p_one set."""
-        if self.tail.direction == "none":
-            return self
-        iv_names = {iv.name for iv in self.ivs}
+        """Each directional IV's per-col coef must have p_one set.
+
+        Per-IV tails take precedence: an IV declared `two` does not require
+        p_one even if the suite-level tail.direction is directional, and an
+        IV declared `one_pos`/`one_neg` requires p_one even if the suite-
+        level direction is `none`.
+        """
+        directional_ivs = {
+            iv.name for iv in self.ivs if iv.tail in ("one_pos", "one_neg")
+        }
         for col in self.columns:
             for var_name, coef in col.coefs.items():
-                if var_name in iv_names and coef.p_one is None:
+                if var_name in directional_ivs and coef.p_one is None:
                     raise ValueError(
                         f"Column {col.col}: IV '{var_name}' has p_one=None "
-                        f"but tail.direction is '{self.tail.direction}'"
+                        f"but its declared tail is directional"
                     )
         return self
 

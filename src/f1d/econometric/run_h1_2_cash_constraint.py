@@ -71,7 +71,12 @@ from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
-from f1d.shared.outputs import generate_manifest, generate_attrition_table
+from f1d.shared.outputs import (
+    extract_coefs_panelols,
+    generate_attrition_table,
+    generate_manifest,
+    write_suite_spec,
+)
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
@@ -103,6 +108,30 @@ IG_RATINGS = {"AAA", "AA+", "AA", "AA-", "A+", "A", "A-", "BBB+", "BBB", "BBB-"}
 MIN_CALLS_PER_FIRM = 5
 YEAR_MIN = 2002
 YEAR_MAX = 2016
+
+# ------------------------------------------------------------------
+# Suite metadata for suite_spec.json emission.
+# H1.2 displays cols 5-8 (interaction specs). The top IV row
+# (Manager_QA_Unc_c) pulls from cols 1-4 (unconditional specs) — the
+# spec builder merges both sources into each column's coefs dict so the
+# renderer sees 6 top-of-table variables. Note: Bug 8 rename deferred.
+# ------------------------------------------------------------------
+SUITE_ID = "H1.2"
+SUITE_DIR_NAME = "h1_2_cash_constraint"
+SUITE_TITLE = (
+    "Financial Constraint-Moderated Speech Uncertainty and Cash Holdings "
+    "(Three-Category)"
+)
+SUITE_CAPTION = (
+    "H1.2: Financial Constraint--Moderated Speech Uncertainty and Cash Holdings "
+    "(Three-Category)"
+)
+SUITE_LABEL = "tab:h1_2"
+SAMPLE_LABEL = "Main sample (excludes financial and utility firms). Fiscal years 2002-2016."
+HYP_DIR = "positive"  # main IV expected beta > 0
+CLUSTERING = {"entity": True, "time": False}
+TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
+EXTENDED_ONLY_CONTROLS: List[str] = []
 
 MODEL_SPECS = [
     # Unconditional specs (no interactions): cols 1-4, full FE ladder
@@ -799,6 +828,177 @@ def generate_report(
     print("  Saved: report_step4_H1_2.md")
 
 
+def _write_suite_spec_json(
+    all_results: List[Dict[str, Any]],
+    out_dir: Path,
+) -> None:
+    """Emit canonical suite_spec_H1.2.json from moderation runner state.
+
+    H1.2 has 8 underlying regressions:
+      - Cols 1-4: unconditional specs (source of Manager_QA_Unc_c main IV)
+      - Cols 5-8: interaction specs (source of BelowIG/Unrated level shifts
+        and the MgrQAUnc_x_IG / x_BelowIG / x_Unrated interactions)
+
+    The displayed table shows 4 columns corresponding to runner cols 5-8.
+    For each displayed col, the spec builder:
+      1. Uses cols 5-8's interaction-model metadata (n_obs, r2, fe, etc.)
+      2. Merges BOTH sets of coefs into the col's coefs dict:
+         - `Manager_QA_Unc_c` from the matching unconditional spec
+           (col 5 <- col 1, col 6 <- col 2, col 7 <- col 3, col 8 <- col 4)
+         - All other top-of-table vars + controls from the interaction spec
+    """
+    results_by_col = {
+        r["meta"]["col"]: r for r in all_results if r.get("meta")
+    }
+
+    col_metadata: List[Dict[str, Any]] = []
+    coefs_per_col: List[Dict[str, Dict[str, Any]]] = []
+
+    # Display cols 5-8 (interaction specs) → renumber to 1..4 in the spec.
+    display_cols = [5, 6, 7, 8]
+    for interaction_col in display_cols:
+        if interaction_col not in results_by_col:
+            raise RuntimeError(
+                f"H1.2 spec build: missing interaction result for col {interaction_col}"
+            )
+        unconditional_col = interaction_col - 4
+        if unconditional_col not in results_by_col:
+            raise RuntimeError(
+                f"H1.2 spec build: missing unconditional result for col {unconditional_col}"
+            )
+
+        int_entry = results_by_col[interaction_col]
+        int_model = int_entry["model"]
+        int_meta = int_entry["meta"]
+        uncond_entry = results_by_col[unconditional_col]
+        uncond_model = uncond_entry["model"]
+
+        # Locate the MODEL_SPECS row corresponding to the interaction col.
+        spec = next(s for s in MODEL_SPECS if s["col"] == interaction_col)
+        fe = spec["fe"]
+        base_fe = fe.replace("_yq", "")
+        fe_entity = "industry" if base_fe == "industry" else "firm"
+        fe_time = (
+            "calendar_year_quarter" if fe.endswith("_yq") else "calendar_year"
+        )
+
+        extra_controls = spec.get("extra_controls", [])
+        control_vars = list(CONTROLS) + list(extra_controls)
+
+        try:
+            dv_mean: Optional[float] = float(
+                int_model.model.dependent.dataframe.mean().iloc[0]
+            )
+        except Exception:
+            dv_mean = None
+
+        col_metadata.append(
+            {
+                "col": len(col_metadata) + 1,  # renumber to 1..4
+                "dv": spec["dv"],
+                "fe_entity": fe_entity,
+                "fe_time": fe_time,
+                "control_vars": control_vars,
+                "n_obs": int(int_meta["n_obs"]),
+                "n_firms": int(int_meta.get("n_firms", 0)) or None,
+                "r2": float(int_meta["r2"]),
+                "adj_r2": float(int_meta.get("adj_r2", float("nan"))),
+                "dv_mean": dv_mean,
+                "cluster_fallback": False,
+            }
+        )
+
+        # Interaction-model coefs: all vars except the main IV (which comes
+        # from the unconditional model instead).
+        interaction_vars = [
+            MOD_BELOW_IG,
+            MOD_UNRATED,
+            IV_CENTERED_IG,
+            "MgrQAUnc_x_BelowIG",
+            "MgrQAUnc_x_Unrated",
+        ]
+        interaction_coefs = extract_coefs_panelols(
+            model=int_model,
+            key_ivs=interaction_vars,
+            all_vars=interaction_vars + control_vars,
+            hyp_dir="none",  # all two-tailed for the interaction block
+        )
+
+        # Unconditional-model coef for Manager_QA_Unc_c (one-tailed positive).
+        uncond_coefs = extract_coefs_panelols(
+            model=uncond_model,
+            key_ivs=[IV_CENTERED],
+            all_vars=[IV_CENTERED],
+            hyp_dir="positive",
+        )
+
+        merged = {}
+        if IV_CENTERED in uncond_coefs:
+            merged[IV_CENTERED] = uncond_coefs[IV_CENTERED]
+        merged.update(interaction_coefs)
+        coefs_per_col.append(merged)
+
+    # Six top-of-table variables with per-var tails.
+    # Order matches the legacy SUITES layout: main IV first, then level
+    # shifts (BelowIG, Unrated), then interactions.
+    ivs = [
+        {
+            "name": IV_CENTERED,
+            "label": r"Manager\_QA\_Unc\_c",
+            "tail": "one_pos",
+        },
+        {"name": MOD_BELOW_IG, "label": "BelowIG", "tail": "two"},
+        {"name": MOD_UNRATED, "label": "Unrated", "tail": "two"},
+        {
+            "name": IV_CENTERED_IG,
+            "label": r"MgrQAUnc\_x\_IG",
+            "tail": "two",
+        },
+        {
+            "name": "MgrQAUnc_x_BelowIG",
+            "label": r"MgrQAUnc\_x\_BelowIG",
+            "tail": "two",
+        },
+        {
+            "name": "MgrQAUnc_x_Unrated",
+            "label": r"MgrQAUnc\_x\_Unrated",
+            "tail": "two",
+        },
+    ]
+
+    header_rows = [[{"label": "CashRatio", "span": len(col_metadata)}]]
+
+    paths = write_suite_spec(
+        output_dir=out_dir,
+        runner_id=SUITE_DIR_NAME,
+        sub_tables=[
+            {
+                "suite_id": SUITE_ID,
+                "dir_name": SUITE_DIR_NAME,
+                "title": SUITE_TITLE,
+                "caption": SUITE_CAPTION,
+                "label": SUITE_LABEL,
+                "col_range": list(range(1, len(col_metadata) + 1)),
+                "header_rows": header_rows,
+                "suite_type": "moderation",
+            }
+        ],
+        coefs_per_col=coefs_per_col,
+        col_metadata=col_metadata,
+        sample_label=SAMPLE_LABEL,
+        clustering=CLUSTERING,
+        tail=TAIL,
+        ivs=ivs,
+        controls={
+            "base": list(CONTROLS),
+            "extended_only": list(EXTENDED_ONLY_CONTROLS),
+        },
+        model_family="PanelOLS",
+    )
+    for path in paths:
+        print(f"  Saved: {path.name}")
+
+
 # ==============================================================================
 # Main
 # ==============================================================================
@@ -890,6 +1090,7 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Save outputs
     diag_df = save_outputs(all_results, out_dir)
+    _write_suite_spec_json(all_results, out_dir)
 
     # Attrition
     if all_results:
