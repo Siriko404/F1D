@@ -26,7 +26,10 @@ Moderator: TNIC3TSIMM (Hoberg & Phillips JPE 2016)
     Log-transformed then z-scored on Main sample.
 
 Sample: Main only (FF12 not in {8, 11}).
-Hypothesis: All two-tailed (matching parent H13).
+Hypothesis: All three key vars one-tailed positive (per user directive
+    2026-04-14). The IV, moderator, and interaction all predict more
+    capex: uncertainty raises capex, product similarity raises capex,
+    and competition amplifies the uncertainty-capex link.
 Unit: Call-level (loads H13 panel, merges TNIC at load time).
 Panel index: ["gvkey", "cal_yr"].
 SEs: Firm-clustered.
