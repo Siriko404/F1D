@@ -2,8 +2,8 @@
 
 **Purpose:** persistent memory for Claude across context compactions. Claude appends/updates this file as work progresses. Read at start of every draft session.
 
-**Current phase:** **Phase 3 (ALL TIERS) + Phase 4 (full 35-suite rerun + PDF regeneration) COMPLETE.** 6 files modified + 2 new incident reports UNCOMMITTED in working tree. Next: commit + Phase 5 (findings.txt + narrative synthesis).
-**Last updated:** 2026-04-13
+**Current phase:** **Phase 5 IN PROGRESS** — family-by-family audit. H1 family DONE 2026-04-14 (decisions: KEEP H1/H1.1/H1.2 main+appendix; DROP H1.1b from first draft). 14 families pending (H4, H12, H13, H16, H17, H19b/H20b, H5, H7-family, H14-family, H11-family, H18/H18b/H21, H22, H23, H24-family). Phases 0-8 architectural rewrite + all 8 LaTeX bugs + P5 findings.txt template expansion bug all complete on master.
+**Last updated:** 2026-04-14
 
 ---
 
@@ -24,7 +24,8 @@
 - [x] **Phase 2.5** — Clustering methodology decision (COMPLETE 2026-04-13 — uniform firm-only + macro exception, empirical H1 test confirmed direction)
 - [x] **Phase 3** — Apply all pipeline fixes (tier 1 + tier 2A/B/C/D ALL DONE)
 - [x] **Phase 4** — Rerun affected suites + regenerate tables (full 35-suite rerun, PDF verified clean)
-- [ ] **Phase 5** — Clean read of post-fix data + synthesize narrative on blank slate (PENDING — next session; needs findings.txt regen first)
+- [x] **Phases 5-8** — Architectural rewrite (zero-hardcoded-state) + Bug 4 (H14 rescale) + Bug 8 (Manager_QA_Unc_c rename) + LaTeX audit fixes — ALL COMPLETE 2026-04-14 (commits c46e655 → bf9f366)
+- [ ] **Phase 5 (audit/synthesis)** — IN PROGRESS. Read raw data family-by-family, decide keep/drop/reframe per suite. **H1 family done. 14 families pending.** Live tracker: `memory/project_phase5_audit_progress.md`
 
 ---
 
@@ -230,3 +231,15 @@ All 35 completed with exit code 0. Regenerated `outputs/all_tables.tex` + `outpu
   1. `log/incidents/2026-04-13_h11-const-row-template-drift.md` — template drift root cause → `feedback_template_diff_discipline.md` prevention rule.
   2. `log/incidents/2026-04-13_shallow-pdf-verification-and-render-design.md` — shallow verification + no design-time render simulation → `feedback_verification_depth.md` + `feedback_render_simulation.md` prevention rules.
 - **2026-04-13 (fourth compaction prep — this one)**: Session state frozen. 6 modified files + 2 new incident reports UNCOMMITTED in working tree. All 35 suites fresh, PDF verified clean per checklist. PROGRESS.md + project_draft_playing_it_safe.md updated. Next session entry point: (a) git commit the current working tree, (b) regenerate findings.txt, (c) Phase 5 narrative synthesis.
+
+- **2026-04-14 (Phases 5-8 architectural rewrite COMPLETE)**: 23 commits c46e655 → fee48a8 implemented zero-hardcoded-state rewrite. `outputs/generate_all_tables.py` 1836→137 LOC. `scripts/generate_findings.py` 559→330 LOC. All 37 suites migrated to suite_spec.json + render_suite() pipeline. 8 LaTeX bugs (clustering drift, H4/H23 tail flip, H14 1e-5 unreadable, sci notation R², pretty DV labels, H5 DISP_lag, Manager_QA_Unc_c rename) all fixed. Findings.txt regenerated with zero warnings.
+
+- **2026-04-14 (P5 audit START + findings.txt template bug)**: Began family-by-family audit per `feedback_phase5_methodology.md`. H1 family fully audited:
+  - H1: KEEP main. UncAnsMgr 6/6 contemp sig (+0.0033** to +0.0072***), 1/6 lead. CEO measures null contemp, marginal lead.
+  - H1.1: KEEP appendix. Interaction null in all 4 cells incl firm FE.
+  - H1.1b: DROP from first version. Redundant binary variant of H1.1.
+  - H1.2: KEEP main, channel **fully confirmed**. UncAnsMgr_c_x_Unrated +0.0040** under firm FE in both YQ specs. OR-disjunctive constraint logic: BelowIG and Unrated both constraint-categorized; either being significant suffices.
+  - **Bug discovered**: `scripts/findings_template.txt` was abridging 5 suites by hiding firm-FE half (H1.1, H1.1b, H1.2, H11, H13.1) via the COL_REMAPS workaround in `generate_findings.py`. Root cause: deleted `_build_findings_template.py` bootstrap was a one-shot snapshot from before Phase 3 tier 2A expanded the runners. LaTeX always rendered correctly (reads spec JSON directly); only findings.txt was abridged.
+  - **Bug fixed** (commit `bf9f366`): expanded template to 4 cols for H1.1/H1.1b/H1.2, 8 cols for H11/H13.1; split H11-Lag → H11-Lag1+H11-Lag2; removed COL_REMAPS dict + resolve_h11_lag helper. 1,196 → 1,236 cells, all green.
+  - **Hidden evidence surfaced**: H1.2 firm-FE constraint amplification, H13.1 firm-FE competition channel, H11/H11-Lag firm-FE PRisk validation.
+  - User clarifications captured in `memory/feedback_phase5_methodology.md`: Phase 5 is decisions not prose; family by family; manual reading no automation; OR-disjunctive constraint logic; do NOT audit `draft.tex` (it is the pre-reset polluted artifact rewritten LAST).

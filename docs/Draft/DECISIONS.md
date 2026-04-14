@@ -1,6 +1,6 @@
 # Draft Decisions Log
 
-**Current phase:** Phase 2 — suite audit. Workflow, protocol, and progress tracker in `PROGRESS.md`.
+**Current phase:** Phase 5 — suite audit & synthesis (in progress). H1 family done. Workflow, protocol, and progress tracker in `PROGRESS.md`. Live suite-by-suite tracker in `memory/project_phase5_audit_progress.md`.
 
 ---
 
@@ -10,12 +10,15 @@
 - Deleted: `outputs/thesis_tables.tex`, `.pdf`, `generate_thesis_tables.py`, `thesis_findings.txt`.
 - Memory: `feedback_preserve_fishing_deck.md` revised (single-deck reality).
 
-### 1.2 Three-tier scope
+### 1.2 Three-tier scope (pre-Phase-5 baseline)
 | Tier | Suites |
 |---|---|
 | **Main** | H1, H1.2, H4a, H4b, H12, H12b, H13, H13.1, H16, H17 |
 | **App I** | H1.1, H1.1b, H13.2, H19b, H20b |
 | **App II** | H5, H7, H7b, H7c, H7d, H7e, H11, H11-Lag, H14, H14b, H14c, H14d, H14e, H18, H18b, H21, H22, H23, H24, H24b, H25 |
+
+**Phase 5 modifications to the tier list (applied as families are audited)** — see §5 for live decisions:
+- 2026-04-14 H1 family: H1.1b → DROP from first version (redundant binary variant). H1.1 → KEEP App I (null competition channel useful boundary). H1, H1.2 → KEEP main.
 
 ### 1.3 FE-selection rule (structural, applied during audit)
 
@@ -467,3 +470,77 @@ No YrQtr-FE variant. Firm-year frequency panel.
 - R²: 0.49 Ind-FE / 0.04 Firm-FE. Big gap (Ind-FE explains cross-sectional level mostly via `lnAssets`+Lagged_DV).
 - Clustering: firm-only.
 - Tailing: one-tailed β>0.
+
+---
+
+## 5. Phase 5 audit decisions (live, family-by-family)
+
+Per `feedback_phase5_methodology.md`: read raw data, decide per-suite keep/drop/reframe, no prose writing during audit, no rescue narratives, OR-disjunctive logic for multi-proxy hypotheses.
+
+### 5.1 H1 family — DONE 2026-04-14
+
+**Files audited line-by-line, manually (no automation):**
+- `outputs/findings.txt` H1, H1.1, H1.1b, H1.2 sections
+- `outputs/all_tables.tex` H1, H1.1, H1.1b, H1.2 LaTeX blocks (verified all 4-col + 8-col layouts post template-fix)
+- `src/f1d/econometric/run_h1_cash_holdings.py` (1013 lines, full) + 3 moderation runners
+- `src/f1d/variables/build_h1_cash_holdings_panel.py` (644 lines, full)
+- `src/f1d/shared/variables/cash_holdings.py` (53 lines)
+- `_compustat_engine.py` line 996 (formula: `cheq / atq`), winsorization at 460+1314
+
+**Metadata audit findings**:
+- ✅ Formula `CashRatio = cheq / atq` matches engine + builder + findings.txt
+- ✅ Reference Bates, Kahle & Stulz (2009, JF) consistent across docs
+- ✅ Tail one-tailed β>0; HYP_DIR="positive"; `applies_to`="ivs_only"
+- ✅ Firm-only clustering (Petersen 2009)
+- ✅ Winsorization 1%/99% per fyearq at engine level
+- ⚠️ Stale prose in `findings_template.txt` H1 header: N=56,131/53,880 → actual 65,128/62,504; DV mean 0.1660/0.1675 → actual 0.1668/0.1680; date "2026-04-09" → 2026-04-14. Cell values current; only the header summary frozen. **Low-priority follow-up template prose pass.**
+- ✅ Top-of-file claim "manager is all managers, including the CEO" — VERIFIED TRUE by user
+
+**Cell results** (UncAnsMgr is the central IV per `feedback_ceo_noisy_mgr_central.md`):
+
+| Suite | UncAnsMgr | UncAnsCEO | UncPreCEO | UncPreMgr |
+|---|---|---|---|---|
+| H1 contemp | **6/6 sig** +0.0033** to +0.0072*** | 0/6 | 0/6 | 0/6 |
+| H1 lead | 1/6 (col9 only) | 4/6 marginal * | 0/6 | 1/6 (col9 Ind-FE) |
+| H1.1 (3 IVs) | main 4/4 sig; interaction 4/4 NULL incl Firm FE | — | — | — |
+| H1.1b (3 IVs) | same pattern as H1.1 | — | — | — |
+| H1.2 (6 IVs) | main UncAnsMgr_c 4/4 sig; **`x_Unrated` 4/4 sig incl Firm FE +0.0040\*\***; `x_BelowIG` 0/4; `x_IG` 0/4 | — | — | — |
+
+**H1.2 confirmation logic**: BelowIG and Unrated are BOTH constraint-categorized (Faulkender & Petersen 2006 framework — rated firms have public debt market access; unrated firms are bank-dependent). Hypothesis is **OR-disjunctive**: channel is fully confirmed if EITHER constraint proxy shows the predicted interaction. Unrated does (4/4 sig under firm FE). **Channel = confirmed.** The BelowIG null is descriptive (less-tight constraint marker doesn't bind in this sample), not refuting.
+
+**Decisions (user-confirmed):**
+
+| Suite | Verdict | Rationale |
+|---|---|---|
+| H1 | KEEP — main | Headline contemporaneous; 6/6 sig under firm FE + extended controls. Lead horizon weak (1/6) — frame as contemporaneous-only effect. |
+| H1.1 | KEEP — App I | Useful null on competition channel. Within-firm robust null (4/4 NULL in firm FE). |
+| **H1.1b** | **DROP from first version** | Redundant binary variant of H1.1. Same conclusion in fewer cells. Kept in fishing deck. |
+| H1.2 | KEEP — main, channel **fully confirmed** | Unrated × UncAnsMgr_c +0.0040** under firm FE survives within-firm. Constraint amplification channel robust. |
+
+**Tensions / open items for the H1 section narrative** (decided pre-prose):
+- Frame H1 lead horizon as **contemporaneous-only**, not "weaker at lead". The data does not support a multi-quarter cash hoarding response.
+- Frame H1.2 explicitly using OR-disjunctive constraint logic. The asymmetry (Unrated sig, BelowIG null) is a feature of constraint sharpness, not a refutation.
+- Cite hidden firm-FE evidence for H1.2 that the template bug was concealing (recovered 2026-04-14 by template expansion fix).
+- CEO/Pre cross-channel handling per `feedback_ceo_noisy_mgr_central.md`: aligned-but-weak = 1-sentence supportive cite; contradicting = "measurement concerns" flag.
+
+### 5.2 Findings.txt template expansion bug — FIXED 2026-04-14 commit `bf9f366`
+
+**Bug**: `scripts/findings_template.txt` was a one-shot snapshot generated by the deleted `scripts/_build_findings_template.py` bootstrap when H1.1/H1.1b/H1.2 were 2-col suites and H11/H13.1 were 4-col suites. Phase 3 tier 2A (commit `6a98792`) expanded these runners to 4 / 8 cols respectively, but the template was never regenerated. The `COL_REMAPS` dict in `generate_findings.py` was duct tape that mapped template_col → spec_col, **silently dropping the firm-FE half of each affected suite from findings.txt**.
+
+LaTeX always rendered the full col count (it reads spec JSON directly via `render_suite()`), so this was a findings.txt-only bug. PDF was correct; only the textual cell catalogue was abridged.
+
+**Hidden evidence the fix surfaced** (load-bearing for the audit):
+- **H1.2 Unrated × UncAnsMgr_c interaction +0.0040** under firm FE in both YQ specs.** Constraint channel survives within-firm variation, not just cross-sectional. Critical for §5.1 H1.2 "channel confirmed" decision.
+- **H13.1 UncAnsMgr_c_x_zlogTSIMM 8/8 sig** including all 4 firm-FE cells. Competition channel for capex robust. Will be load-bearing for the H13 family audit (next).
+- **H11 / H11-Lag1 / H11-Lag2** PRisk → uncertainty sig in firm-FE half too.
+
+**Fix applied:**
+- `scripts/findings_template.txt`: H1.1, H1.1b, H1.2 expanded 2 → 4 cols; H11 expanded 4 → 8 cols; H13.1 expanded 4 → 8 cols; H11-Lag split into H11-Lag1 + H11-Lag2 (8 cols each, matching their separate spec files).
+- `scripts/generate_findings.py`: removed `COL_REMAPS` dict (5 entries) and `resolve_h11_lag` helper (now redundant). Only `resolve_macro` survives for H24/H24b/H25 macro suite remap.
+- `outputs/findings.txt`: 1,196 → 1,236 placeholders, 0 warnings, all suites at full col count.
+
+**Lesson learned**: The `_build_findings_template.py` round-trip workflow was fragile because it required findings.txt to be the source of truth before runner expansions. When the runners changed, the template went stale. The Phase 6 forward-fix (placeholder substitution) didn't re-derive the template structure, so the COL_REMAPS workaround hid that the template was under-spec'd. Permanent fix: identity column mapping for all non-macro suites; never use a one-shot bootstrap that depends on a current findings.txt.
+
+### 5.3 Pending families (audit order)
+
+H4 → H12 → H13 → H16 → H17 → H19b/H20b → H5 → H7 family → H14 family → H11 family → H18/H18b/H21 → H22 → H23 → H24 family.
