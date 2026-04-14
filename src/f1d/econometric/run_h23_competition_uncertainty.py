@@ -56,7 +56,12 @@ from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
-from f1d.shared.outputs import generate_manifest, generate_attrition_table
+from f1d.shared.outputs import (
+    extract_coefs_panelols,
+    generate_attrition_table,
+    generate_manifest,
+    write_suite_spec,
+)
 from f1d.shared.path_utils import get_latest_output_dir
 
 
@@ -67,6 +72,27 @@ from f1d.shared.path_utils import get_latest_output_dir
 IV = "z_log_TotalSimilarity"
 
 DVS = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO"]
+
+# ------------------------------------------------------------------
+# Suite metadata for suite_spec.json emission (single sub-table, 2-row header).
+# HYP_DIR="positive" fixes Bug 3 from project_latex_audit_2026_04_13.md
+# (legacy SUITES dict had key_tails=["two"] but the runner computes p_one
+# with beta>0 halving — the legacy was ignoring the runner's directional
+# hypothesis).
+# ------------------------------------------------------------------
+SUITE_ID = "H23"
+SUITE_DIR_NAME = "h23_competition_uncertainty"
+SUITE_TITLE = "Product-Market Competition and Uncertainty Language"
+SUITE_CAPTION = "H23: Product-Market Competition and Uncertainty Language"
+SUITE_LABEL = "tab:h23_competition_uncertainty"
+SAMPLE_LABEL = (
+    "Main sample (excludes financial and utility firms). "
+    "Unit of observation: firm-fiscal-year."
+)
+HYP_DIR = "positive"  # H23: higher competition -> higher uncertainty (one-tailed)
+CLUSTERING = {"entity": True, "time": False}
+TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
+EXTENDED_ONLY_CONTROLS: List[str] = []  # H23 has no extended set
 
 # Dynamic Pres control for QA DVs (from H11 pattern)
 PRES_CONTROL_MAP = {
@@ -543,6 +569,124 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
     return diag_df
 
 
+def _write_suite_spec_json(
+    all_results: List[Dict[str, Any]],
+    out_dir: Path,
+) -> None:
+    """Emit canonical suite_spec_H23.json from runner state.
+
+    Layout: 8 cols = 4 DVs x 2 FE types. Two-row header groups
+    Industry FE / Firm FE on top, pipeline DV names on bottom.
+    Per-col control_vars via PRES_CONTROL_MAP (Ans DVs get matching
+    Pres sibling as control; Pres DVs get no sibling).
+    """
+    col_metadata: List[Dict[str, Any]] = []
+    coefs_per_col: List[Dict[str, Dict[str, Any]]] = []
+
+    results_by_col = {
+        r["meta"]["col"]: r for r in all_results if r.get("meta")
+    }
+
+    for spec in MODEL_SPECS:
+        col_num = spec["col"]
+        if col_num not in results_by_col:
+            raise RuntimeError(
+                f"H23 spec build: missing result for col {col_num}"
+            )
+        result = results_by_col[col_num]
+        model = result["model"]
+        meta = result["meta"]
+
+        dv = spec["dv"]
+        fe_type = spec["fe"]
+        pres_ctrl = PRES_CONTROL_MAP.get(dv)
+        control_vars = list(BASE_CONTROLS)
+        if pres_ctrl:
+            control_vars.append(pres_ctrl)
+
+        try:
+            dv_mean: Optional[float] = float(
+                model.model.dependent.dataframe.mean().iloc[0]
+            )
+        except Exception:
+            dv_mean = None
+
+        col_metadata.append(
+            {
+                "col": col_num,
+                "dv": dv,
+                "fe_entity": "industry" if fe_type == "industry" else "firm",
+                "fe_time": "calendar_year",
+                "control_vars": control_vars,
+                "n_obs": int(meta["n_obs"]),
+                "n_firms": int(meta.get("n_firms", 0)) or None,
+                "r2": float(meta["r2"]),
+                "adj_r2": float(meta.get("adj_r2", float("nan"))),
+                "dv_mean": dv_mean,
+                "cluster_fallback": False,
+            }
+        )
+
+        coefs_per_col.append(
+            extract_coefs_panelols(
+                model=model,
+                key_ivs=[IV],
+                all_vars=[IV] + control_vars,
+                hyp_dir=HYP_DIR,
+            )
+        )
+
+    base_plus_siblings = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO"]
+
+    header_rows = [
+        [
+            {"label": "Industry FE", "span": 4},
+            {"label": "Firm FE", "span": 4},
+        ],
+        [{"label": spec["dv"], "span": 1} for spec in MODEL_SPECS],
+    ]
+
+    paths = write_suite_spec(
+        output_dir=out_dir,
+        runner_id=SUITE_DIR_NAME,
+        sub_tables=[
+            {
+                "suite_id": SUITE_ID,
+                "dir_name": SUITE_DIR_NAME,
+                "title": SUITE_TITLE,
+                "caption": SUITE_CAPTION,
+                "label": SUITE_LABEL,
+                "col_range": [s["col"] for s in MODEL_SPECS],
+                "header_rows": header_rows,
+                "suite_type": "moderation",
+            }
+        ],
+        coefs_per_col=coefs_per_col,
+        col_metadata=col_metadata,
+        sample_label=SAMPLE_LABEL,
+        clustering=CLUSTERING,
+        tail=TAIL,
+        ivs=[
+            {
+                "name": IV,
+                "label": r"$z(\log(\mathrm{TSIMM}))$",
+                "tail": "one_pos",
+            }
+        ],
+        controls={
+            "base": base_plus_siblings,
+            "extended_only": list(EXTENDED_ONLY_CONTROLS),
+            "labels": {
+                "UncPreMgr": "UncPreMgr",
+                "UncPreCEO": "UncPreCEO",
+            },
+        },
+        model_family="PanelOLS",
+    )
+    for path in paths:
+        print(f"  Saved: {path.name}")
+
+
 # ==============================================================================
 # Main
 # ==============================================================================
@@ -616,6 +760,9 @@ def main(panel_path: Optional[str] = None) -> int:
             all_results.append({"model": model, "meta": meta})
 
     diag_df = save_outputs(all_results, out_dir)
+
+    # Emit canonical suite_spec.json (consumed by generate_all_tables.py)
+    _write_suite_spec_json(all_results, out_dir)
 
     # Attrition table
     if all_results:

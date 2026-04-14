@@ -803,16 +803,16 @@ Adj.~$R^2$ & 0.646 & 0.482 & 0.647 & 0.485 & 0.649 & 0.485 & 0.644 & 0.479 & 0.6
 \begin{table}[htbp]
 \centering
 \caption{H11: Political Risk and Language Uncertainty}
-\label{tab:h11}
+\label{tab:h11_prisk_uncertainty}
 \scriptsize
 \begin{tabular}{lcccccccc}
 \toprule
  & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\
  & \multicolumn{4}{c}{Industry FE} & \multicolumn{4}{c}{Firm FE} \\
 \cmidrule(lr){2-5} \cmidrule(lr){6-9}
- & Mgr QA & CEO QA & Mgr Pres & CEO Pres & Mgr QA & CEO QA & Mgr Pres & CEO Pres \\
+ & UncAnsMgr & UncAnsCEO & UncPreMgr & UncPreCEO & UncAnsMgr & UncAnsCEO & UncPreMgr & UncPreCEO \\
 \midrule
-PRisk & \textbf{0.0002}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0002}$^{***}$ & \textbf{0.0003}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0002}$^{***}$ \\
+Political Risk$_{t}$ & \textbf{0.0002}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0002}$^{***}$ & \textbf{0.0003}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0002}$^{***}$ \\
  & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) \\
 \midrule
 UncQue & \textbf{0.0431}$^{***}$ & \textbf{0.0452}$^{***}$ & \textbf{0.0240}$^{***}$ & \textbf{0.0204}$^{***}$ & \textbf{0.0346}$^{***}$ & \textbf{0.0380}$^{***}$ & \textbf{0.0091}$^{***}$ & \textbf{0.0081}$^{***}$ \\
@@ -849,11 +849,10 @@ Adj.~$R^2$ & 0.065 & 0.056 & 0.052 & 0.043 & 0.002 & -0.006 & -0.005 & -0.004 \\
 \end{tabular}
 \begin{minipage}{\linewidth}
 \vspace{2pt}\scriptsize
-\textit{Notes:} 
-$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. IVs one-tailed ($\beta > 0$); controls two-tailed.
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
  Significant coefficients in \textbf{bold}.
  Standard errors (in parentheses) clustered at firm level.
- Main sample (excludes financial and utility firms).
+ Main sample (excludes financial and utility firms). Firms with fewer than 5 calls are excluded.
  $R^2$ includes absorbed fixed effects (not within-$R^2$).
 \end{minipage}
 \end{table}
@@ -2170,16 +2169,16 @@ Adj.~$R^2$ & 0.489 & -0.086 & 0.489 & -0.085 \\
 \begin{table}[htbp]
 \centering
 \caption{H23: Product-Market Competition and Uncertainty Language}
-\label{tab:h23}
+\label{tab:h23_competition_uncertainty}
 \scriptsize
 \begin{tabular}{lcccccccc}
 \toprule
  & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\
- & \multicolumn{2}{c}{QA\_Uncertainty} & \multicolumn{2}{c}{Pres\_Uncertainty} & \multicolumn{2}{c}{QA\_Uncertainty} & \multicolumn{2}{c}{Pres\_Uncertainty} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}
- & Manager & CEO & Manager & CEO & Manager & CEO & Manager & CEO \\
+ & \multicolumn{4}{c}{Industry FE} & \multicolumn{4}{c}{Firm FE} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+ & UncAnsMgr & UncAnsCEO & UncPreMgr & UncPreCEO & UncAnsMgr & UncAnsCEO & UncPreMgr & UncPreCEO \\
 \midrule
-$z(\log(\mathrm{TSIMM}))$ & \textbf{0.0090}$^{*}$ & 0.0054 & \textbf{0.0297}$^{***}$ & \textbf{0.0304}$^{***}$ & -0.0012 & -0.0061 & 0.0058 & \textbf{0.0302}$^{***}$ \\
+$z(\log(\mathrm{TSIMM}))$ & \textbf{0.0090}$^{**}$ & 0.0054 & \textbf{0.0297}$^{***}$ & \textbf{0.0304}$^{***}$ & -0.0012 & -0.0061 & 0.0058 & \textbf{0.0302}$^{***}$ \\
  & (0.0048) & (0.0055) & (0.0075) & (0.0074) & (0.0059) & (0.0090) & (0.0091) & (0.0093) \\
 \midrule
 UncQue & \textbf{0.0616}$^{***}$ & \textbf{0.0625}$^{***}$ & \textbf{0.0483}$^{***}$ & \textbf{0.0398}$^{***}$ & \textbf{0.0420}$^{***}$ & \textbf{0.0459}$^{***}$ & \textbf{0.0149}$^{**}$ & 0.0084 \\
@@ -2210,17 +2209,16 @@ Firm FE &  &  &  &  & Yes & Yes & Yes & Yes \\
 Year FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
 \midrule
 N & 20,768 & 18,447 & 20,774 & 18,492 & 20,768 & 18,447 & 20,774 & 18,492 \\
-$R^2$ & 0.103 & 0.103 & 0.064 & 0.050 & 0.038 & 0.038 & 0.017 & 0.021 \\
+$R^2$ & 0.104 & 0.103 & 0.064 & 0.050 & 0.038 & 0.038 & 0.017 & 0.021 \\
 Adj.~$R^2$ & 0.102 & 0.102 & 0.062 & 0.048 & -0.045 & -0.050 & -0.067 & -0.068 \\
 \bottomrule
 \end{tabular}
 \begin{minipage}{\linewidth}
 \vspace{2pt}\scriptsize
-\textit{Notes:} 
-$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
  Significant coefficients in \textbf{bold}.
  Standard errors (in parentheses) clustered at firm level.
- Main sample (excludes financial and utility firms).
+ Main sample (excludes financial and utility firms). Unit of observation: firm-fiscal-year.
  $R^2$ includes absorbed fixed effects (not within-$R^2$).
 \end{minipage}
 \end{table}

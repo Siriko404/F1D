@@ -63,7 +63,7 @@ import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -71,7 +71,12 @@ from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
-from f1d.shared.outputs import generate_manifest, generate_attrition_table
+from f1d.shared.outputs import (
+    extract_coefs_panelols,
+    generate_attrition_table,
+    generate_manifest,
+    write_suite_spec,
+)
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -110,6 +115,27 @@ PRES_CONTROL_MAP = {
     "UncPreMgr": None,
     "UncPreCEO": None,
 }
+
+EXTENDED_ONLY_CONTROLS: List[str] = []  # H11 has no extended set
+
+# ------------------------------------------------------------------
+# Suite metadata for suite_spec.json emission (single sub-table, 2-row header).
+# ------------------------------------------------------------------
+SUITE_ID = "H11"
+SUITE_DIR_NAME = "h11_prisk_uncertainty"
+SUITE_TITLE = "Political Risk and Language Uncertainty"
+SUITE_CAPTION = "H11: Political Risk and Language Uncertainty"
+SUITE_LABEL = "tab:h11_prisk_uncertainty"
+SAMPLE_LABEL = (
+    "Main sample (excludes financial and utility firms). "
+    "Firms with fewer than 5 calls are excluded."
+)
+HYP_DIR = "positive"  # H11: higher political risk -> higher speech uncertainty
+CLUSTERING = {"entity": True, "time": False}
+TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
+
+SUB_TABLE_DV_ORDER = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO"]
+SUB_TABLE_FE_ORDER = ["industry", "firm"]
 
 
 # ==============================================================================
@@ -366,6 +392,116 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         f.write("\n".join(lines))
 
 
+def _write_suite_spec_json(
+    main_models: Dict[Tuple[str, str], Dict[str, Any]],
+    out_dir: Path,
+) -> None:
+    """Emit canonical suite_spec_H11.json from runner state (Main-sample only).
+
+    Layout: 8 cols = 4 DVs x 2 FE types (industry, firm). Two-row header with
+    FE groups on top, pipeline DV names on bottom. Per-col control_vars via
+    PRES_CONTROL_MAP (Ans DVs get matching Pres sibling).
+    """
+    col_metadata: List[Dict[str, Any]] = []
+    coefs_per_col: List[Dict[str, Dict[str, Any]]] = []
+
+    col_num = 0
+    for fe_type in SUB_TABLE_FE_ORDER:
+        for dv in SUB_TABLE_DV_ORDER:
+            col_num += 1
+            key = (dv, fe_type)
+            if key not in main_models:
+                raise RuntimeError(
+                    f"H11 spec build: missing Main-sample result for "
+                    f"dv={dv} fe={fe_type}"
+                )
+            entry = main_models[key]
+            model = entry["model"]
+            meta = entry["meta"]
+
+            pres_sibling = PRES_CONTROL_MAP.get(dv)
+            control_vars = list(BASE_CONTROLS)
+            if pres_sibling:
+                control_vars.append(pres_sibling)
+
+            try:
+                dv_mean: Optional[float] = float(
+                    model.model.dependent.dataframe.mean().iloc[0]
+                )
+            except Exception:
+                dv_mean = None
+
+            col_metadata.append(
+                {
+                    "col": col_num,
+                    "dv": dv,
+                    "fe_entity": "industry" if fe_type == "industry" else "firm",
+                    "fe_time": "calendar_year",
+                    "control_vars": control_vars,
+                    "n_obs": int(meta["n_obs"]),
+                    "n_firms": int(meta.get("n_firms", 0)) or None,
+                    "r2": float(meta["r2"]),
+                    "adj_r2": float(meta.get("adj_r2", float("nan"))),
+                    "dv_mean": dv_mean,
+                    "cluster_fallback": False,
+                }
+            )
+            coefs_per_col.append(
+                extract_coefs_panelols(
+                    model=model,
+                    key_ivs=["PRisk"],
+                    all_vars=["PRisk"] + control_vars,
+                    hyp_dir=HYP_DIR,
+                )
+            )
+
+    base_plus_siblings = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO"]
+
+    header_rows = [
+        [
+            {"label": "Industry FE", "span": 4},
+            {"label": "Firm FE", "span": 4},
+        ],
+        [{"label": dv, "span": 1} for fe in SUB_TABLE_FE_ORDER for dv in SUB_TABLE_DV_ORDER],
+    ]
+
+    paths = write_suite_spec(
+        output_dir=out_dir,
+        runner_id=SUITE_DIR_NAME,
+        sub_tables=[
+            {
+                "suite_id": SUITE_ID,
+                "dir_name": SUITE_DIR_NAME,
+                "title": SUITE_TITLE,
+                "caption": SUITE_CAPTION,
+                "label": SUITE_LABEL,
+                "col_range": list(range(1, 9)),
+                "header_rows": header_rows,
+                "suite_type": "moderation",
+            }
+        ],
+        coefs_per_col=coefs_per_col,
+        col_metadata=col_metadata,
+        sample_label=SAMPLE_LABEL,
+        clustering=CLUSTERING,
+        tail=TAIL,
+        ivs=[
+            {"name": "PRisk", "label": r"Political Risk$_{t}$", "tail": "one_pos"}
+        ],
+        controls={
+            "base": base_plus_siblings,
+            "extended_only": list(EXTENDED_ONLY_CONTROLS),
+            "labels": {
+                "UncPreMgr": "UncPreMgr",
+                "UncPreCEO": "UncPreCEO",
+            },
+        },
+        model_family="PanelOLS",
+    )
+    for path in paths:
+        print(f"  Saved: {path.name}")
+
+
 def main(panel_path: str | None = None) -> int:
     t0 = datetime.now()
     timestamp = t0.strftime("%Y-%m-%d_%H%M%S")
@@ -462,6 +598,9 @@ def main(panel_path: str | None = None) -> int:
     print("  Saved: summary_stats.tex")
 
     all_results = []
+    # Retain fitted model objects for Main-sample regressions so the
+    # suite_spec builder can extract control coefs via extract_coefs_panelols.
+    main_models: Dict[Tuple[str, str], Dict[str, Any]] = {}
 
     for dv in CONFIG["dependent_variables"]:
         for sample in CONFIG["samples"]:
@@ -499,12 +638,19 @@ def main(panel_path: str | None = None) -> int:
 
                 if model is not None:
                     all_results.append(meta)
+                    if sample == "Main":
+                        main_models[(dv, fe_type)] = {
+                            "model": model,
+                            "meta": meta,
+                            "controls": list(controls),
+                        }
                     with open(out_dir / f"regression_results_{sample}_{dv}_{fe_type}.txt", "w") as f:
                         f.write(f"FE: {fe_type}\n")
                         f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
                         f.write(str(model.summary))
 
     _save_latex_table(all_results, out_dir)
+    _write_suite_spec_json(main_models, out_dir)
     pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
 
     # Generate sample attrition table
