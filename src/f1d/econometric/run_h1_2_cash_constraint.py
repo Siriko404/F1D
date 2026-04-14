@@ -41,7 +41,11 @@ Moderator: Three-category from S&P splticrm (Compustat Daily Ratings)
     Merge: merge_asof on (gvkey, start_date) to avoid look-ahead bias.
 
 Sample: Main only (FF12 not in {8, 11}). Fiscal years 2002-2016 (ratings end 2017-02).
-Hypothesis: Two-tailed on interactions (b4, b5 != 0); one-tailed on main IV (b1 > 0).
+Hypothesis: All 6 top-of-table IVs one-tailed positive (per user directive
+    2026-04-14). Financial constraint + uncertainty predicts more cash
+    holding: main IV, BelowIG/Unrated level shifts, IG-slope, and both
+    differential interactions are all β > 0. β-sign-gated stars suppress
+    any empirical coefficient whose sign contradicts the hypothesis.
 Unit: Call-level. Panel index: ["gvkey", "cal_yr"] or ["gvkey", "cal_yr_qtr"]. SEs: Firm-clustered.
 
 Inputs:
