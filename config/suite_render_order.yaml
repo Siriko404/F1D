@@ -1,0 +1,68 @@
+# Render order for outputs/all_tables.tex
+#
+# Single source of render order. Each entry must match a suite_id emitted by
+# a runner via write_suite_spec(). The consolidated renderer
+# (outputs/generate_all_tables.py) iterates this list and loads
+# suite_spec_<id>.json from the latest timestamped output directory.
+#
+# Adding or reordering a suite: edit this file + ensure the corresponding
+# runner emits the spec file. No metadata here — just identity + order.
+
+suites:
+  # H1 family
+  - H1
+  - H1.1
+  - H1.1b
+  - H1.2
+
+  # H4 family (both sub-tables emitted by run_h4_leverage.py)
+  - H4a
+  - H4b
+
+  # H5 (Wang 2020 dispersion)
+  - H5
+
+  # H7 family (Amihud illiquidity — core + BGT 25-day)
+  - H7
+  - H7b
+  - H7c
+  - H7d
+  - H7e
+
+  # H11 family (political risk moderation)
+  # H11-Lag1, H11-Lag2 both emitted by run_h11_prisk_uncertainty_lag.py
+  - H11
+  - H11-Lag1
+  - H11-Lag2
+
+  # H12 family (payout)
+  - H12
+  - H12b
+
+  # H13 family (capex)
+  - H13
+  - H13.1
+  - H13.2
+
+  # H14 family (bid-ask spread — core + BGT 25-day)
+  - H14
+  - H14b
+  - H14c
+  - H14d
+  - H14e
+
+  # Other hypotheses
+  - H16
+  - H17
+  - H18
+  - H18b
+  - H19b
+  - H20b
+  - H21
+  - H22
+  - H23
+
+  # Macro uncertainty (two-way clustering exception)
+  - H24
+  - H24b
+  - H25
