@@ -132,7 +132,6 @@ class RenderHints(BaseModel):
     skip_adj_r2: bool = False
     r2_label: str = "R^2"
     scaling_note: Optional[str] = None
-    time_fe_label: str = "Year FE"
     row_order: list[str] = Field(
         default_factory=lambda: [
             "ivs",

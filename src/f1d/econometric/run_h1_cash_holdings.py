@@ -69,7 +69,12 @@ from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
-from f1d.shared.outputs import generate_manifest, generate_attrition_table
+from f1d.shared.outputs import (
+    extract_coefs_panelols,
+    generate_attrition_table,
+    generate_manifest,
+    write_suite_spec,
+)
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
@@ -101,6 +106,23 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
     "CashFlowAt",
     "DailyVola",
 ]
+
+EXTENDED_ONLY_CONTROLS = [c for c in EXTENDED_CONTROLS if c not in BASE_CONTROLS]
+
+# ------------------------------------------------------------------
+# Suite metadata for suite_spec.json emission (consumed by the
+# consolidated renderer in outputs/generate_all_tables.py). Every
+# field below is the single source of truth for rendering this suite.
+# ------------------------------------------------------------------
+SUITE_ID = "H1"
+SUITE_DIR_NAME = "h1_cash_holdings"
+SUITE_TITLE = "Speech Uncertainty and Cash Holdings"
+SUITE_CAPTION = "H1: Speech Uncertainty and Cash Holdings"
+SUITE_LABEL = "tab:h1"
+SAMPLE_LABEL = "Main sample (excludes financial and utility firms)."
+HYP_DIR = "positive"  # H1: beta(uncertainty) > 0 — also drives p_one computation
+CLUSTERING = {"entity": True, "time": False}
+TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
 
 MODEL_SPECS = [
     {"col": 1,  "dv": "CashRatio",      "fe": "industry",    "controls": "base"},
@@ -719,6 +741,111 @@ def generate_report(
     print("  Saved: report_step4_H1.md")
 
 
+def _write_suite_spec_json(
+    all_results: List[Dict[str, Any]],
+    out_dir: Path,
+) -> None:
+    """Emit canonical suite_spec_H1.json from runner state.
+
+    Reads per-col fitted models + meta, maps FE type strings to schema
+    enums, extracts IV + control coefs uniformly, and writes a single
+    validated JSON file for the consolidated renderer to consume.
+    """
+    results_by_col = {r["meta"]["col"]: r for r in all_results if r.get("meta")}
+
+    col_metadata: List[Dict[str, Any]] = []
+    coefs_per_col: List[Dict[str, Dict[str, Optional[float]]]] = []
+
+    for spec in MODEL_SPECS:
+        col_num = spec["col"]
+        if col_num not in results_by_col:
+            raise RuntimeError(
+                f"suite_spec emission: col {col_num} missing from all_results; "
+                f"cannot emit suite_spec_{SUITE_ID}.json"
+            )
+
+        result = results_by_col[col_num]
+        model = result["model"]
+        meta = result["meta"]
+
+        fe_type = spec["fe"]
+        base_fe = fe_type.replace("_yq", "")
+        fe_entity = "industry" if base_fe == "industry" else "firm"
+        fe_time = (
+            "calendar_year_quarter" if fe_type.endswith("_yq") else "calendar_year"
+        )
+
+        control_list = (
+            list(BASE_CONTROLS) if spec["controls"] == "base" else list(EXTENDED_CONTROLS)
+        )
+
+        col_metadata.append(
+            {
+                "col": col_num,
+                "dv": spec["dv"],
+                "fe_entity": fe_entity,
+                "fe_time": fe_time,
+                "control_vars": control_list,
+                "n_obs": int(meta["n_obs"]),
+                "n_firms": int(meta["n_firms"]),
+                "r2": float(meta["r2"]),
+                "adj_r2": float(meta["adj_r2"]),
+                "dv_mean": float(meta["dv_mean"]),
+                "cluster_fallback": False,
+            }
+        )
+
+        coefs_per_col.append(
+            extract_coefs_panelols(
+                model=model,
+                key_ivs=KEY_IVS,
+                all_vars=KEY_IVS + control_list,
+                hyp_dir=HYP_DIR,
+            )
+        )
+
+    ivs_payload = [
+        {"name": iv, "label": iv, "tail": "one_pos"} for iv in KEY_IVS
+    ]
+    controls_payload = {
+        "base": list(BASE_CONTROLS),
+        "extended_only": list(EXTENDED_ONLY_CONTROLS),
+    }
+    header_rows = [
+        [
+            {"label": "CashRatio", "span": 6},
+            {"label": r"CashRatio\_lead", "span": 6},
+        ]
+    ]
+
+    paths = write_suite_spec(
+        output_dir=out_dir,
+        runner_id=SUITE_DIR_NAME,
+        sub_tables=[
+            {
+                "suite_id": SUITE_ID,
+                "dir_name": SUITE_DIR_NAME,
+                "title": SUITE_TITLE,
+                "caption": SUITE_CAPTION,
+                "label": SUITE_LABEL,
+                "col_range": [spec["col"] for spec in MODEL_SPECS],
+                "header_rows": header_rows,
+                "suite_type": "standard",
+            }
+        ],
+        coefs_per_col=coefs_per_col,
+        col_metadata=col_metadata,
+        sample_label=SAMPLE_LABEL,
+        clustering=CLUSTERING,
+        tail=TAIL,
+        ivs=ivs_payload,
+        controls=controls_payload,
+        model_family="PanelOLS",
+    )
+    for path in paths:
+        print(f"  Saved: {path.name}")
+
+
 # ==============================================================================
 # Main
 # ==============================================================================
@@ -815,6 +942,9 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Save outputs
     diag_df = save_outputs(all_results, out_dir)
+
+    # Emit canonical suite_spec.json (consumed by generate_all_tables.py)
+    _write_suite_spec_json(all_results, out_dir)
 
     # Sample attrition table
     if all_results:

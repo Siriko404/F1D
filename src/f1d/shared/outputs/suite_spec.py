@@ -89,21 +89,24 @@ def _build_indicator_rows(
     fe_time: str,
     control_vars: list[str],
     extended_controls: list[str],
-    time_fe_label: str,
 ) -> dict[str, str]:
-    """Compose Extended Controls / Industry FE / Firm FE / Year FE indicator cells.
+    """Compose Extended Controls / Industry FE / Firm FE / Year FE / Year-Quarter FE cells.
 
-    Fully-empty rows are kept in the dict (value "") so the renderer can
-    suppress them via has_firm/has_ind guards at the cross-column level.
+    All five row keys are emitted for every column regardless of which FE the
+    column actually uses. Empty values ("") let the renderer suppress rows
+    where no column has "Yes" (standard has_firm/has_ind guard pattern).
     """
     has_extended = bool(extended_controls) and any(
         v in control_vars for v in extended_controls
     )
+    is_year_fe = fe_time in ("year", "calendar_year")
+    is_yq_fe = fe_time in ("year_quarter", "calendar_year_quarter")
     return {
         "Extended Controls": "Yes" if has_extended else "",
         "Industry FE": "Yes" if fe_entity == "industry" else "",
         "Firm FE": "Yes" if fe_entity == "firm" else "",
-        time_fe_label: "Yes" if fe_time != "none" else "",
+        "Year FE": "Yes" if is_year_fe else "",
+        "Year-Quarter FE": "Yes" if is_yq_fe else "",
     }
 
 
@@ -191,7 +194,6 @@ def write_suite_spec(
     )
 
     render_hints_full = RenderHints(**(render_hints or {}))
-    time_fe_label = render_hints_full.time_fe_label
     extended_names = controls_full.extended_only
 
     written_paths: list[Path] = []
@@ -211,7 +213,6 @@ def write_suite_spec(
                 fe_time=cm["fe_time"],
                 control_vars=control_vars,
                 extended_controls=extended_names,
-                time_fe_label=time_fe_label,
             )
             coefs_dict = {var: Coef(**coef_data) for var, coef_data in cf.items()}
 
