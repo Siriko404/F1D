@@ -79,7 +79,7 @@ One-SD(UncAnsMgr) effect: +0.0011 (col4, Firm FE) = 0.67% of mean; +0.0022 (col3
 ================================================================================
 H1.1: PRODUCT SIMILARITY-MODERATED CASH HOLDINGS (continuous TSIMM)
 ================================================================================
-DV: CashRatio (2 cols)
+DV: CashRatio (4 cols)
     Formula: CashRatio = cheq / atq
       cheq = Cash and Short-Term Investments (Compustat Quarterly)
       atq  = Total Assets (Compustat Quarterly)
@@ -88,18 +88,24 @@ Tail: One-tailed (beta > 0) for IV, moderator, and interaction
 
   UncAnsMgr_c:
       col1   __H1.1__UncAnsMgr_c__col1__[Ind FE, Yr FE, CashRatio]
-      col2   __H1.1__UncAnsMgr_c__col2__[Ind FE, YrQtr FE, CashRatio]
+      col2   __H1.1__UncAnsMgr_c__col2__[Firm FE, Yr FE, CashRatio]
+      col3   __H1.1__UncAnsMgr_c__col3__[Ind FE, YrQtr FE, CashRatio]
+      col4   __H1.1__UncAnsMgr_c__col4__[Firm FE, YrQtr FE, CashRatio]
   z_log_TotalSimilarity:
       col1   __H1.1__z_log_TotalSimilarity__col1__[Ind FE, Yr FE, CashRatio]
-      col2   __H1.1__z_log_TotalSimilarity__col2__[Ind FE, YrQtr FE, CashRatio]
+      col2   __H1.1__z_log_TotalSimilarity__col2__[Firm FE, Yr FE, CashRatio]
+      col3   __H1.1__z_log_TotalSimilarity__col3__[Ind FE, YrQtr FE, CashRatio]
+      col4   __H1.1__z_log_TotalSimilarity__col4__[Firm FE, YrQtr FE, CashRatio]
   UncAnsMgr_c_x_zlogTSIMM:
       col1   __H1.1__UncAnsMgr_c_x_zlogTSIMM__col1__[Ind FE, Yr FE, CashRatio]
-      col2   __H1.1__UncAnsMgr_c_x_zlogTSIMM__col2__[Ind FE, YrQtr FE, CashRatio]
+      col2   __H1.1__UncAnsMgr_c_x_zlogTSIMM__col2__[Firm FE, Yr FE, CashRatio]
+      col3   __H1.1__UncAnsMgr_c_x_zlogTSIMM__col3__[Ind FE, YrQtr FE, CashRatio]
+      col4   __H1.1__UncAnsMgr_c_x_zlogTSIMM__col4__[Firm FE, YrQtr FE, CashRatio]
 
 ================================================================================
 H1.1b: BINARY PRODUCT SIMILARITY-MODERATED CASH HOLDINGS
 ================================================================================
-DV: CashRatio (2 cols)
+DV: CashRatio (4 cols)
     Formula: CashRatio = cheq / atq
       cheq = Cash and Short-Term Investments (Compustat Quarterly)
       atq  = Total Assets (Compustat Quarterly)
@@ -108,45 +114,62 @@ Tail: One-tailed (beta > 0) for IV, moderator, and interaction
 
   UncAnsMgr_c:
       col1   __H1.1b__UncAnsMgr_c__col1__[Ind FE, Yr FE, CashRatio]
-      col2   __H1.1b__UncAnsMgr_c__col2__[Ind FE, YrQtr FE, CashRatio]
+      col2   __H1.1b__UncAnsMgr_c__col2__[Firm FE, Yr FE, CashRatio]
+      col3   __H1.1b__UncAnsMgr_c__col3__[Ind FE, YrQtr FE, CashRatio]
+      col4   __H1.1b__UncAnsMgr_c__col4__[Firm FE, YrQtr FE, CashRatio]
   HighTSIMM:
       col1   __H1.1b__HighTSIMM__col1__[Ind FE, Yr FE, CashRatio]
-      col2   __H1.1b__HighTSIMM__col2__[Ind FE, YrQtr FE, CashRatio]
+      col2   __H1.1b__HighTSIMM__col2__[Firm FE, Yr FE, CashRatio]
+      col3   __H1.1b__HighTSIMM__col3__[Ind FE, YrQtr FE, CashRatio]
+      col4   __H1.1b__HighTSIMM__col4__[Firm FE, YrQtr FE, CashRatio]
   UncAnsMgr_c_x_HighTSIMM:
       col1   __H1.1b__UncAnsMgr_c_x_HighTSIMM__col1__[Ind FE, Yr FE, CashRatio]
-      col2   __H1.1b__UncAnsMgr_c_x_HighTSIMM__col2__[Ind FE, YrQtr FE, CashRatio]
+      col2   __H1.1b__UncAnsMgr_c_x_HighTSIMM__col2__[Firm FE, Yr FE, CashRatio]
+      col3   __H1.1b__UncAnsMgr_c_x_HighTSIMM__col3__[Ind FE, YrQtr FE, CashRatio]
+      col4   __H1.1b__UncAnsMgr_c_x_HighTSIMM__col4__[Firm FE, YrQtr FE, CashRatio]
 
 ================================================================================
 H1.2: FINANCIAL CONSTRAINT-MODERATED CASH HOLDINGS (Three-Category)
 ================================================================================
-DV: CashRatio (2 cols)
+DV: CashRatio (4 cols)
     Formula: CashRatio = cheq / atq
       cheq = Cash and Short-Term Investments (Compustat Quarterly)
       atq  = Total Assets (Compustat Quarterly)
       Reference: Bates, Kahle & Stulz (2009, JF)
 Tail: One-tailed (beta > 0) for all IVs (Hyp B: constraint + uncertainty predicts more cash)
-SEs: Firm-level clustered (Petersen 2009). N=67,487.
+SEs: Firm-level clustered (Petersen 2009). N=67,544.
 DV Mean: CashRatio = 0.1716
-One-SD(UncAnsMgr) interaction effect (x_Unrated): +0.0021 (col1) = 1.23% of mean
 
   UncAnsMgr_c:
       col1   __H1.2__UncAnsMgr_c__col1__[Ind FE, Yr FE, CashRatio]
-      col2   __H1.2__UncAnsMgr_c__col2__[Ind FE, YrQtr FE, CashRatio]
+      col2   __H1.2__UncAnsMgr_c__col2__[Firm FE, Yr FE, CashRatio]
+      col3   __H1.2__UncAnsMgr_c__col3__[Ind FE, YrQtr FE, CashRatio]
+      col4   __H1.2__UncAnsMgr_c__col4__[Firm FE, YrQtr FE, CashRatio]
   UncAnsMgr_c_x_IG:
       col1   __H1.2__UncAnsMgr_c_x_IG__col1__[Ind FE, Yr FE, CashRatio]
-      col2   __H1.2__UncAnsMgr_c_x_IG__col2__[Ind FE, YrQtr FE, CashRatio]
+      col2   __H1.2__UncAnsMgr_c_x_IG__col2__[Firm FE, Yr FE, CashRatio]
+      col3   __H1.2__UncAnsMgr_c_x_IG__col3__[Ind FE, YrQtr FE, CashRatio]
+      col4   __H1.2__UncAnsMgr_c_x_IG__col4__[Firm FE, YrQtr FE, CashRatio]
   BelowIG:
       col1   __H1.2__BelowIG__col1__[Ind FE, Yr FE, CashRatio]
-      col2   __H1.2__BelowIG__col2__[Ind FE, YrQtr FE, CashRatio]
+      col2   __H1.2__BelowIG__col2__[Firm FE, Yr FE, CashRatio]
+      col3   __H1.2__BelowIG__col3__[Ind FE, YrQtr FE, CashRatio]
+      col4   __H1.2__BelowIG__col4__[Firm FE, YrQtr FE, CashRatio]
   Unrated:
       col1   __H1.2__Unrated__col1__[Ind FE, Yr FE, CashRatio]
-      col2   __H1.2__Unrated__col2__[Ind FE, YrQtr FE, CashRatio]
+      col2   __H1.2__Unrated__col2__[Firm FE, Yr FE, CashRatio]
+      col3   __H1.2__Unrated__col3__[Ind FE, YrQtr FE, CashRatio]
+      col4   __H1.2__Unrated__col4__[Firm FE, YrQtr FE, CashRatio]
   UncAnsMgr_c_x_BelowIG:
       col1   __H1.2__UncAnsMgr_c_x_BelowIG__col1__[Ind FE, Yr FE, CashRatio]
-      col2   __H1.2__UncAnsMgr_c_x_BelowIG__col2__[Ind FE, YrQtr FE, CashRatio]
+      col2   __H1.2__UncAnsMgr_c_x_BelowIG__col2__[Firm FE, Yr FE, CashRatio]
+      col3   __H1.2__UncAnsMgr_c_x_BelowIG__col3__[Ind FE, YrQtr FE, CashRatio]
+      col4   __H1.2__UncAnsMgr_c_x_BelowIG__col4__[Firm FE, YrQtr FE, CashRatio]
   UncAnsMgr_c_x_Unrated:
       col1   __H1.2__UncAnsMgr_c_x_Unrated__col1__[Ind FE, Yr FE, CashRatio]
-      col2   __H1.2__UncAnsMgr_c_x_Unrated__col2__[Ind FE, YrQtr FE, CashRatio]
+      col2   __H1.2__UncAnsMgr_c_x_Unrated__col2__[Firm FE, Yr FE, CashRatio]
+      col3   __H1.2__UncAnsMgr_c_x_Unrated__col3__[Ind FE, YrQtr FE, CashRatio]
+      col4   __H1.2__UncAnsMgr_c_x_Unrated__col4__[Firm FE, YrQtr FE, CashRatio]
 
 ================================================================================
 H4a: SPEECH UNCERTAINTY AND BOOK LEVERAGE
@@ -658,50 +681,62 @@ DV Mean: 0.0157, 0.0160
 ================================================================================
 H11: POLITICAL RISK AND LANGUAGE UNCERTAINTY
 ================================================================================
-DV: QA_Uncertainty_pct (Mgr col1, CEO col2), Pres_Uncertainty_pct (Mgr col3, CEO col4)
+DV: 4 uncertainty measures (UncAnsMgr, UncAnsCEO, UncPreMgr, UncPreCEO) under Industry FE (cols 1-4) + Firm FE (cols 5-8)
     Formula: Uncertainty_pct = (Loughran-McDonald uncertainty word count / total word count) * 100
-      DVs: UncAnsMgr, UncAnsCEO (Q&A answers), UncPreMgr, UncPreCEO (presentation)
       Word list: Loughran & McDonald (2011, JF) uncertainty dictionary
       Reference: Dzielinski, Wagner & Zeckhauser (2021)
 Tail: One-tailed for PRisk (beta > 0)
 NOTE: REVERSED CAUSALITY -- uncertainty is the DV, political risk is the IV.
-All specs: Firm FE + Year FE
 
   PRisk:
-      col1   __H11__PRisk__col1__[Firm FE, Yr FE, QA_Uncertainty_pct / Manager]
-      col2   __H11__PRisk__col2__[Firm FE, Yr FE, QA_Uncertainty_pct / CEO]
-      col3   __H11__PRisk__col3__[Firm FE, Yr FE, Pres_Uncertainty_pct / Manager]
-      col4   __H11__PRisk__col4__[Firm FE, Yr FE, Pres_Uncertainty_pct / CEO]
+      col1   __H11__PRisk__col1__[Ind FE, Yr FE, UncAnsMgr]
+      col2   __H11__PRisk__col2__[Ind FE, Yr FE, UncAnsCEO]
+      col3   __H11__PRisk__col3__[Ind FE, Yr FE, UncPreMgr]
+      col4   __H11__PRisk__col4__[Ind FE, Yr FE, UncPreCEO]
+      col5   __H11__PRisk__col5__[Firm FE, Yr FE, UncAnsMgr]
+      col6   __H11__PRisk__col6__[Firm FE, Yr FE, UncAnsCEO]
+      col7   __H11__PRisk__col7__[Firm FE, Yr FE, UncPreMgr]
+      col8   __H11__PRisk__col8__[Firm FE, Yr FE, UncPreCEO]
 
 ================================================================================
-H11-Lag: LAGGED POLITICAL RISK AND LANGUAGE UNCERTAINTY
+H11-Lag1: POLITICAL RISK (1-QTR LAG) AND LANGUAGE UNCERTAINTY
 ================================================================================
-DV: Uncertainty measures predicted by lagged political risk
+DV: 4 uncertainty measures (UncAnsMgr, UncAnsCEO, UncPreMgr, UncPreCEO) under Industry FE (cols 1-4) + Firm FE (cols 5-8)
     Formula: Uncertainty_pct = (Loughran-McDonald uncertainty word count / total word count) * 100
-      DVs: UncAnsMgr, UncAnsCEO (Q&A answers), UncPreMgr, UncPreCEO (presentation)
       Word list: Loughran & McDonald (2011, JF) uncertainty dictionary
       Reference: Dzielinski, Wagner & Zeckhauser (2021)
 Tail: One-tailed (beta > 0)
-NOTE: Reversed causality. All specs: Firm FE + Year FE.
+NOTE: Reversed causality -- uncertainty is the DV, lagged political risk (t-1) is the IV.
 
   PRisk_lag:
-      col1   __H11-Lag__PRisk_lag__col1__[Firm FE, Yr FE, PRisk_lag / Mgr QA]
-      col2   __H11-Lag__PRisk_lag__col2__[Firm FE, Yr FE, PRisk_lag / CEO QA]
-      col3   __H11-Lag__PRisk_lag__col3__[Firm FE, Yr FE, PRisk_lag / Mgr Pres]
-      col4   __H11-Lag__PRisk_lag__col4__[Firm FE, Yr FE, PRisk_lag / CEO Pres]
-      col5   __H11-Lag__PRisk_lag__col5__[Firm FE, Yr FE, PRisk_lag2 / Mgr QA]
-      col6   __H11-Lag__PRisk_lag__col6__[Firm FE, Yr FE, PRisk_lag2 / CEO QA]
-      col7   __H11-Lag__PRisk_lag__col7__[Firm FE, Yr FE, PRisk_lag2 / Mgr Pres]
-      col8   __H11-Lag__PRisk_lag__col8__[Firm FE, Yr FE, PRisk_lag2 / CEO Pres]
+      col1   __H11-Lag1__PRisk_lag__col1__[Ind FE, Yr FE, UncAnsMgr]
+      col2   __H11-Lag1__PRisk_lag__col2__[Ind FE, Yr FE, UncAnsCEO]
+      col3   __H11-Lag1__PRisk_lag__col3__[Ind FE, Yr FE, UncPreMgr]
+      col4   __H11-Lag1__PRisk_lag__col4__[Ind FE, Yr FE, UncPreCEO]
+      col5   __H11-Lag1__PRisk_lag__col5__[Firm FE, Yr FE, UncAnsMgr]
+      col6   __H11-Lag1__PRisk_lag__col6__[Firm FE, Yr FE, UncAnsCEO]
+      col7   __H11-Lag1__PRisk_lag__col7__[Firm FE, Yr FE, UncPreMgr]
+      col8   __H11-Lag1__PRisk_lag__col8__[Firm FE, Yr FE, UncPreCEO]
+
+================================================================================
+H11-Lag2: POLITICAL RISK (2-QTR LAG) AND LANGUAGE UNCERTAINTY
+================================================================================
+DV: 4 uncertainty measures (UncAnsMgr, UncAnsCEO, UncPreMgr, UncPreCEO) under Industry FE (cols 1-4) + Firm FE (cols 5-8)
+    Formula: Uncertainty_pct = (Loughran-McDonald uncertainty word count / total word count) * 100
+      Word list: Loughran & McDonald (2011, JF) uncertainty dictionary
+      Reference: Dzielinski, Wagner & Zeckhauser (2021)
+Tail: One-tailed (beta > 0)
+NOTE: Reversed causality -- uncertainty is the DV, lagged political risk (t-2) is the IV.
+
   PRisk_lag2:
-      col1   __H11-Lag__PRisk_lag2__col1__[Firm FE, Yr FE, PRisk_lag / Mgr QA]
-      col2   __H11-Lag__PRisk_lag2__col2__[Firm FE, Yr FE, PRisk_lag / CEO QA]
-      col3   __H11-Lag__PRisk_lag2__col3__[Firm FE, Yr FE, PRisk_lag / Mgr Pres]
-      col4   __H11-Lag__PRisk_lag2__col4__[Firm FE, Yr FE, PRisk_lag / CEO Pres]
-      col5   __H11-Lag__PRisk_lag2__col5__[Firm FE, Yr FE, PRisk_lag2 / Mgr QA]
-      col6   __H11-Lag__PRisk_lag2__col6__[Firm FE, Yr FE, PRisk_lag2 / CEO QA]
-      col7   __H11-Lag__PRisk_lag2__col7__[Firm FE, Yr FE, PRisk_lag2 / Mgr Pres]
-      col8   __H11-Lag__PRisk_lag2__col8__[Firm FE, Yr FE, PRisk_lag2 / CEO Pres]
+      col1   __H11-Lag2__PRisk_lag2__col1__[Ind FE, Yr FE, UncAnsMgr]
+      col2   __H11-Lag2__PRisk_lag2__col2__[Ind FE, Yr FE, UncAnsCEO]
+      col3   __H11-Lag2__PRisk_lag2__col3__[Ind FE, Yr FE, UncPreMgr]
+      col4   __H11-Lag2__PRisk_lag2__col4__[Ind FE, Yr FE, UncPreCEO]
+      col5   __H11-Lag2__PRisk_lag2__col5__[Firm FE, Yr FE, UncAnsMgr]
+      col6   __H11-Lag2__PRisk_lag2__col6__[Firm FE, Yr FE, UncAnsCEO]
+      col7   __H11-Lag2__PRisk_lag2__col7__[Firm FE, Yr FE, UncPreMgr]
+      col8   __H11-Lag2__PRisk_lag2__col8__[Firm FE, Yr FE, UncPreCEO]
 
 ================================================================================
 H12: SPEECH UNCERTAINTY AND QUARTERLY PAYOUT RATIO
@@ -915,7 +950,7 @@ One-SD(UncAnsMgr) effect on Capex: +0.0006 (col3, Ind FE) = 1.24% of mean
 ================================================================================
 H13.1: PRODUCT SIMILARITY-MODERATED CAPEX
 ================================================================================
-DV: Capex (cols 1-2), Capex_lead (cols 3-4)
+DV: Capex (cols 1-4), Capex_lead (cols 5-8)
     Formula: Capex = capxy_Q4 / atq
       capxy = Capital Expenditures, fiscal-year cumulative (Compustat Annual via Q4)
       atq   = Total Assets, contemporaneous (Compustat Quarterly)
@@ -924,19 +959,31 @@ Tail: One-tailed (beta > 0) for all three key vars (H13.1 is explanatory for H13
 
   UncAnsMgr_c:
       col1   __H13.1__UncAnsMgr_c__col1__[Ind FE, Yr FE, Capex]
-      col2   __H13.1__UncAnsMgr_c__col2__[Ind FE, YrQtr FE, Capex]
-      col3   __H13.1__UncAnsMgr_c__col3__[Ind FE, Yr FE, Capex_lead]
-      col4   __H13.1__UncAnsMgr_c__col4__[Ind FE, YrQtr FE, Capex_lead]
+      col2   __H13.1__UncAnsMgr_c__col2__[Firm FE, Yr FE, Capex]
+      col3   __H13.1__UncAnsMgr_c__col3__[Ind FE, YrQtr FE, Capex]
+      col4   __H13.1__UncAnsMgr_c__col4__[Firm FE, YrQtr FE, Capex]
+      col5   __H13.1__UncAnsMgr_c__col5__[Ind FE, Yr FE, Capex_lead]
+      col6   __H13.1__UncAnsMgr_c__col6__[Firm FE, Yr FE, Capex_lead]
+      col7   __H13.1__UncAnsMgr_c__col7__[Ind FE, YrQtr FE, Capex_lead]
+      col8   __H13.1__UncAnsMgr_c__col8__[Firm FE, YrQtr FE, Capex_lead]
   z_log_TotalSimilarity:
       col1   __H13.1__z_log_TotalSimilarity__col1__[Ind FE, Yr FE, Capex]
-      col2   __H13.1__z_log_TotalSimilarity__col2__[Ind FE, YrQtr FE, Capex]
-      col3   __H13.1__z_log_TotalSimilarity__col3__[Ind FE, Yr FE, Capex_lead]
-      col4   __H13.1__z_log_TotalSimilarity__col4__[Ind FE, YrQtr FE, Capex_lead]
+      col2   __H13.1__z_log_TotalSimilarity__col2__[Firm FE, Yr FE, Capex]
+      col3   __H13.1__z_log_TotalSimilarity__col3__[Ind FE, YrQtr FE, Capex]
+      col4   __H13.1__z_log_TotalSimilarity__col4__[Firm FE, YrQtr FE, Capex]
+      col5   __H13.1__z_log_TotalSimilarity__col5__[Ind FE, Yr FE, Capex_lead]
+      col6   __H13.1__z_log_TotalSimilarity__col6__[Firm FE, Yr FE, Capex_lead]
+      col7   __H13.1__z_log_TotalSimilarity__col7__[Ind FE, YrQtr FE, Capex_lead]
+      col8   __H13.1__z_log_TotalSimilarity__col8__[Firm FE, YrQtr FE, Capex_lead]
   UncAnsMgr_c_x_zlogTSIMM:
       col1   __H13.1__UncAnsMgr_c_x_zlogTSIMM__col1__[Ind FE, Yr FE, Capex]
-      col2   __H13.1__UncAnsMgr_c_x_zlogTSIMM__col2__[Ind FE, YrQtr FE, Capex]
-      col3   __H13.1__UncAnsMgr_c_x_zlogTSIMM__col3__[Ind FE, Yr FE, Capex_lead]
-      col4   __H13.1__UncAnsMgr_c_x_zlogTSIMM__col4__[Ind FE, YrQtr FE, Capex_lead]
+      col2   __H13.1__UncAnsMgr_c_x_zlogTSIMM__col2__[Firm FE, Yr FE, Capex]
+      col3   __H13.1__UncAnsMgr_c_x_zlogTSIMM__col3__[Ind FE, YrQtr FE, Capex]
+      col4   __H13.1__UncAnsMgr_c_x_zlogTSIMM__col4__[Firm FE, YrQtr FE, Capex]
+      col5   __H13.1__UncAnsMgr_c_x_zlogTSIMM__col5__[Ind FE, Yr FE, Capex_lead]
+      col6   __H13.1__UncAnsMgr_c_x_zlogTSIMM__col6__[Firm FE, Yr FE, Capex_lead]
+      col7   __H13.1__UncAnsMgr_c_x_zlogTSIMM__col7__[Ind FE, YrQtr FE, Capex_lead]
+      col8   __H13.1__UncAnsMgr_c_x_zlogTSIMM__col8__[Firm FE, YrQtr FE, Capex_lead]
 
 ================================================================================
 H14: SPEECH UNCERTAINTY AND BID-ASK SPREAD CHANGES

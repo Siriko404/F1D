@@ -14,12 +14,10 @@ Architecture (post-Phase-6 rewrite):
       file per suite, and substitutes each placeholder with a formatted cell.
     - Fails loudly on missing cells for suites in `config/suite_render_order.yaml`.
 
-Col remaps:
-    - H11-Lag: template cols 1-4 (PRisk_lag Firm FE) → H11-Lag1 spec cols 5-8.
-      Template cols 5-8 (PRisk_lag2 Firm FE) → H11-Lag2 spec cols 5-8.
-      Cross-IV cells ("__H11-Lag__PRisk_lag__col5__" etc.) emit "--".
+Col remap (single remaining special case):
     - H24 / H24b / H25: template cols 1-4 (Firm FE contemporaneous) → spec
-      cols 5-8 (Firm FE).
+      cols 5-8 (Firm FE). Macro suites have 8 spec cols (4 Ind + 4 Firm) but
+      the template only displays the Firm FE half.
 
 Run:
     python scripts/generate_findings.py            # regenerate findings.txt
@@ -51,31 +49,6 @@ PLACEHOLDER_RE = re.compile(r"__([A-Za-z][A-Za-z0-9.\-]*)__(.+?)__col(\d+)__")
 # Standard pad width for cell values (matches legacy findings.txt alignment).
 PAD_WIDTH = 16
 
-# Per-suite template-col → spec-col remaps for suites whose template layout
-# is a subset of the current spec's col count (i.e., template was built when
-# the runner had fewer cols; the runner was later expanded).
-#
-# Each entry: suite_id -> {template_col: spec_col}
-# If template_col not in the remap, 1-to-1 mapping is used.
-COL_REMAPS: dict[str, dict[int, int]] = {
-    # H1.1 / H1.1b / H1.2: template shows Industry FE only (col1=Ind+Yr,
-    # col2=Ind+YrQtr). Spec has 4 cols including Firm FE variants: spec
-    # [1=Ind+Yr, 2=Firm+Yr, 3=Ind+YrQtr, 4=Firm+YrQtr]. Remap picks the
-    # Industry-FE cols only.
-    "H1.1":  {1: 1, 2: 3},
-    "H1.1b": {1: 1, 2: 3},
-    "H1.2":  {1: 1, 2: 3},
-    # H11: template shows Firm FE only (4 cols with Mgr-QA/CEO-QA/Mgr-Pres/
-    # CEO-Pres DVs). Spec has 8 cols [1-4=Ind, 5-8=Firm], so remap picks the
-    # Firm-FE half.
-    "H11": {1: 5, 2: 6, 3: 7, 4: 8},
-    # H13.1: template shows Industry FE only (col1=Capex+Yr, col2=Capex+YrQtr,
-    # col3=Capex_lead+Yr, col4=Capex_lead+YrQtr). Spec has 8 cols:
-    # [1=Capex+Ind+Yr, 2=Capex+Firm+Yr, 3=Capex+Ind+YrQtr, 4=Capex+Firm+YrQtr,
-    #  5=Capex_lead+Ind+Yr, 6=Capex_lead+Firm+Yr,
-    #  7=Capex_lead+Ind+YrQtr, 8=Capex_lead+Firm+YrQtr].
-    "H13.1": {1: 1, 2: 3, 3: 5, 4: 7},
-}
 
 
 # ---------------------------------------------------------------------------
@@ -175,30 +148,6 @@ def pad(value: str) -> str:
 # ---------------------------------------------------------------------------
 
 
-def resolve_h11_lag(
-    iv_name: str, col: int
-) -> tuple[Optional[str], Optional[int], Optional[str]]:
-    """Map template (iv, col) to (spec_suite_id, spec_col, reason).
-
-    Returns (None, None, reason) for cross-IV cells that should render "--".
-    """
-    # H11-Lag template: 2 IVs × 8 cols where cross-IV cells are "--".
-    # - PRisk_lag: cols 1-4 valid (Firm FE Lag1), cols 5-8 cross-IV "--"
-    # - PRisk_lag2: cols 1-4 cross-IV "--", cols 5-8 valid (Firm FE Lag2)
-    # Spec: H11-Lag1 has cols 1-4 Industry FE, cols 5-8 Firm FE (same for Lag2).
-    if iv_name == "PRisk_lag":
-        if 1 <= col <= 4:
-            # template col 1-4 → H11-Lag1 spec col 5-8 (Firm FE)
-            return "H11-Lag1", col + 4, None
-        return None, None, "cross-IV cell (PRisk_lag in Lag2 col range)"
-    if iv_name == "PRisk_lag2":
-        if 5 <= col <= 8:
-            # template col 5-8 → H11-Lag2 spec col 5-8 (Firm FE, col offset = -4 + 4 = 0)
-            return "H11-Lag2", col, None
-        return None, None, "cross-IV cell (PRisk_lag2 in Lag1 col range)"
-    return None, None, f"unknown H11-Lag iv {iv_name!r}"
-
-
 def resolve_macro(
     suite_id: str, col: int
 ) -> tuple[Optional[str], Optional[int], Optional[str]]:
@@ -282,26 +231,12 @@ def main() -> int:
         iv_name = match.group(2)
         col = int(match.group(3))
 
-        # Per-suite remap resolution
-        if suite_id == "H11-Lag":
-            target_suite, target_col, reason = resolve_h11_lag(iv_name, col)
-            if target_suite is None:
-                # Cross-IV cell — expected "--", NOT an error.
-                n_cross = "--"
-                nonlocal n_subst
-                n_subst += 1
-                per_suite_counts[suite_id] = per_suite_counts.get(suite_id, 0) + 1
-                if args.verbose:
-                    print(f"[cross] {placeholder}: {reason}")
-                return pad(n_cross)
-        elif suite_id in ("H24", "H24b", "H25"):
+        # Per-suite remap resolution (only macro suites still need a remap)
+        if suite_id in ("H24", "H24b", "H25"):
             target_suite, target_col, reason = resolve_macro(suite_id, col)
             if target_suite is None:
                 record_missing(placeholder, suite_id, col, reason or "macro remap failed")
                 return pad("--")
-        elif suite_id in COL_REMAPS:
-            target_suite = suite_id
-            target_col = COL_REMAPS[suite_id].get(col, col)
         else:
             target_suite, target_col = suite_id, col
 
