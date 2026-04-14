@@ -350,7 +350,101 @@ def load_suite_spec(path: Path) -> SuiteSpec:
     return SuiteSpec.model_validate_json(Path(path).read_text(encoding="utf-8"))
 
 
+# ---------------------------------------------------------------------------
+# Shared builder for standard PanelOLS runners (H1, H5, H13, H16, ...)
+# ---------------------------------------------------------------------------
+
+
+def build_col_data_from_panelols(
+    all_results: list[dict[str, Any]],
+    model_specs: list[dict[str, Any]],
+    key_ivs: list[str],
+    base_controls: list[str],
+    extended_controls: list[str],
+    hyp_dir: str,
+) -> tuple[list[dict[str, Any]], list[dict[str, dict]]]:
+    """Build col_metadata + coefs_per_col lists from a standard-shape runner.
+
+    Expects each entry of `all_results` to be a {"model": fitted_result,
+    "meta": dict} pair produced by the runner's run_regression function.
+    Maps MODEL_SPECS fe-type strings (industry / firm / industry_yq / firm_yq)
+    to the schema's FEEntity + FETime enums (calendar year or calendar
+    year-quarter — matches `feedback_calendar_yr_qtr_fe.md`), computes
+    dv_mean from the fitted model directly (so runners don't need to
+    store it in meta), and extracts IV + control coefs via
+    extract_coefs_panelols with direction-aware p_one.
+
+    Raises RuntimeError if any col in `model_specs` is missing from
+    `all_results` — surfaces silent regression failures that previously
+    disappeared into the gap between all_results and SUITES.
+    """
+    results_by_col = {r["meta"]["col"]: r for r in all_results if r.get("meta")}
+
+    col_metadata: list[dict[str, Any]] = []
+    coefs_per_col: list[dict[str, dict]] = []
+
+    for spec in model_specs:
+        col_num = spec["col"]
+        if col_num not in results_by_col:
+            raise RuntimeError(
+                f"build_col_data_from_panelols: col {col_num} missing from "
+                f"all_results; upstream runner failed silently for this spec"
+            )
+        result = results_by_col[col_num]
+        model = result["model"]
+        meta = result["meta"]
+
+        fe_type = spec["fe"]
+        base_fe = fe_type.replace("_yq", "")
+        fe_entity = "industry" if base_fe == "industry" else "firm"
+        fe_time = (
+            "calendar_year_quarter" if fe_type.endswith("_yq") else "calendar_year"
+        )
+
+        control_list = (
+            list(base_controls) if spec["controls"] == "base" else list(extended_controls)
+        )
+
+        # dv_mean: compute directly from the fitted model's dependent data
+        try:
+            dv_mean: Optional[float] = float(
+                model.model.dependent.dataframe.mean().iloc[0]
+            )
+        except Exception:
+            dv_mean = meta.get("dv_mean")
+            if dv_mean is not None:
+                dv_mean = float(dv_mean)
+
+        col_metadata.append(
+            {
+                "col": col_num,
+                "dv": spec["dv"],
+                "fe_entity": fe_entity,
+                "fe_time": fe_time,
+                "control_vars": control_list,
+                "n_obs": int(meta["n_obs"]),
+                "n_firms": int(meta["n_firms"]) if meta.get("n_firms") is not None else None,
+                "r2": float(meta["r2"]),
+                "adj_r2": float(meta["adj_r2"]) if meta.get("adj_r2") is not None else None,
+                "dv_mean": dv_mean,
+                "cluster_fallback": bool(meta.get("cluster_fallback", False)),
+            }
+        )
+
+        coefs_per_col.append(
+            extract_coefs_panelols(
+                model=model,
+                key_ivs=key_ivs,
+                all_vars=key_ivs + control_list,
+                hyp_dir=hyp_dir,
+            )
+        )
+
+    return col_metadata, coefs_per_col
+
+
 __all__ = [
+    "build_col_data_from_panelols",
     "extract_coefs_logit",
     "extract_coefs_panelols",
     "load_suite_spec",

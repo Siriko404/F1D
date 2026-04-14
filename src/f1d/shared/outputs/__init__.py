@@ -10,6 +10,7 @@ from .manifest_generator import generate_manifest
 from .attrition_table import generate_attrition_table
 from .render_table import render_suite
 from .suite_spec import (
+    build_col_data_from_panelols,
     extract_coefs_logit,
     extract_coefs_panelols,
     load_suite_spec,
@@ -19,6 +20,7 @@ from .suite_spec_schema import SuiteSpec
 
 __all__ = [
     "SuiteSpec",
+    "build_col_data_from_panelols",
     "extract_coefs_logit",
     "extract_coefs_panelols",
     "generate_attrition_table",
