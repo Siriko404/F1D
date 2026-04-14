@@ -8,6 +8,7 @@ Provides:
 
 from .manifest_generator import generate_manifest
 from .attrition_table import generate_attrition_table
+from .render_table import render_suite
 from .suite_spec import (
     extract_coefs_logit,
     extract_coefs_panelols,
@@ -23,5 +24,6 @@ __all__ = [
     "generate_attrition_table",
     "generate_manifest",
     "load_suite_spec",
+    "render_suite",
     "write_suite_spec",
 ]

@@ -15,6 +15,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from f1d.shared.outputs import load_suite_spec, render_suite
+
 BASE = Path(__file__).resolve().parent / "econometric"
 
 
@@ -1737,6 +1739,23 @@ def main():
     all_tex = []
     for suite in SUITES:
         print(f"Generating {suite['id']}...")
+
+        # New path: render from suite_spec_<id>.json if present.
+        # Falls through to the legacy path for suites whose runners have not
+        # yet been enriched. After Phase 4 completes, every suite hits this
+        # branch and the legacy generate_table* functions can be deleted.
+        resolved = resolve_suite_dir(suite["dir"])
+        spec_path = resolved / f"suite_spec_{suite['id']}.json"
+        if spec_path.exists():
+            try:
+                spec = load_suite_spec(spec_path)
+                tex = render_suite(spec)
+                all_tex.append(tex)
+                print(f"  OK (suite_spec renderer)")
+                continue
+            except Exception as e:
+                print(f"  [new renderer error: {e}] — falling back to legacy")
+
         if suite.get("prebuilt_tex"):
             tex_path = resolve_suite_dir(suite["dir"]) / suite["prebuilt_tex"]
             if tex_path.exists():
