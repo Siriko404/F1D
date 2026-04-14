@@ -586,10 +586,13 @@ def _write_suite_spec_json(
         sample_label=SAMPLE_LABEL,
         clustering=CLUSTERING,
         tail=TAIL,
+        # All three H1.1 key vars are one-tailed positive per
+        # feedback_moderation_tails.md (user explicitly corrected twice —
+        # IV, moderator, AND interaction must all be one-tailed positive).
         ivs=[
             {"name": IV_CENTERED, "label": r"Manager\_QA\_Unc\_c", "tail": "one_pos"},
-            {"name": MODERATOR, "label": r"z\_log\_TotalSimilarity", "tail": "two"},
-            {"name": INTERACTION, "label": r"MgrQAUnc\_x\_zlogTSIMM", "tail": "two"},
+            {"name": MODERATOR, "label": r"z\_log\_TotalSimilarity", "tail": "one_pos"},
+            {"name": INTERACTION, "label": r"MgrQAUnc\_x\_zlogTSIMM", "tail": "one_pos"},
         ],
         controls={
             "base": list(CONTROLS),
