@@ -68,7 +68,7 @@ import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -76,7 +76,12 @@ from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
-from f1d.shared.outputs import generate_manifest, generate_attrition_table
+from f1d.shared.outputs import (
+    extract_coefs_panelols,
+    generate_attrition_table,
+    generate_manifest,
+    write_suite_spec,
+)
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import assign_industry_sample
 
@@ -116,6 +121,45 @@ PRES_CONTROL_MAP = {
     "UncPreMgr": None,
     "UncPreCEO": None,
 }
+
+EXTENDED_ONLY_CONTROLS: List[str] = []  # H11-Lag has no extended set
+
+# ------------------------------------------------------------------
+# Suite metadata for suite_spec.json emission (two sub-tables: H11-Lag1 + H11-Lag2).
+# Each sub-table renders 8 Main-sample cols (4 DVs × 2 FE types).
+# ------------------------------------------------------------------
+SUITE_DIR_NAME = "h11_prisk_uncertainty_lag"
+SAMPLE_LABEL = (
+    "Main sample (excludes financial and utility firms). "
+    "Firms with fewer than 5 calls are excluded."
+)
+HYP_DIR = "positive"  # H11-Lag: prior-quarter political risk -> higher speech uncertainty
+CLUSTERING = {"entity": True, "time": False}
+TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
+
+SUB_TABLE_SPECS = [
+    {
+        "suite_id": "H11-Lag1",
+        "iv_name": "PRisk_lag",
+        "iv_label": r"PRisk$_{t-1}$",
+        "title": "Political Risk (1-Qtr Lag) and Language Uncertainty",
+        "caption": "H11-Lag1: Political Risk (1-Qtr Lag) and Language Uncertainty",
+        "label": "tab:h11_lag1",
+    },
+    {
+        "suite_id": "H11-Lag2",
+        "iv_name": "PRisk_lag2",
+        "iv_label": r"PRisk$_{t-2}$",
+        "title": "Political Risk (2-Qtr Lag) and Language Uncertainty",
+        "caption": "H11-Lag2: Political Risk (2-Qtr Lag) and Language Uncertainty",
+        "label": "tab:h11_lag2",
+    },
+]
+
+# Column ordering within each sub-table: 4 DVs × industry FE, then same × firm FE.
+# Matches the legacy SUITES dict col_files mapping for H11-Lag1/H11-Lag2.
+SUB_TABLE_DV_ORDER = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO"]
+SUB_TABLE_FE_ORDER = ["industry", "firm"]
 
 
 # ==============================================================================
@@ -386,6 +430,148 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         f.write("\n".join(lines))
 
 
+def _write_suite_spec_json(
+    main_models: Dict[Tuple[str, str, str], Dict[str, Any]],
+    out_dir: Path,
+) -> None:
+    """Emit canonical suite_spec_H11-Lag1.json + suite_spec_H11-Lag2.json.
+
+    Each sub-table has 8 Main-sample columns: 4 DVs × 2 FE types (industry, firm).
+    Columns 1-4 = industry FE; columns 5-8 = firm FE. Per-column control sets
+    differ by DV per PRES_CONTROL_MAP (Ans DVs add the matching Pres sibling as
+    a control; Pres DVs add no siblings).
+    """
+    # Build a flat col_metadata + coefs_per_col across both sub-tables.
+    # Layout: [Lag1 industry×4, Lag1 firm×4, Lag2 industry×4, Lag2 firm×4]
+    col_metadata: List[Dict[str, Any]] = []
+    coefs_per_col: List[Dict[str, Dict[str, Any]]] = []
+
+    col_num = 0
+    for sub in SUB_TABLE_SPECS:
+        iv_var = sub["iv_name"]
+        for fe_type in SUB_TABLE_FE_ORDER:
+            for dv in SUB_TABLE_DV_ORDER:
+                col_num += 1
+                key = (iv_var, dv, fe_type)
+                if key not in main_models:
+                    raise RuntimeError(
+                        f"H11-Lag spec build: missing Main-sample result for "
+                        f"iv={iv_var} dv={dv} fe={fe_type}"
+                    )
+                entry = main_models[key]
+                model = entry["model"]
+                meta = entry["meta"]
+                # Per-DV control list: BASE + optional Pres sibling.
+                pres_sibling = PRES_CONTROL_MAP.get(dv)
+                control_vars = list(BASE_CONTROLS)
+                if pres_sibling:
+                    control_vars.append(pres_sibling)
+
+                # dv_mean from the fitted model's dependent dataframe.
+                try:
+                    dv_mean: Optional[float] = float(
+                        model.model.dependent.dataframe.mean().iloc[0]
+                    )
+                except Exception:
+                    dv_mean = None
+
+                col_metadata.append(
+                    {
+                        "col": col_num,
+                        "dv": dv,
+                        "fe_entity": "industry" if fe_type == "industry" else "firm",
+                        "fe_time": "calendar_year",
+                        "control_vars": control_vars,
+                        "n_obs": int(meta["n_obs"]),
+                        "n_firms": int(meta.get("n_firms", 0)) or None,
+                        "r2": float(meta["r2"]),
+                        "adj_r2": float(meta.get("adj_r2", float("nan"))),
+                        "dv_mean": dv_mean,
+                        "cluster_fallback": False,
+                    }
+                )
+                coefs_per_col.append(
+                    extract_coefs_panelols(
+                        model=model,
+                        key_ivs=[iv_var],
+                        all_vars=[iv_var] + control_vars,
+                        hyp_dir=HYP_DIR,
+                    )
+                )
+
+    # Build the two sub_tables. Each renders 8 cols from the flat layout.
+    sub_tables: List[Dict[str, Any]] = []
+    for i, sub in enumerate(SUB_TABLE_SPECS):
+        base_col = 1 + i * 8
+        col_range = list(range(base_col, base_col + 8))
+        # Two-row header: FE groups on top, pipeline DV names on bottom.
+        header_rows = [
+            [
+                {"label": "Industry FE", "span": 4},
+                {"label": "Firm FE", "span": 4},
+            ],
+            [
+                {"label": "UncAnsMgr", "span": 1},
+                {"label": "UncAnsCEO", "span": 1},
+                {"label": "UncPreMgr", "span": 1},
+                {"label": "UncPreCEO", "span": 1},
+                {"label": "UncAnsMgr", "span": 1},
+                {"label": "UncAnsCEO", "span": 1},
+                {"label": "UncPreMgr", "span": 1},
+                {"label": "UncPreCEO", "span": 1},
+            ],
+        ]
+        sub_tables.append(
+            {
+                "suite_id": sub["suite_id"],
+                "dir_name": SUITE_DIR_NAME,
+                "title": sub["title"],
+                "caption": sub["caption"],
+                "label": sub["label"],
+                "col_range": col_range,
+                "header_rows": header_rows,
+                "suite_type": "moderation",
+            }
+        )
+
+    # Include both Pres siblings in `base` so the renderer emits a row for
+    # each. Per-column masking via `col.control_vars` ensures UncPreMgr only
+    # shows values in Mgr-QA columns and UncPreCEO only in CEO-QA columns.
+    base_plus_siblings = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO"]
+
+    # Emit each sub-table via a separate write_suite_spec call so each gets
+    # its own IV row (PRisk_lag for H11-Lag1, PRisk_lag2 for H11-Lag2).
+    for sub_full, sub in zip(sub_tables, SUB_TABLE_SPECS):
+        paths = write_suite_spec(
+            output_dir=out_dir,
+            runner_id=SUITE_DIR_NAME,
+            sub_tables=[sub_full],
+            coefs_per_col=coefs_per_col,
+            col_metadata=col_metadata,
+            sample_label=SAMPLE_LABEL,
+            clustering=CLUSTERING,
+            tail=TAIL,
+            ivs=[
+                {
+                    "name": sub["iv_name"],
+                    "label": sub["iv_label"],
+                    "tail": "one_pos",
+                }
+            ],
+            controls={
+                "base": base_plus_siblings,
+                "extended_only": list(EXTENDED_ONLY_CONTROLS),
+                "labels": {
+                    "UncPreMgr": "UncPreMgr",
+                    "UncPreCEO": "UncPreCEO",
+                },
+            },
+            model_family="PanelOLS",
+        )
+        for path in paths:
+            print(f"  Saved: {path.name}")
+
+
 def main(panel_path: str | None = None) -> int:
     t0 = datetime.now()
     timestamp = t0.strftime("%Y-%m-%d_%H%M%S")
@@ -483,6 +669,10 @@ def main(panel_path: str | None = None) -> int:
     print("  Saved: summary_stats.tex")
 
     all_results = []
+    # Retain fitted model objects for Main-sample regressions so the
+    # suite_spec builder can pull control coefs via extract_coefs_panelols.
+    # Key: (iv_var, dv, fe_type) -> {"model": model, "meta": meta, "controls": controls}
+    main_models: Dict[Tuple[str, str, str], Dict[str, Any]] = {}
 
     # Run regressions for each DV, sample, IV, and FE combination
     for iv_var in CONFIG["iv_vars"]:
@@ -526,6 +716,12 @@ def main(panel_path: str | None = None) -> int:
 
                     if model is not None:
                         all_results.append(meta)
+                        if sample == "Main":
+                            main_models[(iv_var, dv, fe_type)] = {
+                                "model": model,
+                                "meta": meta,
+                                "controls": list(controls),
+                            }
                         # Save individual regression results with lag + FE in filename
                         lag_suffix = "lag1" if iv_var == "PRisk_lag" else "lag2"
                         with open(out_dir / f"regression_results_{sample}_{dv}_{lag_suffix}_{fe_type}.txt", "w") as f:
@@ -534,6 +730,7 @@ def main(panel_path: str | None = None) -> int:
                             f.write(str(model.summary))
 
     _save_latex_table(all_results, out_dir)
+    _write_suite_spec_json(main_models, out_dir)
     pd.DataFrame(all_results).to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
 
     # Generate sample attrition table

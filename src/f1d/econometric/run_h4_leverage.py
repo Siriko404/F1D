@@ -75,7 +75,12 @@ from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
-from f1d.shared.outputs import generate_manifest, generate_attrition_table
+from f1d.shared.outputs import (
+    build_col_data_from_panelols,
+    generate_attrition_table,
+    generate_manifest,
+    write_suite_spec,
+)
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
@@ -108,6 +113,40 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
     "RDSales",
     "CashFlowAt",
     "DailyVola",
+]
+
+EXTENDED_ONLY_CONTROLS = [c for c in EXTENDED_CONTROLS if c not in BASE_CONTROLS]
+
+# ------------------------------------------------------------------
+# Suite metadata for suite_spec.json emission (two sub-tables: H4a + H4b).
+# HYP_DIR="negative" fixes Bug 2 from project_latex_audit_2026_04_13.md
+# (tail flip never landed in the legacy SUITES dict).
+# ------------------------------------------------------------------
+SUITE_DIR_NAME = "h4_leverage"
+SAMPLE_LABEL = "Main sample (excludes financial and utility firms)."
+HYP_DIR = "negative"  # H4: uncertainty -> lower leverage (β < 0)
+CLUSTERING = {"entity": True, "time": False}
+TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
+
+SUB_TABLE_SPECS = [
+    {
+        "suite_id": "H4a",
+        "title": "Speech Uncertainty and Book Leverage",
+        "caption": "H4a: Speech Uncertainty and Book Leverage",
+        "label": "tab:h4a",
+        "col_range": list(range(1, 13)),
+        "dv_label": "Leverage",
+        "dv_lead_label": r"Leverage\_lead",
+    },
+    {
+        "suite_id": "H4b",
+        "title": "Speech Uncertainty and Debt-to-Capital",
+        "caption": "H4b: Speech Uncertainty and Debt-to-Capital",
+        "label": "tab:h4b",
+        "col_range": list(range(13, 25)),
+        "dv_label": "DebtToCapital",
+        "dv_lead_label": r"DebtToCapital\_lead",
+    },
 ]
 
 MODEL_SPECS = [
@@ -759,6 +798,59 @@ def generate_report(
     print("  Saved: report_step4_H4.md")
 
 
+def _write_suite_spec_json(
+    all_results: List[Dict[str, Any]],
+    out_dir: Path,
+) -> None:
+    """Emit canonical suite_spec_H4a.json + suite_spec_H4b.json from runner state."""
+    col_metadata, coefs_per_col = build_col_data_from_panelols(
+        all_results=all_results,
+        model_specs=MODEL_SPECS,
+        key_ivs=KEY_IVS,
+        base_controls=BASE_CONTROLS,
+        extended_controls=EXTENDED_CONTROLS,
+        hyp_dir=HYP_DIR,
+    )
+
+    sub_tables = [
+        {
+            "suite_id": sub["suite_id"],
+            "dir_name": SUITE_DIR_NAME,
+            "title": sub["title"],
+            "caption": sub["caption"],
+            "label": sub["label"],
+            "col_range": sub["col_range"],
+            "header_rows": [
+                [
+                    {"label": sub["dv_label"], "span": 6},
+                    {"label": sub["dv_lead_label"], "span": 6},
+                ]
+            ],
+            "suite_type": "standard",
+        }
+        for sub in SUB_TABLE_SPECS
+    ]
+
+    paths = write_suite_spec(
+        output_dir=out_dir,
+        runner_id=SUITE_DIR_NAME,
+        sub_tables=sub_tables,
+        coefs_per_col=coefs_per_col,
+        col_metadata=col_metadata,
+        sample_label=SAMPLE_LABEL,
+        clustering=CLUSTERING,
+        tail=TAIL,
+        ivs=[{"name": iv, "label": iv, "tail": "one_neg"} for iv in KEY_IVS],
+        controls={
+            "base": list(BASE_CONTROLS),
+            "extended_only": list(EXTENDED_ONLY_CONTROLS),
+        },
+        model_family="PanelOLS",
+    )
+    for path in paths:
+        print(f"  Saved: {path.name}")
+
+
 # ==============================================================================
 # Main
 # ==============================================================================
@@ -857,6 +949,9 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Save outputs
     diag_df = save_outputs(all_results, out_dir)
+
+    # Emit canonical suite_spec.json (consumed by generate_all_tables.py)
+    _write_suite_spec_json(all_results, out_dir)
 
     # Sample attrition table
     if all_results:

@@ -283,11 +283,11 @@ $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. IVs one-tailed ($\beta > 0$); contr
  & \multicolumn{6}{c}{Leverage} & \multicolumn{6}{c}{Leverage\_lead} \\
 \cmidrule(lr){2-7} \cmidrule(lr){8-13}
 \midrule
-UncAnsCEO & 0.0002 & -0.0002 & -0.0003 & -0.0001 & -0.0003 & -0.0002 & \textbf{0.0054}$^{**}$ & \textbf{0.0044}$^{*}$ & \textbf{0.0056}$^{**}$ & \textbf{0.0047}$^{*}$ & \textbf{0.0056}$^{**}$ & \textbf{0.0047}$^{*}$ \\
+UncAnsCEO & 0.0002 & -0.0002 & -0.0003 & -0.0001 & -0.0003 & -0.0002 & 0.0054 & 0.0044 & 0.0056 & 0.0047 & 0.0056 & 0.0047 \\
  & (0.0015) & (0.0015) & (0.0015) & (0.0015) & (0.0015) & (0.0015) & (0.0026) & (0.0026) & (0.0026) & (0.0026) & (0.0026) & (0.0026) \\
 UncPreCEO & 0.0011 & -0.0014 & 0.0011 & -0.0006 & 0.0011 & -0.0005 & 0.0045 & -0.0015 & 0.0041 & -0.0008 & 0.0042 & -0.0004 \\
  & (0.0013) & (0.0014) & (0.0013) & (0.0014) & (0.0013) & (0.0014) & (0.0030) & (0.0027) & (0.0030) & (0.0027) & (0.0030) & (0.0027) \\
-UncAnsMgr & -0.0002 & -0.0018 & -0.0011 & -0.0011 & 0.0004 & -0.0012 & -0.0050 & \textbf{-0.0073}$^{**}$ & \textbf{-0.0074}$^{**}$ & \textbf{-0.0069}$^{**}$ & -0.0049 & \textbf{-0.0064}$^{*}$ \\
+UncAnsMgr & -0.0002 & -0.0018 & -0.0011 & -0.0011 & 0.0004 & -0.0012 & \textbf{-0.0050}$^{*}$ & \textbf{-0.0073}$^{**}$ & \textbf{-0.0074}$^{**}$ & \textbf{-0.0069}$^{**}$ & \textbf{-0.0049}$^{*}$ & \textbf{-0.0064}$^{**}$ \\
  & (0.0017) & (0.0019) & (0.0018) & (0.0019) & (0.0017) & (0.0019) & (0.0033) & (0.0033) & (0.0034) & (0.0034) & (0.0033) & (0.0034) \\
 UncPreMgr & 0.0018 & 0.0016 & -0.0001 & 0.0006 & 0.0014 & 0.0004 & 0.0015 & 0.0006 & -0.0001 & 0.0002 & 0.0021 & 0.0001 \\
  & (0.0018) & (0.0021) & (0.0018) & (0.0021) & (0.0018) & (0.0021) & (0.0040) & (0.0042) & (0.0040) & (0.0043) & (0.0040) & (0.0043) \\
@@ -330,9 +330,9 @@ Adj.~$R^2$ & 0.889 & 0.603 & 0.891 & 0.606 & 0.891 & 0.606 & 0.714 & 0.152 & 0.7
 \end{tabular}
 \begin{minipage}{\linewidth}
 \vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta < 0$; two-tailed for controls).
  Significant coefficients in \textbf{bold}.
- Standard errors (in parentheses) two-way clustered (firm, time).
+ Standard errors (in parentheses) clustered at firm level.
  Main sample (excludes financial and utility firms).
  $R^2$ includes absorbed fixed effects (not within-$R^2$).
 \end{minipage}
@@ -353,7 +353,7 @@ UncAnsCEO & 0.0007 & 0.0006 & -0.0004 & 0.0003 & -0.0005 & 0.0002 & 0.0048 & 0.0
  & (0.0022) & (0.0022) & (0.0023) & (0.0023) & (0.0023) & (0.0023) & (0.0045) & (0.0041) & (0.0045) & (0.0041) & (0.0045) & (0.0041) \\
 UncPreCEO & 0.0008 & -0.0011 & 0.0011 & 0.0001 & 0.0010 & 0.0002 & 0.0059 & -0.0018 & 0.0054 & -0.0011 & 0.0056 & -0.0002 \\
  & (0.0021) & (0.0023) & (0.0021) & (0.0023) & (0.0020) & (0.0023) & (0.0050) & (0.0042) & (0.0050) & (0.0042) & (0.0050) & (0.0042) \\
-UncAnsMgr & 0.0002 & 0.0005 & -0.0020 & 0.0015 & 0.0014 & 0.0013 & -0.0087 & -0.0077 & \textbf{-0.0154}$^{***}$ & -0.0079 & -0.0085 & -0.0069 \\
+UncAnsMgr & 0.0002 & 0.0005 & -0.0020 & 0.0015 & 0.0014 & 0.0013 & \textbf{-0.0087}$^{*}$ & \textbf{-0.0077}$^{*}$ & \textbf{-0.0154}$^{***}$ & \textbf{-0.0079}$^{*}$ & \textbf{-0.0085}$^{*}$ & -0.0069 \\
  & (0.0027) & (0.0029) & (0.0026) & (0.0030) & (0.0028) & (0.0030) & (0.0059) & (0.0055) & (0.0058) & (0.0055) & (0.0059) & (0.0055) \\
 UncPreMgr & 0.0007 & 0.0022 & -0.0030 & 0.0007 & 0.0005 & 0.0003 & -0.0023 & -0.0011 & -0.0078 & -0.0016 & -0.0013 & -0.0017 \\
  & (0.0028) & (0.0036) & (0.0026) & (0.0035) & (0.0027) & (0.0035) & (0.0063) & (0.0069) & (0.0063) & (0.0070) & (0.0064) & (0.0070) \\
@@ -396,9 +396,9 @@ Adj.~$R^2$ & 0.867 & 0.610 & 0.869 & 0.608 & 0.869 & 0.608 & 0.662 & 0.166 & 0.6
 \end{tabular}
 \begin{minipage}{\linewidth}
 \vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta < 0$; two-tailed for controls).
  Significant coefficients in \textbf{bold}.
- Standard errors (in parentheses) two-way clustered (firm, time).
+ Standard errors (in parentheses) clustered at firm level.
  Main sample (excludes financial and utility firms).
  $R^2$ includes absorbed fixed effects (not within-$R^2$).
 \end{minipage}
@@ -868,7 +868,7 @@ $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. IVs one-tailed ($\beta > 0$); contr
  & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\
  & \multicolumn{4}{c}{Industry FE} & \multicolumn{4}{c}{Firm FE} \\
 \cmidrule(lr){2-5} \cmidrule(lr){6-9}
- & Mgr QA & CEO QA & Mgr Pres & CEO Pres & Mgr QA & CEO QA & Mgr Pres & CEO Pres \\
+ & UncAnsMgr & UncAnsCEO & UncPreMgr & UncPreCEO & UncAnsMgr & UncAnsCEO & UncPreMgr & UncPreCEO \\
 \midrule
 PRisk$_{t-1}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0002}$^{***}$ & \textbf{0.0000}$^{***}$ & \textbf{0.0000}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0001}$^{***}$ \\
  & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) \\
@@ -907,11 +907,10 @@ Adj.~$R^2$ & 0.063 & 0.054 & 0.049 & 0.035 & -0.002 & -0.009 & -0.011 & -0.012 \
 \end{tabular}
 \begin{minipage}{\linewidth}
 \vspace{2pt}\scriptsize
-\textit{Notes:} 
-$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. IVs one-tailed ($\beta > 0$); controls two-tailed.
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
  Significant coefficients in \textbf{bold}.
  Standard errors (in parentheses) clustered at firm level.
- Main sample (excludes financial and utility firms).
+ Main sample (excludes financial and utility firms). Firms with fewer than 5 calls are excluded.
  $R^2$ includes absorbed fixed effects (not within-$R^2$).
 \end{minipage}
 \end{table}
@@ -926,7 +925,7 @@ $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. IVs one-tailed ($\beta > 0$); contr
  & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\
  & \multicolumn{4}{c}{Industry FE} & \multicolumn{4}{c}{Firm FE} \\
 \cmidrule(lr){2-5} \cmidrule(lr){6-9}
- & Mgr QA & CEO QA & Mgr Pres & CEO Pres & Mgr QA & CEO QA & Mgr Pres & CEO Pres \\
+ & UncAnsMgr & UncAnsCEO & UncPreMgr & UncPreCEO & UncAnsMgr & UncAnsCEO & UncPreMgr & UncPreCEO \\
 \midrule
 PRisk$_{t-2}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0000}$^{***}$ & \textbf{0.0000}$^{**}$ & \textbf{0.0000}$^{***}$ & \textbf{0.0000}$^{***}$ \\
  & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) \\
@@ -965,11 +964,10 @@ Adj.~$R^2$ & 0.063 & 0.054 & 0.047 & 0.034 & -0.002 & -0.009 & -0.012 & -0.013 \
 \end{tabular}
 \begin{minipage}{\linewidth}
 \vspace{2pt}\scriptsize
-\textit{Notes:} 
-$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. IVs one-tailed ($\beta > 0$); controls two-tailed.
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
  Significant coefficients in \textbf{bold}.
  Standard errors (in parentheses) clustered at firm level.
- Main sample (excludes financial and utility firms).
+ Main sample (excludes financial and utility firms). Firms with fewer than 5 calls are excluded.
  $R^2$ includes absorbed fixed effects (not within-$R^2$).
 \end{minipage}
 \end{table}
