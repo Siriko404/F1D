@@ -209,6 +209,11 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     print(f"  BGTDelta_Spread non-null: {panel['BGTDelta_Spread'].notna().sum():,}")
     print(f"  BGTDelta_Spread_lead1 non-null: {panel['BGTDelta_Spread_lead1'].notna().sum():,}")
 
+    # Bug 4 fix (Phase 7): delta spread ~1e-4 with coefs ~1e-6. Rescale by 10^4.
+    panel["BGTDelta_Spread"] = panel["BGTDelta_Spread"] * 1e4
+    panel["BGTDelta_Spread_lag"] = panel["BGTDelta_Spread_lag"] * 1e4
+    panel["BGTDelta_Spread_lead1"] = panel["BGTDelta_Spread_lead1"] * 1e4
+
     return panel
 
 
@@ -509,6 +514,12 @@ def _write_suite_spec_json(
         controls={
             "base": list(BASE_CONTROLS),
             "extended_only": list(EXTENDED_ONLY_CONTROLS),
+        },
+        render_hints={
+            "scaling_note": (
+                r"BGTDelta\_Spread values rescaled by $10^4$ for readability; "
+                r"multiply coefficients by $10^{-4}$ to recover raw units."
+            ),
         },
         model_family="PanelOLS",
     )

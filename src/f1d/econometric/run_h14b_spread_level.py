@@ -215,6 +215,13 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
           f"non-null={panel['PostCallSpread'].notna().sum():,}")
     print(f"  PostCallSpread_lead1: non-null={panel['PostCallSpread_lead1'].notna().sum():,}")
 
+    # Bug 4 fix (Phase 7): spread level ~1e-3 with coefs ~1e-5. Rescale
+    # by 10^4 so coefs render at readable magnitudes. Lagged_DV is scale-
+    # invariant (y and y_lag scale equally) so its estimate is unchanged.
+    panel["PostCallSpread"] = panel["PostCallSpread"] * 1e4
+    panel["PostCallSpread_lag"] = panel["PostCallSpread_lag"] * 1e4
+    panel["PostCallSpread_lead1"] = panel["PostCallSpread_lead1"] * 1e4
+
     return panel
 
 
@@ -502,6 +509,12 @@ def _write_suite_spec_json(
         controls={
             "base": list(BASE_CONTROLS),
             "extended_only": list(EXTENDED_ONLY_CONTROLS),
+        },
+        render_hints={
+            "scaling_note": (
+                r"PostCallSpread values rescaled by $10^4$ for readability; "
+                r"multiply coefficients by $10^{-4}$ to recover raw units."
+            ),
         },
         model_family="PanelOLS",
     )

@@ -206,6 +206,17 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     print(f"  DSPREAD non-null: {panel['DSPREAD'].notna().sum():,}")
     print(f"  DSPREAD_lead1 non-null: {panel['DSPREAD_lead1'].notna().sum():,}")
 
+    # Bug 4 fix (Phase 7): DSPREAD raw values are ~1e-3 with coefs ~1e-5.
+    # Rendering at 4 decimals produces uninformative 0.0000 cells. Rescale
+    # DSPREAD (and its lag/lead variants) by 10^4 so the regression coefs
+    # display at readable magnitudes. Lagged_DV is scale-invariant (both
+    # y and y_lag scale equally) so the autocorrelation estimate is
+    # unchanged. `render_hints.scaling_note` in the spec JSON tells the
+    # renderer to append the inverse-scale disclaimer to the footer.
+    panel["DSPREAD"] = panel["DSPREAD"] * 1e4
+    panel["DSPREAD_lag"] = panel["DSPREAD_lag"] * 1e4
+    panel["DSPREAD_lead1"] = panel["DSPREAD_lead1"] * 1e4
+
     return panel
 
 
@@ -506,6 +517,12 @@ def _write_suite_spec_json(
         controls={
             "base": list(BASE_CONTROLS),
             "extended_only": list(EXTENDED_ONLY_CONTROLS),
+        },
+        render_hints={
+            "scaling_note": (
+                r"DSPREAD values rescaled by $10^4$ for readability; "
+                r"multiply coefficients by $10^{-4}$ to recover raw units."
+            ),
         },
         model_family="PanelOLS",
     )

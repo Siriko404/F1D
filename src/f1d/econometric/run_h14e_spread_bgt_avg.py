@@ -209,6 +209,11 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     print(f"  BGTAvg_Spread non-null: {panel['BGTAvg_Spread'].notna().sum():,}")
     print(f"  BGTAvg_Spread_lead1 non-null: {panel['BGTAvg_Spread_lead1'].notna().sum():,}")
 
+    # Bug 4 fix (Phase 7): avg spread ~1e-3 with coefs ~1e-5. Rescale by 10^4.
+    panel["BGTAvg_Spread"] = panel["BGTAvg_Spread"] * 1e4
+    panel["BGTAvg_Spread_lag"] = panel["BGTAvg_Spread_lag"] * 1e4
+    panel["BGTAvg_Spread_lead1"] = panel["BGTAvg_Spread_lead1"] * 1e4
+
     return panel
 
 
@@ -497,6 +502,12 @@ def _write_suite_spec_json(
         controls={
             "base": list(BASE_CONTROLS),
             "extended_only": list(EXTENDED_ONLY_CONTROLS),
+        },
+        render_hints={
+            "scaling_note": (
+                r"BGTAvg\_Spread values rescaled by $10^4$ for readability; "
+                r"multiply coefficients by $10^{-4}$ to recover raw units."
+            ),
         },
         model_family="PanelOLS",
     )
