@@ -86,13 +86,13 @@ DV: CashRatio (2 cols)
       Reference: Bates, Kahle & Stulz (2009, JF)
 Tail: One-tailed (beta > 0) for IV, moderator, and interaction
 
-  Manager_QA_Unc_c:
+  UncAnsMgr_c:
       col1   +0.0045***      [Ind FE, Yr FE, CashRatio]
       col2   +0.0046***      [Ind FE, YrQtr FE, CashRatio]
   z_log_TotalSimilarity:
       col1   +0.0057***      [Ind FE, Yr FE, CashRatio]
       col2   +0.0055***      [Ind FE, YrQtr FE, CashRatio]
-  MgrQAUnc_x_zlogTSIMM:
+  UncAnsMgr_c_x_zlogTSIMM:
       col1   n.s.            [Ind FE, Yr FE, CashRatio]
       col2   n.s.            [Ind FE, YrQtr FE, CashRatio]
 
@@ -106,13 +106,13 @@ DV: CashRatio (2 cols)
       Reference: Bates, Kahle & Stulz (2009, JF)
 Tail: One-tailed (beta > 0) for IV, moderator, and interaction
 
-  Manager_QA_Unc_c:
+  UncAnsMgr_c:
       col1   +0.0044***      [Ind FE, Yr FE, CashRatio]
       col2   +0.0044***      [Ind FE, YrQtr FE, CashRatio]
   HighTSIMM:
       col1   +0.0060***      [Ind FE, Yr FE, CashRatio]
       col2   +0.0058***      [Ind FE, YrQtr FE, CashRatio]
-  MgrQAUnc_x_HighTSIMM:
+  UncAnsMgr_c_x_HighTSIMM:
       col1   n.s.            [Ind FE, Yr FE, CashRatio]
       col2   n.s.            [Ind FE, YrQtr FE, CashRatio]
 
@@ -124,15 +124,15 @@ DV: CashRatio (2 cols)
       cheq = Cash and Short-Term Investments (Compustat Quarterly)
       atq  = Total Assets (Compustat Quarterly)
       Reference: Bates, Kahle & Stulz (2009, JF)
-Tail: One-tailed for base IV (beta > 0); two-tailed for categories & interactions
+Tail: One-tailed (beta > 0) for all IVs (Hyp B: constraint + uncertainty predicts more cash)
 SEs: Firm-level clustered (Petersen 2009). N=67,487.
 DV Mean: CashRatio = 0.1716
 One-SD(UncAnsMgr) interaction effect (x_Unrated): +0.0021 (col1) = 1.23% of mean
 
-  Manager_QA_Unc_c:
+  UncAnsMgr_c:
       col1   +0.0053***      [Ind FE, Yr FE, CashRatio]
       col2   +0.0050***      [Ind FE, YrQtr FE, CashRatio]
-  MgrQAUnc_x_IG:
+  UncAnsMgr_c_x_IG:
       col1   n.s.            [Ind FE, Yr FE, CashRatio]
       col2   n.s.            [Ind FE, YrQtr FE, CashRatio]
   BelowIG:
@@ -141,10 +141,10 @@ One-SD(UncAnsMgr) interaction effect (x_Unrated): +0.0021 (col1) = 1.23% of mean
   Unrated:
       col1   +0.0062***      [Ind FE, Yr FE, CashRatio]
       col2   n.s.            [Ind FE, YrQtr FE, CashRatio]
-  MgrQAUnc_x_BelowIG:
+  UncAnsMgr_c_x_BelowIG:
       col1   n.s.            [Ind FE, Yr FE, CashRatio]
       col2   n.s.            [Ind FE, YrQtr FE, CashRatio]
-  MgrQAUnc_x_Unrated:
+  UncAnsMgr_c_x_Unrated:
       col1   +0.0059***      [Ind FE, Yr FE, CashRatio]
       col2   +0.0064***      [Ind FE, YrQtr FE, CashRatio]
 
@@ -920,9 +920,9 @@ DV: Capex (cols 1-2), Capex_lead (cols 3-4)
       capxy = Capital Expenditures, fiscal-year cumulative (Compustat Annual via Q4)
       atq   = Total Assets, contemporaneous (Compustat Quarterly)
       Reference: Bates, Kahle & Stulz (2009, JF)
-Tail: Two-tailed for all
+Tail: One-tailed (beta > 0) for all three key vars (H13.1 is explanatory for H13's positive Capex finding)
 
-  Manager_QA_Unc_c:
+  UncAnsMgr_c:
       col1   +0.0010**       [Ind FE, Yr FE, Capex]
       col2   +0.0010**       [Ind FE, YrQtr FE, Capex]
       col3   +0.0017***      [Ind FE, Yr FE, Capex_lead]
@@ -932,7 +932,7 @@ Tail: Two-tailed for all
       col2   +0.0021***      [Ind FE, YrQtr FE, Capex]
       col3   +0.0027***      [Ind FE, Yr FE, Capex_lead]
       col4   +0.0027***      [Ind FE, YrQtr FE, Capex_lead]
-  MgrQAUnc_x_zlogTSIMM:
+  UncAnsMgr_c_x_zlogTSIMM:
       col1   +0.0012**       [Ind FE, Yr FE, Capex]
       col2   +0.0011**       [Ind FE, YrQtr FE, Capex]
       col3   +0.0024***      [Ind FE, Yr FE, Capex_lead]
@@ -1442,120 +1442,6 @@ NOTE: Industry FE + Year FE only (no Firm FE -- logit cannot handle large FE)
       col2   +0.0012*        [Ind FE, Yr FE, extended, CCCL]
 
 ================================================================================
-H19: SPEECH UNCERTAINTY AND EXTERNAL VS INTERNAL FINANCING
-================================================================================
-DV: ExternalFunding (cols 1-6), ExternalFunding_lead (cols 7-12)
-    Formula: ExternalFunding = 1 if max(debt_issuance, equity_issuance) > 5% of lagged assets
-      debt_issuance   = delta(dlcq + dlttq) / lagged_atq
-      equity_issuance = (sstky - prstkcy) / lagged_atq
-      dlcq   = Debt in Current Liabilities (Compustat Quarterly)
-      dlttq  = Long-Term Debt (Compustat Quarterly)
-      sstky  = Sale of Common and Preferred Stock (Compustat Quarterly, cumulative)
-      prstkcy = Purchase of Common and Preferred Stock (Compustat Quarterly, cumulative)
-      Reference: Leary & Roberts (2010, JFE)
-Tail: One-tailed (beta < 0) -- hypothesis: uncertainty increases internal funding
-Classification: Leary & Roberts (2010, JFE). Debt issuance if delta(dlcq+dlttq)/lagged_atq > 5%;
-  equity issuance if (sstky-prstkcy)/lagged_atq > 5%. Internal if neither. Dual -> equity.
-Sample split: 73.1% internal, 26.9% external (at call level)
-
-  UncAnsCEO:
-      col1   --              [Ind FE, Yr FE, basic, ExternalFunding]
-      col2   --              [Firm FE, Yr FE, basic, ExternalFunding]
-      col3   --              [Ind FE, Yr FE, extended, ExternalFunding]
-      col4   --              [Firm FE, Yr FE, extended, ExternalFunding]
-      col5   --              [Ind FE, YrQtr FE, extended, ExternalFunding]
-      col6   --              [Firm FE, YrQtr FE, extended, ExternalFunding]
-      col7   --              [Ind FE, Yr FE, basic, ExternalFunding_lead]
-      col8   --              [Firm FE, Yr FE, basic, ExternalFunding_lead]
-      col9   --              [Ind FE, Yr FE, extended, ExternalFunding_lead]
-      col10  --              [Firm FE, Yr FE, extended, ExternalFunding_lead]
-      col11  --              [Ind FE, YrQtr FE, extended, ExternalFunding_lead]
-      col12  --              [Firm FE, YrQtr FE, extended, ExternalFunding_lead]
-  UncPreCEO:
-      col1   --              [Ind FE, Yr FE, basic, ExternalFunding]
-      col2   --              [Firm FE, Yr FE, basic, ExternalFunding]
-      col3   --              [Ind FE, Yr FE, extended, ExternalFunding]
-      col4   --              [Firm FE, Yr FE, extended, ExternalFunding]
-      col5   --              [Ind FE, YrQtr FE, extended, ExternalFunding]
-      col6   --              [Firm FE, YrQtr FE, extended, ExternalFunding]
-      col7   --              [Ind FE, Yr FE, basic, ExternalFunding_lead]
-      col8   --              [Firm FE, Yr FE, basic, ExternalFunding_lead]
-      col9   --              [Ind FE, Yr FE, extended, ExternalFunding_lead]
-      col10  --              [Firm FE, Yr FE, extended, ExternalFunding_lead]
-      col11  --              [Ind FE, YrQtr FE, extended, ExternalFunding_lead]
-      col12  --              [Firm FE, YrQtr FE, extended, ExternalFunding_lead]
-  UncAnsMgr:
-      col1   --              [Ind FE, Yr FE, basic, ExternalFunding]
-      col2   --              [Firm FE, Yr FE, basic, ExternalFunding]
-      col3   --              [Ind FE, Yr FE, extended, ExternalFunding]
-      col4   --              [Firm FE, Yr FE, extended, ExternalFunding]
-      col5   --              [Ind FE, YrQtr FE, extended, ExternalFunding]
-      col6   --              [Firm FE, YrQtr FE, extended, ExternalFunding]
-      col7   --              [Ind FE, Yr FE, basic, ExternalFunding_lead]
-      col8   --              [Firm FE, Yr FE, basic, ExternalFunding_lead]
-      col9   --              [Ind FE, Yr FE, extended, ExternalFunding_lead]
-      col10  --              [Firm FE, Yr FE, extended, ExternalFunding_lead]
-      col11  --              [Ind FE, YrQtr FE, extended, ExternalFunding_lead]
-      col12  --              [Firm FE, YrQtr FE, extended, ExternalFunding_lead]
-  UncPreMgr:
-      col1   --              [Ind FE, Yr FE, basic, ExternalFunding]
-      col2   --              [Firm FE, Yr FE, basic, ExternalFunding]
-      col3   --              [Ind FE, Yr FE, extended, ExternalFunding]
-      col4   --              [Firm FE, Yr FE, extended, ExternalFunding]
-      col5   --              [Ind FE, YrQtr FE, extended, ExternalFunding]
-      col6   --              [Firm FE, YrQtr FE, extended, ExternalFunding]
-      col7   --              [Ind FE, Yr FE, basic, ExternalFunding_lead]
-      col8   --              [Firm FE, Yr FE, basic, ExternalFunding_lead]
-      col9   --              [Ind FE, Yr FE, extended, ExternalFunding_lead]
-      col10  --              [Firm FE, Yr FE, extended, ExternalFunding_lead]
-      col11  --              [Ind FE, YrQtr FE, extended, ExternalFunding_lead]
-      col12  --              [Firm FE, YrQtr FE, extended, ExternalFunding_lead]
-
-================================================================================
-H20: SPEECH UNCERTAINTY AND DEBT VS EQUITY CHOICE
-================================================================================
-DV: DebtChoice (6 cols)
-    Formula: DebtChoice = 1 if debt-only issuance, 0 if equity-only or dual; NaN if internal
-      Conditional on ExternalFunding = 1
-      Dual issuers (both debt and equity > 5%) classified as equity per Leary & Roberts convention
-      Reference: Leary & Roberts (2010, JFE)
-Tail: Two-tailed
-Sample: RESTRICTED to ExternalFunding == 1 (~27% of main sample, ~12,700-13,200 calls)
-Classification: Leary & Roberts (2010, JFE). DebtChoice = 1 if debt-only issuance,
-  0 if equity-only or dual issuance. Dual -> equity per L&R convention.
-Controls: Leverage EXCLUDED (bad control: shares numerator with debt issuance DV)
-Sample split among external funders: 70% debt-only, 30% equity/dual
-
-  UncAnsCEO:
-      col1   --              [Ind FE, Yr FE, basic, DebtChoice]
-      col2   --              [Firm FE, Yr FE, basic, DebtChoice]
-      col3   --              [Ind FE, Yr FE, extended, DebtChoice]
-      col4   --              [Firm FE, Yr FE, extended, DebtChoice]
-      col5   --              [Ind FE, YrQtr FE, extended, DebtChoice]
-      col6   --              [Firm FE, YrQtr FE, extended, DebtChoice]
-  UncPreCEO:
-      col1   --              [Ind FE, Yr FE, basic, DebtChoice]
-      col2   --              [Firm FE, Yr FE, basic, DebtChoice]
-      col3   --              [Ind FE, Yr FE, extended, DebtChoice]
-      col4   --              [Firm FE, Yr FE, extended, DebtChoice]
-      col5   --              [Ind FE, YrQtr FE, extended, DebtChoice]
-      col6   --              [Firm FE, YrQtr FE, extended, DebtChoice]
-  UncAnsMgr:
-      col1   --              [Ind FE, Yr FE, basic, DebtChoice]
-      col2   --              [Firm FE, Yr FE, basic, DebtChoice]
-      col3   --              [Ind FE, Yr FE, extended, DebtChoice]
-      col4   --              [Firm FE, Yr FE, extended, DebtChoice]
-      col5   --              [Ind FE, YrQtr FE, extended, DebtChoice]
-      col6   --              [Firm FE, YrQtr FE, extended, DebtChoice]
-  UncPreMgr:
-      col1   --              [Ind FE, Yr FE, basic, DebtChoice]
-      col2   --              [Firm FE, Yr FE, basic, DebtChoice]
-      col3   --              [Ind FE, Yr FE, extended, DebtChoice]
-      col4   --              [Firm FE, Yr FE, extended, DebtChoice]
-      col5   --              [Ind FE, YrQtr FE, extended, DebtChoice]
-      col6   --              [Firm FE, YrQtr FE, extended, DebtChoice]
-
-================================================================================
 H21: SPEECH UNCERTAINTY AND SEC COMMENT LETTER COUNT
 ================================================================================
 DV: SEC_Letters_fwd (6 cols)
@@ -1844,10 +1730,6 @@ N: 73,781, 74,641, 51,348, 52,108, 73,711, 74,455, 51,352, 52,066
       col2   n.s.            [Firm FE, Contemporaneous / Mgr Pres]
       col3   +0.0138**       [Firm FE, Contemporaneous / CEO QA]
       col4   +0.0239***      [Firm FE, Contemporaneous / CEO Pres]
-      col5   --              [Firm FE, Next Quarter (t+1) / Mgr QA]
-      col6   --              [Firm FE, Next Quarter (t+1) / Mgr Pres]
-      col7   --              [Firm FE, Next Quarter (t+1) / CEO QA]
-      col8   --              [Firm FE, Next Quarter (t+1) / CEO Pres]
 
 ================================================================================
 H24b: GLOBAL ECONOMIC POLICY UNCERTAINTY AND CALL LANGUAGE UNCERTAINTY
@@ -1859,10 +1741,6 @@ N: 73,781, 74,641, 51,348, 52,108, 73,711, 74,455, 51,352, 52,066
       col2   +0.0124*        [Firm FE, Contemporaneous / Mgr Pres]
       col3   +0.0212**       [Firm FE, Contemporaneous / CEO QA]
       col4   +0.0309***      [Firm FE, Contemporaneous / CEO Pres]
-      col5   --              [Firm FE, Next Quarter (t+1) / Mgr QA]
-      col6   --              [Firm FE, Next Quarter (t+1) / Mgr Pres]
-      col7   --              [Firm FE, Next Quarter (t+1) / CEO QA]
-      col8   --              [Firm FE, Next Quarter (t+1) / CEO Pres]
 
 ================================================================================
 H25: GEOPOLITICAL RISK AND CALL LANGUAGE UNCERTAINTY
@@ -1874,7 +1752,3 @@ N: 73,781, 74,641, 51,348, 52,108, 73,711, 74,455, 51,352, 52,066
       col2   n.s.            [Firm FE, Contemporaneous / Mgr Pres]
       col3   n.s.            [Firm FE, Contemporaneous / CEO QA]
       col4   n.s.            [Firm FE, Contemporaneous / CEO Pres]
-      col5   --              [Firm FE, Next Quarter (t+1) / Mgr QA]
-      col6   --              [Firm FE, Next Quarter (t+1) / Mgr Pres]
-      col7   --              [Firm FE, Next Quarter (t+1) / CEO QA]
-      col8   --              [Firm FE, Next Quarter (t+1) / CEO Pres]
