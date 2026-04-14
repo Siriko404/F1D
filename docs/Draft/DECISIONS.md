@@ -1,6 +1,6 @@
 # Thesis Draft — Decisions Log
 
-**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized; 0 suites audited under the new approach. Starts at H1 (Q1 cluster).
+**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **3 / 37 suites audited.** H1 + H4a + H4b KEEP 2026-04-14. Q1 was reworded at the H1 boundary then the rewording was locked mid-audit (narrative decided post-audit). Next suite: H12.
 
 ---
 
@@ -22,12 +22,14 @@ The audit exists to defend against that default. Every kept suite must earn its 
 
 | # | Question | Role |
 |---|---|---|
-| Q1 | Does speech uncertainty actually predict what firms DO? | Foundation. Without direct-outcome evidence, thesis fails at step 1. |
+| Q1 | **Within a firm, does management Q&A linguistic uncertainty covary with contemporaneous corporate financial state (cash, leverage, payout, investment, buybacks, financing mix) in the direction predicted by precautionary / conservative financial behavior?** | Foundation. The thesis's novel IV must first be shown to track corporate financial conservatism under within-firm identification; without this the thesis fails at step 1. Claim is **association under firm FE, not causal prediction** — verified timing convention (Compustat `datadate ≤ call start_date` via backward `merge_asof` in `_compustat_engine.match_to_manifest`, lines 1402-1409) rules out clean causal direction either way. |
 | Q2 | Does the effect run through a plausible channel, or is it black-box correlation? | Mechanism. Without channel evidence the effect is a curiosity, not a contribution. |
 | Q3 | Is the market actually listening / using the information? | Information content. If market ignores it, the measure is noise. |
 | Q4 | Is the IV just a proxy for macro conditions / business cycle? | Construct validation + endogeneity. If macro EPU drives it, we're measuring macro not firms. |
 | Q5 | Does the effect matter economically, not just statistically? | Magnitude. Cross-cutting sweep, addressed at end of audit, not per-suite. |
 | Q6 | Is this cherry-picking / fishing? | Transparency. Addressed via honest reporting of boundaries, nulls, and CEO/Pre parallel measures inside each Q1-Q4 suite. Not a separate cluster. |
+
+**Q1 revision history:** Q1 was originally worded as *"Does speech uncertainty actually predict what firms DO?"*. Reworded at the H1 dialogue boundary (2026-04-14) after the user pushed back on the "predict" verb and I linear-read `src/f1d/shared/variables/_compustat_engine.py` lines 1383-1417 and `panel_utils.attach_fyearq` to verify the timing convention. The verified convention (backward `merge_asof`, Compustat `datadate ≤ call `start_date`) means contemporaneous regressions are associations between a firm's just-ended reporting quarter state and concurrent management language; neither prediction nor causal direction is identifiable from this data. The revised Q1 asks only for within-firm association, which is the strongest defensible version given the timing. Reframing of other Qs remains provisional — will be revisited as subsequent suites are audited per the user directive "as we proceed with reading the results we have, find the best frame to claim as strong as possible".
 
 Every kept suite maps to exactly **one** of Q1-Q4 (or a new Q7+ named and justified during dialogue). Q5 + Q6 are cross-cutting and addressed differently.
 
@@ -128,11 +130,56 @@ Each audited suite produces **two things**:
 
 | suite_id | DV | N_range | reader_Q | key_cell_fact | verdict | rationale |
 |---|---|---|---|---|---|---|
-| _pending_ | | | | | | |
+| H1 | CashRatio (cols 1-6); CashRatio_lead (cols 7-12, robustness) | 59,440–65,128 | Q1 (provisional) | UncAnsMgr 6/6 positive-significant on contemp CashRatio, including the toughest Firm+YQ+ExtCtrl spec (β=0.0034**); lead DV collapses to 1/6 on UncAnsMgr and the only surviving lead cell uses Ind FE not Firm FE | KEEP | Within-firm contemporaneous association between cash-holdings and management Q&A uncertainty delivered on the primary IV under the toughest FE ladder; lead collapse, CEO-lead > Mgr-lead inversion, and UncPreMgr firm-FE sign flip logged as cross-cutting limitations in §5, not rescued |
+| H4a | Leverage (cols 1-6); Leverage_lead (cols 7-12) | 59,447–65,132 | Q1 (provisional) | UncAnsMgr 0/6 null on contemp Leverage (mixed signs); 6/6 negative-significant on Leverage_lead including Firm+YQ+ExtCtrl (β=-0.0064**); secondary measures (CEO, UncPreCEO, UncPreMgr) all null on both DVs, no inversions to flag | KEEP | Within-firm forward association between book leverage and management Q&A uncertainty delivered on the primary IV at the lead-horizon under all FE ladders; contemp-null vs lead-6/6 pattern is the inverse of H1 and noted as a factual observation in §5.4 (no interpretive commitment — narrative built post-audit) |
+| H4b | DebtToCapital (cols 1-6); DebtToCapital_lead (cols 7-12) | 59,190–64,895 | Q1 (provisional) | UncAnsMgr 0/6 null on contemp DebtToCapital (mixed signs); 5/6 negative-significant on DebtToCapital_lead including Firm+Yr+ExtCtrl (col 10 β=-0.0079*) but NOT col 12 Firm+YQ+ExtCtrl (-0.0069 null); secondary measures all null on both DVs | KEEP | Primary-IV forward-horizon association on lead DV under 5 of 6 FE ladders; contemp-null vs lead-5/6 tracks H4a leverage pattern but weakens slightly at the toughest YQ-FE spec; clean IV hierarchy, no flags |
 
 ### 4.2 Per-suite blocks
 
-_Populated during audit. One block per suite, template:_
+_Populated during audit. One block per suite. Template at the bottom of this section._
+
+### H1 — Speech Uncertainty and Cash Holdings
+
+- **DV**: `CashRatio` (cols 1-6); `CashRatio_lead` (cols 7-12, reported as robustness / lead-spec check)
+- **N**: 59,440–65,128 (main sample, ex financials and utilities)
+- **FE ladder** (repeats per DV): (1) Ind+Yr, (2) Firm+Yr, (3) Ind+Yr+ExtCtrl, (4) Firm+Yr+ExtCtrl, (5) Ind+YQ+ExtCtrl, (6) Firm+YQ+ExtCtrl
+- **Tail**: one-tailed, β>0 for IVs; two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact**: UncAnsMgr is positive-significant in all 6 contemporaneous CashRatio specs (β range 0.0033-0.0072), including the most-demanding Firm+YQ+ExtCtrl spec (col 6, β=0.0034**). Lead DV collapses for the primary IV (1/6 sig: only col 9, which uses Industry FE + Year FE + Ext Controls). UncPreMgr shows an industry-FE vs firm-FE sign flip (col 3: +.0033**; col 4: -.0029 null). UncAnsCEO is null on contemporaneous CashRatio but weakly positive on 4/6 lead specs — the measurement-concern inversion flagged in §5. Lagged_DV ≈ 0.85 (ind) / 0.63 (firm) on Cash; ≈ 0.71 / 0.22 on Cash_lead.
+- **Reader-question**: Q1 provisional — same loose frame as H4a / H4b (narrative decided post-audit, no commitment here). Original draft committed to "contemporaneous cash-holdings channel of corporate financial conservatism" at the H1 dialogue but that wording is superseded by the mid-audit narrative-discipline lock (2026-04-14).
+- **Argument**: The six UncAnsMgr contemporaneous cells deliver the strongest within-firm association-claim the cash family can produce under the toughest identification (Firm FE + Year-Quarter FE + Extended Controls). Magnitudes are modest: **UncAnsMgr is a winsorized percentage, not a standardized IV** (sd ≈ 0.33, mean ≈ 0.82 per `summary_stats.csv`). Using the col 6 Firm+YQ+ExtCtrl β=0.0034, a 1-SD increase in UncAnsMgr yields ΔCashRatio ≈ 0.0034 × 0.33 ≈ 0.0011 (~0.11 pp) — about 0.67% of the CashRatio mean of 0.17. The direction is consistently positive and survives all six FE ladders, which is what Q1-association requires. The lead-spec collapse does not block KEEP because Q1 is not a prediction claim. The verified timing convention (Compustat `datadate ≤ call start_date`, backward `merge_asof`) means the regression is structurally an association between a firm's just-ended reporting-quarter state and the concurrent earnings-call language — neither a causal "language → cash" nor a clean "cash → language" claim is identifiable from this data, and the thesis does not need one.
+- **Verdict**: **KEEP**.
+- **Rationale**: H1 delivers the cash-holdings channel of the Q1 financial-conservatism association under the primary (Mgr Q&A) IV and the toughest FE ladder. The limitations (lead collapse, CEO-lead > Mgr-lead inversion on CashRatio_lead, UncPreMgr FE sign flip) are disclosed honestly and logged as cross-cutting §5 flags, not rescued with sub-narratives. This is the first suite populated under the revised Q1-as-association frame.
+
+### H4a — Speech Uncertainty and Book Leverage
+
+- **DV**: `Leverage` (cols 1-6); `Leverage_lead` (cols 7-12)
+- **N**: 59,447–65,132 (main sample, ex financials and utilities)
+- **FE ladder**: identical to H1 — (1) Ind+Yr, (2) Firm+Yr, (3) Ind+Yr+ExtCtrl, (4) Firm+Yr+ExtCtrl, (5) Ind+YQ+ExtCtrl, (6) Firm+YQ+ExtCtrl, repeating for each DV
+- **Tail**: one-tailed, **β<0** for IVs (opposite direction from H1 tail; confirmed from `all_tables.tex` line 330 notes block)
+- **Cluster**: firm-level
+- **Key cell fact**: UncAnsMgr contemporaneous cells are 0/6 null with mixed signs (-0.0002 to -0.0018, max sig = none). UncAnsMgr lead cells are **6/6 negative-significant**: -0.0050*, -0.0073**, -0.0074**, -0.0069**, -0.0049*, -0.0064**, including the toughest Firm+YQ+ExtCtrl (col 12, β=-0.0064**). All secondary measures (UncAnsCEO, UncPreCEO, UncPreMgr) are null on both DVs across all 12 cells — cleaner IV hierarchy than H1 (no CEO/Mgr inversion, no UncPreMgr sign flip). Lagged_DV = 0.94 (ind) / 0.76 (firm) on contemp Leverage — extreme persistence, much stickier than CashRatio (0.85 / 0.63). CashRatio is included as a control and is negative-significant across the panel (e.g., col 2 β=-0.0297***).
+- **Reader-question**: Q1 provisional — within-firm association between management Q&A linguistic uncertainty and corporate financial-decision outcomes (narrative frame to be decided post-audit, not committed here).
+- **Argument**: Primary IV delivers 6/6 negative-significant cells on the lead DV across all six FE ladders. Direction is consistent with a within-firm forward association between language uncertainty and book leverage; no rescue narrative required because no per-suite framing is being committed. Contemp-null vs lead-6/6 is the inverse of the H1 pattern — noted as a factual observation, not explained.
+- **Verdict**: **KEEP**.
+- **Rationale**: Primary-IV cells deliver a within-firm forward-horizon association on the lead DV under the toughest FE ladder, with a clean IV hierarchy (no secondary-measure contradictions). No narrative commitment made here; post-audit synthesis decides how H1-contemp / H4a-lead fit into the final thesis frame.
+
+### H4b — Speech Uncertainty and Debt-to-Capital
+
+- **DV**: `DebtToCapital` (cols 1-6); `DebtToCapital_lead` (cols 7-12)
+- **N**: 59,190–64,895 (main sample, ex financials and utilities)
+- **FE ladder**: identical to H1 / H4a
+- **Tail**: one-tailed, β<0 for IVs (line 396 notes block)
+- **Cluster**: firm-level
+- **Key cell fact**: UncAnsMgr contemp 0/6 null (mixed signs, .0002 to -.0020). UncAnsMgr lead 5/6 negative-significant: -.0087*, -.0077*, -.0154***, -.0079*, -.0085*, -.0069 — note the toughest spec (col 12 Firm+YQ+ExtCtrl, -.0069) is **null but narrow-miss** (p_one=0.1045, just above the 10% threshold) where H4a col 12 was sig at β=-0.0064** (p_one=0.0287). Secondary measures (UncAnsCEO, UncPreCEO, UncPreMgr) all null on both DVs across all 12 cells. Lagged_DV ≈ 0.93 ind / 0.79 firm on contemp DebtToCapital. CashRatio included as control (negative-significant, e.g., col 2 β=-0.0674***).
+- **Reader-question**: Q1 provisional — same loose frame as H1 / H4a.
+- **Argument**: Primary IV delivers 5/6 negative-significant lead cells across FE ladders. Pattern tracks H4a leverage almost exactly (same inverse contemp/lead asymmetry) but weakens at the toughest Firm+YQ+ExtCtrl spec. No narrative commitment; factual pattern is consistent with H4a.
+- **Verdict**: **KEEP**.
+- **Rationale**: Forward-horizon within-firm association delivered on 5 of 6 lead specs, clean IV hierarchy, no flags. The weakening at col 12 vs H4a is a factual observation to carry forward (not a basis to DROP). Debt-to-capital and book leverage are correlated measures of the same underlying construct — disclosed as such for post-audit synthesis.
+
+---
+
+_Template for subsequent suites:_
 
 ```
 ### H<id> — <title>
@@ -153,10 +200,35 @@ _Populated during audit. One block per suite, template:_
 
 ## 5. Cross-cutting observations
 
-_Empty. Populated when patterns emerge across multiple suites that affect how subsequent suites are read. Examples of what belongs here (not yet populated):_
+_Populated as patterns emerge across suites. Each entry is a factual flag, not a narrative — entries accumulate during the audit and are revisited in the final synthesis._
+
+### 5.1 CEO-lead > Mgr-lead inversion on cash (first seen in H1)
+
+- **Observation**: On `CashRatio_lead` (cols 7-12 of H1), UncAnsCEO carries 4/6 positive-significant cells at the 10% level (cols 7, 10, 11, 12; p_one values 0.0811, 0.0943, 0.0971, 0.0909 per spec JSON), while UncAnsMgr carries only 1/6 (col 9 only; p_one=0.0316 — 5% level **). This is a reversal in *breadth* of the thesis hierarchy (`UncAnsMgr` primary per `feedback_ceo_noisy_mgr_central.md`): on the forward-looking cash spec, the *secondary* IV hits more cells than the primary. **Depth precision:** the single Mgr-lead cell (p=0.0316) is statistically stronger than any individual CEO-lead cell (all at 0.08-0.10), so the inversion is about *breadth*, not *depth*. The only surviving Mgr lead cell uses Ind FE + Year FE + Ext Ctrl (col 9), not Firm FE.
+- **Status**: Measurement-concerns flag, not rescued. Consistent with `feedback_ceo_noisy_mgr_central.md` treatment of contradicting secondary patterns. Revisit after the full Q1 cluster (H4a through H20b) to see whether the inversion is cash-specific or repeats on other conservatism channels.
+- **Loaded from**: H1 (2026-04-14).
+
+### 5.2 UncPreMgr industry-FE vs firm-FE sign flip on cash (first seen in H1)
+
+- **Observation**: On `CashRatio` (H1), UncPreMgr is positive-significant under Industry FE + Extended Controls (col 3, β=+0.0033**) and flips to negative-null under Firm FE + Extended Controls (col 4, β=-0.0029). The same flip pattern appears on `CashRatio_lead` (col 9 positive-sig vs col 10 negative-null).
+- **Status**: Measurement-concerns flag, not rescued. Consistent with the "scripted/IR-vetted obfuscation" caveat on `UncPreMgr` in `feedback_ceo_noisy_mgr_central.md`. Possible reading: UncPreMgr loading is driven by cross-sectional industry composition rather than within-firm variation; firm-FE eats the cross-sectional component. Not a rescue — just a factual direction for the flag.
+- **Loaded from**: H1 (2026-04-14).
+
+### 5.3 Timing convention (verified 2026-04-14)
+
+- **Observation**: The Compustat-to-call match is `pd.merge_asof(left=call start_date, right=Compustat datadate, direction="backward", by=gvkey)` in `src/f1d/shared/variables/_compustat_engine.py` lines 1402-1409. Each call gets the most recent Compustat quarterly record with `datadate ≤ call start_date`. For a typical Q2 earnings call on ~August 5, the attached CashRatio is from the June 30 balance sheet — physically measured ~36 days *before* the language is spoken. Same convention is used in `panel_utils.attach_fyearq` for fiscal-year attachment.
+- **Status**: Not a bug — it's the standard accounting-econometric convention that treats same-reporting-period variables as contemporaneous. But it constrains what any Q1 result can claim: within-firm-quarter covariance reflects a shared latent firm-period condition; causal direction (language→state or state→language) is not identifiable from this data. Q1 was reworded at the H1 boundary to an association framing because of this constraint. Carry this caveat through all Q1/Q2/Q3 suites and any future causal-direction claims.
+- **Loaded from**: H1 (2026-04-14, linear-read investigation of `_compustat_engine.match_to_manifest`).
+
+### 5.4 Contemp-vs-lead DV asymmetry (first seen across H1 / H4a)
+
+- **Observation**: H1 CashRatio shows UncAnsMgr 6/6 sig on contemporaneous DV and 1/6 sig on lead DV. H4a Leverage shows the inverse pattern: 0/6 null on contemp, 6/6 sig on lead. Both primary-IV directions are consistent with one-tailed predictions. Lagged_DV values line up with this asymmetry: Cash is 0.85 ind / 0.63 firm (moderate persistence), Leverage is 0.94 ind / 0.76 firm (extreme persistence).
+- **Status**: Factual pattern, not interpreted here. A narrative explanation (e.g., "DV adjustment-speed heterogeneity: liquid positions respond within-quarter, sticky balance-sheet items respond on a fiscal-annual horizon") would be a rescue if committed during audit. Log only; revisit during post-audit synthesis when all 37 suites have been read and the pattern's generality or specificity can be assessed.
+- **Loaded from**: H1 + H4a (2026-04-14).
+
+### 5.5 Queued observations (to populate as audit proceeds)
 
 - UncAnsMgr robustness pattern across the Q1 cluster — where firm-FE survives, where it dies.
-- CEO/Pre contradiction pattern (e.g., suites where UncPreMgr flips sign between related DVs — flagged per `feedback_ceo_noisy_mgr_central.md`).
 - Sample-size bands and what they imply for generalizability (H22 annual, H5 IBES Detail, H20b Chang sample).
 - Q5 economic magnitude sweep (cross-cutting, at end of audit).
 

@@ -2,9 +2,9 @@
 
 **Purpose:** persistent memory for Claude across context compactions. Claude updates this file as work progresses. Read at start of every draft session.
 
-**Current phase:** **Phase 5 audit — philosophy-framed, dialogue-based. Audit design finalized 2026-04-14. 0 suites audited under the new approach. Starts at H1 (Q1 cluster).**
+**Current phase:** **Phase 5 audit — philosophy-framed, dialogue-based. 3 / 37 suites audited. H1 + H4a + H4b KEEP 2026-04-14. Narrative discipline locked mid-audit. Next = H12 (Q1 cluster).**
 
-**Last updated:** 2026-04-14
+**Last updated:** 2026-04-14 (post-H4b)
 
 ---
 
@@ -65,7 +65,7 @@ Each audited suite produces (a) one row in the summary table at `DECISIONS.md §
 - [x] Phase 3 — Pipeline bug fixes applied
 - [x] Phase 4 — Full 35-suite rerun + table regeneration
 - [x] Architectural rewrite (Phases 0-8) — zero-hardcoded-state pipeline complete, 8 LaTeX-audit bugs fixed. Commits c46e655 → bf9f366.
-- [ ] **Phase 5 audit/synthesis — IN PROGRESS.** Philosophy + design finalized 2026-04-14. Per-suite dialogue pending. 0 / 37 suites audited. Tracker: `memory/project_phase5_audit_progress.md`. First suite: H1.
+- [ ] **Phase 5 audit/synthesis — IN PROGRESS.** Philosophy + design finalized 2026-04-14. **3 / 37 suites audited.** H1 + H4a + H4b KEEP 2026-04-14 (Q1 cluster). Q1 was reworded at H1 boundary, then narrative discipline locked mid-audit: no more Q rewording; final Q wording and narrative frame decided post-audit after all 37 suites are read. See `docs/Draft/DECISIONS.md §1.3` (Q1 revision history), §4.2 (H1/H4a/H4b blocks), §5.1-5.4 (cross-cutting flags). Tracker: `memory/project_phase5_audit_progress.md`. Next suite: **H12**.
 
 ---
 
