@@ -90,8 +90,8 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # ==============================================================================
 
 IV = "UncAnsMgr"
-IV_CENTERED = "Manager_QA_Unc_c"  # mean-centered on Main sample
-IV_CENTERED_IG = "MgrQAUnc_x_IG"  # same variable, renamed in interaction specs
+IV_CENTERED = "UncAnsMgr_c"  # mean-centered on Main sample
+IV_CENTERED_IG = "UncAnsMgr_c_x_IG"  # same variable, renamed in interaction specs
 
 CONTROLS = [
     "Leverage", "lnAssets", "TobinsQ", "ROA", "Capex",
@@ -103,8 +103,8 @@ CONTROLS = [
 # Three-category moderator (reference = IG)
 MOD_BELOW_IG = "BelowIG"
 MOD_UNRATED = "Unrated"
-INT_BELOW_IG = "MgrQAUnc_x_BelowIG"
-INT_UNRATED = "MgrQAUnc_x_Unrated"
+INT_BELOW_IG = "UncAnsMgr_c_x_BelowIG"
+INT_UNRATED = "UncAnsMgr_c_x_Unrated"
 
 # Investment-grade rating codes (BBB- and above)
 IG_RATINGS = {"AAA", "AA+", "AA", "AA-", "A+", "A", "A-", "BBB+", "BBB", "BBB-"}
@@ -116,9 +116,9 @@ YEAR_MAX = 2016
 # ------------------------------------------------------------------
 # Suite metadata for suite_spec.json emission.
 # H1.2 displays cols 5-8 (interaction specs). The top IV row
-# (Manager_QA_Unc_c) pulls from cols 1-4 (unconditional specs) — the
+# (UncAnsMgr_c) pulls from cols 1-4 (unconditional specs) — the
 # spec builder merges both sources into each column's coefs dict so the
-# renderer sees 6 top-of-table variables. Note: Bug 8 rename deferred.
+# renderer sees 6 top-of-table variables.
 # ------------------------------------------------------------------
 SUITE_ID = "H1.2"
 SUITE_DIR_NAME = "h1_2_cash_constraint"
@@ -677,9 +677,9 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     # Unrated level
     _row4("Unrated", "beta_unrated", "se_unrated", "p_two_unrated", _sig_stars_two)
     # Interaction: Below-IG (only cols 3-4)
-    _row4(r"MgrQAUnc\_x\_BelowIG", "beta_int_below_ig", "se_int_below_ig", "p_two_int_below_ig", _sig_stars_two)
+    _row4(r"UncAnsMgr\_c\_x\_BelowIG", "beta_int_below_ig", "se_int_below_ig", "p_two_int_below_ig", _sig_stars_two)
     # Interaction: Unrated (only cols 3-4)
-    _row4(r"MgrQAUnc\_x\_Unrated", "beta_int_unrated", "se_int_unrated", "p_two_int_unrated", _sig_stars_two)
+    _row4(r"UncAnsMgr\_c\_x\_Unrated", "beta_int_unrated", "se_int_unrated", "p_two_int_unrated", _sig_stars_two)
 
     lines.append(r"\midrule")
     lines.append(r"Controls & Ext & Ext & Ext & Ext \\")
@@ -839,15 +839,15 @@ def _write_suite_spec_json(
     """Emit canonical suite_spec_H1.2.json from moderation runner state.
 
     H1.2 has 8 underlying regressions:
-      - Cols 1-4: unconditional specs (source of Manager_QA_Unc_c main IV)
+      - Cols 1-4: unconditional specs (source of UncAnsMgr_c main IV)
       - Cols 5-8: interaction specs (source of BelowIG/Unrated level shifts
-        and the MgrQAUnc_x_IG / x_BelowIG / x_Unrated interactions)
+        and the UncAnsMgr_c_x_IG / x_BelowIG / x_Unrated interactions)
 
     The displayed table shows 4 columns corresponding to runner cols 5-8.
     For each displayed col, the spec builder:
       1. Uses cols 5-8's interaction-model metadata (n_obs, r2, fe, etc.)
       2. Merges BOTH sets of coefs into the col's coefs dict:
-         - `Manager_QA_Unc_c` from the matching unconditional spec
+         - `UncAnsMgr_c` from the matching unconditional spec
            (col 5 <- col 1, col 6 <- col 2, col 7 <- col 3, col 8 <- col 4)
          - All other top-of-table vars + controls from the interaction spec
     """
@@ -918,8 +918,8 @@ def _write_suite_spec_json(
             MOD_BELOW_IG,
             MOD_UNRATED,
             IV_CENTERED_IG,
-            "MgrQAUnc_x_BelowIG",
-            "MgrQAUnc_x_Unrated",
+            "UncAnsMgr_c_x_BelowIG",
+            "UncAnsMgr_c_x_Unrated",
         ]
         # All 5 interaction-block IVs are one-tailed positive per user
         # directive (2026-04-14). Controls (`control_vars`) are filtered
@@ -931,7 +931,7 @@ def _write_suite_spec_json(
             hyp_dir="positive",
         )
 
-        # Unconditional-model coef for Manager_QA_Unc_c (one-tailed positive).
+        # Unconditional-model coef for UncAnsMgr_c (one-tailed positive).
         uncond_coefs = extract_coefs_panelols(
             model=uncond_model,
             key_ivs=[IV_CENTERED],
@@ -955,24 +955,24 @@ def _write_suite_spec_json(
     ivs = [
         {
             "name": IV_CENTERED,
-            "label": r"Manager\_QA\_Unc\_c",
+            "label": r"UncAnsMgr\_c",
             "tail": "one_pos",
         },
         {"name": MOD_BELOW_IG, "label": "BelowIG", "tail": "one_pos"},
         {"name": MOD_UNRATED, "label": "Unrated", "tail": "one_pos"},
         {
             "name": IV_CENTERED_IG,
-            "label": r"MgrQAUnc\_x\_IG",
+            "label": r"UncAnsMgr\_c\_x\_IG",
             "tail": "one_pos",
         },
         {
-            "name": "MgrQAUnc_x_BelowIG",
-            "label": r"MgrQAUnc\_x\_BelowIG",
+            "name": "UncAnsMgr_c_x_BelowIG",
+            "label": r"UncAnsMgr\_c\_x\_BelowIG",
             "tail": "one_pos",
         },
         {
-            "name": "MgrQAUnc_x_Unrated",
-            "label": r"MgrQAUnc\_x\_Unrated",
+            "name": "UncAnsMgr_c_x_Unrated",
+            "label": r"UncAnsMgr\_c\_x\_Unrated",
             "tail": "one_pos",
         },
     ]

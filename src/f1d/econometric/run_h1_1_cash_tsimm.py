@@ -72,7 +72,7 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # ==============================================================================
 
 IV = "UncAnsMgr"
-IV_CENTERED = "Manager_QA_Unc_c"
+IV_CENTERED = "UncAnsMgr_c"
 
 CONTROLS = [
     "Leverage", "lnAssets", "TobinsQ", "ROA", "Capex",
@@ -83,14 +83,12 @@ CONTROLS = [
 
 MODERATOR_RAW = "TotalSimilarity"
 MODERATOR = "z_log_TotalSimilarity"
-INTERACTION = "MgrQAUnc_x_zlogTSIMM"
+INTERACTION = "UncAnsMgr_c_x_zlogTSIMM"
 
 MIN_CALLS_PER_FIRM = 5
 
 # ------------------------------------------------------------------
 # Suite metadata for suite_spec.json emission (moderation, 4 cols, single DV).
-# Note: Manager_QA_Unc_c is the intermediate centered variable name (Bug 8);
-# rename to UncAnsMgr_c is deferred to Phase 7 per the plan.
 # ------------------------------------------------------------------
 SUITE_ID = "H1.1"
 SUITE_DIR_NAME = "h1_1_cash_tsimm"
@@ -590,9 +588,9 @@ def _write_suite_spec_json(
         # feedback_moderation_tails.md (user explicitly corrected twice —
         # IV, moderator, AND interaction must all be one-tailed positive).
         ivs=[
-            {"name": IV_CENTERED, "label": r"Manager\_QA\_Unc\_c", "tail": "one_pos"},
+            {"name": IV_CENTERED, "label": r"UncAnsMgr\_c", "tail": "one_pos"},
             {"name": MODERATOR, "label": r"z\_log\_TotalSimilarity", "tail": "one_pos"},
-            {"name": INTERACTION, "label": r"MgrQAUnc\_x\_zlogTSIMM", "tail": "one_pos"},
+            {"name": INTERACTION, "label": r"UncAnsMgr\_c\_x\_zlogTSIMM", "tail": "one_pos"},
         ],
         controls={
             "base": list(CONTROLS),

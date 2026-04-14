@@ -87,15 +87,13 @@ CONTROLS = [
 
 MODERATOR_RAW = "TotalSimilarity"
 MODERATOR = "HighTSIMM"
-IV_CENTERED = "Manager_QA_Unc_c"  # mean-centered on Main sample
-INTERACTION = "MgrQAUnc_x_HighTSIMM"
+IV_CENTERED = "UncAnsMgr_c"  # mean-centered on Main sample
+INTERACTION = "UncAnsMgr_c_x_HighTSIMM"
 
 MIN_CALLS_PER_FIRM = 5
 
 # ------------------------------------------------------------------
 # Suite metadata for suite_spec.json emission (moderation, 4 cols, single DV).
-# Note: Manager_QA_Unc_c is the intermediate centered variable name (Bug 8);
-# rename to UncAnsMgr_c is deferred to Phase 7 per the plan.
 # ------------------------------------------------------------------
 SUITE_ID = "H1.1b"
 SUITE_DIR_NAME = "h1_1b_cash_tsimm_binary"
@@ -724,7 +722,7 @@ def _write_suite_spec_json(
     """Emit canonical suite_spec_H1.1b.json from moderation runner state.
 
     H1.1b structure: 4 cols = 2 FE entities x 2 time-FE granularities.
-    Binary moderator HighTSIMM; interaction MgrQAUnc_x_HighTSIMM.
+    Binary moderator HighTSIMM; interaction UncAnsMgr_c_x_HighTSIMM.
     """
     col_metadata: List[Dict[str, Any]] = []
     coefs_per_col: List[Dict[str, Dict[str, Any]]] = []
@@ -814,9 +812,9 @@ def _write_suite_spec_json(
         # feedback_moderation_tails.md (user explicitly corrected twice —
         # IV, moderator, AND interaction must all be one-tailed positive).
         ivs=[
-            {"name": IV_CENTERED, "label": r"Manager\_QA\_Unc\_c", "tail": "one_pos"},
+            {"name": IV_CENTERED, "label": r"UncAnsMgr\_c", "tail": "one_pos"},
             {"name": MODERATOR, "label": "HighTSIMM", "tail": "one_pos"},
-            {"name": INTERACTION, "label": r"MgrQAUnc\_x\_HighTSIMM", "tail": "one_pos"},
+            {"name": INTERACTION, "label": r"UncAnsMgr\_c\_x\_HighTSIMM", "tail": "one_pos"},
         ],
         controls={
             "base": list(CONTROLS),

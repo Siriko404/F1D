@@ -76,7 +76,7 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # ==============================================================================
 
 IV = "UncAnsMgr"
-IV_CENTERED = "Manager_QA_Unc_c"
+IV_CENTERED = "UncAnsMgr_c"
 
 CONTROLS = [
     "lnAssets", "TobinsQ", "ROA", "Leverage", "CashRatio",
@@ -90,10 +90,10 @@ MODERATORS = {
         "raw": "TotalSimilarity",
         "log": "log_TotalSimilarity",
         "z": "z_log_TotalSimilarity",
-        "interaction": "MgrQAUnc_x_zlogTSIMM",
+        "interaction": "UncAnsMgr_c_x_zlogTSIMM",
         "label": "TNIC3TSIMM",
         "tex_label": r"$z(\log(\mathrm{TSIMM}))$",
-        "tex_int_label": r"Mgr QA Unc $\times$ $z(\log(\mathrm{TSIMM}))$",
+        "tex_int_label": r"UncAnsMgr\_c $\times$ $z(\log(\mathrm{TSIMM}))$",
     },
 }
 
@@ -101,9 +101,8 @@ MIN_CALLS_PER_FIRM = 5
 
 # ------------------------------------------------------------------
 # Suite metadata for suite_spec.json emission (moderation, 8 cols, 2 DVs).
-# Note: Manager_QA_Unc_c is the intermediate centered variable name (Bug 8);
-# rename to UncAnsMgr_c is deferred to Phase 7 per the plan.
-# H13.1 uses two-tailed tests on all three key vars (matches parent H13).
+# All three key vars one-tailed positive per user directive 2026-04-14
+# (H13.1 is explanatory for H13's positive Capex finding).
 # ------------------------------------------------------------------
 SUITE_ID = "H13.1"
 SUITE_DIR_NAME = "h13_1_competition"
@@ -835,9 +834,9 @@ def _write_suite_spec_json(
         clustering=CLUSTERING,
         tail=TAIL,
         ivs=[
-            {"name": IV_CENTERED, "label": r"Manager\_QA\_Unc\_c", "tail": "one_pos"},
+            {"name": IV_CENTERED, "label": r"UncAnsMgr\_c", "tail": "one_pos"},
             {"name": MODERATOR, "label": r"z\_log\_TotalSimilarity", "tail": "one_pos"},
-            {"name": INTERACTION, "label": r"MgrQAUnc\_x\_zlogTSIMM", "tail": "one_pos"},
+            {"name": INTERACTION, "label": r"UncAnsMgr\_c\_x\_zlogTSIMM", "tail": "one_pos"},
         ],
         controls={
             "base": list(CONTROLS),

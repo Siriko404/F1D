@@ -13,15 +13,13 @@ Architecture (post-Phase-6 rewrite):
     - This script scans the template for placeholders, loads the latest spec
       file per suite, and substitutes each placeholder with a formatted cell.
     - Fails loudly on missing cells for suites in `config/suite_render_order.yaml`.
-      Suites outside the render order (H19, H20 legacy) emit "--" with a warning.
 
 Col remaps:
     - H11-Lag: template cols 1-4 (PRisk_lag Firm FE) → H11-Lag1 spec cols 5-8.
       Template cols 5-8 (PRisk_lag2 Firm FE) → H11-Lag2 spec cols 5-8.
       Cross-IV cells ("__H11-Lag__PRisk_lag__col5__" etc.) emit "--".
     - H24 / H24b / H25: template cols 1-4 (Firm FE contemporaneous) → spec
-      cols 5-8 (Firm FE). Template cols 5-8 (Firm FE Next Quarter t+1) emit
-      "--" because current runners don't produce lead1 specs.
+      cols 5-8 (Firm FE).
 
 Run:
     python scripts/generate_findings.py            # regenerate findings.txt
@@ -52,23 +50,6 @@ PLACEHOLDER_RE = re.compile(r"__([A-Za-z][A-Za-z0-9.\-]*)__(.+?)__col(\d+)__")
 
 # Standard pad width for cell values (matches legacy findings.txt alignment).
 PAD_WIDTH = 16
-
-# Suites that are not in the render order — emit "--" with a warning.
-LEGACY_SUITES = {"H19", "H20"}
-
-# Known template-vs-runner structural mismatches (warn, don't error).
-# Template expects these (placeholder suite_id, col) pairs but the current
-# runner doesn't produce them. Placing here downgrades them from error to
-# warning so findings.txt still regenerates cleanly.
-KNOWN_MISMATCHES: set[tuple[str, int]] = {
-    # H24/H24b/H25: template cols 5-8 are "Next Quarter (t+1)" lead1 specs.
-    # Current macro runners (h24_us_epu, h24b_global_epu, h25_gpr) produce
-    # 8 contemporaneous cols (4 Industry FE + 4 Firm FE). Dropping the lead1
-    # specs was part of the Phase 4 batch 7 macro suite simplification.
-    ("H24", 5), ("H24", 6), ("H24", 7), ("H24", 8),
-    ("H24b", 5), ("H24b", 6), ("H24b", 7), ("H24b", 8),
-    ("H25", 5), ("H25", 6), ("H25", 7), ("H25", 8),
-}
 
 # Per-suite template-col → spec-col remaps for suites whose template layout
 # is a subset of the current spec's col count (i.e., template was built when
@@ -270,7 +251,6 @@ def main() -> int:
 
     # Accumulators
     errors: list[str] = []
-    warnings: list[str] = []
     n_subst = 0
     n_missing = 0
     per_suite_counts: dict[str, int] = {}
@@ -291,25 +271,16 @@ def main() -> int:
         n_missing += 1
         per_suite_missing[suite_id] = per_suite_missing.get(suite_id, 0) + 1
         msg = f"{placeholder}: {reason}"
-        is_known = suite_id in LEGACY_SUITES or (suite_id, col) in KNOWN_MISMATCHES
-        if is_known:
-            warnings.append(msg)
-        else:
-            errors.append(msg)
-            per_suite_has_real_error[suite_id] = True
+        errors.append(msg)
+        per_suite_has_real_error[suite_id] = True
         if args.verbose:
-            tag = "[warn]" if is_known else "[error]"
-            print(f"{tag} {msg}")
+            print(f"[error] {msg}")
 
     def substitute(match: re.Match[str]) -> str:
         placeholder = match.group(0)
         suite_id = match.group(1)
         iv_name = match.group(2)
         col = int(match.group(3))
-
-        if suite_id in LEGACY_SUITES:
-            record_missing(placeholder, suite_id, col, "legacy suite not in render order")
-            return pad("--")
 
         # Per-suite remap resolution
         if suite_id == "H11-Lag":
@@ -382,14 +353,6 @@ def main() -> int:
         else:
             tag = "[WARN]"
         print(f"  {s:10s}  ok={ok:4d}  missing={miss:4d}  {tag}")
-
-    if warnings:
-        print()
-        print(f"Warnings ({len(warnings)}):")
-        for w in warnings[:10]:
-            print(f"  {w}")
-        if len(warnings) > 10:
-            print(f"  ... and {len(warnings) - 10} more")
 
     if errors:
         print()
