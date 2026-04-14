@@ -917,11 +917,14 @@ def _write_suite_spec_json(
             "MgrQAUnc_x_BelowIG",
             "MgrQAUnc_x_Unrated",
         ]
+        # All 5 interaction-block IVs are one-tailed positive per user
+        # directive (2026-04-14). Controls (`control_vars`) are filtered
+        # out of the directional p_one computation inside the helper.
         interaction_coefs = extract_coefs_panelols(
             model=int_model,
             key_ivs=interaction_vars,
             all_vars=interaction_vars + control_vars,
-            hyp_dir="none",  # all two-tailed for the interaction block
+            hyp_dir="positive",
         )
 
         # Unconditional-model coef for Manager_QA_Unc_c (one-tailed positive).
@@ -938,31 +941,35 @@ def _write_suite_spec_json(
         merged.update(interaction_coefs)
         coefs_per_col.append(merged)
 
-    # Six top-of-table variables with per-var tails.
-    # Order matches the legacy SUITES layout: main IV first, then level
-    # shifts (BelowIG, Unrated), then interactions.
+    # Six top-of-table variables, ALL one-tailed positive per user directive
+    # (2026-04-14): financial constraint + uncertainty → more cash holding is
+    # theory-obvious. Level shifts (BelowIG, Unrated) predict positive vs IG
+    # reference (constrained firms hoard more), and both differential
+    # interactions predict positive (constraint amplifies the uncertainty-cash
+    # link). β-sign-gated stars will suppress any term whose empirical sign
+    # contradicts the hypothesis.
     ivs = [
         {
             "name": IV_CENTERED,
             "label": r"Manager\_QA\_Unc\_c",
             "tail": "one_pos",
         },
-        {"name": MOD_BELOW_IG, "label": "BelowIG", "tail": "two"},
-        {"name": MOD_UNRATED, "label": "Unrated", "tail": "two"},
+        {"name": MOD_BELOW_IG, "label": "BelowIG", "tail": "one_pos"},
+        {"name": MOD_UNRATED, "label": "Unrated", "tail": "one_pos"},
         {
             "name": IV_CENTERED_IG,
             "label": r"MgrQAUnc\_x\_IG",
-            "tail": "two",
+            "tail": "one_pos",
         },
         {
             "name": "MgrQAUnc_x_BelowIG",
             "label": r"MgrQAUnc\_x\_BelowIG",
-            "tail": "two",
+            "tail": "one_pos",
         },
         {
             "name": "MgrQAUnc_x_Unrated",
             "label": r"MgrQAUnc\_x\_Unrated",
-            "tail": "two",
+            "tail": "one_pos",
         },
     ]
 
