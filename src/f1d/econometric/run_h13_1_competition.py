@@ -110,7 +110,7 @@ SUITE_CAPTION = (
 )
 SUITE_LABEL = "tab:h13_1"
 SAMPLE_LABEL = "Main sample (excludes financial and utility firms)."
-HYP_DIR = "none"  # all three key vars are two-tailed (matches parent H13)
+HYP_DIR = "positive"  # user directive 2026-04-14: IVs + interaction predict more capex
 CLUSTERING = {"entity": True, "time": False}
 TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
 EXTENDED_ONLY_CONTROLS: List[str] = []
@@ -832,9 +832,9 @@ def _write_suite_spec_json(
         clustering=CLUSTERING,
         tail=TAIL,
         ivs=[
-            {"name": IV_CENTERED, "label": r"Manager\_QA\_Unc\_c", "tail": "two"},
-            {"name": MODERATOR, "label": r"z\_log\_TotalSimilarity", "tail": "two"},
-            {"name": INTERACTION, "label": r"MgrQAUnc\_x\_zlogTSIMM", "tail": "two"},
+            {"name": IV_CENTERED, "label": r"Manager\_QA\_Unc\_c", "tail": "one_pos"},
+            {"name": MODERATOR, "label": r"z\_log\_TotalSimilarity", "tail": "one_pos"},
+            {"name": INTERACTION, "label": r"MgrQAUnc\_x\_zlogTSIMM", "tail": "one_pos"},
         ],
         controls={
             "base": list(CONTROLS),
