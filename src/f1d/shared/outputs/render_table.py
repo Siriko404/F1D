@@ -190,9 +190,12 @@ def _emit_summary_rows(spec: SuiteSpec) -> list[str]:
     n_cells = [f"{int(c.n_obs):,}" for c in spec.columns]
     lines.append("N & " + " & ".join(n_cells) + r" \\")
 
+    # R² label: wrap in $...$ only if the label is bare math (no $).
+    # Labels that already contain $ (e.g. "Pseudo~$R^2$") are emitted verbatim.
     r2_label = spec.render_hints.r2_label
+    r2_rendered = r2_label if "$" in r2_label else f"${r2_label}$"
     r2_cells = [f"{c.r2:.3f}" for c in spec.columns]
-    lines.append(f"${r2_label}$ & " + " & ".join(r2_cells) + r" \\")
+    lines.append(f"{r2_rendered} & " + " & ".join(r2_cells) + r" \\")
 
     if not spec.render_hints.skip_adj_r2:
         adj_cells: list[str] = []

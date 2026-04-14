@@ -57,7 +57,12 @@ import statsmodels.formula.api as smf
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
-from f1d.shared.outputs import generate_manifest, generate_attrition_table
+from f1d.shared.outputs import (
+    extract_coefs_logit,
+    generate_attrition_table,
+    generate_manifest,
+    write_suite_spec,
+)
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
@@ -85,6 +90,23 @@ BASE_CONTROLS = [
 EXTENDED_CONTROLS = BASE_CONTROLS + [
     "SalesGrowth", "RDSales", "CashFlowAt", "DailyVola",
 ]
+
+EXTENDED_ONLY_CONTROLS = [c for c in EXTENDED_CONTROLS if c not in BASE_CONTROLS]
+
+# ------------------------------------------------------------------
+# Suite metadata for suite_spec.json emission (single sub-table, Logit family).
+# ------------------------------------------------------------------
+SUITE_ID = "H18b"
+SUITE_DIR_NAME = "h18b_cccl_logit"
+SUITE_TITLE = "Logit Robustness --- Speech Uncertainty and SEC Comment Letters"
+SUITE_CAPTION = (
+    "H18b: Logit Robustness --- Speech Uncertainty and SEC Comment Letters"
+)
+SUITE_LABEL = "tab:h18b"
+SAMPLE_LABEL = "Main sample (excludes financial and utility firms)."
+HYP_DIR = "positive"  # H18b: uncertainty -> higher P(SEC letter)
+CLUSTERING = {"entity": True, "time": False}
+TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
 
 MIN_CALLS_PER_FIRM = 5
 
@@ -447,6 +469,109 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
     return diag_df
 
 
+def _write_suite_spec_json(
+    all_results: List[Dict[str, Any]],
+    out_dir: Path,
+) -> None:
+    """Emit canonical suite_spec_H18b.json from Logit runner state.
+
+    Pulls AMEs directly from each fitted model via get_margeff(at="overall"),
+    so this function doesn't depend on whether save_outputs has already
+    popped `_mfx_df` off each meta dict.
+    """
+    col_metadata: List[Dict[str, Any]] = []
+    coefs_per_col: List[Dict[str, Dict[str, Any]]] = []
+
+    for spec in MODEL_SPECS:
+        col_num = spec["col"]
+        result = next(
+            (r for r in all_results if r.get("meta", {}).get("col") == col_num),
+            None,
+        )
+        if result is None:
+            raise RuntimeError(
+                f"H18b spec build: no result for col {col_num}"
+            )
+        model = result["model"]
+        meta = result["meta"]
+
+        ctrl_key = spec["controls"]
+        control_list = (
+            list(BASE_CONTROLS) if ctrl_key == "base" else list(EXTENDED_CONTROLS)
+        )
+
+        # DV mean (binary; mean = P(CCCL=1))
+        try:
+            dv_mean: Optional[float] = float(
+                model.model.endog.mean()
+            )
+        except Exception:
+            dv_mean = None
+
+        col_metadata.append(
+            {
+                "col": col_num,
+                "dv": spec["dv"],
+                "fe_entity": "industry",
+                "fe_time": "calendar_year",
+                "control_vars": control_list,
+                "n_obs": int(meta["n_obs"]),
+                "n_firms": int(meta.get("n_firms", 0)) or None,
+                "r2": float(meta["pseudo_r2"]),
+                "adj_r2": None,  # suppressed via render_hints.skip_adj_r2
+                "dv_mean": dv_mean,
+                "cluster_fallback": False,
+            }
+        )
+
+        # Pull AMEs from the model (fresh summary_frame — independent of save_outputs).
+        mfx_df = model.get_margeff(at="overall").summary_frame()
+        coefs_per_col.append(
+            extract_coefs_logit(
+                mfx_df=mfx_df,
+                key_ivs=KEY_IVS,
+                all_vars=KEY_IVS + control_list,
+                hyp_dir=HYP_DIR,
+            )
+        )
+
+    paths = write_suite_spec(
+        output_dir=out_dir,
+        runner_id=SUITE_DIR_NAME,
+        sub_tables=[
+            {
+                "suite_id": SUITE_ID,
+                "dir_name": SUITE_DIR_NAME,
+                "title": SUITE_TITLE,
+                "caption": SUITE_CAPTION,
+                "label": SUITE_LABEL,
+                "col_range": [s["col"] for s in MODEL_SPECS],
+                "header_rows": [
+                    [{"label": "CCCL", "span": len(MODEL_SPECS)}]
+                ],
+                "suite_type": "standard",
+            }
+        ],
+        coefs_per_col=coefs_per_col,
+        col_metadata=col_metadata,
+        sample_label=SAMPLE_LABEL,
+        clustering=CLUSTERING,
+        tail=TAIL,
+        ivs=[{"name": iv, "label": iv, "tail": "one_pos"} for iv in KEY_IVS],
+        controls={
+            "base": list(BASE_CONTROLS),
+            "extended_only": list(EXTENDED_ONLY_CONTROLS),
+        },
+        model_family="Logit",
+        render_hints={
+            "skip_adj_r2": True,
+            "r2_label": r"Pseudo~$R^2$",
+        },
+    )
+    for path in paths:
+        print(f"  Saved: {path.name}")
+
+
 # ==============================================================================
 # Main
 # ==============================================================================
@@ -514,6 +639,9 @@ def main(panel_path: Optional[str] = None) -> int:
         model, meta = run_logit_regression(df_prepared, spec)
         if model is not None and meta:
             all_results.append({"model": model, "meta": meta})
+
+    # Emit canonical suite_spec.json BEFORE save_outputs pops _mfx_df.
+    _write_suite_spec_json(all_results, out_dir)
 
     diag_df = save_outputs(all_results, out_dir)
 
