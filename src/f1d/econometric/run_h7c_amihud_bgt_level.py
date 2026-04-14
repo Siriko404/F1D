@@ -67,7 +67,12 @@ from linearmodels.panel import PanelOLS
 
 from f1d.shared.latex_tables_accounting import make_summary_stats_table
 from f1d.shared.logging.config import setup_run_logging
-from f1d.shared.outputs import generate_manifest, generate_attrition_table
+from f1d.shared.outputs import (
+    build_col_data_from_panelols,
+    generate_attrition_table,
+    generate_manifest,
+    write_suite_spec,
+)
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
@@ -108,6 +113,21 @@ EXTENDED_CONTROLS = BASE_CONTROLS + [
     "Turnover",
     "UncQue",
 ]
+
+EXTENDED_ONLY_CONTROLS = [c for c in EXTENDED_CONTROLS if c not in BASE_CONTROLS]
+
+# ------------------------------------------------------------------
+# Suite metadata for suite_spec.json emission.
+# ------------------------------------------------------------------
+SUITE_ID = "H7c"
+SUITE_DIR_NAME = "h7c_amihud_bgt_level"
+SUITE_TITLE = 'H7c: Speech Uncertainty and BGT (2018) 25-Day Post-Call Amihud Level (, day 0 included)'
+SUITE_CAPTION = r'H7c: Speech Uncertainty and BGT (2018) 25-Day Post-Call Amihud Level ($[0,+25]$, day 0 included)'
+SUITE_LABEL = "tab:h7c"
+SAMPLE_LABEL = "Main sample (excludes financial and utility firms)."
+HYP_DIR = "positive"
+CLUSTERING = {"entity": True, "time": False}
+TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
 
 MODEL_SPECS = [
     # Contemporaneous DV (cols 1-6)
@@ -489,6 +509,58 @@ def save_outputs(all_results, out_dir):
     return diag_df
 
 
+
+
+def _write_suite_spec_json(
+    all_results: List[Dict[str, Any]],
+    out_dir: Path,
+) -> None:
+    """Emit canonical suite_spec_H7c.json from runner state."""
+    col_metadata, coefs_per_col = build_col_data_from_panelols(
+        all_results=all_results,
+        model_specs=MODEL_SPECS,
+        key_ivs=KEY_IVS,
+        base_controls=BASE_CONTROLS,
+        extended_controls=EXTENDED_CONTROLS,
+        hyp_dir=HYP_DIR,
+    )
+    header_rows = [
+        [
+            {"label": r"BGTLevel\_Amihud", "span": 6},
+            {"label": r"BGTLevel\_Amihud\_lead1", "span": 6},
+        ]
+    ]
+    paths = write_suite_spec(
+        output_dir=out_dir,
+        runner_id=SUITE_DIR_NAME,
+        sub_tables=[
+            {
+                "suite_id": SUITE_ID,
+                "dir_name": SUITE_DIR_NAME,
+                "title": SUITE_TITLE,
+                "caption": SUITE_CAPTION,
+                "label": SUITE_LABEL,
+                "col_range": [s["col"] for s in MODEL_SPECS],
+                "header_rows": header_rows,
+                "suite_type": "standard",
+            }
+        ],
+        coefs_per_col=coefs_per_col,
+        col_metadata=col_metadata,
+        sample_label=SAMPLE_LABEL,
+        clustering=CLUSTERING,
+        tail=TAIL,
+        ivs=[{"name": iv, "label": iv, "tail": "one_pos"} for iv in KEY_IVS],
+        controls={
+            "base": list(BASE_CONTROLS),
+            "extended_only": list(EXTENDED_ONLY_CONTROLS),
+        },
+        model_family="PanelOLS",
+    )
+    for path in paths:
+        print(f"  Saved: {path.name}")
+
+
 def main(panel_path: Optional[str] = None) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
@@ -552,6 +624,9 @@ def main(panel_path: Optional[str] = None) -> int:
             all_results.append({"model": model, "meta": meta})
 
     diag_df = save_outputs(all_results, out_dir)
+
+    # Emit canonical suite_spec.json (consumed by generate_all_tables.py)
+    _write_suite_spec_json(all_results, out_dir)
 
     if all_results:
         first_meta = all_results[0].get("meta", {})
