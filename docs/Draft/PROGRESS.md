@@ -2,9 +2,9 @@
 
 **Purpose:** persistent memory for Claude across context compactions. Claude updates this file as work progresses. Read at start of every draft session.
 
-**Current phase:** **Phase 5 audit — philosophy-framed, dialogue-based. 7 / 37 suites audited. H1 + H4a + H4b + H12 + H12b + H13 KEEP, H16 DROP-flagged (revisit) 2026-04-14/15. Narrative discipline locked mid-audit. Rules 21-23 added 2026-04-15 during H12 dialogue. Next = H17 (Q1 cluster).**
+**Current phase:** **Phase 5 audit — philosophy-framed, dialogue-based. 10 / 37 suites audited — Q1 CLUSTER COMPLETE. H1 + H4a + H4b + H12 + H12b + H13 + H17 + H19b KEEP; H16 DROP-flagged (revisit), H20b DROP. Narrative discipline locked mid-audit. Rules 21-23 added 2026-04-15. Next cluster: Q2 (channel/mechanism, 6 suites). Next suite = H1.1.**
 
-**Last updated:** 2026-04-15 (post-H12b/H13/H16 batch)
+**Last updated:** 2026-04-15 (post-Q1 cluster complete)
 
 ---
 
@@ -65,7 +65,7 @@ Each audited suite produces (a) one row in the summary table at `DECISIONS.md §
 - [x] Phase 3 — Pipeline bug fixes applied
 - [x] Phase 4 — Full 35-suite rerun + table regeneration
 - [x] Architectural rewrite (Phases 0-8) — zero-hardcoded-state pipeline complete, 8 LaTeX-audit bugs fixed. Commits c46e655 → bf9f366.
-- [ ] **Phase 5 audit/synthesis — IN PROGRESS.** Philosophy + design finalized 2026-04-14. **7 / 37 suites audited.** H1 + H4a + H4b + H12 + H12b + H13 KEEP, **H16 DROP-flagged** (revisit if strong reason emerges) 2026-04-14/15 (Q1 cluster). Q1 was reworded at H1 boundary, then narrative discipline locked mid-audit: no more Q rewording; final Q wording and narrative frame decided post-audit after all 37 suites are read. **Rules 21-23 added 2026-04-15 during H12 dialogue** (rule 21: provisional Q is placeholder, not filter; rule 22: null coefficient signs are noise, not signal; rule 23: significance pattern is the audit signal, not effect magnitudes). See `docs/Draft/DECISIONS.md §1.3` (Q1 revision history), §4.2 (H1/H4a/H4b/H12/H12b/H13/H16 blocks), §5.1-5.8 (cross-cutting flags: §5.5 UncPreMgr cross-sectional now spans 3 DVs, §5.6 PayoutRatio_q low persistence, §5.7 H13 cross-IV FE-strata split, §5.8 first complete-null suite H16). Tracker: `memory/project_phase5_audit_progress.md`. Next suite: **H17**.
+- [ ] **Phase 5 audit/synthesis — IN PROGRESS.** Philosophy + design finalized 2026-04-14. **10 / 37 suites audited — Q1 cluster COMPLETE.** H1 + H4a + H4b + H12 + H12b + H13 + H17 + H19b KEEP; **H16 DROP-flagged** (revisit if strong reason emerges); **H20b DROP** ("findings not clean, headache"). Q1 was reworded at H1 boundary, then narrative discipline locked mid-audit: no more Q rewording; final Q wording and narrative frame decided post-audit after all 37 suites are read. **Rules 21-23 added 2026-04-15 during H12 dialogue** (rule 21: provisional Q is placeholder, not filter; rule 22: null coefficient signs are noise, not signal; rule 23: significance pattern is the audit signal, not effect magnitudes). See `docs/Draft/DECISIONS.md §1.3` (Q1 revision history), §4.2 (H1/H4a/H4b/H12/H12b/H13/H16/H17/H19b/H20b blocks), §5.1-5.10 (cross-cutting flags: §5.5 UncPreMgr cross-sectional spans 3 DVs, §5.6 PayoutRatio_q low persistence, §5.7 H13 cross-IV FE-strata split, §5.8 first complete-null H16, §5.9 H17 breaks §5.5 UncPreMgr generalization, §5.10 H19b+H20b negative-persistence DV class). Tracker: `memory/project_phase5_audit_progress.md`. **Next cluster: Q2 (channel/mechanism, 6 suites). Next suite: H1.1.**
 
 ---
 

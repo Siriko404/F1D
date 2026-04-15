@@ -1,6 +1,6 @@
 # Thesis Draft — Decisions Log
 
-**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **7 / 37 suites audited.** H1 + H4a + H4b + H12 + H12b + H13 KEEP, H16 DROP-flagged (revisit) 2026-04-14/15. Q1 was reworded at the H1 boundary then the rewording was locked mid-audit (narrative decided post-audit). Rules 21-23 added 2026-04-15 during H12 dialogue. Next suite: H17.
+**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **10 / 37 suites audited — Q1 cluster COMPLETE.** H1 + H4a + H4b + H12 + H12b + H13 + H17 + H19b KEEP; H16 DROP-flagged (revisit), H20b DROP. Q1 was reworded at the H1 boundary then the rewording was locked mid-audit (narrative decided post-audit). Rules 21-23 added 2026-04-15 during H12 dialogue. Next cluster: Q2 (channel/mechanism, 6 suites). Next suite: H1.1.
 
 ---
 
@@ -137,6 +137,9 @@ Each audited suite produces **two things**:
 | H12b | DivPayerQ (cols 1-6); DivPayerQ_lead1 (cols 7-12) | 60,175–64,145 | Q1 (provisional) | UncAnsCEO 0/12, UncPreCEO 0/12; UncAnsMgr 1/12 sig β<0 (col 6 Firm+YQ+ExtCtrl contemp only); UncPreMgr 6/12 sig β<0 — all 6 sig cells industry-FE (cols 1, 3, 5 contemp + 7, 9, 11 lead), firm-FE 0/6. Within-firm 1/24 (the UncAnsMgr col 6 only). Lagged_DV ≈ 0.91 ind / 0.70 firm — high persistence (sticky payer status, opposite of PayoutRatio_q's 0.07) | KEEP | Cross-sectional UncPreMgr industry-FE pattern repeats for the 3rd DV (after H1 cash, H12 payout — generalized in §5.5); one within-firm UncAnsMgr cell at the toughest spec is the only firm-FE survivor across all 4 IVs |
 | H13 | Capex (cols 1-6); Capex_lead (cols 7-12) | 58,897–65,105 | Q1 (provisional) | **TWO-TAILED** (different from prior Q1 directional suites). UncPreCEO 0/12; **UncAnsCEO 3/12 sig β>0 — all 3 under FIRM FE contemp (cols 2, 4, 6)**; **UncAnsMgr 4/12 sig β>0 — all 4 under INDUSTRY FE (col 3 contemp + 7, 9, 11 lead)**; UncPreMgr 1/12 sig β<0 (col 11 lead). Cross-IV FE-strata split: CEO firm-FE / Mgr industry-FE, both β>0. Lagged_DV ≈ 0.74 ind / 0.32 firm contemp; 0.64 ind / 0.09 firm lead | KEEP | First suite with cross-IV FE-strata split — UncAnsCEO carries within-firm signal that UncAnsMgr does not, UncAnsMgr carries cross-sectional signal that UncAnsCEO does not, both positive. UncPreMgr 1 sig cell opposite direction. Two-tailed exploratory spec per `feedback_moderation_tails.md`. New §5.7 entry on FE-strata split |
 | H16 | RDSales (cols 1-6); RDSales_lead (cols 7-12) | 58,970–65,086 | Q1 (provisional) | **TWO-TAILED**. **0/48 sig across all 4 IVs × all 12 cells** — first complete-null suite in the audit. Lagged_DV ≈ 0.71 ind / 0.34 firm contemp; 0.51 ind / 0.05 firm lead | **DROP (provisional, flagged for revisit)** | Per rule 21 explicit DROP criterion ("all-null"). User decision 2026-04-15: provisional DROP, revisit at end-of-audit if a strong reason to keep emerges (e.g., narrative needs an honest null on R&D for completeness). New §5.8 entry on first complete-null suite |
+| H17 | RepurchaseIntensity (cols 1-6); RepurchaseIntensity_lead_qtr (cols 7-12) | 57,529–61,030 | Q1 (provisional) | **TWO-TAILED**. UncAnsCEO 0/12; UncPreCEO 1/12 sig β>0 (col 8 firm-FE lead); UncAnsMgr 4/12 sig β<0 (cols 1, 3, 5 contemp + col 7 lead, all industry-FE); **UncPreMgr 7/12 sig β>0 — cols 1, 3, 5 industry-FE contemp + cols 2, 4, 6 FIRM-FE contemp + col 7 industry-FE lead — first UncPreMgr firm-FE survival in audit, breaks §5.5 generalization**. UncAnsMgr (β<0) and UncPreMgr (β>0) opposite-direction on same DV. Lagged_DV ≈ 0.46 ind / 0.32 firm | KEEP | First suite breaking the §5.5 cross-sectional-only UncPreMgr pattern: UncPreMgr survives firm FE in 3 contemp cells. Mgr/PreMgr opposite-sign split on the same DV. New §5.9 entry |
+| H19b | ChangExternalFunding (cols 1-6); ChangExternalFunding_lead (cols 7-12) | 60,052–65,069 | Q1 (provisional) | UncAnsCEO 0/12, UncPreCEO 0/12, UncPreMgr 0/12; UncAnsMgr 2/12 sig β<0 (cols 9 + 11, both Ind+ExtCtrl lead with year/yq variants — match tail). Lagged_DV ≈ +0.07 ind / **-0.07 firm** — first negative-persistence DV in the audit (mean reversion under firm FE) | KEEP | Weak primary-IV lead-horizon signal, 2/12 sig β<0 matching the H4a/H4b family direction at much lower breadth. Negative Lagged_DV under firm FE is structurally novel for the Chang (2006) financing-decision DV class. New §5.10 entry on negative-persistence DV class |
+| H20b | ChangDebtChoice (cols 1-6); ChangDebtChoice_lead (cols 7-12) | **3,404–13,666 (Chang restricted sample, 4-15× smaller than other Q1 suites)** | Q1 (provisional) | **TWO-TAILED**. UncAnsCEO 0/12, UncAnsMgr 0/12; UncPreCEO 2/12 sig β<0 (cols 1, 3 industry-FE contemp); UncPreMgr 3/12 sig β>0 (cols 1, 3, 5 industry-FE contemp). **Pre-CEO and Pre-Mgr OPPOSITE directions on same DV** — first opposite-direction Pre split. Lead horizon 0/24 sig anywhere. Lagged_DV all-negative (mean reversion) | **DROP** | **User decision 2026-04-15** (verbatim): *"20b drop, since the findings are not clean and seems like a heaache"*. Per rule 21 "empirically uninterpretable" criterion: tiny restricted sample + primary IV null + Pre-CEO/Pre-Mgr opposite-direction sig cells + zero lead-horizon signal = no coherent finding. Negative Lagged_DV logged §5.10 alongside H19b for the DV-class observation |
 
 ### 4.2 Per-suite blocks
 
@@ -258,6 +261,65 @@ _Populated during audit. One block per suite. Template at the bottom of this sec
 - **Verdict**: **DROP (provisional, flagged for revisit)**.
 - **Rationale**: Per rule 21 explicit DROP criterion. **User decision 2026-04-15** (verbatim): *"for RD, we will decide later if we had a very good reason to keep it, but for now, flag it as drop"*. Reasons to potentially revisit at synthesis: (a) a clean null is a kind of finding that constrains narrative scope ("speech uncertainty does not move R&D investment under any identification"), (b) if the post-audit thesis frame needs an honest null on R&D for completeness or balance, KEEP-as-honest-null may be preferred. Default DROP unless a strong reason emerges. New §5.8 entry on the first complete-null suite.
 
+### H17 — Speech Uncertainty and Repurchase Intensity
+
+- **DV**: `RepurchaseIntensity` (cols 1-6); `RepurchaseIntensity_lead_qtr` (cols 7-12)
+- **N**: 57,529–61,030 (main sample, ex financials and utilities)
+- **FE ladder**: identical to prior Q1 suites
+- **Tail**: **TWO-TAILED** (line 1758 notes block — exploratory like H13/H16)
+- **Cluster**: firm-level
+- **Key cell fact** (rules 21+22+23):
+    - **UncAnsCEO**: 0/12 sig
+    - **UncPreCEO**: **1/12 sig β>0** — col 8 (Firm+Yr lead) only.
+    - **UncAnsMgr**: **4/12 sig β<0** — cols 1, 3, 5 (industry-FE contemp, all 3 specs) + col 7 (industry-FE lead). All industry-FE.
+    - **UncPreMgr**: **7/12 sig β>0** — cols 1, 3, 5 (industry-FE contemp) + cols 2, 4, 6 (**firm-FE contemp**) + col 7 (industry-FE lead). **First UncPreMgr firm-FE survival in the audit so far** — survives firm FE in 3 contemp cells.
+    - **FE-ladder survival across all 4 IVs × both DVs**: industry-FE 8/24 sig (Mgr 4 + PreMgr 4); firm-FE **4/24 sig** (PreMgr 3 contemp + PreCEO 1 lead).
+    - **Direction split**: UncAnsMgr β<0 (4 cells); UncPreMgr β>0 (7 cells). Same DV, opposite signs between Mgr and PreMgr.
+    - **Lagged_DV** (rule 23 structural): ≈ 0.46 (ind) / 0.32 (firm) contemp; ≈ 0.35 (ind) / 0.19 (firm) lead. Moderate persistence.
+- **Reader-question**: Q1 (provisional, placeholder).
+- **Argument**: H17 RepurchaseIntensity is the first suite where the cross-sectional-only UncPreMgr pattern from §5.5 (H1/H12/H12b) does NOT hold — UncPreMgr survives firm FE in 3 contemp cells. The §5.5 generalization is now contradicted by H17 and needs re-scoping post-audit. Separately, UncAnsMgr (4 cells β<0) and UncPreMgr (7 cells β>0) carry opposite-direction signals on the same DV — a measurement-concerns flag per `feedback_ceo_noisy_mgr_central.md` (do NOT build narrative; log only). Two-tailed spec means no directional prediction.
+- **Verdict**: **KEEP — informative mixed pattern with novel structure**.
+- **Rationale**: Three informative facts: (a) **first UncPreMgr firm-FE survival in the audit**, (b) opposite-sign Mgr/PreMgr split on the same DV, (c) UncAnsMgr's clean 4-cell industry-FE β<0 pattern. KEEP per rule 21 — informative pattern. New §5.9 entry on the UncPreMgr firm-FE survival breaking the §5.5 generalization.
+
+### H19b — Speech Uncertainty and External vs Internal Financing (Chang et al. 2006)
+
+- **DV**: `ChangExternalFunding` (cols 1-6); `ChangExternalFunding_lead` (cols 7-12)
+- **N**: 60,052–65,069 (main sample, ex financials and utilities)
+- **FE ladder**: identical to prior Q1 suites
+- **Tail**: one-tailed, β<0 for IVs (line 1959 notes block); two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact** (rules 21+22+23):
+    - **UncAnsCEO**: 0/12 sig
+    - **UncPreCEO**: 0/12 sig
+    - **UncAnsMgr**: **2/12 sig β<0** — cols 9 (Ind+Yr+ExtCtrl lead) and 11 (Ind+YQ+ExtCtrl lead). Both industry-FE lead with extended controls. β<0 matches tail.
+    - **UncPreMgr**: 0/12 sig
+    - **FE-ladder survival across all 4 IVs × both DVs**: industry-FE 2/24 sig (UncAnsMgr lead with ExtCtrl); firm-FE 0/24 sig.
+    - **Lagged_DV** (rule 23 structural): ≈ **+0.07 (ind) / -0.07 (firm)** contemp; ≈ +0.08 (ind) / -0.04 (firm) lead. **Negative Lagged_DV under firm FE — first negative-persistence DV in the audit** (mean reversion). Industry-FE Lagged_DV is positive.
+- **Reader-question**: Q1 (provisional, placeholder).
+- **Argument**: Weak primary-IV lead-horizon signal — 2/12 UncAnsMgr sig cells, both industry-FE lead with extended controls, both β<0 matching the tail. No CEO measures, no UncPreMgr, no contemp signal. The lead-horizon β<0 direction echoes the H4a/H4b family pattern (lead-horizon negative on financing structure) but at much lower breadth (2/12 vs 5-6/12). Negative Lagged_DV under firm FE is structurally novel for the Chang (2006) financing-decision DV class.
+- **Verdict**: **KEEP — weak but directionally consistent primary-IV lead-horizon signal**.
+- **Rationale**: Tracks the H4a/H4b lead-horizon β<0 family direction at lower breadth. Small primary-IV signal (2/12) is informative for the cluster pattern even though the suite is not strong on its own. Negative Lagged_DV (mean reversion) is a new DV-class observation logged in §5.10. KEEP per rule 21 — informative pattern (matches family direction).
+
+### H20b — Speech Uncertainty and Debt vs Equity Choice (Chang et al. 2006)
+
+- **DV**: `ChangDebtChoice` (cols 1-6); `ChangDebtChoice_lead` (cols 7-12)
+- **N**: **3,404–13,666** (Chang restricted sample — debt-vs-equity decisions among external-financing events; **4-15× smaller than other Q1 suites**)
+- **FE ladder**: identical to prior Q1 suites
+- **Tail**: **TWO-TAILED** (line 2027 notes block)
+- **Cluster**: firm-level
+- **Key cell fact** (rules 21+22+23):
+    - **UncAnsCEO**: 0/12 sig
+    - **UncPreCEO**: **2/12 sig β<0** — cols 1 (Ind+Yr) and 3 (Ind+Yr+ExtCtrl). Both industry-FE contemp.
+    - **UncAnsMgr**: 0/12 sig
+    - **UncPreMgr**: **3/12 sig β>0** — cols 1, 3, 5 (all industry-FE contemp).
+    - **FE-ladder survival across all 4 IVs × both DVs**: industry-FE 5/24 sig (PreCEO 2 + PreMgr 3, all contemp); firm-FE 0/24 sig. **Lead horizon 0/24 sig anywhere** (cols 7-12 all null).
+    - **Direction conflict**: UncPreCEO (β<0) and UncPreMgr (β>0) — **opposite-direction sig cells on the same DV between two Pre measures**. First opposite-direction Pre split in the audit.
+    - **Lagged_DV** (rule 23 structural): **≈ -0.09 (ind) / -0.05 (firm)** contemp; ≈ -0.05 (ind) / -0.02 (firm) lead. **All-negative Lagged_DV** — strong mean reversion. Second negative-persistence DV after H19b.
+- **Reader-question**: Q1 (provisional, placeholder).
+- **Argument**: Three structural concerns: (a) sample is 4-15× smaller than other Q1 suites due to Chang's external-financing-event restriction, (b) primary IV UncAnsMgr is 0/12 null, (c) UncPreCEO (β<0) and UncPreMgr (β>0) carry opposite-direction sig cells on the same DV — measurement-concerns flag without a coherent reading. Lead horizon 0 sig anywhere. The pattern exists but is uninterpretable as a clean finding.
+- **Verdict**: **DROP**.
+- **Rationale**: **User decision 2026-04-15** (verbatim): *"20b drop, since the findings are not clean and seems like a heaache"*. Per rule 21, DROP is reserved for suites where no informative pattern exists OR where empirically uninterpretable. H20b's combination of (a) tiny restricted sample, (b) primary IV null, (c) Pre-CEO/Pre-Mgr opposite-direction sig cells, and (d) zero lead-horizon signal makes the suite empirically uninterpretable as a clean finding. The Chang sample restriction makes generalizability suspect even if the Pre pattern were clean. Logged §5.10 alongside H19b for the negative-persistence DV class observation.
+
 ---
 
 _Template for subsequent suites:_
@@ -331,10 +393,25 @@ _Populated as patterns emerge across suites. Each entry is a factual flag, not a
 - **Status**: Clean null across every cell. Per rule 21 explicit DROP criterion ("all-null"). User decision 2026-04-15: provisionally flag as DROP, revisit at end-of-audit if a strong reason to keep emerges (e.g., narrative needs an honest null on R&D for completeness, or the null becomes load-bearing as a falsification pre-registered prediction). Possible reading: R&D investment is a long-horizon, sticky, multi-year decision insensitive to quarterly speech-uncertainty fluctuations — but that interpretation is post-audit synthesis material.
 - **Loaded from**: H16 (2026-04-15).
 
-### 5.9 Queued observations (to populate as audit proceeds)
+### 5.9 UncPreMgr firm-FE survival on repurchases breaks §5.5 generalization (H17)
 
-- UncAnsMgr robustness pattern across the Q1 cluster — where firm-FE survives, where it dies.
-- Sample-size bands and what they imply for generalizability (H22 annual, H5 IBES Detail, H20b Chang sample).
+- **Observation**: §5.5 above (updated through H12b) generalized that UncPreMgr loads cross-sectionally (industry-FE) but not within-firm (firm-FE) across H1 cash, H12 payout, and H12b payer indicator. **H17 RepurchaseIntensity contradicts that generalization**: UncPreMgr is sig β>0 in 3 firm-FE contemp cells (cols 2, 4, 6) AND in 4 industry-FE cells (cols 1, 3, 5, 7), 7/12 sig total. This is the **first UncPreMgr firm-FE survival in the audit so far**. The §5.5 cross-sectional-only generalization does NOT hold for repurchases.
+- **Status**: Factual cross-suite observation. Per `feedback_ceo_noisy_mgr_central.md`, UncPreMgr is a secondary measure with measurement concerns; do NOT interpret here. Possible implications for post-audit synthesis: (a) repurchase decisions may be more sensitive to scripted/IR-vetted language than other Q1 outcomes, (b) the §5.5 cross-sectional-only generalization needs to be re-scoped post-audit to "cash/payout/payer DVs" rather than "all Q1 DVs". Note: H17 also has UncAnsMgr (β<0, 4 cells industry-FE) AND UncPreMgr (β>0, 7 cells mixed FE) — the two Mgr measures hit OPPOSITE directions on the same DV, which is a separate measurement-concerns flag. Log only; revisit at synthesis.
+- **Loaded from**: H17 (2026-04-15).
+
+### 5.10 Negative-persistence DV class: Chang (2006) financing measures show mean reversion (H19b + H20b)
+
+- **Observation**: H19b ChangExternalFunding and H20b ChangDebtChoice both show negative or near-zero Lagged_DV under firm FE — a structural property different from all prior Q1 DVs. Specifically:
+    - **H19b**: Lagged_DV ≈ +0.07 (ind) / **-0.07 (firm)** contemp; +0.08 (ind) / -0.04 (firm) lead. Sign flip across FE strata.
+    - **H20b**: Lagged_DV ≈ **-0.09 (ind) / -0.05 (firm)** contemp; -0.05 (ind) / -0.02 (firm) lead. **All-negative across all 12 cells**.
+    Compare prior Q1 DVs: H1 Cash 0.85/0.63, H4a Leverage 0.94/0.76, H4b DebtToCapital 0.93/0.79, H12 PayoutRatio_q 0.25/0.07, H12b DivPayerQ 0.91/0.70, H13 Capex 0.74/0.32, H17 RepurchaseIntensity 0.46/0.32. All persistence-loaded (positive). H19b and H20b are the first DVs with negative or near-zero firm-FE persistence.
+- **Status**: Structural property of the Chang (2006) financing-decision DV class. These DVs measure financing CHOICES (whether to use external funding; whether to issue debt vs equity), which are episodic decisions not stocks. Episodic decisions should mean-revert, not persist, so the negative Lagged_DV is consistent with the DV semantics. Not a bug. Implication: comparing IV signal across stock-DVs (H1/H4a/H4b/H12b/H17) and flow/decision-DVs (H19b/H20b) may not be apples-to-apples for any post-audit synthesis on within-firm signal strength. Log only; revisit at end-of-audit synthesis.
+- **Loaded from**: H19b + H20b (2026-04-15).
+
+### 5.11 Queued observations (to populate as audit proceeds)
+
+- UncAnsMgr robustness pattern across the Q2/Q3/Q4 clusters — where firm-FE survives, where it dies.
+- Sample-size bands and what they imply for generalizability (H22 annual, H5 IBES Detail, H20b Chang sample DROP precedent).
 - Q5 economic magnitude sweep (cross-cutting, at end of audit).
 
 ---
