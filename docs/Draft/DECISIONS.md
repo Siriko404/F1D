@@ -1,6 +1,6 @@
 # Thesis Draft — Decisions Log
 
-**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **10 / 37 suites audited + RE-CATALOGUED under rule 24.** Q1 cluster COMPLETE: H1 + H4a + H4b + H12 + H12b + H13 + H17 + H19b KEEP; H16 DROP-flagged (revisit), H20b DROP. Q1 was reworded at the H1 boundary then the rewording was locked mid-audit (narrative decided post-audit). Rules 21-24 added 2026-04-15. **Rule 24 (record-scope ≠ verdict-scope) shifted §4.2 cataloguing to full-row format; Q1 retroactive REVERSED same day; all 10 §4.2 blocks now contain row-by-row catalogue (IVs + all controls + Lagged_DV + R²/N). See §5.12.** Next cluster: Q2 (channel/mechanism, 6 suites). Next suite: H1.1.
+**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **15 / 37 suites audited (Q1 COMPLETE + Q2 batch 1 complete).** Q1: H1 + H4a + H4b + H12 + H12b + H13 + H17 + H19b KEEP; H16 DROP-flagged (revisit), H20b DROP. Q2 batch 1 (H1.1/H1.1b/H1.2/H13.1/H13.2): all 5 KEEP. All 15 suites catalogued under rule 24 full-row format. Rules 21-24 added 2026-04-15; Q1 retroactive REVERSED same day (see §5.12). **Notable findings**: H1 family TSIMM moderation null (H1.1/H1.1b), Unrated × UncAnsMgr_c sig 4/4 (H1.2), capex × TSIMM sig 8/8 incl firm-FE (H13.1), UncAnsMgr persistent 10/16 across 4 capex horizons (H13.2), §5.13 CEO coverage gap explains H1 vs H1.1 sample difference (not panel drift). Next cluster: Q2 batch 2 = H22 (last Q2 suite, firm-year, ~4-8K N class).
 
 ---
 
@@ -140,6 +140,11 @@ Each audited suite produces **two things**:
 | H17 | RepurchaseIntensity (cols 1-6); RepurchaseIntensity_lead_qtr (cols 7-12) | 57,529–61,030 | Q1 (provisional) | **TWO-TAILED**. UncAnsCEO 0/12; UncPreCEO 1/12 sig β>0 (col 8 firm-FE lead); UncAnsMgr 4/12 sig β<0 (cols 1, 3, 5 contemp + col 7 lead, all industry-FE); **UncPreMgr 7/12 sig β>0 — cols 1, 3, 5 industry-FE contemp + cols 2, 4, 6 FIRM-FE contemp + col 7 industry-FE lead — first UncPreMgr firm-FE survival in audit, breaks §5.5 generalization**. UncAnsMgr (β<0) and UncPreMgr (β>0) opposite-direction on same DV. Lagged_DV ≈ 0.46 ind / 0.32 firm | KEEP | First suite breaking the §5.5 cross-sectional-only UncPreMgr pattern: UncPreMgr survives firm FE in 3 contemp cells. Mgr/PreMgr opposite-sign split on the same DV. New §5.9 entry |
 | H19b | ChangExternalFunding (cols 1-6); ChangExternalFunding_lead (cols 7-12) | 60,052–65,069 | Q1 (provisional) | UncAnsCEO 0/12, UncPreCEO 0/12, UncPreMgr 0/12; UncAnsMgr 2/12 sig β<0 (cols 9 + 11, both Ind+ExtCtrl lead with year/yq variants — match tail). Lagged_DV ≈ +0.07 ind / **-0.07 firm** — first negative-persistence DV in the audit (mean reversion under firm FE) | KEEP | Weak primary-IV lead-horizon signal, 2/12 sig β<0 matching the H4a/H4b family direction at much lower breadth. Negative Lagged_DV under firm FE is structurally novel for the Chang (2006) financing-decision DV class. New §5.10 entry on negative-persistence DV class |
 | H20b | ChangDebtChoice (cols 1-6); ChangDebtChoice_lead (cols 7-12) | **3,404–13,666 (Chang restricted sample, 4-15× smaller than other Q1 suites)** | Q1 (provisional) | **TWO-TAILED**. UncAnsCEO 0/12, UncAnsMgr 0/12; UncPreCEO 2/12 sig β<0 (cols 1, 3 industry-FE contemp); UncPreMgr 3/12 sig β>0 (cols 1, 3, 5 industry-FE contemp). **Pre-CEO and Pre-Mgr OPPOSITE directions on same DV** — first opposite-direction Pre split. Lead horizon 0/24 sig anywhere. Lagged_DV all-negative (mean reversion) | **DROP** | **User decision 2026-04-15** (verbatim): *"20b drop, since the findings are not clean and seems like a heaache"*. Per rule 21 "empirically uninterpretable" criterion: tiny restricted sample + primary IV null + Pre-CEO/Pre-Mgr opposite-direction sig cells + zero lead-horizon signal = no coherent finding. Negative Lagged_DV logged §5.10 alongside H19b for the DV-class observation |
+| H1.1 | CashRatio (4 cols, contemp only) | 73,707 (Mgr-only + TSIMM; +8.6K vs H1 because no 4-IV CEO bottleneck) | Q2 (provisional) | `UncAnsMgr_c` **4/4 sig β>0** (re-confirms H1 on broader sample); `z_log_TotalSimilarity` 4/4 sig β>0; **`UncAnsMgr_c × zlogTSIMM` 0/4 null** — TSIMM continuous interaction does not moderate | KEEP | Main IV re-confirms H1; continuous TSIMM interaction null across all 4 FE ladders — first negative interaction result in Q2 |
+| H1.1b | CashRatio (4 cols) | 73,707 (same as H1.1) | Q2 (provisional) | `UncAnsMgr_c` **4/4 sig β>0**; `HighTSIMM` 2/4 sig β>0 ind contemp; **`UncAnsMgr_c × HighTSIMM` 0/4 null** | KEEP | Redundant null with H1.1 — binary version also fails to find interaction; the null is robust to functional form |
+| H1.2 | CashRatio (4 cols) | 67,544 (Mgr-only + rating coverage) | Q2 (provisional) | `UncAnsMgr_c` **4/4 sig β>0**; `BelowIG × UncAnsMgr_c` 0/4 null; `IG × UncAnsMgr_c` 0/4 null; **`Unrated × UncAnsMgr_c` 4/4 sig β>0** — first sig interaction in H1 family. `lnAssets` col 1 ind sign flip anomaly | KEEP | Only sig interaction in H1 moderation family. Unrated-firm subgroup shows 4/4 interaction sig β>0 across all FE ladders; rated-but-below-IG null |
+| H13.1 | Capex (cols 1-4); Capex_lead (cols 5-8) | 73,673 contemp / 69,580 lead | Q2 (provisional) | `UncAnsMgr_c` 4/8 sig β>0 ind-only (firm 0/4 null); `z_log_TotalSimilarity` 6/8 sig β>0; **`UncAnsMgr_c × zlogTSIMM` 8/8 sig β>0 including all 4 firm-FE cells** — highest interaction sig rate in audit | KEEP | 8/8 interaction sig including firm-FE survival. First moderation pattern with within-firm identification. Strongest channel evidence in Q1+Q2 audit so far |
+| H13.2 | Capex_lead / _lead2 / _lead3 / _lead4 (16 cols: 4 horizons × 4 FE) | 58,897 (h1) → 41,091 (h4), shrinks with horizon | Q2 (provisional, **cluster-fit flag: re-cluster to Q1?**) | **TWO-TAILED**. UncAnsCEO 0/16 null; UncPreCEO 0/16 null; `UncAnsMgr` **10/16 sig β>0** across all 4 lead horizons (mostly industry-FE); UncPreMgr 1/16 sig β<0. **Capex firm-FE Lagged_DV turns NEGATIVE at h2-h4 (+0.087 at h1 → −0.06 to −0.08 at h2-h4)** — new DV-class observation | KEEP (flag re-cluster) | Sustained cross-sectional UncAnsMgr effect on capex out to 4 quarters; firm-FE null beyond contemp. Structurally a Q1-extended suite, not a moderation test — re-cluster question deferred to synthesis |
 
 ### 4.2 Per-suite blocks
 
@@ -325,6 +330,108 @@ _Populated during audit. One block per suite. Template at the bottom of this sec
 - **Verdict**: **DROP**.
 - **Rationale**: **User decision 2026-04-15** (verbatim): *"20b drop, since the findings are not clean and seems like a heaache"*. Per rule 21, DROP is reserved for suites where no informative pattern exists OR where empirically uninterpretable. H20b's combination of (a) tiny restricted sample, (b) primary IV null, (c) Pre-CEO/Pre-Mgr opposite-direction sig cells, and (d) zero lead-horizon signal makes the suite empirically uninterpretable as a clean finding. The Chang sample restriction makes generalizability suspect even if the Pre pattern were clean. Logged §5.10 alongside H19b for the negative-persistence DV class observation.
 
+### H1.1 — Product Similarity-Moderated Cash Holdings
+
+- **DV**: `CashRatio` (cols 1-4, contemp only)
+- **N**: 73,707 (all 4 cols; Main sample; larger than H1's 65,128 because H1.1 requires only `UncAnsMgr` non-null, not all 4 IVs — see §5.13 CEO coverage explanation)
+- **FE ladder**: (1) Ind+Yr, (2) Firm+Yr, (3) Ind+YQ, (4) Firm+YQ
+- **Tail**: one-tailed β>0 main IV; two-tailed moderator and interaction
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsMgr_c` **4/4 sig β>0** (all cells incl firm-FE — re-confirms H1 main effect on broader Mgr-only sample). `z_log_TotalSimilarity` 4/4 sig β>0. **`UncAnsMgr_c × zlogTSIMM` 0/4 null** — interaction does not moderate at any FE ladder.
+    - **Base controls**: `Leverage` 4/4 sig β<0; `lnAssets` 4/4 sig β<0; `TobinsQ` 4/4 sig β>0; `ROA` 4/4 sig β<0; `Capex` 4/4 sig β<0; `DivDummy` 2/4 sig β<0 (cols 1, 3 ind-only, FE-strata split); `sCFO` 2/4 sig β>0 (cols 1, 3 ind-only, FE-strata split).
+    - **Extended controls**: `SalesGrowth` 4/4 sig β<0; `RDSales` 2/4 sig β>0 ind + 1 marginal firm; `CashFlowAt` 4/4 sig β>0; `DailyVola` 2/4 — **FE sign flip**: col 2 firm sig β<0, col 3 ind sig β>0.
+    - **Lagged_DV** (rule 23 structural): 0.857 / 0.858 (ind); 0.665 / 0.666 (firm). Matches H1 structural persistence.
+    - **R² / N**: 0.834 / 0.484 → 0.835 / 0.484. N = 73,707 (all 4 cols).
+- **Reader-question**: Q2 (provisional, placeholder per rule 21).
+- **Argument**: Main IV `UncAnsMgr_c` re-confirms H1 cash-uncertainty direction on the broader Mgr-only sample at higher N (+8.6K vs H1). Continuous `z_log_TotalSimilarity` moderator is sig β>0 as a standalone level effect. Interaction term is null 0/4 across all FE ladders — no evidence of TSIMM-moderated amplification. Under rule 21 the pattern is informative (main sig + interaction null is a valid empirical fact, not "all-null"). Per rule 18 no interpretive label is committed here; whether this is "failed channel" or "honest pre-registered null" is a synthesis decision.
+- **Verdict**: **KEEP — main IV re-confirms H1, interaction null**.
+- **Rationale**: Rule 21 KEEP default. Informative facts: (a) H1 main effect replicates on broader Mgr-only sample, (b) TSIMM continuous interaction is clean null — first negative interaction result in Q2.
+
+### H1.1b — Binary Product Similarity-Moderated Cash Holdings
+
+- **DV**: `CashRatio` (cols 1-4, contemp only)
+- **N**: 73,707 (identical to H1.1 — same Mgr-only + TSIMM base, binary recode of moderator does not change sample)
+- **FE ladder**: identical to H1.1
+- **Tail**: one-tailed β>0 main IV; two-tailed moderator and interaction
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsMgr_c` **4/4 sig β>0**. `HighTSIMM` 2/4 sig β>0 (cols 1, 3 ind contemp only; firm 0/2 null). **`UncAnsMgr_c × HighTSIMM` 0/4 null**.
+    - **Base controls**: `Leverage` 4/4 sig β<0; `lnAssets` 4/4 sig β<0; `TobinsQ` 4/4 sig β>0; `ROA` 4/4 sig β<0; `Capex` 4/4 sig β<0; `DivDummy` 2/4 sig β<0 (ind-only); `sCFO` 2/4 sig β>0 (ind-only).
+    - **Extended controls**: `SalesGrowth` 4/4 sig β<0; `RDSales` 2/4 sig β>0 ind + 1 marginal firm; `CashFlowAt` 4/4 sig β>0; `DailyVola` 2/4 FE sign flip (col 2 firm β<0, col 3 ind β>0).
+    - **Lagged_DV**: 0.862 / 0.863 (ind); 0.665 / 0.666 (firm).
+    - **R² / N**: 0.833 / 0.484 → 0.834 / 0.484. N = 73,707.
+- **Reader-question**: Q2 (provisional, placeholder).
+- **Argument**: Binary-TSIMM version of H1.1. Main IV re-confirms H1; interaction null across all 4 cells. The binary functional form does not recover moderation that the continuous form also failed to find — the null is robust to functional form choice.
+- **Verdict**: **KEEP — redundant null with H1.1**.
+- **Rationale**: Rule 21 KEEP default. At synthesis, H1.1 + H1.1b likely collapse into a single "TSIMM does not moderate H1" observation regardless of continuous vs binary.
+
+### H1.2 — Financial Constraint-Moderated Cash Holdings (Three-Category)
+
+- **DV**: `CashRatio` (cols 1-4, contemp only)
+- **N**: 67,544 (Mgr-only + rating coverage; rating filter loses ~6.2K vs H1.1's 73.7K)
+- **FE ladder**: identical to H1.1/H1.1b
+- **Tail**: one-tailed β>0 main IV; two-tailed moderators and interactions
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsMgr_c` **4/4 sig β>0**. `BelowIG` 1/4 sig β>0 (col 1 only). `Unrated` 1/4 sig β>0 (col 1 only). `UncAnsMgr_c × IG` 0/4 null. `UncAnsMgr_c × BelowIG` 0/4 null. **`UncAnsMgr_c × Unrated` 4/4 sig β>0** (first sig interaction in the H1 family).
+    - **Base controls**: `Leverage` 4/4 sig β<0; `lnAssets` 4/4 sig — **FE × col sign flip**: col 1 ind sig β>0 (+0.0005**), cols 3, 5 ind sig β<0, firm cells all sig β<0. Anomaly flag; `TobinsQ` 4/4 sig β>0; `ROA` 4/4 sig β<0; `Capex` 4/4 sig β<0; `DivDummy` 3/4 sig β<0 (col 4 null); `sCFO` 2/4 sig β>0 (ind-only).
+    - **Extended controls**: `SalesGrowth` 4/4 sig β<0; `RDSales` 4/4 sig β>0 (different from H1.1 where firm-FE was null); `CashFlowAt` 4/4 sig β>0; `DailyVola` FE-mixed.
+    - **Lagged_DV**: 0.864 / 0.867 (ind); 0.656 / 0.657 (firm).
+    - **R² / N**: 0.831 / 0.469 → 0.832 / 0.469. N = 67,544.
+- **Reader-question**: Q2 (provisional, placeholder).
+- **Argument**: 3-category rating indicator (IG reference / BelowIG / Unrated) interacted with main IV. Main IV sig as in H1 family. Of the 3 interaction terms: IG-interaction 0/4 null, BelowIG-interaction 0/4 null, **Unrated-interaction 4/4 sig β>0**. Per rule 18 no interpretive label is committed here; the Unrated-interaction 4/4 pattern is the empirical fact — whether it maps to a "constraint channel" narrative is a synthesis decision.
+- **Verdict**: **KEEP — only sig interaction in H1 family**.
+- **Rationale**: Unrated × UncAnsMgr_c interaction is 4/4 sig β>0 across all FE ladders including firm-FE. First positive interaction result in Q2 cluster. The BelowIG null is also informative (rated-but-below-IG shows no amplification, only unrated firms do).
+
+### H13.1 — Product Similarity-Moderated Capital Expenditure
+
+- **DV**: `Capex` (cols 1-4 contemp); `Capex_lead` (cols 5-8)
+- **N**: 73,673 contemp / 69,580 lead (Mgr-only + TSIMM coverage on H13 panel)
+- **FE ladder**: (1) Ind+Yr, (2) Firm+Yr, (3) Ind+YQ, (4) Firm+YQ × 2 DVs
+- **Tail**: one-tailed β>0 main IV; two-tailed moderator and interaction (parent H13 is two-tailed but H13.1 child is one-tailed per `feedback_moderation_tails.md`)
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsMgr_c` 4/8 sig β>0 — cols 1, 3, 5, 7 (all industry-FE; firm-FE 0/4 null). `z_log_TotalSimilarity` 6/8 sig β>0 (mostly). **`UncAnsMgr_c × zlogTSIMM` 8/8 sig β>0 — every cell including all 4 firm-FE cells.** Highest interaction sig rate in Q1+Q2 audit so far.
+    - **Base controls**: `lnAssets` 8/8 sig β<0 (mostly); `TobinsQ` 8/8 sig β>0; `ROA` 8/8 sig — **direction split**: cols 1-6 contemp β<0, cols 7-8 lead β>0 firm-FE, mixed under industry-FE; `Leverage` 6/8 sig (contemp all, lead firm-only); `CashRatio` 5/8 sig β<0; `DivDummy` 2/8 sig β<0 (lead only); `sCFO` 6/8 sig β<0.
+    - **Extended controls**: `SalesGrowth` 8/8 sig β>0; `RDSales` 8/8 sig β>0; `CashFlowAt` 8/8 sig β>0; `DailyVola` 8/8 sig — **sign flip across horizon**: cols 1-4 contemp β>0 (mostly), cols 5-8 lead β<0.
+    - **Lagged_DV**: 0.731 / 0.734 (ind contemp); 0.624 / 0.625 (ind lead); 0.333 / 0.335 (firm contemp); 0.094 / 0.097 (firm lead). Tracks H13 parent persistence.
+    - **R² / N**: contemp 0.620 / 0.156 → 0.623 / 0.159; lead 0.494 / 0.071 → 0.497 / 0.070. N = 73,673 contemp / 69,580 lead.
+- **Reader-question**: Q2 (provisional, placeholder).
+- **Argument**: Capex × log TSIMM interaction is sig in all 8 cells including firm-FE. Main IV sig only under industry-FE (firm-FE null), consistent with H13 parent. Interaction survives firm-FE in all 4 firm cells — within-firm identification confirmed. Per rule 18 no mechanism label committed; the 8/8 interaction pattern is the empirical fact.
+- **Verdict**: **KEEP — highest interaction sig rate in audit**.
+- **Rationale**: 8/8 sig interaction including all 4 firm-FE cells. First moderation pattern with within-firm survival in the audit. Strong candidate for the Q2 narrative scope, subject to synthesis.
+
+### H13.2 — Speech Uncertainty and Capital Expenditure — Lead Horizons
+
+- **DV**: `Capex_lead`, `Capex_lead2`, `Capex_lead3`, `Capex_lead4` (16 cols: 4 horizons × 4 FE ladders each)
+- **N**: 58,897 (h1) → 52,648 (h2) → 46,679 (h3) → 41,091 (h4). Sample shrinks with horizon due to fiscal-year consecutiveness requirement.
+- **FE ladder**: (1) Ind+Yr, (2) Firm+Yr, (3) Ind+YQ, (4) Firm+YQ × 4 horizons
+- **Tail**: **TWO-TAILED** (line 1289 notes block)
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue — native 4-IV structure extended to 4 horizons, NOT centered-IV moderation):
+    - **IVs**: `UncAnsCEO` 0/16 null. `UncPreCEO` 0/16 null. `UncAnsMgr` **10/16 sig β>0** — cols 1, 3, 5, 7, 9, 10, 11, 12, 13, 15 (mostly industry-FE across all 4 horizons; cols 10, 12 firm-FE at h2). Sustained positive sig across 4 lead horizons, predominantly cross-sectional. `UncPreMgr` 1/16 sig β<0 (col 3 lead1 only).
+    - **Base controls** (compact cross-horizon summary):
+        - `lnAssets`: mixed signs by horizon; firm-FE negative throughout
+        - `TobinsQ`: 8/8 sig β>0 at h1, declining to 4/8 at h4 (weakens with horizon)
+        - `ROA`: strong contemp β<0 at h1, direction/FE shifts at longer horizons
+        - `Leverage`: **sign flip by horizon** — h1 lead null/negative, h2-h4 ind sig β>0 + firm sig β<0
+        - `CashRatio`: mostly null across horizons (2/16 sig)
+        - `DivDummy`: h1 cols 1, 3 sig β<0; h2-4 mostly null
+        - `sCFO`: **sign flip across horizons** — h1 firm sig β<0; h2 contemp sig β>0; h3-h4 firm sig β>0. Major anomaly flag.
+    - **Extended controls**: SalesGrowth 8/8 sig β>0 h1+h2, weakening h3-h4; RDSales sig β>0 h1-h3, declining h4; CashFlowAt 8/8 sig β>0 all horizons; DailyVola mixed sign by horizon.
+    - **Lagged_DV** (rule 23 structural): 
+        - h1: 0.640 / 0.625 (ind); **+0.087 / +0.088 (firm)**
+        - h2: 0.563 / 0.565 (ind); **−0.035 / −0.034 (firm)**
+        - h3: 0.521 / 0.518 (ind); **−0.077 / −0.078 (firm)**
+        - h4: 0.497 / 0.494 (ind); **−0.064 / −0.063 (firm)**
+        - **Capex turns mean-reverting under firm-FE at horizons 2-4** — new DV-class observation.
+    - **R² / N**: h1 contemp 0.496 / 0.070 → 0.501 / 0.068; h4 0.361 / 0.016 → 0.366 / 0.016. N = 58,897 → 41,091 (collapsing with horizon).
+- **Reader-question**: Q2 (provisional, placeholder). **Cluster-fit flag**: H13.2 is structurally a multi-horizon extension of H13 (same 4 IVs, same DV class) not a moderation test. Synthesis-time decision: stay in Q2 ("channel = temporal depth") or re-cluster to Q1-extended.
+- **Argument**: UncAnsMgr positive cross-sectional effect on capex (seen in H13 parent) persists out to 4 lead quarters (10/16 sig). Firm-FE within-firm effect is null beyond contemp — the persistence is cross-sectional. Capex Lagged_DV turning negative under firm-FE at h2+ is a new DV-class observation (candidate for a new §5 entry at Q2 close).
+- **Verdict**: **KEEP — persistent cross-sectional effect across 4 horizons; flag for Q1 re-cluster**.
+- **Rationale**: Rule 21 KEEP default for informative pattern. UncAnsMgr 10/16 sig across 4 horizons is empirically informative. Cluster-reassignment question deferred to synthesis — the suite fits Q1-extended more naturally than Q2 moderation.
+
 ---
 
 _Template for subsequent suites:_
@@ -432,6 +539,37 @@ _Populated as patterns emerge across suites. Each entry is a factual flag, not a
     - **Lagged_DV heterogeneity** (DV persistence): H1/H4a/H4b/H12b/H17 have positive persistence across all FE strata; H12 PayoutRatio_q firm-FE near-zero (0.07); H13 Capex firm-FE lead near-zero (0.09); H16 RDSales firm-FE lead near-zero (0.05); **H19b/H20b have NEGATIVE persistence under firm FE** (mean reversion; first occurrence in audit). The negative-persistence DV class is documented in §5.10.
 - **Implication for synthesis**: All 10 Q1 suites now have full-row records. Cross-suite comparisons of controls (e.g., "where does TobinsQ Q-theory anomaly hit?") can be made directly from §4.2 without re-opening tables. Synthesis can use the §4.2 catalogue as the canonical empirical record.
 - **Loaded from**: Q1→Q2 boundary 2026-04-15. Incident report: `log/incidents/2026-04-15_q1-controls-uncatalogued.md`. Re-catalogue commits: batch 1 `ad9def1`, batch 2 (this commit).
+
+### 5.13 CEO coverage gap explains H1 vs H1.1/H1.1b/H1.2 sample differences (2026-04-15)
+
+- **Observation**: H1.1 and H1.1b have N=73,707 vs H1's N=65,128 — H1.1 is LARGER than its parent H1. Initially looked like a panel-drift smoking gun, but empirical verification + runner source reading shows it is runner-side complete-case filtering, not panel drift.
+- **Empirical verification** (on `h1_cash_holdings_panel.parquet`):
+    - Whole panel: 112,968 calls
+    - `UncAnsMgr` non-missing: 108,517 (96.1%)
+    - **`UncAnsCEO` non-missing: 90,947 (80.5%)** — CEO bottleneck
+    - `UncPreMgr` non-missing: 111,151 (98.4%)
+    - **`UncPreCEO` non-missing: 91,169 (80.7%)**
+    - Main sample: 88,205 (post financials + utilities exclusion)
+    - Main + 4-IV non-null: 70,086
+    - Main + `UncAnsMgr` non-null: 84,729
+    - **Gap = ~14,643 calls (~17% of Main sample) lost to CEO speaker ID missing**
+    - Main + 4-IV + base controls + CashRatio: 67,000 → H1 actual 65,128 (further loss to Lagged_DV + min-calls-per-firm)
+    - Main + Mgr-only + base controls + CashRatio: 80,238 → H1.1 actual 73,707 (further loss to TSIMM coverage + centering)
+- **Runner source evidence**:
+    - Both `run_h1_cash_holdings.py` and `run_h1_1_cash_tsimm.py` load **the same parquet file** (`h1_cash_holdings_panel.parquet`). Zero panel drift possible between H1 and H1.1.
+    - H1 runner (`run_h1_cash_holdings.py` line 86-90): `KEY_IVS = ["UncAnsCEO", "UncPreCEO", "UncAnsMgr", "UncPreMgr"]`. Line 311: `complete_mask = df[required].notna().all(axis=1)` — requires all 4 IVs non-null.
+    - H1.1 runner (`run_h1_1_cash_tsimm.py` line 74-76, 170-176): `IV = "UncAnsMgr"`. Loads only `UncAnsMgr` from the panel (NOT the other 3 IVs). Merges TNIC3 TSIMM from `inputs/TNIC3HHIdata/TNIC3HHIdata.txt`. Complete-case filter requires only `UncAnsMgr` + TSIMM non-null.
+- **Explanation of H1 vs H1.1/H1.1b/H1.2 sample gap**:
+    - H1 (65,128) is CEO-bottlenecked because the 4-IV complete-case filter drops the ~17% of calls with missing CEO speaker ID.
+    - H1.1/H1.1b (73,707) are Mgr-only — no CEO bottleneck. They lose ~6.5K to TNIC3 TSIMM coverage.
+    - H1.2 (67,544) is Mgr-only + rating coverage — loses ~6.2K more than H1.1 to rating data filter (IG/BelowIG/Unrated classification requirement).
+- **Generalization**: Every Q1 4-IV suite uses the same `KEY_IVS = {UncAnsMgr, UncAnsCEO, UncPreMgr, UncPreCEO}` set and complete-case filter. **Every Q1 4-IV regression is CEO-bottlenecked** by the same ~17% missingness. Any Mgr-only moderation suite runs on a broader sample than its 4-IV parent.
+- **Implication for cross-suite comparisons**:
+    - H1.1 main-effect re-confirmation of H1 is on a LARGER sample (73.7K vs 65.1K) — **stronger H1 evidence**, not weaker.
+    - Cross-suite sample differences should be decomposed into (a) panel-coverage differences, (b) IV-set differences, (c) merged-data-source differences. Only (a) could indicate panel drift.
+- **Panel-consistency TODO status**: H1 vs H1.1 is resolved (same panel file, runner-side filter). Whether the OTHER panel builders (H4, H12, H13, etc.) produce bit-identical values for shared variables when filtered to common `(gvkey, fyearq)` keys is still open. Deferred TODO remains in `memory/project_phase5_audit_progress.md`.
+- **Status**: Factual observation, not a narrative. Use this to interpret sample differences during synthesis.
+- **Loaded from**: Q2 batch 1 audit (H1.1 cataloguing), runner source reads, empirical panel analysis 2026-04-15.
 
 ---
 
