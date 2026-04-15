@@ -1,6 +1,6 @@
 # Thesis Draft — Decisions Log
 
-**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **10 / 37 suites audited — Q1 cluster COMPLETE.** H1 + H4a + H4b + H12 + H12b + H13 + H17 + H19b KEEP; H16 DROP-flagged (revisit), H20b DROP. Q1 was reworded at the H1 boundary then the rewording was locked mid-audit (narrative decided post-audit). Rules 21-23 added 2026-04-15 during H12 dialogue. Next cluster: Q2 (channel/mechanism, 6 suites). Next suite: H1.1.
+**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **10 / 37 suites audited — Q1 cluster COMPLETE.** H1 + H4a + H4b + H12 + H12b + H13 + H17 + H19b KEEP; H16 DROP-flagged (revisit), H20b DROP. Q1 was reworded at the H1 boundary then the rewording was locked mid-audit (narrative decided post-audit). Rules 21-24 added 2026-04-15. **Rule 24 (record-scope ≠ verdict-scope) shifted §4.2 cataloguing to full-row format starting H1.1 — Q1 records frozen with controls-cataloguing gap per user decision; see §5.12.** Next cluster: Q2 (channel/mechanism, 6 suites). Next suite: H1.1.
 
 ---
 
@@ -413,6 +413,15 @@ _Populated as patterns emerge across suites. Each entry is a factual flag, not a
 - UncAnsMgr robustness pattern across the Q2/Q3/Q4 clusters — where firm-FE survives, where it dies.
 - Sample-size bands and what they imply for generalizability (H22 annual, H5 IBES Detail, H20b Chang sample DROP precedent).
 - Q5 economic magnitude sweep (cross-cutting, at end of audit).
+
+### 5.12 Audit cataloguing format shift mid-Q1: Q1 records frozen with controls-cataloguing gap; Q2 onward full-row format (rule 24, 2026-04-15)
+
+- **Observation**: Across all 10 Q1 cluster suites (H1, H4a, H4b, H12, H12b, H13, H16, H17, H19b, H20b), the per-suite §4.2 "Key cell fact" line catalogued only the 4 IVs + Lagged_DV. Controls (`Size`, `MTB`, `Profitability`, `CashFlow`, `Tangibility`, cross-DV controls like `CashRatio`/`Leverage`) were read linearly per rule 6 when reading `outputs/all_tables.tex` but were not catalogued in the §4.2 record except in 2 incidental cases (H4a `CashRatio` β=-0.0297***, H4b `CashRatio` β=-0.0674***). The gap surfaced 2026-04-15 at the Q1→Q2 boundary when the user asked: *"are you telling me that you have not read the contorl behavior in each suite so far?"* and earlier issued: *"we must read ALL results in the suites for all variables in their tables!"*.
+- **Root cause**: Rule 23 framed audit observables as IV-specific ("sig-star count + FE-ladder survival + sig-cell direction" for IVs). I conflated **verdict scope** (rule 21 — KEEP/DROP/REFRAME rests on IV × FE × DV informative pattern) with **record scope** (what gets catalogued in §4.2). Controls don't bear on the verdict, so I cut them from the record by default. The negative-space "what about everything else" was unspecified in rules 21-23 and collapsed into "exclude". This is the same root failure family as rule 21 (filtering cataloguing through Q-target) and rule 22 (filtering cataloguing through null-sign-as-signal): each rule patches a different layer of "cataloguing gets collapsed into a downstream filter".
+- **Fix**: Rule 24 added 2026-04-15 to `feedback_phase5_methodology.md`. From H1.1 onward, every §4.2 block must catalogue every row of the regression table — IVs (or main+moderator+interaction for Q2 moderation suites), all controls, Lagged_DV, R²/N. Cataloguing is the empirical record; the verdict is a downstream summary of one slice of that record.
+- **Status**: Q1 records are **frozen as-is** per user decision 2026-04-15 (verbatim: "no" on retroactive Q1 re-cataloguing). The controls-cataloguing gap is permanent in the Q1 audit memory. Cost is **deferred to Q5 synthesis**: any future "what did the controls do in suite X" question for a Q1 suite requires re-opening `outputs/all_tables.tex` for that suite and reading the table fresh. Q2 cluster (H1.1 first) uses the new full-row format.
+- **Implication for synthesis**: When comparing controls across suites at end-of-audit, Q1 suites will need cell re-reading; Q2/Q3/Q4 suites will have control behavior in the §4.2 record. This may produce uneven cross-suite comparisons in the final synthesis. Flag for cross-cutting Q5 sweep when the audit completes.
+- **Loaded from**: Q1→Q2 boundary 2026-04-15. Incident report: `log/incidents/2026-04-15_q1-controls-uncatalogued.md`.
 
 ---
 
