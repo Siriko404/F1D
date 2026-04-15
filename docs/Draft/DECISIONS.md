@@ -1,6 +1,6 @@
 # Thesis Draft — Decisions Log
 
-**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **4 / 37 suites audited.** H1 + H4a + H4b + H12 KEEP 2026-04-14/15. Q1 was reworded at the H1 boundary then the rewording was locked mid-audit (narrative decided post-audit). Rules 21-23 added 2026-04-15 during H12 dialogue (provisional Q is placeholder; null signs are noise; sig-pattern is the audit signal, not magnitudes). Next suite: H12b.
+**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **7 / 37 suites audited.** H1 + H4a + H4b + H12 + H12b + H13 KEEP, H16 DROP-flagged (revisit) 2026-04-14/15. Q1 was reworded at the H1 boundary then the rewording was locked mid-audit (narrative decided post-audit). Rules 21-23 added 2026-04-15 during H12 dialogue. Next suite: H17.
 
 ---
 
@@ -134,6 +134,9 @@ Each audited suite produces **two things**:
 | H4a | Leverage (cols 1-6); Leverage_lead (cols 7-12) | 59,447–65,132 | Q1 (provisional) | UncAnsMgr 0/6 null on contemp Leverage (mixed signs); 6/6 negative-significant on Leverage_lead including Firm+YQ+ExtCtrl (β=-0.0064**); secondary measures (CEO, UncPreCEO, UncPreMgr) all null on both DVs, no inversions to flag | KEEP | Within-firm forward association between book leverage and management Q&A uncertainty delivered on the primary IV at the lead-horizon under all FE ladders; contemp-null vs lead-6/6 pattern is the inverse of H1 and noted as a factual observation in §5.4 (no interpretive commitment — narrative built post-audit) |
 | H4b | DebtToCapital (cols 1-6); DebtToCapital_lead (cols 7-12) | 59,190–64,895 | Q1 (provisional) | UncAnsMgr 0/6 null on contemp DebtToCapital (mixed signs); 5/6 negative-significant on DebtToCapital_lead including Firm+Yr+ExtCtrl (col 10 β=-0.0079*) but NOT col 12 Firm+YQ+ExtCtrl (-0.0069 null); secondary measures all null on both DVs | KEEP | Primary-IV forward-horizon association on lead DV under 5 of 6 FE ladders; contemp-null vs lead-5/6 tracks H4a leverage pattern but weakens slightly at the toughest YQ-FE spec; clean IV hierarchy, no flags |
 | H12 | PayoutRatio_q (cols 1-6); PayoutRatio_q_lead_qtr (cols 7-12) | 44,624–47,651 | Q1 (provisional) | UncAnsMgr 0/12, UncAnsCEO 0/12, UncPreCEO 0/12; UncPreMgr 6/12 sig β<0 — all 6 sig cells under industry FE (cols 1, 3, 5 contemp + 7, 9, 11 lead), firm-FE 0/6 across both DVs. Within-firm 0/24 across all 4 IVs. Lagged_DV ≈ 0.25 ind / 0.07 firm — drastically lower persistence than H1/H4a/H4b | KEEP | Within-firm zero across all 4 IVs; cross-sectional industry-FE-only loading on scripted-language UncPreMgr; mixed pattern recorded as informative empirical fact for post-audit synthesis. First suite catalogued under rules 21+22+23 (no Q-filter, no null-sign reading, no magnitude-as-signal) |
+| H12b | DivPayerQ (cols 1-6); DivPayerQ_lead1 (cols 7-12) | 60,175–64,145 | Q1 (provisional) | UncAnsCEO 0/12, UncPreCEO 0/12; UncAnsMgr 1/12 sig β<0 (col 6 Firm+YQ+ExtCtrl contemp only); UncPreMgr 6/12 sig β<0 — all 6 sig cells industry-FE (cols 1, 3, 5 contemp + 7, 9, 11 lead), firm-FE 0/6. Within-firm 1/24 (the UncAnsMgr col 6 only). Lagged_DV ≈ 0.91 ind / 0.70 firm — high persistence (sticky payer status, opposite of PayoutRatio_q's 0.07) | KEEP | Cross-sectional UncPreMgr industry-FE pattern repeats for the 3rd DV (after H1 cash, H12 payout — generalized in §5.5); one within-firm UncAnsMgr cell at the toughest spec is the only firm-FE survivor across all 4 IVs |
+| H13 | Capex (cols 1-6); Capex_lead (cols 7-12) | 58,897–65,105 | Q1 (provisional) | **TWO-TAILED** (different from prior Q1 directional suites). UncPreCEO 0/12; **UncAnsCEO 3/12 sig β>0 — all 3 under FIRM FE contemp (cols 2, 4, 6)**; **UncAnsMgr 4/12 sig β>0 — all 4 under INDUSTRY FE (col 3 contemp + 7, 9, 11 lead)**; UncPreMgr 1/12 sig β<0 (col 11 lead). Cross-IV FE-strata split: CEO firm-FE / Mgr industry-FE, both β>0. Lagged_DV ≈ 0.74 ind / 0.32 firm contemp; 0.64 ind / 0.09 firm lead | KEEP | First suite with cross-IV FE-strata split — UncAnsCEO carries within-firm signal that UncAnsMgr does not, UncAnsMgr carries cross-sectional signal that UncAnsCEO does not, both positive. UncPreMgr 1 sig cell opposite direction. Two-tailed exploratory spec per `feedback_moderation_tails.md`. New §5.7 entry on FE-strata split |
+| H16 | RDSales (cols 1-6); RDSales_lead (cols 7-12) | 58,970–65,086 | Q1 (provisional) | **TWO-TAILED**. **0/48 sig across all 4 IVs × all 12 cells** — first complete-null suite in the audit. Lagged_DV ≈ 0.71 ind / 0.34 firm contemp; 0.51 ind / 0.05 firm lead | **DROP (provisional, flagged for revisit)** | Per rule 21 explicit DROP criterion ("all-null"). User decision 2026-04-15: provisional DROP, revisit at end-of-audit if a strong reason to keep emerges (e.g., narrative needs an honest null on R&D for completeness). New §5.8 entry on first complete-null suite |
 
 ### 4.2 Per-suite blocks
 
@@ -197,6 +200,64 @@ _Populated during audit. One block per suite. Template at the bottom of this sec
 - **Verdict**: **KEEP — informative mixed pattern**.
 - **Rationale**: Under rules 21+22+23, KEEP is the default verdict for any informative empirical pattern. H12 has two distinct informative facts: (a) within-firm zero across all 4 IVs and both DVs, and (b) cross-sectional industry-FE-only UncPreMgr negative loading consistent across 6 cells. Both are recorded for post-audit synthesis; whether either fact maps to a final reader-Q wording is a synthesis decision deferred per the narrative-discipline lock. **First suite catalogued under rules 21-23**, added during this dialogue after three user corrections (provisional Q treated as filter; null signs treated as evidence; β magnitudes treated as audit signal). Incident: `log/incidents/2026-04-14_h12-filter-by-fixed-Q.md`.
 
+### H12b — Speech Uncertainty and Dividend Payer Indicator (Hoberg-Prabhala 2009 analog)
+
+- **DV**: `DivPayerQ` (cols 1-6); `DivPayerQ_lead1` (cols 7-12)
+- **N**: 60,175–64,145 (main sample, ex financials and utilities)
+- **FE ladder**: identical to H1/H4a/H4b/H12 (Ind+Yr → Firm+YQ+ExtCtrl ladder, repeats per DV)
+- **Tail**: one-tailed, β<0 for IVs (line 1095 notes block); two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact** (rules 21+22+23):
+    - **UncAnsCEO**: 0/12 sig
+    - **UncPreCEO**: 0/12 sig
+    - **UncAnsMgr**: **1/12 sig** — col 6 only (Firm+YQ+ExtCtrl contemp), β<0 matches tail. The only firm-FE survivor across all 4 IVs in this suite.
+    - **UncPreMgr**: **6/12 sig β<0** — sig cells are 1, 3, 5 (contemp ind-FE) + 7, 9, 11 (lead ind-FE). All under industry FE; firm-FE 0/6.
+    - **FE-ladder survival across all 4 IVs × both DVs**: industry-FE 6/24 sig (all UncPreMgr); firm-FE **1/24 sig** (the UncAnsMgr col 6).
+    - **Lagged_DV** (rule 23 structural): ≈ 0.91 (ind) / **0.70 (firm)** contemp; ≈ 0.91 (ind) / 0.72 (firm) lead. **High persistence** — DivPayerQ is sticky binary payer-status, structurally opposite of PayoutRatio_q (firm 0.07).
+- **Reader-question**: Q1 (provisional, placeholder per rule 21).
+- **Argument**: Cross-sectional UncPreMgr industry-FE-only pattern is now seen on a third distinct DV (H1 cash, H12 payout, H12b payer indicator) with the same shape: 6/6 sig industry-FE cells β<0, 0/6 firm-FE. Generalized in §5.5. UncAnsMgr's single firm-FE sig cell at the toughest spec (col 6 Firm+YQ+ExtCtrl) is a tiny within-firm signal — present, but not a strong pattern. CEO measures null on both DVs.
+- **Verdict**: **KEEP — informative mixed pattern**.
+- **Rationale**: Two informative facts: (a) cross-sectional UncPreMgr industry-FE pattern extends to a third DV, and (b) one within-firm UncAnsMgr cell at the toughest spec. KEEP per rule 21 — informative pattern, not all-null.
+
+### H13 — Speech Uncertainty and Capital Expenditure
+
+- **DV**: `Capex` (cols 1-6); `Capex_lead` (cols 7-12)
+- **N**: 58,897–65,105 (main sample, ex financials and utilities)
+- **FE ladder**: identical to prior Q1 suites
+- **Tail**: **TWO-TAILED** (line 1161 notes block — different from prior Q1 directional suites). H13 was deliberately set up as exploratory per `feedback_moderation_tails.md` (parent-child asymmetry: H13 two-tailed, H13.1 one-tailed)
+- **Cluster**: firm-level
+- **Key cell fact** (rules 21+22+23):
+    - **UncAnsCEO**: **3/12 sig β>0** — all 3 sig cells under **firm FE contemp** (col 2 = Firm+Yr, col 4 = Firm+Yr+ExtCtrl, col 6 = Firm+YQ+ExtCtrl). Lead 0/6 null.
+    - **UncPreCEO**: 0/12 sig
+    - **UncAnsMgr**: **4/12 sig β>0** — all 4 sig cells under **industry FE** (col 3 = Ind+Yr+ExtCtrl contemp; cols 7, 9, 11 = industry-FE lead specs). Firm-FE 0/6 across both DVs.
+    - **UncPreMgr**: **1/12 sig β<0** — col 11 (Ind+YQ+ExtCtrl lead). Industry FE.
+    - **FE-ladder survival across all 4 IVs × both DVs**: industry-FE **5/24 sig** (UncAnsMgr 4 + UncPreMgr 1); firm-FE **3/24 sig** (UncAnsCEO 3, all contemp).
+    - **Cross-IV FE-strata split** (NEW pattern): UncAnsCEO carries within-firm contemp signal (3 cells β>0). UncAnsMgr carries cross-sectional signal (4 cells β>0, mostly lead). Two primary IVs hit DIFFERENT FE strata with the SAME positive direction.
+    - **Lagged_DV** (rule 23 structural): ≈ 0.74 (ind) / 0.32 (firm) contemp; ≈ 0.64 (ind) / 0.09 (firm) lead. Moderate persistence (between PayoutRatio_q's 0.07 and CashRatio's 0.63).
+- **Reader-question**: Q1 (provisional, placeholder).
+- **Argument**: First Q1 suite with non-zero firm-FE signal beyond the toughest-spec single-cell pattern (H12b col 6). UncAnsCEO has 3 sig firm-FE contemp cells (β>0); UncAnsMgr has 4 sig industry-FE cells (β>0). Two primary IVs split FE strata. UncPreMgr has 1 sig lead cell β<0 — opposite direction from the Mgr/CEO pattern. Two-tailed spec means no directional prediction; both positive findings are exploratory observations, not tail-violations.
+- **Verdict**: **KEEP — informative mixed pattern with cross-IV FE-strata split**.
+- **Rationale**: First suite where UncAnsCEO carries within-firm signal that UncAnsMgr does not (and vice versa for industry-FE). The cross-IV FE-strata split is a new structural observation different from H1/H4a/H4b/H12/H12b. Logged in §5.7. Per `feedback_ceo_noisy_mgr_central.md`, UncAnsCEO is a secondary measure — but here it carries within-firm signal the primary IV does not. Measurement-concerns flag in OPPOSITE direction from §5.1 (where CEO-lead > Mgr-lead inverted breadth on cash lead).
+
+### H16 — Speech Uncertainty and R&D Investment Intensity
+
+- **DV**: `RDSales` (cols 1-6); `RDSales_lead` (cols 7-12)
+- **N**: 58,970–65,086 (main sample, ex financials and utilities)
+- **FE ladder**: identical to prior Q1 suites
+- **Tail**: **TWO-TAILED** (line 1690 notes block)
+- **Cluster**: firm-level
+- **Key cell fact** (rules 21+22+23):
+    - **UncAnsCEO**: 0/12 sig
+    - **UncPreCEO**: 0/12 sig
+    - **UncAnsMgr**: 0/12 sig
+    - **UncPreMgr**: 0/12 sig
+    - **0/48 sig across all 4 IVs × all 12 cells.** First complete-null suite in the audit.
+    - **Lagged_DV** (rule 23 structural): ≈ 0.71 (ind) / 0.34 (firm) contemp; ≈ 0.51 (ind) / 0.05 (firm) lead. Moderate ind / low firm persistence.
+- **Reader-question**: Q1 (provisional, placeholder).
+- **Argument**: Speech uncertainty is silent on R&D investment intensity under any IV (CEO or Mgr; Ans or Pre), any FE ladder (industry or firm), any horizon (contemp or lead). Per rule 21 explicit DROP criterion, "all-null" is reserved-for-DROP. R&D investment does not covary with management or CEO speech uncertainty. The cleanest null in the audit so far. A possible reading is that R&D is a long-horizon, sticky, multi-year decision insensitive to quarterly speech-uncertainty fluctuations, but that is post-audit synthesis material — not interpreted here.
+- **Verdict**: **DROP (provisional, flagged for revisit)**.
+- **Rationale**: Per rule 21 explicit DROP criterion. **User decision 2026-04-15** (verbatim): *"for RD, we will decide later if we had a very good reason to keep it, but for now, flag it as drop"*. Reasons to potentially revisit at synthesis: (a) a clean null is a kind of finding that constrains narrative scope ("speech uncertainty does not move R&D investment under any identification"), (b) if the post-audit thesis frame needs an honest null on R&D for completeness or balance, KEEP-as-honest-null may be preferred. Default DROP unless a strong reason emerges. New §5.8 entry on the first complete-null suite.
+
 ---
 
 _Template for subsequent suites:_
@@ -246,11 +307,11 @@ _Populated as patterns emerge across suites. Each entry is a factual flag, not a
 - **Status**: Factual pattern, not interpreted here. A narrative explanation (e.g., "DV adjustment-speed heterogeneity: liquid positions respond within-quarter, sticky balance-sheet items respond on a fiscal-annual horizon") would be a rescue if committed during audit. Log only; revisit during post-audit synthesis when all 37 suites have been read and the pattern's generality or specificity can be assessed.
 - **Loaded from**: H1 + H4a (2026-04-14).
 
-### 5.5 UncPreMgr industry-FE cross-sectional loading repeats on payout (H1 → H12)
+### 5.5 UncPreMgr industry-FE cross-sectional loading repeats across DVs (H1 → H12 → H12b)
 
-- **Observation**: H1 CashRatio (§5.2 above) showed UncPreMgr industry-FE-only sig pattern with firm-FE sign flip. H12 PayoutRatio_q now shows the same shape: 6/6 sig cells under industry FE (3 contemp + 3 lead), 0/6 sig cells under firm FE. The pattern is now seen on two distinct DVs from different financial domains (cash holdings, payout ratio) with consistent shape — scripted-language uncertainty (`UncPreMgr`) loads cross-sectionally between firms but not within-firm. The primary IV (`UncAnsMgr`) is null on H12 across all 12 cells, so this is a UncPreMgr-only pattern.
-- **Status**: Factual cross-suite observation. Per `feedback_ceo_noisy_mgr_central.md`, UncPreMgr is a secondary measure with known measurement concerns (scripted/IR-vetted obfuscation; cross-sectional loading is consistent with industry composition driving the result rather than within-firm linguistic variation). Do NOT build a positive narrative around it here. Log only; revisit at end-of-audit synthesis to assess whether the cross-sectional UncPreMgr pattern is general (across most/all DVs in the audit) or DV-specific.
-- **Loaded from**: H1 + H12 (2026-04-15).
+- **Observation**: H1 CashRatio (§5.2 above) showed UncPreMgr industry-FE-only sig pattern with firm-FE sign flip. H12 PayoutRatio_q showed the same shape: 6/6 sig industry-FE cells, 0/6 firm-FE. **H12b DivPayerQ (added 2026-04-15) is the third DV showing the same shape**: UncPreMgr 6/6 sig β<0 industry-FE cells (cols 1, 3, 5 contemp + 7, 9, 11 lead), 0/6 sig firm-FE. The pattern is now seen on **three distinct DVs** spanning cash holdings, quarterly payout ratio, and binary payer indicator — consistent shape across financial domains.
+- **Status**: Cross-DV factual pattern. Per `feedback_ceo_noisy_mgr_central.md`, UncPreMgr is a secondary measure with known measurement concerns (scripted/IR-vetted obfuscation; cross-sectional loading is consistent with industry composition driving the result rather than within-firm linguistic variation). Do NOT build positive narrative around it here. Log only; revisit at end-of-audit synthesis. The Q1 cluster has 3 more direct-outcome suites pending (H17, H19b, H20b) — by end of Q1 we'll know if this is a Q1-wide pattern or DV-specific.
+- **Loaded from**: H1 + H12 + H12b (2026-04-14/15).
 
 ### 5.6 PayoutRatio_q quarter-to-quarter persistence is near-zero under firm FE (H12)
 
@@ -258,7 +319,19 @@ _Populated as patterns emerge across suites. Each entry is a factual flag, not a
 - **Status**: Structural property of the DV, not an effect claim. Per rule 23 of `feedback_phase5_methodology.md`, this is a Lagged_DV observation that is allowed in the §4.2 record because it describes the DV's adjustment-speed, not an IV effect. A possible reading is "payout decisions are near-discrete events, not sticky balance sheet stocks" but that interpretation is post-audit synthesis material — log only here. Revisit when comparing across all 10 Q1 suites at end-of-audit, alongside the §5.4 contemp-vs-lead asymmetry pattern.
 - **Loaded from**: H12 (2026-04-15).
 
-### 5.7 Queued observations (to populate as audit proceeds)
+### 5.7 Cross-IV FE-strata split: UncAnsCEO firm-FE / UncAnsMgr industry-FE on Capex (H13)
+
+- **Observation**: H13 Capex is the first Q1 suite where the two primary IVs hit DIFFERENT FE strata with the SAME direction. UncAnsCEO has 3/6 sig contemp cells under firm FE (cols 2, 4, 6) all β>0; UncAnsMgr has 4/6 sig cells (1 contemp + 3 lead) under industry FE (cols 3, 7, 9, 11) all β>0. Cross-IV split: CEO firm-FE / Mgr industry-FE / both β>0. UncPreMgr has 1 sig lead cell β<0 (col 11) — opposite direction. UncPreCEO null. H13 is two-tailed (no directional prediction).
+- **Status**: New structural pattern not seen in H1/H4a/H4b/H12/H12b (which had EITHER cross-sectional UncPreMgr OR clean primary-IV pattern). H13 has a cross-IV FE-strata split. Per `feedback_ceo_noisy_mgr_central.md`, UncAnsCEO is a secondary measure — but here it carries within-firm signal the primary UncAnsMgr does not. Measurement-concerns flag in OPPOSITE direction from §5.1 (where CEO-lead > Mgr-lead inverted breadth on cash lead). Do NOT interpret here. Log only; revisit at end-of-audit synthesis.
+- **Loaded from**: H13 (2026-04-15).
+
+### 5.8 First complete-null suite: speech uncertainty silent on R&D investment (H16)
+
+- **Observation**: H16 RDSales is the first audited suite with **0/48 sig cells across all 4 IVs × all 12 spec cells**. UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr all null on both contemp and lead RDSales, under industry FE and firm FE alike, with and without extended controls, with Year FE or Year-Quarter FE. Two-tailed spec. Lagged_DV moderate (0.71 ind / 0.34 firm).
+- **Status**: Clean null across every cell. Per rule 21 explicit DROP criterion ("all-null"). User decision 2026-04-15: provisionally flag as DROP, revisit at end-of-audit if a strong reason to keep emerges (e.g., narrative needs an honest null on R&D for completeness, or the null becomes load-bearing as a falsification pre-registered prediction). Possible reading: R&D investment is a long-horizon, sticky, multi-year decision insensitive to quarterly speech-uncertainty fluctuations — but that interpretation is post-audit synthesis material.
+- **Loaded from**: H16 (2026-04-15).
+
+### 5.9 Queued observations (to populate as audit proceeds)
 
 - UncAnsMgr robustness pattern across the Q1 cluster — where firm-FE survives, where it dies.
 - Sample-size bands and what they imply for generalizability (H22 annual, H5 IBES Detail, H20b Chang sample).
