@@ -1,6 +1,6 @@
 # Thesis Draft — Decisions Log
 
-**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **20 / 37 suites audited (Q1 COMPLETE + Q2 COMPLETE + Q3 batch 1 COMPLETE).** Q1 (10): H1/H4a/H4b/H12/H12b/H13/H17/H19b KEEP; H16 DROP-flagged (revisit), H20b DROP. Q2 (6): H1.1/H1.1b/H1.2/H13.1/H13.2 KEEP; H22 KEEP (sample-size watch flag). Q3 batch 1 (4): H5 KEEP, H7 KEEP (near-null flag), H7b KEEP, H7c KEEP (CEO measurement-concerns flag). All 20 suites catalogued under rule 24 full-row format. Rules 21-24 added 2026-04-15; Q1 retroactive REVERSED same day (see §5.12). **Notable Q3 batch 1 findings**: H5 UncPreMgr 12/12 full-ladder sig (first in audit, breaks §5.5 §5.14); H7c UncAnsCEO 6/6 contemp all-FE incl firm-FE (deepest CEO-inversion in audit §5.15); H7 near-complete null with R² 0.001–0.005 (change-variable noise §5.16); H22 small-N firm-year alongside H20b precedent (§5.17). Next cluster: Q3 batch 2 = H7d → H7e → H14 → H14b → H14c.
+**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **25 / 37 suites audited (Q1 COMPLETE + Q2 COMPLETE + Q3 batch 1-2 COMPLETE).** Q1 (10): H1/H4a/H4b/H12/H12b/H13/H17/H19b KEEP; H16 DROP-flagged, H20b DROP. Q2 (6): all KEEP (H22 sample-size flag). Q3 batch 1 (4): H5/H7b/H7c KEEP; H7 KEEP (near-null flag). Q3 batch 2 (5): H7d/H7e KEEP; H14 KEEP (near-null flag, confirms §5.16); H14b/H14c KEEP (multiple CEO-inversion flags). All 25 under rule 24. **Notable Q3 batch 2 findings**: H14c **14/48 sig — richest liquidity suite** (first UncPreCEO sig pattern in audit + UncAnsCEO 5/6 LEAD on BGT 25-day spread); **H7c vs H14c horizon split** on same BGT 25-day window (Amihud contemp / Spread lead §5.18); **H14b UncAnsCEO 3/3 firm-FE lead** (novel CEO signature, 4th inversion instance §5.18); H14 1/48 **confirms §5.16 level-vs-change on spread side**; H7e 51-day symmetric average does NOT replicate H7c's CEO signal (window specificity §5.19). Next batch: Q3 batch 3 = H14d → H14e → H18 → H18b → H21.
 
 ---
 
@@ -150,6 +150,11 @@ Each audited suite produces **two things**:
 | H7 | DeltaILLIQ (cols 1-6); DeltaILLIQ_lead1 (cols 7-12) | 60,182–63,736 | Q3 (provisional) | `UncAnsCEO` 0/12 null; `UncPreCEO` **1/12 sig β>0** (col 2 firm+yr contemp only); `UncAnsMgr` 0/12 null; `UncPreMgr` 0/12 null. **1/48 sig — near-complete null**. Lagged_DV 0/12 null (change variable mean-reverts). **R² 0.001–0.005** (near-zero explanatory power) | KEEP (near-null flag) | Rule 21 KEEP default (1 sig cell technically informative). Near-null at R²≈0.003 parallels H16 R&D 0/48. User-override to DROP-flag available if "change-variable illiquidity uninformative" becomes the synthesis read. Level-vs-change contrast with H7b/H7c in §5.16 |
 | H7b | PostCallAmihud (cols 1-6); PostCallAmihud_lead1 (cols 7-12) | 60,182–63,736 (same panel as H7) | Q3 (provisional) | `UncAnsCEO` 0/12 null; `UncPreCEO` 0/12 null; `UncAnsMgr` 0/12 null; `UncPreMgr` **2/12 sig β>0** — col 3 (ind+yr+ext contemp) + col 9 (ind+yr+ext lead), industry-FE + ExtCtrl only. Lagged_DV 0.71/0.61 ind / 0.60/0.39 firm — high persistence (level variable, opposite of H7 change variable) | KEEP | Level-variant of H7 on same panel. Primary IV null; UncPreMgr 2/12 sig industry-FE + ExtCtrl only (cross-sectional-only matching §5.5). Level-vs-change structural contrast with H7 logged §5.16 |
 | H7c | BGTLevel_Amihud (cols 1-6); BGTLevel_Amihud_lead1 (cols 7-12) | 60,256–63,806 | Q3 (provisional) | `UncAnsCEO` **6/12 sig β>0 — ALL 6 contemp cells across all FE ladders incl 3 firm-FE** (cols 2, 4, 6); lead 0/6 null. `UncPreCEO` 0/12 null; `UncAnsMgr` 0/12 null; `UncPreMgr` 1/12 sig β>0 (col 9 lead ind+yr+ext only). **First 6/6 UncAnsCEO contemp-all-FE in audit** — breadth + firm-FE depth. Lagged_DV 0.78/0.67 | KEEP (measurement-concerns flag: CEO inverts primary hierarchy) | Rule 21 informative pattern. Deepest CEO-channel signal in audit — echoes §5.1 H1 CEO-lead inversion but goes DEEPER (contemp + firm-FE survival, 3 firm cells). Per feedback_ceo_noisy_mgr_central flagged as measurement concerns, not rescued. New §5.15 |
+| H7d | BGTDelta_Amihud (cols 1-6); BGTDelta_Amihud_lead1 (cols 7-12) — 25-day change window [+1,+25]-[-25,-1] | 60,036–63,537 | Q3 (provisional) | `UncAnsCEO` 0/12 null; `UncPreCEO` **4/12 sig β>0 — cols 7, 9, 11, 12 (lead-horizon only: 3 ind + 1 firm col 12)**; `UncAnsMgr` **1/12 sig β>0** (col 1 ind+yr contemp only); `UncPreMgr` 0/12 null. **5/48 sig**. Lagged_DV 12/12 sig ~0.15–0.18 (moderate persistence, weaker than H7c/H7e levels). R² 0.022–0.039 (between H7 0.003 and H7b/H7c 0.45+) | KEEP | Rule 21 informative pattern. 25-day change variant carries modestly more signal than 3-day change (H7 1/48) but far less than 25-day level (H7c 6/6 contemp CEO). UncPreCEO lead-horizon cluster is distinctive. §5.16 level-vs-change nuance: mid-horizon change carries some signal, short-horizon change doesn't |
+| H7e | BGTAvg_Amihud (cols 1-6); BGTAvg_Amihud_lead1 (cols 7-12) — 51-day symmetric average [-25,+25] | 60,256–63,816 | Q3 (provisional) | `UncAnsCEO` 0/12 null; `UncPreCEO` 0/12 null; `UncAnsMgr` 0/12 null; `UncPreMgr` **2/12 sig β>0** — col 3 (ind+yr+ext contemp) + col 9 (ind+yr+ext lead), industry-FE + ExtCtrl only (same pattern as H7b). Lagged_DV 12/12 sig **~0.80 ind / 0.70 firm** (highest persistence so far); R² **0.64–0.65 / 0.48–0.50 — highest firm-FE R² in audit** | KEEP | Rule 21 informative pattern (2 sig UncPreMgr cells matching §5.5 / H7b). **H7e does NOT replicate H7c's 6/6 contemp UncAnsCEO pattern** — the symmetric 51-day average (including pre-call) loses the signal that the post-call-only 25-day window carries. Suggests H7c's CEO signal is specific to the [0,+25] post-call-only window. §5.15 scope observation flagged |
+| H14 | DSPREAD change (cols 1-6); DSPREAD_lead1 (cols 7-12) — Lee (2016) 3-day spread change [+1,+3]-[-3,-1] | 44,132–63,972 (N drops ~30% with extended controls) | Q3 (provisional) | `UncAnsCEO` 0/12 null; `UncPreCEO` 0/12 null; `UncAnsMgr` 0/12 null; `UncPreMgr` **1/12 sig β>0** (col 6 firm+yq+ext contemp only). **1/48 sig — near-complete null**. Lagged_DV 5/12 mixed (small-magnitude firm β<0, col 9 β>0). **R² 0.001–0.009** (near-zero explanatory power). DSPREAD rescaled ×10⁴ per notes block | KEEP (near-null flag) | Rule 21 KEEP default (1 sig cell). **§5.16 hypothesis CONFIRMED on bid-ask spread side**: H14 change variant mirrors H7 DeltaILLIQ near-null almost exactly (1/48 vs 1/48, R² 0.001–0.009 vs 0.001–0.005). Near-null twin of H7; user-override to DROP available |
+| H14b | PostCallSpread (cols 1-6); PostCallSpread_lead1 (cols 7-12) — Lee (2016) 3-day level [+1,+3] | 60,368–63,972 | Q3 (provisional) | `UncAnsCEO` **3/12 sig β>0 — cols 8, 10, 12 firm-FE lead cells only** (contemp 0/6 null, ind-lead 0/3 null); `UncPreCEO` 0/12 null; `UncAnsMgr` **2/12 sig β>0** — cols 3, 9 (ind+yr+ext contemp + lead only); `UncPreMgr` **3/12 sig β>0** — col 2 (firm+yr contemp) + col 3 (ind+yr+ext contemp) + col 9 (ind+yr+ext lead). **8/48 sig**. Lagged_DV 12/12 ~0.61 ind / 0.43 firm. R² 0.53–0.56 / 0.29–0.33. PostCallSpread rescaled ×10⁴ | KEEP (CEO firm-FE lead flag) | Level variant of H14 on same panel. **Novel UncAnsCEO pattern**: 3/3 firm-FE lead cells (cols 8, 10, 12) — distinct from §5.1 H1 (lead ind), §5.7 H13 (contemp firm), §5.15 H7c (contemp all FE). Fourth CEO-inversion instance on liquidity. §5.16 level-vs-change holds. New §5.18 |
+| H14c | BGTLevel_Spread (cols 1-6); BGTLevel_Spread_lead1 (cols 7-12) — BGT 25-day level [0,+25] | 44,092–63,899 (N drops ~30% with extended controls) | Q3 (provisional) | `UncAnsCEO` **5/12 sig β>0 — cols 7, 8, 9, 10, 12 ALL lead-horizon cells** (2 ind cols 7, 9 + 3 firm cols 8, 10, 12); contemp 0/6 null. `UncPreCEO` **3/12 sig β>0 — cols 1, 2, 4 contemp only** (ind+yr + firm+yr + firm+yr+ext) — **first UncPreCEO sig pattern in audit**. `UncAnsMgr` **2/12 sig β>0** — cols 3, 9. `UncPreMgr` **4/12 sig β>0** — cols 3, 9, 10, 12. **14/48 sig — richest liquidity suite in audit**. Lagged_DV ~0.75 ind / 0.65 firm; R² **0.72–0.78 / 0.56–0.59 — highest R² in audit**. Rescaled ×10⁴ | KEEP (multiple flags) | Rule 21 informative pattern. **Two novel observations**: (a) UncAnsCEO loads 5/6 on LEAD horizon (OPPOSITE to H7c's 6/6 contemp) — same BGT 25-day window, different market DV, opposite horizon loading; (b) **first UncPreCEO sig pattern in audit** — 3/3 contemp cells β>0. New §5.18 (joint with H14b) |
 
 ### 4.2 Per-suite blocks
 
@@ -527,6 +532,96 @@ _Populated during audit. One block per suite. Template at the bottom of this sec
 - **Verdict**: **KEEP (measurement-concerns flag — CEO inverts primary hierarchy)**.
 - **Rationale**: Rule 21 KEEP default for informative pattern. **6/6 UncAnsCEO contemp-all-FE is the deepest CEO signal in audit** — echoes §5.1 H1 CEO-lead > Mgr-lead breadth inversion on cash but goes DEEPER (contemp horizon + firm-FE survival, 3 firm-FE cells). Per feedback_ceo_noisy_mgr_central logged as measurement concerns, not rescued. New §5.15 entry.
 
+### H7d — Speech Uncertainty and BGT-Window 25-Day Amihud Delta ([+1,+25]-[-25,-1])
+
+- **DV**: `BGTDelta_Amihud` (cols 1-6); `BGTDelta_Amihud_lead1` (cols 7-12)
+- **N**: 60,036–63,537
+- **FE ladder**: identical to H5/H7/H7b/H7c (6 × 2 DVs)
+- **Tail**: one-tailed β>0 for IVs; two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsCEO` 0/12 null. `UncPreCEO` **4/12 sig β>0** — cols 7 (ind+yr lead), 9 (ind+yr+ext lead), 11 (ind+yq+ext lead), 12 (firm+yq+ext lead). **All 4 in lead horizon; 3 industry-FE + 1 firm-FE (col 12).** `UncAnsMgr` **1/12 sig β>0** (col 1 ind+yr contemp only). `UncPreMgr` 0/12 null.
+    - **Base controls**: `lnAssets` 12/12 sig β>0 (consistent). `TobinsQ` 12/12 sig β>0 (consistent). `ROA` 3/12 sig β<0 — cols 1, 2 contemp ind/firm + col 9 ind+yr+ext lead. `Leverage` 7/12 sig β<0 — cols 1-6 contemp (all FE) + col 8 firm+yr lead. `Capex` 1/12 sig β<0 (col 3 ind+yr+ext contemp only). `DivDummy` 2/12 sig β<0 — cols 9, 11 lead industry-FE + ext only. `sCFO` 1/12 sig β<0 (col 3 only).
+    - **Extended controls** (cols 3-6, 9-12): `DailyVola` **6/8 sig with horizon sign flip** — contemp cols 4, 6 β>0; lead cols 9, 10, 11, 12 β<0. Anomaly. `StockPrice` 7/8 sig β<0 (col 3 null). `Turnover` **4/8 sig β>0 — all 4 lead cells only** (contemp 0/4 null; horizon split). `UncQue` 0/8 null.
+    - **Lagged_DV** (rule 23 structural): 0.164 / 0.141 / 0.172 / 0.147 / 0.170 / 0.149 / 0.178 / 0.156 / 0.172 / 0.153 / 0.174 / 0.155. **12/12 sig ~0.14–0.18 — moderate persistence** (weaker than H7b/H7c/H7e levels but stronger than H7 3-day change 0/12 null).
+    - **R² / N**: contemp 0.030 / 0.022 → 0.032 / 0.025; lead 0.034 / 0.026 → 0.038 / 0.031. Low but not near-zero (between H7 0.003 and H7b 0.55). N = 63,537 → 60,036 → 63,066 → 60,826.
+- **Reader-question**: Q3 (provisional, placeholder per rule 21).
+- **Argument**: 25-day change variant on Amihud illiquidity. Primary `UncAnsMgr` 1/12 (col 1 only). `UncPreCEO` 4/12 sig lead-horizon industry-FE + col 12 firm-FE cluster — first UncPreCEO cluster in the audit. Compared to H7 (3-day change near-null 1/48) and H7c (25-day level 6/12 contemp UncAnsCEO all-FE), H7d sits in between: 5/48 sig, R² 0.02–0.04, change variable on the longer window. The window length matters more than level vs change for this DV.
+- **Verdict**: **KEEP**.
+- **Rationale**: Rule 21 informative pattern. §5.16 level-vs-change nuance: the 25-day-window change variant carries modest signal (5/48) while the 3-day change is near-null (1/48) — window length matters. Distinctive UncPreCEO lead-horizon cluster (4/12 cols 7, 9, 11, 12) is new and noted in §5.18.
+
+### H7e — Speech Uncertainty and BGT-Window 25-Day Amihud Average ([-25,+25], 51-day symmetric)
+
+- **DV**: `BGTAvg_Amihud` (cols 1-6); `BGTAvg_Amihud_lead1` (cols 7-12)
+- **N**: 60,256–63,816
+- **FE ladder**: identical to H5/H7/H7b/H7c/H7d
+- **Tail**: one-tailed β>0 for IVs; two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsCEO` 0/12 null. `UncPreCEO` 0/12 null. `UncAnsMgr` 0/12 null. `UncPreMgr` **2/12 sig β>0** — col 3 (ind+yr+ext contemp) + col 9 (ind+yr+ext lead). Both industry-FE + extended controls only (cross-sectional-only matching §5.5 and identical to H7b pattern).
+    - **Base controls**: `lnAssets` 12/12 sig β<0. `TobinsQ` **9/12 sig β<0** (cols 8, 10, 12 null — firm-FE leads). `ROA` 12/12 sig β<0. `Leverage` **4/12 sig β<0** — cols 3, 9, 10, 12 only. `Capex` **10/12 sig β<0** (cols 2, 6 null). `DivDummy` **6/12 sig with FE sign flip** — cols 3, 5, 9 ind β>0; cols 8, 10, 12 firm β<0. Anomaly. `sCFO` **3/12 sig β<0** — cols 4, 6, 10 firm-FE cells only.
+    - **Extended controls** (cols 3-6, 9-12): `DailyVola` 8/8 sig β>0. `StockPrice` 8/8 sig (small positive). `Turnover` 8/8 sig β<0. `UncQue` 2/8 sig β<0 — cols 5, 6 (ind+yq+ext + firm+yq+ext contemp only).
+    - **Lagged_DV** (rule 23 structural): contemp 0.799 / 0.701 / 0.787 / 0.689 / 0.790 / 0.693; lead 0.805 / 0.708 / 0.797 / 0.699 / 0.799 / 0.701. **12/12 sig ~0.80 ind / 0.70 firm — highest persistence in audit so far**.
+    - **R² / N**: contemp 0.647 / 0.496 → 0.649 / 0.500; lead 0.644 / 0.494 → 0.642 / 0.492. **Highest R² in liquidity family so far (0.64–0.65 ind / 0.48–0.50 firm)**. N = 63,816 → 60,256 → 63,397 → 61,136.
+- **Reader-question**: Q3 (provisional, placeholder per rule 21).
+- **Argument**: 51-day symmetric average (including pre-call window). Primary `UncAnsMgr` null. `UncPreMgr` 2/12 sig β>0 pattern identical to H7b (cols 3, 9 ind+yr+ext only). **No UncAnsCEO 6/6 contemp pattern** — the 51-day symmetric average does NOT carry the H7c 25-day post-call-only CEO signal. The disappearance when pre-call is included suggests H7c's signal is specific to the post-call-only window structure.
+- **Verdict**: **KEEP**.
+- **Rationale**: Rule 21 informative pattern (2 sig UncPreMgr cells). H7e's disappearance of the H7c CEO 6/6 contemp pattern is a window-specificity observation for §5.15 scope.
+
+### H14 — Speech Uncertainty and Lee (2016) 3-Day Bid-Ask Spread Change ($\Delta$DSPREAD)
+
+- **DV**: `DSPREAD` = Lee (2016) [+1,+3]-[-3,-1] change (cols 1-6); `DSPREAD_lead1` (cols 7-12). **Rescaled by 10⁴ for readability** per notes block.
+- **N**: 44,132–63,972 (extended-control merge drops ~30% of sample)
+- **FE ladder**: identical to H7/H7b/H7c family
+- **Tail**: one-tailed β>0 for IVs; two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsCEO` 0/12 null. `UncPreCEO` 0/12 null. `UncAnsMgr` 0/12 null. `UncPreMgr` **1/12 sig β>0** (col 6 firm+yq+ext contemp only). **1/48 sig — near-complete null**, parallel to H7 DeltaILLIQ (also 1/48).
+    - **Base controls**: `lnAssets` **10/12 sig β>0** (cols 10, 12 firm-FE lead null). `TobinsQ` **6/12 sig β>0** — cols 1, 2, 5, 7, 8, 11. `ROA` 2/12 sig β<0 — cols 1, 7. `Leverage` 3/12 sig β<0 — cols 1, 5, 7. `Capex` 2/12 sig β>0 — cols 5, 11. `DivDummy` 0/12 null. `sCFO` **9/12 sig β>0** — cols 1, 4, 5, 6, 7, 9, 10, 11, 12 (mostly ind+ext).
+    - **Extended controls** (cols 3-6, 9-12): `StockPrice` **5/8 sig β<0** — cols 3, 5, 6, 9, 11 (col 4, 10, 12 null). `Turnover` 8/8 sig β>0. `DailyVola` **5/8 sig β<0** — col 3 + cols 9, 10, 11, 12. `AbsSurpDec` **4/8 sig β<0** — cols 3, 5 + cols 9, 11 (all industry-FE).
+    - **Lagged_DV** (rule 23 structural): 0.014 / **-0.017* firm** / 0.017 / **-0.023** firm** / 0.013 / **-0.023** firm** / 0.013 / **-0.019* firm** / **0.022* ind** / -0.016 / 0.019 / -0.016. **5/12 sig, mixed-sign and near-zero values** — firm-FE cells mostly small negative, col 9 ind+yr+ext lead small positive, rest null. Change variable mean-reverts (similar to H7 0/12 null).
+    - **R² / N**: contemp 0.005 / 0.001 → 0.007 / 0.001; lead 0.006 / 0.001 → 0.009 / 0.002. **R² 0.001–0.009 — near-zero explanatory power**, parallel to H7 (0.001–0.005). **N drops ~30% when extended controls added** (63,972 → 44,132 contemp; 63,554 → 44,640 lead) — external liquidity data merge coverage.
+- **Reader-question**: Q3 (provisional, placeholder per rule 21).
+- **Argument**: Bid-ask spread change variant. Primary `UncAnsMgr` null. Only 1 sig cell across 48 IV cells. R² near-zero (0.001–0.009). Parallels H7 DeltaILLIQ (1/48, R² 0.001–0.005) almost exactly — both 3-day change variants on the same panel fail to carry speech-uncertainty signal. §5.16 level-vs-change hypothesis confirmed on the spread family.
+- **Verdict**: **KEEP (near-null flag)**.
+- **Rationale**: Rule 21 KEEP default (1 sig cell). §5.16 confirmed on spread side: H14 near-null twin of H7. User-override to DROP-flag available.
+
+### H14b — Speech Uncertainty and Lee (2016) 3-Day Post-Call Bid-Ask Spread Level
+
+- **DV**: `PostCallSpread` = Lee (2016) [+1,+3] level (cols 1-6); `PostCallSpread_lead1` (cols 7-12). **Rescaled by 10⁴**.
+- **N**: 60,368–63,972 (same panel as H14, same ~30% extended-control drop)
+- **FE ladder**: identical to H14
+- **Tail**: one-tailed β>0 for IVs; two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsCEO` **3/12 sig β>0 — cols 8, 10, 12 firm-FE lead cells only** (contemp 0/6 null; lead-ind 0/3 null). **Novel UncAnsCEO FE/horizon signature: all 3 sig cells are firm-FE lead.** `UncPreCEO` 0/12 null. `UncAnsMgr` **2/12 sig β>0** — col 3 (ind+yr+ext contemp) + col 9 (ind+yr+ext lead), industry-FE + ExtCtrl only. `UncPreMgr` **3/12 sig β>0** — col 2 (firm+yr contemp) + col 3 (ind+yr+ext contemp) + col 9 (ind+yr+ext lead). **8/48 sig total.**
+    - **Base controls**: `lnAssets` 12/12 sig β<0 (consistent — larger firms tighter spreads). `TobinsQ` **11/12 sig β<0** (col 9 null). `ROA` 12/12 sig β<0. `Leverage` **10/12 sig β>0** (cols 3, 9 null). `Capex` **10/12 sig β<0** (cols 3, 9 null). `DivDummy` **7/12 sig with FE sign flip** — cols 3, 5 ind β>0; cols 2, 4, 6, 8, 10, 12 firm β<0. Anomaly. `sCFO` **4/12 sig β>0 — cols 2, 8, 10, 12 firm-FE cells only**.
+    - **Extended controls** (cols 3-6, 9-12): `DailyVola` 8/8 sig β>0. `StockPrice` **6/8 sig with FE sign flip** — cols 3, 9 ind β<0; cols 4, 6, 10, 12 firm β>0. Anomaly. `Turnover` 8/8 sig β<0. `UncQue` **5/8 sig mixed** — cols 3, 9 ind β>0; cols 4, 5, 6 β<0. Anomaly.
+    - **Lagged_DV** (rule 23 structural): contemp 0.615 / 0.454 / 0.591 / 0.413 / 0.563 / 0.409; lead 0.613 / 0.447 / 0.612 / 0.416 / 0.590 / 0.425. **12/12 sig ~0.60 ind / 0.43 firm** (intermediate persistence, lower than H7b/H7c/H7e Amihud levels).
+    - **R² / N**: contemp 0.539 / 0.294 → 0.554 / 0.313; lead 0.547 / 0.292 → 0.555 / 0.303. Moderate-high R² (0.53–0.56 ind / 0.29–0.33 firm). N = 63,972 → 60,368 → 63,554 → 61,257.
+- **Reader-question**: Q3 (provisional, placeholder per rule 21).
+- **Argument**: Level variant of H14 on same panel. Primary `UncAnsMgr` 2/12 sig industry-FE + ext (cols 3, 9, cross-sectional-only matching §5.5). **UncAnsCEO 3/3 firm-FE lead cells sig β>0** — novel signature distinct from prior CEO inversions: §5.1 H1 (cash lead ind-FE), §5.7 H13 (capex contemp firm-FE), §5.15 H7c (Amihud contemp all-FE). H14b is the first lead-horizon firm-FE-only CEO pattern. `UncPreMgr` 3/12 mixed (2 contemp + 1 lead ind+ext). §5.16 level-vs-change confirmed.
+- **Verdict**: **KEEP (CEO firm-FE lead flag)**.
+- **Rationale**: Rule 21 informative pattern. Fourth CEO-inversion instance on liquidity family, with a novel horizon/FE signature. New §5.18 documents the CEO-inversion sub-class pattern across liquidity suites.
+
+### H14c — Speech Uncertainty and BGT-Window 25-Day Bid-Ask Spread Level ([0,+25])
+
+- **DV**: `BGTLevel_Spread` (cols 1-6); `BGTLevel_Spread_lead1` (cols 7-12). **Rescaled by 10⁴**.
+- **N**: 44,092–63,899 (~30% extended-control drop)
+- **FE ladder**: identical to H7c (BGT 25-day Amihud)
+- **Tail**: one-tailed β>0 for IVs; two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsCEO` **5/12 sig β>0 — cols 7, 8, 9, 10, 12 ALL lead-horizon cells** (2 ind cols 7, 9 + 3 firm cols 8, 10, 12); contemp 0/6 null (col 11 lead also null). **OPPOSITE horizon to H7c's 6/6 contemp UncAnsCEO**. `UncPreCEO` **3/12 sig β>0 — cols 1, 2, 4 contemp cells** (ind+yr + firm+yr + firm+yr+ext); lead 0/6 null. **First UncPreCEO sig pattern in the audit**. `UncAnsMgr` **2/12 sig β>0** — col 3 (ind+yr+ext contemp) + col 9 (ind+yr+ext lead) — same pattern as H7b/H7e/H14b. `UncPreMgr` **4/12 sig β>0** — col 3 (ind+yr+ext contemp) + cols 9, 10, 12 (ind+yr+ext lead + firm+yr+ext lead + firm+yq+ext lead). **14/48 sig — richest liquidity suite in audit**.
+    - **Base controls**: `lnAssets` 12/12 sig β<0. `TobinsQ` **12/12 sig with sign anomaly** — col 9 sig β>0 (+0.101**), other 11 sig β<0. Col 9 sign flip anomaly. `ROA` 12/12 sig β<0. `Leverage` 5/12 sig mixed — col 1 β>0, col 2 β>0, col 7 β>0, col 8 β>0, col 9 β<0. Anomaly. `Capex` 3/12 sig β<0 — cols 7, 8, 10 (lead cells only). `DivDummy` 4/12 sig mixed — cols 3, 5 ind β>0 contemp + col 8 firm β<0 lead. `sCFO` 4/12 sig β>0 — cols 2, 4, 6, 8 firm-FE cells only.
+    - **Extended controls** (cols 3-6, 9-12): `StockPrice` **6/8 sig with FE sign flip** — col 3 ind β<0 + col 4 β<0 + col 6 null + col 9 ind β<0 + col 10 firm β>0 + col 12 firm β>0 (3 β<0 + 2 β>0 mixed). Anomaly. `Turnover` 8/8 sig β<0. `DailyVola` 8/8 sig β>0. `AbsSurpDec` **2/8 sig mixed** — col 5 β<0 contemp + col 9 β>0 lead.
+    - **Lagged_DV** (rule 23 structural): contemp 0.814 / 0.703 / 0.733 / 0.631 / 0.733 / 0.642; lead 0.805 / 0.681 / 0.754 / 0.611 / 0.760 / 0.648. **12/12 sig ~0.75 ind / 0.65 firm — very high persistence**.
+    - **R² / N**: contemp 0.778 / 0.585 → 0.730 / 0.557; lead 0.774 / 0.567 → 0.723 / 0.530. **Highest R² in audit** (0.72–0.78 ind / 0.53–0.59 firm). N = 63,899 → 44,092 → 63,443 → 44,569.
+- **Reader-question**: Q3 (provisional, placeholder per rule 21).
+- **Argument**: 25-day BGT level on bid-ask spread. **Three distinct IV patterns**: (a) `UncAnsCEO` 5/6 lead cells sig β>0 across both ind and firm FE — OPPOSITE horizon to H7c's 6/6 contemp on Amihud (same 25-day window, different market DV, opposite horizon loading); (b) **`UncPreCEO` 3/3 contemp cells sig β>0** — first UncPreCEO sig pattern in the audit (breaks the "UncPreCEO always null" baseline seen in all prior suites); (c) `UncAnsMgr` + `UncPreMgr` cross-sectional-only pattern matching §5.5. Richest liquidity signal in audit (14/48).
+- **Verdict**: **KEEP (multiple flags)**.
+- **Rationale**: Rule 21 informative pattern. Three cross-cutting observations surface: (a) H14c vs H7c horizon split on same BGT 25-day window (different DVs, different horizons); (b) first UncPreCEO sig pattern in audit; (c) H14c has highest R² and richest IV signal of any liquidity suite. All three flagged in new §5.18 (joint H14b/H14c liquidity-family CEO structures) and §5.19 (first UncPreCEO).
+
 ---
 
 _Template for subsequent suites:_
@@ -689,6 +784,37 @@ _Populated as patterns emerge across suites. Each entry is a factual flag, not a
 - **Observation**: H22 EquityDelayCon_lead is a firm-year panel with N = 8,564–8,621 — same small-sample class as H20b ChangDebtChoice (3,404–13,666, Chang external-financing-event restricted sample). Both substantially smaller than the call-level Q1/Q2/Q3 panels (~60–70K). Both have primary IV `UncAnsMgr` null. H20b was DROPped per rule 21 "empirically uninterpretable" (opposite-direction Pre split + Chang restriction). H22 has 2/4 UncAnsCEO industry-FE sig β>0 and no opposite-direction splits — slightly cleaner than H20b but still small-N firm-year with near-zero firm-FE R² (0.04). H5 IBES Detail panel (18–20K) is intermediate in size between Main call-level and the small-N class — not quite in this flag zone but worth noting for generalizability sweeps.
 - **Status**: Factual observation on sample-size heterogeneity in the audit. Small-N / special-sample suites create generalizability questions distinct from the main-panel suites — different sampling frames → different inference populations. User DROP override for H22 remains on the table if small-N firm-year generalizability is ruled out at synthesis (parallel to H20b precedent). For any future small-panel suites (H18b logit, H21 SEC letters, H23 firm-year TSIMM, H24/H24b/H25 macro-IV suites) same consideration applies. Revisit at end-of-audit.
 - **Loaded from**: H22 (2026-04-15). Precedent: H20b (2026-04-15, §5.10 + DROP verdict).
+
+### 5.18 Liquidity-family CEO-inversion structures + BGT 25-day horizon split (H7c/H14b/H14c) + first UncPreCEO sig (H14c)
+
+- **Observation**: After Q3 batch 2 (H7d/H7e/H14/H14b/H14c), the liquidity family carries a growing catalogue of CEO-inversion sub-patterns plus a new UncPreCEO sig pattern. Catalogue:
+    - **H7c BGT 25-day Amihud**: `UncAnsCEO` **6/6 contemp** cells sig β>0 all FE (incl 3 firm-FE). Lead 0/6 null. (Logged in §5.15.)
+    - **H14b 3-day post-call spread level**: `UncAnsCEO` **3/3 firm-FE lead** cells sig β>0 (cols 8, 10, 12). Contemp 0/6 null. Lead-ind 0/3 null. Novel: first lead-horizon firm-FE-only CEO pattern.
+    - **H14c BGT 25-day spread**: `UncAnsCEO` **5/6 lead** cells sig β>0 (cols 7-10, 12; 2 ind + 3 firm). Contemp 0/6 null. **OPPOSITE horizon to H7c's 6/6 contemp on Amihud — same BGT 25-day post-call window, different market DV, opposite horizon loading.**
+    - **H14c also has the first UncPreCEO sig pattern in the audit**: 3/3 contemp cells sig β>0 (cols 1, 2, 4 — ind+yr / firm+yr / firm+yr+ext). All prior suites (H1–H14b, H22, H5, H7–H7e) had UncPreCEO 0/12 null.
+- **Cross-catalogue with prior CEO-inversion observations**:
+    - §5.1 H1 cash `CashRatio_lead`: `UncAnsCEO` 4/6 lead cells sig β>0 — all industry-FE (firm-FE 0/3).
+    - §5.7 H13 capex `Capex`: `UncAnsCEO` 3/3 firm-FE contemp cells sig β>0.
+    - §5.15 H7c BGT Amihud (above).
+    - H14b (above).
+    - H14c (above).
+    - Five distinct CEO-inversion signatures now seen across audit. Each has a different horizon × FE combination (lead-ind, contemp-firm, contemp-all-FE, lead-firm-only, lead-all-FE).
+- **Status**: Cross-suite factual pattern. Per `feedback_ceo_noisy_mgr_central.md`, UncAnsCEO / UncPreCEO are secondary measures with performative / IR-vetted concerns; CEO-inversion instances are measurement-concerns flags, not positive hypothesis channels. Do NOT build a "CEO speaks through market-liquidity DVs" rescue narrative. The growing catalogue is the record; interpretation is synthesis-time. Two notable sub-observations deferred:
+    - **H7c vs H14c horizon split** on the same BGT 25-day window: Amihud contemp / Spread lead. Possible synthesis question: which liquidity DV responds at which horizon to CEO language? Not answered here.
+    - **H14c first UncPreCEO sig pattern**: after 19 prior suites with UncPreCEO 0/12 null in each, H14c has 3/12 sig β>0 contemp on a BGT 25-day post-call spread DV. This is the first empirical deviation from the "UncPreCEO baseline null" pattern. Synthesis question deferred.
+- **Loaded from**: H7c (§5.15 existing) + H14b + H14c (2026-04-15, Q3 batch 2). Incorporates H1 §5.1 + H13 §5.7 catalogue cross-reference.
+
+### 5.19 §5.16 level-vs-change confirmed on bid-ask spread family (H14/H14b/H14c)
+
+- **Observation**: §5.16 documented the level-vs-change R² split on H7 (DeltaILLIQ 0.001–0.005 / 0/12 sig Lagged_DV) vs H7b/H7c (PostCallAmihud and BGTLevel_Amihud, R² 0.39–0.62 / 12/12 sig Lagged_DV). Q3 batch 2 replicates the split on bid-ask spreads:
+    - **H14 DSPREAD change [+1,+3]-[-3,-1]**: R² 0.001–0.009; Lagged_DV mostly near-zero; **1/48 sig** (near-complete null, parallel to H7 1/48). Near-null twin of H7.
+    - **H14b PostCallSpread level [+1,+3]**: R² 0.29–0.56; Lagged_DV 12/12 sig ~0.60 ind / 0.43 firm; 8/48 sig.
+    - **H14c BGTLevel_Spread [0,+25]**: R² 0.56–0.78; Lagged_DV 12/12 sig ~0.75 ind / 0.65 firm; 14/48 sig (richest liquidity suite).
+    - **H7d BGTDelta_Amihud 25-day change**: R² 0.02–0.04; Lagged_DV 12/12 sig ~0.15–0.18; 5/48 sig. **Mid-horizon change variant carries some signal — nuances the pure level-vs-change split.**
+    - **H7e BGTAvg_Amihud 51-day symmetric average**: R² 0.48–0.65; Lagged_DV 12/12 sig ~0.80/0.70 (highest persistence in audit); 2/48 sig (only UncPreMgr cross-sectional cells). **51-day symmetric includes pre-call window — does NOT replicate H7c's 6/6 contemp UncAnsCEO pattern**, suggesting the CEO signal is specific to the post-call-only window structure.
+- **Status**: Structural property of the DV class — change variables on short (3-day) windows are dominated by sampling noise and carry no IV signal; level variables and longer-window change variables carry signal. Any liquidity-channel narrative should use level DVs. H7 and H14 remain near-null flagged; user DROP override available for both.
+- **Refinement to §5.16**: The hypothesis "level vs change" is refined to "level vs short-window change vs longer-window change". Short-window change (H7, H14) is near-null; longer-window change (H7d 25-day) carries modest signal; levels (H7b/H7c/H7e/H14b/H14c) carry full signal. Window length interacts with change/level structure.
+- **Loaded from**: Q3 batch 2 (2026-04-15). Extends §5.16.
 
 ---
 
