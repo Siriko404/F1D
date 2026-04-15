@@ -2,9 +2,9 @@
 
 **Purpose:** persistent memory for Claude across context compactions. Claude updates this file as work progresses. Read at start of every draft session.
 
-**Current phase:** **Phase 5 audit — philosophy-framed, dialogue-based. 3 / 37 suites audited. H1 + H4a + H4b KEEP 2026-04-14. Narrative discipline locked mid-audit. Next = H12 (Q1 cluster).**
+**Current phase:** **Phase 5 audit — philosophy-framed, dialogue-based. 4 / 37 suites audited. H1 + H4a + H4b + H12 KEEP 2026-04-14/15. Narrative discipline locked mid-audit. Rules 21-23 added 2026-04-15 during H12 dialogue. Next = H12b (Q1 cluster).**
 
-**Last updated:** 2026-04-14 (post-H4b)
+**Last updated:** 2026-04-15 (post-H12)
 
 ---
 
@@ -65,7 +65,7 @@ Each audited suite produces (a) one row in the summary table at `DECISIONS.md §
 - [x] Phase 3 — Pipeline bug fixes applied
 - [x] Phase 4 — Full 35-suite rerun + table regeneration
 - [x] Architectural rewrite (Phases 0-8) — zero-hardcoded-state pipeline complete, 8 LaTeX-audit bugs fixed. Commits c46e655 → bf9f366.
-- [ ] **Phase 5 audit/synthesis — IN PROGRESS.** Philosophy + design finalized 2026-04-14. **3 / 37 suites audited.** H1 + H4a + H4b KEEP 2026-04-14 (Q1 cluster). Q1 was reworded at H1 boundary, then narrative discipline locked mid-audit: no more Q rewording; final Q wording and narrative frame decided post-audit after all 37 suites are read. See `docs/Draft/DECISIONS.md §1.3` (Q1 revision history), §4.2 (H1/H4a/H4b blocks), §5.1-5.4 (cross-cutting flags). Tracker: `memory/project_phase5_audit_progress.md`. Next suite: **H12**.
+- [ ] **Phase 5 audit/synthesis — IN PROGRESS.** Philosophy + design finalized 2026-04-14. **4 / 37 suites audited.** H1 + H4a + H4b + H12 KEEP 2026-04-14/15 (Q1 cluster). Q1 was reworded at H1 boundary, then narrative discipline locked mid-audit: no more Q rewording; final Q wording and narrative frame decided post-audit after all 37 suites are read. **Rules 21-23 added 2026-04-15 during H12 dialogue** (rule 21: provisional Q is placeholder, not filter; rule 22: null coefficient signs are noise, not signal; rule 23: significance pattern is the audit signal, not effect magnitudes). See `docs/Draft/DECISIONS.md §1.3` (Q1 revision history), §4.2 (H1/H4a/H4b/H12 blocks), §5.1-5.6 (cross-cutting flags incl. cross-sectional UncPreMgr generalization §5.5 and PayoutRatio_q low-persistence flag §5.6). Tracker: `memory/project_phase5_audit_progress.md`. Next suite: **H12b**.
 
 ---
 

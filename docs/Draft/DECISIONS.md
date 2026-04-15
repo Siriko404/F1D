@@ -1,6 +1,6 @@
 # Thesis Draft — Decisions Log
 
-**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **3 / 37 suites audited.** H1 + H4a + H4b KEEP 2026-04-14. Q1 was reworded at the H1 boundary then the rewording was locked mid-audit (narrative decided post-audit). Next suite: H12.
+**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **4 / 37 suites audited.** H1 + H4a + H4b + H12 KEEP 2026-04-14/15. Q1 was reworded at the H1 boundary then the rewording was locked mid-audit (narrative decided post-audit). Rules 21-23 added 2026-04-15 during H12 dialogue (provisional Q is placeholder; null signs are noise; sig-pattern is the audit signal, not magnitudes). Next suite: H12b.
 
 ---
 
@@ -133,6 +133,7 @@ Each audited suite produces **two things**:
 | H1 | CashRatio (cols 1-6); CashRatio_lead (cols 7-12, robustness) | 59,440–65,128 | Q1 (provisional) | UncAnsMgr 6/6 positive-significant on contemp CashRatio, including the toughest Firm+YQ+ExtCtrl spec (β=0.0034**); lead DV collapses to 1/6 on UncAnsMgr and the only surviving lead cell uses Ind FE not Firm FE | KEEP | Within-firm contemporaneous association between cash-holdings and management Q&A uncertainty delivered on the primary IV under the toughest FE ladder; lead collapse, CEO-lead > Mgr-lead inversion, and UncPreMgr firm-FE sign flip logged as cross-cutting limitations in §5, not rescued |
 | H4a | Leverage (cols 1-6); Leverage_lead (cols 7-12) | 59,447–65,132 | Q1 (provisional) | UncAnsMgr 0/6 null on contemp Leverage (mixed signs); 6/6 negative-significant on Leverage_lead including Firm+YQ+ExtCtrl (β=-0.0064**); secondary measures (CEO, UncPreCEO, UncPreMgr) all null on both DVs, no inversions to flag | KEEP | Within-firm forward association between book leverage and management Q&A uncertainty delivered on the primary IV at the lead-horizon under all FE ladders; contemp-null vs lead-6/6 pattern is the inverse of H1 and noted as a factual observation in §5.4 (no interpretive commitment — narrative built post-audit) |
 | H4b | DebtToCapital (cols 1-6); DebtToCapital_lead (cols 7-12) | 59,190–64,895 | Q1 (provisional) | UncAnsMgr 0/6 null on contemp DebtToCapital (mixed signs); 5/6 negative-significant on DebtToCapital_lead including Firm+Yr+ExtCtrl (col 10 β=-0.0079*) but NOT col 12 Firm+YQ+ExtCtrl (-0.0069 null); secondary measures all null on both DVs | KEEP | Primary-IV forward-horizon association on lead DV under 5 of 6 FE ladders; contemp-null vs lead-5/6 tracks H4a leverage pattern but weakens slightly at the toughest YQ-FE spec; clean IV hierarchy, no flags |
+| H12 | PayoutRatio_q (cols 1-6); PayoutRatio_q_lead_qtr (cols 7-12) | 44,624–47,651 | Q1 (provisional) | UncAnsMgr 0/12, UncAnsCEO 0/12, UncPreCEO 0/12; UncPreMgr 6/12 sig β<0 — all 6 sig cells under industry FE (cols 1, 3, 5 contemp + 7, 9, 11 lead), firm-FE 0/6 across both DVs. Within-firm 0/24 across all 4 IVs. Lagged_DV ≈ 0.25 ind / 0.07 firm — drastically lower persistence than H1/H4a/H4b | KEEP | Within-firm zero across all 4 IVs; cross-sectional industry-FE-only loading on scripted-language UncPreMgr; mixed pattern recorded as informative empirical fact for post-audit synthesis. First suite catalogued under rules 21+22+23 (no Q-filter, no null-sign reading, no magnitude-as-signal) |
 
 ### 4.2 Per-suite blocks
 
@@ -176,6 +177,25 @@ _Populated during audit. One block per suite. Template at the bottom of this sec
 - **Argument**: Primary IV delivers 5/6 negative-significant lead cells across FE ladders. Pattern tracks H4a leverage almost exactly (same inverse contemp/lead asymmetry) but weakens at the toughest Firm+YQ+ExtCtrl spec. No narrative commitment; factual pattern is consistent with H4a.
 - **Verdict**: **KEEP**.
 - **Rationale**: Forward-horizon within-firm association delivered on 5 of 6 lead specs, clean IV hierarchy, no flags. The weakening at col 12 vs H4a is a factual observation to carry forward (not a basis to DROP). Debt-to-capital and book leverage are correlated measures of the same underlying construct — disclosed as such for post-audit synthesis.
+
+### H12 — Speech Uncertainty and Quarterly Payout Ratio
+
+- **DV**: `PayoutRatio_q` (cols 1-6); `PayoutRatio_q_lead_qtr` (cols 7-12)
+- **N**: 44,624–47,651 (main sample, ex financials and utilities)
+- **FE ladder** (repeats per DV): (1) Ind+Yr, (2) Firm+Yr, (3) Ind+Yr+ExtCtrl, (4) Firm+Yr+ExtCtrl, (5) Ind+YQ+ExtCtrl, (6) Firm+YQ+ExtCtrl
+- **Tail**: one-tailed, β<0 for IVs (line 1029 notes block); two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact** (catalogued per rules 21+22+23: sig-pattern observables only, no β values on IV cells, no sign-talk on null cells):
+    - **UncAnsMgr**: 0/12 sig
+    - **UncAnsCEO**: 0/12 sig
+    - **UncPreCEO**: 0/12 sig
+    - **UncPreMgr**: **6/12 sig β<0** — sig cells are 1, 3, 5 (contemp industry-FE) and 7, 9, 11 (lead industry-FE). All 6 sig cells under industry FE; firm-FE cells 0/6 across both DVs.
+    - **FE-ladder survival across all 4 IVs × both DVs**: industry-FE cells 6/24 sig (all UncPreMgr); firm-FE cells 0/24 sig.
+    - **Lagged_DV** (rule 23 structural exception, allowed because it describes DV adjustment-speed not an IV effect): ≈ 0.25 (ind FE) / **0.07 (firm FE)** on contemp PayoutRatio_q; ≈ 0.23 (ind) / **0.04 (firm)** on lead. Drastically lower than H1 CashRatio (0.85/0.63), H4a Leverage (0.94/0.76), H4b DebtToCapital (0.93/0.79). Quarter-to-quarter persistence under firm FE is near-zero on this DV. Recorded in §5.6.
+- **Reader-question**: Q1 (provisional). Per rule 21, Q wording is a placeholder; this block describes the empirical pattern, not a Q-answer match.
+- **Argument**: The cataloguing IS the argument. Within-firm variation (firm-FE cells across all 4 IVs and both DVs) shows zero association between any speech-uncertainty measure and quarterly payout ratio. Cross-sectional (between-firm, industry-FE) variation shows scripted-language UncPreMgr loading negatively on payout ratio, 6/6 sig cells consistent direction. The within-firm-zero / cross-sectional-PreMgr-only split is the informative content. UncPreMgr's industry-FE-only pattern echoes the §5.2 measurement-concerns flag from H1 — the cross-sectional shape is now seen on two distinct DVs (cash, payout) and is generalized in §5.5.
+- **Verdict**: **KEEP — informative mixed pattern**.
+- **Rationale**: Under rules 21+22+23, KEEP is the default verdict for any informative empirical pattern. H12 has two distinct informative facts: (a) within-firm zero across all 4 IVs and both DVs, and (b) cross-sectional industry-FE-only UncPreMgr negative loading consistent across 6 cells. Both are recorded for post-audit synthesis; whether either fact maps to a final reader-Q wording is a synthesis decision deferred per the narrative-discipline lock. **First suite catalogued under rules 21-23**, added during this dialogue after three user corrections (provisional Q treated as filter; null signs treated as evidence; β magnitudes treated as audit signal). Incident: `log/incidents/2026-04-14_h12-filter-by-fixed-Q.md`.
 
 ---
 
@@ -226,7 +246,19 @@ _Populated as patterns emerge across suites. Each entry is a factual flag, not a
 - **Status**: Factual pattern, not interpreted here. A narrative explanation (e.g., "DV adjustment-speed heterogeneity: liquid positions respond within-quarter, sticky balance-sheet items respond on a fiscal-annual horizon") would be a rescue if committed during audit. Log only; revisit during post-audit synthesis when all 37 suites have been read and the pattern's generality or specificity can be assessed.
 - **Loaded from**: H1 + H4a (2026-04-14).
 
-### 5.5 Queued observations (to populate as audit proceeds)
+### 5.5 UncPreMgr industry-FE cross-sectional loading repeats on payout (H1 → H12)
+
+- **Observation**: H1 CashRatio (§5.2 above) showed UncPreMgr industry-FE-only sig pattern with firm-FE sign flip. H12 PayoutRatio_q now shows the same shape: 6/6 sig cells under industry FE (3 contemp + 3 lead), 0/6 sig cells under firm FE. The pattern is now seen on two distinct DVs from different financial domains (cash holdings, payout ratio) with consistent shape — scripted-language uncertainty (`UncPreMgr`) loads cross-sectionally between firms but not within-firm. The primary IV (`UncAnsMgr`) is null on H12 across all 12 cells, so this is a UncPreMgr-only pattern.
+- **Status**: Factual cross-suite observation. Per `feedback_ceo_noisy_mgr_central.md`, UncPreMgr is a secondary measure with known measurement concerns (scripted/IR-vetted obfuscation; cross-sectional loading is consistent with industry composition driving the result rather than within-firm linguistic variation). Do NOT build a positive narrative around it here. Log only; revisit at end-of-audit synthesis to assess whether the cross-sectional UncPreMgr pattern is general (across most/all DVs in the audit) or DV-specific.
+- **Loaded from**: H1 + H12 (2026-04-15).
+
+### 5.6 PayoutRatio_q quarter-to-quarter persistence is near-zero under firm FE (H12)
+
+- **Observation**: H12 Lagged_DV ≈ 0.07 (firm FE, contemp) and ≈ 0.04 (firm FE, lead). Compare H1 CashRatio Lagged_DV ≈ 0.63 firm; H4a Leverage ≈ 0.76 firm; H4b DebtToCapital ≈ 0.79 firm. Payout ratio has drastically lower quarter-to-quarter persistence under within-firm identification than the cash and leverage DVs already audited.
+- **Status**: Structural property of the DV, not an effect claim. Per rule 23 of `feedback_phase5_methodology.md`, this is a Lagged_DV observation that is allowed in the §4.2 record because it describes the DV's adjustment-speed, not an IV effect. A possible reading is "payout decisions are near-discrete events, not sticky balance sheet stocks" but that interpretation is post-audit synthesis material — log only here. Revisit when comparing across all 10 Q1 suites at end-of-audit, alongside the §5.4 contemp-vs-lead asymmetry pattern.
+- **Loaded from**: H12 (2026-04-15).
+
+### 5.7 Queued observations (to populate as audit proceeds)
 
 - UncAnsMgr robustness pattern across the Q1 cluster — where firm-FE survives, where it dies.
 - Sample-size bands and what they imply for generalizability (H22 annual, H5 IBES Detail, H20b Chang sample).
