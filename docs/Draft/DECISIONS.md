@@ -1,6 +1,6 @@
 # Thesis Draft — Decisions Log
 
-**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **15 / 37 suites audited (Q1 COMPLETE + Q2 batch 1 complete).** Q1: H1 + H4a + H4b + H12 + H12b + H13 + H17 + H19b KEEP; H16 DROP-flagged (revisit), H20b DROP. Q2 batch 1 (H1.1/H1.1b/H1.2/H13.1/H13.2): all 5 KEEP. All 15 suites catalogued under rule 24 full-row format. Rules 21-24 added 2026-04-15; Q1 retroactive REVERSED same day (see §5.12). **Notable findings**: H1 family TSIMM moderation null (H1.1/H1.1b), Unrated × UncAnsMgr_c sig 4/4 (H1.2), capex × TSIMM sig 8/8 incl firm-FE (H13.1), UncAnsMgr persistent 10/16 across 4 capex horizons (H13.2), §5.13 CEO coverage gap explains H1 vs H1.1 sample difference (not panel drift). Next cluster: Q2 batch 2 = H22 (last Q2 suite, firm-year, ~4-8K N class).
+**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **20 / 37 suites audited (Q1 COMPLETE + Q2 COMPLETE + Q3 batch 1 COMPLETE).** Q1 (10): H1/H4a/H4b/H12/H12b/H13/H17/H19b KEEP; H16 DROP-flagged (revisit), H20b DROP. Q2 (6): H1.1/H1.1b/H1.2/H13.1/H13.2 KEEP; H22 KEEP (sample-size watch flag). Q3 batch 1 (4): H5 KEEP, H7 KEEP (near-null flag), H7b KEEP, H7c KEEP (CEO measurement-concerns flag). All 20 suites catalogued under rule 24 full-row format. Rules 21-24 added 2026-04-15; Q1 retroactive REVERSED same day (see §5.12). **Notable Q3 batch 1 findings**: H5 UncPreMgr 12/12 full-ladder sig (first in audit, breaks §5.5 §5.14); H7c UncAnsCEO 6/6 contemp all-FE incl firm-FE (deepest CEO-inversion in audit §5.15); H7 near-complete null with R² 0.001–0.005 (change-variable noise §5.16); H22 small-N firm-year alongside H20b precedent (§5.17). Next cluster: Q3 batch 2 = H7d → H7e → H14 → H14b → H14c.
 
 ---
 
@@ -145,6 +145,11 @@ Each audited suite produces **two things**:
 | H1.2 | CashRatio (4 cols) | 67,544 (Mgr-only + rating coverage) | Q2 (provisional) | `UncAnsMgr_c` **4/4 sig β>0**; `BelowIG × UncAnsMgr_c` 0/4 null; `IG × UncAnsMgr_c` 0/4 null; **`Unrated × UncAnsMgr_c` 4/4 sig β>0** — first sig interaction in H1 family. `lnAssets` col 1 ind sign flip anomaly | KEEP | Only sig interaction in H1 moderation family. Unrated-firm subgroup shows 4/4 interaction sig β>0 across all FE ladders; rated-but-below-IG null |
 | H13.1 | Capex (cols 1-4); Capex_lead (cols 5-8) | 73,673 contemp / 69,580 lead | Q2 (provisional) | `UncAnsMgr_c` 4/8 sig β>0 ind-only (firm 0/4 null); `z_log_TotalSimilarity` 6/8 sig β>0; **`UncAnsMgr_c × zlogTSIMM` 8/8 sig β>0 including all 4 firm-FE cells** — highest interaction sig rate in audit | KEEP | 8/8 interaction sig including firm-FE survival. First moderation pattern with within-firm identification. Strongest channel evidence in Q1+Q2 audit so far |
 | H13.2 | Capex_lead / _lead2 / _lead3 / _lead4 (16 cols: 4 horizons × 4 FE) | 58,897 (h1) → 41,091 (h4), shrinks with horizon | Q2 (provisional, **cluster-fit flag: re-cluster to Q1?**) | **TWO-TAILED**. UncAnsCEO 0/16 null; UncPreCEO 0/16 null; `UncAnsMgr` **10/16 sig β>0** across all 4 lead horizons (mostly industry-FE); UncPreMgr 1/16 sig β<0. **Capex firm-FE Lagged_DV turns NEGATIVE at h2-h4 (+0.087 at h1 → −0.06 to −0.08 at h2-h4)** — new DV-class observation | KEEP (flag re-cluster) | Sustained cross-sectional UncAnsMgr effect on capex out to 4 quarters; firm-FE null beyond contemp. Structurally a Q1-extended suite, not a moderation test — re-cluster question deferred to synthesis |
+| H22 | EquityDelayCon_lead (4 cols, firm-year) | 8,564–8,621 (firm-year, small-sample class alongside H20b DROP precedent) | Q2 (provisional; edge: Q1 vs Q2 per §3) | `UncAnsCEO` **2/4 sig β>0** — cols 1, 3 industry-FE only (firm-FE 0/2 null); `UncPreCEO` 0/4 null; `UncAnsMgr` 0/4 null; `UncPreMgr` 0/4 null. Lagged_DV ≈ 0.66 ind / 0.18 firm. Very high ind-FE R² (0.49) but near-zero firm-FE R² (0.04) | KEEP (sample-size watch flag) | Rule 21 KEEP default for informative pattern (UncAnsCEO 2/4 sig industry-FE β>0). Firm-year ~8.6K places H22 in H20b small-sample class — user DROP override available if generalizability ruled out at synthesis. Cluster edge-case Q1 vs Q2 deferred. New §5.17 |
+| H5 | DISP (cols 1-6); DISP_lead (cols 7-12) | 18,406–20,069 (IBES Detail coverage ~1/3 of Q1 Main cash panel) | Q3 (provisional; edge: Q1 vs Q3 per §3) | `UncAnsCEO` 0/12 null; `UncPreCEO` 0/12 null; `UncAnsMgr` **6/12 sig β>0 — all 6 industry-FE cells both DVs** (cross-sectional only, firm-FE 0/6); `UncPreMgr` **12/12 sig β>0 — every cell incl firm-FE (first full-ladder UncPreMgr survival in audit)**. Lagged_DV ≈ 0.63 ind / 0.38 firm contemp; 0.58 / 0.31 lead | KEEP | Two Mgr channels: UncAnsMgr cross-sectional-only (matches §5.5 pattern); **UncPreMgr 12/12 including firm-FE — strongest UncPreMgr in audit, further breaks §5.5 after H17**. Analyst market listens to scripted-presentation language at least as strongly as Q&A. Edge-case Q1 vs Q3 held. New §5.14 |
+| H7 | DeltaILLIQ (cols 1-6); DeltaILLIQ_lead1 (cols 7-12) | 60,182–63,736 | Q3 (provisional) | `UncAnsCEO` 0/12 null; `UncPreCEO` **1/12 sig β>0** (col 2 firm+yr contemp only); `UncAnsMgr` 0/12 null; `UncPreMgr` 0/12 null. **1/48 sig — near-complete null**. Lagged_DV 0/12 null (change variable mean-reverts). **R² 0.001–0.005** (near-zero explanatory power) | KEEP (near-null flag) | Rule 21 KEEP default (1 sig cell technically informative). Near-null at R²≈0.003 parallels H16 R&D 0/48. User-override to DROP-flag available if "change-variable illiquidity uninformative" becomes the synthesis read. Level-vs-change contrast with H7b/H7c in §5.16 |
+| H7b | PostCallAmihud (cols 1-6); PostCallAmihud_lead1 (cols 7-12) | 60,182–63,736 (same panel as H7) | Q3 (provisional) | `UncAnsCEO` 0/12 null; `UncPreCEO` 0/12 null; `UncAnsMgr` 0/12 null; `UncPreMgr` **2/12 sig β>0** — col 3 (ind+yr+ext contemp) + col 9 (ind+yr+ext lead), industry-FE + ExtCtrl only. Lagged_DV 0.71/0.61 ind / 0.60/0.39 firm — high persistence (level variable, opposite of H7 change variable) | KEEP | Level-variant of H7 on same panel. Primary IV null; UncPreMgr 2/12 sig industry-FE + ExtCtrl only (cross-sectional-only matching §5.5). Level-vs-change structural contrast with H7 logged §5.16 |
+| H7c | BGTLevel_Amihud (cols 1-6); BGTLevel_Amihud_lead1 (cols 7-12) | 60,256–63,806 | Q3 (provisional) | `UncAnsCEO` **6/12 sig β>0 — ALL 6 contemp cells across all FE ladders incl 3 firm-FE** (cols 2, 4, 6); lead 0/6 null. `UncPreCEO` 0/12 null; `UncAnsMgr` 0/12 null; `UncPreMgr` 1/12 sig β>0 (col 9 lead ind+yr+ext only). **First 6/6 UncAnsCEO contemp-all-FE in audit** — breadth + firm-FE depth. Lagged_DV 0.78/0.67 | KEEP (measurement-concerns flag: CEO inverts primary hierarchy) | Rule 21 informative pattern. Deepest CEO-channel signal in audit — echoes §5.1 H1 CEO-lead inversion but goes DEEPER (contemp + firm-FE survival, 3 firm cells). Per feedback_ceo_noisy_mgr_central flagged as measurement concerns, not rescued. New §5.15 |
 
 ### 4.2 Per-suite blocks
 
@@ -432,6 +437,96 @@ _Populated during audit. One block per suite. Template at the bottom of this sec
 - **Verdict**: **KEEP — persistent cross-sectional effect across 4 horizons; flag for Q1 re-cluster**.
 - **Rationale**: Rule 21 KEEP default for informative pattern. UncAnsMgr 10/16 sig across 4 horizons is empirically informative. Cluster-reassignment question deferred to synthesis — the suite fits Q1-extended more naturally than Q2 moderation.
 
+### H22 — Speech Uncertainty and Equity Financing Constraints (Hoberg-Maksimovic)
+
+- **DV**: `EquityDelayCon_lead` (4 cols, lead only — firm-year panel)
+- **N**: 8,564–8,621 (firm-year, small-sample class alongside H20b DROP precedent ~3-14K)
+- **FE ladder**: (1) Ind+Yr, (2) Firm+Yr, (3) Ind+Yr+ExtCtrl, (4) Firm+Yr+ExtCtrl (no YQ variant — annual panel)
+- **Tail**: one-tailed β>0 for IVs; two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsCEO` **2/4 sig β>0** — cols 1, 3 (industry-FE only; firm-FE 0/2 null). `UncPreCEO` 0/4 null. `UncAnsMgr` 0/4 null. `UncPreMgr` 0/4 null. Primary IV null; secondary UncAnsCEO is the only sig pattern, industry-FE only.
+    - **Base controls**: `lnAssets` — **sign flip across cols**: col 1 sig β>0 (ind+yr), col 3 sig β<0 (ind+yr+ext), cols 2, 4 firm null. Anomaly flag. `TobinsQ` 0/4 null. `ROA` 1/4 sig β<0 (col 1 only). `Leverage` 0/4 null. `Capex` 0/4 null. `CashRatio` **3/4 sig β>0** — cols 1, 2, 3 (col 4 firm+yr+ext null). `DivDummy` 0/4 null. `sCFO` 2/4 sig β<0 — cols 2, 4 firm-FE only (FE-strata split).
+    - **Extended controls** (cols 3, 4): `SalesGrowth` 1/2 sig β>0 (col 3 ind only). `RDSales` 1/2 sig β>0 (col 3 ind only). `CashFlowAt` 0/2 null. `DailyVola` 1/2 sig β>0 (col 4 firm only).
+    - **Lagged_DV** (rule 23 structural): 0.660 / 0.181 / 0.664 / 0.184. Moderate ind persistence; low firm persistence (~0.18). Lower firm-FE persistence than Q1 balance-sheet stocks.
+    - **R² / N**: 0.491 / 0.041 / 0.491 / 0.043. **Very high ind-FE R² (~0.49) but near-zero firm-FE R² (~0.04)** — spec has almost no within-firm explanatory power. N = 8,621 (cols 1, 2) / 8,564 (cols 3, 4).
+- **Reader-question**: Q2 (provisional, placeholder per rule 21). **Cluster edge-case still open**: Q2 (constraint channel) vs Q1 (direct outcome on financial-structure variable) per §3. Structurally H22 has 4 native IVs (not a moderation test), closer to Q1 shape; reclassification deferred to synthesis.
+- **Argument**: Primary `UncAnsMgr` null. `UncAnsCEO` 2/4 sig β>0 industry-FE only is the only informative IV pattern. Firm-FE 0/4 across all IVs — within-firm null. Small firm-year sample (~8.6K, similar class to H20b DROP precedent). Firm-FE R² near zero (0.04) — spec has almost no within-firm explanatory power on equity-delay constraint. Per rule 21 informative pattern (UncAnsCEO 2/4) → KEEP default; sample-size concern flagged separately.
+- **Verdict**: **KEEP (sample-size watch flag)**.
+- **Rationale**: Rule 21 KEEP default for informative pattern. Sample size puts H22 in H20b's small-N firm-year class — user may choose DROP if the small panel makes the suite not generalizable to the broader call-level story. Cluster edge-case (Q1 vs Q2) deferred to synthesis. New §5.17 entry on small-N firm-year class.
+
+### H5 — Speech Uncertainty and Analyst Forecast Dispersion (Wang 2020)
+
+- **DV**: `DISP` (cols 1-6); `DISP_lead` (cols 7-12)
+- **N**: 18,406–20,069 (IBES Detail coverage ≈ 1/3 of Q1 Main cash panel)
+- **FE ladder**: (1) Ind+Yr, (2) Firm+Yr, (3) Ind+Yr+ExtCtrl, (4) Firm+Yr+ExtCtrl, (5) Ind+YQ+ExtCtrl, (6) Firm+YQ+ExtCtrl × 2 DVs
+- **Tail**: one-tailed β>0 for IVs; two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsCEO` 0/12 null. `UncPreCEO` 0/12 null. `UncAnsMgr` **6/12 sig β>0** — all 6 industry-FE cells (cols 1, 3, 5, 7, 9, 11), firm-FE 0/6 both DVs. Cross-sectional only (matches §5.5). `UncPreMgr` **12/12 sig β>0** — every cell across both DVs and all FE ladders **including all 6 firm-FE cells**. **First full-ladder UncPreMgr survival in the audit.**
+    - **Base controls**: `lnAssets` 0/12 null. `TobinsQ` 12/12 sig β<0 (consistent). `ROA` 12/12 sig β<0 (consistent). `Leverage` 12/12 sig β>0 (consistent). `Capex` **3/12 sig β<0 — cols 2, 4, 6 firm-FE contemp only** (firm-FE-only FE-strata split). `DivDummy` **6/12 sig β<0 — all 6 industry-FE cells, firm-FE 0/6** (FE-strata split). `sCFO` 11/12 sig β>0 (col 2 null; rest sig).
+    - **Extended controls** (cols 3-6, 9-12): `SurpDec` 6/8 sig β<0 (mostly industry-FE). `Loss` 8/8 sig β>0 (consistent). `UncQue` 0/8 null. `NegCall` 8/8 sig β>0 (consistent).
+    - **Lagged_DV** (rule 23 structural): contemp 0.648 / 0.388 / 0.628 / 0.372 / 0.631 / 0.376; lead 0.593 / 0.310 / 0.579 / 0.302 / 0.584 / 0.309. Moderate ind (~0.63/0.58); intermediate firm (~0.38/0.31). DISP is a moderately persistent dispersion measure.
+    - **R² / N**: contemp 0.488 / 0.204 → 0.501 / 0.223 → 0.503 / 0.223; lead 0.431 / 0.158 → 0.452 / 0.179 → 0.458 / 0.180. Moderate ind R² (~0.49); moderate firm R² (~0.19–0.22). N = 20,069 → 19,124 → 19,355 → 18,406.
+- **Reader-question**: Q3 (provisional, placeholder per rule 21). **Cluster edge-case still open**: Q3 (info content via analyst channel) vs Q1 (direct outcome on analyst disagreement) per §3. Analyst dispersion is structurally a market-side DV (analyst behavior in response to firm information), closer to Q3 shape. Defer to synthesis.
+- **Argument**: Two Mgr-side channels deliver on analyst dispersion. `UncAnsMgr` 6/12 sig β>0 all industry-FE (cross-sectional only, matching §5.5 pattern). `UncPreMgr` **12/12 sig β>0** — every cell across both DVs and all FE ladders including all 6 firm-FE cells. This is the **strongest UncPreMgr pattern in the audit**, further breaking the §5.5 cross-sectional-only generalization after H17 first broke it on repurchases. CEO measures null on both.
+- **Verdict**: **KEEP — strongest UncPreMgr in audit + cross-sectional UncAnsMgr signal**.
+- **Rationale**: Rule 21 KEEP default. Two informative facts: (a) UncAnsMgr cross-sectional-only (industry-FE 6/6, firm-FE 0/6), (b) **UncPreMgr 12/12 sig across all FE ladders including firm-FE — first full-ladder UncPreMgr survival in audit**. The §5.5 generalization is now broken twice (H17 partial, H5 full). Per feedback_ceo_noisy_mgr_central, UncPreMgr is a secondary measure — do not build narrative here. New §5.14 entry.
+
+### H7 — Speech Uncertainty and 3-Day Post-Call Illiquidity Change ($\Delta$Amihud)
+
+- **DV**: `DeltaILLIQ` = Amihud[+1,+3] − Amihud[-3,-1] (cols 1-6); `DeltaILLIQ_lead1` (cols 7-12)
+- **N**: 60,182–63,736
+- **FE ladder**: identical to H5 (6 × 2 DVs)
+- **Tail**: one-tailed β>0 for IVs; two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsCEO` 0/12 null. `UncPreCEO` **1/12 sig β>0** (col 2 firm+yr contemp only). `UncAnsMgr` 0/12 null. `UncPreMgr` 0/12 null. **1/48 sig — near-complete null.**
+    - **Base controls**: `lnAssets` 12/12 sig β>0 (consistent). `TobinsQ` 12/12 sig β>0 (consistent). `ROA` 2/12 sig β>0 — cols 7, 8 lead only (weak). `Leverage` 2/12 sig β<0 — cols 2, 4 firm-FE contemp only. `Capex` 4/12 sig β>0 — cols 1, 5, 7, 11 (mixed FE). `DivDummy` 1/12 sig β<0 (col 9 only). `sCFO` 1/12 sig β<0 (col 8 only).
+    - **Extended controls** (cols 3-6, 9-12): `DailyVola` 5/8 sig β<0 — col 3 contemp + cols 9-12 lead. `StockPrice` 7/8 sig β<0 (col 3 null). `Turnover` 8/8 sig β>0 (consistent). `UncQue` 1/8 sig β<0 (col 3 only).
+    - **Lagged_DV** (rule 23 structural): **0/12 null across all cells** — change variable mean-reverts completely. Values 0.022 / -0.012 / 0.028 / -0.009 / 0.026 / -0.009 / 0.012 / -0.022 / 0.017 / -0.018 / 0.016 / -0.018.
+    - **R² / N**: contemp 0.004 / 0.001 → 0.005 / 0.001; lead 0.004 / 0.001 → 0.005 / 0.002. **R² 0.001–0.005 across all cells — model has near-zero explanatory power on DeltaILLIQ.** Adj R² often negative under firm-FE. N = 63,736 → 60,182 → 63,313 → 61,060.
+- **Reader-question**: Q3 (provisional, placeholder per rule 21).
+- **Argument**: Primary IV `UncAnsMgr` null. Only 1 sig cell across 48 IV cells (UncPreCEO col 2 firm+yr contemp). R² near-zero (0.001–0.005) — DeltaILLIQ is a change variable dominated by sampling noise; spec has almost no within-firm explanatory power. Comparable in breadth to H16 R&D complete-null (0/48) — H7 is 1/48 sig.
+- **Verdict**: **KEEP (near-null flag)**.
+- **Rationale**: Rule 21 KEEP default (1 sig cell technically informative pattern). But near-complete-null + near-zero R² puts H7 in H16 R&D comparison class: functionally the spec is uninformative on change-variable illiquidity. User-override to DROP-flag available (parallel to H16 decision) if "change-variable illiquidity uninformative" becomes the synthesis read. Contrast with H7b/H7c (level variants, same panel) shows level structure carries the weak UncPreMgr / strong UncAnsCEO signals while change structure does not. New §5.16 entry.
+
+### H7b — Speech Uncertainty and 3-Day Post-Call Amihud Illiquidity Level
+
+- **DV**: `PostCallAmihud` = Amihud[+1,+3] level (cols 1-6); `PostCallAmihud_lead1` (cols 7-12)
+- **N**: 60,182–63,736 (same panel as H7)
+- **FE ladder**: identical to H5/H7
+- **Tail**: one-tailed β>0 for IVs; two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsCEO` 0/12 null. `UncPreCEO` 0/12 null. `UncAnsMgr` 0/12 null. `UncPreMgr` **2/12 sig β>0** — col 3 (ind+yr+ext contemp) + col 9 (ind+yr+ext lead). Both industry-FE + extended controls only (cross-sectional-only matching §5.5).
+    - **Base controls**: `lnAssets` 12/12 sig β<0 (consistent — larger firms more liquid). `TobinsQ` 11/12 sig β<0 (col 8 null). `ROA` 12/12 sig β<0 (consistent). `Leverage` 1/12 sig β>0 (col 2 firm+yr contemp only). `Capex` 10/12 sig β<0 (cols 2, 4 firm contemp null). `DivDummy` **7/12 sig with FE sign flip** — cols 3, 5 ind contemp β>0; cols 2, 6, 8, 10, 12 firm β<0. Anomaly flag. `sCFO` 10/12 sig β<0 (cols 2, 8 null).
+    - **Extended controls** (cols 3-6, 9-12): `DailyVola` 8/8 sig β>0 (larger vol → more illiquidity). `StockPrice` 8/8 sig (small-magnitude positive). `Turnover` 8/8 sig β<0 (more turnover → more liquidity). `UncQue` 6/8 sig β<0 (cols 3, 9 null).
+    - **Lagged_DV** (rule 23 structural): contemp 0.710 / 0.609 / 0.693 / 0.591 / 0.694 / 0.594; lead 0.728 / 0.626 / 0.717 / 0.611 / 0.717 / 0.613. **High persistence — ind ~0.70, firm ~0.60**. Level variable (opposite of H7 change variable which had 0/12 null Lagged_DV).
+    - **R² / N**: contemp 0.541 / 0.390 → 0.545 / 0.395; lead 0.546 / 0.395 → 0.544 / 0.392. Much higher than H7 (level variant R² ~0.39-0.55 vs change variant R² ~0.003). N = 63,736 → 60,182 → 63,313 → 61,060.
+- **Reader-question**: Q3 (provisional, placeholder per rule 21).
+- **Argument**: Level variant of H7 on same panel. Primary `UncAnsMgr` null. `UncPreMgr` 2/12 sig β>0 — both cells industry-FE + extended controls (cols 3, 9). Cross-sectional-only pattern matching §5.5. CEO measures null. Contrast with H7: same panel, same IVs, same FE ladders, but H7b has high Lagged_DV and R², while H7 has zero persistence and near-zero R². Structural difference between level and change DVs.
+- **Verdict**: **KEEP**.
+- **Rationale**: Rule 21 informative pattern (2 sig UncPreMgr cells). Weaker than H5/H7c but not null. Level-vs-change structural contrast with H7 logged in §5.16.
+
+### H7c — Speech Uncertainty and BGT (2018) 25-Day Post-Call Amihud Level
+
+- **DV**: `BGTLevel_Amihud` = Amihud[0,+25] level with day 0 included (cols 1-6); `BGTLevel_Amihud_lead1` (cols 7-12)
+- **N**: 60,256–63,806
+- **FE ladder**: identical to H5/H7/H7b
+- **Tail**: one-tailed β>0 for IVs; two-tailed for controls
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **IVs**: `UncAnsCEO` **6/12 sig β>0 — ALL 6 contemp cells across all FE ladders including 3 firm-FE cells** (cols 1, 2, 3, 4, 5, 6). Lead 0/6 null. **First 6/6 UncAnsCEO contemp-all-FE pattern in the audit** — breadth + firm-FE depth. `UncPreCEO` 0/12 null. `UncAnsMgr` 0/12 null. `UncPreMgr` 1/12 sig β>0 — col 9 (ind+yr+ext lead only).
+    - **Base controls**: `lnAssets` 12/12 sig β<0 (consistent). `TobinsQ` 5/12 sig β<0 — cols 1, 3, 5, 7, 11 (all industry-FE; firm-FE 0/6 null — FE-strata split). `ROA` 12/12 sig β<0 (consistent). `Leverage` 2/12 sig β<0 — cols 3, 10 only. `Capex` 10/12 sig β<0 (cols 2, 4 null). `DivDummy` **6/12 sig with FE sign flip** — cols 3, 5 ind β>0; cols 2, 8, 10, 12 firm β<0. Anomaly flag. `sCFO` 2/12 sig β<0 — cols 4, 6 firm-FE contemp only.
+    - **Extended controls** (cols 3-6, 9-12): `DailyVola` 8/8 sig β>0. `StockPrice` 8/8 sig (small positive). `Turnover` 8/8 sig β<0. `UncQue` 4/8 sig β<0 — cols 3, 4, 5, 6 contemp; lead 0/4 null.
+    - **Lagged_DV** (rule 23 structural): contemp 0.790 / 0.680 / 0.774 / 0.661 / 0.777 / 0.665; lead 0.786 / 0.678 / 0.783 / 0.668 / 0.784 / 0.672. **Very high persistence** (ind ~0.78, firm ~0.67) — matches H7b level.
+    - **R² / N**: contemp 0.621 / 0.451 → 0.622 / 0.454; lead 0.623 / 0.456 → 0.619 / 0.451. High R² across all cells. N = 63,806 → 60,256 → 63,351 → 61,099.
+- **Reader-question**: Q3 (provisional, placeholder per rule 21).
+- **Argument**: **6/6 UncAnsCEO contemp cells sig β>0 across all FE ladders including 3 firm-FE cells (cols 2, 4, 6)** — the deepest CEO-channel signal in the audit so far. Primary `UncAnsMgr` null. The pattern inverts the thesis IV hierarchy (primary=Mgr, CEO=secondary) per `feedback_ceo_noisy_mgr_central.md`. `UncPreMgr` 1/12 sig lead only. Per rule 18 no mechanism label is committed.
+- **Verdict**: **KEEP (measurement-concerns flag — CEO inverts primary hierarchy)**.
+- **Rationale**: Rule 21 KEEP default for informative pattern. **6/6 UncAnsCEO contemp-all-FE is the deepest CEO signal in audit** — echoes §5.1 H1 CEO-lead > Mgr-lead breadth inversion on cash but goes DEEPER (contemp horizon + firm-FE survival, 3 firm-FE cells). Per feedback_ceo_noisy_mgr_central logged as measurement concerns, not rescued. New §5.15 entry.
+
 ---
 
 _Template for subsequent suites:_
@@ -570,6 +665,30 @@ _Populated as patterns emerge across suites. Each entry is a factual flag, not a
 - **Panel-consistency TODO status**: H1 vs H1.1 is resolved (same panel file, runner-side filter). Whether the OTHER panel builders (H4, H12, H13, etc.) produce bit-identical values for shared variables when filtered to common `(gvkey, fyearq)` keys is still open. Deferred TODO remains in `memory/project_phase5_audit_progress.md`.
 - **Status**: Factual observation, not a narrative. Use this to interpret sample differences during synthesis.
 - **Loaded from**: Q2 batch 1 audit (H1.1 cataloguing), runner source reads, empirical panel analysis 2026-04-15.
+
+### 5.14 UncPreMgr full-ladder survival on analyst dispersion (H5) — §5.5 broken at scale
+
+- **Observation**: H5 DISP has **UncPreMgr 12/12 sig β>0** across both DVs (contemp + lead) and all 6 FE ladders (Ind+Yr / Firm+Yr / Ind+Yr+Ext / Firm+Yr+Ext / Ind+YQ+Ext / Firm+YQ+Ext). This is the **first full-ladder UncPreMgr survival in the audit**. §5.5 (cross-sectional-only UncPreMgr on cash/payout/payer) was first broken by H17 (7/12 including 3 firm-FE contemp cells). H5 breaks it further at 12/12 — every cell including firm-FE. UncAnsMgr on H5 is 6/12 sig all industry-FE (cross-sectional only, matching the original §5.5 pattern shape). CEO measures both null.
+- **Status**: Cross-suite factual pattern. Per `feedback_ceo_noisy_mgr_central.md`, UncPreMgr is a secondary measure with scripted/IR-vetted language concerns. The full-ladder survival on an analyst-dispersion DV is structurally different from the original §5.5 cash/payout/payer pattern — here UncPreMgr goes firm-FE AND industry-FE with both contemp and lead DVs. Do not interpret here; revisit at synthesis. Two possible readings (synthesis only): (a) analyst market is listening to scripted-presentation uncertainty at least as strongly as Q&A uncertainty; (b) DISP is mechanically correlated with prepared-segment textual features.
+- **Loaded from**: H5 (2026-04-15).
+
+### 5.15 UncAnsCEO contemp-all-FE on BGT 25-day Amihud (H7c) — deepest CEO inversion in audit
+
+- **Observation**: H7c BGT 25-day Amihud has **UncAnsCEO 6/6 sig β>0 on contemp cells across all FE ladders including 3 firm-FE cells (cols 2, 4, 6)**. Lead horizon 0/6 null. Primary `UncAnsMgr` 0/12 null. `UncPreMgr` 1/12 sig (lead only). **Deepest CEO-channel signal in the audit so far** — breadth (6/6 contemp) + firm-FE depth (3 cells). §5.1 flagged H1 CEO-lead > Mgr-lead breadth inversion on cash (4 cells, lead horizon, all industry-FE); §5.7 flagged H13 capex CEO firm-FE contemp (3 cells); §5.15 (H7c) is the deepest: 6 contemp cells across both FE strata, with 3 firm-FE survivors, on a market-liquidity DV.
+- **Status**: Measurement-concerns flag per `feedback_ceo_noisy_mgr_central.md`. CEO-carrying-signal-that-Mgr-does-not is now seen three times: §5.1 (H1 cash lead breadth) / §5.7 (H13 capex contemp firm-FE strata split) / §5.15 (H7c BGT Amihud contemp all-FE). Each instance goes deeper than the last. Do not rescue with a "CEO speaks through BGT window" or "25-day window captures CEO-specific market impact" narrative. Log only; revisit at synthesis. Possible interpretive frames deferred: (a) 25-day window is longer than 3-day, may capture a different information-absorption horizon where CEO attributes load; (b) market-side DVs respond to CEO-specific signaling more than balance-sheet DVs. Both are synthesis decisions.
+- **Loaded from**: H7c (2026-04-15).
+
+### 5.16 Level-vs-change liquidity DV structural contrast (H7 vs H7b/H7c)
+
+- **Observation**: H7 (DeltaILLIQ = change variable, ΔAmihud[+1,+3]-[-3,-1]) has **R² 0.001–0.005** and **Lagged_DV 0/12 null** (complete mean reversion) — the model has near-zero explanatory power on change-variable illiquidity. H7b (PostCallAmihud level [+1,+3]) has **R² 0.39–0.55** and **Lagged_DV 12/12 sig ~0.59–0.72** — strong persistence on the same panel, same IVs, same FE ladders. H7c (BGT 25-day Amihud level [0,+25]) has **R² 0.45–0.62** and **Lagged_DV 12/12 sig ~0.66–0.79** — also strong persistence. IVs also split: H7 is 1/48 sig (near-null); H7b is 2/12 sig UncPreMgr industry-FE with ExtCtrl only; H7c is 6/12 UncAnsCEO contemp all-FE (§5.15).
+- **Status**: Structural property of the DV class, not an effect claim. Change variables (H7 ΔAmihud) are dominated by sampling noise at the 3-day post-call window; level variables (H7b PostCallAmihud, H7c BGT 25-day Amihud) carry signal. Any liquidity-channel narrative should use level DVs, not the change DV. Parallel in structure to §5.10 positive-vs-negative-persistence DV class distinction (stock vs flow DVs). **Cross-cluster implication**: H14 family (bid-ask spread) likely has the same change-vs-level split — watch for it during H14 dialogue. H7 near-null DROP-flag pending user decision (parallel to H16 R&D 0/48 decision).
+- **Loaded from**: H7 + H7b + H7c (2026-04-15).
+
+### 5.17 Small-N firm-year / special-sample panel class (H22 + H20b precedent)
+
+- **Observation**: H22 EquityDelayCon_lead is a firm-year panel with N = 8,564–8,621 — same small-sample class as H20b ChangDebtChoice (3,404–13,666, Chang external-financing-event restricted sample). Both substantially smaller than the call-level Q1/Q2/Q3 panels (~60–70K). Both have primary IV `UncAnsMgr` null. H20b was DROPped per rule 21 "empirically uninterpretable" (opposite-direction Pre split + Chang restriction). H22 has 2/4 UncAnsCEO industry-FE sig β>0 and no opposite-direction splits — slightly cleaner than H20b but still small-N firm-year with near-zero firm-FE R² (0.04). H5 IBES Detail panel (18–20K) is intermediate in size between Main call-level and the small-N class — not quite in this flag zone but worth noting for generalizability sweeps.
+- **Status**: Factual observation on sample-size heterogeneity in the audit. Small-N / special-sample suites create generalizability questions distinct from the main-panel suites — different sampling frames → different inference populations. User DROP override for H22 remains on the table if small-N firm-year generalizability is ruled out at synthesis (parallel to H20b precedent). For any future small-panel suites (H18b logit, H21 SEC letters, H23 firm-year TSIMM, H24/H24b/H25 macro-IV suites) same consideration applies. Revisit at end-of-audit.
+- **Loaded from**: H22 (2026-04-15). Precedent: H20b (2026-04-15, §5.10 + DROP verdict).
 
 ---
 
