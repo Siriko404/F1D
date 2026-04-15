@@ -1,6 +1,6 @@
 # Thesis Draft — Decisions Log
 
-**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **10 / 37 suites audited — Q1 cluster COMPLETE.** H1 + H4a + H4b + H12 + H12b + H13 + H17 + H19b KEEP; H16 DROP-flagged (revisit), H20b DROP. Q1 was reworded at the H1 boundary then the rewording was locked mid-audit (narrative decided post-audit). Rules 21-24 added 2026-04-15. **Rule 24 (record-scope ≠ verdict-scope) shifted §4.2 cataloguing to full-row format starting H1.1 — Q1 records frozen with controls-cataloguing gap per user decision; see §5.12.** Next cluster: Q2 (channel/mechanism, 6 suites). Next suite: H1.1.
+**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **10 / 37 suites audited + RE-CATALOGUED under rule 24.** Q1 cluster COMPLETE: H1 + H4a + H4b + H12 + H12b + H13 + H17 + H19b KEEP; H16 DROP-flagged (revisit), H20b DROP. Q1 was reworded at the H1 boundary then the rewording was locked mid-audit (narrative decided post-audit). Rules 21-24 added 2026-04-15. **Rule 24 (record-scope ≠ verdict-scope) shifted §4.2 cataloguing to full-row format; Q1 retroactive REVERSED same day; all 10 §4.2 blocks now contain row-by-row catalogue (IVs + all controls + Lagged_DV + R²/N). See §5.12.** Next cluster: Q2 (channel/mechanism, 6 suites). Next suite: H1.1.
 
 ---
 
@@ -242,14 +242,12 @@ _Populated during audit. One block per suite. Template at the bottom of this sec
 - **FE ladder**: identical to prior Q1 suites
 - **Tail**: **TWO-TAILED** (line 1161 notes block — different from prior Q1 directional suites). H13 was deliberately set up as exploratory per `feedback_moderation_tails.md` (parent-child asymmetry: H13 two-tailed, H13.1 one-tailed)
 - **Cluster**: firm-level
-- **Key cell fact** (rules 21+22+23):
-    - **UncAnsCEO**: **3/12 sig β>0** — all 3 sig cells under **firm FE contemp** (col 2 = Firm+Yr, col 4 = Firm+Yr+ExtCtrl, col 6 = Firm+YQ+ExtCtrl). Lead 0/6 null.
-    - **UncPreCEO**: 0/12 sig
-    - **UncAnsMgr**: **4/12 sig β>0** — all 4 sig cells under **industry FE** (col 3 = Ind+Yr+ExtCtrl contemp; cols 7, 9, 11 = industry-FE lead specs). Firm-FE 0/6 across both DVs.
-    - **UncPreMgr**: **1/12 sig β<0** — col 11 (Ind+YQ+ExtCtrl lead). Industry FE.
-    - **FE-ladder survival across all 4 IVs × both DVs**: industry-FE **5/24 sig** (UncAnsMgr 4 + UncPreMgr 1); firm-FE **3/24 sig** (UncAnsCEO 3, all contemp).
-    - **Cross-IV FE-strata split** (NEW pattern): UncAnsCEO carries within-firm contemp signal (3 cells β>0). UncAnsMgr carries cross-sectional signal (4 cells β>0, mostly lead). Two primary IVs hit DIFFERENT FE strata with the SAME positive direction.
-    - **Lagged_DV** (rule 23 structural): ≈ 0.74 (ind) / 0.32 (firm) contemp; ≈ 0.64 (ind) / 0.09 (firm) lead. Moderate persistence (between PayoutRatio_q's 0.07 and CashRatio's 0.63).
+- **Key cell fact** (rule 24 full-row catalogue, re-read 2026-04-15):
+    - **IVs**: `UncAnsCEO` 3/12 sig β>0 — **all 3 firm-FE contemp** (cols 2, 4, 6). Lead 0/6 null. `UncPreCEO` 0/12 null. `UncAnsMgr` 4/12 sig β>0 — **all 4 industry-FE** (col 3 contemp + cols 7, 9, 11 lead). Firm-FE 0/6 both DVs. `UncPreMgr` 1/12 sig β<0 — col 11 (ind+yq+ext lead) only. **Cross-IV FE-strata split**: UncAnsCEO firm-FE / UncAnsMgr industry-FE, both β>0 — two primary IVs in different FE strata with same direction.
+    - **Base controls**: `lnAssets` 9/12 sig — **FE × col sign mix**: cols 3, 9 ind sig β>0; col 11 ind sig β<0; all 6 firm-FE cells sig β<0. Anomaly flag; `TobinsQ` 12/12 sig β>0 (consistent); `ROA` 10/12 sig — **strong sign anomaly**: cols 3-6 contemp sig β<0; cols 7-8, 10, 12 lead sig β>0; col 9, 11 ind lead sig β<0. FE × horizon sign mix; `Leverage` 9/12 sig β<0 — cols 1-6 contemp + 8, 10, 12 firm lead. Ind lead null; `CashRatio` 7/12 sig β<0 — 6 contemp + col 11 lead; `DivDummy` 8/12 sig — **FE sign flip**: ind cells (1, 5, 7, 9, 11) sig β<0; firm contemp (2, 4, 6) sig β>0; firm lead null; `sCFO` 9/12 sig β<0 — 6 contemp + 3 firm lead (8, 10, 12); ind lead null.
+    - **Extended controls**: `SalesGrowth` 8/8 sig β>0 (consistent); `RDSales` 8/8 sig β>0 (small β=0.0008-0.0019); `CashFlowAt` 8/8 sig β>0 (large β=0.018-0.059); `DailyVola` 7/8 sig — **sign flip across horizon**: contemp positive (3, 4 sig +); lead all sig β<0 (9, 10, 11, 12). Col 6 sig β<0 contemp anomaly.
+    - **Lagged_DV** (rule 23 structural): **0.76 / 0.74 / 0.74 (ind contemp); 0.65 / 0.64 / 0.64 (ind lead); 0.32 / 0.32 / 0.32 (firm contemp); 0.086 / 0.087 / 0.088 (firm lead)**. Moderate ind persistence; weak firm contemp; **near-zero firm lead** (similar to H12 PayoutRatio_q).
+    - **R² / N**: contemp 0.617 / 0.144 → 0.626 / 0.150; lead 0.490 / 0.058 → 0.501 / 0.068. N = 65,105 → 62,482 → 60,090 → 58,897.
 - **Reader-question**: Q1 (provisional, placeholder).
 - **Argument**: First Q1 suite with non-zero firm-FE signal beyond the toughest-spec single-cell pattern (H12b col 6). UncAnsCEO has 3 sig firm-FE contemp cells (β>0); UncAnsMgr has 4 sig industry-FE cells (β>0). Two primary IVs split FE strata. UncPreMgr has 1 sig lead cell β<0 — opposite direction from the Mgr/CEO pattern. Two-tailed spec means no directional prediction; both positive findings are exploratory observations, not tail-violations.
 - **Verdict**: **KEEP — informative mixed pattern with cross-IV FE-strata split**.
@@ -262,13 +260,12 @@ _Populated during audit. One block per suite. Template at the bottom of this sec
 - **FE ladder**: identical to prior Q1 suites
 - **Tail**: **TWO-TAILED** (line 1690 notes block)
 - **Cluster**: firm-level
-- **Key cell fact** (rules 21+22+23):
-    - **UncAnsCEO**: 0/12 sig
-    - **UncPreCEO**: 0/12 sig
-    - **UncAnsMgr**: 0/12 sig
-    - **UncPreMgr**: 0/12 sig
-    - **0/48 sig across all 4 IVs × all 12 cells.** First complete-null suite in the audit.
-    - **Lagged_DV** (rule 23 structural): ≈ 0.71 (ind) / 0.34 (firm) contemp; ≈ 0.51 (ind) / 0.05 (firm) lead. Moderate ind / low firm persistence.
+- **Key cell fact** (rule 24 full-row catalogue, re-read 2026-04-15):
+    - **IVs**: `UncAnsCEO` 0/12 null; `UncPreCEO` 0/12 null; `UncAnsMgr` 0/12 null; `UncPreMgr` 0/12 null. **0/48 sig across all 4 IVs × all 12 cells — first complete-null suite in the audit.**
+    - **Base controls**: `lnAssets` 7/12 sig β>0 — cols 1, 3, 4, 5, 6, 7, 11 (mostly contemp ind + firm + col 11 lead); `TobinsQ` 5/12 sig β>0 — cols 1, 3, 4, 5, 6 contemp only. Lead 0/6 null; `ROA` 3/12 sig β<0 — cols 1, 2 contemp + col 7 ind lead; `Leverage` 4/12 sig β<0 — cols 1, 2, 3, 5 contemp only. Lead 0/6 null; `CashRatio` 8/12 sig β>0 — cols 1, 2, 3, 5, 7, 8, 9, 11; `Capex` 4/12 sig — **sign anomaly**: col 1 sig β<0 (ind contemp); cols 3, 4, 5 sig β>0 (with ext). Anomaly flag; `DivDummy` 2/12 sig β<0 — cols 3, 5 contemp only; `sCFO` 0/12 null.
+    - **Extended controls**: `SalesGrowth` 4/8 sig β<0 — cols 3, 4, 5, 6 contemp only. Lead 0/4 null; `CashFlowAt` 6/8 sig β<0 — cols 3, 4, 5, 6 contemp + 9, 11 lead ind; `DailyVola` 1/8 sig — col 6 only (firm+yq+ext contemp -0.0007**).
+    - **Lagged_DV** (rule 23 structural): **0.66 / 0.74 / 0.74 (ind contemp); 0.52 / 0.51 / 0.51 (ind lead); 0.28 / 0.39 / 0.39 (firm contemp); 0.040 / 0.057 / 0.057 (firm lead — null at α=0.10)**. Cols 8, 10, 12 firm lead Lagged_DV null. Within-firm RDSales has near-zero own persistence at lead horizon.
+    - **R² / N**: contemp 0.448 / 0.072 → 0.505 / 0.185; lead 0.252 / 0.004 → 0.259 / 0.007. **Very low R² firm contemp (0.07-0.18) and firm lead near-zero (0.004-0.007)** — within-firm R&D essentially unexplainable by the spec. N = 65,086 → 62,517 → 60,105 → 58,970.
 - **Reader-question**: Q1 (provisional, placeholder).
 - **Argument**: Speech uncertainty is silent on R&D investment intensity under any IV (CEO or Mgr; Ans or Pre), any FE ladder (industry or firm), any horizon (contemp or lead). Per rule 21 explicit DROP criterion, "all-null" is reserved-for-DROP. R&D investment does not covary with management or CEO speech uncertainty. The cleanest null in the audit so far. A possible reading is that R&D is a long-horizon, sticky, multi-year decision insensitive to quarterly speech-uncertainty fluctuations, but that is post-audit synthesis material — not interpreted here.
 - **Verdict**: **DROP (provisional, flagged for revisit)**.
@@ -281,14 +278,12 @@ _Populated during audit. One block per suite. Template at the bottom of this sec
 - **FE ladder**: identical to prior Q1 suites
 - **Tail**: **TWO-TAILED** (line 1758 notes block — exploratory like H13/H16)
 - **Cluster**: firm-level
-- **Key cell fact** (rules 21+22+23):
-    - **UncAnsCEO**: 0/12 sig
-    - **UncPreCEO**: **1/12 sig β>0** — col 8 (Firm+Yr lead) only.
-    - **UncAnsMgr**: **4/12 sig β<0** — cols 1, 3, 5 (industry-FE contemp, all 3 specs) + col 7 (industry-FE lead). All industry-FE.
-    - **UncPreMgr**: **7/12 sig β>0** — cols 1, 3, 5 (industry-FE contemp) + cols 2, 4, 6 (**firm-FE contemp**) + col 7 (industry-FE lead). **First UncPreMgr firm-FE survival in the audit so far** — survives firm FE in 3 contemp cells.
-    - **FE-ladder survival across all 4 IVs × both DVs**: industry-FE 8/24 sig (Mgr 4 + PreMgr 4); firm-FE **4/24 sig** (PreMgr 3 contemp + PreCEO 1 lead).
-    - **Direction split**: UncAnsMgr β<0 (4 cells); UncPreMgr β>0 (7 cells). Same DV, opposite signs between Mgr and PreMgr.
-    - **Lagged_DV** (rule 23 structural): ≈ 0.46 (ind) / 0.32 (firm) contemp; ≈ 0.35 (ind) / 0.19 (firm) lead. Moderate persistence.
+- **Key cell fact** (rule 24 full-row catalogue, re-read 2026-04-15):
+    - **IVs**: `UncAnsCEO` 0/12 null; `UncPreCEO` 1/12 sig β>0 — col 8 (firm+yr lead 0.0004*) only; `UncAnsMgr` **4/12 sig β<0** — cols 1, 3, 5 (industry-FE contemp) + col 7 (industry-FE lead). All industry-FE; firm-FE 0/6; `UncPreMgr` **7/12 sig β>0** — cols 1, 3, 5 (industry-FE contemp) + **cols 2, 4, 6 (firm-FE contemp)** + col 7 (ind lead). **First UncPreMgr firm-FE survival in the audit.** **FE survival across all 4 IVs × both DVs**: industry-FE 8/24 sig; firm-FE 4/24 sig (PreMgr 3 contemp + PreCEO 1 lead). **Direction split**: Mgr β<0 (4 cells); PreMgr β>0 (7 cells). Opposite signs same DV.
+    - **Base controls**: `lnAssets` 9/12 sig β>0 — cols 1, 3, 5 ind contemp + all 6 lead. Cols 2, 4, 6 firm contemp null; `TobinsQ` 12/12 sig β>0 (consistent positive); `ROA` 12/12 sig β>0 (consistent positive); `Leverage` 9/12 sig β<0 — cols 2, 4, 6 firm contemp + all 6 lead. Cols 1, 3, 5 ind contemp null; `Capex` 6/12 sig — **FE sign flip**: cols 2, 4 firm contemp sig β>0; cols 3, 5 ind contemp sig β<0; cols 9, 11 ind lead sig β<0. Anomaly flag; `CashRatio` 12/12 sig — **FE sign mix in contemp**: ind contemp (1, 3, 5) sig β>0; firm contemp (2, 4, 6) sig β<0; all lead sig β>0; `DivDummy` 1/12 sig — col 2 only (firm+yr 0.0006*); `sCFO` 6/12 sig β<0 — cols 1, 3, 5, 7, 9, 11 (all industry-FE).
+    - **Extended controls**: `SalesGrowth` 8/8 sig β<0 (consistent); `RDSales` 4/8 sig β>0 — cols 3, 5, 9, 11 (industry-FE only, FE-strata split); `CashFlowAt` 8/8 sig β>0 (consistent); `DailyVola` 8/8 sig β<0 (very small magnitudes ≈ 10^-5).
+    - **Lagged_DV** (rule 23 structural): **0.47 / 0.46 / 0.45 (ind contemp); 0.36 / 0.35 / 0.35 (ind lead); 0.32 / 0.32 / 0.31 (firm contemp); 0.19 / 0.19 / 0.19 (firm lead)**. Moderate persistence; firm lead 0.19 (intermediate between H1 cash and H12 payout).
+    - **R² / N**: contemp 0.300 / 0.117 → 0.309 / 0.119; lead 0.233 / 0.064 → 0.245 / 0.067. N = 61,030 → 58,550 → 58,610 → 57,529.
 - **Reader-question**: Q1 (provisional, placeholder).
 - **Argument**: H17 RepurchaseIntensity is the first suite where the cross-sectional-only UncPreMgr pattern from §5.5 (H1/H12/H12b) does NOT hold — UncPreMgr survives firm FE in 3 contemp cells. The §5.5 generalization is now contradicted by H17 and needs re-scoping post-audit. Separately, UncAnsMgr (4 cells β<0) and UncPreMgr (7 cells β>0) carry opposite-direction signals on the same DV — a measurement-concerns flag per `feedback_ceo_noisy_mgr_central.md` (do NOT build narrative; log only). Two-tailed spec means no directional prediction.
 - **Verdict**: **KEEP — informative mixed pattern with novel structure**.
@@ -301,13 +296,12 @@ _Populated during audit. One block per suite. Template at the bottom of this sec
 - **FE ladder**: identical to prior Q1 suites
 - **Tail**: one-tailed, β<0 for IVs (line 1959 notes block); two-tailed for controls
 - **Cluster**: firm-level
-- **Key cell fact** (rules 21+22+23):
-    - **UncAnsCEO**: 0/12 sig
-    - **UncPreCEO**: 0/12 sig
-    - **UncAnsMgr**: **2/12 sig β<0** — cols 9 (Ind+Yr+ExtCtrl lead) and 11 (Ind+YQ+ExtCtrl lead). Both industry-FE lead with extended controls. β<0 matches tail.
-    - **UncPreMgr**: 0/12 sig
-    - **FE-ladder survival across all 4 IVs × both DVs**: industry-FE 2/24 sig (UncAnsMgr lead with ExtCtrl); firm-FE 0/24 sig.
-    - **Lagged_DV** (rule 23 structural): ≈ **+0.07 (ind) / -0.07 (firm)** contemp; ≈ +0.08 (ind) / -0.04 (firm) lead. **Negative Lagged_DV under firm FE — first negative-persistence DV in the audit** (mean reversion). Industry-FE Lagged_DV is positive.
+- **Key cell fact** (rule 24 full-row catalogue, re-read 2026-04-15):
+    - **IVs**: `UncAnsCEO` 0/12 null; `UncPreCEO` 0/12 null; `UncAnsMgr` **2/12 sig β<0** — cols 9 (ind+yr+ext lead) + 11 (ind+yq+ext lead). Both industry-FE lead with extended controls; matches tail. `UncPreMgr` 0/12 null. **FE survival across all 4 IVs × both DVs**: industry-FE 2/24 sig (UncAnsMgr lead-only with ExtCtrl); firm-FE 0/24 sig.
+    - **Base controls**: `lnAssets` 8/12 sig — cols 1, 3 contemp ind sig β<0; cols 7-12 all lead sig β<0 (firm lead very large -0.12). Cols 2, 4, 5, 6 contemp null; `TobinsQ` 12/12 sig β>0 (consistent); `ROA` 10/12 sig — **strong sign anomaly**: col 1 sig β<0 (ind+yr); cols 3-6 contemp sig β>0 (with ext); col 7 sig β<0 (ind+yr lead); cols 9-12 sig β>0. FE × spec sign flip; `Leverage` 12/12 sig — **lead FE sign flip**: contemp all β>0 (1-6); lead ind β>0 (7, 9, 11); lead firm β<0 (8, 10, 12). Anomaly flag; `Capex` 12/12 sig β>0 (very strong, β=0.65-1.00); `CashRatio` 8/12 sig β<0 — cols 3, 5, 7, 8, 9, 10, 11, 12; `DivDummy` 6/12 sig β>0 — all 6 firm-FE cells (2, 4, 6, 8, 10, 12). Ind 0/6 null; `sCFO` 5/12 sig β<0 — cols 4, 6, 8, 10, 12 firm-FE only (FE-strata split).
+    - **Extended controls**: `SalesGrowth` 6/8 sig β>0 — 4 contemp (3-6) + 2 lead (9, 11); `RDSales` 4/8 sig β>0 — cols 4, 6 contemp firm + 9, 11 lead ind. Mixed FE; `CashFlowAt` 8/8 sig β<0 (strong consistent); `DailyVola` 1/8 sig — col 9 only (lead ind -0.0003*).
+    - **Lagged_DV** (rule 23 structural): **+0.081 / +0.058 / +0.057 (ind contemp); +0.083 / +0.072 / +0.072 (ind lead); −0.071 / −0.085 / −0.085 (firm contemp); −0.035 / −0.036 / −0.036 (firm lead)**. **Sign flip across FE strata** — ind positive, firm negative. **First negative-persistence DV under firm FE** (mean reversion on the Chang external-funding measure). All sig.
+    - **R² / N**: contemp 0.054 / 0.025 → 0.082 / 0.048; lead 0.033 / 0.031 → 0.040 / 0.031. **Low R²** — financing decisions hard to predict. N = 65,069 → 62,450 → 60,052 → 58,871.
 - **Reader-question**: Q1 (provisional, placeholder).
 - **Argument**: Weak primary-IV lead-horizon signal — 2/12 UncAnsMgr sig cells, both industry-FE lead with extended controls, both β<0 matching the tail. No CEO measures, no UncPreMgr, no contemp signal. The lead-horizon β<0 direction echoes the H4a/H4b family pattern (lead-horizon negative on financing structure) but at much lower breadth (2/12 vs 5-6/12). Negative Lagged_DV under firm FE is structurally novel for the Chang (2006) financing-decision DV class.
 - **Verdict**: **KEEP — weak but directionally consistent primary-IV lead-horizon signal**.
@@ -320,14 +314,12 @@ _Populated during audit. One block per suite. Template at the bottom of this sec
 - **FE ladder**: identical to prior Q1 suites
 - **Tail**: **TWO-TAILED** (line 2027 notes block)
 - **Cluster**: firm-level
-- **Key cell fact** (rules 21+22+23):
-    - **UncAnsCEO**: 0/12 sig
-    - **UncPreCEO**: **2/12 sig β<0** — cols 1 (Ind+Yr) and 3 (Ind+Yr+ExtCtrl). Both industry-FE contemp.
-    - **UncAnsMgr**: 0/12 sig
-    - **UncPreMgr**: **3/12 sig β>0** — cols 1, 3, 5 (all industry-FE contemp).
-    - **FE-ladder survival across all 4 IVs × both DVs**: industry-FE 5/24 sig (PreCEO 2 + PreMgr 3, all contemp); firm-FE 0/24 sig. **Lead horizon 0/24 sig anywhere** (cols 7-12 all null).
-    - **Direction conflict**: UncPreCEO (β<0) and UncPreMgr (β>0) — **opposite-direction sig cells on the same DV between two Pre measures**. First opposite-direction Pre split in the audit.
-    - **Lagged_DV** (rule 23 structural): **≈ -0.09 (ind) / -0.05 (firm)** contemp; ≈ -0.05 (ind) / -0.02 (firm) lead. **All-negative Lagged_DV** — strong mean reversion. Second negative-persistence DV after H19b.
+- **Key cell fact** (rule 24 full-row catalogue, re-read 2026-04-15):
+    - **IVs**: `UncAnsCEO` 0/12 null; `UncPreCEO` 2/12 sig β<0 — cols 1, 3 (industry-FE contemp); `UncAnsMgr` 0/12 null; `UncPreMgr` 3/12 sig β>0 — cols 1, 3, 5 (industry-FE contemp). **Direction conflict**: PreCEO β<0 vs PreMgr β>0 on same DV — **first opposite-direction Pre split in the audit**. **FE survival across all 4 IVs × both DVs**: industry-FE 5/24 sig (all contemp); firm-FE 0/24 sig. **Lead horizon 0/24 sig anywhere**.
+    - **Base controls**: `lnAssets` 9/12 sig β>0 — cols 1-7, 9, 11. Cols 8, 10, 12 firm lead null; `TobinsQ` 9/12 sig β<0 — cols 1-6 contemp + 7, 9, 11 lead ind. Firm lead null; `ROA` 12/12 sig β>0 (consistent); `Leverage` 9/12 sig — **lead FE sign flip**: contemp all β>0 (1-6); lead ind null (7, 9, 11); lead firm sig β<0 (8, 10, 12). Anomaly flag; `Capex` 5/12 sig β>0 — cols 2-6 contemp only. Col 1 + lead 0/6 null; `CashRatio` 9/12 sig β<0 — cols 1-7, 9, 11. Cols 8, 10, 12 firm lead null; `DivDummy` 5/12 sig β>0 — cols 1, 2, 3, 5, 7; `sCFO` 6/12 sig β<0 — cols 1-6 contemp only. Lead 0/6 null.
+    - **Extended controls**: `SalesGrowth` 4/8 sig β>0 — cols 3-6 contemp only. Lead 0/4 null; `RDSales` 0/8 null; `CashFlowAt` 5/8 sig β<0 — cols 4, 5, 6 contemp + 9, 11 lead ind; `DailyVola` 7/8 sig β<0 — cols 3, 5, 6, 9, 10, 11, 12. Col 4 null.
+    - **Lagged_DV** (rule 23 structural): **−0.087 / −0.089 / −0.086 (ind contemp); −0.052 / −0.053 / −0.053 (ind lead); −0.050 / −0.056 / −0.056 (firm contemp); −0.013 / −0.017 / −0.018 (firm lead, mostly null)**. **All-negative Lagged_DV across all 12 cells** — strong mean reversion. Second negative-persistence DV after H19b. Cols 8, 10, 12 firm lead null.
+    - **R² / N**: contemp 0.249 / 0.075 → 0.260 / 0.083; lead 0.231 / 0.056 → 0.254 / 0.066. **Tiny restricted sample**: N = 13,666 (cols 1-2) → 13,057 (cols 3-6) → 3,518 (cols 7-8 lead) → 3,404 (cols 9-12 lead). **4-15× smaller than other Q1 suites** due to Chang external-financing-event restriction.
 - **Reader-question**: Q1 (provisional, placeholder).
 - **Argument**: Three structural concerns: (a) sample is 4-15× smaller than other Q1 suites due to Chang's external-financing-event restriction, (b) primary IV UncAnsMgr is 0/12 null, (c) UncPreCEO (β<0) and UncPreMgr (β>0) carry opposite-direction sig cells on the same DV — measurement-concerns flag without a coherent reading. Lead horizon 0 sig anywhere. The pattern exists but is uninterpretable as a clean finding.
 - **Verdict**: **DROP**.
@@ -427,14 +419,19 @@ _Populated as patterns emerge across suites. Each entry is a factual flag, not a
 - Sample-size bands and what they imply for generalizability (H22 annual, H5 IBES Detail, H20b Chang sample DROP precedent).
 - Q5 economic magnitude sweep (cross-cutting, at end of audit).
 
-### 5.12 Audit cataloguing format shift mid-Q1: Q1 records frozen with controls-cataloguing gap; Q2 onward full-row format (rule 24, 2026-04-15)
+### 5.12 Audit cataloguing format shift mid-Q1 → REVERSED same day: all Q1 re-catalogued under rule 24 full-row format (2026-04-15)
 
-- **Observation**: Across all 10 Q1 cluster suites (H1, H4a, H4b, H12, H12b, H13, H16, H17, H19b, H20b), the per-suite §4.2 "Key cell fact" line catalogued only the 4 IVs + Lagged_DV. Controls (`Size`, `MTB`, `Profitability`, `CashFlow`, `Tangibility`, cross-DV controls like `CashRatio`/`Leverage`) were read linearly per rule 6 when reading `outputs/all_tables.tex` but were not catalogued in the §4.2 record except in 2 incidental cases (H4a `CashRatio` β=-0.0297***, H4b `CashRatio` β=-0.0674***). The gap surfaced 2026-04-15 at the Q1→Q2 boundary when the user asked: *"are you telling me that you have not read the contorl behavior in each suite so far?"* and earlier issued: *"we must read ALL results in the suites for all variables in their tables!"*.
-- **Root cause**: Rule 23 framed audit observables as IV-specific ("sig-star count + FE-ladder survival + sig-cell direction" for IVs). I conflated **verdict scope** (rule 21 — KEEP/DROP/REFRAME rests on IV × FE × DV informative pattern) with **record scope** (what gets catalogued in §4.2). Controls don't bear on the verdict, so I cut them from the record by default. The negative-space "what about everything else" was unspecified in rules 21-23 and collapsed into "exclude". This is the same root failure family as rule 21 (filtering cataloguing through Q-target) and rule 22 (filtering cataloguing through null-sign-as-signal): each rule patches a different layer of "cataloguing gets collapsed into a downstream filter".
-- **Fix**: Rule 24 added 2026-04-15 to `feedback_phase5_methodology.md`. From H1.1 onward, every §4.2 block must catalogue every row of the regression table — IVs (or main+moderator+interaction for Q2 moderation suites), all controls, Lagged_DV, R²/N. Cataloguing is the empirical record; the verdict is a downstream summary of one slice of that record.
-- **Status**: Q1 records are **frozen as-is** per user decision 2026-04-15 (verbatim: "no" on retroactive Q1 re-cataloguing). The controls-cataloguing gap is permanent in the Q1 audit memory. Cost is **deferred to Q5 synthesis**: any future "what did the controls do in suite X" question for a Q1 suite requires re-opening `outputs/all_tables.tex` for that suite and reading the table fresh. Q2 cluster (H1.1 first) uses the new full-row format.
-- **Implication for synthesis**: When comparing controls across suites at end-of-audit, Q1 suites will need cell re-reading; Q2/Q3/Q4 suites will have control behavior in the §4.2 record. This may produce uneven cross-suite comparisons in the final synthesis. Flag for cross-cutting Q5 sweep when the audit completes.
-- **Loaded from**: Q1→Q2 boundary 2026-04-15. Incident report: `log/incidents/2026-04-15_q1-controls-uncatalogued.md`.
+- **Observation**: Across all 10 Q1 cluster suites (H1, H4a, H4b, H12, H12b, H13, H16, H17, H19b, H20b), the per-suite §4.2 "Key cell fact" line had originally catalogued only the 4 IVs + Lagged_DV. Controls were read linearly per rule 6 when reading `outputs/all_tables.tex` but were not catalogued in the §4.2 record except in 2 incidental cases (H4a `CashRatio` β=-0.0297***, H4b `CashRatio` β=-0.0674***). The gap surfaced 2026-04-15 at the Q1→Q2 boundary when the user asked: *"are you telling me that you have not read the contorl behavior in each suite so far?"* and earlier issued: *"we must read ALL results in the suites for all variables in their tables!"*.
+- **Root cause**: Rule 23 framed audit observables as IV-specific ("sig-star count + FE-ladder survival + sig-cell direction" for IVs). I conflated **verdict scope** (rule 21 — KEEP/DROP/REFRAME rests on IV × FE × DV informative pattern) with **record scope** (what gets catalogued in §4.2). Controls don't bear on the verdict, so I cut them from the record by default. Same root failure family as rule 21 (filtering through Q-target) and rule 22 (filtering through null-sign-as-signal).
+- **Fix**: Rule 24 added 2026-04-15 to `feedback_phase5_methodology.md`. Every §4.2 block must catalogue every row of the regression table — IVs (or main+moderator+interaction for Q2 moderation suites), all controls, Lagged_DV, R²/N.
+- **Q1 retroactive — REVERSED 2026-04-15**: Initial user decision was "no" on retroactive Q1 rework. **Reversed same day**: user directive *"read the first 10 suites again, with the new approach, 5 at a time"*. **All 10 Q1 suites re-catalogued under rule 24 full-row format** in 2 batches (batch 1: H1/H4a/H4b/H12/H12b; batch 2: H13/H16/H17/H19b/H20b). §4.2 "Key cell fact" lines now contain row-by-row catalogue for every Q1 suite. **Argument/Verdict/Rationale lines unchanged** (preserves prior session work; H1 magnitude paragraph still flagged for Q5 migration per rule 23).
+- **What the re-catalogue surfaced** (controls-side observations not visible in the IV-only records):
+    - **FE-strata splits** in controls were rampant across Q1 suites — `lnAssets`, `TobinsQ`, `RDSales`, `CashFlowAt`, `DivDummy`, `sCFO` all show industry-FE-only or firm-FE-only patterns on at least one DV. Suggests cross-sectional vs within-firm identification matters more than the IV-only audit indicated.
+    - **Sign-flip anomalies** in controls: H1 `lnAssets` col 9; H1 `DailyVola` ind+ vs firm−; H4a/H4b `TobinsQ` Q-theory sign anomaly (β>0 not β<0); H12 `lnAssets` ind+/firm−; H12 `CashFlowAt` ind+/firm lead−; H12 `DailyVola` ind−/firm lead+; H12b `Capex` ind−/firm contemp+; H13 `lnAssets` mixed; H13 `ROA` FE × horizon × spec sign mix; H13 `DivDummy` ind−/firm contemp+; H17 `Capex` ind−/firm contemp+; H17 `CashRatio` ind+/firm contemp−; H19b `ROA` FE × spec sign flip; H19b `Leverage` lead ind+/firm−; H20b `Leverage` lead ind null/firm−.
+    - **R² heterogeneity**: H1/H4a/H4b have very high industry-FE R² (0.82-0.89) and low firm-FE R² (0.45-0.62); H12 PayoutRatio_q has very low R² across the board (0.01-0.09); H16 RDSales has near-zero firm-FE lead R² (0.004-0.007); H19b/H20b Chang DVs also low R² (0.03-0.26). DV explainability varies massively across the cluster.
+    - **Lagged_DV heterogeneity** (DV persistence): H1/H4a/H4b/H12b/H17 have positive persistence across all FE strata; H12 PayoutRatio_q firm-FE near-zero (0.07); H13 Capex firm-FE lead near-zero (0.09); H16 RDSales firm-FE lead near-zero (0.05); **H19b/H20b have NEGATIVE persistence under firm FE** (mean reversion; first occurrence in audit). The negative-persistence DV class is documented in §5.10.
+- **Implication for synthesis**: All 10 Q1 suites now have full-row records. Cross-suite comparisons of controls (e.g., "where does TobinsQ Q-theory anomaly hit?") can be made directly from §4.2 without re-opening tables. Synthesis can use the §4.2 catalogue as the canonical empirical record.
+- **Loaded from**: Q1→Q2 boundary 2026-04-15. Incident report: `log/incidents/2026-04-15_q1-controls-uncatalogued.md`. Re-catalogue commits: batch 1 `ad9def1`, batch 2 (this commit).
 
 ---
 

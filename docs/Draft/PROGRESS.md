@@ -2,9 +2,9 @@
 
 **Purpose:** persistent memory for Claude across context compactions. Claude updates this file as work progresses. Read at start of every draft session.
 
-**Current phase:** **Phase 5 audit — philosophy-framed, dialogue-based. 10 / 37 suites audited — Q1 CLUSTER COMPLETE. H1 + H4a + H4b + H12 + H12b + H13 + H17 + H19b KEEP; H16 DROP-flagged (revisit), H20b DROP. Narrative discipline locked mid-audit. Rules 21-24 added 2026-04-15. Rule 24 shifted §4.2 cataloguing format to full-row (every variable, not just IVs); Q1 records frozen with controls-cataloguing gap per user decision; Q2 onward (H1.1 first) uses full-row format. Next cluster: Q2 (channel/mechanism, 6 suites). Next suite = H1.1.**
+**Current phase:** **Phase 5 audit — philosophy-framed, dialogue-based. 10 / 37 suites audited + RE-CATALOGUED under rule 24. Q1 CLUSTER COMPLETE: H1 + H4a + H4b + H12 + H12b + H13 + H17 + H19b KEEP; H16 DROP-flagged (revisit), H20b DROP. Narrative discipline locked mid-audit. Rules 21-24 added 2026-04-15. Rule 24 shifted §4.2 cataloguing format to full-row; Q1 retroactive REVERSED same day; all 10 §4.2 blocks now full-row format. Next cluster: Q2 (channel/mechanism, 6 suites). Next suite = H1.1.**
 
-**Last updated:** 2026-04-15 (post-Q1 cluster complete + rule 24 added)
+**Last updated:** 2026-04-15 (post-Q1 re-catalogue under rule 24)
 
 ---
 
