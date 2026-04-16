@@ -1,14 +1,14 @@
 # Thesis Skeleton — Draft v3
 
-Revised 2026-04-16 evening. Supersedes v2. Key changes: (1) single-question RQ on financial conservatism (observed pattern) motivated by precautionary motive (theoretical mechanism); (2) HK retired as formal hypothesis — H13/H13.1/H13.2 relocate to Ch 4.4 as "documented investment-margin puzzle" with competitive real options interpretation; (3) reverse-engineered cash-buffer-bridge claim removed; (4) 3 formal hypotheses HC/HL/HFC (was 4); (5) title word changed from "Precaution" to "Conservatism" for RQ-title alignment.
+Revised 2026-04-16 evening. Supersedes v2. Key changes: (1) single-question RQ on financing conservatism (observed pattern) motivated by precautionary motive (theoretical mechanism); (2) HK retired as formal hypothesis — H13/H13.1/H13.2 relocate to Ch 4.4 as "documented investment-margin puzzle" with competitive real options interpretation; (3) reverse-engineered cash-buffer-bridge claim removed; (4) 3 formal hypotheses HC/HL/HFC (was 4); (5) title phrase changed from "Corporate Financial Precaution" to "Financing Conservatism" (RQ-title alignment + tighter scope-specific term).
 
 ## Title
 
-**Hold On to Your Cash: Managerial Speech Uncertainty and Corporate Financial Conservatism**
+**Hold On to Your Cash: Managerial Speech Uncertainty and Financing Conservatism**
 
 ## Research Question
 
-Does managerial speech uncertainty during earnings calls predict financial conservatism in firms' financing decisions?
+Does managerial speech uncertainty during earnings calls predict financing conservatism?
 
 ## Central Claim
 
@@ -20,12 +20,12 @@ We additionally document an investment-margin pattern — firms' capital expendi
 
 Formal-hypothesis labels HC/HL/HFC avoid collision with suite names (H1, H4a, H13, etc.).
 
-**HC (Cash — financial conservatism on the liquidity margin):** Firms whose managers express higher uncertainty in Q&A hold more cash contemporaneously. Literature derivation: AFW 2004 cash-flow sensitivity of cash implies uncertainty increases the marginal value of internal liquidity; BKS 2009 document secular rise in precautionary cash holdings among US firms.
+**HC (Cash — financing conservatism on the liquidity margin):** Firms whose managers express higher uncertainty in Q&A hold more cash contemporaneously. Literature derivation: AFW 2004 cash-flow sensitivity of cash implies uncertainty increases the marginal value of internal liquidity; BKS 2009 document secular rise in precautionary cash holdings among US firms.
 - Suite: H1 (CashRatio, 12 cols, one-tailed positive)
 - Result: UncAnsMgr 6/6 sig contemporaneous CashRatio; 1/6 lead (response is contemporaneous, non-persistent)
 - Boundary: product-market competition does NOT moderate (H1.1 0/4 continuous TSIMM; H1.1b 0/4 HighTSIMM binary) — the cash response is universal across competitive-structure segments, not concentrated in competitive-threat firms
 
-**HL (Leverage — financial conservatism on the capital-structure margin):** Firms whose managers express higher uncertainty reduce leverage in the following quarter. Literature derivation: precautionary motive implies preserving debt capacity (Minton-Wruck 2009 financial conservatism; Strebulaev-Yang 2013 zero-leverage mystery); Leary-Roberts 2005 establish structural lag in leverage adjustment relative to cash.
+**HL (Leverage — financing conservatism on the capital-structure margin):** Firms whose managers express higher uncertainty reduce leverage in the following quarter. Literature derivation: precautionary motive implies preserving debt capacity (Minton-Wruck 2009 financial conservatism; Strebulaev-Yang 2013 zero-leverage mystery); Leary-Roberts 2005 establish structural lag in leverage adjustment relative to cash.
 - Suites: H4a (Leverage, 12 cols, one-tailed negative), H4b (DebtToCapital, 12 cols, one-tailed negative)
 - Result: UncAnsMgr 0/6 contemp + 6/6 lead (H4a); 0/6 contemp + 5/6 lead (H4b). Temporal asymmetry consistent with leverage being structurally slower to adjust than cash.
 - Secondary IVs (UncAnsCEO, UncPreCEO, UncPreMgr): 0/12 on both suites — cleanest channel hierarchy
@@ -61,7 +61,7 @@ Payout DVs (H12 PayoutRatio_q, H12b DivPayerQ) show a distinct channel pattern: 
 ### Chapter 1: Introduction
 - Motivation: earnings calls as a window into managerial uncertainty; firm-quarter frequency panel data on speech uncertainty enables tests of the precautionary motive at higher temporal resolution than prior annual 10-K textual studies
 - Gap: DWZ 2021 established speech uncertainty measures but did not link call-Q&A managerial uncertainty to firm-quarter cash and leverage dynamics. Loughran-McDonald 2013 and Bodnaruk-Loughran-McDonald 2015 link 10-K uncertainty language to financing but on annual frequency without managerial segmentation.
-- Contribution: (1) first evidence linking call-Q&A managerial uncertainty to firm-quarter financial conservatism; (2) first decomposition of Q&A vs presentation channels showing segment-specific DV loading on payout outcomes; (3) documented investment-margin puzzle — capex rises under managerial uncertainty with the effect concentrated in competitive product markets, a pattern consistent with competitive real options (Grenadier 2002) as a mechanism distinct from the precautionary motive that governs the financing-margin response. The financing and investment findings are presented as operating under separate theoretical mechanisms; we do not test a causal or sequencing bridge between them.
+- Contribution: (1) first evidence linking call-Q&A managerial uncertainty to firm-quarter financing conservatism; (2) first decomposition of Q&A vs presentation channels showing segment-specific DV loading on payout outcomes; (3) documented investment-margin puzzle — capex rises under managerial uncertainty with the effect concentrated in competitive product markets, a pattern consistent with competitive real options (Grenadier 2002) as a mechanism distinct from the precautionary motive that governs the financing-margin response. The financing and investment findings are presented as operating under separate theoretical mechanisms; we do not test a causal or sequencing bridge between them.
 - Preview of findings
 
 ### Chapter 2: Literature Review and Theoretical Framework
@@ -72,11 +72,11 @@ Payout DVs (H12 PayoutRatio_q, H12b DivPayerQ) show a distinct channel pattern: 
 **2.2 Textual Analysis of Earnings Calls**
 - DWZ 2021 speech uncertainty measurement; Loughran-McDonald 2013 10-K tone; BGT 2018 Q&A segment treatment precedent; Larcker-Zakolyukina 2012 CFO identification precedent
 
-**2.3 Precautionary Motive and Financial Conservatism (mechanism for HC/HL/HFC)**
+**2.3 Precautionary Motive and Financing Conservatism (mechanism for HC/HL/HFC)**
 - Cash holdings: Opler-Pinkowitz-Stulz-Williamson 1999 determinants; Bates-Kahle-Stulz 2009 secular rise
 - Cash-flow sensitivity of cash: Almeida-Campello-Weisbach 2004; Han-Qiu 2007 extension with financial constraints
 - Pecking order: Myers-Majluf 1984; Fazzari-Hubbard-Petersen 1988 financing constraints
-- Financial conservatism: Minton-Wruck 2009; Strebulaev-Yang 2013 zero-leverage
+- Financing conservatism tradition: Minton-Wruck 2009 (paper title "Financial Conservatism", leverage-focused); Strebulaev-Yang 2013 zero-leverage
 - Financial constraints classification: Faulkender-Petersen 2006 credit-rating-access hierarchy
 - Propensity to save: Riddick-Whited 2009
 
@@ -86,7 +86,7 @@ Payout DVs (H12 PayoutRatio_q, H12b DivPayerQ) show a distinct channel pattern: 
 - Preemption under uncertainty: Dixit-Pindyck 1994 (cited via Grenadier/Aguerrevere); note that AFW 2004 and the precautionary literature alone predict capex↓ under uncertainty; the competitive real options literature provides a separate mechanism that predicts capex↑ in competitive settings
 
 **2.5 Hypothesis Development** (literature → hypotheses)
-- From §2.3: precautionary motive under managerial speech uncertainty → financial conservatism on financing margin → HC (cash↑), HL (leverage↓), HFC (effect strongest where external finance is costly)
+- From §2.3: precautionary motive under managerial speech uncertainty → financing conservatism → HC (cash↑), HL (leverage↓), HFC (effect strongest where external finance is costly)
 - §2.4 is theoretical background for Ch 4.4 investment-margin interpretation, NOT for formal hypothesis development. The investment-margin pattern is documented empirically and interpreted post-hoc through Grenadier/Aguerrevere, consistent with standard practice when observed patterns fall outside the main literature-driven prediction.
 
 ### Chapter 3: Data and Methodology
@@ -163,7 +163,7 @@ Payout DVs (H12 PayoutRatio_q, H12b DivPayerQ) show a distinct channel pattern: 
 
 ### Chapter 5: Discussion
 
-**5.1 Financial Conservatism Under Managerial Speech Uncertainty**
+**5.1 Financing Conservatism Under Managerial Speech Uncertainty**
 - HC/HL/HFC together describe a consistent conservatism pattern: cash↑, leverage↓, effect concentrated among Unrated firms
 - Consistent with precautionary motive literature (AFW 2004, BKS 2009, OPSW 1999, Riddick-Whited 2009) adapted to a novel IV (call-Q&A managerial uncertainty) at a higher temporal resolution (firm-quarter) than prior annual-10-K studies
 - Temporal asymmetry mechanism (§3.5 elaborated): cash responds contemporaneously, leverage with a lag — consistent with adjustment-cost asymmetry
@@ -218,14 +218,14 @@ Full 37-suite table (appendix A) with columns: suite ID / hypothesis class / pri
 
 ## Changes from v2 (2026-04-16 evening)
 
-1. **Title word:** "Precaution" → "Conservatism" (RQ-title alignment)
-2. **RQ:** single-question; Part 2 on competition/investment REMOVED. "Financial response" → "financial conservatism in firms' financing decisions" — scope restricted to financing side
+1. **Title phrase:** "Corporate Financial Precaution" → "Financing Conservatism" (RQ-title alignment + tighter scope-specific term; avoids "financial/financing" redundancy)
+2. **RQ:** single-question; Part 2 on competition/investment REMOVED. "Financial response" → "financing conservatism" — scope restricted to financing side; "financing" is specific to cash/leverage/payout decisions (vs ambiguous "financial" which could encompass accounting conservatism Basu 1997)
 3. **Formal hypotheses:** 4 (HC/HL/HK/HFC) → 3 (HC/HL/HFC). HK retired as formal hypothesis — literature-driven prediction from precautionary theory was capex↓, observed sign was capex↑, so forcing HK into the precautionary frame was reverse-engineered
 4. **HK content (H13/H13.1/H13.2) relocated** from "formal hypothesis" to "Ch 4.4 documented investment-margin puzzle with competitive real options interpretation"
 5. **Cash-buffer-bridge claim REMOVED** — v2 claimed firms "HOLD cash to DEPLOY under competition" as the mechanism linking financing conservatism and capex↑. This was a reverse-engineered post-hoc synthesis; no paper in the top-tier literature unifies precautionary motive and competitive real options, and Gao-Zhao (2022) explicitly models them as "competing forces." The bridge is removed from the thesis claims; the two responses are presented as operating on separate mechanisms
 6. **Contribution claim (Ch 1) restructured:** "first empirical bridge from precautionary cash accumulation to competitive-preemption capex via internal-fund deployment" → "documented investment-margin puzzle consistent with competitive real options as a separate mechanism"
 7. **§3.5 adds new caveat:** financing-investment causal bridge NOT tested — separate outcome equations, any sequencing interpretation is theoretical
-8. **§5 restructured** into 5 subsections: financial conservatism (§5.1), investment puzzle (§5.2), relationship (§5.3, theoretical only), presentation substructure (§5.4), identification (§5.5)
+8. **§5 restructured** into 5 subsections: financing conservatism (§5.1), investment puzzle (§5.2), relationship (§5.3, theoretical only), presentation substructure (§5.4), identification (§5.5)
 9. **Literature section Ch 2** restructured to separate precautionary-motive background (§2.3, drives HC/HL/HFC formal hypotheses) from competitive-real-options background (§2.4, interpretive frame for Ch 4.4 puzzle only, NOT used in formal hypothesis development)
 10. **Suite allocation:** 9 core → 6 core + 3 puzzle (total 23 body unchanged)
 11. **Hypothesis-development flow** (§2.5): literature → hypotheses explicit; §2.4 flagged as interpretive background not hypothesis-generating
