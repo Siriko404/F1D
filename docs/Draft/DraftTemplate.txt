@@ -1,3 +1,6 @@
+** two column style mandatory with traditional styling, according to fin/econ traditional top journal design. **
+
+
 
 # [Paper Title]
 
