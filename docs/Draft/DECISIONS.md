@@ -1,6 +1,6 @@
 # Thesis Draft — Decisions Log
 
-**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **30 / 37 suites audited (Q1 COMPLETE + Q2 COMPLETE + Q3 COMPLETE).** Q1 (10): 8 KEEP + H16 DROP-flagged + H20b DROP. Q2 (6): all KEEP (H22 sample-size flag). Q3 (14): all KEEP — H5/H7b/H7c/H7d/H7e/H14b/H14c/H14e/H18/H18b/H21 clean KEEP; H7/H14/H14d KEEP near-null flags. Rules 21-24 in force. **Notable Q3 batch 3 findings**: H14e 9/48 sig (UncPreCEO 3/3 contemp matches H14c; second UncPreCEO contemp suite) + highest ind-FE R² in audit (0.83); H21 UncPreCEO 3/6 ind-only — **third UncPreCEO sig suite** (§5.21 recurring pattern across H14c/H14e/H21 on information DVs); H14d 1/48 near-null contrasts with H7d 5/48 (**same 25-day change window, different DVs → different signal** — §5.20 window×DV asymmetry); H7e loses H7c Amihud signal under 51-day symmetric while H14e preserves H14c spread signal (DV-specific window sensitivity); H18/H18b UncPreMgr cols 1, 2 robust to LPM↔Logit, §5.22 CCCL DV class observations. **Next cluster: Q4 = H11 → H11-Lag1 → H11-Lag2 → H23 → H24 → H24b → H25 (7 suites, construct validation / reverse direction)**.
+**Current phase:** Phase 5 audit — philosophy-framed, dialogue-based. Hard reset 2026-04-14. Audit design finalized. **37 / 37 SUITES AUDITED — Q1 + Q2 + Q3 + Q4 COMPLETE — full audit cataloguing finished 2026-04-16.** Q1 (10): 8 KEEP + H16 DROP-flagged + H20b DROP. Q2 (6): all KEEP (H22 sample-size flag). Q3 (14): all KEEP — 11 clean KEEP + H7/H14/H14d KEEP near-null flags. **Q4 (7) — FINAL cluster: all KEEP** — H11 / H11-Lag1 / H11-Lag2 / H24b 8/8 sig β>0 (broadest loading) + H24 6/8 + H23 4/8 ind-heavy + H25 1/8 near-null. Rules 21-24 in force. **Q4 notable findings**: H11-series tiny-magnitude flag (β=0.0001-0.0003, negative firm-FE Adj R², no Lagged_DV); H24b 8/8 (inverts pre-restructure wrong-sign); H24 vs H24b Mgr-Pre DV heterogeneity (US EPU null, GEPU sig); H23 UncPreCEO firm-FE survival = fourth UncPreCEO sig instance (§5.24); H25 GPR near-null = fifth near-null suite (§5.27). §5.23-5.27 added. **Total audit DROPs**: 2 (H16 Q1 DROP-flagged-for-revisit + H20b Q1 DROP) out of 37. **Next phase: Q5 economic-magnitude sweep + post-audit synthesis**.
 
 ---
 
@@ -160,6 +160,13 @@ Each audited suite produces **two things**:
 | H18 | CCCL (6 cols, LPM, 1 DV) | 64,172–66,886 | Q3 (provisional) | `UncAnsCEO` 0/6 null; `UncPreCEO` 0/6 null; `UncAnsMgr` 0/6 null; `UncPreMgr` **2/6 sig β>0** — cols 1, 2 (ind+yr + firm+yr, no extended controls); cols 3-6 with ext null. **2/24 sig**. Lagged_DV 3/6 sig firm-FE β<0 (mean reversion, binary DV). **R² 0.000–0.001 near-zero** (binary CCCL DV, LPM struggles) | KEEP | Rule 21 informative pattern (2 sig cells, robust to LPM/Logit per H18b). Primary `UncAnsMgr` null. Only UncPreMgr signal, extended-control sensitive. New §5.22 |
 | H18b | CCCL Logit (2 cols, ind+yr only — firm FE not supported) | 64,172–66,886 | Q3 (provisional) | `UncAnsCEO` 0/2 null; `UncPreCEO` 0/2 null; `UncAnsMgr` 0/2 null; `UncPreMgr` **2/2 sig β>0** — col 1 (ind+yr) + col 2 (ind+yr+ext). Pseudo R² 0.089 / 0.090. Logit variant of H18 without firm FE | KEEP | Logit robustness check for H18. UncPreMgr ind-only pattern **robust to functional form**: LPM 2/6 (no-ext cells) + Logit 2/2 (both cols). CEO measures null in both. §5.22 |
 | H21 | SEC_Letters_fwd (6 cols, 1 DV) | 64,172–66,886 | Q3 (provisional) | `UncAnsCEO` 0/6 null; `UncPreCEO` **3/6 sig β>0 — cols 1, 3, 5 industry-FE only** (firm-FE 0/3 null); `UncAnsMgr` 0/6 null; `UncPreMgr` 0/6 null. **3/24 sig**. **Third UncPreCEO sig suite** (H14c → H14e → H21). Lagged_DV 3/6 sig firm-FE β<0 (mean reversion). R² 0.004–0.005 near-zero | KEEP | Rule 21 informative pattern. UncPreCEO 3/3 industry-FE contemp. **Third UncPreCEO sig instance in audit** — all three on information-channel DVs (H14c/H14e spread levels + H21 SEC letter count). §5.21 UncPreCEO recurring pattern |
+| H11 | 4 speech DVs (UncAnsMgr / UncAnsCEO / UncPreMgr / UncPreCEO) × ind+Yr / firm+Yr FE (8 cols) — **REVERSE direction: speech is LHS** | 65,394–77,758 | Q4 (provisional) | `PRisk_t` **8/8 sig β>0** across all 4 DVs × both FE strata (β=0.0001–0.0003). **No Lagged_DV control in spec** (structural difference from H23/H24/H24b/H25). Firm-FE Adj R² **NEGATIVE** (-0.002 to -0.006) — within-firm fit near-zero. Controls: UncQue 8/8 sig, NegCall 8/8 sig, lnAssets 4/8 sig β<0 ind-only (FE-strata split), TobinsQ 2/8 sig β<0 cols 1-2 (UncAns DVs ind-only), **ROA 5/8 sig β>0** (cols 1-3 ind + 5-6 firm; cols 4, 7, 8 null), CashRatio 3/8 mixed (col 3 ind β>0 UncPreMgr + cols 5, 6 firm β>0 UncAns), DivDummy 3/8 sig (col 3 ind β<0 UncPreMgr + cols 7, 8 firm β<0 UncPre), FirmMat 4/8 sig (cols 3, 4 ind + 5, 6 firm), EarnVol 0/8 null. UncPreMgr as control on UncAnsMgr DV cols: 2/2 sig β>0 (cols 1, 5). UncPreCEO as control on UncAnsCEO DV cols: 2/2 sig β>0 (cols 2, 6) | KEEP (tiny-magnitude flag) | Rule 21 KEEP default for full-ladder informative pattern. Primary IV loads on every speech DV under both FE strata — broadest informative pattern in the Q4 cluster so far. Tiny β + negative firm-FE Adj R² logged as §5.23 flag; magnitude is a Q5 downstream concern not an audit-verdict input |
+| H11-Lag1 | Same 4 speech DVs × 8 cols | 63,049–75,014 | Q4 (provisional) | `PRisk_{t-1}` **8/8 sig β>0** — identical pattern to H11 contemp. Firm-FE magnitudes marginally smaller (round to β=0.0000 but three-star sig). No Lagged_DV. Controls near-identical to H11 | KEEP | Lag-1 replication of H11 contemp. Same 8/8 survival, same tiny magnitudes, same structural caveats (no Lagged_DV + negative Adj R² under firm FE). §5.23 applies |
+| H11-Lag2 | Same 4 speech DVs × 8 cols | 62,674–74,561 | Q4 (provisional) | `PRisk_{t-2}` **8/8 sig β>0**, col 6 (firm-FE UncAnsCEO) drops to ** from ***; all other 7 cells still ***. No Lagged_DV. Controls near-identical to H11/H11-Lag1 | KEEP | Lag-2 replication of H11 — slight attenuation at one cell, same 8/8 breadth otherwise. Logged as factual observation, not interpreted. §5.23 applies |
+| H23 | 4 speech DVs × ind+Yr / firm+Yr FE (8 cols, **firm-fiscal-year panel**) | 18,447–20,774 | Q4 (provisional) | `z(log(TSIMM))` **4/8 sig β>0** — ind col 1 UncAnsMgr β=0.0090** / col 3 UncPreMgr β=0.0297*** / col 4 UncPreCEO β=0.0304***; firm col 8 UncPreCEO β=0.0302***. **UncPreCEO is the only DV with firm-FE survival** — **fourth UncPreCEO sig suite** in audit (after H14c/H14e/H21 in Q3; §5.24). UncAnsCEO 0/2 null on ind and firm. Has Lagged_DV 8/8 sig (0.13–0.68). Firm-year panel ≈20K parallels H22 class. Controls: UncQue 7/8 sig (col 8 null), NegCall 8/8 sig, lnAssets 4/8 ind-only β<0, TobinsQ 2/8 ind-only β<0 (cols 1, 2), **ROA 6/8 sig β>0** (cols 1-4 ind + 5, 6 firm; cols 7, 8 firm null), CashRatio 3/8 mixed (col 4 ind β<0 UncPreCEO + cols 5, 6 firm β>0 UncAns), DivDummy 2/8 sig β<0 (col 3 ind + col 7 firm UncPreMgr), FirmMat 5/8 sig β>0 (cols 1, 2, 4 ind + 5, 6 firm), EarnVol 0/8 null. UncPreMgr control 2/2 sig β>0 (cols 1, 5); UncPreCEO control 2/2 sig β>0 (cols 2, 6) | KEEP (small-panel flag) | Rule 21 informative pattern. Ind-FE pattern delivers; firm-FE collapses except via UncPreCEO. Fourth UncPreCEO sig instance extends §5.21 beyond Q3 information DVs (§5.24). Small firm-year panel logged alongside H22/H20b — sample-size generalizability watch |
+| H24 | 4 speech DVs × ind+Cal.Yr / firm+Cal.Yr FE (8 cols). **DV column order Mgr-QA / Mgr-Pre / CEO-QA / CEO-Pre** (different from H11/H23; line 2237) | 59,676–75,142 | Q4 (provisional) | `log(US EPU)_t` **6/8 sig β>0** — hits Mgr-QA 2/2, CEO-QA 2/2, CEO-Pre 2/2; **Mgr-Pre 0/2 null** (cols 2 + 6 — only DV not responding to US EPU). β=0.0117–0.0239. Lagged_DV 8/8 sig — highest persistence on Mgr-Pre ind 0.68 / firm 0.42, lowest on CEO-QA firm 0.11. Two-way cluster (firm, cal_yr_qtr). Cal.Year FE via other_effects. R² 0.17 / 0.48 / 0.14 / 0.29 ind; 0.04 / 0.19 / 0.03 / 0.08 firm. Controls: UncQue 8/8 sig, NegCall 8/8 sig, lnAssets 4/8 ind-only β<0, TobinsQ 2/8 ind-only β<0 (UncAns DVs), ROA 7/8 sig β>0, CashRatio 3/8 sig β>0, DivDummy 3/8 sig β<0, FirmMat 3/8 sig, EarnVol 0/8 null | KEEP | Rule 21 informative pattern. Mgr-Pre null is a DV-specific non-response to US EPU — logged as §5.26 Q4 DV-heterogeneity flag alongside H24b contrast (H24b hits Mgr-Pre 2/2). §5.23 broad external-loading instance |
+| H24b | Same 8-col structure as H24 (same panel, `other_effects=cal_yr`) | 59,676–75,142 | Q4 (provisional) | `log(GEPU)_t` **8/8 sig β>0** — all 4 DVs × both FE strata. β=0.0124–0.0309. **Inverts the pre-restructure wrong-sign GEPU finding** per `project_h24_h24b_h25_macro_uncertainty.md` (prior spec without Cal.Year FE produced uniformly NEGATIVE GEPU coefficients — year-level confounders absorbed here). Broadest Q4 signal. Lagged_DV 8/8 sig near-identical to H24. Controls near-identical to H24 | KEEP | Rule 21 broadest informative pattern in Q4 (ties H11-series 8/8 breadth). Direction restored to β>0 after Cal.Year FE / other_effects spec fix. §5.23 broad external-loading; §5.26 DV-heterogeneity contrast — H24 vs H24b differ only on Mgr-Pre response (H24 null, H24b sig) |
+| H25 | Same 8-col structure | 59,676–75,142 | Q4 (provisional) | `log(GPR)_t` **1/8 sig** — col 4 UncPreCEO ind+Cal.Yr β=0.0147*; all other 7 cells null. Lagged_DV 8/8 sig. Controls near-identical to H24/H24b | KEEP (near-null flag) | Rule 21 KEEP default (1 sig cell informative). Near-complete null joins H7/H14/H14d/H16 near-null family (§5.27, fifth instance). GPR does not meaningfully drive speech uncertainty after Cal.Year FE absorbs year-level confounders. User DROP override available at synthesis |
 
 ### 4.2 Per-suite blocks
 
@@ -717,6 +724,134 @@ _Populated during audit. One block per suite. Template at the bottom of this sec
 - **Verdict**: **KEEP**.
 - **Rationale**: Rule 21 informative pattern (3 sig UncPreCEO cells). UncPreCEO recurring signal is now a cross-suite pattern (H14c, H14e, H21). §5.21 entry.
 
+### H11 — Political Risk and Speech Uncertainty (Hassan, Hollander, van Lent, Tahoun 2019 PRisk)
+
+- **DV**: 4 speech measures as parallel DVs across columns — `UncAnsMgr` (cols 1, 5), `UncAnsCEO` (cols 2, 6), `UncPreMgr` (cols 3, 7), `UncPreCEO` (cols 4, 8). **REVERSE direction**: speech is LHS; PRisk is RHS. Contemp only (no lead spec).
+- **N**: 77,658 / 65,394 / 77,758 / 65,760 per DV (larger than Q1-Q3 Main panels; ~77K on Mgr DVs, ~65K on CEO DVs reflecting the CEO coverage gap per `reference_ceo_coverage_gap.md`)
+- **FE ladder**: (1-4) Industry FE + Year FE across 4 DVs; (5-8) Firm FE + Year FE across 4 DVs. No extended controls variant. No year-quarter FE variant. **No Lagged_DV control in spec** (structural difference from H23/H24/H24b/H25 which do include Lagged_DV).
+- **Tail**: one-tailed β>0 for IV; two-tailed for controls (line 849)
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue, re-read 2026-04-16):
+    - **Primary IV**: `PRisk_t` **8/8 sig β>0** — all 4 DVs × both FE strata. β = 0.0002 / 0.0001 / 0.0002 / 0.0003 (ind); 0.0001 / 0.0001 / 0.0001 / 0.0002 (firm). All *** at p<0.01. Broadest IV pattern in Q4 cluster (tied with H11-Lag1, H11-Lag2, H24b).
+    - **Base controls**: `UncQue` **8/8 sig β>0** (cols 1-4 ind β≈0.02-0.05; cols 5-8 firm β≈0.008-0.04). `NegCall` **8/8 sig β>0** (all cells). `lnAssets` **4/8 sig β<0 — all 4 ind cells (β≈-0.02 to -0.03), firm-FE 0/4 null** (FE-strata split). `TobinsQ` **2/8 sig β<0 — cols 1, 2 ind UncAns DVs only**; cols 3, 4 ind (UncPre DVs) null; firm 0/4 null. `ROA` **5/8 sig β>0** — cols 1, 2, 3 ind (β≈0.07-0.10) + cols 5, 6 firm (β≈0.06); col 4 ind (UncPreCEO) null 0.0477, cols 7, 8 firm (UncPre DVs) null. `CashRatio` **3/8 sig — mixed location**: col 3 ind UncPreMgr β=0.0923*** + cols 5, 6 firm UncAnsMgr/UncAnsCEO β>0 sig. `DivDummy` **3/8 sig β<0** — col 3 ind UncPreMgr β=-0.0481*** + cols 7, 8 firm UncPre DVs β≈-0.02. `FirmMat` **4/8 sig β>0** — cols 3, 4 ind (β≈0.002-0.004) + cols 5, 6 firm (β≈0.003). `EarnVol` **0/8 null**.
+    - **Same-call Pre controls** (structural — added to UncAns DV cols only to control for within-call Pre correlation): `UncPreMgr` appears in cols 1 + 5 (UncAnsMgr DV cols), **2/2 sig β>0** (β=0.1637*** ind, 0.1174*** firm). `UncPreCEO` appears in cols 2 + 6 (UncAnsCEO DV cols), **2/2 sig β>0** (β=0.1786*** ind, 0.1078*** firm).
+    - **Lagged_DV**: **NOT PRESENT in this spec.** Structural observation — no DV persistence control, unlike every other Q4 suite.
+    - **R² / N**: **R² 0.066 / 0.057 / 0.053 / 0.043 (ind)**; **0.026 / 0.021 / 0.018 / 0.023 (firm)**. **Adj R² on 3 of 4 firm-FE cells is NEGATIVE** (0.002 / -0.006 / -0.005 / -0.004). N: Mgr DVs 77,658 / 77,758; CEO DVs 65,394 / 65,760.
+- **Reader-question**: Q4 (provisional, placeholder per rule 21) — construct validation / reverse-direction test.
+- **Argument**: PRisk loads 8/8 with β>0 on every speech DV under both FE strata. The thesis's speech IV is at minimum partly correlated with firm-level political risk exposure (Hassan-Hollander-van Lent-Tahoun 2019 measure). Magnitudes are very small (β≈0.0001-0.0003) and firm-FE Adj R² runs negative on 3 of 4 cells — the within-firm explanatory contribution of PRisk is nearly zero even though the coefficient is statistically distinguishable from zero at 112K-call N. Spec does NOT include Lagged_DV so DV persistence is unabsorbed. Pattern is an informative empirical fact about IV-construct overlap; Q-answer interpretation deferred to post-audit synthesis.
+- **Verdict**: **KEEP** (tiny-magnitude + no-Lagged-DV flags for §5.23 / §5.25).
+- **Rationale**: Rule 21 KEEP default for full-ladder informative pattern. Magnitudes and R²-weakness are Q5 economic-significance concerns downstream of the audit; they do not reduce the factual record of 8/8 sig cells. Two structural flags filed at cross-cutting §5.23 (tiny-magnitude broad-loading) and §5.25 (H11-series no-Lagged-DV spec difference from H23/H24/H24b/H25).
+
+### H11-Lag1 — Political Risk (1-Qtr Lag) and Speech Uncertainty
+
+- **DV**: Same 4 speech DVs as H11 (UncAnsMgr / UncAnsCEO / UncPreMgr / UncPreCEO across 8 cols)
+- **N**: 74,918 / 63,049 / 75,014 / 63,399 per DV (smaller than H11 by ~3K, lag requirement drops head-of-panel observations)
+- **FE ladder**: Identical to H11 — Ind+Yr cols 1-4, Firm+Yr cols 5-8. No ExtCtrl, no YQ FE, no Lagged_DV.
+- **Tail**: one-tailed β>0 for IV
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **Primary IV**: `PRisk_{t-1}` **8/8 sig β>0** — same full-ladder survival as H11 contemp. β = 0.0001 / 0.0001 / 0.0001 / 0.0002 (ind); 0.0000 / 0.0000 / 0.0001 / 0.0001 (firm). All *** at p<0.01. Firm-FE magnitudes round to 0.0000 under four-decimal display but retain three-star significance.
+    - **Base controls**: Near-identical to H11 (values within 0.001-0.005 across cells). `UncQue` 8/8 sig, `NegCall` 8/8 sig, `lnAssets` 4/8 ind-only β<0 (FE-strata split), `TobinsQ` 2/8 ind-only β<0 (cols 1, 2), `ROA` **6/8 sig** — cols 1, 2, 3 ind + 5, 6 firm + col 8 firm β=0.0455* sig (new vs H11 contemp col 8 null); cols 4, 7 null. `CashRatio` 3/8 mixed (col 3 ind UncPreMgr + cols 5, 6 firm UncAns). `DivDummy` 3/8 sig β<0 (col 3 ind + cols 7, 8 firm). `FirmMat` **3/8 sig β>0** — col 3 ind β=0.0059*** + col 5 firm β=0.0028* + col 6 firm β=0.0039** (col 4 ind 0.0021 null). `EarnVol` 0/8 null.
+    - **Same-call Pre controls**: `UncPreMgr` 2/2 sig (cols 1, 5 β=0.1693*** / 0.1219***). `UncPreCEO` 2/2 sig (cols 2, 6 β=0.1821*** / 0.1122***).
+    - **Lagged_DV**: NOT PRESENT.
+    - **R² / N**: **R² 0.063 / 0.055 / 0.049 / 0.036 (ind)**; **0.022 / 0.018 / 0.014 / 0.016 (firm)**. Adj R² on all 4 firm-FE cells NEGATIVE (-0.002 / -0.009 / -0.011 / -0.012). N: Mgr DVs 74,918 / 75,014; CEO DVs 63,049 / 63,399.
+- **Reader-question**: Q4 (provisional).
+- **Argument**: Lag-1 replication of H11's contemp pattern. Same 8/8 breadth, same tiny magnitudes, same near-zero firm-FE explanatory power. Structurally identical caveats.
+- **Verdict**: **KEEP**.
+- **Rationale**: Lag replication confirms the external-loading pattern is not contemp-only; same §5.23 / §5.25 flags apply.
+
+### H11-Lag2 — Political Risk (2-Qtr Lag) and Speech Uncertainty
+
+- **DV**: Same 4 speech DVs
+- **N**: 74,467 / 62,674 / 74,561 / 63,022 (slightly smaller than H11-Lag1 by ~450 calls)
+- **FE ladder**: Identical to H11
+- **Tail**: one-tailed β>0 for IV
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **Primary IV**: `PRisk_{t-2}` **8/8 sig β>0**. β = 0.0001 / 0.0001 / 0.0001 / 0.0001 (ind, all ***); 0.0000 / 0.0000 / 0.0000 / 0.0000 (firm). **Col 6 (firm UncAnsCEO) drops to ** from *** — only cell in H11-series weakening below the p<0.01 bar.** All other 7 cells remain ***.
+    - **Base controls**: Near-identical to H11 / H11-Lag1. `UncQue` 8/8 sig, `NegCall` 8/8 sig, `lnAssets` 4/8 ind-only β<0, `TobinsQ` 2/8 ind-only β<0 (cols 1, 2), `ROA` **6/8 sig** (cols 1-3 ind + 5, 6 firm + col 8 firm β=0.0464* sig; cols 4, 7 null). `CashRatio` **3/8 mixed** (col 3 ind UncPreMgr + cols 5, 6 firm UncAns, unchanged from lags). `DivDummy` **3/8 sig β<0** (col 3 ind*** + col 7 firm* + col 8 firm*). `FirmMat` **3/8 sig** (col 3 ind** + col 5 firm* + col 6 firm**). `EarnVol` 0/8 null.
+    - **Same-call Pre controls**: `UncPreMgr` 2/2 sig (cols 1, 5 β=0.1707*** / 0.1247***). `UncPreCEO` 2/2 sig (cols 2, 6 β=0.1827*** / 0.1138***).
+    - **Lagged_DV**: NOT PRESENT.
+    - **R² / N**: **R² 0.063 / 0.055 / 0.048 / 0.035 (ind)**; **0.023 / 0.019 / 0.013 / 0.015 (firm)**. Adj R² firm cells all NEGATIVE. N: Mgr DVs 74,467 / 74,561; CEO DVs 62,674 / 63,022.
+- **Reader-question**: Q4 (provisional).
+- **Argument**: Lag-2 replication with one cell attenuation (col 6 firm UncAnsCEO drops *** → **). All other cells retain H11 pattern. Logged as factual observation, not interpreted.
+- **Verdict**: **KEEP**.
+- **Rationale**: Minor attenuation at one cell across 2-quarter lag horizon; 8/8 breadth preserved. §5.23 / §5.25 flags apply.
+
+### H23 — Product-Market Competition and Speech Uncertainty (TSIMM firm-year)
+
+- **DV**: Same 4 speech DVs (8 cols: 4 ind+yr, 4 firm+yr). **Unit of observation: firm-fiscal-year** (line 2222) — small-sample class parallel to H22 / H20b.
+- **N**: 20,768 / 18,447 / 20,774 / 18,492 per DV (firm-year, ~1/4 of Main call panel)
+- **FE ladder**: (1-4) Ind FE + Year FE across 4 DVs; (5-8) Firm FE + Year FE. No ExtCtrl, no YQ FE. **Has Lagged_DV** (structural difference from H11-series).
+- **Tail**: one-tailed β>0 for IV (line 2219)
+- **Cluster**: firm-level
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **Primary IV**: `z(log(TSIMM))` **4/8 sig β>0** — col 1 UncAnsMgr ind β=0.0090** + col 3 UncPreMgr ind β=0.0297*** + col 4 UncPreCEO ind β=0.0304*** + col 8 UncPreCEO firm β=0.0302***. Col 2 UncAnsCEO ind null; cols 5-7 firm null on UncAnsMgr / UncAnsCEO / UncPreMgr. **UncPreCEO is the only DV with firm-FE survival** (2/2 sig β>0).
+    - **Cross-suite note**: H23 is the **fourth suite with significant UncPreCEO loading** in the audit (prior: H14c, H14e, H21 — all Q3 information DVs). H23 is the first Q4 UncPreCEO instance; direction β>0 matches H14c/H14e/H21 direction. §5.24.
+    - **Base controls**: `UncQue` **7/8 sig β>0** (col 8 0.0084 null). `NegCall` **8/8 sig β>0**. `lnAssets` **4/8 sig β<0** — all 4 ind cells (FE-strata split), firm 0/4 null. `TobinsQ` **2/8 sig β<0** (cols 1, 2 ind UncAns DVs). `ROA` **6/8 sig β>0** — cols 1-4 ind + 5, 6 firm; col 7 null 0.0064, col 8 null 0.0241. `CashRatio` **3/8 mixed** — col 4 ind UncPreCEO β=-0.0803** (β<0) + col 5 firm UncAnsMgr β=0.0589*** + col 6 firm UncAnsCEO β=0.0524* (both β>0). `DivDummy` **2/8 sig β<0** (col 3 ind UncPreMgr*** + col 7 firm UncPreMgr*). `FirmMat` **5/8 sig β>0** (cols 1, 2, 4 ind + 5, 6 firm). `EarnVol` 0/8 null.
+    - **Same-call Pre controls**: `UncPreMgr` 2/2 sig (cols 1, 5 β=0.1943*** / 0.1418***). `UncPreCEO` 2/2 sig (cols 2, 6 β=0.2491*** / 0.1687***).
+    - **Lagged_DV**: **Present, 8/8 sig β>0**. Ind: 0.3333 / 0.6755 / 0.2986 / 0.5176. Firm: 0.1367 / 0.4185 / 0.1103 / 0.2626. Highest persistence on UncAnsCEO ind 0.68 / firm 0.42; lowest on UncAnsCEO firm 0.11. **H23's firm-year persistence ≈ 0.1-0.4 — much stronger than H11-series which has no Lagged_DV row for comparison.**
+    - **R² / N**: **R² 0.104 / 0.103 / 0.064 / 0.050 (ind)**; **0.038 / 0.038 / 0.017 / 0.021 (firm)**. **Adj R² firm cells ALL NEGATIVE (-0.045 / -0.050 / -0.067 / -0.068)**. N: firm-year ~20K (Mgr DVs) / ~18K (CEO DVs).
+- **Reader-question**: Q4 (provisional).
+- **Argument**: TSIMM product-market similarity loads on speech uncertainty 4/8 industry-FE heavy and collapses under firm-FE except via UncPreCEO. The one firm-FE survivor is UncPreCEO (col 8 β=0.0302***), which extends the Q3 UncPreCEO recurring pattern (§5.21 H14c/H14e/H21) into Q4. Small firm-year panel (~20K) parallels H22 / H20b small-N class.
+- **Verdict**: **KEEP** (small-panel + UncPreCEO-fourth-instance flags).
+- **Rationale**: Rule 21 informative pattern. Ind-FE delivers on 3 DVs; firm-FE delivers only via UncPreCEO. Fourth UncPreCEO sig instance widens §5.21 → §5.24 (spans Q3 information DVs + Q4 reverse direction). Small firm-year N logged alongside H22/H20b — sample-size override at synthesis.
+
+### H24 — US Economic Policy Uncertainty and Speech Uncertainty (BBD US EPU)
+
+- **DV**: 4 speech DVs in **DIFFERENT column order** from H11/H23 — cols 1-4: UncAnsMgr / UncPreMgr / UncAnsCEO / UncPreCEO (Ind+Cal.Yr FE); cols 5-8 same order (Firm+Cal.Yr FE) per line 2237.
+- **N**: 74,013 / 75,142 / 59,676 / 60,503 per DV (call-level)
+- **FE ladder**: (1-4) Industry FE + **Calendar Year FE via `other_effects=cal_yr`**; (5-8) Firm FE + Calendar Year FE. **No TimeEffects and no Year-Quarter FE** (per `feedback_macro_iv_handling.md` — TimeEffects absorbs the monthly macro IV).
+- **Tail**: one-tailed β>0 for IV
+- **Cluster**: **two-way clustered (firm, cal_yr_qtr)** per line 2280
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **Primary IV**: `log(US EPU)_t` (calendar-month match, not aggregated) **6/8 sig β>0** — col 1 UncAnsMgr ind β=0.0141** + col 3 UncAnsCEO ind β=0.0117* + col 4 UncPreCEO ind β=0.0211*** + col 5 UncAnsMgr firm β=0.0147** + col 7 UncAnsCEO firm β=0.0138** + col 8 UncPreCEO firm β=0.0239***. **Col 2 UncPreMgr ind β=0.0065 null AND col 6 UncPreMgr firm β=0.0071 null — UncPreMgr is the only DV not responding to US EPU**. By DV: UncAnsMgr 2/2 sig, UncAnsCEO 2/2 sig, UncPreMgr 0/2 null, UncPreCEO 2/2 sig.
+    - **Base controls**: `UncQue` **8/8 sig β>0**. `NegCall` **8/8 sig β>0**. `lnAssets` **4/8 sig β<0** — all 4 ind cells; firm 0/4 null (FE-strata split). `TobinsQ` **2/8 sig β<0** — cols 1, 3 ind (UncAns DVs under the new column ordering). `ROA` **7/8 sig β>0** — col 6 firm UncPreMgr null (β=0.0125), all others sig. `CashRatio` **3/8 sig β>0** — col 2 ind UncPreMgr β=0.0325*** + col 5 firm UncAnsMgr β=0.0534*** + col 7 firm UncAnsCEO β=0.0604***. `DivDummy` **3/8 sig β<0** — col 2 ind UncPreMgr β=-0.0167*** + col 6 firm UncPreMgr β=-0.0101* + col 8 firm UncPreCEO β=-0.0157*. `FirmMat` **3/8 sig β>0** — col 2 ind UncPreMgr β=0.0021*** + col 5 firm UncAnsMgr β=0.0027* + col 7 firm UncAnsCEO β=0.0039**. `EarnVol` 0/8 null.
+    - **Same-call Pre controls**: `UncPreMgr` 2/2 sig β>0 on cols 1 + 5 (UncAnsMgr DV cols): 0.1223*** / 0.1126***. `UncPreCEO` 2/2 sig β>0 on cols 3 + 7 (UncAnsCEO DV cols): 0.1384*** / 0.1043***.
+    - **Lagged_DV**: **8/8 sig β>0** (structural, rule 23 magnitudes allowed). Ind: 0.3333 / 0.6755 / 0.2986 / 0.5176. Firm: 0.1367 / 0.4185 / 0.1103 / 0.2626. Highest persistence on UncPreMgr ind 0.68 / firm 0.42; lowest on UncAnsCEO firm 0.11. UncPreMgr's high persistence is a structural feature of the DV — the scripted-presentation measure is very sticky, which may explain why macro monthly shocks don't register as easily.
+    - **R² / N**: **R² 0.171 / 0.484 / 0.141 / 0.292 (ind)**; **0.041 / 0.186 / 0.030 / 0.084 (firm)**. Adj R² firm on UncPreMgr col 6 is 0.166 (positive) — unlike H11-series where Adj R² runs negative. Lagged_DV presence explains the R² lift. N: 74,013 / 75,142 / 59,676 / 60,503.
+- **Reader-question**: Q4 (provisional).
+- **Argument**: US EPU loads on 3 of 4 speech DVs under both FE strata; UncPreMgr is the sole non-responder. Primary IV `UncAnsMgr` hits 2/2 under both FE strata — the thesis's central speech measure covaries with monthly US EPU. The UncPreMgr null is a DV-heterogeneity observation, not a problem for the audit record.
+- **Verdict**: **KEEP**.
+- **Rationale**: Rule 21 informative pattern — 6/8 sig β>0 with primary IV hit. UncPreMgr non-response logged at §5.26 DV-heterogeneity for contrast with H24b (which hits UncPreMgr 2/2). §5.23 broad external-loading instance.
+
+### H24b — Global Economic Policy Uncertainty and Speech Uncertainty (GEPU)
+
+- **DV**: Same 4 speech DVs in same column order as H24 (Mgr-QA / Mgr-Pre / CEO-QA / CEO-Pre)
+- **N**: 74,013 / 75,142 / 59,676 / 60,503 per DV — **identical to H24** (same panel, same filters)
+- **FE ladder**: Identical to H24 (Ind/Firm × Cal.Yr via other_effects)
+- **Tail**: one-tailed β>0 for IV
+- **Cluster**: two-way (firm, cal_yr_qtr)
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **Primary IV**: `log(GEPU)_t` (calendar-month match) **8/8 sig β>0 — ALL cells sig** under both FE strata. β: 0.0234*** / 0.0131* / 0.0178* / 0.0271*** (ind); 0.0242** / 0.0124* / 0.0212** / 0.0309*** (firm). **Broadest IV pattern in Q4 (ties H11-series 8/8).** All 4 DVs hit under both FE strata.
+    - **Important note**: The project memory `project_h24_h24b_h25_macro_uncertainty.md` records that **prior to the Cal.Year FE restructure, GEPU produced uniformly NEGATIVE coefficients** — the "wrong-sign" was driven by year-to-year confounders. The current Cal.Year-FE-via-other_effects spec absorbs those confounders and reveals the positive relationship. This flip is a spec-design effect, not a data effect.
+    - **Base controls**: Near-identical to H24 (within 0.0001-0.0002). `UncQue` 8/8 sig, `NegCall` 8/8 sig, `lnAssets` 4/8 sig β<0 ind-only, `TobinsQ` 2/8 sig β<0 (cols 1, 3 UncAns ind), `ROA` 7/8 sig (col 6 UncPreMgr firm null), `CashRatio` 3/8 sig β>0 (cols 2 ind + 5, 7 firm), `DivDummy` 3/8 sig β<0 (cols 2, 6, 8), `FirmMat` 3/8 sig (cols 2, 5, 7), `EarnVol` 0/8 null.
+    - **Same-call Pre controls**: `UncPreMgr` 2/2 sig β>0 cols 1, 5 (0.1223*** / 0.1126***). `UncPreCEO` 2/2 sig β>0 cols 3, 7 (0.1384*** / 0.1043***). Near-identical to H24 (same panel).
+    - **Lagged_DV**: **8/8 sig β>0**, near-identical to H24 values.
+    - **R² / N**: **R² 0.171 / 0.484 / 0.141 / 0.292 (ind)**; **0.041 / 0.186 / 0.031 / 0.084 (firm)**. N identical to H24.
+- **Reader-question**: Q4 (provisional).
+- **Argument**: GEPU loads on every speech DV under every FE stratum. Unlike H24 (US EPU), GEPU hits UncPreMgr 2/2 under both FE strata (ind 0.0131* / firm 0.0124*). H24 vs H24b contrast: same panel, same spec, two different macro IVs, one hits UncPreMgr and one does not. US EPU → Mgr-Pre null, Global EPU → Mgr-Pre sig.
+- **Verdict**: **KEEP**.
+- **Rationale**: Rule 21 broadest informative pattern in Q4 (ties H11-series 8/8). The sign-flip from prior spec is a methodology-corrected artifact logged in project memory, not rescued here. §5.23 broad external-loading + §5.26 DV-heterogeneity contrast with H24.
+
+### H25 — Geopolitical Risk and Speech Uncertainty (GPR)
+
+- **DV**: Same 4 speech DVs in same column order as H24/H24b
+- **N**: 74,013 / 75,142 / 59,676 / 60,503 per DV (same panel as H24/H24b)
+- **FE ladder**: Identical to H24 / H24b
+- **Tail**: one-tailed β>0 for IV
+- **Cluster**: two-way (firm, cal_yr_qtr)
+- **Key cell fact** (rule 24 full-row catalogue):
+    - **Primary IV**: `log(GPR)_t` **1/8 sig** — only col 4 UncPreCEO ind+Cal.Yr β=0.0147* (p<0.10). All other 7 cells null. Col 1 UncAnsMgr ind β=-0.0112 null; col 2 UncPreMgr ind β=0.0073 null; col 3 UncAnsCEO ind β=-0.0059 null; col 5 UncAnsMgr firm β=-0.0119 null; col 6 UncPreMgr firm β=0.0067 null; col 7 UncAnsCEO firm β=-0.0058 null; col 8 UncPreCEO firm β=0.0118 null (close to threshold but p>0.10, per rule 22 the direction of a null cell is not evidence).
+    - **Base controls**: Near-identical to H24 / H24b (same panel). `UncQue` 8/8 sig, `NegCall` 8/8 sig, `lnAssets` 4/8 sig β<0 ind-only, `TobinsQ` 2/8 sig β<0 ind UncAns, `ROA` 7/8 sig β>0 (col 6 null), `CashRatio` 3/8 sig β>0 (col 2 ind + 5, 7 firm), `DivDummy` 3/8 sig β<0 (cols 2, 6, 8), `FirmMat` 3/8 sig (cols 2, 5, 7), `EarnVol` 0/8 null.
+    - **Same-call Pre controls**: `UncPreMgr` 2/2 sig β>0 (cols 1, 5). `UncPreCEO` 2/2 sig β>0 (cols 3, 7).
+    - **Lagged_DV**: **8/8 sig β>0**, near-identical to H24/H24b.
+    - **R² / N**: R² 0.171 / 0.484 / 0.141 / 0.292 (ind); 0.041 / 0.186 / 0.030 / 0.084 (firm). N same as H24/H24b.
+- **Reader-question**: Q4 (provisional).
+- **Argument**: GPR does not meaningfully drive speech uncertainty after absorbing year-level confounders via Cal.Year FE. The one sig cell (col 4 UncPreCEO ind β=0.0147*) is near the threshold and industry-FE only; not a pattern. Near-null status parallels H7 (1/48), H14 (1/48), H14d (1/48), H16 (0/48) — fifth near-null suite in the audit.
+- **Verdict**: **KEEP** (near-null flag).
+- **Rationale**: Rule 21 KEEP default (1 sig cell technically informative). Practical interpretation: GPR is a poor driver of speech uncertainty — useful as a null finding for construct-validation narrative (not every macro-uncertainty proxy loads on the IV). Logged at §5.27 fifth-near-null-instance. User DROP override available at synthesis.
+
 ---
 
 _Template for subsequent suites:_
@@ -946,6 +1081,65 @@ _Populated as patterns emerge across suites. Each entry is a factual flag, not a
     - **(b) Robustness to functional form**: UncPreMgr is sig on CCCL under both LPM (ind-FE, no-ext, cols 1, 2) and Logit (ind-FE, both cols, with and without ext). CEO measures null under both. UncAnsMgr null under both. **The CCCL signal is robust to LPM↔Logit but not robust to firm FE or (in LPM) extended controls.** Limited-scope signal.
 - **Cross-reference**: H21 (SEC_Letters_fwd count DV) on same panel has UncPreCEO 3/6 ind-FE sig and UncPreMgr 0/6 null. Binary receipt (H18/H18b) loads on UncPreMgr; count (H21) loads on UncPreCEO. Different SEC-risk language markers load on different information-content DVs. Synthesis observation deferred.
 - **Loaded from**: H18 + H18b (2026-04-15, Q3 batch 3). Cross-reference: H21 (same batch).
+
+### 5.23 Q4 external-uncertainty broad-loading + tiny-magnitude on speech DVs (H11 family + H24b)
+
+- **Observation**: Five Q4 suites exhibit broad positive loading of external-uncertainty IVs on speech-uncertainty measures:
+    - **H11** `PRisk_t`: 8/8 sig β>0 all 4 speech DVs × both FE strata (β=0.0001–0.0003). Tiny magnitudes; firm-FE Adj R² NEGATIVE (-0.002 to -0.006).
+    - **H11-Lag1** `PRisk_{t-1}`: 8/8 sig β>0 same pattern (firm-FE cells round to β=0.0000 at 4dp).
+    - **H11-Lag2** `PRisk_{t-2}`: 8/8 sig β>0, col 6 (firm UncAnsCEO) drops to ** from ***.
+    - **H24** `log(US EPU)_t`: 6/8 sig β>0 — UncPreMgr 0/2 null, all other DVs 2/2 sig.
+    - **H24b** `log(GEPU)_t`: **8/8 sig β>0** — all 4 DVs × both FE strata; **broadest macro-IV signal in the audit**. Inverts pre-restructure wrong-sign GEPU finding (Cal.Year FE via other_effects absorbs year-level confounders).
+    - **H23** `z(log(TSIMM))`: 4/8 sig β>0 — industry-FE heavy; firm-FE only via UncPreCEO col 8 (§5.24).
+    - **H25** `log(GPR)_t`: 1/8 sig only (§5.27 near-null class).
+- **Observation (tiny-magnitude subset)**: H11 / H11-Lag1 / H11-Lag2 all show statistically significant 8/8 coefficients with β ≈ 0.0001–0.0003. At 112K-call N, p-values cross α=0.01 easily even when the coefficient's within-firm explanatory contribution is near zero (3 of 4 firm-FE Adj R² cells negative). This is the classic "cheap p-values on very small effects" pattern the audit philosophy (`DECISIONS.md §1.2`) warns about. **Load-bearing for Q5 economic-magnitude sweep**: the H11 external-loading finding is statistically robust but economically marginal in within-firm terms; the construct-validation narrative needs to be built on the H24 / H24b within-firm magnitudes (β≈0.01–0.03, ≈100× larger than PRisk) rather than the H11 magnitudes.
+- **Status**: Informative empirical record for the post-audit synthesis. Tiny magnitudes are a downstream Q5 concern; they do not reduce the audit-record breadth. The cross-cluster implication is that **speech uncertainty is partly a reflection of external (political, competitive, macro) uncertainty exposure** — the question is whether there is residual speech-specific variation after absorbing those, which is the Q4 construct-validation reader question in its provisional form.
+- **Loaded from**: H11 / H11-Lag1 / H11-Lag2 / H23 / H24 / H24b / H25 (2026-04-16, Q4 batch).
+
+### 5.24 UncPreCEO fourth sig instance — H23 extends §5.21 from Q3 information DVs to Q4 construct validation
+
+- **Observation**: H23 col 8 (firm-FE UncPreCEO DV) has `z(log(TSIMM))` β=0.0302*** sig β>0 — making it the **fourth suite** in the audit with a significant UncPreCEO pattern. Prior instances (§5.21):
+    - **H14c** — UncPreCEO 3/3 contemp ind-FE β>0 on BGT 25-day spread level
+    - **H14e** — UncPreCEO 3/3 contemp ind-FE β>0 on BGT 51-day symmetric spread average
+    - **H21** — UncPreCEO 3/3 ind-FE β>0 on SEC comment letter count
+    - **H23** — UncPreCEO 2/2 (ind col 4 + **firm col 8**) β>0 on TSIMM firm-year (new 2026-04-16)
+- **Status**: The UncPreCEO pattern now spans Q3 (information/market-side DVs) and Q4 (construct validation / firm-year reverse direction). H23 is the first instance with **firm-FE survival on UncPreCEO**; prior 3 were all ind-FE only. Direction (β>0) is consistent across all 4 instances. Worth noting: H23's UncPreCEO firm-FE survival is on a firm-year panel (~18K) — the sample is restricted, which may contribute to the firm-FE identification power.
+- **Status**: Not a mechanism claim — logged as a measurement-pattern observation. UncPreCEO is a secondary measure per `feedback_ceo_noisy_mgr_central.md`; the pattern is catalogued, not theorized. §5.21 + §5.24 together are the UncPreCEO observation thread for synthesis review.
+- **Loaded from**: H23 (2026-04-16). Cross-reference: §5.21 (Q3 cluster).
+
+### 5.25 H11-series structural difference — no Lagged_DV control (vs all other Q4 suites)
+
+- **Observation**: H11 / H11-Lag1 / H11-Lag2 runner specifications do NOT include `Lagged_DV` as a control. The regression form is `UncAnsMgr ~ PRisk_t + UncQue + NegCall + lnAssets + TobinsQ + ROA + CashRatio + DivDummy + FirmMat + EarnVol [+ same-call Pre for Ans DVs] + EntityEffects + TimeEffects`. No DV persistence term. By contrast:
+    - **H23** (TSIMM firm-year): Lagged_DV 8/8 sig present.
+    - **H24 / H24b / H25** (macro): Lagged_DV 8/8 sig present (values 0.11–0.68).
+- **Status**: The absence of Lagged_DV in H11-series matters because the speech DVs (UncAnsMgr etc.) are known to be persistent within firm — H24's Lagged_DV cells range 0.11–0.68 showing substantial within-call DV autocorrelation. H11's tiny β (0.0001–0.0003) and negative firm-FE Adj R² are partly a consequence of running PRisk on a DV whose own lag is unabsorbed. **Comparison of H11 PRisk magnitudes to H24/H24b EPU magnitudes is not apples-to-apples** because the two specs differ on Lagged_DV inclusion. This is a Q5 / synthesis concern, not a mid-audit rescue — the pattern is catalogued; the interpretation of "how much is IV effect vs unabsorbed DV persistence" is deferred.
+- **Status**: Not rescue narrative — factual spec-difference observation. Logged for synthesis.
+- **Loaded from**: H11 / H11-Lag1 / H11-Lag2 / H23 / H24 / H24b / H25 (2026-04-16, Q4 batch).
+
+### 5.26 Macro-IV DV-heterogeneity — H24 vs H24b differ only on UncPreMgr response
+
+- **Observation**: H24 and H24b run on the same panel (74,013 / 75,142 / 59,676 / 60,503 per DV), same spec (ind/firm × Cal.Year FE via other_effects, two-way clustering), same sample filters. Only the IV differs (US EPU vs GEPU). Result:
+    - **H24** (US EPU): Mgr-QA 2/2 sig, Mgr-Pre 0/2 null, CEO-QA 2/2 sig, CEO-Pre 2/2 sig. 6/8 total.
+    - **H24b** (GEPU): Mgr-QA 2/2 sig, Mgr-Pre 2/2 sig, CEO-QA 2/2 sig, CEO-Pre 2/2 sig. 8/8 total.
+    - The only DV that differs is `UncPreMgr`: null under US EPU, sig under GEPU.
+- **Status**: H25 (GPR) on the same panel hits 0/2 on UncPreMgr. So UncPreMgr's macro responsiveness appears highest on GEPU, null on US EPU + GPR. Pattern: the scripted-presentation manager measure responds to global EPU but not to domestic EPU or GPR.
+- **Status**: Logged as factual DV-heterogeneity observation. Not rescued — the differential response is an empirical fact. Possible readings at synthesis: (i) international-exposure channel of scripted guidance responds to global but not domestic EPU; (ii) UncPreMgr is noisy and responds sporadically to the broadest IV. Decision deferred to synthesis.
+- **Loaded from**: H24 vs H24b contrast (2026-04-16, Q4 batch).
+
+### 5.27 Near-null suite class expanded — fifth instance (H25 GPR on speech DVs)
+
+- **Observation**: Five suites now catalogued with "near-null" patterns (≤1/N total sig cells and R² near zero):
+    - **H7** DeltaILLIQ 3-day change: 1/48 sig, R² 0.001–0.005 (§5.16)
+    - **H14** DSPREAD 3-day change: 1/48 sig, R² 0.001–0.009 (§5.19)
+    - **H14d** BGTDelta_Spread 25-day: 1/48 sig, R² 0.002–0.012 (§5.20)
+    - **H16** RDSales (Q1): 0/48 sig, R² ≈0.005 firm-FE lead (complete-null; §5.8)
+    - **H25** `log(GPR)_t` macro (NEW): 1/8 sig, R² same as H24/H24b panel ~0.17 / 0.48 / 0.14 / 0.29 ind / 0.04 / 0.19 / 0.03 / 0.08 firm (**but this R² is driven by controls and Lagged_DV, NOT by GPR — GPR contributes near-nothing beyond the controls**)
+- **Status**: Near-null is KEEP-default per rule 21 (1 sig cell is informative), but at synthesis the user has DROP override available. Five near-null suites cluster observations:
+    - H7 / H14 / H14d share a structural feature: all three are CHANGE variables (post-minus-pre spread/illiquidity) on thin-daily-data DVs where change variants mean-revert (§5.16 / §5.19 / §5.20).
+    - H16 is a DIFFERENT structural reason: R&D is a sticky flow, near-zero firm-FE variation within quarters over short horizons.
+    - H25 is a DIFFERENT structural reason again: GPR is a geopolitical measure that does not meaningfully drive call-level speech uncertainty after Cal.Year FE absorbs year-level confounders. Contrast with H24 / H24b on the same panel / same spec (6/8 and 8/8 sig respectively) — confirms this is about GPR specifically, not the spec.
+- **Status**: The near-null class is an important finding for the thesis — it delineates WHERE speech uncertainty does NOT correlate with external measures. Provides honest non-cherry-picked reporting for construct validation. Do not DROP as a group; user decision at synthesis.
+- **Loaded from**: H25 (2026-04-16). Cross-reference: §5.8 (H16), §5.16 (H7), §5.19 (H14), §5.20 (H14d).
 
 ---
 
