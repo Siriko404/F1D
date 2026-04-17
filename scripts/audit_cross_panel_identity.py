@@ -22,9 +22,10 @@ import pandas as pd
 # Latest panel per active suite (as of 2026-04-16)
 SUITE_PANELS = {
     "h1":  "outputs/variables/h1_cash_holdings/2026-04-09_224348/h1_cash_holdings_panel.parquet",
-    "h2":  "outputs/variables/h2_investment/2026-03-25_224731/h2_investment_panel.parquet",
+    # h2_investment is ARCHIVED (project_archived_suites.md) — panel is stale from
+    # 2026-03-25 and carries pre-a027b7c TobinsQ. Excluded from audit: not in thesis.
     "h4":  "outputs/variables/h4_leverage/2026-04-09_224744/h4_leverage_panel.parquet",
-    "h5":  "outputs/variables/h5_dispersion/2026-03-18_184756/h5_dispersion_panel.parquet",
+    "h5":  "outputs/variables/h5b_wang_disp/2026-04-16_220956/h5b_wang_disp_panel.parquet",
     "h7":  "outputs/variables/h7_illiquidity/2026-04-09_225201/h7_illiquidity_panel.parquet",
     "h11": "outputs/variables/h11_prisk_uncertainty/2026-04-09_225456/h11_prisk_uncertainty_panel.parquet",
     "h13": "outputs/variables/h13_capex/2026-04-09_230002/h13_capex_panel.parquet",
@@ -155,7 +156,11 @@ def main():
     if fy_panels:
         sample_fy = next(iter(fy_panels.values()))
         fy_idx = None
-        for cand in [["gvkey", "fyearq"], ["gvkey", "fyear"], ["gvkey", "cal_yr"]]:
+        # NOTE: prefer fyearq_int over cal_yr — H22 sets cal_yr=fyearq_int while
+        # H23 sets cal_yr=calendar year of latest call (Dec-FYE Q4 calls held in
+        # next calendar year). Joining on cal_yr cross-matches different fiscal
+        # years and produces ~76% spurious mismatch. fyearq_int is canonical.
+        for cand in [["gvkey", "fyearq_int"], ["gvkey", "fyearq"], ["gvkey", "fyear"], ["gvkey", "cal_yr"]]:
             if all(c in sample_fy.columns for c in cand):
                 fy_idx = cand
                 break
