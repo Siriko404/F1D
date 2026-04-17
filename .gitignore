@@ -109,13 +109,21 @@ db_password.*
 *.stackdump
 convo*.txt
 
-# LaTeX build artifacts
+# LaTeX build artifacts (keep .tex, .bib, .pdf — drop intermediate files)
 *.aux
 *.log
 *.out
+*.bbl
+*.blg
+*.toc
+*.lof
+*.lot
 *.synctex.gz
 *.fls
 *.fdb_latexmk
+*.nav
+*.snm
+*.vrb
 
 # OS
 .DS_Store

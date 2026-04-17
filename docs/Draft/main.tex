@@ -1,0 +1,90 @@
+% main.tex — Thesis master document
+% Title: "Hold On to Your Cash: Managerial Speech Uncertainty and Financing Conservatism"
+% Author: Sina Soleimanipour
+% Skeleton: docs/Draft/THESIS_SKELETON.md (v4)
+% Layout: TWO-COLUMN body (per user 2026-04-16) + sidewaystable* for wide regression tables
+%         (per Option A, 2026-04-16: 1 table per landscape page, no trimming)
+% Bibliography: docs/Draft/references.bib (17 verified entries — Tier-1 + Tier-2)
+
+\documentclass[twocolumn,11pt,a4paper]{article}
+
+% ---- Geometry: portrait two-col with reasonable margins ----
+\usepackage[margin=2cm,top=2.5cm,bottom=2.5cm,columnsep=0.8cm]{geometry}
+
+% ---- Typography (matches outputs/all_tables.tex preamble) ----
+\usepackage{newtxtext,newtxmath}
+
+% ---- Math + symbols ----
+% amssymb omitted — newtxmath provides equivalent symbols and conflicts on \Bbbk
+\usepackage{amsmath}
+
+% ---- Tables ----
+\usepackage{booktabs}
+\usepackage{rotating}        % sidewaystable* for wide landscape tables
+\usepackage{tabularx}
+\usepackage{multirow}
+
+% ---- Graphics, floats ----
+\usepackage{graphicx}
+\usepackage{float}
+
+% ---- Bibliography (author-year, finance/econ standard) ----
+\usepackage{natbib}
+\bibpunct{(}{)}{;}{a}{,}{,}    % JF-style citation punctuation
+
+% ---- Spacing (modest density; can tighten later if needed) ----
+\usepackage{setspace}
+\setstretch{1.0}
+
+% ---- URL handling for DOIs in bib ----
+\usepackage{url}
+
+% ---- Hyperref last for compatibility ----
+\usepackage[colorlinks=true,linkcolor=black,citecolor=blue,urlcolor=blue]{hyperref}
+
+% ---- Convenience macros ----
+\newcommand{\Var}[1]{\texttt{#1}}        % e.g., \Var{UncAnsMgr}
+\newcommand{\Hyp}[1]{\textsc{H#1}}       % e.g., \Hyp{C} → HC
+
+% ---- Title block ----
+\title{\textbf{Hold On to Your Cash:}\\
+       \large Managerial Speech Uncertainty and Financing Conservatism}
+\author{Sina Soleimanipour\thanks{%
+        Department/Affiliation TODO. Contact: sinasoleimanipour@gmail.com.
+        I thank [advisor], [committee], [seminar participants] for helpful comments.}}
+\date{\today}
+
+\begin{document}
+
+% ---- Two-column document, but title + abstract span both columns via \twocolumn[...] ----
+\twocolumn[
+  \begin{@twocolumnfalse}
+    \maketitle
+    \input{sections/abstract.tex}
+    \vspace{1em}
+  \end{@twocolumnfalse}
+]
+
+% ---- Body sections ----
+\input{sections/section_1_intro.tex}
+\input{sections/section_2_framework.tex}
+\input{sections/section_3_main.tex}
+\input{sections/section_4_additional.tex}
+\input{sections/section_5_conclusion.tex}
+
+% ---- Bibliography ----
+\bibliographystyle{chicago}
+\bibliography{references}
+
+% ---- Appendix (single-column, optional) ----
+\onecolumn
+\appendix
+% \input{sections/appendix_a_var_defs.tex}
+% \input{sections/appendix_b_validity_tables.tex}
+
+% ---- Wide regression tables: rotated full-page landscape ----
+% Each suite gets a sidewaystable* per Option A (1 table per landscape page).
+% TODO Step 8.5: build table-numbering map + per-suite \input wrappers.
+% Until then, the auto-generated outputs/all_tables.tex remains a standalone document.
+
+\end{document}
