@@ -160,7 +160,7 @@ def build_panels(include_suites, specs, panels, anchor_overrides, exclude_vars):
 
     rows = []
     for panel_label, vars_list in [
-        ("A. Speech Uncertainty IVs", sorted(iv_set)),
+        ("A. Independent Variables", sorted(iv_set)),
         ("B. Dependent Variables", sorted(dv_set)),
         ("C. Firm Controls", sorted(control_set)),
     ]:
@@ -184,6 +184,42 @@ def build_panels(include_suites, specs, panels, anchor_overrides, exclude_vars):
                 }
             )
     return pd.DataFrame(rows)
+
+
+def append_extra_vars(rows_df, extra_vars, panels):
+    """Append supplementary vars (raw economic forms whose transformed version
+    is what enters the regression). Each entry: name, anchor (suite_id), panel."""
+    extra_rows = []
+    for ev in extra_vars or []:
+        name = ev["name"]
+        sid = ev["anchor"]
+        target_panel = ev["panel"]
+        if sid not in panels:
+            print(f"  [skip extra] {name}: anchor suite {sid} has no panel loaded")
+            continue
+        panel = panels[sid]
+        if name not in panel.columns:
+            print(f"  [skip extra] {name}: not in {sid} panel")
+            continue
+        sample = apply_main_filter(panel)
+        stats = compute_stats(sample[name])
+        if stats is None:
+            print(f"  [skip extra] {name}: all NaN in {sid} Main sample")
+            continue
+        extra_rows.append(
+            {
+                "panel": target_panel,
+                "variable": name,
+                "unit": detect_unit(panel),
+                "anchor": sid,
+                **stats,
+            }
+        )
+    if not extra_rows:
+        return rows_df
+    extras = pd.DataFrame(extra_rows)
+    out = pd.concat([rows_df, extras], ignore_index=True)
+    return out.sort_values(["panel", "variable"]).reset_index(drop=True)
 
 
 def compute_panel_balance(panel: pd.DataFrame) -> dict:
@@ -293,6 +329,7 @@ def main() -> int:
     anchor_overrides = ss_cfg.get("anchor_panel") or {}
     exclude_vars = set(ss_cfg.get("exclude_vars") or [])
     panel_dir_alias = ss_cfg.get("panel_dir_alias") or {}
+    extra_vars = ss_cfg.get("extra_vars") or []
 
     print("=" * 70)
     print("Summary Stats Table 1 — adaptive scope")
@@ -318,6 +355,7 @@ def main() -> int:
     )
 
     stats = build_panels(include_suites, specs, panels, anchor_overrides, exclude_vars)
+    stats = append_extra_vars(stats, extra_vars, panels)
     print(f"\nVariables summarized: {len(stats)}")
     print(stats.groupby("panel").size().to_string())
 

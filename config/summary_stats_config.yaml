@@ -73,3 +73,12 @@ panel_dir_alias:
   H24: h24_h24b_h25_macro
   H24b: h24_h24b_h25_macro
   H25: h24_h24b_h25_macro
+
+# Supplementary substantive variables NOT in any spec's IV/DV/Control list.
+# Use for raw economic measures whose transformed form (z-scored, logged) is
+# what enters the regression. Reader needs the raw form for interpretation.
+extra_vars:
+  - name: TotalSimilarity
+    anchor: H23
+    panel: "A. Independent Variables"
+    note: "HP 2016 raw TSIMM; H23 regression uses z_log_TotalSimilarity"
