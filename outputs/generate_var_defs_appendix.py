@@ -240,10 +240,13 @@ def build_appendix_body(variables: Dict[str, Dict]) -> str:
 def build_standalone(body: str) -> str:
     """Wrap body in standalone preamble matching main.tex typography."""
     preamble = r"""\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage[a4paper,margin=1.5cm]{geometry}
 \usepackage{newtxtext}
 \usepackage{newtxmath}
 \usepackage{amsmath}
+\usepackage{textcomp}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
