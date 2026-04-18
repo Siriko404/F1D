@@ -93,7 +93,7 @@ Capex & Build Capex = capxy\_annual / atq\_lag from raw Compustat quarterly data
 \addlinespace[2pt]
 CashFlowAt & Build CashFlow = oancfy / atq from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/oancfy/atq (see module: src/f1d/shared/variables/cash\_flow.py) & \seqsplit{Compustat/oancfy/atq} & Bates, Kahle \& Stulz (2009, JF) \\
 \addlinespace[2pt]
-CashRatio & Build CashRatio = cheq / atq from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/cheq/atq (see module: src/f1d/shared/variables/cash\_holdings.py) & \seqsplit{Compustat/cheq/atq} & \citet{bates2009} (Section II, p.1991; BKS use annual che/at — we use quarterly cheq/atq for panel alignment) \\
+CashRatio & Build CashRatio = cheq / atq from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/cheq/atq (see module: src/f1d/shared/variables/cash\_holdings.py) & \seqsplit{Compustat/cheq/atq} & \citet{bates2009} (Section II, p.1991; BKS use annual che/at --- we use quarterly cheq/atq for panel alignment) \\
 \addlinespace[2pt]
 ChangDebtChoice & ChangDebtChoice (description not in module docstring)\par\smallskip\textit{Formula:} see module: src/f1d/shared/variables/\_compustat\_engine.py & \seqsplit{.../variables/\_compustat\_engine.py} & cdh2006 \\
 \addlinespace[2pt]
@@ -105,7 +105,7 @@ DebtToCapital & Build DebtToCapital = total debt / (equity + total debt).\par\sm
 \addlinespace[2pt]
 DivDummy & Build DivDummy = (dvy > 0).astype(float) from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/dvy>0 (see module: src/f1d/shared/variables/dividend\_payer.py) & \seqsplit{Compustat/dvy>0} & \citet{bates2009} (Section IV, p.2000; dividend payout dummy based on common dividends) \\
 \addlinespace[2pt]
-DivPayerQ & Build DivPayerQ = (dvpsxq > 0).astype(float) from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/dvpsxq>0 (quarterly ex-date) (see module: src/f1d/shared/variables/dividend\_payer\_quarterly.py) & \seqsplit{Compustat/dvpsxq>0} & Hoberg \& Prabhala (2009, RFS) — Compustat item 26 (dvpsx) analog \\
+DivPayerQ & Build DivPayerQ = (dvpsxq > 0).astype(float) from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/dvpsxq>0 (quarterly ex-date) (see module: src/f1d/shared/variables/dividend\_payer\_quarterly.py) & \seqsplit{Compustat/dvpsxq>0} & Hoberg \& Prabhala (2009, RFS) --- Compustat item 26 (dvpsx) analog \\
 \addlinespace[2pt]
 EarnVol & Builder for Earnings Volatility (earnings\_volatility) variable.\par\smallskip\textit{Formula:} Compustat (see module: src/f1d/shared/variables/earnings\_volatility.py) & \seqsplit{Compustat} & \citet{duong2025} (Appendix B, p.30; 3-year rolling std of qoq asset-scaled earnings) \\
 \addlinespace[2pt]
@@ -119,7 +119,7 @@ lnAssets & Build Size = ln(atq) from raw Compustat quarterly data.\par\smallskip
 \addlinespace[2pt]
 Loss & Builder for Loss (H5 Control Variable).\par\smallskip\textit{Formula:} Compustat ibq < 0 (see module: src/f1d/shared/variables/loss\_dummy.py) & \seqsplit{Compustat ibq < 0} & \citet{biddle2009} (Appendix A, p.131; indicator for negative net income before extraordinary items) \\
 \addlinespace[2pt]
-PayoutRatio\_q & Build PayoutRatio\_q = (dvpspq × cshoq) / ibq from Compustat.\par\smallskip\textit{Formula:} Compustat/(dvpspq*cshoq)/ibq (quarterly) (see module: src/f1d/shared/variables/payout\_ratio\_quarterly.py) & \seqsplit{Compustat/} & dds2004 \\
+PayoutRatio\_q & Build PayoutRatio\_q = (dvpspq $\times$ cshoq) / ibq from Compustat.\par\smallskip\textit{Formula:} Compustat/(dvpspq*cshoq)/ibq (quarterly) (see module: src/f1d/shared/variables/payout\_ratio\_quarterly.py) & \seqsplit{Compustat/} & dds2004 \\
 \addlinespace[2pt]
 PRisk & Match quarterly PRisk onto each earnings call by (gvkey, calendar\_quarter).\par\smallskip\textit{Formula:} Hassan et al. (2019) quarterly PRisk (see module: src/f1d/shared/variables/prisk\_q.py) & \seqsplit{Hassan et al.} & hhlt2019 \\
 \addlinespace[2pt]
@@ -168,7 +168,7 @@ Lagged\_DV & Generic lagged-DV control (1Q lag of suite-specific DV).\par\smalls
 \addlinespace[2pt]
 Unrated & No-rating subsample indicator (H1.2).\par\smallskip\textit{Formula:} Binary = 1 if firm has no S\&P rating at call date; 0 otherwise. & \seqsplit{runtime} & thesis (H1.2 rating subsample) \\
 \addlinespace[2pt]
-z\_log\_TotalSimilarity & z-scored log of HP 2016 TotalSimilarity (continuous moderator, H1.1).\par\smallskip\textit{Formula:} z-score of log(1 + TotalSimilarity) computed within year. TotalSimilarity = HP 2016 firm-year product market similarity score (sum of pairwise cosine similarities × 100). & \seqsplit{runtime} & hp2016 \\
+z\_log\_TotalSimilarity & z-scored log of HP 2016 TotalSimilarity (continuous moderator, H1.1).\par\smallskip\textit{Formula:} z-score of log(1 + TotalSimilarity) computed within year. TotalSimilarity = HP 2016 firm-year product market similarity score (sum of pairwise cosine similarities $\times$ 100). & \seqsplit{runtime} & hp2016 \\
 \addlinespace[2pt]
 \end{longtable}
 
@@ -189,7 +189,7 @@ z\_log\_TotalSimilarity & z-scored log of HP 2016 TotalSimilarity (continuous mo
 \endfoot
 \bottomrule
 \endlastfoot
-AbsSurpDec & Absolute earnings surprise quintile magnitude.\par\smallskip\textit{Formula:} abs(SurpDec) — unsigned magnitude of signed-quintile earnings surprise rank, values 0-5. & \seqsplit{runtime} & thesis (magnitude control independent of sign) \\
+AbsSurpDec & Absolute earnings surprise quintile magnitude.\par\smallskip\textit{Formula:} abs(SurpDec) --- unsigned magnitude of signed-quintile earnings surprise rank, values 0-5. & \seqsplit{runtime} & thesis (magnitude control independent of sign) \\
 \addlinespace[2pt]
 BGTAvg\_Amihud\_lead1 & 1Q lead of BGTAvg\_Amihud.\par\smallskip\textit{Formula:} 1-quarter lead of BGTAvg\_Amihud & \seqsplit{runtime} & bgt2018 (window); F1D extension (symmetric average shape) \\
 \addlinespace[2pt]
@@ -290,9 +290,9 @@ DISP & Analyst forecast dispersion (Wang 2020)\par\smallskip\textit{Formula:} SD
 \addlinespace[2pt]
 DSPREAD & Change in closing bid-ask spread around earnings call\par\smallskip\textit{Formula:} mean(RelSpread[+1,+3]) - mean(RelSpread[-3,-1]) where RelSpread = 2*(ASK-BID)/(ASK+BID) & \seqsplit{inputs/CRSP\_DSF} & lee2016 \\
 \addlinespace[2pt]
-GEPU\_log & Davis (2016, NBER WP 22740) Global Economic Policy Uncertainty (GEPU) index (log-transformed, current-\$ GDP weights)\par\smallskip\textit{Formula:} log(GEPU\_current) — GDP-weighted average of 16 country EPU indices, matched by calendar month of call start\_date & \seqsplit{inputs/EconomicPolicyUncertaintyIndex/Global} & \citet{davis2016} \\
+GEPU\_log & Davis (2016, NBER WP 22740) Global Economic Policy Uncertainty (GEPU) index (log-transformed, current-\$ GDP weights)\par\smallskip\textit{Formula:} log(GEPU\_current) --- GDP-weighted average of 16 country EPU indices, matched by calendar month of call start\_date & \seqsplit{inputs/EconomicPolicyUncertaintyIndex/Global} & \citet{davis2016} \\
 \addlinespace[2pt]
-GPR\_log & Caldara \& Iacoviello (2022, AER) headline Geopolitical Risk index (log-transformed, 10-newspaper recent version)\par\smallskip\textit{Formula:} log(GPR) — recent headline Geopolitical Risk index, matched by calendar month of call start\_date & \seqsplit{inputs/matteoiacoviello/GPR\_Global} & ci2022 \\
+GPR\_log & Caldara \& Iacoviello (2022, AER) headline Geopolitical Risk index (log-transformed, 10-newspaper recent version)\par\smallskip\textit{Formula:} log(GPR) --- recent headline Geopolitical Risk index, matched by calendar month of call start\_date & \seqsplit{inputs/matteoiacoviello/GPR\_Global} & ci2022 \\
 \addlinespace[2pt]
 SEC\_Letters\_fwd & SEC comment letter count (forward-looking)\par\smallskip\textit{Formula:} Count of SEC-originated letters (UPLOAD type) in next calendar quarter & \seqsplit{inputs/EDGAR\_CommentLetters} & cdm2013 (thesis extension to count) \\
 \addlinespace[2pt]

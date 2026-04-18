@@ -50,26 +50,64 @@ BIB_KEYS = {
 
 
 def tex_escape(s: str) -> str:
-    """Escape LaTeX special chars in plain text (not formulas — those go in math mode)."""
+    """Escape LaTeX special chars + transform non-ASCII chars to LaTeX commands.
+
+    Without this transform, source chars like × and — render as placeholder
+    glyphs (inverted ??) in PDF even with utf8 inputenc + T1 fontenc, because
+    newtxtext/newtxmath's font tables don't always include them.
+    """
     if s is None:
         return ""
     s = str(s)
-    # Order matters: backslash first, then others
-    repl = [
-        ("\\", r"\textbackslash{}"),
-        ("&", r"\&"),
-        ("%", r"\%"),
-        ("$", r"\$"),
-        ("#", r"\#"),
-        ("_", r"\_"),
-        ("{", r"\{"),
-        ("}", r"\}"),
-        ("~", r"\textasciitilde{}"),
-        ("^", r"\textasciicircum{}"),
-    ]
-    for a, b in repl:
-        s = s.replace(a, b)
-    return s
+    # Step 1: replace non-ASCII chars with sentinel-wrapped LaTeX commands.
+    # Sentinel \x00...\x01 survives subsequent escape pass; restored at end.
+    SENT_OPEN, SENT_CLOSE = "\x00", "\x01"
+    unicode_map = {
+        "\u2014": "---",
+        "\u2013": "--",
+        "\u00d7": SENT_OPEN + r"$\times$" + SENT_CLOSE,
+        "\u00b1": SENT_OPEN + r"$\pm$" + SENT_CLOSE,
+        "\u00b7": SENT_OPEN + r"$\cdot$" + SENT_CLOSE,
+        "\u2022": SENT_OPEN + r"$\bullet$" + SENT_CLOSE,
+        "\u2018": "`",
+        "\u2019": "'",
+        "\u201c": "``",
+        "\u201d": "''",
+        "\u00a7": SENT_OPEN + r"\S{}" + SENT_CLOSE,
+        "\u00a9": SENT_OPEN + r"\copyright{}" + SENT_CLOSE,
+        "\u2026": SENT_OPEN + r"\ldots{}" + SENT_CLOSE,
+        "\u00e9": SENT_OPEN + r"\'e" + SENT_CLOSE,
+        "\u00e8": SENT_OPEN + r"\`e" + SENT_CLOSE,
+        "\u00ed": SENT_OPEN + r"\'i" + SENT_CLOSE,
+        "\u00f1": SENT_OPEN + r"\~n" + SENT_CLOSE,
+        "\u00fc": SENT_OPEN + r'\"u' + SENT_CLOSE,
+        "\u00f6": SENT_OPEN + r'\"o' + SENT_CLOSE,
+        "\u00e4": SENT_OPEN + r'\"a' + SENT_CLOSE,
+        "\u0142": SENT_OPEN + r"\l{}" + SENT_CLOSE,
+        "\u00ad": "",
+    }
+    for u, latex in unicode_map.items():
+        s = s.replace(u, latex)
+    # Step 2: standard LaTeX escape pass (only touches non-sentinel content).
+    parts = []
+    i = 0
+    while i < len(s):
+        if s[i] == SENT_OPEN:
+            # Pass through sentinel content unchanged
+            j = s.index(SENT_CLOSE, i)
+            parts.append(s[i + 1:j])
+            i = j + 1
+        else:
+            c = s[i]
+            replacement = {
+                "\\": r"\textbackslash{}",
+                "&": r"\&", "%": r"\%", "$": r"\$", "#": r"\#",
+                "_": r"\_", "{": r"\{", "}": r"\}",
+                "~": r"\textasciitilde{}", "^": r"\textasciicircum{}",
+            }.get(c, c)
+            parts.append(replacement)
+            i += 1
+    return "".join(parts)
 
 
 def render_reference(ref_str: str) -> str:
