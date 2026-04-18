@@ -11,10 +11,10 @@ Per feedback_adaptive_scope_via_config.md: build wide, filter via config.
 Per feedback_table_completeness.md: report all variables completely.
 
 Outputs:
-  outputs/summary_stats.tex             — \\input fragment for main.tex
-  outputs/summary_stats_standalone.tex  — preview-compile document
-  outputs/summary_stats.pdf             — compiled preview
-  outputs/summary_stats.csv             — tidy stats table
+  docs/Draft/summary_stats.tex             — \\input fragment for main.tex
+  docs/Draft/summary_stats_standalone.tex  — preview-compile document
+  docs/Draft/summary_stats.pdf             — compiled preview
+  docs/Draft/summary_stats.csv             — tidy stats table
 """
 from __future__ import annotations
 
@@ -30,12 +30,12 @@ import yaml
 from f1d.shared.outputs import load_suite_spec
 from f1d.shared.path_utils import get_latest_output_dir
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]  # docs/Draft/<script> → repo root
 RENDER_ORDER = REPO_ROOT / "config" / "suite_render_order.yaml"
 SS_CONFIG = REPO_ROOT / "config" / "summary_stats_config.yaml"
 ECONOMETRIC = REPO_ROOT / "outputs" / "econometric"
 VARIABLES = REPO_ROOT / "outputs" / "variables"
-OUT_DIR = REPO_ROOT / "outputs"
+OUT_DIR = Path(__file__).resolve().parent  # outputs land alongside the script (docs/Draft/)
 
 MAIN_SAMPLE_EXCLUDE_FF12 = [8, 11]  # Finance, Utility
 
@@ -401,7 +401,7 @@ def main() -> int:
     }
 
     stats.to_csv(OUT_DIR / "summary_stats.csv", index=False)
-    print(f"\n  wrote: outputs/summary_stats.csv")
+    print(f"\n  wrote: docs/Draft/summary_stats.csv")
 
     fragment = OUT_DIR / "summary_stats.tex"
     standalone = OUT_DIR / "summary_stats_standalone.tex"

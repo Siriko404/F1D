@@ -24,11 +24,12 @@ from typing import Dict, List, Optional, Tuple
 
 import yaml
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]  # docs/Draft/<script> → repo root
+HERE = Path(__file__).resolve().parent       # docs/Draft/  (output destination)
 YAML_PATH = ROOT / "config" / "variables.yaml"
-OUT_FRAG = ROOT / "outputs" / "variable_definitions.tex"
-OUT_STANDALONE = ROOT / "outputs" / "variable_definitions_standalone.tex"
-OUT_PDF = ROOT / "outputs" / "variable_definitions_standalone.pdf"
+OUT_FRAG = HERE / "variable_definitions.tex"
+OUT_STANDALONE = HERE / "variable_definitions_standalone.tex"
+OUT_PDF = HERE / "variable_definitions_standalone.pdf"
 
 STAGE_TITLES = {
     1: "Sample Manifest",
@@ -300,7 +301,7 @@ def build_standalone(body: str) -> str:
 """
     closing = r"""
 
-\bibliography{../docs/Draft/references}
+\bibliography{references}
 
 \end{document}
 """

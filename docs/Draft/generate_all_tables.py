@@ -26,7 +26,7 @@ import yaml
 
 from f1d.shared.outputs import load_suite_spec, render_suite
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]  # docs/Draft/<script> → repo root
 ECONOMETRIC = REPO_ROOT / "outputs" / "econometric"
 RENDER_ORDER = REPO_ROOT / "config" / "suite_render_order.yaml"
 
