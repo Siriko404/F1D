@@ -700,8 +700,29 @@ def yaml_dump_entry(name: str, entry: Dict) -> str:
     return "\n".join(lines)
 
 
-def emit_proposed_yaml(proposed: Dict[str, Dict], header: str) -> str:
+def emit_proposed_yaml(proposed: Dict[str, Dict], header: str,
+                        manifest_entry: Optional[Dict] = None,
+                        review_entries: Optional[List[Tuple[str, Dict]]] = None) -> str:
     lines = [header, "", "variables:"]
+    # Preserved manifest (Stage 1 — identifier columns, not regression vars)
+    if manifest_entry is not None:
+        lines.append("")
+        lines.append("  # ===========================================================================")
+        lines.append("  # Stage 1: Sample Manifest (preserved — identifier columns, not regression vars)")
+        lines.append("  # ===========================================================================")
+        lines.append("")
+        lines.append("  manifest:")
+        order = ["stage", "source", "file_name", "columns", "description"]
+        for k in order:
+            if k not in manifest_entry:
+                continue
+            v = manifest_entry[k]
+            if isinstance(v, list):
+                lines.append(f"    {k}:")
+                for item in v:
+                    lines.append(f"      - {item}")
+            else:
+                lines.append(f"    {k}: {v}")
     # Group by stage for readability
     by_stage = defaultdict(list)
     for col, e in proposed.items():
@@ -729,6 +750,22 @@ def emit_proposed_yaml(proposed: Dict[str, Dict], header: str) -> str:
             entry_name = re.sub(r"([a-z])([A-Z])", r"\1_\2", col).lower()
             lines.append("")
             lines.append(yaml_dump_entry(entry_name, e))
+
+    # REVIEW entries: in YAML but no current spec uses them; module still exports.
+    # Kept commented-out (NOT live entries) pending user decision per dead_review.md.
+    if review_entries:
+        lines.append("")
+        lines.append("  # ===========================================================================")
+        lines.append("  # REVIEW: Module-exported but no current spec consumes (12 entries)")
+        lines.append("  # Pending user decision (per tmp/yaml_repair/dead_review.md). Kept here as")
+        lines.append("  # commented-out reference — uncomment if a future spec adds them.")
+        lines.append("  # ===========================================================================")
+        for col, e in sorted(review_entries):
+            entry_name = re.sub(r"([a-z])([A-Z])", r"\1_\2", col).lower()
+            entry_block = yaml_dump_entry(entry_name, e)
+            lines.append("")
+            for ln in entry_block.split("\n"):
+                lines.append("  # " + ln.lstrip(" "))
     return "\n".join(lines) + "\n"
 
 
@@ -769,7 +806,14 @@ def main():
         "#   3. Diff candidate vs config/variables.yaml; splice if approved\n"
         "# =============================================================================\n"
     )
-    proposed_yaml = emit_proposed_yaml(proposed, header)
+    # Preserve manifest entry from existing YAML
+    manifest_entry = raw_existing.get("variables", {}).get("manifest")
+    # REVIEW entries: dead but module-exported (kept commented in final YAML)
+    review_entries = [(d["col"], existing[d["col"]]) for d in dead_triage if d["rec"] == "REVIEW"]
+
+    proposed_yaml = emit_proposed_yaml(proposed, header,
+                                        manifest_entry=manifest_entry,
+                                        review_entries=review_entries)
     (OUT_DIR / "proposed_variables.yaml").write_text(proposed_yaml, encoding="utf-8")
 
     # --- Emit diff_report.md ---
