@@ -1,0 +1,75 @@
+# Summary Stats Table 1 configuration
+#
+# Adaptive-scope: script reads ALL suites from config/suite_render_order.yaml.
+# Edit this file to curate (do NOT edit the generator script).
+#
+# include_suites: defaults to all suites in render order. Uncomment to restrict.
+# include_suites:
+#   - H1
+#   - H4a
+
+# Anchor panel per variable — where to pull observations from for a shared var.
+# Default (unset) = first-encountered suite in render order. H1 has broadest
+# Main sample (65k+ calls) and carries all shared call-level controls + IVs.
+anchor_panel:
+  UncAnsMgr: H1
+  UncPreMgr: H1
+  UncAnsCEO: H1
+  UncPreCEO: H1
+  lnAssets: H1
+  TobinsQ: H1
+  ROA: H1
+  Leverage: H1
+  Capex: H1
+  DivDummy: H1
+  sCFO: H1
+  CashRatio: H1
+  BookLev: H4a
+  SalesGrowth: H1
+  RDSales: H1
+  CashFlowAt: H1
+  DailyVola: H1
+  CurrentRatio: H1
+
+# Variables to skip (placeholders, mean-centered duplicates, interactions).
+exclude_vars:
+  - Lagged_DV
+  - UncAnsMgr_c
+  - UncPreMgr_c
+  - UncAnsCEO_c
+  - UncPreCEO_c
+  - z_log_TotalSimilarity
+  - HighTSIMM
+  - UncAnsMgr_c_x_zlogTSIMM
+  - UncAnsMgr_c_x_HighTSIMM
+  - UncAnsMgr_c_x_BelowIG    # H1.2 interaction; BelowIG is runtime construct
+  - UncAnsMgr_c_x_IG         # same
+  - UncAnsMgr_c_x_Unrated    # same
+
+# Sub-suite spec.dir_name → parent builder's actual panel directory.
+# Many runners (H7b/c/d/e, H14b-e, H12b, H18b, H19b, H20b, H1.1/H1.2, H24-H25,
+# H13.1) emit their own logical dir_name in the spec but reuse a parent
+# suite's panel. This map routes them correctly.
+# H1.1/H1.1b/H1.2 → h1_cash_holdings: their rating-based subsample indicators
+# (BelowIG, IG, Unrated) are constructed at runtime in the runner from
+# external rating data, NOT stored in any panel. They are absent from Table 1.
+panel_dir_alias:
+  H1.1: h1_cash_holdings
+  H1.1b: h1_cash_holdings
+  H1.2: h1_cash_holdings
+  H7b: h7_illiquidity
+  H7c: h7_illiquidity
+  H7d: h7_illiquidity
+  H7e: h7_illiquidity
+  H12b: h12_payout
+  H13.1: h13_capex
+  H14b: h14_bidask_spread
+  H14c: h14_bidask_spread
+  H14d: h14_bidask_spread
+  H14e: h14_bidask_spread
+  H18b: h18_cccl_received
+  H19b: h19b_h20b_financing
+  H20b: h19b_h20b_financing
+  H24: h24_h24b_h25_macro
+  H24b: h24_h24b_h25_macro
+  H25: h24_h24b_h25_macro

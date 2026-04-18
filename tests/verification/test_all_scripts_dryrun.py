@@ -78,8 +78,6 @@ ALL_SCRIPTS: List[str] = [
     "src/f1d/econometric/run_h16_rd_sales.py",
     "src/f1d/econometric/run_h17_repurchase_intensity.py",
     "src/f1d/econometric/run_h18_cccl_received.py",
-    # Reporting
-    "src/f1d/reporting/generate_summary_stats.py",
 ]
 
 # Count by stage
@@ -88,8 +86,7 @@ SCRIPT_COUNTS = {
     "Stage 2": 2,
     "Stage 3": 17,
     "Stage 4": 21,
-    "Reporting": 1,
-    "Total": 46,
+    "Total": 45,
 }
 
 
