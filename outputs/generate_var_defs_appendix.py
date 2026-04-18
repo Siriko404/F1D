@@ -113,11 +113,34 @@ def render_formula(formula_str: str) -> str:
     return tex_escape(formula_str)
 
 
+def shorten_source(source: str) -> str:
+    """Compress source paths to a short tag. Keeps last 1-2 components for context."""
+    if not source:
+        return ""
+    s = source.strip()
+    # Strip leading parenthetical comments
+    if "(" in s:
+        s = s.split("(", 1)[0].strip()
+    # Compress paths: src/f1d/shared/variables/foo.py → shared/variables/foo.py
+    if "/" in s:
+        parts = s.split("/")
+        if len(parts) > 3:
+            s = ".../" + "/".join(parts[-2:])
+    return s
+
+
+def split_long_token(s: str) -> str:
+    """Allow LaTeX to break long tokens at underscores/slashes by inserting
+    `\seqsplit{}` markers. Without this, file paths and snake_case names
+    overflow narrow columns."""
+    return r"\seqsplit{" + s + "}"
+
+
 def build_appendix_body(variables: Dict[str, Dict]) -> str:
     """Emit the body LaTeX (for inclusion in main.tex via \\input).
 
-    Body = section header + per-stage subsection longtables.
-    Caller wraps in standalone preamble or main.tex appendix env.
+    Layout: landscape orientation, longtable with tabularx-style flexible
+    description column, scriptsize font, ragged-right wrapping.
     """
     by_stage: Dict[int, List[Tuple[str, Dict]]] = {1: [], 2: [], 3: [], 4: [], 5: []}
     for entry_name, entry in variables.items():
@@ -128,7 +151,6 @@ def build_appendix_body(variables: Dict[str, Dict]) -> str:
             stage = int(stage)
         except (TypeError, ValueError):
             stage = 9
-        # Resolve display name: prefer single column, else entry_name
         col = entry.get("column")
         cols = entry.get("columns")
         if col:
@@ -139,8 +161,11 @@ def build_appendix_body(variables: Dict[str, Dict]) -> str:
             display = entry_name
         by_stage.setdefault(stage, []).append((display, entry))
 
+    # Body emits \section + \subsection (auto-numbered when caller wraps in \appendix).
+    # main.tex must include `\appendix` BEFORE `\input{outputs/variable_definitions.tex}`.
+    # Standalone wrapper handles \appendix automatically.
     lines = []
-    lines.append(r"\section*{Appendix A: Variable Definitions}")
+    lines.append(r"\section{Variable Definitions}")
     lines.append(r"\label{app:vardefs}")
     lines.append("")
     lines.append(
@@ -151,63 +176,86 @@ def build_appendix_body(variables: Dict[str, Dict]) -> str:
         r"frequency or sample are documented in the formula column."
     )
     lines.append("")
+    lines.append(r"\begin{landscape}")
+    lines.append(r"\scriptsize")
+    lines.append(r"\setlength{\LTpre}{0pt}\setlength{\LTpost}{0pt}")
+    lines.append(r"\renewcommand{\arraystretch}{1.15}")
+    lines.append("")
+
+    # Column spec: name (3cm) | description (flex 12cm) | source (4cm) | reference (5cm)
+    # Total ~24cm fits A4 landscape (~25.7cm text width).
+    col_spec = r">{\raggedright\arraybackslash\ttfamily\footnotesize}p{3.8cm} >{\raggedright\arraybackslash}p{11.5cm} >{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{5cm}"
 
     for stage in sorted(by_stage.keys()):
         if not by_stage[stage]:
             continue
         title = STAGE_TITLES.get(stage, f"Stage {stage}")
-        lines.append(rf"\subsection*{{A.{stage}\quad {tex_escape(title)}}}")
+        # Auto-numbered subsection (becomes A.1, A.2, ... when wrapped in \appendix)
+        lines.append(rf"\subsection{{{tex_escape(title)}}}")
         lines.append("")
-        lines.append(r"\begin{small}")
-        lines.append(r"\begin{longtable}{@{} p{2.5cm} p{7cm} p{2.5cm} p{4cm} @{}}")
+        lines.append(rf"\begin{{longtable}}{{{col_spec}}}")
         lines.append(r"\toprule")
         lines.append(r"\textbf{Name} & \textbf{Description / Formula} & \textbf{Source} & \textbf{Reference} \\")
         lines.append(r"\midrule")
         lines.append(r"\endfirsthead")
+        lines.append(rf"\multicolumn{{4}}{{l}}{{\textit{{(continued from previous page)}}}} \\")
         lines.append(r"\toprule")
         lines.append(r"\textbf{Name} & \textbf{Description / Formula} & \textbf{Source} & \textbf{Reference} \\")
         lines.append(r"\midrule")
         lines.append(r"\endhead")
-        lines.append(r"\bottomrule")
+        lines.append(r"\midrule")
+        lines.append(rf"\multicolumn{{4}}{{r}}{{\textit{{(continued on next page)}}}} \\")
         lines.append(r"\endfoot")
+        lines.append(r"\bottomrule")
+        lines.append(r"\endlastfoot")
 
         for display, entry in sorted(by_stage[stage], key=lambda x: x[0].lower()):
-            name = tex_escape(display)
+            # Name column is already \ttfamily via col_spec; just escape + comma-join
+            if "," in display:
+                name_cell = ", ".join(tex_escape(p.strip()) for p in display.split(","))
+            else:
+                name_cell = tex_escape(display)
             desc = entry.get("description", "")
             formula = entry.get("formula", "")
-            # Combine description + formula into one cell
             if desc and formula and desc.strip() != formula.strip():
-                cell = f"{tex_escape(desc)} \\newline\\textit{{Formula:}} {render_formula(formula)}"
+                cell = f"{tex_escape(desc)}\\par\\smallskip\\textit{{Formula:}} {render_formula(formula)}"
             elif formula:
                 cell = render_formula(formula)
             else:
                 cell = tex_escape(desc)
-            source = tex_escape(entry.get("source", ""))
+            # Source: shortened + seqsplit-wrapped to allow break inside long paths
+            source_short = shorten_source(entry.get("source", ""))
+            source_cell = split_long_token(tex_escape(source_short)) if source_short else ""
             ref = render_reference(entry.get("reference", ""))
-            lines.append(f"\\texttt{{{name}}} & {cell} & \\footnotesize {source} & \\footnotesize {ref} \\\\")
+            lines.append(f"{name_cell} & {cell} & {source_cell} & {ref} \\\\")
+            lines.append(r"\addlinespace[2pt]")
 
         lines.append(r"\end{longtable}")
-        lines.append(r"\end{small}")
         lines.append("")
 
+    lines.append(r"\end{landscape}")
     return "\n".join(lines)
 
 
 def build_standalone(body: str) -> str:
     """Wrap body in standalone preamble matching main.tex typography."""
     preamble = r"""\documentclass[11pt,a4paper]{article}
-\usepackage[margin=2cm]{geometry}
+\usepackage[a4paper,margin=1.5cm]{geometry}
 \usepackage{newtxtext}
 \usepackage{newtxmath}
 \usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
+\usepackage{ragged2e}
+\usepackage{seqsplit}
+\usepackage{pdflscape}
 \usepackage[round,authoryear]{natbib}
 \usepackage{hyperref}
 \bibliographystyle{chicago}
 
 \begin{document}
+\appendix
 """
     closing = r"""
 
