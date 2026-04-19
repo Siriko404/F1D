@@ -76,15 +76,17 @@
 \bibliographystyle{chicago}
 \bibliography{references}
 
-% ---- Appendix (single-column, optional) ----
+% ---- Appendix (single-column) ----
 \onecolumn
 \appendix
 % \input{sections/appendix_a_var_defs.tex}
 % \input{sections/appendix_b_validity_tables.tex}
 
-% ---- Wide regression tables: rotated full-page landscape ----
-% Each suite gets a sidewaystable* per Option A (1 table per landscape page).
-% TODO Step 8.5: build table-numbering map + per-suite \input wrappers.
-% Until then, the auto-generated outputs/all_tables.tex remains a standalone document.
+% ---- Tables Appendix: rotated full-page landscape, NBER-style ----
+% Each suite gets its own \begin{sidewaystable}[p] (1 table per landscape page).
+% Auto-generated per-suite fragments live in docs/Draft/per_suite/.
+% Re-run docs/Draft/generate_all_tables.py to refresh after any spec change.
+\section*{Tables}
+\input{per_suite/_all_suites_input.tex}
 
 \end{document}

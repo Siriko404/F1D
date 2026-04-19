@@ -1,0 +1,67 @@
+\begin{sidewaystable}[p]
+\setlength{\tabcolsep}{3pt}
+\centering
+\caption{H22: Speech Uncertainty and Equity Financing Constraints}
+\label{tab:h22}
+\scriptsize
+\begin{tabular}{lcccc}
+\toprule
+ & (1) & (2) & (3) & (4) \\
+ & \multicolumn{4}{c}{EquityDelayCon\_lead} \\
+\cmidrule(lr){2-5}
+\midrule
+UncAnsCEO & \textbf{0.0058}$^{*}$ & 0.0039 & \textbf{0.0059}$^{*}$ & 0.0041 \\
+ & (0.0042) & (0.0041) & (0.0042) & (0.0041) \\
+UncPreCEO & 0.0030 & 0.0025 & 0.0027 & 0.0028 \\
+ & (0.0028) & (0.0038) & (0.0027) & (0.0039) \\
+UncAnsMgr & -0.0038 & -0.0032 & -0.0089 & -0.0036 \\
+ & (0.0049) & (0.0052) & (0.0048) & (0.0052) \\
+UncPreMgr & -0.0044 & -0.0060 & -0.0075 & -0.0063 \\
+ & (0.0029) & (0.0048) & (0.0029) & (0.0049) \\
+\midrule
+lnAssets & \textbf{0.0010}$^{*}$ & 0.0026 & \textbf{-0.0009}$^{**}$ & 0.0025 \\
+ & (0.0006) & (0.0026) & (0.0004) & (0.0026) \\
+TobinsQ & 0.0006 & 0.0006 & -0.0004 & 0.0005 \\
+ & (0.0007) & (0.0009) & (0.0007) & (0.0009) \\
+ROA & \textbf{-0.0119}$^{**}$ & 0.0075 & -0.0086 & 0.0023 \\
+ & (0.0059) & (0.0088) & (0.0087) & (0.0091) \\
+Leverage & 0.0052 & -0.0133 & 0.0064 & -0.0129 \\
+ & (0.0043) & (0.0082) & (0.0042) & (0.0083) \\
+Capex & 0.0145 & 0.0048 & 0.0067 & 0.0006 \\
+ & (0.0144) & (0.0227) & (0.0154) & (0.0231) \\
+CashRatio & \textbf{0.0215}$^{***}$ & \textbf{0.0158}$^{*}$ & \textbf{0.0137}$^{**}$ & 0.0146 \\
+ & (0.0061) & (0.0094) & (0.0056) & (0.0097) \\
+DivDummy & 0.0003 & 0.0052 & 0.0006 & 0.0055 \\
+ & (0.0017) & (0.0035) & (0.0017) & (0.0035) \\
+sCFO & 0.0029 & \textbf{-0.0040}$^{**}$ & 0.0024 & \textbf{-0.0039}$^{**}$ \\
+ & (0.0021) & (0.0017) & (0.0023) & (0.0016) \\
+Lagged\_DV & \textbf{0.6600}$^{***}$ & \textbf{0.1811}$^{***}$ & \textbf{0.6641}$^{***}$ & \textbf{0.1841}$^{***}$ \\
+ & (0.0109) & (0.0154) & (0.0107) & (0.0154) \\
+SalesGrowth &  &  & \textbf{0.0048}$^{**}$ & 0.0013 \\
+ &  &  & (0.0023) & (0.0020) \\
+RDSales &  &  & \textbf{0.0027}$^{**}$ & 0.0004 \\
+ &  &  & (0.0012) & (0.0011) \\
+CashFlowAt &  &  & 0.0023 & 0.0165 \\
+ &  &  & (0.0098) & (0.0106) \\
+DailyVola &  &  & -0.0001 & \textbf{0.0001}$^{**}$ \\
+ &  &  & (0.0000) & (0.0000) \\
+\midrule
+Extended Controls &  &  & Yes & Yes \\
+Industry FE & Yes &  & Yes &  \\
+Firm FE &  & Yes &  & Yes \\
+Year FE & Yes & Yes & Yes & Yes \\
+\midrule
+N & 8,621 & 8,621 & 8,564 & 8,564 \\
+$R^2$ & 0.491 & 0.041 & 0.491 & 0.043 \\
+Adj.~$R^2$ & 0.489 & -0.086 & 0.489 & -0.085 \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{2pt}\scriptsize
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
+ Significant coefficients in \textbf{bold}.
+ Standard errors (in parentheses) clustered at firm level.
+ Main sample (excludes financial and utility firms).
+ $R^2$ includes absorbed fixed effects (not within-$R^2$).
+\end{minipage}
+\end{sidewaystable}

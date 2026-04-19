@@ -1,0 +1,59 @@
+\begin{sidewaystable}[p]
+\setlength{\tabcolsep}{3pt}
+\centering
+\caption{H25: Geopolitical Risk and Call Language Uncertainty}
+\label{tab:h25_gpr}
+\scriptsize
+\begin{tabular}{lcccccccc}
+\toprule
+ & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\
+ & \multicolumn{4}{c}{Industry + Cal. Year FE} & \multicolumn{4}{c}{Firm + Cal. Year FE} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+ & UncAnsMgr & UncPreMgr & UncAnsCEO & UncPreCEO & UncAnsMgr & UncPreMgr & UncAnsCEO & UncPreCEO \\
+\midrule
+$\log(\text{GPR})_{t}$ & -0.0112 & 0.0073 & -0.0059 & \textbf{0.0147}$^{*}$ & -0.0119 & 0.0067 & -0.0058 & 0.0118 \\
+ & (0.0087) & (0.0061) & (0.0102) & (0.0095) & (0.0087) & (0.0058) & (0.0100) & (0.0093) \\
+\midrule
+UncQue & \textbf{0.0388}$^{***}$ & \textbf{0.0115}$^{***}$ & \textbf{0.0414}$^{***}$ & \textbf{0.0165}$^{***}$ & \textbf{0.0349}$^{***}$ & \textbf{0.0084}$^{***}$ & \textbf{0.0380}$^{***}$ & \textbf{0.0096}$^{***}$ \\
+ & (0.0033) & (0.0024) & (0.0036) & (0.0032) & (0.0030) & (0.0023) & (0.0032) & (0.0028) \\
+NegCall & \textbf{0.0714}$^{***}$ & \textbf{0.0730}$^{***}$ & \textbf{0.0677}$^{***}$ & \textbf{0.1260}$^{***}$ & \textbf{0.0611}$^{***}$ & \textbf{0.0934}$^{***}$ & \textbf{0.0631}$^{***}$ & \textbf{0.1404}$^{***}$ \\
+ & (0.0065) & (0.0059) & (0.0081) & (0.0090) & (0.0057) & (0.0059) & (0.0068) & (0.0082) \\
+lnAssets & \textbf{-0.0153}$^{***}$ & \textbf{-0.0127}$^{***}$ & \textbf{-0.0136}$^{***}$ & \textbf{-0.0143}$^{***}$ & -0.0004 & 0.0028 & 0.0011 & 0.0039 \\
+ & (0.0018) & (0.0016) & (0.0022) & (0.0020) & (0.0045) & (0.0046) & (0.0063) & (0.0063) \\
+TobinsQ & \textbf{-0.0071}$^{***}$ & 0.0011 & \textbf{-0.0081}$^{***}$ & 0.0008 & 0.0022 & 0.0015 & 0.0024 & 0.0007 \\
+ & (0.0016) & (0.0012) & (0.0018) & (0.0019) & (0.0017) & (0.0014) & (0.0024) & (0.0018) \\
+ROA & \textbf{0.0609}$^{***}$ & \textbf{0.0343}$^{***}$ & \textbf{0.0838}$^{***}$ & \textbf{0.0368}$^{**}$ & \textbf{0.0512}$^{***}$ & 0.0125 & \textbf{0.0553}$^{***}$ & \textbf{0.0468}$^{**}$ \\
+ & (0.0171) & (0.0121) & (0.0223) & (0.0168) & (0.0161) & (0.0145) & (0.0194) & (0.0192) \\
+CashRatio & -0.0120 & \textbf{0.0325}$^{***}$ & 0.0185 & -0.0079 & \textbf{0.0527}$^{***}$ & 0.0059 & \textbf{0.0598}$^{***}$ & 0.0295 \\
+ & (0.0174) & (0.0119) & (0.0220) & (0.0187) & (0.0149) & (0.0161) & (0.0227) & (0.0229) \\
+DivDummy & 0.0074 & \textbf{-0.0167}$^{***}$ & 0.0104 & -0.0073 & -0.0078 & \textbf{-0.0101}$^{*}$ & -0.0032 & \textbf{-0.0154}$^{*}$ \\
+ & (0.0053) & (0.0042) & (0.0064) & (0.0061) & (0.0066) & (0.0059) & (0.0089) & (0.0083) \\
+FirmMat & -0.0002 & \textbf{0.0021}$^{***}$ & -0.0005 & 0.0009 & \textbf{0.0027}$^{*}$ & 0.0008 & \textbf{0.0039}$^{**}$ & -0.0011 \\
+ & (0.0011) & (0.0007) & (0.0015) & (0.0008) & (0.0015) & (0.0013) & (0.0019) & (0.0012) \\
+EarnVol & -0.0061 & -0.0062 & -0.0003 & -0.0076 & -0.0030 & 0.0021 & 0.0149 & -0.0084 \\
+ & (0.0076) & (0.0069) & (0.0106) & (0.0086) & (0.0076) & (0.0067) & (0.0111) & (0.0118) \\
+UncPreMgr & \textbf{0.1224}$^{***}$ &  &  &  & \textbf{0.1127}$^{***}$ &  &  &  \\
+ & (0.0071) &  &  &  & (0.0059) &  &  &  \\
+UncPreCEO &  &  & \textbf{0.1385}$^{***}$ &  &  &  & \textbf{0.1045}$^{***}$ &  \\
+ &  &  & (0.0070) &  &  &  & (0.0048) &  \\
+Lagged\_DV & \textbf{0.3332}$^{***}$ & \textbf{0.6755}$^{***}$ & \textbf{0.2986}$^{***}$ & \textbf{0.5175}$^{***}$ & \textbf{0.1366}$^{***}$ & \textbf{0.4185}$^{***}$ & \textbf{0.1103}$^{***}$ & \textbf{0.2626}$^{***}$ \\
+ & (0.0084) & (0.0101) & (0.0091) & (0.0131) & (0.0069) & (0.0099) & (0.0071) & (0.0089) \\
+\midrule
+Industry FE & Yes & Yes & Yes & Yes &  &  &  &  \\
+Firm FE &  &  &  &  & Yes & Yes & Yes & Yes \\
+Year FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+\midrule
+N & 74,013 & 75,142 & 59,676 & 60,503 & 74,013 & 75,142 & 59,676 & 60,503 \\
+$R^2$ & 0.171 & 0.484 & 0.141 & 0.292 & 0.041 & 0.186 & 0.030 & 0.084 \\
+Adj.~$R^2$ & 0.171 & 0.484 & 0.141 & 0.291 & 0.017 & 0.166 & 0.001 & 0.057 \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{2pt}\scriptsize
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
+ Significant coefficients in \textbf{bold}.
+ Standard errors (in parentheses) two-way clustered (firm, calendar quarter).
+ Main sample (excludes financial and utility firms). Firms with fewer than 5 calls are excluded.
+ $R^2$ includes absorbed fixed effects (not within-$R^2$).
+\end{minipage}
+\end{sidewaystable}

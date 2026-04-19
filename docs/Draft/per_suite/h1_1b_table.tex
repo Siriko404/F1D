@@ -1,0 +1,63 @@
+\begin{sidewaystable}[p]
+\setlength{\tabcolsep}{3pt}
+\centering
+\caption{H1.1b: Binary Product Similarity--Moderated Speech Uncertainty and Cash Holdings}
+\label{tab:h1_1b}
+\scriptsize
+\begin{tabular}{lcccc}
+\toprule
+ & (1) & (2) & (3) & (4) \\
+ & \multicolumn{4}{c}{CashRatio} \\
+\cmidrule(lr){2-5}
+\midrule
+UncAnsMgr\_c & \textbf{0.0044}$^{***}$ & \textbf{0.0038}$^{***}$ & \textbf{0.0044}$^{***}$ & \textbf{0.0037}$^{***}$ \\
+ & (0.0014) & (0.0012) & (0.0014) & (0.0012) \\
+HighTSIMM & \textbf{0.0060}$^{***}$ & 0.0014 & \textbf{0.0058}$^{***}$ & 0.0014 \\
+ & (0.0011) & (0.0018) & (0.0011) & (0.0018) \\
+UncAnsMgr\_c\_x\_HighTSIMM & 0.0010 & -0.0006 & 0.0010 & -0.0006 \\
+ & (0.0022) & (0.0018) & (0.0022) & (0.0018) \\
+\midrule
+Leverage & \textbf{-0.0109}$^{***}$ & \textbf{-0.0171}$^{***}$ & \textbf{-0.0113}$^{***}$ & \textbf{-0.0173}$^{***}$ \\
+ & (0.0028) & (0.0064) & (0.0029) & (0.0065) \\
+lnAssets & \textbf{-0.0018}$^{***}$ & \textbf{-0.0169}$^{***}$ & \textbf{-0.0016}$^{***}$ & \textbf{-0.0166}$^{***}$ \\
+ & (0.0004) & (0.0017) & (0.0004) & (0.0017) \\
+TobinsQ & \textbf{0.0046}$^{***}$ & \textbf{0.0032}$^{***}$ & \textbf{0.0045}$^{***}$ & \textbf{0.0030}$^{***}$ \\
+ & (0.0005) & (0.0011) & (0.0005) & (0.0011) \\
+ROA & \textbf{-0.0633}$^{***}$ & \textbf{-0.0332}$^{***}$ & \textbf{-0.0603}$^{***}$ & \textbf{-0.0313}$^{***}$ \\
+ & (0.0076) & (0.0090) & (0.0076) & (0.0090) \\
+Capex & \textbf{-0.1488}$^{***}$ & \textbf{-0.2384}$^{***}$ & \textbf{-0.1455}$^{***}$ & \textbf{-0.2303}$^{***}$ \\
+ & (0.0122) & (0.0217) & (0.0121) & (0.0216) \\
+DivDummy & \textbf{-0.0039}$^{***}$ & -0.0025 & \textbf{-0.0035}$^{***}$ & -0.0022 \\
+ & (0.0010) & (0.0018) & (0.0010) & (0.0018) \\
+sCFO & \textbf{0.0127}$^{**}$ & 0.0026 & \textbf{0.0124}$^{**}$ & 0.0026 \\
+ & (0.0058) & (0.0030) & (0.0056) & (0.0030) \\
+SalesGrowth & \textbf{-0.0094}$^{***}$ & \textbf{-0.0116}$^{***}$ & \textbf{-0.0088}$^{***}$ & \textbf{-0.0111}$^{***}$ \\
+ & (0.0028) & (0.0029) & (0.0027) & (0.0029) \\
+RDSales & \textbf{0.0045}$^{***}$ & 0.0014 & \textbf{0.0045}$^{***}$ & \textbf{0.0015}$^{*}$ \\
+ & (0.0015) & (0.0009) & (0.0015) & (0.0009) \\
+CashFlowAt & \textbf{0.1018}$^{***}$ & \textbf{0.1278}$^{***}$ & \textbf{0.1014}$^{***}$ & \textbf{0.1271}$^{***}$ \\
+ & (0.0110) & (0.0140) & (0.0111) & (0.0141) \\
+DailyVola & -0.0000 & \textbf{-0.0001}$^{***}$ & \textbf{0.0001}$^{**}$ & -0.0000 \\
+ & (0.0000) & (0.0000) & (0.0000) & (0.0000) \\
+Lagged\_DV & \textbf{0.8623}$^{***}$ & \textbf{0.6650}$^{***}$ & \textbf{0.8628}$^{***}$ & \textbf{0.6662}$^{***}$ \\
+ & (0.0060) & (0.0096) & (0.0060) & (0.0096) \\
+\midrule
+Industry FE & Yes &  & Yes &  \\
+Firm FE &  & Yes &  & Yes \\
+Year FE & Yes & Yes &  &  \\
+Year-Quarter FE &  &  & Yes & Yes \\
+\midrule
+N & 73,707 & 73,707 & 73,707 & 73,707 \\
+$R^2$ & 0.833 & 0.484 & 0.834 & 0.484 \\
+Adj.~$R^2$ & 0.833 & 0.471 & 0.834 & 0.471 \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{2pt}\scriptsize
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
+ Significant coefficients in \textbf{bold}.
+ Standard errors (in parentheses) clustered at firm level.
+ Main sample (excludes financial and utility firms).
+ $R^2$ includes absorbed fixed effects (not within-$R^2$).
+\end{minipage}
+\end{sidewaystable}
