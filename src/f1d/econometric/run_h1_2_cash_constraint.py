@@ -945,31 +945,20 @@ def _write_suite_spec_json(
         merged.update(interaction_coefs)
         coefs_per_col.append(merged)
 
-    # Six top-of-table variables, ALL one-tailed positive per user directive
-    # (2026-04-14): financial constraint + uncertainty → more cash holding is
-    # theory-obvious. Level shifts (BelowIG, Unrated) predict positive vs IG
-    # reference (constrained firms hoard more), and both differential
-    # interactions predict positive (constraint amplifies the uncertainty-cash
-    # link). β-sign-gated stars will suppress any term whose empirical sign
-    # contradicts the hypothesis.
+    # Display-only suppression (2026-04-18, T53): user requested keeping ONLY
+    # the unconditional main IV (UncAnsMgr_c, from cols 1-4) plus the Unrated
+    # moderator + Unrated×UncAnsMgr interaction (from cols 5-8). BelowIG main,
+    # IG-conditional UncAnsMgr_c_x_IG, and UncAnsMgr_c_x_BelowIG are still
+    # ESTIMATED in the underlying regressions (necessary for unbiased
+    # coefficients on retained terms) but not shown in the displayed table.
+    # All retained IVs one-tailed positive per user directive (2026-04-14).
     ivs = [
         {
             "name": IV_CENTERED,
             "label": r"UncAnsMgr\_c",
             "tail": "one_pos",
         },
-        {"name": MOD_BELOW_IG, "label": "BelowIG", "tail": "one_pos"},
         {"name": MOD_UNRATED, "label": "Unrated", "tail": "one_pos"},
-        {
-            "name": IV_CENTERED_IG,
-            "label": r"UncAnsMgr\_c\_x\_IG",
-            "tail": "one_pos",
-        },
-        {
-            "name": "UncAnsMgr_c_x_BelowIG",
-            "label": r"UncAnsMgr\_c\_x\_BelowIG",
-            "tail": "one_pos",
-        },
         {
             "name": "UncAnsMgr_c_x_Unrated",
             "label": r"UncAnsMgr\_c\_x\_Unrated",
