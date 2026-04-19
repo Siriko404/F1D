@@ -20,13 +20,13 @@
 
 % ---- Tables ----
 \usepackage{booktabs}
-\usepackage{rotating}        % sidewaystable* for wide landscape tables
 \usepackage{tabularx}
 \usepackage{multirow}
 
 % ---- Graphics, floats ----
 \usepackage{graphicx}
-\usepackage{float}
+\usepackage{float}           % H float specifier for inline placement
+\usepackage{pdflscape}       % \begin{landscape} → true landscape PDF page
 
 % ---- Bibliography (author-year, finance/econ standard) ----
 \usepackage{natbib}
@@ -82,11 +82,12 @@
 % \input{sections/appendix_a_var_defs.tex}
 % \input{sections/appendix_b_validity_tables.tex}
 
-% ---- Tables Appendix: rotated full-page landscape, NBER-style ----
-% Each suite gets its own \begin{sidewaystable}[p] (1 table per landscape page).
+% ---- Tables Appendix: true landscape PDF pages, NBER-style ----
+% Each suite gets its own \begin{landscape} ... \begin{table}[H] ... block.
+% pdflscape rotates the underlying PDF page so the viewer shows tables
+% upright in landscape orientation (no manual viewer rotation required).
 % Auto-generated per-suite fragments live in docs/Draft/per_suite/.
 % Re-run docs/Draft/generate_all_tables.py to refresh after any spec change.
-\section*{Tables}
 \input{per_suite/_all_suites_input.tex}
 
 \end{document}
