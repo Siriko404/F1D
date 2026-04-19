@@ -16,6 +16,8 @@ anchor_panel:
   UncPreMgr: H1
   UncAnsCEO: H1
   UncPreCEO: H1
+  UncAnsNoCEO: H1.r   # H1 panel rebuilt 2026-04-19 with both NoCEO cols
+  UncPreNoCEO: H1.r
   lnAssets: H1
   TobinsQ: H1
   ROA: H1
@@ -57,6 +59,7 @@ panel_dir_alias:
   H1.1: h1_cash_holdings
   H1.1b: h1_cash_holdings
   H1.2: h1_cash_holdings
+  H1.r: h1_cash_holdings   # robustness suite reuses H1 panel (with UncPreNoCEO added)
   H7b: h7_illiquidity
   H7c: h7_illiquidity
   H7d: h7_illiquidity
