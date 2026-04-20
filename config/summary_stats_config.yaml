@@ -57,8 +57,11 @@ exclude_vars:
 # external rating data, NOT stored in any panel. They are absent from Table 1.
 panel_dir_alias:
   H1.1: h1_cash_holdings
+  H1.1.r: h1_cash_holdings   # CEO partition channel — reuses H1 panel
   H1.1b: h1_cash_holdings
+  H1.1b.r: h1_cash_holdings  # CEO partition channel binary — reuses H1 panel
   H1.2: h1_cash_holdings
+  H1.2.r: h1_cash_holdings   # CEO partition channel constraint — reuses H1 panel
   H1.r: h1_cash_holdings   # robustness suite reuses H1 panel (with UncPreNoCEO added)
   H7b: h7_illiquidity
   H7c: h7_illiquidity
@@ -89,6 +92,8 @@ panel_dir_alias:
   H12b.r: h12_payout
   H13.r: h13_capex
   H13.2.r: h13_2_capex_leads
+  H13.1.r: h13_capex   # CEO partition channel — reuses H13 panel
+  H13.3: h13_capex     # NEW capex x constraint channel — reuses H13 panel
   H14.r: h14_bidask_spread
   H14b.r: h14_bidask_spread
   H14c.r: h14_bidask_spread

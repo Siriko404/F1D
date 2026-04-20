@@ -12,8 +12,11 @@ suites:
   # H1 family
   - H1
   - H1.1
+  - H1.1.r
   - H1.1b
+  - H1.1b.r
   - H1.2
+  - H1.2.r
   - H1.r
 
   # H4 family (both sub-tables emitted by run_h4_leverage.py)
@@ -54,8 +57,10 @@ suites:
   - H13
   - H13.r
   - H13.1
+  - H13.1.r
   - H13.2
   - H13.2.r
+  - H13.3
 
   # H14 family (bid-ask spread — core + BGT 25-day)
   - H14
