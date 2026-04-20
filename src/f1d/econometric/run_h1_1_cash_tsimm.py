@@ -17,9 +17,9 @@ Model Specification:
 
 Parent suite: H1 (Cash Holdings)
 
-2 Models:
-    Col 1: DV = CashRatio_t, Industry + Calendar Year FE, Extended controls
-    Col 2: DV = CashRatio_t, Industry + Calendar Year-Quarter FE, Extended controls
+8 Models:
+    Cols 1-4: DV = CashRatio_t, full FE ladder (Industry+CalYr, Firm+CalYr, Industry+YQ, Firm+YQ)
+    Cols 5-8: DV = CashRatio_{t+1} (lead), full FE ladder (mirrors H13.1 design)
 
 Moderator: TNIC3TSIMM (Hoberg & Phillips JPE 2016)
     Log-transformed then z-scored on Main sample.
@@ -104,14 +104,26 @@ TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
 EXTENDED_ONLY_CONTROLS: List[str] = []  # H1.1 uses a single flat control set
 
 MODEL_SPECS = [
-    {"col": 1, "dv": "CashRatio", "fe": "industry",    "extra_controls": []},
-    {"col": 2, "dv": "CashRatio", "fe": "firm",        "extra_controls": []},
-    {"col": 3, "dv": "CashRatio", "fe": "industry_yq", "extra_controls": []},
-    {"col": 4, "dv": "CashRatio", "fe": "firm_yq",     "extra_controls": []},
+    # CashRatio_t: cols 1-4 (full FE ladder)
+    {"col": 1, "dv": "CashRatio",      "fe": "industry",    "extra_controls": []},
+    {"col": 2, "dv": "CashRatio",      "fe": "firm",        "extra_controls": []},
+    {"col": 3, "dv": "CashRatio",      "fe": "industry_yq", "extra_controls": []},
+    {"col": 4, "dv": "CashRatio",      "fe": "firm_yq",     "extra_controls": []},
+    # CashRatio_lead: cols 5-8 (full FE ladder)
+    {"col": 5, "dv": "CashRatio_lead", "fe": "industry",    "extra_controls": []},
+    {"col": 6, "dv": "CashRatio_lead", "fe": "firm",        "extra_controls": []},
+    {"col": 7, "dv": "CashRatio_lead", "fe": "industry_yq", "extra_controls": []},
+    {"col": 8, "dv": "CashRatio_lead", "fe": "firm_yq",     "extra_controls": []},
 ]
+
+DV_TEX = {
+    "CashRatio": r"Cash$_t$",
+    "CashRatio_lead": r"Cash$_{t+1}$",
+}
 
 SUMMARY_STATS_VARS = [
     {"col": "CashRatio", "label": "Cash Holdings$_t$"},
+    {"col": "CashRatio_lead", "label": "Cash Holdings$_{t+1}$"},
     {"col": IV, "label": "Mgr QA Uncertainty (raw)"},
     {"col": IV_CENTERED, "label": "Mgr QA Uncertainty (centered)"},
     {"col": MODERATOR_RAW, "label": "TNIC3TSIMM (raw)"},
@@ -170,7 +182,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
     columns = [
         "start_date",
         "gvkey", "year", "fyearq_int", "ff12_code",
-        "CashRatio", "CashRatio_lag",
+        "CashRatio", "CashRatio_lag", "CashRatio_lead",
         IV,
         *[c for c in CONTROLS if c != "Lagged_DV"],
     ]
@@ -282,7 +294,9 @@ def prepare_regression_data(
 
     time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
 
-    lag_col = f"{dv}_lag"
+    # Lagged_DV always lag of base DV (t-1), regardless of whether DV is t or t+1
+    base_dv = dv.replace("_lead", "")
+    lag_col = f"{base_dv}_lag"
     panel = panel.copy()
     panel["Lagged_DV"] = panel[lag_col]
 
@@ -494,10 +508,9 @@ def _write_suite_spec_json(
 ) -> None:
     """Emit canonical suite_spec_H1.1.json from moderation runner state.
 
-    H1.1 structure: 4 cols = 2 FE entities (industry/firm) x 2 time-FE
-    granularities (cal_yr / cal_yr_qtr). Three top-of-table IVs with
-    per-IV tails: main IV one-tailed positive, moderator and interaction
-    two-tailed.
+    H1.1 structure: 8 cols = 2 DVs (CashRatio, CashRatio_lead) x 2 FE
+    entities (industry/firm) x 2 time-FE granularities (cal_yr / cal_yr_qtr).
+    All three key IVs are one-tailed positive per feedback_moderation_tails.md.
     """
     col_metadata: List[Dict[str, Any]] = []
     coefs_per_col: List[Dict[str, Dict[str, Any]]] = []
@@ -561,7 +574,10 @@ def _write_suite_spec_json(
         )
 
     header_rows = [
-        [{"label": "CashRatio", "span": len(MODEL_SPECS)}]
+        [
+            {"label": "CashRatio", "span": 4},
+            {"label": r"CashRatio\_lead", "span": 4},
+        ]
     ]
 
     paths = write_suite_spec(
@@ -627,7 +643,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print("=" * 80)
     print(f"Timestamp: {timestamp}")
     print(f"Output:    {out_dir}")
-    print(f"Design:    1 IV x 1 DV x 2 FE types = 2 models")
+    print(f"Design:    1 IV x 2 DVs x 4 FE types = 8 models")
     print(f"Moderator: z(log(TNIC3TSIMM))")
     print(f"IV:        {IV}")
 
@@ -642,7 +658,8 @@ def main(panel_path: Optional[str] = None) -> int:
     main_n = len(panel)
 
     print(f"\n  Main sample: {main_n:,} calls, {panel['gvkey'].nunique():,} firms")
-    print(f"  CashRatio non-null: {panel['CashRatio'].notna().sum():,}")
+    for dv in ["CashRatio", "CashRatio_lead"]:
+        print(f"  {dv} non-null: {panel[dv].notna().sum():,}")
     print(f"  {IV}: {panel[IV].notna().sum():,} "
           f"({100 * panel[IV].notna().mean():.1f}%)")
     print(f"  {MODERATOR}: {panel[MODERATOR].notna().sum():,} "
