@@ -992,8 +992,8 @@ def _write_suite_spec_json(
     # 8 display cols: 4 CashRatio_t + 4 Capex_lead
     header_rows = [
         [
-            {"label": "CashRatio", "span": 4},
-            {"label": r"CashRatio\_lead", "span": 4},
+            {"label": "Capex", "span": 4},
+            {"label": r"Capex\_lead", "span": 4},
         ]
     ]
 
