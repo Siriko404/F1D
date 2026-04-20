@@ -36,6 +36,8 @@ from f1d.shared.variables import (
     CEOQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
+    NonCEOManagerQAUncertaintyBuilder,
+    NonCEOManagerPresUncertaintyBuilder,
     # DV
     WangDispBuilder,
     # Base controls
@@ -91,6 +93,12 @@ def build_panel(
         ),
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
+        ),
+        "nonceo_manager_qa_uncertainty": NonCEOManagerQAUncertaintyBuilder(
+            var_config.get("nonceo_manager_qa_uncertainty", {})
+        ),
+        "nonceo_manager_pres_uncertainty": NonCEOManagerPresUncertaintyBuilder(
+            var_config.get("nonceo_manager_pres_uncertainty", {})
         ),
         # DV (Wang 2020 dispersion)
         "wang_disp": WangDispBuilder(var_config.get("wang_disp", {})),

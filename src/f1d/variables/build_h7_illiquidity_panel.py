@@ -46,6 +46,8 @@ from f1d.shared.variables import (
     CEOPresUncertaintyBuilder,
     ManagerQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
+    NonCEOManagerQAUncertaintyBuilder,
+    NonCEOManagerPresUncertaintyBuilder,
     # DV builder (produces DeltaILLIQ + PreCallILLIQ)
     AmihudChangeBuilder,
     # H7c/d/e BGT (2018) 25-day post-call Amihud (Level/Delta/Avg)
@@ -104,6 +106,12 @@ def build_panel(
         ),
         "manager_pres_uncertainty": ManagerPresUncertaintyBuilder(
             var_config.get("manager_pres_uncertainty", {})
+        ),
+        "nonceo_manager_qa_uncertainty": NonCEOManagerQAUncertaintyBuilder(
+            var_config.get("nonceo_manager_qa_uncertainty", {})
+        ),
+        "nonceo_manager_pres_uncertainty": NonCEOManagerPresUncertaintyBuilder(
+            var_config.get("nonceo_manager_pres_uncertainty", {})
         ),
         # DV (produces DeltaILLIQ + PreCallILLIQ)
         "amihud_change": AmihudChangeBuilder(var_config.get("amihud_change", {})),
