@@ -92,6 +92,8 @@ CONFIG = {
         "UncAnsCEO",
         "UncPreMgr",
         "UncPreCEO",
+        "UncAnsNoCEO",
+        "UncPreNoCEO",
     ],
     "samples": ["Main", "Finance", "Utility"],
     "fe_specs": ["industry", "firm"],
@@ -112,8 +114,10 @@ BASE_CONTROLS = [
 PRES_CONTROL_MAP = {
     "UncAnsMgr": "UncPreMgr",
     "UncAnsCEO": "UncPreCEO",
+    "UncAnsNoCEO": "UncPreNoCEO",
     "UncPreMgr": None,
     "UncPreCEO": None,
+    "UncPreNoCEO": None,
 }
 
 EXTENDED_ONLY_CONTROLS: List[str] = []  # H11 has no extended set
@@ -134,7 +138,7 @@ HYP_DIR = "positive"  # H11: higher political risk -> higher speech uncertainty
 CLUSTERING = {"entity": True, "time": False}
 TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
 
-SUB_TABLE_DV_ORDER = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO"]
+SUB_TABLE_DV_ORDER = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO", "UncAnsNoCEO", "UncPreNoCEO"]
 SUB_TABLE_FE_ORDER = ["industry", "firm"]
 
 
@@ -148,6 +152,8 @@ SUMMARY_STATS_VARS = [
     {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
+    {"col": "UncAnsNoCEO", "label": "Non-CEO Mgr QA Uncertainty"},
+    {"col": "UncPreNoCEO", "label": "Non-CEO Mgr Pres Uncertainty"},
     # Main independent variable
     {"col": "PRisk", "label": "Political Risk$_{t}$"},
     # Controls
@@ -295,10 +301,14 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         ("UncAnsCEO", "industry"),
         ("UncPreMgr", "industry"),
         ("UncPreCEO", "industry"),
+        ("UncAnsNoCEO", "industry"),
+        ("UncPreNoCEO", "industry"),
         ("UncAnsMgr", "firm"),
         ("UncAnsCEO", "firm"),
         ("UncPreMgr", "firm"),
         ("UncPreCEO", "firm"),
+        ("UncAnsNoCEO", "firm"),
+        ("UncPreNoCEO", "firm"),
     ]
     col_results = [get_res(dv, fe) for dv, fe in col_order]
 
@@ -338,12 +348,12 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "\\caption{H11: Political Risk and Language Uncertainty}",
         "\\label{tab:h11_prisk_uncertainty}",
         "\\scriptsize",
-        "\\begin{tabular}{l" + "c" * 8 + "}",
+        "\\begin{tabular}{l" + "c" * 12 + "}",
         "\\toprule",
-        " & \\multicolumn{4}{c}{Industry FE} & \\multicolumn{4}{c}{Firm FE} \\\\",
-        "\\cmidrule(lr){2-5} \\cmidrule(lr){6-9}",
-        " & Mgr QA & CEO QA & Mgr Pres & CEO Pres & Mgr QA & CEO QA & Mgr Pres & CEO Pres \\\\",
-        " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\",
+        " & \\multicolumn{6}{c}{Industry FE} & \\multicolumn{6}{c}{Firm FE} \\\\",
+        "\\cmidrule(lr){2-7} \\cmidrule(lr){8-13}",
+        " & Mgr QA & CEO QA & Mgr Pres & CEO Pres & NoCEO QA & NoCEO Pres & Mgr QA & CEO QA & Mgr Pres & CEO Pres & NoCEO QA & NoCEO Pres \\\\",
+        " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) & (10) & (11) & (12) \\\\",
         "\\midrule",
     ]
 
@@ -361,10 +371,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines.append(" & " + " & ".join(se_cells) + " \\\\")
 
     lines.append("\\midrule")
-    lines.append("Controls & " + " & ".join(["Yes"] * 8) + " \\\\")
-    lines.append("Industry FE & " + " & ".join(["Yes"] * 4 + [""] * 4) + " \\\\")
-    lines.append("Firm FE & " + " & ".join([""] * 4 + ["Yes"] * 4) + " \\\\")
-    lines.append("Calendar Year FE & " + " & ".join(["Yes"] * 8) + " \\\\")
+    lines.append("Controls & " + " & ".join(["Yes"] * 12) + " \\\\")
+    lines.append("Industry FE & " + " & ".join(["Yes"] * 6 + [""] * 6) + " \\\\")
+    lines.append("Firm FE & " + " & ".join([""] * 6 + ["Yes"] * 6) + " \\\\")
+    lines.append("Calendar Year FE & " + " & ".join(["Yes"] * 12) + " \\\\")
     lines.append("\\midrule")
 
     lines.append(build_row("Observations", lambda r: r["n_obs"], lambda v: f"{v:,}"))
@@ -455,12 +465,12 @@ def _write_suite_spec_json(
                 )
             )
 
-    base_plus_siblings = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO"]
+    base_plus_siblings = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO", "UncPreNoCEO"]
 
     header_rows = [
         [
-            {"label": "Industry FE", "span": 4},
-            {"label": "Firm FE", "span": 4},
+            {"label": "Industry FE", "span": 6},
+            {"label": "Firm FE", "span": 6},
         ],
         [{"label": dv, "span": 1} for fe in SUB_TABLE_FE_ORDER for dv in SUB_TABLE_DV_ORDER],
     ]
@@ -475,7 +485,7 @@ def _write_suite_spec_json(
                 "title": SUITE_TITLE,
                 "caption": SUITE_CAPTION,
                 "label": SUITE_LABEL,
-                "col_range": list(range(1, 9)),
+                "col_range": list(range(1, 13)),
                 "header_rows": header_rows,
                 "suite_type": "moderation",
             }
@@ -494,6 +504,7 @@ def _write_suite_spec_json(
             "labels": {
                 "UncPreMgr": "UncPreMgr",
                 "UncPreCEO": "UncPreCEO",
+                "UncPreNoCEO": "UncPreNoCEO",
             },
         },
         model_family="PanelOLS",
@@ -551,6 +562,8 @@ def main(panel_path: str | None = None) -> int:
             "UncAnsCEO",
             "UncPreMgr",
             "UncPreCEO",
+            "UncAnsNoCEO",
+            "UncPreNoCEO",
             # Primary predictor
             "PRisk",
             # Base controls
