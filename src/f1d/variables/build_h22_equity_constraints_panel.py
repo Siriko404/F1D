@@ -72,6 +72,7 @@ from f1d.shared.variables import (
     CEOQAUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     NonCEOManagerQAUncertaintyBuilder,
+    NonCEOManagerPresUncertaintyBuilder,
     AnalystQAUncertaintyBuilder,
     NegativeSentimentBuilder,
     # Financial controls — base (Compustat engine singleton)
@@ -122,8 +123,13 @@ CONTROL_COLS = [
 ]
 
 # Additional linguistic cols to average (for downstream consumers)
+# Note: 2026-04-19 — fixed stale `UncAnsNoCEOMgr` typo (engine column is `UncAnsNoCEO`,
+# rename map at `_linguistic_engine.py:183`). Added `UncPreNoCEO` for partition-variant
+# robustness suites (H22.r). Without these the firm-year collapse silently dropped the
+# NoCEO QA column despite the builder running successfully.
 EXTRA_LING_COLS = [
-    "UncAnsNoCEOMgr",
+    "UncAnsNoCEO",
+    "UncPreNoCEO",
     "UncAnsAnalyst",
     "NegSent",
 ]
@@ -177,6 +183,9 @@ def build_call_level_panel(
         ),
         "nonceo_manager_qa_uncertainty": NonCEOManagerQAUncertaintyBuilder(
             var_config.get("nonceo_manager_qa_uncertainty", {})
+        ),
+        "nonceo_manager_pres_uncertainty": NonCEOManagerPresUncertaintyBuilder(
+            var_config.get("nonceo_manager_pres_uncertainty", {})
         ),
         "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
             var_config.get("analyst_qa_uncertainty", {})

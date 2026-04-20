@@ -71,6 +71,7 @@ from f1d.shared.variables import (
     CEOQAUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
     NonCEOManagerQAUncertaintyBuilder,
+    NonCEOManagerPresUncertaintyBuilder,
     AnalystQAUncertaintyBuilder,      # → UncQue (control)
     NegativeSentimentBuilder,          # → NegCall (control)
     # Financial controls (from H11 pattern — uncertainty-DV appropriate)
@@ -88,12 +89,16 @@ from f1d.shared.variables import (
 
 
 # Linguistic columns to average across calls within fiscal year
+# Note: 2026-04-19 — fixed stale `UncAnsNoCEOMgr` typo (engine column is `UncAnsNoCEO`,
+# rename map at `_linguistic_engine.py:183`). Added `UncPreNoCEO` for partition-variant
+# robustness suites. Without these the firm-year collapse silently dropped NoCEO QA.
 LING_COLS = [
     "UncAnsMgr",
     "UncAnsCEO",
     "UncPreMgr",
     "UncPreCEO",
-    "UncAnsNoCEOMgr",
+    "UncAnsNoCEO",
+    "UncPreNoCEO",
     "UncQue",       # analyst QA uncertainty (control)
     "NegCall",      # negative sentiment (control)
 ]
@@ -158,6 +163,9 @@ def build_call_level_panel(
         ),
         "nonceo_manager_qa_uncertainty": NonCEOManagerQAUncertaintyBuilder(
             var_config.get("nonceo_manager_qa_uncertainty", {})
+        ),
+        "nonceo_manager_pres_uncertainty": NonCEOManagerPresUncertaintyBuilder(
+            var_config.get("nonceo_manager_pres_uncertainty", {})
         ),
         "analyst_qa_uncertainty": AnalystQAUncertaintyBuilder(
             var_config.get("analyst_qa_uncertainty", {})
