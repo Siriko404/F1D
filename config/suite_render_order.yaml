@@ -18,19 +18,27 @@ suites:
 
   # H4 family (both sub-tables emitted by run_h4_leverage.py)
   - H4a
+  - H4a.r
   - H4b
+  - H4b.r
 
   # H5 (Wang 2020 dispersion)
   - H5
+  - H5.r
 
   # H7 family (Amihud illiquidity — core + BGT 25-day)
   - H7
+  - H7.r
   - H7b
+  - H7b.r
   - H7c
+  - H7c.r
   - H7d
+  - H7d.r
   - H7e
+  - H7e.r
 
-  # H11 family (political risk moderation)
+  # H11 family (political risk moderation, expanded to 6-DV in-place)
   # H11-Lag1, H11-Lag2 both emitted by run_h11_prisk_uncertainty_lag.py
   - H11
   - H11-Lag1
@@ -38,32 +46,49 @@ suites:
 
   # H12 family (payout)
   - H12
+  - H12.r
   - H12b
+  - H12b.r
 
   # H13 family (capex)
   - H13
+  - H13.r
   - H13.1
   - H13.2
+  - H13.2.r
 
   # H14 family (bid-ask spread — core + BGT 25-day)
   - H14
+  - H14.r
   - H14b
+  - H14b.r
   - H14c
+  - H14c.r
   - H14d
+  - H14d.r
   - H14e
+  - H14e.r
 
   # Other hypotheses
   - H16
+  - H16.r
   - H17
+  - H17.r
   - H18
+  - H18.r
   - H18b
+  - H18b.r
   - H19b
+  - H19b.r
   - H20b
+  - H20b.r
   - H21
+  - H21.r
   - H22
+  - H22.r
   - H23
 
-  # Macro uncertainty (two-way clustering exception)
+  # Macro uncertainty (two-way clustering exception, expanded to 6-DV in-place)
   - H24
   - H24b
   - H25

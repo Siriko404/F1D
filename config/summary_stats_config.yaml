@@ -76,6 +76,32 @@ panel_dir_alias:
   H24: h24_h24b_h25_macro
   H24b: h24_h24b_h25_macro
   H25: h24_h24b_h25_macro
+  # Partition variant siblings — all reuse parent panels (with NoCEO cols added 2026-04-19)
+  H4a.r: h4_leverage
+  H4b.r: h4_leverage
+  H5.r: h5b_wang_disp
+  H7.r: h7_illiquidity
+  H7b.r: h7_illiquidity
+  H7c.r: h7_illiquidity
+  H7d.r: h7_illiquidity
+  H7e.r: h7_illiquidity
+  H12.r: h12_payout
+  H12b.r: h12_payout
+  H13.r: h13_capex
+  H13.2.r: h13_2_capex_leads
+  H14.r: h14_bidask_spread
+  H14b.r: h14_bidask_spread
+  H14c.r: h14_bidask_spread
+  H14d.r: h14_bidask_spread
+  H14e.r: h14_bidask_spread
+  H16.r: h16_rd_sales
+  H17.r: h17_repurchase_intensity
+  H18.r: h18_cccl_received
+  H18b.r: h18_cccl_received
+  H19b.r: h19b_h20b_financing
+  H20b.r: h19b_h20b_financing
+  H21.r: h21_sec_letters
+  H22.r: h22_equity_constraints
 
 # Supplementary substantive variables NOT in any spec's IV/DV/Control list.
 # Use for raw economic measures whose transformed form (z-scored, logged) is
