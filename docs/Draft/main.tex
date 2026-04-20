@@ -29,10 +29,6 @@
 \usepackage{float}           % H float specifier for inline placement
 \usepackage{pdflscape}       % \begin{landscape} → true landscape PDF page
 
-% ---- Bibliography (author-year, finance/econ standard) ----
-\usepackage{natbib}
-\bibpunct{(}{)}{;}{a}{,}{,}    % JF-style citation punctuation
-
 % ---- Spacing (modest density; can tighten later if needed) ----
 \usepackage{setspace}
 \setstretch{1.0}
@@ -40,8 +36,11 @@
 % ---- URL handling for DOIs in bib ----
 \usepackage{url}
 
-% ---- Hyperref last for compatibility ----
+% ---- Hyperref before apacite (apacite compatibility requirement) ----
 \usepackage[colorlinks=true,linkcolor=black,citecolor=blue,urlcolor=blue]{hyperref}
+
+% ---- Bibliography (APA 6/7 via apacite — must follow hyperref) ----
+\usepackage{apacite}
 
 % ---- Convenience macros ----
 \newcommand{\Var}[1]{\texttt{#1}}        % e.g., \Var{UncAnsMgr}
@@ -74,7 +73,7 @@
 \input{sections/section_5_conclusion.tex}
 
 % ---- Bibliography ----
-\bibliographystyle{apalike}
+\bibliographystyle{apacite}
 \bibliography{references}
 
 % ---- Appendix (single-column) ----
