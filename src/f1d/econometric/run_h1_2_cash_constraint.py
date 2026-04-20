@@ -138,20 +138,38 @@ TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
 EXTENDED_ONLY_CONTROLS: List[str] = []
 
 MODEL_SPECS = [
+    # Block 1: CashRatio_t
     # Unconditional specs (no interactions): cols 1-4, full FE ladder
-    {"col": 1, "dv": "CashRatio", "fe": "industry",    "extra_controls": [], "interactions": False},
-    {"col": 2, "dv": "CashRatio", "fe": "firm",        "extra_controls": [], "interactions": False},
-    {"col": 3, "dv": "CashRatio", "fe": "industry_yq", "extra_controls": [], "interactions": False},
-    {"col": 4, "dv": "CashRatio", "fe": "firm_yq",     "extra_controls": [], "interactions": False},
+    {"col": 1, "dv": "CashRatio",      "fe": "industry",    "extra_controls": [], "interactions": False},
+    {"col": 2, "dv": "CashRatio",      "fe": "firm",        "extra_controls": [], "interactions": False},
+    {"col": 3, "dv": "CashRatio",      "fe": "industry_yq", "extra_controls": [], "interactions": False},
+    {"col": 4, "dv": "CashRatio",      "fe": "firm_yq",     "extra_controls": [], "interactions": False},
     # Interaction specs (IG-reference conditional effect): cols 5-8, full FE ladder
-    {"col": 5, "dv": "CashRatio", "fe": "industry",    "extra_controls": [], "interactions": True},
-    {"col": 6, "dv": "CashRatio", "fe": "firm",        "extra_controls": [], "interactions": True},
-    {"col": 7, "dv": "CashRatio", "fe": "industry_yq", "extra_controls": [], "interactions": True},
-    {"col": 8, "dv": "CashRatio", "fe": "firm_yq",     "extra_controls": [], "interactions": True},
+    {"col": 5, "dv": "CashRatio",      "fe": "industry",    "extra_controls": [], "interactions": True},
+    {"col": 6, "dv": "CashRatio",      "fe": "firm",        "extra_controls": [], "interactions": True},
+    {"col": 7, "dv": "CashRatio",      "fe": "industry_yq", "extra_controls": [], "interactions": True},
+    {"col": 8, "dv": "CashRatio",      "fe": "firm_yq",     "extra_controls": [], "interactions": True},
+    # Block 2: CashRatio_lead (one-quarter-ahead)
+    # Unconditional specs: cols 9-12
+    {"col":  9, "dv": "CashRatio_lead", "fe": "industry",    "extra_controls": [], "interactions": False},
+    {"col": 10, "dv": "CashRatio_lead", "fe": "firm",        "extra_controls": [], "interactions": False},
+    {"col": 11, "dv": "CashRatio_lead", "fe": "industry_yq", "extra_controls": [], "interactions": False},
+    {"col": 12, "dv": "CashRatio_lead", "fe": "firm_yq",     "extra_controls": [], "interactions": False},
+    # Interaction specs: cols 13-16
+    {"col": 13, "dv": "CashRatio_lead", "fe": "industry",    "extra_controls": [], "interactions": True},
+    {"col": 14, "dv": "CashRatio_lead", "fe": "firm",        "extra_controls": [], "interactions": True},
+    {"col": 15, "dv": "CashRatio_lead", "fe": "industry_yq", "extra_controls": [], "interactions": True},
+    {"col": 16, "dv": "CashRatio_lead", "fe": "firm_yq",     "extra_controls": [], "interactions": True},
 ]
+
+DV_TEX = {
+    "CashRatio": r"Cash$_t$",
+    "CashRatio_lead": r"Cash$_{t+1}$",
+}
 
 SUMMARY_STATS_VARS = [
     {"col": "CashRatio", "label": "Cash Holdings$_t$"},
+    {"col": "CashRatio_lead", "label": "Cash Holdings$_{t+1}$"},
     {"col": IV, "label": "Mgr QA Uncertainty (raw)"},
     {"col": IV_CENTERED, "label": "Mgr QA Uncertainty (centered)"},
     {"col": MOD_BELOW_IG, "label": "Below-IG (dummy)"},
@@ -209,7 +227,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
 
     columns = [
         "gvkey", "year", "fyearq_int", "ff12_code", "start_date",
-        "CashRatio", "CashRatio_lag",
+        "CashRatio", "CashRatio_lag", "CashRatio_lead",
         IV,
         *[c for c in CONTROLS if c != "Lagged_DV"],  # lagged created dynamically
     ]
@@ -353,8 +371,9 @@ def prepare_regression_data(
     # Determine time column based on FE type
     time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
 
-    # Create Lagged_DV: always lag of the base DV (t-1)
-    lag_col = f"{dv}_lag"
+    # Create Lagged_DV: always lag of the base DV (t-1), regardless of t/t+1
+    base_dv = dv.replace("_lead", "")
+    lag_col = f"{base_dv}_lag"
     panel = panel.copy()
     panel["Lagged_DV"] = panel[lag_col]
 
@@ -838,17 +857,18 @@ def _write_suite_spec_json(
 ) -> None:
     """Emit canonical suite_spec_H1.2.json from moderation runner state.
 
-    H1.2 has 8 underlying regressions:
-      - Cols 1-4: unconditional specs (source of UncAnsMgr_c main IV)
-      - Cols 5-8: interaction specs (source of BelowIG/Unrated level shifts
-        and the UncAnsMgr_c_x_IG / x_BelowIG / x_Unrated interactions)
+    H1.2 has 16 underlying regressions (after 2026-04-20 lead-DV upgrade):
+      - Cols 1-4: unconditional specs, DV=CashRatio_t
+      - Cols 5-8: interaction specs, DV=CashRatio_t
+      - Cols 9-12: unconditional specs, DV=CashRatio_lead
+      - Cols 13-16: interaction specs, DV=CashRatio_lead
 
-    The displayed table shows 4 columns corresponding to runner cols 5-8.
-    For each displayed col, the spec builder:
-      1. Uses cols 5-8's interaction-model metadata (n_obs, r2, fe, etc.)
+    The displayed table shows 8 columns corresponding to runner interaction
+    cols 5-8 (CashRatio_t) + 13-16 (CashRatio_lead). For each displayed col:
+      1. Uses interaction-model metadata (n_obs, r2, fe, etc.)
       2. Merges BOTH sets of coefs into the col's coefs dict:
-         - `UncAnsMgr_c` from the matching unconditional spec
-           (col 5 <- col 1, col 6 <- col 2, col 7 <- col 3, col 8 <- col 4)
+         - `UncAnsMgr_c` from the matching unconditional spec (interaction
+           col - 4 = unconditional col)
          - All other top-of-table vars + controls from the interaction spec
     """
     results_by_col = {
@@ -858,8 +878,9 @@ def _write_suite_spec_json(
     col_metadata: List[Dict[str, Any]] = []
     coefs_per_col: List[Dict[str, Dict[str, Any]]] = []
 
-    # Display cols 5-8 (interaction specs) → renumber to 1..4 in the spec.
-    display_cols = [5, 6, 7, 8]
+    # Display interaction cols (CashRatio_t: 5-8; CashRatio_lead: 13-16),
+    # renumber to 1..8 in the spec.
+    display_cols = [5, 6, 7, 8, 13, 14, 15, 16]
     for interaction_col in display_cols:
         if interaction_col not in results_by_col:
             raise RuntimeError(
@@ -966,7 +987,13 @@ def _write_suite_spec_json(
         },
     ]
 
-    header_rows = [[{"label": "CashRatio", "span": len(col_metadata)}]]
+    # 8 display cols: 4 CashRatio_t + 4 CashRatio_lead
+    header_rows = [
+        [
+            {"label": "CashRatio", "span": 4},
+            {"label": r"CashRatio\_lead", "span": 4},
+        ]
+    ]
 
     paths = write_suite_spec(
         output_dir=out_dir,
@@ -1024,7 +1051,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print("=" * 80)
     print(f"Timestamp:  {timestamp}")
     print(f"Output:     {out_dir}")
-    print(f"Design:     1 IV × 1 DV × (base + interaction) × 2 FE types = 4 models")
+    print(f"Design:     1 IV × 2 DVs × (base + interaction) × 4 FE types = 16 models (8 displayed)")
     print(f"Channel:    CH1 — Precautionary liquidity under external-finance frictions")
     print(f"Moderator:  Three-category: IG (ref) / Below-IG / Unrated")
     print(f"IV:         {IV}")
