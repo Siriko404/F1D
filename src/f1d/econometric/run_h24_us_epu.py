@@ -119,13 +119,15 @@ CONFIG = {
 }
 
 # 4 contemporaneous uncertainty DVs (used across 2 FE types = 8 cols)
-DVS = ["UncAnsMgr", "UncPreMgr", "UncAnsCEO", "UncPreCEO"]
+DVS = ["UncAnsMgr", "UncPreMgr", "UncAnsCEO", "UncPreCEO", "UncAnsNoCEO", "UncPreNoCEO"]
 
 DV_LABELS = {
     "UncAnsMgr": "Mgr QA",
     "UncPreMgr": "Mgr Pres",
     "UncAnsCEO": "CEO QA",
     "UncPreCEO": "CEO Pres",
+    "UncAnsNoCEO": "NoCEO QA",
+    "UncPreNoCEO": "NoCEO Pres",
 }
 
 # H11-style base controls (excluding presentation control, which is DV-dependent,
@@ -147,22 +149,28 @@ BASE_CONTROLS = [
 PRES_CONTROL_MAP = {
     "UncAnsMgr": "UncPreMgr",
     "UncAnsCEO": "UncPreCEO",
+    "UncAnsNoCEO": "UncPreNoCEO",
     "UncPreMgr": None,
     "UncPreCEO": None,
+    "UncPreNoCEO": None,
 }
 
-# 8 model specifications: 4 DVs x 2 FE types
+# 12 model specifications: 6 DVs x 2 FE types
 MODEL_SPECS = [
-    # Industry + Calendar Year FE (cols 1-4)
+    # Industry + Calendar Year FE (cols 1-6)
     {"col": 1, "dv": "UncAnsMgr", "fe": "industry"},
     {"col": 2, "dv": "UncPreMgr", "fe": "industry"},
     {"col": 3, "dv": "UncAnsCEO", "fe": "industry"},
     {"col": 4, "dv": "UncPreCEO", "fe": "industry"},
-    # Firm + Calendar Year FE (cols 5-8)
-    {"col": 5, "dv": "UncAnsMgr", "fe": "firm"},
-    {"col": 6, "dv": "UncPreMgr", "fe": "firm"},
-    {"col": 7, "dv": "UncAnsCEO", "fe": "firm"},
-    {"col": 8, "dv": "UncPreCEO", "fe": "firm"},
+    {"col": 5, "dv": "UncAnsNoCEO", "fe": "industry"},
+    {"col": 6, "dv": "UncPreNoCEO", "fe": "industry"},
+    # Firm + Calendar Year FE (cols 7-12)
+    {"col": 7, "dv": "UncAnsMgr", "fe": "firm"},
+    {"col": 8, "dv": "UncPreMgr", "fe": "firm"},
+    {"col": 9, "dv": "UncAnsCEO", "fe": "firm"},
+    {"col": 10, "dv": "UncPreCEO", "fe": "firm"},
+    {"col": 11, "dv": "UncAnsNoCEO", "fe": "firm"},
+    {"col": 12, "dv": "UncPreNoCEO", "fe": "firm"},
 ]
 
 
@@ -173,6 +181,8 @@ MODEL_SPECS = [
 SUMMARY_STATS_VARS = [
     {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
     {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
+    {"col": "UncAnsNoCEO", "label": "Non-CEO Mgr QA Uncertainty"},
+    {"col": "UncPreNoCEO", "label": "Non-CEO Mgr Pres Uncertainty"},
     {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
     {"col": MACRO_IV_RAW, "label": "US EPU (raw)"},
@@ -442,7 +452,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     def row(label: str, cells: List[str]) -> str:
         return f"{label} & " + " & ".join(cells) + r" \\"
 
-    cols = list(range(1, 9))
+    cols = list(range(1, 13))
     results = [by_col.get(c, {}) for c in cols]
 
     lines = [
@@ -451,10 +461,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         rf"\caption{{{SUITE_CAPTION}}}",
         rf"\label{{{SUITE_LABEL}}}",
         r"\small",
-        r"\begin{tabular}{l" + "c" * 8 + r"}",
+        r"\begin{tabular}{l" + "c" * 12 + r"}",
         r"\toprule",
-        r" & \multicolumn{4}{c}{Industry + Cal.~Year FE} & \multicolumn{4}{c}{Firm + Cal.~Year FE} \\",
-        r"\cmidrule(lr){2-5} \cmidrule(lr){6-9}",
+        r" & \multicolumn{6}{c}{Industry + Cal.~Year FE} & \multicolumn{6}{c}{Firm + Cal.~Year FE} \\",
+        r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}",
         r" & "
         + " & ".join([DV_LABELS[MODEL_SPECS[c - 1]["dv"]] for c in cols])
         + r" \\",
@@ -592,13 +602,13 @@ def _write_suite_spec_json(
     # Base controls for the spec: BASE_CONTROLS + both Pres siblings +
     # Lagged_DV. The renderer emits a row for each; per-col masking via
     # col.control_vars hides the cell in columns where the var isn't used.
-    base_plus_dynamic = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO", "Lagged_DV"]
+    base_plus_dynamic = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO", "UncPreNoCEO", "Lagged_DV"]
 
     # Two-row header: top = FE groups, bottom = DV pipeline names.
     header_rows = [
         [
-            {"label": r"Industry + Cal. Year FE", "span": 4},
-            {"label": r"Firm + Cal. Year FE", "span": 4},
+            {"label": r"Industry + Cal. Year FE", "span": 6},
+            {"label": r"Firm + Cal. Year FE", "span": 6},
         ],
         [
             {"label": spec["dv"], "span": 1} for spec in MODEL_SPECS
@@ -632,6 +642,7 @@ def _write_suite_spec_json(
             "labels": {
                 "UncPreMgr": "UncPreMgr",
                 "UncPreCEO": "UncPreCEO",
+                "UncPreNoCEO": "UncPreNoCEO",
                 "Lagged_DV": r"Lagged\_DV",
             },
         },

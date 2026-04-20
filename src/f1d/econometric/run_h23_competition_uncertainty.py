@@ -71,7 +71,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 IV = "z_log_TotalSimilarity"
 
-DVS = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO"]
+DVS = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO", "UncAnsNoCEO", "UncPreNoCEO"]
 
 # ------------------------------------------------------------------
 # Suite metadata for suite_spec.json emission (single sub-table, 2-row header).
@@ -98,8 +98,10 @@ EXTENDED_ONLY_CONTROLS: List[str] = []  # H23 has no extended set
 PRES_CONTROL_MAP = {
     "UncAnsMgr": "UncPreMgr",
     "UncAnsCEO": "UncPreCEO",
+    "UncAnsNoCEO": "UncPreNoCEO",
     "UncPreMgr": None,
     "UncPreCEO": None,
+    "UncPreNoCEO": None,
 }
 
 BASE_CONTROLS = [
@@ -117,16 +119,20 @@ BASE_CONTROLS = [
 MIN_FIRM_YEARS = 5
 
 MODEL_SPECS = [
-    # Industry + Fiscal Year FE (cols 1-4)
+    # Industry + Fiscal Year FE (cols 1-6)
     {"col": 1, "dv": "UncAnsMgr", "fe": "industry"},
     {"col": 2, "dv": "UncAnsCEO", "fe": "industry"},
     {"col": 3, "dv": "UncPreMgr", "fe": "industry"},
     {"col": 4, "dv": "UncPreCEO", "fe": "industry"},
-    # Firm + Fiscal Year FE (cols 5-8)
-    {"col": 5, "dv": "UncAnsMgr", "fe": "firm"},
-    {"col": 6, "dv": "UncAnsCEO", "fe": "firm"},
-    {"col": 7, "dv": "UncPreMgr", "fe": "firm"},
-    {"col": 8, "dv": "UncPreCEO", "fe": "firm"},
+    {"col": 5, "dv": "UncAnsNoCEO", "fe": "industry"},
+    {"col": 6, "dv": "UncPreNoCEO", "fe": "industry"},
+    # Firm + Fiscal Year FE (cols 7-12)
+    {"col": 7, "dv": "UncAnsMgr", "fe": "firm"},
+    {"col": 8, "dv": "UncAnsCEO", "fe": "firm"},
+    {"col": 9, "dv": "UncPreMgr", "fe": "firm"},
+    {"col": 10, "dv": "UncPreCEO", "fe": "firm"},
+    {"col": 11, "dv": "UncAnsNoCEO", "fe": "firm"},
+    {"col": 12, "dv": "UncPreNoCEO", "fe": "firm"},
 ]
 
 DV_LABELS = {
@@ -134,6 +140,8 @@ DV_LABELS = {
     "UncAnsCEO": "CEO QA Uncertainty",
     "UncPreMgr": "Mgr Pres Uncertainty",
     "UncPreCEO": "CEO Pres Uncertainty",
+    "UncAnsNoCEO": "Non-CEO Mgr QA Uncertainty",
+    "UncPreNoCEO": "Non-CEO Mgr Pres Uncertainty",
 }
 
 SUMMARY_STATS_VARS = [
@@ -141,6 +149,8 @@ SUMMARY_STATS_VARS = [
     {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
+    {"col": "UncAnsNoCEO", "label": "Non-CEO Mgr QA Uncertainty"},
+    {"col": "UncPreNoCEO", "label": "Non-CEO Mgr Pres Uncertainty"},
     {"col": "TotalSimilarity", "label": "TNIC3TSIMM (raw)"},
     {"col": "log_TotalSimilarity", "label": "$\\log(\\mathrm{TSIMM})$"},
     {"col": "z_log_TotalSimilarity", "label": "$z(\\log(\\mathrm{TSIMM}))$"},
@@ -392,7 +402,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         if meta:
             results_by_col[meta["col"]] = meta
 
-    n_cols = 8
+    n_cols = 12
 
     def fmt_coef(val, stars):
         return f"{val:.4f}{stars}" if not np.isnan(val) else ""
@@ -431,10 +441,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     # FE group headers
     lines.append(
-        r" & \multicolumn{4}{c}{Industry + Year FE}"
-        r" & \multicolumn{4}{c}{Firm + Year FE} \\"
+        r" & \multicolumn{6}{c}{Industry + Year FE}"
+        r" & \multicolumn{6}{c}{Firm + Year FE} \\"
     )
-    lines.append(r"\cmidrule(lr){2-5} \cmidrule(lr){6-9}")
+    lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
     lines.append(r"\midrule")
 
     # IV coefficient
@@ -636,12 +646,12 @@ def _write_suite_spec_json(
             )
         )
 
-    base_plus_siblings = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO"]
+    base_plus_siblings = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO", "UncPreNoCEO"]
 
     header_rows = [
         [
-            {"label": "Industry FE", "span": 4},
-            {"label": "Firm FE", "span": 4},
+            {"label": "Industry FE", "span": 6},
+            {"label": "Firm FE", "span": 6},
         ],
         [{"label": spec["dv"], "span": 1} for spec in MODEL_SPECS],
     ]
@@ -679,6 +689,7 @@ def _write_suite_spec_json(
             "labels": {
                 "UncPreMgr": "UncPreMgr",
                 "UncPreCEO": "UncPreCEO",
+                "UncPreNoCEO": "UncPreNoCEO",
             },
         },
         model_family="PanelOLS",
