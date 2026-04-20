@@ -97,6 +97,8 @@ CONFIG = {
         "UncAnsCEO",
         "UncPreMgr",
         "UncPreCEO",
+        "UncAnsNoCEO",
+        "UncPreNoCEO",
     ],
     "samples": ["Main", "Finance", "Utility"],
     "iv_vars": ["PRisk_lag", "PRisk_lag2"],  # Test both lag-1 and lag-2
@@ -118,8 +120,10 @@ BASE_CONTROLS = [
 PRES_CONTROL_MAP = {
     "UncAnsMgr": "UncPreMgr",
     "UncAnsCEO": "UncPreCEO",
+    "UncAnsNoCEO": "UncPreNoCEO",
     "UncPreMgr": None,
     "UncPreCEO": None,
+    "UncPreNoCEO": None,
 }
 
 EXTENDED_ONLY_CONTROLS: List[str] = []  # H11-Lag has no extended set
@@ -158,7 +162,7 @@ SUB_TABLE_SPECS = [
 
 # Column ordering within each sub-table: 4 DVs × industry FE, then same × firm FE.
 # Matches the legacy SUITES dict col_files mapping for H11-Lag1/H11-Lag2.
-SUB_TABLE_DV_ORDER = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO"]
+SUB_TABLE_DV_ORDER = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO", "UncAnsNoCEO", "UncPreNoCEO"]
 SUB_TABLE_FE_ORDER = ["industry", "firm"]
 
 
@@ -172,6 +176,8 @@ SUMMARY_STATS_VARS = [
     {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
+    {"col": "UncAnsNoCEO", "label": "Non-CEO Mgr QA Uncertainty"},
+    {"col": "UncPreNoCEO", "label": "Non-CEO Mgr Pres Uncertainty"},
     # Main independent variables (lagged)
     {"col": "PRisk_lag", "label": "Political Risk$_{t-1}$"},
     {"col": "PRisk_lag2", "label": "Political Risk$_{t-2}$"},
@@ -322,7 +328,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
                 return r
         return None
 
-    dv_order = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO"]
+    dv_order = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO", "UncAnsNoCEO", "UncPreNoCEO"]
     col_order = (
         [(dv, "PRisk_lag",  "industry") for dv in dv_order]
         + [(dv, "PRisk_lag",  "firm")     for dv in dv_order]
@@ -359,8 +365,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         cells = [fmt(extractor(r)) if r else "" for r in col_results]
         return label + " & " + " & ".join(cells) + " \\\\"
 
-    col_nums = " & ".join(f"({i})" for i in range(1, 17))
-    sub_labels = " & ".join(["Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres"] * 4)
+    col_nums = " & ".join(f"({i})" for i in range(1, 25))
+    sub_labels = " & ".join(["Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres", "NoCEO QA", "NoCEO Pres"] * 4)
 
     lines = [
         "\\begin{table}[htbp]",
@@ -368,14 +374,14 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "\\caption{H11-Lag: Political Risk (Lagged) and Language Uncertainty}",
         "\\label{tab:h11_prisk_uncertainty_lag}",
         "\\scriptsize",
-        "\\begin{tabular}{l" + "c" * 16 + "}",
+        "\\begin{tabular}{l" + "c" * 24 + "}",
         "\\toprule",
-        (" & \\multicolumn{8}{c}{Political Risk$_{t-1}$}"
-         " & \\multicolumn{8}{c}{Political Risk$_{t-2}$} \\\\"),
-        "\\cmidrule(lr){2-9} \\cmidrule(lr){10-17}",
-        (" & \\multicolumn{4}{c}{Industry FE} & \\multicolumn{4}{c}{Firm FE}"
-         " & \\multicolumn{4}{c}{Industry FE} & \\multicolumn{4}{c}{Firm FE} \\\\"),
-        "\\cmidrule(lr){2-5} \\cmidrule(lr){6-9} \\cmidrule(lr){10-13} \\cmidrule(lr){14-17}",
+        (" & \\multicolumn{12}{c}{Political Risk$_{t-1}$}"
+         " & \\multicolumn{12}{c}{Political Risk$_{t-2}$} \\\\"),
+        "\\cmidrule(lr){2-13} \\cmidrule(lr){14-25}",
+        (" & \\multicolumn{6}{c}{Industry FE} & \\multicolumn{6}{c}{Firm FE}"
+         " & \\multicolumn{6}{c}{Industry FE} & \\multicolumn{6}{c}{Firm FE} \\\\"),
+        "\\cmidrule(lr){2-7} \\cmidrule(lr){8-13} \\cmidrule(lr){14-19} \\cmidrule(lr){20-25}",
         f" & {sub_labels} \\\\",
         f" & {col_nums} \\\\",
         "\\midrule",
@@ -394,12 +400,12 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines.append(" & " + " & ".join(se_cells) + " \\\\")
 
     lines.append("\\midrule")
-    lines.append("Controls & " + " & ".join(["Yes"] * 16) + " \\\\")
-    ind_row = ["Yes"] * 4 + [""] * 4 + ["Yes"] * 4 + [""] * 4
-    firm_row = [""] * 4 + ["Yes"] * 4 + [""] * 4 + ["Yes"] * 4
+    lines.append("Controls & " + " & ".join(["Yes"] * 24) + " \\\\")
+    ind_row = ["Yes"] * 6 + [""] * 6 + ["Yes"] * 6 + [""] * 6
+    firm_row = [""] * 6 + ["Yes"] * 6 + [""] * 6 + ["Yes"] * 6
     lines.append("Industry FE & " + " & ".join(ind_row) + " \\\\")
     lines.append("Firm FE & " + " & ".join(firm_row) + " \\\\")
-    lines.append("Calendar Year FE & " + " & ".join(["Yes"] * 16) + " \\\\")
+    lines.append("Calendar Year FE & " + " & ".join(["Yes"] * 24) + " \\\\")
     lines.append("\\midrule")
 
     lines.append(build_row("Observations", lambda r: r["n_obs"], lambda v: f"{v:,}"))
@@ -502,23 +508,27 @@ def _write_suite_spec_json(
     # Build the two sub_tables. Each renders 8 cols from the flat layout.
     sub_tables: List[Dict[str, Any]] = []
     for i, sub in enumerate(SUB_TABLE_SPECS):
-        base_col = 1 + i * 8
-        col_range = list(range(base_col, base_col + 8))
+        base_col = 1 + i * 12
+        col_range = list(range(base_col, base_col + 12))
         # Two-row header: FE groups on top, pipeline DV names on bottom.
         header_rows = [
             [
-                {"label": "Industry FE", "span": 4},
-                {"label": "Firm FE", "span": 4},
+                {"label": "Industry FE", "span": 6},
+                {"label": "Firm FE", "span": 6},
             ],
             [
                 {"label": "UncAnsMgr", "span": 1},
                 {"label": "UncAnsCEO", "span": 1},
                 {"label": "UncPreMgr", "span": 1},
                 {"label": "UncPreCEO", "span": 1},
+                {"label": "UncAnsNoCEO", "span": 1},
+                {"label": "UncPreNoCEO", "span": 1},
                 {"label": "UncAnsMgr", "span": 1},
                 {"label": "UncAnsCEO", "span": 1},
                 {"label": "UncPreMgr", "span": 1},
                 {"label": "UncPreCEO", "span": 1},
+                {"label": "UncAnsNoCEO", "span": 1},
+                {"label": "UncPreNoCEO", "span": 1},
             ],
         ]
         sub_tables.append(
@@ -537,7 +547,7 @@ def _write_suite_spec_json(
     # Include both Pres siblings in `base` so the renderer emits a row for
     # each. Per-column masking via `col.control_vars` ensures UncPreMgr only
     # shows values in Mgr-QA columns and UncPreCEO only in CEO-QA columns.
-    base_plus_siblings = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO"]
+    base_plus_siblings = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO", "UncPreNoCEO"]
 
     # Emit each sub-table via a separate write_suite_spec call so each gets
     # its own IV row (PRisk_lag for H11-Lag1, PRisk_lag2 for H11-Lag2).
@@ -564,6 +574,7 @@ def _write_suite_spec_json(
                 "labels": {
                     "UncPreMgr": "UncPreMgr",
                     "UncPreCEO": "UncPreCEO",
+                    "UncPreNoCEO": "UncPreNoCEO",
                 },
             },
             model_family="PanelOLS",
@@ -621,6 +632,8 @@ def main(panel_path: str | None = None) -> int:
             "UncAnsCEO",
             "UncPreMgr",
             "UncPreCEO",
+            "UncAnsNoCEO",
+            "UncPreNoCEO",
             # Primary predictors (lagged)
             "PRisk_lag",
             "PRisk_lag2",
