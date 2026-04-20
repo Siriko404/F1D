@@ -77,6 +77,8 @@ from f1d.shared.variables import (
     CEOQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
+    NonCEOManagerQAUncertaintyBuilder,
+    NonCEOManagerPresUncertaintyBuilder,
     # Main Independent Variable — aggregate monthly macro series
     MacroUncertaintyBuilder,
     # Linguistic controls
@@ -118,7 +120,12 @@ def parse_arguments():
 # ==============================================================================
 
 # Base uncertainty DVs — used for lead/lag construction and final column list
-UNCERTAINTY_DVS = ["UncAnsMgr", "UncPreMgr", "UncAnsCEO", "UncPreCEO"]
+# Note: 2026-04-19 — extended with UncAnsNoCEO + UncPreNoCEO for partition-variant
+# DV-side rollout (per BLOCKER B1 fix in plan). Without this extension, the
+# create_next_quarter_lead and create_prior_quarter_lag calls would not produce
+# `_lead`/`_lag` columns for the new NoCEO DVs, causing KeyError when the
+# DV-side runners (run_h24_us_epu, etc.) try `df[f"{dv_var}_lag"]`.
+UNCERTAINTY_DVS = ["UncAnsMgr", "UncPreMgr", "UncAnsCEO", "UncPreCEO", "UncAnsNoCEO", "UncPreNoCEO"]
 
 
 def build_panel(
@@ -146,6 +153,12 @@ def build_panel(
         ),
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
+        ),
+        "nonceo_manager_qa_uncertainty": NonCEOManagerQAUncertaintyBuilder(
+            var_config.get("nonceo_manager_qa_uncertainty", {})
+        ),
+        "nonceo_manager_pres_uncertainty": NonCEOManagerPresUncertaintyBuilder(
+            var_config.get("nonceo_manager_pres_uncertainty", {})
         ),
         # Main Independent Variables — 3 monthly macro series matched by calendar month
         # Single builder emits GPR, US_EPU, GEPU_current + their log variants

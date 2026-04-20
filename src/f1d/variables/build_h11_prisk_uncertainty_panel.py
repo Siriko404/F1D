@@ -43,6 +43,8 @@ from f1d.shared.variables import (
     AnalystQAUncertaintyBuilder,
     ManagerPresUncertaintyBuilder,
     CEOPresUncertaintyBuilder,
+    NonCEOManagerQAUncertaintyBuilder,
+    NonCEOManagerPresUncertaintyBuilder,
     SizeBuilder,
     BookLevBuilder,
     ROABuilder,
@@ -94,6 +96,12 @@ def build_panel(
         ),
         "ceo_pres_uncertainty": CEOPresUncertaintyBuilder(
             var_config.get("ceo_pres_uncertainty", {})
+        ),
+        "nonceo_manager_qa_uncertainty": NonCEOManagerQAUncertaintyBuilder(
+            var_config.get("nonceo_manager_qa_uncertainty", {})
+        ),
+        "nonceo_manager_pres_uncertainty": NonCEOManagerPresUncertaintyBuilder(
+            var_config.get("nonceo_manager_pres_uncertainty", {})
         ),
         # Main Independent Variable (NEW)
         "prisk_q": PRiskQBuilder(var_config.get("prisk_q", {})),
