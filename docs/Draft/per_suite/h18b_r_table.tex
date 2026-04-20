@@ -1,0 +1,68 @@
+\begin{landscape}
+\begin{table}[H]
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.85}
+\centering
+\caption{H18b.r: Logit + Orthogonal Speaker Partition --- SEC Comment Letters}
+\label{tab:h18b_robust}
+\scriptsize
+\begin{tabular}{lcc}
+\toprule
+ & (1) & (2) \\
+ & \multicolumn{2}{c}{CCCL} \\
+\cmidrule(lr){2-3}
+\midrule
+UncAnsCEO & -0.0016 & -0.0016 \\
+ & (0.0007) & (0.0008) \\
+UncAnsNoCEO & -0.0003 & -0.0002 \\
+ & (0.0004) & (0.0005) \\
+UncPreCEO & 0.0006 & 0.0008 \\
+ & (0.0006) & (0.0006) \\
+UncPreNoCEO & \textbf{0.0006}$^{*}$ & \textbf{0.0006}$^{*}$ \\
+ & (0.0004) & (0.0004) \\
+\midrule
+lnAssets & \textbf{-0.0004}$^{*}$ & \textbf{-0.0004}$^{**}$ \\
+ & (0.0002) & (0.0002) \\
+TobinsQ & -0.0000 & -0.0001 \\
+ & (0.0002) & (0.0002) \\
+ROA & -0.0017 & -0.0031 \\
+ & (0.0020) & (0.0031) \\
+Leverage & -0.0010 & -0.0008 \\
+ & (0.0013) & (0.0013) \\
+Capex & 0.0003 & 0.0031 \\
+ & (0.0058) & (0.0059) \\
+CashRatio & -0.0001 & 0.0004 \\
+ & (0.0019) & (0.0022) \\
+DivDummy & -0.0002 & -0.0004 \\
+ & (0.0006) & (0.0006) \\
+sCFO & -0.0007 & -0.0000 \\
+ & (0.0034) & (0.0019) \\
+Lagged\_DV & -0.0016 & -0.0026 \\
+ & (0.0033) & (0.0043) \\
+SalesGrowth &  & -0.0008 \\
+ &  & (0.0010) \\
+RDSales &  & -0.0022 \\
+ &  & (0.0023) \\
+CashFlowAt &  & 0.0019 \\
+ &  & (0.0040) \\
+DailyVola &  & -0.0000 \\
+ &  & (0.0000) \\
+\midrule
+Extended Controls &  & Yes \\
+Industry FE & Yes & Yes \\
+Year FE & Yes & Yes \\
+\midrule
+N & 62,704 & 60,199 \\
+Pseudo~$R^2$ & 0.091 & 0.092 \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{2pt}\scriptsize
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
+ Significant coefficients in \textbf{bold}.
+ Standard errors (in parentheses) clustered at firm level.
+ Main sample (excludes financial and utility firms).
+ $R^2$ includes absorbed fixed effects (not within-$R^2$).
+\end{minipage}
+\end{table}
+\end{landscape}
