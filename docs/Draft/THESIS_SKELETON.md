@@ -104,9 +104,9 @@ All main specifications reported (no cherry-picking). The 2-IV CEO framework fix
 - PanelOLS (linearmodels) with `entity_effects` + `time_effects`; firm-clustered SE; two-way `(firm, cal_yr_qtr)` for macro-IV suites in §IV.1 only.
 - Lagged DV as base control (unified single row per column).
 - FE ladder: 4 steps per DV — Industry+Year, Firm+Year, Industry+YrQtr, Firm+YrQtr.
-- Base controls: `lnAssets`, `TobinsQ`, `ROA`, `DivDummy`, `sCFO`, `Lagged_DV`.
+- Base controls (per actual runner): `Leverage`, `lnAssets`, `TobinsQ`, `ROA`, `Capex`, `DivDummy`, `sCFO`, `Lagged_DV`.
 - Extended controls: `SalesGrowth`, `RDSales`, `CashFlowAt`, `DailyVola`.
-- Bad-control exclusion: `Leverage` NOT in cash regressions (shared-numerator overlap).
+- Leverage retained despite shared denominator (atq) with DV: no numerator overlap, so not bad-controlled. (Earlier v5.1 draft claimed Leverage exclusion; that was a memory-derived error — actual H1 runner BASE_CONTROLS includes Leverage + Capex.)
 - HC main suite: 12 cols (contemp + lead × 4 FE). HFC main suite: 16 cols (unconditional + interaction per DV × 4 FE).
 
 ### §III — Main Empirical Analyses
