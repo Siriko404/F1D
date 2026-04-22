@@ -1,37 +1,23 @@
 % section_4_additional.tex — Additional Analyses
-% Drafted per: docs/Draft/THESIS_SKELETON.md v4 §IV
+% Drafted per: docs/Draft/THESIS_SKELETON.md v5 §IV
+% v5 reorganization (2026-04-22):
+%   §IV.1 Drivers of CEO speech uncertainty (H11 + H24 + H24b) — reverse-direction construct validation
+%   §IV.2 Capital expenditure + competition (H13 + H13.1) — exploratory
+%   §IV.3 Outside-world reaction (1 of {H17, H14c}) — TBD
 % Pending task: T43 (Draft §IV Additional Analyses)
 
 \section{Additional Analyses}
 \label{sec:additional}
 
-\textit{Section placeholder.} Drafting in T43.
-%
-% Outline per skeleton v4 §IV:
-%
-% §4.1 Capital Expenditure and Product-Market Competition (EXPLORATORY, two-tailed):
-%   • H13 (capex level), H13.2 (capex leads 1–4): documented pattern, two-tailed.
-%   • H13.1 (capex × competition moderator): one-tailed explanatory per Grenadier (2002).
-%   • Frame as exploratory, NOT puzzle (per project_capex_exploratory.md).
-%   • Channel via Grenadier 2002 + HP 2016 TSIMM moderator.
-%   • Disclose: HP 2016 sample 1997–2008; we use HP's externally maintained data through 2018.
-%   • Pre-commitment §2.1 statistical-bucket distinction must be invoked here.
-%
-% §4.2 Macro Uncertainty Robustness (reverse direction):
-%   • H24 (US EPU/BBD 2016): 6/8 sig positive.
-%   • H24b (GEPU/Davis 2016): 8/8 sig positive (sign-flip vs no-time-FE spec).
-%   • H25 (GPR/CI 2022): mostly null (1/8 marginal).
-%   • Interpretation: macro uncertainty drives some speech uncertainty; GPR weak.
-%
-% §4.3 Market Microstructure Discriminant:
-%   • H7/H7b/H7c-e (Amihud 2002 ILLIQ): per-window analyses.
-%   • H14/H14b/H14c-e (DSPREAD): per-window analyses.
-%   • Discriminant claim: speech uncertainty does NOT predict short-run microstructure changes.
-%
-% §4.4 Information-Environment Convergent Validity:
-%   • H5 DISP (Wang 2020 price-deflated): convergent with speech uncertainty.
-%   • H11 PRisk (Hassan et al. 2020): cross-IV convergent test.
-%
-% §4.5 Payout (appendix only per v4 reframe):
-%   • Suite remains in pipeline; v4 body excludes per "fits cleanly OR drop" rule.
-%   • Appendix table only; brief footnote in body referencing.
+\subsection{Drivers of CEO Speech Uncertainty}
+\label{sec:additional:drivers}
+
+The main analyses of \S\ref{sec:main} treat CEO speech uncertainty as the regressor. This subsection inverts the direction and asks whether the speech-uncertainty metric itself responds to exogenous uncertainty shocks, a construct-validation test for the main IV. If the metric captures economically meaningful uncertainty content rather than stylistic noise, it should covary positively with independently measured uncertainty at firm, US, and global levels of aggregation.
+
+We estimate three reverse-direction regressions. The firm-level driver is PRisk, the political-risk count of \citeA{hassan2020}, which flags bigrams in a firm's earnings-call transcript that lie within ten words of a risk or uncertainty synonym and overlap a political-topic dictionary; PRisk therefore varies at the firm-quarter level, and the associated regressions cluster standard errors at the firm. The US macro driver is the news-based Economic Policy Uncertainty index of \citeA{baker2016}, matched to each call by calendar month; the global aggregation is the GDP-weighted Global EPU index of \citeA{davis2016}, likewise matched monthly. The macro regressions cluster standard errors two-way at the firm and calendar-quarter levels and absorb calendar-year fixed effects, so identification runs off within-year monthly variation in the driver. All three regressions are tested one-tailed in the theoretically predicted positive direction (exogenous uncertainty shocks raise measured speech uncertainty). Table~\ref{tab:driver_matrix} consolidates the three drivers against the two CEO speech-uncertainty channels (UncAnsCEO, UncPreCEO) under both industry and firm fixed effects.
+
+The firm-level PRisk driver is strongly significant in every cell. Contemporaneous coefficients range from $+0.00013$ to $+0.00030$ per unit PRisk across the four CEO cells (Q\&A and Presentation channels $\times$ industry and firm fixed effects), with $t$-statistics between $9.0$ and $17.0$ and sample sizes of $65{,}394$ to $65{,}760$ firm-quarters. The PRisk-on-speech mapping therefore holds at high statistical precision across both CEO channels.
+
+The macro drivers exhibit a channel-asymmetric pattern. US EPU raises UncPreCEO by $+0.021$ to $+0.024$ per unit log-EPU ($p$-values $0.0008$--$0.0021$, one-tailed); the Q\&A coefficient is smaller, $+0.012$ to $+0.014$, and reaches conventional significance only under firm fixed effects ($p=0.037$; the industry-FE cell is $p=0.052$). Global EPU follows the same pattern at larger magnitudes: UncPreCEO loads at $+0.027$ (industry FE, $p=0.0056$) to $+0.031$ (firm FE, $p=0.0021$); UncAnsCEO loads at $+0.018$ (industry FE, $p=0.051$) and $+0.021$ (firm FE, $p=0.027$).
+
+The channel asymmetry here is inverted relative to the cash regressions of \S\ref{sec:main}: the Q\&A channel dominates in \S\ref{sec:main:hc} and \S\ref{sec:main:hfc}, but the Presentation channel dominates in the macro-driver regressions. The firm-level PRisk measure, which is itself constructed at the firm-call level, loads both channels approximately equally. The pattern is descriptively consistent with prepared remarks carrying broad uncertainty content (macroeconomic, political) and spontaneous Q\&A content responding more tightly to firm-specific conditions; a fuller interpretive treatment is deferred to \S\ref{sec:conclusion}. Comparable results for the NoCEO speech channels, which identify whether uncertainty content in non-CEO speech also responds to the three drivers, are reported in Appendix~\ref{app:additional:drivers}.
