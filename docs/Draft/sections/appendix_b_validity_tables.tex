@@ -1,0 +1,78 @@
+% Appendix B — Detailed Validity Tables (auto-generated via scripts/adhoc/build_appendix_b.py)
+
+\section{Detailed Validity Tables}
+\label{app:additional}
+
+This appendix reports two sets of companion tables for the construct-validation and outside-world reaction analyses of \S\ref{sec:additional}.
+
+\subsection{Driver Regressions --- Non-CEO Speech Channels}
+\label{app:additional:drivers}
+
+Table~\ref{tab:driver_matrix_noceo} replicates the consolidated driver matrix of \S\ref{sec:additional:drivers} using the non-CEO manager speech channels (UncAnsNoCEO, UncPreNoCEO) in place of the CEO-partitioned regressors. A driver that moves both the CEO and non-CEO speech channels in the predicted direction is consistent with aggregate firm-call-level uncertainty content propagating to both speaker pools; a driver that loads one channel and not the other suggests channel-specific responsiveness.
+
+\begin{table}[htbp]
+\centering
+\caption{Driver Matrix --- Non-CEO Speech Channels}
+\label{tab:driver_matrix_noceo}
+\small
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{UncAnsNoCEO} & \multicolumn{2}{c}{UncPreNoCEO} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+ & Industry FE & Firm FE & Industry FE & Firm FE \\
+\midrule
+PRisk (firm-call, \citeA{hassan2020}) & \textbf{0.00014}$^{***}$ & \textbf{0.00012}$^{***}$ & \textbf{0.00014}$^{***}$ & \textbf{0.00011}$^{***}$ \\
+ & (0.00002) & (0.00002) & (0.00003) & (0.00002) \\
+US EPU (log, \citeA{baker2016}) & \textbf{0.0109}$^{*}$ & 0.0098 & 0.0008 & 0.0006 \\
+ & (0.0081) & (0.0084) & (0.0079) & (0.0070) \\
+Global EPU (log, \citeA{davis2016}) & \textbf{0.0178}$^{*}$ & 0.0166 & 0.0078 & 0.0053 \\
+ & (0.0128) & (0.0132) & (0.0123) & (0.0108) \\
+\midrule
+N range & 68,858--73,816 & 68,858--73,816 & 73,835--76,549 & 73,835--76,549 \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{4pt}\scriptsize
+\textit{Notes:} Companion to Table~\ref{tab:driver_matrix}. Each cell reports the coefficient and cluster-robust standard error (in parentheses) on the respective driver variable from a PanelOLS regression of the non-CEO manager speech-uncertainty regressand (UncAnsNoCEO or UncPreNoCEO) on the driver plus the standard control set. PRisk is firm-clustered; US EPU and Global EPU are two-way firm $\times$ calendar-year-quarter clustered. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed positive on all drivers). Significant coefficients in \textbf{bold}.
+\end{minipage}
+\end{table}
+
+\subsection{Outside-World Reaction --- Manager-Pool Coefficients}
+\label{app:additional:reaction}
+
+Table~\ref{tab:h14c_mgr} reports the manager-pool speech-uncertainty coefficients from the same joint four-regressor specification used in \S\ref{sec:additional:reaction}. The H14c suite includes both CEO and non-CEO manager (pooled) speech-uncertainty regressors in every column; the body table reports the CEO coefficients, and this table reports the corresponding manager-pool coefficients. Dependent variable is the 26-day post-call relative bid-ask spread Spread\textsubscript{25D}.
+
+\begin{landscape}
+\begin{table}[H]
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.85}
+\centering
+\caption{H14c Manager-Pool Coefficients --- Companion to \S\ref{sec:additional:reaction}}
+\label{tab:h14c_mgr}
+\scriptsize
+\begin{tabular}{lcccccccccccc}
+\toprule
+ & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) & (10) & (11) & (12) \\
+ & \multicolumn{6}{c}{Spread\textsubscript{25D}$_t$} & \multicolumn{6}{c}{Spread\textsubscript{25D}$_{t+1}$} \\
+\cmidrule(lr){2-7} \cmidrule(lr){8-13}
+\midrule
+UncAnsMgr & -0.3223 & -0.2516 & \textbf{0.3616}$^{*}$ & -0.2453 & -0.2257 & -0.3266 & -0.5609 & -0.6551 & \textbf{0.5780}$^{***}$ & -0.4518 & -0.2466 & -0.3593 \\
+ & (0.2454) & (0.2610) & (0.2202) & (0.2380) & (0.2121) & (0.2294) & (0.2351) & (0.2465) & (0.1819) & (0.1953) & (0.1683) & (0.1824) \\
+UncPreMgr & -0.0123 & 0.1870 & \textbf{0.5508}$^{***}$ & 0.1023 & -0.0070 & 0.0686 & 0.0435 & 0.2640 & \textbf{0.9476}$^{***}$ & \textbf{0.2786}$^{*}$ & 0.0401 & \textbf{0.2893}$^{*}$ \\
+ & (0.1939) & (0.2529) & (0.1452) & (0.2181) & (0.1438) & (0.2112) & (0.2308) & (0.2562) & (0.1605) & (0.2124) & (0.1543) & (0.2060) \\
+\midrule
+Controls & Base & Base & Ext & Ext & Ext & Ext & Base & Base & Ext & Ext & Ext & Ext \\
+Industry FE & Yes &  & Yes &  & Yes &  & Yes &  & Yes &  & Yes &  \\
+Firm FE &  & Yes &  & Yes &  & Yes &  & Yes &  & Yes &  & Yes \\
+\midrule
+N & 63,899 & 63,899 & 44,092 & 44,092 & 44,092 & 44,092 & 63,443 & 63,443 & 44,569 & 44,569 & 44,569 & 44,569 \\
+$R^2$ & 0.778 & 0.585 & 0.721 & 0.563 & 0.730 & 0.557 & 0.774 & 0.567 & 0.699 & 0.514 & 0.723 & 0.530 \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{2pt}\scriptsize
+\textit{Notes:} Companion to body \S\ref{sec:additional:reaction}. Reports the manager-pool (UncAnsMgr, UncPreMgr) coefficients from the same 4-regressor joint specification whose CEO coefficients appear in the body. Dependent variable: 26-day post-call closing-quote relative bid-ask spread Spread\textsubscript{25D}, scaled to basis points. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed positive). Significant coefficients in \textbf{bold}. Firm-clustered standard errors. Main sample 2002--2018.
+\end{minipage}
+\end{table}
+\end{landscape}
+

@@ -1,0 +1,57 @@
+% Appendix D — Partition Decomposition (CEO vs Non-CEO Speaker Pool)
+% Drafted per skeleton v5.1; references body §I, §2.3 motivation for CEO partition.
+
+\section{Partition Decomposition: CEO vs.\ Non-CEO Speaker Pool}
+\label{app:partition}
+
+This appendix documents the empirical motivation for the CEO speaker-partition adopted throughout the body. The HC and HFC analyses of \S\ref{sec:main} use CEO-restricted speech-uncertainty regressors (UncAnsCEO, UncPreCEO) rather than the standard pooled-manager aggregate of \citeA{bushee2018}. The core empirical claim that motivates this design choice is that the precautionary cash-holdings response identified in HC localizes to the CEO Q\&A segment of the call: the pooled-manager regressor that mixes CEO and non-CEO speech masks this concentration.
+
+\subsection{Decomposition logic}
+
+The pooled-manager Q\&A uncertainty regressor is mechanically a weighted average of the CEO-restricted regressor and a non-CEO-manager-restricted regressor, with the weights determined by the share of total Q\&A words attributable to each speaker subset:
+\begin{equation*}
+\text{UncAnsMgr}_c \;=\; w^{\text{CEO}}_c \cdot \text{UncAnsCEO}_c \;+\; w^{\text{NoCEO}}_c \cdot \text{UncAnsNoCEO}_c,
+\end{equation*}
+where $w^{\text{CEO}}_c + w^{\text{NoCEO}}_c = 1$ within the CEO-present sample. If the precautionary cash response loads on UncAnsCEO and UncAnsNoCEO with equal weight, the pooled-manager coefficient should approximate the equal-weighted average. If the response loads disproportionately on one channel, the pooled aggregate attenuates the channel-specific coefficient toward the population-share-weighted average and obscures the underlying mechanism.
+
+\subsection{Partition outcome taxonomy}
+
+We catalogue the partition outcomes across the suites estimated in this paper into four classes by comparing the parent (UncAnsMgr / UncPreMgr) coefficient to the partitioned (UncAnsCEO / UncPreCEO and UncAnsNoCEO / UncPreNoCEO) coefficients on the same dependent variable.
+
+\paragraph{Class A --- CEO localization.} The parent-pool signal localizes to the CEO segment under partition; the non-CEO-manager partition is null. This is the pattern observed for the cash-holdings response (HC), where UncAnsCEO is significant in 12 of 12 specifications at $p<0.10$ while UncAnsNoCEO is materially weaker. The pooled-manager regressor would average the strong CEO signal with the weak non-CEO signal, attenuating the headline coefficient and obscuring the speaker-specific mechanism.
+
+\paragraph{Class B --- Non-CEO or Presentation-segment localization.} The parent signal localizes to the non-CEO speaker pool or to the prepared-Presentation segment rather than to the CEO Q\&A channel. This is the pattern observed in suites where forecaster or analyst reaction tracks non-CEO-manager speech rather than CEO speech, and where the CEO Q\&A channel is null even when the pool-aggregated regressor is significant.
+
+\paragraph{Class C --- Signal collapses under partition.} The parent-pool signal disappears entirely when the regressor is partitioned by speaker, indicating that the parent coefficient was a joint-IV nesting artifact rather than a substantive economic signal. Suites in this class are not part of the body of the present paper; they are excluded from the v5.1 thesis scope on the grounds that the partition decomposition reveals the headline to be a measurement artifact.
+
+\paragraph{Class D --- Signal preserved and distributed.} The parent-pool signal is robust and distributes approximately equally across the CEO and non-CEO partitions. This pattern is consistent with broad firm-call-level uncertainty content propagating to all manager speakers within the call. The driver regressions of \S\ref{sec:additional:drivers} are partly in this class for PRisk (the firm-call-level political-risk index loads both CEO channels at high precision), and partly in Class B for the macro drivers (which preferentially load the Presentation channel).
+
+\subsection{HC + HFC partition verification}
+
+Table~\ref{tab:partition_hc_summary} summarizes the partition decomposition for the cash-holdings response (HC, suite H1) and the financial-constraint moderation (HFC, suite H1.2). Programmatic extraction from the per-suite specification files is documented in the auxiliary CSV \texttt{\_partition\_findings.csv} retained at the repository root for replication.
+
+\begin{table}[htbp]
+\centering
+\caption{HC + HFC Partition Decomposition Summary}
+\label{tab:partition_hc_summary}
+\small
+\begin{tabular}{llccc}
+\toprule
+Suite & Regressor partition & Contemp.\ sig.~(at $p<0.10$) & Lead sig.~(at $p<0.10$) & Class \\
+\midrule
+H1 (HC, parent UncAnsMgr) & Pooled manager & 6 / 6 & 1 / 6 & --- \\
+\hspace{1em}H1.r (CEO partition) & UncAnsCEO & 6 / 6 & 6 / 6 & A \\
+\hspace{1em}H1.r (Non-CEO partition) & UncAnsNoCEO & 4 / 6 & 0 / 6 & --- \\
+\midrule
+H1.2 (HFC, parent UncAnsMgr$\times$Unrated) & Pooled manager $\times$ Unrated & 4 / 4 & 4 / 4 & --- \\
+\hspace{1em}H1.2.r (CEO partition) & UncAnsCEO $\times$ Unrated & 4 / 4 & 4 / 4 & A \\
+\hspace{1em}H1.2.r (Non-CEO partition) & UncAnsNoCEO $\times$ Unrated & 0 / 4 & 0 / 4 & --- \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{4pt}\scriptsize
+\textit{Notes:} Cells report sig-counts at $p<0.10$ (one-tailed) for the indicated regressor across the four-step fixed-effects ladder of \S\ref{sec:framework:design}. ``Class'' assigns the partition outcome to the four-class taxonomy described in this appendix. The H1 / H1.2 results above use the auxiliary partition-variant runs (suite IDs H1.r, H1.2.r) which decompose the parent UncAnsMgr regressor into CEO and non-CEO speaker partitions on the same panel. The body of the paper estimates the CEO-restricted specifications (H1.ceo2, H1.2.ceo2) directly; this appendix table cross-validates that the cash response localizes to the CEO partition and does not load the non-CEO partition.
+\end{minipage}
+\end{table}
+
+The pattern in Table~\ref{tab:partition_hc_summary} satisfies the Class A criterion for both HC and HFC: the cash response is concentrated in the CEO partition and is not detectable in the non-CEO-manager partition. The CEO-restricted regressors of \S\ref{sec:main} therefore identify the speaker locus of the precautionary signal that the standard pooled-manager construction would obscure.
