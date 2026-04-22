@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H14c BGTLevel_Spread (12-col 2-DV)
+STAGE 4: Test H14c 25-Day Post-Call Spread Level (12-col 2-DV)
 ================================================================================
 ID: econometric/run_h14c_spread_bgt_level
-Description: Run H14 Bid-Ask Spread hypothesis test using 12 model specifications
-             with 4 simultaneous uncertainty IVs and a contemp + t+1 lead DV.
+Description: Run H14c 25-day post-call closing-quote bid-ask spread hypothesis
+             test using 12 model specifications with 4 simultaneous uncertainty
+             IVs and a contemp + t+1 lead DV.
 
 Model Specifications (12 columns):
-    Cols 1-6:  DV = BGTLevel_Spread (contemporaneous)
-    Cols 7-12: DV = BGTLevel_Spread_lead1 (next-quarter lead)
+    Cols 1-6:  DV = Spread_{25D}      (contemporaneous; column = BGTLevel_Spread)
+    Cols 7-12: DV = Spread_{25D,t+1}  (next-quarter lead;  column = BGTLevel_Spread_lead1)
 
-DV: BGTLevel_Spread = mean(RelSpread[+1,+3]) - mean(RelSpread[-3,-1])
-    where RelSpread_d = 2*(ASK_d - BID_d)/(ASK_d + BID_d)  [closing quotes]
-    Following Lee (2016, The Accounting Review).
+DV: Spread_{25D} = mean(RelSpread[0,+25]) where the window includes the call day
+    plus the 25 following trading days (26 daily observations total, sample-size-
+    weighted by day0 + post counts).
+    Daily relative spread: RelSpread_d = 2*(ASK_d - BID_d)/(ASK_d + BID_d)
+    from CRSP closing quotes; pooled-winsorized at 1%/99%; rescaled by 1e4 (bps).
 
 Key Independent Variables (4):
     UncAnsCEO, UncPreCEO, UncAnsMgr, UncPreMgr
@@ -69,7 +72,11 @@ warnings.filterwarnings(
 
 # ----------------------------------------------------------------------
 # H14c window construction:
-# BGT (2018) 25-day post-call window applied to Lee (2016) closing-quote bid-ask spread formula. Window = [0, +25] trading days, day 0 INCLUDED per BGT verbatim. Hybrid construction (window from BGT, formula from Lee).
+# 25-day post-call window applied to standard closing-quote bid-ask spread
+# formula. Window = [0, +25] trading days = call day INCLUDED + 25 following
+# trading days = 26 daily observations per call. Variable kept as
+# BGTLevel_Spread in the panel for backward compatibility with prior outputs;
+# user-facing strings (titles, captions, labels) renamed to Spread_{25D}.
 # ----------------------------------------------------------------------
 
 # ==============================================================================
@@ -109,8 +116,8 @@ EXTENDED_ONLY_CONTROLS = [c for c in EXTENDED_CONTROLS if c not in BASE_CONTROLS
 # ------------------------------------------------------------------
 SUITE_ID = "H14c"
 SUITE_DIR_NAME = "h14c_spread_bgt_level"
-SUITE_TITLE = 'H14c: Speech Uncertainty and BGT-Window 25-Day Bid-Ask Spread Level (, day 0 included)'
-SUITE_CAPTION = r'H14c: Speech Uncertainty and BGT-Window 25-Day Bid-Ask Spread Level ($[0,+25]$, day 0 included)'
+SUITE_TITLE = 'H14c: Speech Uncertainty and 25-Day Post-Call Bid-Ask Spread Level (call day plus 25 trading days)'
+SUITE_CAPTION = r'H14c: Speech Uncertainty and 25-Day Post-Call Bid-Ask Spread Level ($[0,+25]$, the call day plus 25 trading days)'
 SUITE_LABEL = "tab:h14c"
 SAMPLE_LABEL = "Main sample (excludes financial and utility firms)."
 HYP_DIR = "positive"
@@ -142,8 +149,8 @@ VARIABLE_LABELS = {
 }
 
 SUMMARY_STATS_VARS = [
-    {"col": "BGTLevel_Spread", "label": r"$\Delta$Spread$_t$"},
-    {"col": "BGTLevel_Spread_lead1", "label": r"$\Delta$Spread$_{t+1}$"},
+    {"col": "BGTLevel_Spread", "label": r"Spread$_{25D,t}$"},
+    {"col": "BGTLevel_Spread_lead1", "label": r"Spread$_{25D,t+1}$"},
     {"col": "PreCallSpread", "label": "Pre-Call Spread"},
     {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
@@ -365,15 +372,15 @@ def _save_latex_table(all_results, out_dir):
 
     lines = [
         r"\begin{table}[htbp]", r"\centering",
-        r"\caption{H14c: Speech Uncertainty and BGT-Window 25-Day Closing-Quote Bid-Ask Spread LEVEL (contemp + $t+1$ lead)}",
+        r"\caption{H14c: Speech Uncertainty and 25-Day Post-Call Closing-Quote Bid-Ask Spread LEVEL (call day plus 25 trading days; contemp + $t+1$ lead)}",
         r"\label{tab:h14c_bgt_level_spread}", r"\scriptsize",
         r"\begin{tabular}{l" + "c" * n_cols + "}", r"\toprule",
     ]
     col_nums = " & ".join(f"({i})" for i in range(1, n_cols + 1))
     lines.append(f" & {col_nums} " + r"\\")
     lines.append(
-        r" & \multicolumn{6}{c}{$\Delta$Spread$_t$}"
-        r" & \multicolumn{6}{c}{$\Delta$Spread$_{t+1}$} \\"
+        r" & \multicolumn{6}{c}{Spread$_{25D,t}$}"
+        r" & \multicolumn{6}{c}{Spread$_{25D,t+1}$} \\"
     )
     lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
     lines.append(r"\midrule")
@@ -422,8 +429,8 @@ def _save_latex_table(all_results, out_dir):
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed; H14: $\beta > 0$). ",
         r"Standard errors (in parentheses) firm-level clustered. ",
         r"Main sample (excludes financial and utility firms). ",
-        r"BGTLevel_Spread$_t$ = BGT (2018) 25-day window applied to Lee (2016) closing-quote spread formula. ",
-        r"BGTLevel_Spread$_{t+1}$ = next-quarter call's BGTLevel_Spread (calendar quarter, strict consecutive). ",
+        r"Spread$_{25D,t}$ = mean daily closing-quote relative bid-ask spread over the 25-day post-call window (call day plus 25 following trading days). Daily formula: $2(\text{ASK}-\text{BID})/(\text{ASK}+\text{BID})$ from CRSP closing quotes. ",
+        r"Spread$_{25D,t+1}$ = next-quarter call's Spread$_{25D}$ (calendar quarter, strict consecutive). ",
         r"Lagged\_DV control = true t-1 prior-quarter lag. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}", r"\end{table}",
@@ -474,8 +481,8 @@ def _write_suite_spec_json(
     )
     header_rows = [
         [
-            {"label": r"BGTLevel\_Spread", "span": 6},
-            {"label": r"BGTLevel\_Spread\_lead1", "span": 6},
+            {"label": r"Spread$_{25D,t}$", "span": 6},
+            {"label": r"Spread$_{25D,t+1}$", "span": 6},
         ]
     ]
     paths = write_suite_spec(
@@ -505,8 +512,8 @@ def _write_suite_spec_json(
         },
         render_hints={
             "scaling_note": (
-                r"BGTLevel\_Spread values rescaled by $10^4$ for readability; "
-                r"multiply coefficients by $10^{-4}$ to recover raw units."
+                r"Spread$_{25D}$ values rescaled by $10^4$ (basis points) for readability; "
+                r"multiply coefficients by $10^{-4}$ to recover raw fraction units."
             ),
         },
         model_family="PanelOLS",
