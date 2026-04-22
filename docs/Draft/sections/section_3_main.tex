@@ -1,6 +1,9 @@
-% section_3_main.tex — Main Empirical Analyses (HC, HL, HFC)
-% Drafted per: docs/Draft/THESIS_SKELETON.md v4 §III
+% section_3_main.tex — Main Empirical Analyses (HC, HFC)
+% Drafted per: docs/Draft/THESIS_SKELETON.md v5 §III
 % Pending task: T42 (Draft §III Main Empirical Analyses)
+% v5 changes from v4 prose: HL dropped (Class C joint-IV artifact, see project_partition_findings_synthesis.md);
+% IV framework switched from UncAnsMgr (single, pool) to 2-IV CEO (UncAnsCEO + UncPreCEO);
+% reciprocal-control sentence removed (no leverage suite in §III).
 
 \section{Main Empirical Analyses}
 \label{sec:main}
@@ -10,6 +13,6 @@
 
 We construct a quarterly panel of 112{,}968 earnings-call transcripts covering 2{,}429 unique firms over fiscal years 2002--2018, sourced from S\&P Capital~IQ. Call-level speech metrics are merged with Compustat quarterly fundamentals and CRSP daily security data. Following \citeA{bates2009}, we exclude financial firms (SIC 6000--6999) and regulated utilities (SIC 4900--4999); we refer to this filtered universe as the Main sample throughout.
 
-The dependent variables are CashRatio (\texttt{cheq/atq}, the linear cash-to-assets form adopted by \citeauthor{bates2009}, \citeyear{bates2009}), Leverage (\texttt{(dlttq+dlcq)/atq}), and DebtToCapital. The primary speech-uncertainty regressor is UncAnsMgr, a call-level measure of manager Q\&A uncertainty constructed from the \citeA{dzielinski2021} uncertainty wordlist applied to the all-manager pooled aggregation in the spirit of \citeA{bushee2018}; full construction details appear in \S\ref{sec:framework}. Base controls are lnAssets, TobinsQ, ROA, Capex, DivDummy, sCFO, and a unit-by-DV Lagged~DV. Extended controls add SalesGrowth, RDSales, CashFlowAt, and DailyVola. The reciprocal control rule applies: leverage enters as a control in cash regressions, and cash enters as a control in leverage regressions.
+The dependent variable is CashRatio (\texttt{cheq/atq}, the linear cash-to-assets form adopted by \citeauthor{bates2009}, \citeyear{bates2009}). Speech uncertainty is measured by two CEO-specific call-level regressors: UncAnsCEO (CEO Q\&A uncertainty) and UncPreCEO (CEO presentation uncertainty). Both are constructed by applying the \citeA{dzielinski2021} uncertainty wordlist at the speaker-utterance level and aggregating within the CEO speaker pool; full construction details, including the rationale for the CEO partition, appear in \S\ref{sec:framework}. Base controls are Leverage, lnAssets, TobinsQ, ROA, Capex, DivDummy, sCFO, and a unit-by-DV Lagged~DV. Extended controls add SalesGrowth, RDSales, CashFlowAt, and DailyVola.
 
-We estimate PanelOLS specifications across a four-step fixed-effects ladder (Industry $+$ Calendar Year, Firm $+$ Calendar Year, Industry $+$ Calendar Year-Quarter, Firm $+$ Calendar Year-Quarter), with standard errors clustered at the firm level. Each main suite reports twelve columns: contemporaneous and one-quarter-lead dependent variables crossed with the FE ladder. Inference for the IV in this section follows the one-tailed convention pre-committed in \S\ref{sec:framework}.
+We estimate PanelOLS specifications across a four-step fixed-effects ladder (Industry $+$ Calendar Year, Firm $+$ Calendar Year, Industry $+$ Calendar Year-Quarter, Firm $+$ Calendar Year-Quarter), with standard errors clustered at the firm level. Each suite reports both the contemporaneous and the one-quarter-lead dependent variable across this FE ladder; per-suite column counts and the interaction structure (where applicable) are stated in the corresponding tables. Inference for both speech-uncertainty regressors in this section follows the one-tailed positive convention pre-committed in \S\ref{sec:framework:precommit}.
