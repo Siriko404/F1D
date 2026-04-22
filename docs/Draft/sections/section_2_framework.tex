@@ -1,38 +1,22 @@
 % section_2_framework.tex — Conceptual Framework + Empirical Strategy
-% Drafted per: docs/Draft/THESIS_SKELETON.md v4 §II
+% Drafted per: docs/Draft/THESIS_SKELETON.md v5.1 §II (post-capex-drop 2026-04-22):
+%   §2.1 Pre-commitment statement
+%   §2.2 Conceptual framework (uncertainty and corporate decisions)
+%   §2.3 Speech uncertainty measurement (DWZ + BGT + CEO partition + CEO-as-face)
+%   §2.4 Precautionary motive + financing conservatism (HC + HFC anchor)
+%   §2.5 Empirical design
 % Pending task: T44 (Draft §II Framework + Empirical Strategy)
 
 \section{Conceptual Framework and Empirical Strategy}
 \label{sec:framework}
 
-\textit{Section placeholder.} Drafting in T44.
-%
-% Outline per skeleton v4 §II:
-%
-% §2.1 Pre-commitment statement — three statistical buckets:
-%   • §III hypothesis tests: ONE-tailed pre-specified (sign per theory).
-%   • §IV.A capex H13/H13.2: TWO-tailed exploratory (no theoretical prediction).
-%   • §IV.A capex H13.1: ONE-tailed explanatory (Grenadier 2002 sign).
-%
-% PLACEHOLDER LABEL (referenced from section_3_main.tex line 18):
-% When drafting §2.1, emit: \subsection{Pre-commitment Statement}\label{sec:framework:precommit}
-%
-% §2.2 Precautionary motive (Opler et al. 1999 + Bates et al. 2009):
-%   Theory anchor (OPSW) + method anchor (BKS DV form cheq/atq) — Pattern G.
-%
-% §2.3 Financial conservatism cluster (Minton \& Wruck 2001):
-%   Title-source paper. Disclose theoretical-mechanism split (slack/pecking-order vs precautionary).
-%
-% §2.4 Constraint moderator (Faulkender \& Petersen 2006):
-%   Binary rated/unrated → we extend to three-way (IG/BelowIG/Unrated). Disclose extension.
-%   Use FP exact wording: "credit constrained" (NOT "capital constrained").
-%
-% §2.5 Competitive real options (Grenadier 2002):
-%   Method anchor: Hoberg \& Phillips 2016 TSIMM (TNIC3 web-data series, our 2002–2018 sample).
-%
-% §2.6 Speech construct (DWZ 2021 + BGT 2018 co-foundational):
-%   DWZ wordlist (LM 2011 uncertainty 297 words) + BGT pooling (per Ian Gow's published code).
-%
-% §2.7 Validity (paragraph + targeted appendix):
-%   Convergent: PRisk (Hassan et al.\ 2020), US EPU (BBD 2016), GEPU (Davis 2016), DISP (Wang 2020).
-%   Discriminant: GPR (Caldara \& Iacoviello 2022), ILLIQ (Amihud 2002).
+\subsection{Pre-Commitment Statement}
+\label{sec:framework:precommit}
+
+This section front-loads the statistical conventions used throughout the paper so that the empirical results in \S\ref{sec:main} and \S\ref{sec:additional} can be read with the inference rules held constant.
+
+Two formal hypotheses are stated in \S\ref{sec:main}: HC (Cash---precautionary liquidity buffer, \S\ref{sec:main:hc}) and HFC (Financial Constraint moderation of HC, \S\ref{sec:main:hfc}). Both are tested one-tailed in the theoretically predicted positive direction on both CEO-specific speech-uncertainty regressors, UncAnsCEO and UncPreCEO. The one-tailed convention is justified by the sign restriction imposed by the precautionary motive of \citeA{opler1999} and by the dominant theoretical direction in the related precautionary-motive and financing-conservatism literature. One-tailed inference applies symmetrically to both regressors; the Q\&A and Presentation segments of CEO speech are both hypothesized to carry precautionary uncertainty content, and any channel-specific asymmetry observed empirically is reported descriptively rather than asserted ex ante.
+
+Two additional analyses in \S\ref{sec:additional} are tested under the same one-tailed positive convention but are not formal hypotheses. The driver regressions of \S\ref{sec:additional:drivers} invert the direction of the main-suite specifications to ask whether the CEO speech-uncertainty metric itself responds to independently measured exogenous uncertainty shocks; we report them as construct-validation evidence for the main regressor. The outside-world reaction regressions of \S\ref{sec:additional:reaction} ask whether post-call bid-ask spreads widen with CEO speech uncertainty, consistent with the canonical information-asymmetry prediction that liquidity providers widen quoted spreads to compensate for perceived informed-trading risk. Neither set of regressions is used as an identification strategy for HC or HFC.
+
+All specifications reported in the paper body appear in their corresponding tables in their entirety; no column is dropped between estimation and reporting. The four-step fixed-effects ladder applied within each suite (\S\ref{sec:framework:design}) is a within-regressor robustness check, not an independent replication---the twelve columns of the HC table, for example, are not twelve independent tests of HC. Multiple-testing adjustment, consistent with the conventions above, is handled at the per-hypothesis rather than per-cell level.
