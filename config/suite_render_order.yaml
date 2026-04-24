@@ -12,12 +12,15 @@ suites:
   # H1 family
   - H1
   - H1.r
+  - H1.ceo2
+  - H1.ceo2.decomp
   - H1.1
   - H1.1.r
   - H1.1b
   - H1.1b.r
   - H1.2
   - H1.2.r
+  - H1.2.ceo2
 
   # H4 family (both sub-tables emitted by run_h4_leverage.py)
   - H4a
