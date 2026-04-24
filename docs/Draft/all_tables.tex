@@ -711,6 +711,73 @@ Adj.~$R^2$ & 0.819 & 0.425 & 0.821 & 0.425 & 0.641 & 0.071 & 0.643 & 0.070 \\
 \clearpage
 \begin{table}[htbp]
 \centering
+\caption{H1.2 CEO 2-IV Decomp: Financial Constraint--Moderated DWZ CEO Speech Decomposition and Cash Holdings}
+\label{tab:h1_2_ceo2_decomp}
+\scriptsize
+\begin{tabular}{lcccccccc}
+\toprule
+ & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\
+ & \multicolumn{4}{c}{CashRatio} & \multicolumn{4}{c}{CashRatio\_lead} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+\midrule
+ClarityCEO\_QtrExp\_c & \textbf{-0.0114}$^{***}$ & \textbf{-0.0131}$^{***}$ & \textbf{-0.0104}$^{***}$ & \textbf{-0.0127}$^{***}$ & -0.0038 & \textbf{-0.0188}$^{**}$ & -0.0019 & \textbf{-0.0189}$^{**}$ \\
+ & (0.0035) & (0.0052) & (0.0034) & (0.0052) & (0.0054) & (0.0103) & (0.0054) & (0.0103) \\
+UncResCEO\_QtrExp\_c & \textbf{0.0021}$^{*}$ & \textbf{0.0024}$^{**}$ & \textbf{0.0021}$^{*}$ & \textbf{0.0022}$^{**}$ & \textbf{0.0044}$^{**}$ & \textbf{0.0036}$^{**}$ & \textbf{0.0044}$^{**}$ & \textbf{0.0036}$^{**}$ \\
+ & (0.0013) & (0.0013) & (0.0013) & (0.0013) & (0.0020) & (0.0017) & (0.0020) & (0.0017) \\
+Unrated & 0.0021 & -0.0044 & -0.0012 & -0.0044 & \textbf{0.0051}$^{**}$ & -0.0077 & -0.0020 & -0.0077 \\
+ & (0.0014) & (0.0043) & (0.0018) & (0.0043) & (0.0024) & (0.0067) & (0.0032) & (0.0067) \\
+ClarityCEO\_c $\times$ Unrated & -0.0093 & -0.0103 & -0.0094 & -0.0101 & -0.0079 & \textbf{-0.0286}$^{*}$ & -0.0083 & \textbf{-0.0289}$^{*}$ \\
+ & (0.0061) & (0.0098) & (0.0060) & (0.0099) & (0.0099) & (0.0168) & (0.0098) & (0.0168) \\
+UncResCEO\_c $\times$ Unrated & 0.0027 & 0.0020 & 0.0027 & 0.0019 & \textbf{0.0057}$^{*}$ & 0.0041 & \textbf{0.0057}$^{*}$ & 0.0040 \\
+ & (0.0025) & (0.0024) & (0.0025) & (0.0024) & (0.0039) & (0.0033) & (0.0039) & (0.0033) \\
+\midrule
+Leverage &  &  &  &  &  &  &  &  \\
+ &  &  &  &  &  &  &  &  \\
+lnAssets &  &  &  &  &  &  &  &  \\
+ &  &  &  &  &  &  &  &  \\
+TobinsQ &  &  &  &  &  &  &  &  \\
+ &  &  &  &  &  &  &  &  \\
+ROA &  &  &  &  &  &  &  &  \\
+ &  &  &  &  &  &  &  &  \\
+Capex &  &  &  &  &  &  &  &  \\
+ &  &  &  &  &  &  &  &  \\
+DivDummy &  &  &  &  &  &  &  &  \\
+ &  &  &  &  &  &  &  &  \\
+sCFO &  &  &  &  &  &  &  &  \\
+ &  &  &  &  &  &  &  &  \\
+SalesGrowth &  &  &  &  &  &  &  &  \\
+ &  &  &  &  &  &  &  &  \\
+RDSales &  &  &  &  &  &  &  &  \\
+ &  &  &  &  &  &  &  &  \\
+CashFlowAt &  &  &  &  &  &  &  &  \\
+ &  &  &  &  &  &  &  &  \\
+DailyVola &  &  &  &  &  &  &  &  \\
+ &  &  &  &  &  &  &  &  \\
+Lagged\_DV &  &  &  &  &  &  &  &  \\
+ &  &  &  &  &  &  &  &  \\
+\midrule
+Industry FE & Yes &  & Yes &  & Yes &  & Yes &  \\
+Firm FE &  & Yes &  & Yes &  & Yes &  & Yes \\
+Year FE & Yes & Yes &  &  & Yes & Yes &  &  \\
+Year-Quarter FE &  &  & Yes & Yes &  &  & Yes & Yes \\
+\midrule
+N & 21,824 & 21,824 & 21,824 & 21,824 & 21,371 & 21,371 & 21,371 & 21,371 \\
+$R^2$ & 0.841 & 0.453 & 0.841 & 0.453 & 0.679 & 0.095 & 0.680 & 0.095 \\
+Adj.~$R^2$ & 0.841 & 0.423 & 0.841 & 0.423 & 0.679 & 0.046 & 0.679 & 0.045 \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{2pt}\scriptsize
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
+ Significant coefficients in \textbf{bold}.
+ Standard errors (in parentheses) clustered at firm level.
+ Main sample (excludes financial and utility firms). Fiscal years 2002-2016. DWZ quarterly-expanding decomposition: Clarity = -CEO FE; UncRes = call-level residual.
+ $R^2$ includes absorbed fixed effects (not within-$R^2$).
+\end{minipage}
+\end{table}
+\clearpage
+\begin{table}[htbp]
+\centering
 \caption{H4a: Speech Uncertainty and Book Leverage}
 \label{tab:h4a}
 \scriptsize

@@ -62,6 +62,7 @@ panel_dir_alias:
   H1.1b.r: h1_cash_holdings  # CEO partition channel binary — reuses H1 panel
   H1.2: h1_cash_holdings
   H1.2.r: h1_cash_holdings   # CEO partition channel constraint — reuses H1 panel
+  H1.2.ceo2.decomp: h1_cash_holdings   # DWZ decomp HFC variant — reuses H1 panel
   H1.r: h1_cash_holdings   # robustness suite reuses H1 panel (with UncPreNoCEO added)
   H7b: h7_illiquidity
   H7c: h7_illiquidity
