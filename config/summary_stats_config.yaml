@@ -72,6 +72,7 @@ panel_dir_alias:
   H13.1: h13_capex
   H14b: h14_bidask_spread
   H14c: h14_bidask_spread
+  H14c.ceo2.decomp: h14_bidask_spread  # DWZ decomp reaction — reuses H14 panel
   H14d: h14_bidask_spread
   H14e: h14_bidask_spread
   H18b: h18_cccl_received

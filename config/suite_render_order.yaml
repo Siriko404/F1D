@@ -73,6 +73,7 @@ suites:
   - H14b.r
   - H14c
   - H14c.r
+  - H14c.ceo2.decomp
   - H14d
   - H14d.r
   - H14e
