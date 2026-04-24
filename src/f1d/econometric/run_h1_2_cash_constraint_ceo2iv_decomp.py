@@ -11,22 +11,22 @@ Description: DWZ-decomposition variant of H1.2.ceo2. Replaces the main
              Both decomp components computed via strict no-look-ahead
              quarterly-expanding fit of DWZ Eq.4 — see
              run_h0_3_ceo_clarity_expanding.py. Both decomp IVs mean-centered
-             on Main sample. Two Unrated interaction terms estimated:
-             ClarityCEO × Unrated and UncResCEO × Unrated. Moderator is BINARY
-             Unrated vs Rated (FP 2006 verbatim spec) — BelowIG level dummy
-             AND BelowIG interactions DROPPED entirely. Reference group =
+             on Main sample. ONE Unrated interaction term estimated: UncResCEO ×
+             Unrated (state channel only). ClarityCEO × Unrated DROPPED — trait
+             × constraint has theoretically ambiguous direction (constraint
+             priority pushes cash UP, clarity perception pushes cash DOWN —
+             competing forces with no clean monotone prediction). Moderator is
+             BINARY Unrated vs Rated (FP 2006 verbatim spec) — BelowIG level
+             dummy AND BelowIG interactions DROPPED entirely. Reference group =
              Rated firms (IG ∪ BelowIG).
 
-Tail directions (asymmetric per design lock 2026-04-23):
+Tail directions:
     Main ClarityCEO_QtrExp_c: one-tail NEG
         (high persistent clarity → less precautionary cash; HC at trait level)
     Main UncResCEO_QtrExp_c: one-tail POS
         (positive within-quarter uncertainty surprise → more cash; HC at state level)
     Interaction UncResCEO × Unrated: one-tail POS
-        (HFC amplification — constrained firms more reactive to state uncertainty)
-    Interaction ClarityCEO × Unrated: TWO-TAIL
-        (no theory prior: trait-level moderation by constraint status has no
-         clean monotone mechanism — null does not read as theory failure)
+        (HFC amplification at state level — clean precautionary mechanism)
     Unrated level dummy: two-tailed (no directional prior on level shift).
 
 Channel: CH1 — Precautionary liquidity under external-finance frictions.
@@ -37,7 +37,7 @@ DWZ source: Demerjian, Wang & Zarowin (2021), Eq.4 + Eq.5.
 Model Specification:
     CashRatio = b1*ClarityCEO_c + b2*UncResCEO_c
               + b3*Unrated
-              + b4*(ClarityCEO_c x Unrated) + b5*(UncResCEO_c x Unrated)
+              + b4*(UncResCEO_c x Unrated)
               + controls + IndustryFE + CalendarYearFE + e
 
 16 Models (8 displayed: cols 5-8 + 13-16 = interaction specs only):
@@ -115,20 +115,22 @@ CONTROLS = [
 # BelowIG dropped entirely: no level dummy, no interactions. Reference group =
 # Rated firms (IG ∪ BelowIG) — the FP 2006 binary specification.
 MOD_UNRATED = "Unrated"
-# Per-IV interaction term names (Unrated only; binary moderator)
-INT_UNRATED_CLARITY = "ClarityCEO_QtrExp_c_x_Unrated"
+# HFC interaction test: state channel ONLY.
+# Why: only UncRes × Unrated has a clean monotone HFC prediction (constrained firms
+#      amplify their precautionary response to state-level uncertainty surprises).
+#      Clarity × Unrated would test a trait × constraint interaction whose direction
+#      is theoretically ambiguous (constraint pushes cash UP via HFC priority;
+#      clarity pushes cash DOWN via reduced uncertainty perception — competing forces
+#      with no clean monotone prediction). Dropped to avoid reporting an
+#      uninterpretable cell.
 INT_UNRATED_UNCRES = "UncResCEO_QtrExp_c_x_Unrated"
-INT_UNRATED_TERMS = [INT_UNRATED_CLARITY, INT_UNRATED_UNCRES]
+INT_UNRATED_TERMS = [INT_UNRATED_UNCRES]
 
-# Per-IV tail directions (asymmetric; locked 2026-04-23).
-# Why: state-channel interaction (UncRes×Unrated) has clean HFC amplification
-#      mechanism; trait-channel interaction (Clarity×Unrated) does not. Two-tail
-#      preserves null-as-non-failure for the trait interaction.
+# Per-IV tail directions (state-channel HFC test only).
 IV_TAIL_DIRECTION: Dict[str, str] = {
     "ClarityCEO_QtrExp_c": "negative",
     "UncResCEO_QtrExp_c": "positive",
-    INT_UNRATED_CLARITY: "none",        # two-tailed
-    INT_UNRATED_UNCRES: "positive",
+    INT_UNRATED_UNCRES: "positive",    # HFC amplification of state-level POS main
 }
 
 # Investment-grade rating codes (BBB- and above)
@@ -431,9 +433,9 @@ def prepare_regression_data(
     df = panel.copy()
     df = df.replace([np.inf, -np.inf], np.nan)
 
-    # Create Unrated interaction terms only for interaction specs
+    # State-channel HFC interaction only (UncRes × Unrated).
+    # Trait-channel interaction (Clarity × Unrated) intentionally NOT constructed.
     if use_interactions:
-        df[INT_UNRATED_CLARITY] = df["ClarityCEO_QtrExp_c"] * df[MOD_UNRATED]
         df[INT_UNRATED_UNCRES] = df["UncResCEO_QtrExp_c"] * df[MOD_UNRATED]
 
     # Drop NaN in DV
@@ -572,13 +574,11 @@ def run_regression(
     beta_unr, se_unr, p_two_unr = _extract_coef(model, MOD_UNRATED)
 
     if use_interactions:
-        beta_int_clarity, se_int_clarity, p_two_int_clarity = _extract_coef(model, INT_UNRATED_CLARITY)
         beta_int_uncres, se_int_uncres, p_two_int_uncres = _extract_coef(model, INT_UNRATED_UNCRES)
     else:
-        beta_int_clarity, se_int_clarity, p_two_int_clarity = np.nan, np.nan, np.nan
         beta_int_uncres, se_int_uncres, p_two_int_uncres = np.nan, np.nan, np.nan
 
-    # Per-IV directional p (asymmetric per IV_TAIL_DIRECTION)
+    # Per-IV directional p
     def _p_by_dir(b: float, p2: float, direction: str) -> float:
         if np.isnan(p2) or np.isnan(b):
             return float("nan")
@@ -590,7 +590,6 @@ def run_regression(
 
     p_clarity = _p_by_dir(beta_clarity, p_two_clarity, IV_TAIL_DIRECTION["ClarityCEO_QtrExp_c"])
     p_uncres = _p_by_dir(beta_uncres, p_two_uncres, IV_TAIL_DIRECTION["UncResCEO_QtrExp_c"])
-    p_int_clarity = _p_by_dir(beta_int_clarity, p_two_int_clarity, IV_TAIL_DIRECTION[INT_UNRATED_CLARITY])
     p_int_uncres = _p_by_dir(beta_int_uncres, p_two_int_uncres, IV_TAIL_DIRECTION[INT_UNRATED_UNCRES])
 
     print(f"  [OK] {elapsed:.1f}s | R2={model.rsquared:.4f}  Adj R2={1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f}")
@@ -598,8 +597,6 @@ def run_regression(
     print(f"  UncResCEO_QtrExp_c:  b={beta_uncres:.4f} p(pos-tail)={p_uncres:.4f} {_sig_stars_one(p_uncres)}")
     print(f"  {MOD_UNRATED}: b={beta_unr:.4f} p2={p_two_unr:.4f}")
     if use_interactions:
-        print(f"  {INT_UNRATED_CLARITY}: b={beta_int_clarity:.4f} p2={p_int_clarity:.4f} "
-              f"{_sig_stars_one(p_int_clarity)}  [two-tail]")
         print(f"  {INT_UNRATED_UNCRES}: b={beta_int_uncres:.4f} p1(pos)={p_int_uncres:.4f} "
               f"{_sig_stars_one(p_int_uncres)}")
 
@@ -621,15 +618,11 @@ def run_regression(
         "p_iv_uncres": p_uncres, "p_two_iv_uncres": p_two_uncres,
         # Unrated level (two-tailed)
         "beta_unrated": beta_unr, "se_unrated": se_unr, "p_two_unrated": p_two_unr,
-        # Interaction Clarity x Unrated (TWO-TAIL)
-        "beta_int_clarity_unrated": beta_int_clarity, "se_int_clarity_unrated": se_int_clarity,
-        "p_int_clarity_unrated": p_int_clarity, "p_two_int_clarity_unrated": p_two_int_clarity,
-        # Interaction UncRes x Unrated (one-tail POS)
+        # Interaction UncRes x Unrated (one-tail POS — sole HFC interaction test)
         "beta_int_uncres_unrated": beta_int_uncres, "se_int_uncres_unrated": se_int_uncres,
         "p_int_uncres_unrated": p_int_uncres, "p_two_int_uncres_unrated": p_two_int_uncres,
         "extra_controls": ",".join(extra_controls) if extra_controls else "",
         # VIF
-        "vif_int_clarity_unrated": vif.get(INT_UNRATED_CLARITY, np.nan) if (vif and use_interactions) else np.nan,
         "vif_int_uncres_unrated": vif.get(INT_UNRATED_UNCRES, np.nan) if (vif and use_interactions) else np.nan,
         # Counts (binary)
         "n_rated": n_rated, "n_unrated": n_unrated,
@@ -718,10 +711,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
          "p_iv_uncres", _sig_stars_one)
     # Unrated level (two-tailed)
     _row("Unrated", "beta_unrated", "se_unrated", "p_two_unrated", _sig_stars_two)
-    # Interaction: ClarityCEO x Unrated (TWO-TAIL)
-    _row(r"ClarityCEO\_c $\times$ Unrated", "beta_int_clarity_unrated",
-         "se_int_clarity_unrated", "p_int_clarity_unrated", _sig_stars_two)
-    # Interaction: UncResCEO x Unrated (one-tail POS)
+    # Interaction: UncResCEO x Unrated (one-tail POS — sole HFC interaction)
     _row(r"UncResCEO\_c $\times$ Unrated", "beta_int_uncres_unrated",
          "se_int_uncres_unrated", "p_int_uncres_unrated", _sig_stars_one)
 
@@ -764,7 +754,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\textit{ClarityCEO\_c}: one-tailed NEG ($\beta < 0$; high persistent clarity $\Rightarrow$ less cash). ",
         r"\textit{UncResCEO\_c}: one-tailed POS ($\beta > 0$; positive within-quarter uncertainty $\Rightarrow$ more cash). ",
         r"\textit{UncResCEO} $\times$ Unrated: one-tailed POS (HFC amplification at state level). ",
-        r"\textit{ClarityCEO} $\times$ Unrated: two-tailed (no theoretical prior for trait-level moderation). ",
+        r"Trait $\times$ constraint interaction (ClarityCEO $\times$ Unrated) NOT estimated: ",
+        r"theoretically ambiguous direction (constraint pushes cash up, clarity pushes cash down). ",
         r"Unrated level dummy: two-tailed. ",
         r"Moderator is BINARY: Unrated vs Rated reference group (FP 2006 specification; ",
         r"Rated $=$ any S\&P long-term issuer rating). ",
@@ -808,14 +799,13 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
             f.write(f"Moderator: Unrated only (binary; FP 2006)\n")
             if has_int:
                 f.write(f"Interactions: {', '.join(INT_UNRATED_TERMS)}\n")
-                f.write(f"Tail: ClarityxUnrated TWO-TAIL; UncResxUnrated one-tail POS\n")
+                f.write(f"Tail: UncResxUnrated one-tail POS (Clarity×Unrated DROPPED)\n")
             else:
                 f.write(f"Interactions: none (base model)\n")
             f.write(f"FE: {meta['fe']}\n")
             f.write(f"Sample years: {YEAR_MIN}-{YEAR_MAX}\n")
             f.write(f"Extra controls: {meta.get('extra_controls', '')}\n")
             if has_int:
-                f.write(f"VIF(int_clarity_unrated): {meta.get('vif_int_clarity_unrated', 'N/A')}\n")
                 f.write(f"VIF(int_uncres_unrated): {meta.get('vif_int_uncres_unrated', 'N/A')}\n")
             f.write(f"N: Rated={meta['n_rated']}, Unrated={meta['n_unrated']}\n")
             f.write(f"Adj_R2: {meta['adj_r2']:.10f}\n")
@@ -846,7 +836,7 @@ def generate_report(
         f"**Duration:** {duration:.1f} seconds",
         f"**Design:** ClarityCEO_c (NEG), UncResCEO_c (POS) × Unrated interactions",
         f"          (DWZ Eq.5 qtr-expanding decomposition; binary Unrated moderator per FP 2006)",
-        f"**Tails:** Clarity NEG, UncRes POS (mains); UncRes×Unrated POS, Clarity×Unrated TWO-TAIL",
+        f"**Tails:** Clarity NEG, UncRes POS (mains); UncRes×Unrated POS (sole HFC interaction; trait-channel interaction dropped as theoretically ambiguous)",
         f"**Channel:** CH1 — Precautionary liquidity under external-finance frictions",
         f"**IV centering means:** {iv_means_str}",
         f"**Sample years:** {YEAR_MIN}-{YEAR_MAX}",
@@ -854,8 +844,8 @@ def generate_report(
         "",
         "## Results",
         "",
-        "| Col | DV | Spec | b_clarity (p) | b_uncres (p) | b_int_clarity (p2) | b_int_uncres (p1) | N | R2 |",
-        "|-----|----|------|---------------|--------------|---------------------|--------------------|---|-----|",
+        "| Col | DV | Spec | b_clarity (p) | b_uncres (p) | b_int_uncres (p1) | N | R2 |",
+        "|-----|----|------|---------------|--------------|--------------------|---|-----|",
     ]
 
     for r in all_results:
@@ -865,19 +855,16 @@ def generate_report(
         s_cl = _sig_stars_one(m["p_iv_clarity"])
         s_un = _sig_stars_one(m["p_iv_uncres"])
         if m.get("interactions"):
-            s_int_cl = _sig_stars_two(m["p_int_clarity_unrated"])
             s_int_un = _sig_stars_one(m["p_int_uncres_unrated"])
-            int_cl_str = f"{m['beta_int_clarity_unrated']:.4f}{s_int_cl} ({m['p_int_clarity_unrated']:.3f})"
             int_un_str = f"{m['beta_int_uncres_unrated']:.4f}{s_int_un} ({m['p_int_uncres_unrated']:.3f})"
         else:
-            int_cl_str = "—"
             int_un_str = "—"
         spec_label = "Int" if m.get("interactions") else "Base"
         lines.append(
             f"| ({m['col']}) | {m['dv']} | {spec_label} | "
             f"{m['beta_iv_clarity']:.4f}{s_cl} ({m['p_iv_clarity']:.3f}) | "
             f"{m['beta_iv_uncres']:.4f}{s_un} ({m['p_iv_uncres']:.3f}) | "
-            f"{int_cl_str} | {int_un_str} | "
+            f"{int_un_str} | "
             f"{m['n_obs']:,} | {m['r2']:.4f} |"
         )
 
@@ -888,7 +875,7 @@ def generate_report(
         "- b_clarity (NEG): persistent CEO clarity → less precautionary cash (rated firms baseline)",
         "- b_uncres (POS): within-quarter uncertainty surprise → more cash (rated firms baseline)",
         "- b_int_uncres (POS): HFC amplification at state level for unrated firms",
-        "- b_int_clarity (two-tail): no theory prior on trait-level moderation by constraint status",
+        "- Trait × constraint interaction NOT estimated (theoretically ambiguous direction)",
         "- Reference group: Rated (IG ∪ BelowIG) firms; binary moderator per FP 2006",
     ]
 
@@ -974,15 +961,15 @@ def _write_suite_spec_json(
             }
         )
 
-        # Interaction-model coefs: Unrated level + 2 Unrated interactions.
+        # Interaction-model coefs: Unrated level + 1 Unrated interaction (state channel only).
         # MOD_UNRATED level treated as two-tailed (no directional prior on level shift).
         interaction_vars = [
             MOD_UNRATED,
-            INT_UNRATED_CLARITY,
             INT_UNRATED_UNCRES,
         ]
 
-        # Per-IV directional stitching across 3 directions
+        # Per-IV directional stitching across 3 directions for IVs;
+        # control coefs from a single any-direction call (controls always p_one=None).
         merged_int: Dict[str, Dict[str, Any]] = {}
         for direction in ("positive", "negative", "none"):
             ivs_for_dir = [
@@ -1001,6 +988,15 @@ def _write_suite_spec_json(
             for v in ivs_for_dir:
                 if v in coefs:
                     merged_int[v] = coefs[v]
+
+        # Carry-over control coefs from interaction model (no direction matters
+        # — controls have p_one=None regardless of hyp_dir).
+        control_coefs = extract_coefs_panelols(
+            model=int_model,
+            key_ivs=[],  # treat all as controls → p_one=None
+            all_vars=control_vars,
+            hyp_dir="none",
+        )
 
         # Main decomp IV slopes from unconditional spec (per-IV direction).
         merged_main: Dict[str, Dict[str, Any]] = {}
@@ -1023,18 +1019,18 @@ def _write_suite_spec_json(
 
         merged: Dict[str, Dict[str, Any]] = dict(merged_main)
         merged.update(merged_int)
+        merged.update(control_coefs)  # add control rows so renderer fills them
         coefs_per_col.append(merged)
 
-    # Display IVs (decomp): 2 main + Unrated level + 2 Unrated interactions.
-    # Tail values per IV_TAIL_DIRECTION (asymmetric).
+    # Display IVs (decomp): 2 main + Unrated level + 1 state-channel interaction.
+    # Trait-channel interaction (Clarity × Unrated) intentionally absent — dropped
+    # as theoretically ambiguous direction.
     ivs = [
         {"name": "ClarityCEO_QtrExp_c",
          "label": r"ClarityCEO\_QtrExp\_c", "tail": "one_neg"},
         {"name": "UncResCEO_QtrExp_c",
          "label": r"UncResCEO\_QtrExp\_c", "tail": "one_pos"},
         {"name": MOD_UNRATED, "label": "Unrated", "tail": "two"},
-        {"name": INT_UNRATED_CLARITY,
-         "label": r"ClarityCEO\_c $\times$ Unrated", "tail": "two"},
         {"name": INT_UNRATED_UNCRES,
          "label": r"UncResCEO\_c $\times$ Unrated", "tail": "one_pos"},
     ]
@@ -1107,7 +1103,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print(f"Channel:    CH1 — Precautionary liquidity under external-finance frictions")
     print(f"Moderator:  Binary Unrated vs Rated (FP 2006)")
     print(f"IVs:        {', '.join(IVS_RAW)}  (DWZ Eq.5 qtr-expanding)")
-    print(f"Tails:      Clarity NEG / UncRes POS / UncRes×Unrated POS / Clarity×Unrated TWO-TAIL")
+    print(f"Tails:      Clarity NEG / UncRes POS / UncRes×Unrated POS  (Clarity×Unrated DROPPED as theoretically ambiguous)")
     print(f"Sample:     {YEAR_MIN}-{YEAR_MAX}")
 
     # Load panel + merge decomp parquet
@@ -1215,12 +1211,10 @@ def main(panel_path: Optional[str] = None) -> int:
         s_cl = _sig_stars_one(m["p_iv_clarity"])
         s_un = _sig_stars_one(m["p_iv_uncres"])
         if m.get("interactions"):
-            s_int_cl = _sig_stars_two(m["p_int_clarity_unrated"])
             s_int_un = _sig_stars_one(m["p_int_uncres_unrated"])
             print(f"  Col ({m['col']}) {m['dv']} [int]: "
                   f"Clarity b={m['beta_iv_clarity']:.4f}{s_cl} | "
                   f"UncRes b={m['beta_iv_uncres']:.4f}{s_un} | "
-                  f"Int(Cl×Unr,2t) b={m['beta_int_clarity_unrated']:.4f}{s_int_cl} | "
                   f"Int(Un×Unr,1t+) b={m['beta_int_uncres_unrated']:.4f}{s_int_un}")
         else:
             print(f"  Col ({m['col']}) {m['dv']} [base]: "
