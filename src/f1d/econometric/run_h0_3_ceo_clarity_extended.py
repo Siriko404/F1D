@@ -409,8 +409,11 @@ def run_regression(
         # statsmodels treatment-codes C(ceo_id)/C(gvkey): one entity is base (omitted, FE=0).
         # Other entities: model.params["C(<ent>)[T.<id>]"] = level diff from base.
         # Clarity = -FE; arbitrary additive constant doesn't affect downstream regs.
-        entity_col = "ceo_id" if model_name == "CEO_Baseline" else "gvkey"
-        clarity_label = "ClarityCEO_Full" if model_name == "CEO_Baseline" else "ClarityMgr_Full"
+        # Both Manager_Baseline + CEO_Baseline use C(ceo_id) FE per L369 formula.
+        # ClarityMgr := -CEO FE coefficient from UncAnsMgr regression (manager-pool clarity at CEO grain).
+        entity_col = "ceo_id"
+        # DWZ Eq.5 canonical names (no _Full suffix; QtrExp variant is the suffixed one).
+        clarity_label = "ClarityCEO" if model_name == "CEO_Baseline" else "ClarityMgr"
         fe_label = clarity_label.replace("Clarity", "FE_")
         fe_prefix = f"C({entity_col})[T."
         fe_params = {
