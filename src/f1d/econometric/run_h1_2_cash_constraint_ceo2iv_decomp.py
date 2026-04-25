@@ -99,10 +99,16 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # Configuration
 # ==============================================================================
 
-# CEO 2-IV DECOMPOSED stack (DWZ Eq.5; both mean-centered on Main sample)
-IVS_RAW = ["ClarityCEO_QtrExp", "UncResCEO_QtrExp"]
-IVS_CENTERED = ["ClarityCEO_QtrExp_c", "UncResCEO_QtrExp_c"]
+# CEO 3-IV stack (DWZ Eq.5 decomposed: Clarity + UncRes; plus raw UncPreCEO).
+# All mean-centered on Main sample for clean interaction interpretation.
+# UncPreCEO is NOT decomposed: its persistent CEO-trait component is already
+# absorbed by ClarityCEO via DWZ Eq.4 (UncPreCEO appears as RHS regressor in the
+# decomposition; the CEO fixed-effect soaks both QA and Pres trait variance).
+IVS_RAW = ["ClarityCEO_QtrExp", "UncResCEO_QtrExp", "UncPreCEO"]
+IVS_CENTERED = ["ClarityCEO_QtrExp_c", "UncResCEO_QtrExp_c", "UncPreCEO_c"]
 IV_RAW_TO_CENTERED = dict(zip(IVS_RAW, IVS_CENTERED))
+# Decomp parquet only carries Clarity + UncRes (not UncPreCEO which lives in H1 panel).
+DECOMP_IVS_RAW = ["ClarityCEO_QtrExp", "UncResCEO_QtrExp"]
 
 CONTROLS = [
     "Leverage", "lnAssets", "TobinsQ", "ROA", "Capex",
@@ -124,13 +130,24 @@ MOD_UNRATED = "Unrated"
 #      with no clean monotone prediction). Dropped to avoid reporting an
 #      uninterpretable cell.
 INT_UNRATED_UNCRES = "UncResCEO_QtrExp_c_x_Unrated"
-INT_UNRATED_TERMS = [INT_UNRATED_UNCRES]
+INT_UNRATED_UNCPRE = "UncPreCEO_c_x_Unrated"
+INT_UNRATED_TERMS = [INT_UNRATED_UNCRES, INT_UNRATED_UNCPRE]
 
-# Per-IV tail directions (state-channel HFC test only).
+# Per-IV tail directions.
+# Main effects: Clarity NEG (high persistent clarity → less precautionary cash);
+# UncRes POS (positive within-quarter uncertainty surprise → more cash);
+# UncPreCEO POS (more presentation-segment uncertainty → more cash).
+# HFC interactions: UncRes × Unr POS + UncPreCEO × Unr POS (constraint amplifies
+# precautionary cash response to any uncertainty source). Clarity × Unr intentionally
+# NOT included — trait × constraint mixes competing forces (HFC pushes cash UP
+# under constraint; high clarity pushes cash DOWN via reduced perception) — no clean
+# monotone HFC prediction.
 IV_TAIL_DIRECTION: Dict[str, str] = {
     "ClarityCEO_QtrExp_c": "negative",
     "UncResCEO_QtrExp_c": "positive",
-    INT_UNRATED_UNCRES: "positive",    # HFC amplification of state-level POS main
+    "UncPreCEO_c": "positive",
+    INT_UNRATED_UNCRES: "positive",    # HFC amplification of state-channel POS main
+    INT_UNRATED_UNCPRE: "positive",    # HFC amplification of pres-channel POS main
 }
 
 # Investment-grade rating codes (BBB- and above)
@@ -152,11 +169,11 @@ SUITE_ID = "H1.2.ceo2.decomp"
 SUITE_DIR_NAME = "h1_2_cash_constraint_ceo2iv_decomp"
 SUITE_TITLE = (
     "Financial Constraint-Moderated CEO Speech Uncertainty and Cash Holdings "
-    "(CEO 2-IV Decomposed: DWZ Clarity + UncRes, qtr-exp)"
+    "(CEO 3-IV: DWZ Clarity + UncRes [qtr-exp] + raw UncPreCEO)"
 )
 SUITE_CAPTION = (
-    r"H1.2 CEO 2-IV Decomp: Financial Constraint--Moderated DWZ CEO Speech "
-    r"Decomposition and Cash Holdings"
+    r"H1.2 CEO 3-IV Decomp: Financial Constraint--Moderated DWZ CEO QA "
+    r"Decomposition + Pres-Segment Uncertainty and Cash Holdings"
 )
 SUITE_LABEL = "tab:h1_2_ceo2_decomp"
 SAMPLE_LABEL = (
@@ -205,6 +222,8 @@ SUMMARY_STATS_VARS = [
     {"col": "ClarityCEO_QtrExp_c", "label": "CEO Clarity (DWZ qtr-exp, centered)"},
     {"col": "UncResCEO_QtrExp", "label": "CEO UncRes (DWZ qtr-exp, raw)"},
     {"col": "UncResCEO_QtrExp_c", "label": "CEO UncRes (DWZ qtr-exp, centered)"},
+    {"col": "UncPreCEO", "label": "CEO Pres Uncertainty (raw)"},
+    {"col": "UncPreCEO_c", "label": "CEO Pres Uncertainty (centered)"},
     {"col": MOD_UNRATED, "label": "Unrated (dummy)"},
     {"col": "Leverage", "label": "Leverage"},
     {"col": "lnAssets", "label": "Firm Size (log AT)"},
@@ -261,11 +280,13 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
     if not panel_file.exists():
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
-    # H1 panel: DV + controls + identifiers (decomp IVs come from merge below)
+    # H1 panel: DV + controls + UncPreCEO (3rd IV, raw) + identifiers
+    # (decomp IVs Clarity + UncRes come from merge below)
     columns = [
         "file_name",
         "gvkey", "year", "fyearq_int", "ff12_code", "start_date",
         "CashRatio", "CashRatio_lag", "CashRatio_lead",
+        "UncPreCEO",
         *[c for c in CONTROLS if c != "Lagged_DV"],  # lagged created dynamically
     ]
 
@@ -281,15 +302,15 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
     decomp_file = decomp_dir / "ceo_clarity_qtrexp_residuals.parquet"
     decomp = pd.read_parquet(
         decomp_file,
-        columns=["file_name", *IVS_RAW],
+        columns=["file_name", *DECOMP_IVS_RAW],  # only Clarity + UncRes; UncPreCEO from H1 panel
     )
     print(f"  Decomp:     {decomp_file}")
     print(f"  Decomp rows: {len(decomp):,}  "
-          f"non-NaN Clarity: {decomp[IVS_RAW[0]].notna().sum():,}")
+          f"non-NaN Clarity: {decomp[DECOMP_IVS_RAW[0]].notna().sum():,}")
 
     before = len(panel)
     panel = panel.merge(decomp, on="file_name", how="left", validate="one_to_one")
-    matched = panel[IVS_RAW[0]].notna().sum()
+    matched = panel[DECOMP_IVS_RAW[0]].notna().sum()
     print(f"  After merge: {len(panel):,} rows ({matched:,} with non-NaN Clarity; "
           f"{before - matched:,} dropped downstream by complete-case)")
 
@@ -433,10 +454,12 @@ def prepare_regression_data(
     df = panel.copy()
     df = df.replace([np.inf, -np.inf], np.nan)
 
-    # State-channel HFC interaction only (UncRes × Unrated).
-    # Trait-channel interaction (Clarity × Unrated) intentionally NOT constructed.
+    # State-channel HFC interaction (UncRes × Unrated) + Pres-channel HFC interaction
+    # (UncPreCEO × Unrated). Trait-channel interaction (Clarity × Unrated) intentionally
+    # NOT constructed — competing-forces incoherence.
     if use_interactions:
         df[INT_UNRATED_UNCRES] = df["UncResCEO_QtrExp_c"] * df[MOD_UNRATED]
+        df[INT_UNRATED_UNCPRE] = df["UncPreCEO_c"] * df[MOD_UNRATED]
 
     # Drop NaN in DV
     before = len(df)
@@ -570,13 +593,16 @@ def run_regression(
     # Extract main decomposed IV coefficients (per-IV asymmetric directions)
     beta_clarity, se_clarity, p_two_clarity = _extract_coef(model, "ClarityCEO_QtrExp_c")
     beta_uncres, se_uncres, p_two_uncres = _extract_coef(model, "UncResCEO_QtrExp_c")
+    beta_uncpre, se_uncpre, p_two_uncpre = _extract_coef(model, "UncPreCEO_c")
     # Unrated level (two-tailed)
     beta_unr, se_unr, p_two_unr = _extract_coef(model, MOD_UNRATED)
 
     if use_interactions:
         beta_int_uncres, se_int_uncres, p_two_int_uncres = _extract_coef(model, INT_UNRATED_UNCRES)
+        beta_int_uncpre, se_int_uncpre, p_two_int_uncpre = _extract_coef(model, INT_UNRATED_UNCPRE)
     else:
         beta_int_uncres, se_int_uncres, p_two_int_uncres = np.nan, np.nan, np.nan
+        beta_int_uncpre, se_int_uncpre, p_two_int_uncpre = np.nan, np.nan, np.nan
 
     # Per-IV directional p
     def _p_by_dir(b: float, p2: float, direction: str) -> float:
@@ -590,15 +616,20 @@ def run_regression(
 
     p_clarity = _p_by_dir(beta_clarity, p_two_clarity, IV_TAIL_DIRECTION["ClarityCEO_QtrExp_c"])
     p_uncres = _p_by_dir(beta_uncres, p_two_uncres, IV_TAIL_DIRECTION["UncResCEO_QtrExp_c"])
+    p_uncpre = _p_by_dir(beta_uncpre, p_two_uncpre, IV_TAIL_DIRECTION["UncPreCEO_c"])
     p_int_uncres = _p_by_dir(beta_int_uncres, p_two_int_uncres, IV_TAIL_DIRECTION[INT_UNRATED_UNCRES])
+    p_int_uncpre = _p_by_dir(beta_int_uncpre, p_two_int_uncpre, IV_TAIL_DIRECTION[INT_UNRATED_UNCPRE])
 
     print(f"  [OK] {elapsed:.1f}s | R2={model.rsquared:.4f}  Adj R2={1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid:.4f}")
     print(f"  ClarityCEO_QtrExp_c: b={beta_clarity:.4f} p(neg-tail)={p_clarity:.4f} {_sig_stars_one(p_clarity)}")
     print(f"  UncResCEO_QtrExp_c:  b={beta_uncres:.4f} p(pos-tail)={p_uncres:.4f} {_sig_stars_one(p_uncres)}")
+    print(f"  UncPreCEO_c:         b={beta_uncpre:.4f} p(pos-tail)={p_uncpre:.4f} {_sig_stars_one(p_uncpre)}")
     print(f"  {MOD_UNRATED}: b={beta_unr:.4f} p2={p_two_unr:.4f}")
     if use_interactions:
         print(f"  {INT_UNRATED_UNCRES}: b={beta_int_uncres:.4f} p1(pos)={p_int_uncres:.4f} "
               f"{_sig_stars_one(p_int_uncres)}")
+        print(f"  {INT_UNRATED_UNCPRE}: b={beta_int_uncpre:.4f} p1(pos)={p_int_uncpre:.4f} "
+              f"{_sig_stars_one(p_int_uncpre)}")
 
     n_unrated = int(df_prepared[MOD_UNRATED].sum())
     n_rated = int((df_prepared[MOD_UNRATED] == 0).sum())
@@ -616,14 +647,21 @@ def run_regression(
         # Main UncRes (one-tail POS)
         "beta_iv_uncres": beta_uncres, "se_iv_uncres": se_uncres,
         "p_iv_uncres": p_uncres, "p_two_iv_uncres": p_two_uncres,
+        # Main UncPreCEO (one-tail POS)
+        "beta_iv_uncpre": beta_uncpre, "se_iv_uncpre": se_uncpre,
+        "p_iv_uncpre": p_uncpre, "p_two_iv_uncpre": p_two_uncpre,
         # Unrated level (two-tailed)
         "beta_unrated": beta_unr, "se_unrated": se_unr, "p_two_unrated": p_two_unr,
-        # Interaction UncRes x Unrated (one-tail POS — sole HFC interaction test)
+        # Interaction UncRes x Unrated (one-tail POS — state HFC channel)
         "beta_int_uncres_unrated": beta_int_uncres, "se_int_uncres_unrated": se_int_uncres,
         "p_int_uncres_unrated": p_int_uncres, "p_two_int_uncres_unrated": p_two_int_uncres,
+        # Interaction UncPreCEO x Unrated (one-tail POS — pres HFC channel)
+        "beta_int_uncpre_unrated": beta_int_uncpre, "se_int_uncpre_unrated": se_int_uncpre,
+        "p_int_uncpre_unrated": p_int_uncpre, "p_two_int_uncpre_unrated": p_two_int_uncpre,
         "extra_controls": ",".join(extra_controls) if extra_controls else "",
         # VIF
         "vif_int_uncres_unrated": vif.get(INT_UNRATED_UNCRES, np.nan) if (vif and use_interactions) else np.nan,
+        "vif_int_uncpre_unrated": vif.get(INT_UNRATED_UNCPRE, np.nan) if (vif and use_interactions) else np.nan,
         # Counts (binary)
         "n_rated": n_rated, "n_unrated": n_unrated,
         "sample_years": f"{YEAR_MIN}-{YEAR_MAX}",
@@ -709,11 +747,17 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     # Main UncResCEO_c (one-tail POS)
     _row(r"UncResCEO\_QtrExp\_c", "beta_iv_uncres", "se_iv_uncres",
          "p_iv_uncres", _sig_stars_one)
+    # Main UncPreCEO_c (one-tail POS) — 3rd IV preserved from parent
+    _row(r"UncPreCEO\_c", "beta_iv_uncpre", "se_iv_uncpre",
+         "p_iv_uncpre", _sig_stars_one)
     # Unrated level (two-tailed)
     _row("Unrated", "beta_unrated", "se_unrated", "p_two_unrated", _sig_stars_two)
-    # Interaction: UncResCEO x Unrated (one-tail POS — sole HFC interaction)
+    # Interaction: UncResCEO x Unrated (one-tail POS — state HFC channel)
     _row(r"UncResCEO\_c $\times$ Unrated", "beta_int_uncres_unrated",
          "se_int_uncres_unrated", "p_int_uncres_unrated", _sig_stars_one)
+    # Interaction: UncPreCEO x Unrated (one-tail POS — pres HFC channel)
+    _row(r"UncPreCEO\_c $\times$ Unrated", "beta_int_uncpre_unrated",
+         "se_int_uncpre_unrated", "p_int_uncpre_unrated", _sig_stars_one)
 
     lines.append(r"\midrule")
     lines.append(r"Controls & " + " & ".join(["Ext"] * 8) + r" \\")
@@ -746,14 +790,18 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. ",
-        r"DWZ Eq.5 decomposition variant of H1.2.ceo2: replaces (UncAnsCEO\_c, UncPreCEO\_c) ",
-        r"with the persistent CEO-trait component \textit{ClarityCEO\_c} (= negated CEO ",
-        r"fixed effect from DWZ Eq.4) and the call-level state residual \textit{UncResCEO\_c}, ",
-        r"both estimated under strict no-look-ahead quarterly-expanding window, then mean-centered ",
-        r"on the Main sample. ",
+        r"DWZ Eq.5 decomposition variant of H1.2.ceo2: replaces UncAnsCEO\_c with the persistent ",
+        r"CEO-trait component \textit{ClarityCEO\_c} (= negated CEO fixed effect from DWZ Eq.4) and ",
+        r"the call-level state residual \textit{UncResCEO\_c}, both estimated under strict no-look-ahead ",
+        r"quarterly-expanding window, then mean-centered on the Main sample. ",
+        r"\textit{UncPreCEO\_c} (presentation-segment uncertainty, raw + centered) is preserved as ",
+        r"a third IV from the parent suite: it is not decomposed because its persistent CEO-trait ",
+        r"variance is already absorbed by ClarityCEO via DWZ Eq.4. ",
         r"\textit{ClarityCEO\_c}: one-tailed NEG ($\beta < 0$; high persistent clarity $\Rightarrow$ less cash). ",
         r"\textit{UncResCEO\_c}: one-tailed POS ($\beta > 0$; positive within-quarter uncertainty $\Rightarrow$ more cash). ",
-        r"\textit{UncResCEO} $\times$ Unrated: one-tailed POS (HFC amplification at state level). ",
+        r"\textit{UncPreCEO\_c}: one-tailed POS ($\beta > 0$; more presentation uncertainty $\Rightarrow$ more cash). ",
+        r"\textit{UncResCEO} $\times$ Unrated: one-tailed POS (HFC amplification at state channel). ",
+        r"\textit{UncPreCEO} $\times$ Unrated: one-tailed POS (HFC amplification at presentation channel). ",
         r"Trait $\times$ constraint interaction (ClarityCEO $\times$ Unrated) NOT estimated: ",
         r"theoretically ambiguous direction (constraint pushes cash up, clarity pushes cash down). ",
         r"Unrated level dummy: two-tailed. ",
@@ -961,11 +1009,12 @@ def _write_suite_spec_json(
             }
         )
 
-        # Interaction-model coefs: Unrated level + 1 Unrated interaction (state channel only).
+        # Interaction-model coefs: Unrated level + 2 Unrated interactions (state + pres channels).
         # MOD_UNRATED level treated as two-tailed (no directional prior on level shift).
         interaction_vars = [
             MOD_UNRATED,
             INT_UNRATED_UNCRES,
+            INT_UNRATED_UNCPRE,
         ]
 
         # Per-IV directional stitching across 3 directions for IVs;
@@ -1022,7 +1071,7 @@ def _write_suite_spec_json(
         merged.update(control_coefs)  # add control rows so renderer fills them
         coefs_per_col.append(merged)
 
-    # Display IVs (decomp): 2 main + Unrated level + 1 state-channel interaction.
+    # Display IVs (decomp): 3 main + Unrated level + 2 channel interactions.
     # Trait-channel interaction (Clarity × Unrated) intentionally absent — dropped
     # as theoretically ambiguous direction.
     ivs = [
@@ -1030,9 +1079,13 @@ def _write_suite_spec_json(
          "label": r"ClarityCEO\_QtrExp\_c", "tail": "one_neg"},
         {"name": "UncResCEO_QtrExp_c",
          "label": r"UncResCEO\_QtrExp\_c", "tail": "one_pos"},
+        {"name": "UncPreCEO_c",
+         "label": r"UncPreCEO\_c", "tail": "one_pos"},
         {"name": MOD_UNRATED, "label": "Unrated", "tail": "two"},
         {"name": INT_UNRATED_UNCRES,
          "label": r"UncResCEO\_c $\times$ Unrated", "tail": "one_pos"},
+        {"name": INT_UNRATED_UNCPRE,
+         "label": r"UncPreCEO\_c $\times$ Unrated", "tail": "one_pos"},
     ]
 
     # 8 display cols: 4 CashRatio_t + 4 CashRatio_lead

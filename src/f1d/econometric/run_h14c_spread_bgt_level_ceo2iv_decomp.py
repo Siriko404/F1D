@@ -95,12 +95,16 @@ warnings.filterwarnings(
 KEY_IVS = [
     "ClarityCEO_QtrExp",
     "UncResCEO_QtrExp",
+    "UncPreCEO",
 ]
+# Decomp parquet only carries Clarity + UncRes (UncPreCEO lives in H14 panel).
+DECOMP_IVS_RAW = ["ClarityCEO_QtrExp", "UncResCEO_QtrExp"]
 
 # Per-IV tail directions (asymmetric per DWZ decomposition + BGT 2018 logic).
 IV_TAIL_DIRECTION: Dict[str, str] = {
     "ClarityCEO_QtrExp": "negative",
     "UncResCEO_QtrExp": "positive",
+    "UncPreCEO": "positive",
 }
 
 # Lagged_DV placeholder routed at spec-prep time (PreCallSpread removed)
@@ -130,12 +134,12 @@ EXTENDED_ONLY_CONTROLS = [c for c in EXTENDED_CONTROLS if c not in BASE_CONTROLS
 SUITE_ID = "H14c.ceo2.decomp"
 SUITE_DIR_NAME = "h14c_spread_bgt_level_ceo2iv_decomp"
 SUITE_TITLE = (
-    'H14c CEO 2-IV Decomp: DWZ Speech Decomposition and 25-Day Post-Call '
-    'Bid-Ask Spread Level (call day plus 25 trading days)'
+    'H14c CEO 3-IV Decomp: DWZ QA Decomposition + Raw UncPreCEO and '
+    '25-Day Post-Call Bid-Ask Spread Level (call day plus 25 trading days)'
 )
 SUITE_CAPTION = (
-    r'H14c CEO 2-IV Decomp: DWZ Speech Decomposition and 25-Day Post-Call '
-    r'Bid-Ask Spread Level ($[0,+25]$, the call day plus 25 trading days)'
+    r'H14c CEO 3-IV Decomp: ClarityCEO + UncResCEO (DWZ Eq.5) + UncPreCEO (raw) and '
+    r'25-Day Post-Call Bid-Ask Spread Level ($[0,+25]$, the call day plus 25 trading days)'
 )
 SUITE_LABEL = "tab:h14c_ceo2_decomp"
 SAMPLE_LABEL = (
@@ -166,6 +170,7 @@ MIN_CALLS_PER_FIRM = 5
 VARIABLE_LABELS = {
     "ClarityCEO_QtrExp": "CEO Clarity (DWZ, qtr-exp)",
     "UncResCEO_QtrExp": "CEO Residual Uncertainty (DWZ, qtr-exp)",
+    "UncPreCEO": "CEO Pres Uncertainty",
 }
 
 SUMMARY_STATS_VARS = [
@@ -221,7 +226,8 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     if not panel_file.exists():
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
-    # H14 panel: DV + controls + identifiers (decomp IVs come from merge below)
+    # H14 panel: DV + controls + UncPreCEO (3rd IV, raw) + identifiers
+    # (decomp IVs Clarity + UncRes come from merge below)
     columns = [
         "file_name",
         "start_date",
@@ -229,6 +235,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         "cal_yr", "cal_qtr", "cal_yr_qtr",
         "BGTLevel_Spread", "BGTLevel_Spread_lag", "BGTLevel_Spread_lead1",
         "PreCallSpread",
+        "UncPreCEO",
         "lnAssets", "TobinsQ", "ROA", "Leverage",
         "Capex", "DivDummy", "sCFO",
         "StockPrice", "Turnover", "DailyVola", "AbsSurpDec",
@@ -250,14 +257,14 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         required_file="ceo_clarity_qtrexp_residuals.parquet",
     )
     decomp_file = decomp_dir / "ceo_clarity_qtrexp_residuals.parquet"
-    decomp = pd.read_parquet(decomp_file, columns=["file_name", *KEY_IVS])
+    decomp = pd.read_parquet(decomp_file, columns=["file_name", *DECOMP_IVS_RAW])
     print(f"  Decomp:     {decomp_file}")
     print(f"  Decomp rows: {len(decomp):,}  "
-          f"non-NaN Clarity: {decomp[KEY_IVS[0]].notna().sum():,}")
+          f"non-NaN Clarity: {decomp[DECOMP_IVS_RAW[0]].notna().sum():,}")
 
     before = len(panel)
     panel = panel.merge(decomp, on="file_name", how="left", validate="one_to_one")
-    matched = panel[KEY_IVS[0]].notna().sum()
+    matched = panel[DECOMP_IVS_RAW[0]].notna().sum()
     print(f"  After merge: {len(panel):,} rows ({matched:,} with non-NaN Clarity; "
           f"{before - matched:,} dropped downstream by complete-case)")
 
@@ -472,12 +479,16 @@ def _save_latex_table(all_results, out_dir):
         r"\begin{minipage}{\linewidth}", r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. ",
-        r"DWZ Eq.5 decomposition variant: replaces the 4-IV speech stack with ",
+        r"DWZ Eq.5 decomposition variant: replaces UncAnsCEO with ",
         r"\textit{ClarityCEO} (= negated CEO fixed effect from DWZ Eq.4) and ",
         r"\textit{UncResCEO} (call-level residual), estimated under strict ",
         r"no-look-ahead quarterly-expanding window. ",
+        r"\textit{UncPreCEO} (raw, presentation-segment uncertainty) is preserved as a ",
+        r"third IV from the parent suite (DWZ Eq.4 RHS regressor; not decomposed because ",
+        r"its persistent CEO-trait variance is already absorbed by ClarityCEO). ",
         r"\textit{ClarityCEO}: one-tailed NEG ($\beta < 0$; clear CEO $\Rightarrow$ narrower spread). ",
         r"\textit{UncResCEO}: one-tailed POS ($\beta > 0$; uncertainty surprise $\Rightarrow$ wider spread; BGT 2018). ",
+        r"\textit{UncPreCEO}: one-tailed POS ($\beta > 0$; pres uncertainty $\Rightarrow$ wider spread). ",
         r"Standard errors (in parentheses) firm-level clustered. ",
         r"Main sample (excludes financial and utility firms). ",
         r"Spread$_{25D,t}$ = mean daily closing-quote relative bid-ask spread over the 25-day post-call window (call day plus 25 following trading days). Daily formula: $2(\text{ASK}-\text{BID})/(\text{ASK}+\text{BID})$ from CRSP closing quotes. ",

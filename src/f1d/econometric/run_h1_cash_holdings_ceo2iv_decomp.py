@@ -88,6 +88,7 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 KEY_IVS = [
     "ClarityCEO_QtrExp",
     "UncResCEO_QtrExp",
+    "UncPreCEO",
 ]
 
 BASE_CONTROLS = [
@@ -118,7 +119,7 @@ EXTENDED_ONLY_CONTROLS = [c for c in EXTENDED_CONTROLS if c not in BASE_CONTROLS
 SUITE_ID = "H1.ceo2.decomp"
 SUITE_DIR_NAME = "h1_cash_holdings_ceo2iv_decomp"
 SUITE_TITLE = "Speech Uncertainty and Cash Holdings (CEO 2-IV: DWZ Q&A Decomposition, Quarterly Expanding)"
-SUITE_CAPTION = "H1 CEO 2-IV: ClarityCEO + UncResCEO (DWZ Eq.5, qtr-exp)"
+SUITE_CAPTION = "H1 CEO 3-IV: ClarityCEO + UncResCEO (DWZ Eq.5, qtr-exp) + UncPreCEO (raw)"
 SUITE_LABEL = "tab:h1_ceo2_decomp"
 SAMPLE_LABEL = "Main sample (excludes financial and utility firms)."
 HYP_DIR = "positive"  # Suite-level literal (TailSpec validation); per-IV
@@ -134,6 +135,7 @@ TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
 IV_TAIL_DIRECTION: Dict[str, str] = {
     "ClarityCEO_QtrExp": "negative",
     "UncResCEO_QtrExp": "positive",
+    "UncPreCEO": "positive",
 }
 
 MODEL_SPECS = [
@@ -158,6 +160,7 @@ MIN_CALLS_PER_FIRM = 5
 VARIABLE_LABELS = {
     "ClarityCEO_QtrExp": "CEO Clarity (DWZ, qtr-exp)",
     "UncResCEO_QtrExp": "CEO Residual Uncertainty (DWZ, qtr-exp)",
+    "UncPreCEO": "CEO Pres Uncertainty",
 }
 
 # Summary statistics variable list
@@ -239,6 +242,7 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
         "start_date",
         "gvkey", "year", "fyearq_int", "ff12_code",
         "CashRatio", "CashRatio_lead", "CashRatio_lag",
+        "UncPreCEO",
         "Leverage", "lnAssets", "TobinsQ", "ROA",
         "Capex", "DivDummy", "sCFO",
         "SalesGrowth", "RDSales", "CashFlowAt", "DailyVola",
@@ -642,10 +646,14 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"trait component (\textit{ClarityCEO}, the negative of the CEO fixed effect ",
         r"from DWZ Eq.4) and a within-quarter state component (\textit{UncResCEO}, ",
         r"the residual from DWZ Eq.4), estimated via quarterly-expanding window. ",
+        r"\textit{UncPreCEO} (raw, presentation-segment uncertainty) enters as a third ",
+        r"independent IV preserved from the parent suite (DWZ Eq.4 RHS regressor; not decomposed ",
+        r"because its persistent-CEO variance is already absorbed by ClarityCEO). ",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed). ",
         r"\textit{ClarityCEO}: H1 direction $\beta < 0$ (high persistent clarity $\Rightarrow$ ",
         r"less precautionary cash). \textit{UncResCEO}: H1 direction $\beta > 0$ ",
         r"(positive within-quarter uncertainty $\Rightarrow$ more cash). ",
+        r"\textit{UncPreCEO}: H1 direction $\beta > 0$ (more presentation uncertainty $\Rightarrow$ more cash). ",
         r"Standard errors (in parentheses) firm-level clustered. ",
         r"Main sample (excludes financial and utility firms). ",
         r"Industry FE uses Fama-French 12 industry dummies. ",
