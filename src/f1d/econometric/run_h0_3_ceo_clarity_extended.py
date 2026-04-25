@@ -303,7 +303,7 @@ def run_regression(
     df_sample: pd.DataFrame,
     model_config: Dict[str, Any],
     model_name: str,
-) -> tuple[Any, Optional[pd.DataFrame], Set[Any], Optional[pd.DataFrame]]:
+) -> tuple[Any, Optional[pd.DataFrame], Set[Any], Optional[pd.DataFrame], Optional[pd.DataFrame]]:
     """Run OLS regression with CEO fixed effects for one model × Main sample.
 
     Uses smf.ols with clustered standard errors at CEO level.
@@ -321,7 +321,7 @@ def run_regression(
 
     if not STATSMODELS_AVAILABLE:
         print("  ERROR: statsmodels not available")
-        return None, None, set(), None
+        return None, None, set(), None, None
 
     min_calls = MIN_CALLS
     ceo_counts = df_sample["ceo_id"].value_counts()
@@ -335,7 +335,7 @@ def run_regression(
 
     if len(df_reg) < 100:
         print(f"  WARNING: Too few observations ({len(df_reg)}), skipping")
-        return None, None, set(), None
+        return None, None, set(), None, None
 
     df_reg["ceo_id"] = df_reg["ceo_id"].astype(str)
     # Convert year to string for formula (C(year) creates dummies)
@@ -382,7 +382,7 @@ def run_regression(
         )
     except ValueError as e:
         print(f"ERROR: Regression failed: {e}", file=sys.stderr)
-        return None, None, set(), None
+        return None, None, set(), None, None
 
     duration = (datetime.now() - start_time).total_seconds()
     print(f"  [OK] Complete in {duration:.1f}s")
@@ -392,6 +392,7 @@ def run_regression(
 
     # Extract residuals for baseline models
     residuals_df = None
+    fe_df = None
     if model_name in ("Manager_Baseline", "CEO_Baseline"):
         # CRITICAL: Verify alignment between model residuals and DataFrame rows
         assert len(model.resid) == len(df_reg), (
@@ -404,7 +405,29 @@ def run_regression(
         residuals_df[residual_col_name] = model.resid.values
         print(f"  Extracted {len(residuals_df):,} residuals for {model_name}")
 
-    return model, df_reg, valid_ceos, residuals_df
+        # Also extract entity FE values (Clarity = -gamma_i per DWZ Eq.5)
+        # statsmodels treatment-codes C(ceo_id)/C(gvkey): one entity is base (omitted, FE=0).
+        # Other entities: model.params["C(<ent>)[T.<id>]"] = level diff from base.
+        # Clarity = -FE; arbitrary additive constant doesn't affect downstream regs.
+        entity_col = "ceo_id" if model_name == "CEO_Baseline" else "gvkey"
+        clarity_label = "ClarityCEO_Full" if model_name == "CEO_Baseline" else "ClarityMgr_Full"
+        fe_label = clarity_label.replace("Clarity", "FE_")
+        fe_prefix = f"C({entity_col})[T."
+        fe_params = {
+            key[len(fe_prefix):-1]: float(val)
+            for key, val in model.params.items()
+            if key.startswith(fe_prefix) and key.endswith("]")
+        }
+        all_entities = sorted(df_reg[entity_col].astype(str).unique())
+        fe_records = [
+            {entity_col: ent, fe_label: fe_params.get(ent, 0.0), clarity_label: -fe_params.get(ent, 0.0)}
+            for ent in all_entities
+        ]
+        fe_df = pd.DataFrame(fe_records)
+        print(f"  Extracted {len(fe_df):,} entity FEs for {model_name} "
+              f"(base {entity_col}={all_entities[0]} omitted, FE=0)")
+
+    return model, df_reg, valid_ceos, residuals_df, fe_df
 
 
 # ==============================================================================
@@ -417,8 +440,10 @@ def save_outputs(
     out_dir: Path,
     manager_residuals: Optional[pd.DataFrame] = None,
     ceo_residuals: Optional[pd.DataFrame] = None,
+    manager_fe: Optional[pd.DataFrame] = None,
+    ceo_fe: Optional[pd.DataFrame] = None,
 ) -> None:
-    """Save LaTeX table, regression results text files, and residuals."""
+    """Save LaTeX table, regression results text files, residuals, and entity FE tables."""
     print("\n" + "=" * 60)
     print("Saving outputs")
     print("=" * 60)
@@ -462,17 +487,25 @@ def save_outputs(
     )
     print("  Saved: ceo_clarity_extended_table.tex")
 
-    # Save manager baseline residuals
+    # Save manager baseline residuals + entity FE table
     if manager_residuals is not None and len(manager_residuals) > 0:
         mgr_path = out_dir / "manager_clarity_residual.parquet"
         manager_residuals.to_parquet(mgr_path, index=False)
         print(f"  Saved: manager_clarity_residual.parquet ({len(manager_residuals):,} rows)")
+    if manager_fe is not None and len(manager_fe) > 0:
+        mgr_fe_path = out_dir / "manager_clarity_fe.parquet"
+        manager_fe.to_parquet(mgr_fe_path, index=False)
+        print(f"  Saved: manager_clarity_fe.parquet ({len(manager_fe):,} entities)")
 
-    # Save CEO baseline residuals
+    # Save CEO baseline residuals + entity FE table
     if ceo_residuals is not None and len(ceo_residuals) > 0:
         ceo_path = out_dir / "ceo_clarity_residual.parquet"
         ceo_residuals.to_parquet(ceo_path, index=False)
         print(f"  Saved: ceo_clarity_residual.parquet ({len(ceo_residuals):,} rows)")
+    if ceo_fe is not None and len(ceo_fe) > 0:
+        ceo_fe_path = out_dir / "ceo_clarity_fe.parquet"
+        ceo_fe.to_parquet(ceo_fe_path, index=False)
+        print(f"  Saved: ceo_clarity_fe.parquet ({len(ceo_fe):,} entities)")
 
     # Save model diagnostics CSV
     diag_rows = []
@@ -640,6 +673,8 @@ def main(panel_path: Optional[str] = None) -> int:
     results: Dict[str, Dict[str, Any]] = {}
     manager_residuals: Optional[pd.DataFrame] = None
     ceo_residuals: Optional[pd.DataFrame] = None
+    manager_fe: Optional[pd.DataFrame] = None
+    ceo_fe: Optional[pd.DataFrame] = None
 
     for model_name, model_config in MODELS.items():
         # Prepare complete-case data for this model
@@ -652,18 +687,20 @@ def main(panel_path: Optional[str] = None) -> int:
             print(f"\n  Skipping {model_name}: too few observations ({len(df_main)})")
             continue
 
-        model, df_reg, valid_entities, residuals = run_regression(
+        model, df_reg, valid_entities, residuals, fe_df = run_regression(
             df_main, model_config, model_name
         )
 
         if model is None or df_reg is None:
             continue
 
-        # Collect residuals from baseline models
+        # Collect residuals + FE table from baseline models
         if model_name == "Manager_Baseline":
             manager_residuals = residuals
+            manager_fe = fe_df
         elif model_name == "CEO_Baseline":
             ceo_residuals = residuals
+            ceo_fe = fe_df
 
         results[model_name] = {
             "model": model,
@@ -678,7 +715,8 @@ def main(panel_path: Optional[str] = None) -> int:
         }
 
     if results:
-        save_outputs(results, out_dir, manager_residuals, ceo_residuals)
+        save_outputs(results, out_dir, manager_residuals, ceo_residuals,
+                     manager_fe=manager_fe, ceo_fe=ceo_fe)
         duration = (datetime.now() - start_time).total_seconds()
         generate_report(results, out_dir, duration)
 
