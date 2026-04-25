@@ -6,8 +6,10 @@ ceo_clarity_extended econometric run and caches them for reuse.
 Used by: CEOClarityResidualBuilder, ManagerClarityResidualBuilder
 
 Source files (from outputs/econometric/ceo_clarity_extended/{latest}/):
-    - ceo_clarity_residual.parquet (column: ceo_clarity_residual)
-    - manager_clarity_residual.parquet (column: manager_clarity_residual)
+    - ceo_clarity_residual.parquet (column: UncResCEO — DWZ-faithful name post-2026-04-24)
+    - manager_clarity_residual.parquet (column: UncResMgr — DWZ-faithful name post-2026-04-24)
+    - ceo_clarity_fe.parquet (cols: ceo_id, FE_CEO, ClarityCEO)
+    - manager_clarity_fe.parquet (cols: ceo_id, FE_Mgr, ClarityMgr)
 
 Both merge on file_name (call-level identifier).
 
@@ -67,21 +69,39 @@ class ClarityResidualEngine:
         return df
 
     def get_ceo_residuals(self, root_path: Path) -> pd.DataFrame:
-        """Get CEO Q&A clarity residuals.
+        """Get CEO Q&A clarity residuals (DWZ Eq.4 full-sample baseline).
 
-        Returns DataFrame with columns: file_name, ceo_clarity_residual
+        Returns DataFrame with columns: file_name, UncResCEO
         """
         return self._load_residuals(
             root_path, "ceo_clarity_residual.parquet", "ceo"
         )
 
     def get_manager_residuals(self, root_path: Path) -> pd.DataFrame:
-        """Get Manager Q&A clarity residuals.
+        """Get Manager Q&A clarity residuals (DWZ Eq.4 full-sample baseline).
 
-        Returns DataFrame with columns: file_name, manager_clarity_residual
+        Returns DataFrame with columns: file_name, UncResMgr
         """
         return self._load_residuals(
             root_path, "manager_clarity_residual.parquet", "manager"
+        )
+
+    def get_ceo_fe(self, root_path: Path) -> pd.DataFrame:
+        """Get CEO entity FE table (DWZ Eq.5 ClarityCEO = -CEO_FE).
+
+        Returns DataFrame with columns: ceo_id, FE_CEO, ClarityCEO
+        """
+        return self._load_residuals(
+            root_path, "ceo_clarity_fe.parquet", "ceo_fe"
+        )
+
+    def get_manager_fe(self, root_path: Path) -> pd.DataFrame:
+        """Get Manager entity FE table (CEO-grain Mgr-pool FE).
+
+        Returns DataFrame with columns: ceo_id, FE_Mgr, ClarityMgr
+        """
+        return self._load_residuals(
+            root_path, "manager_clarity_fe.parquet", "mgr_fe"
         )
 
 

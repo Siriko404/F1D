@@ -400,8 +400,8 @@ def run_regression(
         )
         # Extract residuals with metadata
         residuals_df = df_reg[['file_name', 'gvkey', 'ceo_id', 'sample', 'start_date']].copy()
-        # Use specific column name based on model type
-        residual_col_name = "manager_clarity_residual" if model_name == "Manager_Baseline" else "ceo_clarity_residual"
+        # DWZ-faithful canonical column names (no _Full / no snake_case).
+        residual_col_name = "UncResMgr" if model_name == "Manager_Baseline" else "UncResCEO"
         residuals_df[residual_col_name] = model.resid.values
         print(f"  Extracted {len(residuals_df):,} residuals for {model_name}")
 

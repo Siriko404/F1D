@@ -52,9 +52,12 @@ class ManagerClarityResidualBuilder(VariableBuilder):
                 metadata={"source": "ClarityResidualEngine", "column": self.column, "error": str(e)}
             )
 
-        # Rename source column to output column name
-        data = source_df[["file_name", "manager_clarity_residual"]].copy()
-        data = data.rename(columns={"manager_clarity_residual": self.column})
+        # Source column is canonical UncResMgr (post-2026-04-24 rename); rename to
+        # builder's configured column name (default UncResMgr — usually no-op).
+        source_col = "UncResMgr"
+        data = source_df[["file_name", source_col]].copy()
+        if source_col != self.column:
+            data = data.rename(columns={source_col: self.column})
 
         stats = self.get_stats(data[self.column], self.column)
 
