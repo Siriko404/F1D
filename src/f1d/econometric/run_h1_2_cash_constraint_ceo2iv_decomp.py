@@ -1,24 +1,25 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H1.2 HFC Channel — CEO 2-IV DECOMPOSED (DWZ Eq.5 × Unrated)
+STAGE 4: H1.2 HFC Channel — CEO 3-IV Decomp (Full-only, DWZ Eq.5 × Unrated)
 ================================================================================
 ID: econometric/run_h1_2_cash_constraint_ceo2iv_decomp
-Description: DWZ-decomposition variant of H1.2.ceo2. Replaces the main
-             speech-uncertainty IV stack (UncAnsCEO_c + UncPreCEO_c) with the
-             DWZ Eq.5 decomposition: ClarityCEO_QtrExp_c (persistent CEO trait,
-             = -CEO FE) + UncResCEO_QtrExp_c (call-level state residual).
-             Both decomp components computed via strict no-look-ahead
-             quarterly-expanding fit of DWZ Eq.4 — see
-             run_h0_3_ceo_clarity_expanding.py. Both decomp IVs mean-centered
-             on Main sample. ONE Unrated interaction term estimated: UncResCEO ×
-             Unrated (state channel only). ClarityCEO × Unrated DROPPED — trait
-             × constraint has theoretically ambiguous direction (constraint
-             priority pushes cash UP, clarity perception pushes cash DOWN —
-             competing forces with no clean monotone prediction). Moderator is
-             BINARY Unrated vs Rated (FP 2006 verbatim spec) — BelowIG level
-             dummy AND BelowIG interactions DROPPED entirely. Reference group =
-             Rated firms (IG ∪ BelowIG).
+Description: DWZ Eq.5 decomposition variant of H1.2.ceo2 (HFC moderator).
+             Replaces UncAnsCEO_c with two components: ClarityCEO_c (DWZ Eq.4
+             negated CEO FE, persistent trait) + UncResCEO_c (DWZ residual,
+             call-level state). UncPreCEO_c enters as a third raw IV. All 3
+             IVs mean-centered on Main sample.
+
+             Full-only design: single regression per cell on natural Full sample.
+             QtrExp (no-look-ahead expanding-window) sibling lives in
+             run_h1_2_cash_constraint_ceo2iv_decomp_qtrexp.py. Dual-stack 5-IV
+             precursor preserved in commits ae13357 + fb32343.
+
+             2 Unrated interactions estimated: UncResCEO × Unrated (state channel)
+             + UncPreCEO × Unrated (presentation channel). ClarityCEO × Unrated
+             DROPPED — trait × constraint has theoretically ambiguous direction.
+             Moderator is BINARY Unrated vs Rated (FP 2006 verbatim spec).
+             Reference group = Rated firms (IG ∪ BelowIG).
 
 Tail directions:
     Main ClarityCEO_QtrExp_c: one-tail NEG
@@ -99,33 +100,15 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # Configuration
 # ==============================================================================
 
-# Dual-stack 5-IV design (per H1 pilot pattern, commit 484eeda).
-# Two regressions per cell on intersection sample:
-#   Reg A (DWZ-faithful Full):    Cash ~ Clarity_c + UncRes_c + UncPre_c + Unr [+ ints] + ctrls + FE
-#   Reg B (No-look-ahead QtrExp): Cash ~ Clarity_QtrExp_c + UncRes_QtrExp_c + UncPre_c + Unr [+ ints] + ctrls + FE
+# Full-only 3-IV decomp design (one regression per cell on natural Full sample).
+#   Cash ~ ClarityCEO_c + UncResCEO_c + UncPreCEO_c + Unr [+ 2 ints] + ctrls + FE
 # All centered on Main sample for clean interaction interpretation.
-# UncPreCEO_c is shared between Reg A and Reg B; Reg A is canonical display source.
+# Dual-stack 5-IV precursor preserved in commits ae13357 + fb32343 (restore via
+# `git checkout ae13357 -- <path>`). QtrExp sibling lives in a separate runner.
 
-# Reg A (Full method) IVs
 IVS_REG_A_RAW = ["ClarityCEO", "UncResCEO", "UncPreCEO"]
 IVS_REG_A_CENTERED = ["ClarityCEO_c", "UncResCEO_c", "UncPreCEO_c"]
-
-# Reg B (QtrExp method) IVs
-IVS_REG_B_RAW = ["ClarityCEO_QtrExp", "UncResCEO_QtrExp", "UncPreCEO"]
-IVS_REG_B_CENTERED = ["ClarityCEO_QtrExp_c", "UncResCEO_QtrExp_c", "UncPreCEO_c"]
-
-# All 5 unique raw + centered IVs (UncPreCEO is shared; centering applied to all 5)
-ALL_RAW_IVS = ["ClarityCEO", "UncResCEO", "ClarityCEO_QtrExp", "UncResCEO_QtrExp", "UncPreCEO"]
-ALL_CENTERED_IVS = ["ClarityCEO_c", "UncResCEO_c", "ClarityCEO_QtrExp_c", "UncResCEO_QtrExp_c", "UncPreCEO_c"]
-IV_RAW_TO_CENTERED = dict(zip(ALL_RAW_IVS, ALL_CENTERED_IVS))
-
-# Legacy aliases (some downstream code paths reference IVS_RAW/IVS_CENTERED).
-# Kept for backwards compatibility; equal to the union sets.
-IVS_RAW = ALL_RAW_IVS
-IVS_CENTERED = ALL_CENTERED_IVS
-
-# Decomp parquets carry the QtrExp variants; Full method uses extended dir.
-DECOMP_IVS_RAW = ["ClarityCEO_QtrExp", "UncResCEO_QtrExp"]
+KEY_IVS = IVS_REG_A_CENTERED  # canonical IV stack name
 
 CONTROLS = [
     "Leverage", "lnAssets", "TobinsQ", "ROA", "Capex",
@@ -137,52 +120,37 @@ CONTROLS = [
 # Binary moderator (Unrated vs Rated reference) per FP 2006 verbatim.
 MOD_UNRATED = "Unrated"
 
-# 3 unique HFC interaction terms (Clarity × Unrated DROPPED for both methods —
-# trait × constraint mixes competing forces; no clean monotone HFC prediction).
+# 2 HFC interaction terms (Clarity × Unrated DROPPED — trait × constraint mixes
+# competing forces; no clean monotone HFC prediction).
 INT_A_UNCRES_UNRATED = "UncResCEO_c_x_Unrated"
-INT_B_UNCRES_UNRATED = "UncResCEO_QtrExp_c_x_Unrated"
-INT_UNCPRE_UNRATED   = "UncPreCEO_c_x_Unrated"   # shared between Reg A and Reg B
-ALL_INTERACTIONS = [INT_A_UNCRES_UNRATED, INT_B_UNCRES_UNRATED, INT_UNCPRE_UNRATED]
+INT_UNCPRE_UNRATED   = "UncPreCEO_c_x_Unrated"
+ALL_INTERACTIONS = [INT_A_UNCRES_UNRATED, INT_UNCPRE_UNRATED]
 
-# Legacy aliases (existing _save_latex_table / report references).
-INT_UNRATED_UNCRES = INT_B_UNCRES_UNRATED  # legacy points to QtrExp variant
-INT_UNRATED_UNCPRE = INT_UNCPRE_UNRATED
-INT_UNRATED_TERMS = [INT_B_UNCRES_UNRATED, INT_UNCPRE_UNRATED]  # Reg B's pair (legacy)
-
-# 9 display IV rows in LOCKED stacked-pair order (do NOT reorder).
+# 6 display IV rows.
 DISPLAY_IVS = [
-    "ClarityCEO_c",                    # Row 1 (Reg A uncond, NEG)
-    "ClarityCEO_QtrExp_c",             # Row 2 (Reg B uncond, NEG)
-    "UncResCEO_c",                     # Row 3 (Reg A uncond, POS)
-    "UncResCEO_QtrExp_c",              # Row 4 (Reg B uncond, POS)
-    "UncPreCEO_c",                     # Row 5 (Reg A uncond, POS)
-    MOD_UNRATED,                       # Row 6 (Reg A int, two-tail)
-    INT_A_UNCRES_UNRATED,              # Row 7 (Reg A int, POS)
-    INT_B_UNCRES_UNRATED,              # Row 8 (Reg B int, POS)
-    INT_UNCPRE_UNRATED,                # Row 9 (Reg A int, POS)
+    "ClarityCEO_c",          # Row 1 (uncond, NEG)
+    "UncResCEO_c",           # Row 2 (uncond, POS)
+    "UncPreCEO_c",           # Row 3 (uncond, POS)
+    MOD_UNRATED,             # Row 4 (int, two-tail)
+    INT_A_UNCRES_UNRATED,    # Row 5 (int, POS)
+    INT_UNCPRE_UNRATED,      # Row 6 (int, POS)
 ]
 
 IV_TAIL_DIRECTION: Dict[str, str] = {
-    "ClarityCEO_c":              "negative",
-    "ClarityCEO_QtrExp_c":       "negative",
-    "UncResCEO_c":               "positive",
-    "UncResCEO_QtrExp_c":        "positive",
-    "UncPreCEO_c":               "positive",
-    MOD_UNRATED:                 "none",          # two-tailed level dummy
-    INT_A_UNCRES_UNRATED:        "positive",
-    INT_B_UNCRES_UNRATED:        "positive",
-    INT_UNCPRE_UNRATED:          "positive",
+    "ClarityCEO_c":         "negative",
+    "UncResCEO_c":          "positive",
+    "UncPreCEO_c":          "positive",
+    MOD_UNRATED:            "none",  # two-tailed level dummy
+    INT_A_UNCRES_UNRATED:   "positive",
+    INT_UNCPRE_UNRATED:     "positive",
 }
 
 VARIABLE_LABELS = {
-    "ClarityCEO_c":         "CEO Clarity (DWZ Full, c)",
-    "ClarityCEO_QtrExp_c":  "CEO Clarity (DWZ Qtr-Exp, c)",
-    "UncResCEO_c":          "CEO Residual Unc. (DWZ Full, c)",
-    "UncResCEO_QtrExp_c":   "CEO Residual Unc. (DWZ Qtr-Exp, c)",
+    "ClarityCEO_c":         "CEO Clarity (DWZ, c)",
+    "UncResCEO_c":          "CEO Residual Unc. (DWZ, c)",
     "UncPreCEO_c":          "CEO Pres Unc. (c)",
     MOD_UNRATED:            "Unrated",
-    INT_A_UNCRES_UNRATED:   r"UncRes (Full) $\times$ Unrated",
-    INT_B_UNCRES_UNRATED:   r"UncRes (Qtr-Exp) $\times$ Unrated",
+    INT_A_UNCRES_UNRATED:   r"UncRes $\times$ Unrated",
     INT_UNCPRE_UNRATED:     r"UncPre $\times$ Unrated",
 }
 
@@ -205,17 +173,16 @@ SUITE_ID = "H1.2.ceo2.decomp"
 SUITE_DIR_NAME = "h1_2_cash_constraint_ceo2iv_decomp"
 SUITE_TITLE = (
     "Financial Constraint-Moderated CEO Speech Uncertainty and Cash Holdings "
-    "(CEO 5-IV Dual Stack: DWZ-Faithful Full + Quarterly-Expanding + Pres x Unrated)"
+    "(CEO 3-IV Decomp: DWZ-Faithful Full + Pres x Unrated)"
 )
 SUITE_CAPTION = (
-    r"H1.2 CEO 5-IV Dual Stack HFC: ClarityCEO + UncResCEO (DWZ Full + Qtr-Exp) + "
+    r"H1.2 CEO 3-IV Decomp HFC: ClarityCEO + UncResCEO (DWZ Full) + "
     r"UncPreCEO $\times$ Unrated Constraint"
 )
 SUITE_LABEL = "tab:h1_2_ceo2_decomp"
 SAMPLE_LABEL = (
     "Main sample (excludes financial and utility firms). Fiscal years 2002-2016. "
-    "DWZ Eq.5 decomposition: Clarity = -CEO FE; UncRes = call-level residual. "
-    "Two methods reported per cell: DWZ-faithful Full + no-look-ahead quarterly-expanding."
+    "DWZ Eq.5 decomposition: Clarity = -CEO FE; UncRes = call-level residual."
 )
 HYP_DIR = "positive"  # Suite-level Pydantic placeholder; per-IV via IV_TAIL_DIRECTION + spec stitching.
 CLUSTERING = {"entity": True, "time": False}
@@ -255,15 +222,11 @@ DV_TEX = {
 SUMMARY_STATS_VARS = [
     {"col": "CashRatio", "label": "Cash Holdings$_t$"},
     {"col": "CashRatio_lead", "label": "Cash Holdings$_{t+1}$"},
-    # Dual-stack 5 IVs (Full method + QtrExp variant + shared UncPreCEO)
-    {"col": "ClarityCEO", "label": "CEO Clarity (DWZ Full, raw)"},
-    {"col": "ClarityCEO_c", "label": "CEO Clarity (DWZ Full, c)"},
-    {"col": "ClarityCEO_QtrExp", "label": "CEO Clarity (DWZ Qtr-Exp, raw)"},
-    {"col": "ClarityCEO_QtrExp_c", "label": "CEO Clarity (DWZ Qtr-Exp, c)"},
-    {"col": "UncResCEO", "label": "CEO UncRes (DWZ Full, raw)"},
-    {"col": "UncResCEO_c", "label": "CEO UncRes (DWZ Full, c)"},
-    {"col": "UncResCEO_QtrExp", "label": "CEO UncRes (DWZ Qtr-Exp, raw)"},
-    {"col": "UncResCEO_QtrExp_c", "label": "CEO UncRes (DWZ Qtr-Exp, c)"},
+    # 3 Full IVs (raw + centered)
+    {"col": "ClarityCEO", "label": "CEO Clarity (DWZ, raw)"},
+    {"col": "ClarityCEO_c", "label": "CEO Clarity (DWZ, c)"},
+    {"col": "UncResCEO", "label": "CEO UncRes (DWZ, raw)"},
+    {"col": "UncResCEO_c", "label": "CEO UncRes (DWZ, c)"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty (raw)"},
     {"col": "UncPreCEO_c", "label": "CEO Pres Uncertainty (c)"},
     {"col": MOD_UNRATED, "label": "Unrated (dummy)"},
@@ -301,18 +264,15 @@ def parse_arguments():
 
 
 def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.DataFrame, Path]:
-    """Load H1 panel + merge BOTH DWZ-decomp parquets (Full + QtrExp).
+    """Load H1 panel + merge DWZ Full decomp parquets.
 
-    Dual-stack 5-IV design (per H1 pilot):
-      - UncPreCEO: H1 panel (raw, single source).
-      - ClarityCEO + UncResCEO (DWZ Full method): from ceo_clarity_extended/{latest}/
-        ClarityCEO joined on ceo_id (per-CEO constant per DWZ Eq.5);
-        UncResCEO joined on file_name (call-level).
-      - ClarityCEO_QtrExp + UncResCEO_QtrExp (no-look-ahead variant): from
-        ceo_clarity_expanding/{latest}/, both joined on file_name.
+    Full-only 3-IV design:
+      - UncPreCEO: H1 panel (raw).
+      - UncResCEO: ceo_clarity_extended/{latest}/ceo_clarity_residual.parquet (file_name).
+      - ClarityCEO: ceo_clarity_extended/{latest}/ceo_clarity_fe.parquet (ceo_id, per-CEO).
     """
     print("\n" + "=" * 60)
-    print("Loading H1 panel + merging DWZ decomp parquets (Full + QtrExp)")
+    print("Loading H1 panel + merging DWZ Full decomp parquets")
     print("=" * 60)
 
     if panel_path:
@@ -362,25 +322,9 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
     panel = panel.merge(full_fe, on="ceo_id", how="left", validate="many_to_one")
     print(f"  After Full ClarityCEO merge: {panel['ClarityCEO'].notna().sum():,} matched")
 
-    # ----- Merge 3: DWZ QtrExp variant (Clarity_QtrExp + UncRes_QtrExp) on file_name -----
-    decomp_dir = get_latest_output_dir(
-        root_path / "outputs" / "econometric" / "ceo_clarity_expanding",
-        required_file="ceo_clarity_qtrexp_residuals.parquet",
-    )
-    decomp_file = decomp_dir / "ceo_clarity_qtrexp_residuals.parquet"
-    decomp = pd.read_parquet(
-        decomp_file,
-        columns=["file_name", *DECOMP_IVS_RAW],
-    )
-    print(f"  QtrExp:          {decomp_file}")
-    print(f"  QtrExp rows:     {len(decomp):,} "
-          f"(non-NaN Clarity_QtrExp: {decomp[DECOMP_IVS_RAW[0]].notna().sum():,})")
-    panel = panel.merge(decomp, on="file_name", how="left", validate="one_to_one")
-    print(f"  After QtrExp merge: {panel[DECOMP_IVS_RAW[0]].notna().sum():,} matched")
-
-    # Per-IV non-NaN summary (intersection enforced at complete-case stage downstream).
-    print("\n  Per-IV non-NaN counts (intersection enforced downstream):")
-    for iv in ALL_RAW_IVS:
+    # Per-IV non-NaN summary on natural Full sample (complete-case downstream).
+    print("\n  Per-IV non-NaN counts on Full sample:")
+    for iv in IVS_REG_A_RAW:
         n = panel[iv].notna().sum()
         print(f"    {iv:25s}: {n:,} ({100*n/len(panel):.1f}%)")
 
@@ -461,20 +405,15 @@ def load_and_merge_ratings(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame
 
 
 def center_iv(panel: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, float]]:
-    """Mean-center each of the 5 CEO IVs on Main sample (after FF12 filter, before complete-case).
-
-    Centers Reg A (Full): ClarityCEO, UncResCEO, UncPreCEO.
-    Centers Reg B (QtrExp): ClarityCEO_QtrExp, UncResCEO_QtrExp.
-    UncPreCEO is shared (only one centered version produced).
-    """
+    """Mean-center 3 Full IVs on Main sample (after FF12 filter, before complete-case)."""
     print("\n" + "=" * 60)
-    print("Centering 5 CEO IVs on Main sample (3 Full + 2 QtrExp; UncPreCEO shared)")
+    print("Centering 3 Full IVs on Main sample")
     print("=" * 60)
 
     main_mask = ~panel["ff12_code"].isin([8, 11])
     iv_means: Dict[str, float] = {}
 
-    for raw, centered in zip(ALL_RAW_IVS, ALL_CENTERED_IVS):
+    for raw, centered in zip(IVS_REG_A_RAW, IVS_REG_A_CENTERED):
         iv_main = panel.loc[main_mask, raw].dropna()
         mu = float(iv_main.mean())
         panel[centered] = panel[raw] - mu
@@ -519,8 +458,8 @@ def prepare_regression_data(
 
     use_interactions = spec.get("interactions", True)
 
-    # Intersection sample: require ALL 5 raw + 5 centered IVs non-NaN (Reg A + Reg B union).
-    required = ([dv] + ALL_RAW_IVS + ALL_CENTERED_IVS + [MOD_UNRATED]
+    # Natural Full sample: require 3 raw + 3 centered Full IVs non-NaN.
+    required = ([dv] + IVS_REG_A_RAW + IVS_REG_A_CENTERED + [MOD_UNRATED]
                 + all_controls + ["gvkey", time_col, "ff12_code"])
 
     missing = [c for c in required if c not in panel.columns]
@@ -530,26 +469,22 @@ def prepare_regression_data(
     df = panel.copy()
     df = df.replace([np.inf, -np.inf], np.nan)
 
-    # 3 unique HFC interaction terms (Clarity × Unrated DROPPED for both methods —
-    # trait × constraint mixes competing forces; no clean monotone HFC prediction).
-    #   Reg A: UncResCEO_c × Unrated
-    #   Reg B: UncResCEO_QtrExp_c × Unrated
-    #   Shared: UncPreCEO_c × Unrated (Reg A is canonical display source)
+    # 2 HFC interaction terms (Clarity × Unrated DROPPED — trait × constraint
+    # mixes competing forces; no clean monotone HFC prediction).
     if use_interactions:
-        df[INT_A_UNCRES_UNRATED] = df["UncResCEO_c"]            * df[MOD_UNRATED]
-        df[INT_B_UNCRES_UNRATED] = df["UncResCEO_QtrExp_c"]     * df[MOD_UNRATED]
-        df[INT_UNCPRE_UNRATED]   = df["UncPreCEO_c"]            * df[MOD_UNRATED]
+        df[INT_A_UNCRES_UNRATED] = df["UncResCEO_c"] * df[MOD_UNRATED]
+        df[INT_UNCPRE_UNRATED]   = df["UncPreCEO_c"] * df[MOD_UNRATED]
 
     # Drop NaN in DV
     before = len(df)
     df = df[df[dv].notna()].copy()
     print(f"  After DV ({dv}) filter: {len(df):,} / {before:,}")
 
-    # Complete cases on intersection sample (drops Q1 rows with NaN Clarity_QtrExp/UncRes_QtrExp).
+    # Complete cases on natural Full sample.
     all_required = required + (ALL_INTERACTIONS if use_interactions else [])
     complete_mask = df[all_required].notna().all(axis=1)
     df = df[complete_mask].copy()
-    print(f"  After complete cases (5-IV intersection): {len(df):,}")
+    print(f"  After complete cases (Full sample): {len(df):,}")
 
     # Min calls per firm
     firm_counts = df["gvkey"].value_counts()
@@ -661,21 +596,13 @@ def _stash_iv_to_meta(meta: Dict[str, Any], model: Any, iv: str) -> None:
 
 def run_regression(
     df_prepared: pd.DataFrame, spec: Dict[str, Any]
-) -> Tuple[Any, Any, Dict[str, Any]]:
-    """Run TWO PanelOLS regressions per spec (dual-stack 5-IV design).
+) -> Tuple[Any, Dict[str, Any]]:
+    """Run a single PanelOLS regression per spec (Full-only).
 
-      Reg A (DWZ-faithful Full):    Cash ~ Clarity_c + UncRes_c + UncPre_c + Unr [+ ints A] + ctrls + FE
-      Reg B (No-look-ahead QtrExp): Cash ~ Clarity_QtrExp_c + UncRes_QtrExp_c + UncPre_c + Unr [+ ints B] + ctrls + FE
+      Cash ~ Clarity_c + UncRes_c + UncPre_c + Unr [+ 2 ints] + ctrls + FE
 
-    Both run on the SAME intersection sample. Display semantics:
-      - Clarity_QtrExp + UncRes_QtrExp + INT_B_UNCRES_UNRATED come from Reg B; everything else from Reg A.
-      - N + R^2 from Reg A (DWZ-faithful primary anchor).
-
-    Failure handling (mirrors H1 pilot):
-      - Reg A fails → return (None, None, {}); col skipped.
-      - Reg B fails with Reg A success → render Reg A only; Reg B cells empty.
-
-    Returns (model_a, model_b, meta) or (None, None, {}) on Reg A failure.
+    Per-IV one-tail directions applied via IV_TAIL_DIRECTION at p_one stitching.
+    Returns (model, meta) or (None, {}) on regression failure.
     """
     dv = spec["dv"]
     col_num = spec["col"]
@@ -693,131 +620,69 @@ def run_regression(
 
     if len(df_prepared) < 100:
         print(f"  Too few obs ({len(df_prepared)}), skipping")
-        return None, None, {}
+        return None, {}
 
     use_interactions = spec.get("interactions", True)
 
-    # Build Reg A + Reg B exog stacks
     if use_interactions:
-        exog_a = IVS_REG_A_CENTERED + [MOD_UNRATED] + [INT_A_UNCRES_UNRATED, INT_UNCPRE_UNRATED] + all_controls
-        exog_b = IVS_REG_B_CENTERED + [MOD_UNRATED] + [INT_B_UNCRES_UNRATED, INT_UNCPRE_UNRATED] + all_controls
+        exog = KEY_IVS + [MOD_UNRATED] + ALL_INTERACTIONS + all_controls
     else:
-        exog_a = IVS_REG_A_CENTERED + [MOD_UNRATED] + all_controls
-        exog_b = IVS_REG_B_CENTERED + [MOD_UNRATED] + all_controls
+        exog = KEY_IVS + [MOD_UNRATED] + all_controls
 
     n_firms = df_prepared["gvkey"].nunique()
     n_time_periods = df_prepared.groupby(["gvkey", time_col]).ngroups
     print(f"  N={len(df_prepared):,}, firms={n_firms:,}, firm-time-periods={n_time_periods:,}")
     if extra_controls:
         print(f"  Extra controls: {extra_controls}")
-    print(f"  Reg A exog: {len(exog_a)} vars (3 IVs + Unr + {2 if use_interactions else 0} ints + {len(all_controls)} ctrls)")
-    print(f"  Reg B exog: {len(exog_b)} vars (3 IVs + Unr + {2 if use_interactions else 0} ints + {len(all_controls)} ctrls)")
+    print(f"  exog: {len(exog)} vars (3 IVs + Unr + {2 if use_interactions else 0} ints + {len(all_controls)} ctrls)")
 
     df_panel = df_prepared.set_index(["gvkey", time_col])
 
-    # ----- Reg A fit -----
     t0 = datetime.now()
     try:
-        model_a = _fit_one(df_panel, dv, exog_a, base_fe)
+        model = _fit_one(df_panel, dv, exog, base_fe)
     except Exception as e:
-        print(f"  ERROR Reg A: {e}", file=sys.stderr)
-        model_a = None
-    elapsed_a = (datetime.now() - t0).total_seconds()
+        print(f"  ERROR regression failed: {e}", file=sys.stderr)
+        return None, {}
+    elapsed = (datetime.now() - t0).total_seconds()
 
-    if model_a is None:
-        print(f"  [FAIL] Reg A failed; skipping col {col_num}")
-        return None, None, {}
-    print(f"  Reg A [OK] in {elapsed_a:.1f}s | R^2={model_a.rsquared:.4f} | N={int(model_a.nobs):,}")
+    print(f"  [OK] in {elapsed:.1f}s | R^2={model.rsquared:.4f} | N={int(model.nobs):,}")
 
-    # ----- Reg B fit -----
-    t0 = datetime.now()
-    try:
-        model_b = _fit_one(df_panel, dv, exog_b, base_fe)
-    except Exception as e:
-        print(f"  ERROR Reg B: {e}", file=sys.stderr)
-        model_b = None
-    elapsed_b = (datetime.now() - t0).total_seconds()
-    if model_b is not None:
-        print(f"  Reg B [OK] in {elapsed_b:.1f}s | R^2={model_b.rsquared:.4f} | N={int(model_b.nobs):,}")
-    else:
-        print(f"  Reg B [FAIL] — QtrExp display cells will be empty in this col")
-
-    # VIF on Reg A's exog (single source for diagnostics)
-    vif = compute_vif(df_prepared, exog_a)
-
+    vif = compute_vif(df_prepared, exog)
     n_unrated = int(df_prepared[MOD_UNRATED].sum())
     n_rated = int((df_prepared[MOD_UNRATED] == 0).sum())
 
-    # Build merged meta with per-IV keys (mirrors H1 pilot pattern: <iv>_beta/_se/_t/_p_one)
     meta: Dict[str, Any] = {
         "col": col_num, "dv": dv, "fe": fe,
         "interactions": use_interactions,
-        "n_obs": int(model_a.nobs), "n_firms": n_firms, "n_time_periods": n_time_periods,
-        "r2": float(model_a.rsquared),
-        "adj_r2": 1 - (1 - model_a.rsquared) * (model_a.nobs - 1) / model_a.df_resid,
-        "dv_mean": float(model_a.model.dependent.dataframe.mean().iloc[0]),
+        "n_obs": int(model.nobs), "n_firms": n_firms, "n_time_periods": n_time_periods,
+        "r2": float(model.rsquared),
+        "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
+        "dv_mean": float(model.model.dependent.dataframe.mean().iloc[0]),
         "extra_controls": ",".join(extra_controls) if extra_controls else "",
         "n_rated": n_rated, "n_unrated": n_unrated,
         "sample_years": f"{YEAR_MIN}-{YEAR_MAX}",
     }
 
-    # ---- Reg A IV coefs (Clarity_c, UncRes_c, UncPre_c, Unrated, INT_A_UNCRES, INT_UNCPRE) ----
-    print(f"  Reg A coefs:")
-    for iv in IVS_REG_A_CENTERED + [MOD_UNRATED]:
-        _stash_iv_to_meta(meta, model_a, iv)
+    print(f"  IV coefs:")
+    for iv in KEY_IVS + [MOD_UNRATED]:
+        _stash_iv_to_meta(meta, model, iv)
     if use_interactions:
-        for iv in [INT_A_UNCRES_UNRATED, INT_UNCPRE_UNRATED]:
-            _stash_iv_to_meta(meta, model_a, iv)
+        for iv in ALL_INTERACTIONS:
+            _stash_iv_to_meta(meta, model, iv)
 
-    # ---- Reg B IV coefs (Clarity_QtrExp_c, UncRes_QtrExp_c, INT_B_UNCRES — display only) ----
-    if model_b is not None:
-        print(f"  Reg B coefs (_QtrExp display + diagnostics):")
-        for iv in ["ClarityCEO_QtrExp_c", "UncResCEO_QtrExp_c"]:
-            _stash_iv_to_meta(meta, model_b, iv)
-        if use_interactions:
-            _stash_iv_to_meta(meta, model_b, INT_B_UNCRES_UNRATED)
-        # Reg B's UncPreCEO_c + UncPreCEO_c × Unrated for diagnostics CSV (NOT displayed).
-        for iv in ["UncPreCEO_c", INT_UNCPRE_UNRATED]:
-            if iv in model_b.params.index:
-                meta[f"{iv}_beta_qtrexp"] = float(model_b.params[iv])
-                meta[f"{iv}_se_qtrexp"] = float(model_b.std_errors[iv])
-            else:
-                meta[f"{iv}_beta_qtrexp"] = np.nan
-                meta[f"{iv}_se_qtrexp"] = np.nan
-        meta["r2_qtrexp"] = float(model_b.rsquared)
-        meta["adj_r2_qtrexp"] = 1 - (1 - model_b.rsquared) * (model_b.nobs - 1) / model_b.df_resid
-    else:
-        for iv in ["ClarityCEO_QtrExp_c", "UncResCEO_QtrExp_c"]:
-            meta[f"{iv}_beta"] = np.nan
-            meta[f"{iv}_se"] = np.nan
-            meta[f"{iv}_t"] = np.nan
-            meta[f"{iv}_p_one"] = np.nan
-        if use_interactions:
-            meta[f"{INT_B_UNCRES_UNRATED}_beta"] = np.nan
-            meta[f"{INT_B_UNCRES_UNRATED}_se"] = np.nan
-            meta[f"{INT_B_UNCRES_UNRATED}_t"] = np.nan
-            meta[f"{INT_B_UNCRES_UNRATED}_p_one"] = np.nan
-        meta["UncPreCEO_c_beta_qtrexp"] = np.nan
-        meta["UncPreCEO_c_se_qtrexp"] = np.nan
-        meta[f"{INT_UNCPRE_UNRATED}_beta_qtrexp"] = np.nan
-        meta[f"{INT_UNCPRE_UNRATED}_se_qtrexp"] = np.nan
-        meta["r2_qtrexp"] = None
-        meta["adj_r2_qtrexp"] = None
-
-    # VIF (Reg A canonical source)
     if vif and use_interactions:
-        for t in [INT_A_UNCRES_UNRATED, INT_UNCPRE_UNRATED]:
+        for t in ALL_INTERACTIONS:
             meta[f"vif_{t}"] = vif.get(t, np.nan)
         meta[f"vif_{MOD_UNRATED}"] = vif.get(MOD_UNRATED, np.nan)
 
-    # Sanity: warn if any DISPLAY_IV missing/NaN
     for iv in DISPLAY_IVS:
-        if not use_interactions and iv in (INT_A_UNCRES_UNRATED, INT_B_UNCRES_UNRATED, INT_UNCPRE_UNRATED):
-            continue  # uncond specs legitimately lack interaction terms
+        if not use_interactions and iv in ALL_INTERACTIONS:
+            continue
         if f"{iv}_beta" not in meta or pd.isna(meta.get(f"{iv}_beta")):
             print(f"  WARN col {col_num}: display IV {iv} missing/NaN")
 
-    return model_a, model_b, meta
+    return model, meta
 
 
 def _sig_stars_one(p: float) -> str:
@@ -844,10 +709,9 @@ def _sig_stars_two(p: float) -> str:
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     """Write 8-column LaTeX table: 4 interaction CashRatio_t + 4 interaction CashRatio_lead.
 
-    Dual-stack 5-IV display: 9 rows (5 main + Unrated + 3 interactions). Coefficients
-    pulled from interaction-spec metas only (mains are conditional slopes at Unrated=0).
-    Iterates DISPLAY_IVS for locked stacked-pair order. Per-IV stars use one-tail
-    direction map; Unrated level uses two-tail stars.
+    Full-only 3-IV decomp: 6 rows (3 main + Unrated + 2 interactions). Coefficients
+    pulled from interaction-spec metas (mains are conditional slopes at Unrated=0).
+    Per-IV stars use one-tail direction map; Unrated level uses two-tail stars.
     """
     results_by_col = {}
     for r in all_results:
@@ -885,7 +749,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\midrule",
     ]
 
-    # 9 IV rows in stacked-pair order (DISPLAY_IVS); per-IV stars by tail direction.
+    # 6 IV rows (DISPLAY_IVS); per-IV stars by tail direction.
     for iv in DISPLAY_IVS:
         label = VARIABLE_LABELS.get(iv, iv).replace("_", r"\_")
         direction = IV_TAIL_DIRECTION.get(iv, "positive")
@@ -930,28 +794,21 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} ",
         r"DWZ Eq.5 decomposition of CEO Q\&A uncertainty into a persistent CEO trait ",
-        r"component (\textit{ClarityCEO}) and a within-quarter state component (\textit{UncResCEO}). ",
-        r"Two estimation methods reported per cell on the same intersection sample: the ",
-        r"\textit{DWZ-faithful Full} method (rows 1, 3, 7) uses a single full-panel Eq.4 regression ",
-        r"following DWZ; the \textit{quarterly-expanding} variant (rows 2, 4, 8) uses a recursively-trained ",
-        r"Eq.4 to avoid forward-looking contamination. \textit{UncPreCEO} (rows 5, 9) enters both ",
-        r"regressions as a third raw IV; coefficient + SE reported from the Full-method (Reg A) ",
-        r"specification --- the QtrExp specification's UncPreCEO and UncPreCEO$\times$Unrated ",
-        r"coefficients are saved in \texttt{model\_diagnostics.csv} as ",
-        r"\texttt{UncPreCEO\_c\_beta\_qtrexp} etc. for reader inspection. ",
-        r"\textit{ClarityCEO} $\times$ Unrated NOT estimated for either method: trait $\times$ constraint ",
-        r"mixes competing forces (constraint pushes cash UP via HFC priority; high clarity pushes cash DOWN ",
-        r"via reduced perception) --- no clean monotone HFC prediction. ",
+        r"component (\textit{ClarityCEO}, the negative of the CEO fixed effect from DWZ Eq.4) ",
+        r"and a within-quarter state component (\textit{UncResCEO}, the residual from DWZ Eq.4); ",
+        r"both Full-method (single full-panel Eq.4 fit). ",
+        r"\textit{UncPreCEO} (raw presentation-segment uncertainty) enters as a third IV. ",
+        r"\textit{ClarityCEO} $\times$ Unrated NOT estimated: trait $\times$ constraint mixes competing forces ",
+        r"(constraint pushes cash UP via HFC priority; high clarity pushes cash DOWN via reduced perception) --- ",
+        r"no clean monotone HFC prediction. ",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for directional IVs; two-tailed for Unrated level). ",
-        r"Per-IV directions: \textit{ClarityCEO} (Full + Qtr-Exp) $\beta < 0$; \textit{UncResCEO} (Full + Qtr-Exp), ",
-        r"\textit{UncPreCEO}, and HFC interactions $\beta > 0$; \textit{Unrated} level two-tailed. ",
+        r"Per-IV directions: \textit{ClarityCEO} $\beta < 0$; \textit{UncResCEO}, \textit{UncPreCEO}, ",
+        r"and HFC interactions $\beta > 0$; \textit{Unrated} level two-tailed. ",
         r"Moderator is BINARY: Unrated vs Rated reference group (FP 2006; Rated $=$ any S\&P long-term issuer rating). ",
         r"Rating matched via merge\_asof to most recent rating before call date. ",
         r"Standard errors (in parentheses) firm-level clustered. ",
         r"Main sample (excludes financial and utility firms). ",
         r"Sample restricted to fiscal years 2002--2016 (ratings coverage). ",
-        r"$N$ and $R^2$ shown for the DWZ-faithful (Reg A) specification; ",
-        r"the quarterly-expanding $R^2$ (\texttt{r2\_qtrexp}) is in \texttt{model\_diagnostics.csv}. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}",
         r"\end{table}",
@@ -984,11 +841,11 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
             f.write(f"H1.2 CEO 2-IV Decomposed Financing-Constraint-Moderated Cash Holdings [{spec_type}]\n")
             f.write(f"Col: ({col_num})\n")
             f.write(f"DV: {meta['dv']}\n")
-            f.write(f"IVs: {', '.join(IVS_RAW)} (DWZ Eq.5 qtr-exp; mean-centered)\n")
+            f.write(f"IVs: {', '.join(IVS_REG_A_RAW)} (DWZ Eq.5 Full; mean-centered)\n")
             f.write(f"Moderator: Unrated only (binary; FP 2006)\n")
             if has_int:
-                f.write(f"Interactions: {', '.join(INT_UNRATED_TERMS)}\n")
-                f.write(f"Tail: UncResxUnrated one-tail POS (Clarity×Unrated DROPPED)\n")
+                f.write(f"Interactions: {', '.join(ALL_INTERACTIONS)}\n")
+                f.write(f"Tail: UncResxUnrated + UncPrexUnrated one-tail POS (Clarity×Unrated DROPPED)\n")
             else:
                 f.write(f"Interactions: none (base model)\n")
             f.write(f"FE: {meta['fe']}\n")
@@ -1016,24 +873,18 @@ def generate_report(
     all_results: List[Dict[str, Any]], out_dir: Path,
     duration: float, iv_means: Dict[str, float],
 ) -> None:
-    """Generate markdown report for CEO 5-IV dual-stack decomp variant."""
+    """Generate markdown report for CEO 3-IV Full-only decomp variant."""
     iv_means_str = ", ".join(f"{k}={v:+.4f}" for k, v in iv_means.items())
     lines = [
-        "# H1.2 CEO 5-IV Dual Stack DECOMP Financing-Constraint-Moderated Cash Holdings",
+        "# H1.2 CEO 3-IV Decomp Financing-Constraint-Moderated Cash Holdings (Full-only)",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
-        f"**Design:** Two regressions per cell on intersection sample:",
-        f"  - **Reg A (DWZ-faithful Full)**: Clarity_c + UncRes_c + UncPre_c + Unr [+ ints A] + ctrls + FE",
-        f"  - **Reg B (No-look-ahead QtrExp)**: Clarity_QtrExp_c + UncRes_QtrExp_c + UncPre_c + Unr [+ ints B] + ctrls + FE",
-        f"**Display rows (stacked-pair, 9 IVs):**",
-        f"  1. ClarityCEO_c (Reg A; NEG)        2. ClarityCEO_QtrExp_c (Reg B; NEG)",
-        f"  3. UncResCEO_c (Reg A; POS)         4. UncResCEO_QtrExp_c (Reg B; POS)",
-        f"  5. UncPreCEO_c (Reg A; POS — Reg B in CSV)",
-        f"  6. Unrated (Reg A; two-tail)",
-        f"  7. UncResCEO_c x Unr (Reg A; POS)   8. UncResCEO_QtrExp_c x Unr (Reg B; POS)",
-        f"  9. UncPreCEO_c x Unr (Reg A; POS — Reg B in CSV)",
-        f"**Per-IV tails:** ClarityCEO (both methods) NEG; UncResCEO (both methods), UncPreCEO, HFC interactions POS; Unrated two-tailed.",
+        f"**Design:** Cash ~ Clarity_c + UncRes_c + UncPre_c + Unr [+ 2 ints] + ctrls + FE",
+        f"**Display rows (6 IVs):**",
+        f"  1. ClarityCEO_c (NEG)        2. UncResCEO_c (POS)        3. UncPreCEO_c (POS)",
+        f"  4. Unrated (two-tail)        5. UncResCEO_c x Unr (POS)  6. UncPreCEO_c x Unr (POS)",
+        f"**Per-IV tails:** ClarityCEO NEG; UncResCEO + UncPreCEO + HFC interactions POS; Unrated two-tailed.",
         f"**ClarityCEO x Unrated DROPPED**: trait x constraint mixes competing forces; no clean monotone HFC prediction.",
         f"**Channel:** CH1 — Precautionary liquidity under external-finance frictions",
         f"**IV centering means:** {iv_means_str}",
@@ -1041,8 +892,8 @@ def generate_report(
         "",
         "## Results (interaction-spec coefs; conditional slopes at Unrated=0)",
         "",
-        "| Col | DV | Spec | ClarityCEO (Full) | UncResCEO (Full) | INT_A_UNCRES | INT_B_UNCRES | N | R2 (Reg A) |",
-        "|-----|----|------|-------------------|------------------|--------------|--------------|---|------------|",
+        "| Col | DV | Spec | ClarityCEO | UncResCEO | INT_UNCRES_UNR | INT_UNCPRE_UNR | N | R2 |",
+        "|-----|----|------|------------|-----------|----------------|----------------|---|------|",
     ]
 
     for r in all_results:
@@ -1056,12 +907,12 @@ def generate_report(
         if m.get("interactions"):
             b_int_a = m.get(f"{INT_A_UNCRES_UNRATED}_beta", np.nan)
             p_int_a = m.get(f"{INT_A_UNCRES_UNRATED}_p_one", np.nan)
-            b_int_b = m.get(f"{INT_B_UNCRES_UNRATED}_beta", np.nan)
-            p_int_b = m.get(f"{INT_B_UNCRES_UNRATED}_p_one", np.nan)
+            b_int_p = m.get(f"{INT_UNCPRE_UNRATED}_beta", np.nan)
+            p_int_p = m.get(f"{INT_UNCPRE_UNRATED}_p_one", np.nan)
             int_a_str = f"{b_int_a:+.4f}{_sig_stars_one(p_int_a)} ({p_int_a:.3f})"
-            int_b_str = f"{b_int_b:+.4f}{_sig_stars_one(p_int_b)} ({p_int_b:.3f})"
+            int_p_str = f"{b_int_p:+.4f}{_sig_stars_one(p_int_p)} ({p_int_p:.3f})"
         else:
-            int_a_str, int_b_str = "—", "—"
+            int_a_str, int_p_str = "—", "—"
         spec_label = "Int" if m.get("interactions") else "Base"
         s_cl = _sig_stars_one(p_cl) if not np.isnan(p_cl) else ""
         s_un = _sig_stars_one(p_un) if not np.isnan(p_un) else ""
@@ -1069,7 +920,7 @@ def generate_report(
             f"| ({m['col']}) | {m['dv']} | {spec_label} | "
             f"{b_cl:+.4f}{s_cl} ({p_cl:.3f}) | "
             f"{b_un:+.4f}{s_un} ({p_un:.3f}) | "
-            f"{int_a_str} | {int_b_str} | "
+            f"{int_a_str} | {int_p_str} | "
             f"{m['n_obs']:,} | {m['r2']:.4f} |"
         )
 
@@ -1077,11 +928,11 @@ def generate_report(
         "",
         "## Interpretation",
         "",
-        "- ClarityCEO (Full + QtrExp; NEG): persistent CEO clarity → less precautionary cash (rated firms baseline)",
-        "- UncResCEO (Full + QtrExp; POS): within-quarter uncertainty surprise → more cash (rated firms baseline)",
-        "- UncPreCEO (Reg A only; POS): presentation-segment uncertainty → more cash",
-        "- INT_A/B_UNCRES_UNRATED (POS): HFC amplification at state level for unrated firms (both methods)",
-        "- INT_UNCPRE_UNRATED (Reg A only; POS): HFC amplification at presentation level",
+        "- ClarityCEO (NEG): persistent CEO clarity → less precautionary cash (rated firms baseline)",
+        "- UncResCEO (POS): within-quarter uncertainty surprise → more cash (rated firms baseline)",
+        "- UncPreCEO (POS): presentation-segment uncertainty → more cash",
+        "- INT_A_UNCRES_UNRATED (POS): HFC amplification at state level for unrated firms",
+        "- INT_UNCPRE_UNRATED (POS): HFC amplification at presentation level",
         "- Trait × constraint interaction NOT estimated (theoretically ambiguous direction)",
         "- Reference group: Rated (IG ∪ BelowIG) firms; binary moderator per FP 2006",
     ]
@@ -1104,10 +955,8 @@ def _write_suite_spec_json(
       - Cols 13-16: interaction,  DV=CashRatio_lead
 
     Display table = 8 cols: interaction cols 5-8 + 13-16. Main decomp IV slopes
-    (ClarityCEO_c, UncResCEO_c) come from matched UNCONDITIONAL spec
-    (interaction_col - 4); moderator level + Unrated interactions from
-    interaction spec. Per-IV directional p stitched across 3 directions
-    (positive/negative/none) per IV_TAIL_DIRECTION.
+    (ClarityCEO_c, UncResCEO_c, UncPreCEO_c) come from matched UNCONDITIONAL spec
+    (interaction_col - 4); moderator level + interactions from interaction spec.
     """
     results_by_col = {
         r["meta"]["col"]: r for r in all_results if r.get("meta")
@@ -1129,12 +978,10 @@ def _write_suite_spec_json(
             )
 
         int_entry = results_by_col[interaction_col]
-        int_model_a = int_entry["model"]            # Reg A int
-        int_model_b = int_entry.get("model_b")      # Reg B int (may be None)
+        int_model = int_entry["model"]
         int_meta = int_entry["meta"]
         uncond_entry = results_by_col[unconditional_col]
-        uncond_model_a = uncond_entry["model"]      # Reg A uncond
-        uncond_model_b = uncond_entry.get("model_b")  # Reg B uncond (may be None)
+        uncond_model = uncond_entry["model"]
 
         spec = next(s for s in MODEL_SPECS if s["col"] == interaction_col)
         fe = spec["fe"]
@@ -1149,7 +996,7 @@ def _write_suite_spec_json(
 
         try:
             dv_mean: Optional[float] = float(
-                int_model_a.model.dependent.dataframe.mean().iloc[0]
+                int_model.model.dependent.dataframe.mean().iloc[0]
             )
         except Exception:
             dv_mean = None
@@ -1170,88 +1017,55 @@ def _write_suite_spec_json(
             }
         )
 
-        # ----- Dual-stack 9-IV coef extraction (4 model sources × per-direction extracts) -----
+        # Per-IV directional stitching (mirrors H14c pattern).
         merged_coefs: Dict[str, Dict[str, Any]] = {}
 
-        # Reg A uncond: ClarityCEO_c (NEG), UncResCEO_c (POS), UncPreCEO_c (POS)
+        # Uncond model: ClarityCEO_c (NEG), UncResCEO_c (POS), UncPreCEO_c (POS)
         for direction in ("positive", "negative"):
             ivs_for_dir = [
-                ivc for ivc in IVS_REG_A_CENTERED
+                ivc for ivc in KEY_IVS
                 if IV_TAIL_DIRECTION.get(ivc) == direction
             ]
             if not ivs_for_dir:
                 continue
             coefs = extract_coefs_panelols(
-                model=uncond_model_a,
+                model=uncond_model,
                 key_ivs=ivs_for_dir,
-                all_vars=list(IVS_REG_A_CENTERED),
+                all_vars=list(KEY_IVS),
                 hyp_dir=direction,
             )
             for ivc in ivs_for_dir:
                 if ivc in coefs:
                     merged_coefs[ivc] = coefs[ivc]
 
-        # Reg B uncond: ClarityCEO_QtrExp_c (NEG), UncResCEO_QtrExp_c (POS)
-        # all_vars EXCLUDES UncPreCEO_c (Reg A canonical source)
-        if uncond_model_b is not None:
-            qtrexp_uncond_ivs = ["ClarityCEO_QtrExp_c", "UncResCEO_QtrExp_c"]
-            for direction in ("positive", "negative"):
-                ivs_for_dir = [
-                    ivc for ivc in qtrexp_uncond_ivs
-                    if IV_TAIL_DIRECTION.get(ivc) == direction
-                ]
-                if not ivs_for_dir:
-                    continue
-                coefs = extract_coefs_panelols(
-                    model=uncond_model_b,
-                    key_ivs=ivs_for_dir,
-                    all_vars=qtrexp_uncond_ivs,
-                    hyp_dir=direction,
-                )
-                for ivc in ivs_for_dir:
-                    if ivc in coefs:
-                        merged_coefs[ivc] = coefs[ivc]
-
-        # Reg A int: Unrated (none), INT_A_UNCRES_UNRATED (pos), INT_UNCPRE_UNRATED (pos)
-        reg_a_int_vars = [MOD_UNRATED, INT_A_UNCRES_UNRATED, INT_UNCPRE_UNRATED]
+        # Int model: Unrated (none), INT_A_UNCRES_UNRATED (pos), INT_UNCPRE_UNRATED (pos)
+        int_vars = [MOD_UNRATED] + ALL_INTERACTIONS
         for direction in ("positive", "none"):
             ivs_for_dir = [
-                v for v in reg_a_int_vars
+                v for v in int_vars
                 if IV_TAIL_DIRECTION.get(v, "none") == direction
             ]
             if not ivs_for_dir:
                 continue
             coefs = extract_coefs_panelols(
-                model=int_model_a,
+                model=int_model,
                 key_ivs=ivs_for_dir,
-                all_vars=reg_a_int_vars,
+                all_vars=int_vars,
                 hyp_dir=direction,
             )
             for v in ivs_for_dir:
                 if v in coefs:
                     merged_coefs[v] = coefs[v]
 
-        # Reg B int: INT_B_UNCRES_UNRATED only (UncPreCEO×Unr from Reg A as canonical source)
-        if int_model_b is not None:
-            coefs_b_int = extract_coefs_panelols(
-                model=int_model_b,
-                key_ivs=[INT_B_UNCRES_UNRATED],
-                all_vars=[INT_B_UNCRES_UNRATED],
-                hyp_dir="positive",
-            )
-            if INT_B_UNCRES_UNRATED in coefs_b_int:
-                merged_coefs[INT_B_UNCRES_UNRATED] = coefs_b_int[INT_B_UNCRES_UNRATED]
-
-        # Controls from Reg A int (canonical single source; matches existing pattern)
+        # Controls from int model (canonical single source).
         control_coefs = extract_coefs_panelols(
-            model=int_model_a,
-            key_ivs=[],  # treat all as controls → p_one=None
+            model=int_model,
+            key_ivs=[],
             all_vars=control_vars,
             hyp_dir="none",
         )
         merged_coefs.update(control_coefs)
 
-        # Sanity: warn if any DISPLAY_IV missing (likely drop_absorbed)
         for iv in DISPLAY_IVS:
             if iv not in merged_coefs:
                 print(f"  WARN col {interaction_col}: display IV '{iv}' missing from coefs "
@@ -1259,7 +1073,6 @@ def _write_suite_spec_json(
 
         coefs_per_col.append(merged_coefs)
 
-    # Display 9 IVs in LOCKED stacked-pair order (DISPLAY_IVS).
     ivs = [
         {
             "name": iv,
@@ -1338,7 +1151,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print(f"Design:     2 decomp IVs × 2 DVs × (base + interaction) × 4 FE types = 16 models (8 displayed)")
     print(f"Channel:    CH1 — Precautionary liquidity under external-finance frictions")
     print(f"Moderator:  Binary Unrated vs Rated (FP 2006)")
-    print(f"IVs:        {', '.join(IVS_RAW)}  (DWZ Eq.5 qtr-expanding)")
+    print(f"IVs:        {', '.join(IVS_REG_A_RAW)}  (DWZ Eq.5 Full method)")
     print(f"Tails:      Clarity NEG / UncRes POS / UncRes×Unrated POS  (Clarity×Unrated DROPPED as theoretically ambiguous)")
     print(f"Sample:     {YEAR_MIN}-{YEAR_MAX}")
 
@@ -1394,9 +1207,9 @@ def main(panel_path: Optional[str] = None) -> int:
             print(f"  Skipping: too few obs")
             continue
 
-        model_a, model_b, meta = run_regression(df_prep, spec)
-        if model_a is not None and meta:
-            all_results.append({"model": model_a, "model_b": model_b, "meta": meta})
+        model, meta = run_regression(df_prep, spec)
+        if model is not None and meta:
+            all_results.append({"model": model, "meta": meta})
 
     # Save outputs
     diag_df = save_outputs(all_results, out_dir)
@@ -1464,8 +1277,8 @@ def main(panel_path: Optional[str] = None) -> int:
         return count
 
     # Main IVs: from BOTH uncond + int specs (mains exist in both, slightly different coefs)
-    print("  Main IVs (across all 16 spec×reg fits):")
-    for iv in DISPLAY_IVS[:5] + [MOD_UNRATED]:
+    print("  Main IVs (across 16 specs):")
+    for iv in KEY_IVS + [MOD_UNRATED]:
         sig_uncond = _count_sig(uncond_metas, iv)
         sig_int = _count_sig(interaction_metas, iv)
         direction = IV_TAIL_DIRECTION.get(iv, "positive")
@@ -1475,7 +1288,7 @@ def main(panel_path: Optional[str] = None) -> int:
 
     # Interactions: int specs only
     print("  Interaction IVs (int specs only):")
-    for iv in [INT_A_UNCRES_UNRATED, INT_B_UNCRES_UNRATED, INT_UNCPRE_UNRATED]:
+    for iv in ALL_INTERACTIONS:
         sig_int = _count_sig(interaction_metas, iv)
         print(f"    {iv:35s} (β > 0): {sig_int}/{len(interaction_metas)} sig")
 
@@ -1486,12 +1299,12 @@ if __name__ == "__main__":
     args = parse_arguments()
     if args.dry_run:
         print("Dry-run: validating...")
-        print(f"  IVs: {', '.join(IVS_RAW)}")
-        print(f"  Centered: {', '.join(IVS_CENTERED)}")
+        print(f"  IVs (raw):      {', '.join(IVS_REG_A_RAW)}")
+        print(f"  IVs (centered): {', '.join(IVS_REG_A_CENTERED)}")
         print(f"  Specs: {len(MODEL_SPECS)}")
         print(f"  Controls: {len(CONTROLS)}")
         print(f"  Moderator: {MOD_UNRATED} (binary)")
-        print(f"  Interactions: {', '.join(INT_UNRATED_TERMS)}")
+        print(f"  Interactions: {', '.join(ALL_INTERACTIONS)}")
         print(f"  IV_TAIL_DIRECTION: {IV_TAIL_DIRECTION}")
         print(f"  Sample years: {YEAR_MIN}-{YEAR_MAX}")
         print("[OK]")
