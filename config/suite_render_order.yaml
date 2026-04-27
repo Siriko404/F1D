@@ -23,6 +23,7 @@ suites:
   - H1.2.r
   - H1.2.ceo2
   - H1.2.ceo2.decomp
+  - H1.2.ceo2.decomp.qtrexp
 
   # H4 family (both sub-tables emitted by run_h4_leverage.py)
   - H4a
@@ -115,9 +116,10 @@ thesis_suites:
   - H1.ceo2
   - H1.ceo2.decomp
   - H1.ceo2.decomp.qtrexp
-  # HFC moderator (parent + Full decomp + QtrExp decomp post-Phase-3)
+  # HFC moderator (parent + Full decomp + QtrExp decomp)
   - H1.2.ceo2
   - H1.2.ceo2.decomp
+  - H1.2.ceo2.decomp.qtrexp
   # §4.1 drivers (H11 base + lags via tab:driver_matrix custom build at h24_table.tex slug)
   - H11
   - H11-Lag1
