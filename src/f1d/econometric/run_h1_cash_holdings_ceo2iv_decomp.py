@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-STAGE 4: Test H1 Cash Holdings Hypothesis — CEO 2-IV Variant
+STAGE 4: H1 Cash Holdings — CEO 3-IV Decomp (Full-only)
 ================================================================================
-ID: econometric/test_h1_cash_holdings_ceo2iv
-Description: H1 CEO-only 2-IV variant that restricts the joint-IV stack to exactly
-             two CEO speech-uncertainty measures: UncAnsCEO (CEO Q&A) and UncPreCEO
-             (CEO Presentation). Drops UncAnsMgr / UncPreMgr / UncAnsNoCEO /
-             UncPreNoCEO entirely. Identical 12-spec ladder, controls, FE, sample,
-             and clustering as parent H1. Per the CEO-only pivot of the thesis.
+ID: econometric/run_h1_cash_holdings_ceo2iv_decomp
+Description: DWZ Eq.5 decomposition variant of H1. Replaces UncAnsCEO with
+             two components: ClarityCEO (DWZ Eq.4 negated CEO FE; persistent
+             trait) + UncResCEO (DWZ Eq.4 residual; call-level state). UncPreCEO
+             enters as a third raw IV. Identical 12-spec ladder, controls, FE,
+             sample, and clustering as parent H1.ceo2.
+
+             Full-only design: single regression per cell on natural Full sample.
+             QtrExp (no-look-ahead expanding-window) sibling lives in
+             run_h1_cash_holdings_ceo2iv_decomp_qtrexp.py. Dual-stack 5-IV
+             precursor preserved in commits 484eeda + ae13357.
 
 Model Specifications (12 columns in one table):
     Cols 1-4: DV = CashRatio (contemporaneous), Calendar Year FE
@@ -18,9 +23,10 @@ Model Specifications (12 columns in one table):
     Odd cols (1-4,7-10): Industry FE + Year FE / Even: Firm FE + Year FE
     Cols 5-6, 11-12: Extended controls only, YQ FE
 
-Key Independent Variables (2, CEO-only, both enter simultaneously):
-    UncAnsCEO (CEO Q&A uncertainty),
-    UncPreCEO (CEO Presentation uncertainty),
+Key Independent Variables (3, all enter simultaneously):
+    ClarityCEO  (DWZ Full FE; tail β<0)
+    UncResCEO   (DWZ Full residual; tail β>0)
+    UncPreCEO   (raw presentation; tail β>0)
 
 Base Controls (8):
     Leverage, lnAssets, TobinsQ, ROA, Capex, DivDummy, sCFO, Lagged_DV
@@ -28,10 +34,13 @@ Base Controls (8):
 Extended Controls:
     Base + SalesGrowth, RDSales, CashFlow, DailyVola
 
-Sample: Main only (FF12 codes 1-7, 9-10, 12).
+Sample: Main only (FF12 codes 1-7, 9-10, 12). Natural Full sample (only Full
+        IVs required non-NaN; QtrExp not loaded).
 
-Hypothesis Test (one-tailed):
-    H1: beta(uncertainty_var) > 0  -- higher speech uncertainty -> more cash
+Hypothesis Test (one-tailed, per-IV):
+    ClarityCEO  β < 0
+    UncResCEO   β > 0
+    UncPreCEO   β > 0
 
 Standard Errors: Firm-clustered (groups=gvkey).
 
@@ -85,24 +94,12 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 # Configuration
 # ==============================================================================
 
-# Dual-stack 5-IV design: two regressions per cell on intersection sample.
-#   Reg A (DWZ-faithful Full)     : Cash ~ ClarityCEO + UncResCEO + UncPreCEO + ...
-#   Reg B (No-look-ahead QtrExp)  : Cash ~ ClarityCEO_QtrExp + UncResCEO_QtrExp + UncPreCEO + ...
-# Display: 5 IV rows in stacked-pair order; UncPreCEO row from Reg A only.
-IVS_REG_A = ["ClarityCEO", "UncResCEO", "UncPreCEO"]
-IVS_REG_B = ["ClarityCEO_QtrExp", "UncResCEO_QtrExp", "UncPreCEO"]
-DISPLAY_IVS = [   # LOCKED render order (stacked pairs); do not reorder
-    "ClarityCEO",
-    "ClarityCEO_QtrExp",
-    "UncResCEO",
-    "UncResCEO_QtrExp",
-    "UncPreCEO",
-]
-# Set of all unique IVs for NA filtering (order irrelevant; do not sort to avoid implying display order)
-ALL_IVS_FOR_NAFILTER = list(set(IVS_REG_A) | set(IVS_REG_B))
-
-# KEY_IVS retained as alias for code paths that reference the old name; equals DISPLAY_IVS.
-KEY_IVS = DISPLAY_IVS
+# Full-only 3-IV decomp design (one regression per cell on natural Full sample).
+#   Cash ~ ClarityCEO + UncResCEO + UncPreCEO + controls + FE
+# Dual-stack 5-IV design preserved in commits 484eeda + ae13357 (restore via
+# `git checkout 484eeda -- <path>`). QtrExp sibling lives in a separate runner.
+KEY_IVS = ["ClarityCEO", "UncResCEO", "UncPreCEO"]
+DISPLAY_IVS = KEY_IVS  # back-compat alias for code paths that reference old name
 
 BASE_CONTROLS = [
     "Leverage",
@@ -131,8 +128,8 @@ EXTENDED_ONLY_CONTROLS = [c for c in EXTENDED_CONTROLS if c not in BASE_CONTROLS
 # ------------------------------------------------------------------
 SUITE_ID = "H1.ceo2.decomp"
 SUITE_DIR_NAME = "h1_cash_holdings_ceo2iv_decomp"
-SUITE_TITLE = "Speech Uncertainty and Cash Holdings (CEO 5-IV Dual Stack: DWZ-Faithful Full + Quarterly-Expanding + Pres)"
-SUITE_CAPTION = "H1 CEO 5-IV Dual Stack: ClarityCEO + UncResCEO (DWZ Full + Qtr-Exp) + UncPreCEO"
+SUITE_TITLE = "Speech Uncertainty and Cash Holdings (CEO 3-IV Decomp: DWZ-Faithful Full + Pres)"
+SUITE_CAPTION = "H1 CEO 3-IV Decomp: ClarityCEO + UncResCEO (DWZ Full) + UncPreCEO"
 SUITE_LABEL = "tab:h1_ceo2_decomp"
 SAMPLE_LABEL = "Main sample (excludes financial and utility firms)."
 HYP_DIR = "positive"  # Suite-level literal (TailSpec validation); per-IV
@@ -145,12 +142,11 @@ TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
 #   CEOs (low Clarity, high gamma) hold more cash → as Clarity rises, cash falls → beta NEG.
 # State component: UncResCEO = call-level deviation. HC predicts positive uncertainty surprise
 #   raises cash → beta POS.
+# Pres component: UncPreCEO = raw presentation-segment uncertainty. HC predicts beta POS.
 IV_TAIL_DIRECTION: Dict[str, str] = {
-    "ClarityCEO":         "negative",
-    "ClarityCEO_QtrExp":  "negative",
-    "UncResCEO":          "positive",
-    "UncResCEO_QtrExp":   "positive",
-    "UncPreCEO":          "positive",
+    "ClarityCEO": "negative",
+    "UncResCEO":  "positive",
+    "UncPreCEO":  "positive",
 }
 
 MODEL_SPECS = [
@@ -173,24 +169,19 @@ MODEL_SPECS = [
 MIN_CALLS_PER_FIRM = 5
 
 VARIABLE_LABELS = {
-    "ClarityCEO":         "CEO Clarity (DWZ Full)",
-    "ClarityCEO_QtrExp":  "CEO Clarity (DWZ Qtr-Exp)",
-    "UncResCEO":          "CEO Residual Unc. (DWZ Full)",
-    "UncResCEO_QtrExp":   "CEO Residual Unc. (DWZ Qtr-Exp)",
-    "UncPreCEO":          "CEO Pres Uncertainty",
+    "ClarityCEO": "CEO Clarity (DWZ)",
+    "UncResCEO":  "CEO Residual Unc. (DWZ)",
+    "UncPreCEO":  "CEO Pres Uncertainty",
 }
 
-# Summary statistics variable list — 5-IV dual-stack design.
+# Summary statistics variable list — 3-IV Full-only decomp.
 # ClarityCEO is per-CEO (constant within CEO); its summary stats reflect
-# cross-CEO variation, not call-level. Other IVs are call-level.
+# cross-CEO variation, not call-level. UncResCEO + UncPreCEO are call-level.
 SUMMARY_STATS_VARS = [
     {"col": "CashRatio", "label": "Cash Holdings$_t$"},
     {"col": "CashRatio_lead", "label": "Cash Holdings$_{t+1}$"},
-    # 5-IV display stack (Reg A IVs + Reg B IVs)
-    {"col": "ClarityCEO", "label": "CEO Clarity (DWZ Full)"},
-    {"col": "ClarityCEO_QtrExp", "label": "CEO Clarity (DWZ Qtr-Exp)"},
-    {"col": "UncResCEO", "label": "CEO Residual Unc. (DWZ Full)"},
-    {"col": "UncResCEO_QtrExp", "label": "CEO Residual Unc. (DWZ Qtr-Exp)"},
+    {"col": "ClarityCEO", "label": "CEO Clarity (DWZ)"},
+    {"col": "UncResCEO", "label": "CEO Residual Unc. (DWZ)"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
     # Base controls
     {"col": "Leverage", "label": "Leverage"},
@@ -236,18 +227,17 @@ def parse_arguments():
 
 
 def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFrame:
-    """Load call-level H1 panel + merge BOTH DWZ-decomp parquets (Full + QtrExp).
+    """Load call-level H1 panel + merge DWZ Full decomp parquets.
 
-    Dual-stack 5-IV design:
+    Full-only 3-IV design:
       - UncPreCEO: H1 panel (raw).
-      - ClarityCEO + UncResCEO (DWZ Full method): from ceo_clarity_extended/{latest}/
-        ClarityCEO joined on ceo_id (per-CEO constant per DWZ Eq.5);
-        UncResCEO joined on file_name (call-level).
-      - ClarityCEO_QtrExp + UncResCEO_QtrExp (no-look-ahead variant): from
-        ceo_clarity_expanding/{latest}/, both joined on file_name.
+      - UncResCEO (DWZ Full residual): ceo_clarity_extended/{latest}/
+        ceo_clarity_residual.parquet, joined on file_name (call-level).
+      - ClarityCEO (DWZ Full FE): ceo_clarity_extended/{latest}/
+        ceo_clarity_fe.parquet, joined on ceo_id (per-CEO constant per DWZ Eq.5).
     """
     print("\n" + "=" * 60)
-    print("Loading H1 panel + merging DWZ decomp parquets (Full + QtrExp)")
+    print("Loading H1 panel + merging DWZ Full decomp parquets")
     print("=" * 60)
 
     if panel_path:
@@ -299,25 +289,9 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     panel = panel.merge(full_fe, on="ceo_id", how="left", validate="many_to_one")
     print(f"  After Full ClarityCEO merge: {panel['ClarityCEO'].notna().sum():,} matched")
 
-    # ----- Merge 3: DWZ QtrExp variant (Clarity_QtrExp + UncRes_QtrExp) on file_name -----
-    qtrexp_dir = get_latest_output_dir(
-        root_path / "outputs" / "econometric" / "ceo_clarity_expanding",
-        required_file="ceo_clarity_qtrexp_residuals.parquet",
-    )
-    qtrexp_file = qtrexp_dir / "ceo_clarity_qtrexp_residuals.parquet"
-    qtrexp = pd.read_parquet(
-        qtrexp_file,
-        columns=["file_name", "ClarityCEO_QtrExp", "UncResCEO_QtrExp"],
-    )
-    print(f"  QtrExp:          {qtrexp_file}")
-    print(f"  QtrExp rows:     {len(qtrexp):,} "
-          f"(non-NaN Clarity_QtrExp: {qtrexp['ClarityCEO_QtrExp'].notna().sum():,})")
-    panel = panel.merge(qtrexp, on="file_name", how="left", validate="one_to_one")
-    print(f"  After QtrExp merge: {panel['ClarityCEO_QtrExp'].notna().sum():,} matched")
-
-    # Per-IV non-NaN summary on full panel (intersection enforced at complete-case stage)
-    print("\n  Per-IV non-NaN counts (intersection enforced downstream):")
-    for iv in DISPLAY_IVS:
+    # Per-IV non-NaN summary on full panel (natural Full sample; complete-case downstream)
+    print("\n  Per-IV non-NaN counts on Full sample:")
+    for iv in KEY_IVS:
         n = panel[iv].notna().sum()
         print(f"    {iv:25s}: {n:,} ({100*n/len(panel):.1f}%)")
 
@@ -365,8 +339,8 @@ def prepare_regression_data(
     panel = panel.copy()
     panel["Lagged_DV"] = panel[lag_col]
 
-    # Intersection sample: require all 5 dual-stack IVs non-NaN (union of Reg A + Reg B IVs).
-    required = [dv] + ALL_IVS_FOR_NAFILTER + controls + ["gvkey", "fyearq_int", "ff12_code"]
+    # Natural Full sample: require 3 Full IVs non-NaN (UncResCEO + ClarityCEO + UncPreCEO).
+    required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
     if fe_type.endswith("_yq"):
         required.append("cal_yr_qtr")
 
@@ -382,8 +356,8 @@ def prepare_regression_data(
     # Replace inf with NaN
     df = df.replace([np.inf, -np.inf], np.nan)
 
-    # Coverage check: warn if any of the 5 display IVs has >50% NaN
-    for iv in DISPLAY_IVS:
+    # Coverage check: warn if any of the 3 IVs has >50% NaN
+    for iv in KEY_IVS:
         pct_missing = df[iv].isna().mean() * 100
         if pct_missing > 50:
             print(f"  WARNING: {iv} has {pct_missing:.1f}% missing values")
@@ -482,24 +456,17 @@ def _stash_iv_to_meta(meta: Dict[str, Any], model: Any, iv: str) -> None:
 def run_regression(
     df_prepared: pd.DataFrame,
     spec: Dict[str, Any],
-) -> Tuple[Any, Any, Dict[str, Any]]:
-    """Run TWO PanelOLS regressions for a given model specification (dual-stack).
+) -> Tuple[Any, Dict[str, Any]]:
+    """Run a single PanelOLS regression for a given model specification.
 
-      Reg A (DWZ-faithful Full):    Cash ~ ClarityCEO + UncResCEO + UncPreCEO + controls + FE
-      Reg B (No-look-ahead QtrExp): Cash ~ ClarityCEO_QtrExp + UncResCEO_QtrExp + UncPreCEO + controls + FE
+      Cash ~ ClarityCEO + UncResCEO + UncPreCEO + controls + FE
 
-    Both run on the SAME intersection sample. Display semantics:
-      - Clarity_QtrExp + UncRes_QtrExp coefs from Reg B; all others from Reg A.
-      - N + R² shown from Reg A (DWZ-faithful primary anchor).
-
-    Failure handling:
-      - Reg A fails → return (None, None, {}) — col is skipped.
-      - Reg B fails with Reg A success → render Reg A coefs only; QtrExp cells empty.
-        (Schema validator accepts missing IVs; renderer emits empty cells.)
+    Per-IV one-tail directions: Clarity NEG, UncRes/UncPreCEO POS — applied at
+    p_one stitching stage (run_regression returns p_two; directional p_one
+    derived per-IV from IV_TAIL_DIRECTION).
 
     Returns:
-        Tuple of (model_a, model_b, meta) or (None, None, {}) on Reg A failure.
-        model_b may be None if only Reg B failed.
+        Tuple of (model, meta) or (None, {}) on regression failure.
     """
     col_num = spec["col"]
     dv = spec["dv"]
@@ -507,12 +474,12 @@ def run_regression(
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
 
     print(f"\n" + "=" * 60)
-    print(f"Running DUAL regression: Col ({col_num}) | DV={dv} | FE={fe_type} | Controls={spec['controls']}")
+    print(f"Running regression: Col ({col_num}) | DV={dv} | FE={fe_type} | Controls={spec['controls']}")
     print("=" * 60)
 
     if len(df_prepared) < 100:
         print(f"  WARNING: Too few observations ({len(df_prepared)}), skipping")
-        return None, None, {}
+        return None, {}
 
     time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
     base_fe = fe_type.replace("_yq", "")
@@ -524,95 +491,35 @@ def run_regression(
 
     df_panel = df_prepared.set_index(["gvkey", time_col])
 
-    # ----- Reg A: DWZ-faithful Full -----
-    exog_a = IVS_REG_A + controls
-    print(f"  Reg A (Full):   exog={len(exog_a)} vars (3 IVs + {len(controls)} controls)")
+    exog = KEY_IVS + controls
+    print(f"  exog={len(exog)} vars (3 IVs + {len(controls)} controls)")
     t0 = datetime.now()
     try:
-        model_a = _fit_one(df_panel, dv, exog_a, base_fe)
+        model = _fit_one(df_panel, dv, exog, base_fe)
     except Exception as e:
-        print(f"  ERROR Reg A failed: {e}", file=sys.stderr)
-        model_a = None
-    elapsed_a = (datetime.now() - t0).total_seconds()
+        print(f"  ERROR regression failed: {e}", file=sys.stderr)
+        return None, {}
+    elapsed = (datetime.now() - t0).total_seconds()
 
-    if model_a is None:
-        # Reg A is the primary anchor; without it N + R² + UncPreCEO undefined.
-        # Skip the col entirely.
-        print(f"  [FAIL] Reg A failed; skipping col {col_num}")
-        return None, None, {}
+    print(f"  [OK] in {elapsed:.1f}s | R²={model.rsquared:.4f} | N={int(model.nobs):,}")
 
-    print(f"  Reg A [OK] in {elapsed_a:.1f}s | R²={model_a.rsquared:.4f} | N={int(model_a.nobs):,}")
-
-    # ----- Reg B: No-look-ahead QtrExp -----
-    exog_b = IVS_REG_B + controls
-    print(f"  Reg B (QtrExp): exog={len(exog_b)} vars (3 IVs + {len(controls)} controls)")
-    t0 = datetime.now()
-    try:
-        model_b = _fit_one(df_panel, dv, exog_b, base_fe)
-    except Exception as e:
-        print(f"  ERROR Reg B failed: {e}", file=sys.stderr)
-        model_b = None
-    elapsed_b = (datetime.now() - t0).total_seconds()
-
-    if model_b is not None:
-        print(f"  Reg B [OK] in {elapsed_b:.1f}s | R²={model_b.rsquared:.4f} | N={int(model_b.nobs):,}")
-    else:
-        print(f"  Reg B [FAIL] — QtrExp cells will be empty in this col")
-
-    # ----- Build merged meta dict -----
     meta: Dict[str, Any] = {
         "col": col_num,
         "dv": dv,
         "fe": fe_type,
         "controls": spec["controls"],
-        "n_obs": int(model_a.nobs),
+        "n_obs": int(model.nobs),
         "n_firms": df_prepared["gvkey"].nunique(),
-        "r2": float(model_a.rsquared),
-        "adj_r2": 1 - (1 - model_a.rsquared) * (model_a.nobs - 1) / model_a.df_resid,
-        "dv_mean": float(model_a.model.dependent.dataframe.mean().iloc[0]),
+        "r2": float(model.rsquared),
+        "adj_r2": 1 - (1 - model.rsquared) * (model.nobs - 1) / model.df_resid,
+        "dv_mean": float(model.model.dependent.dataframe.mean().iloc[0]),
     }
 
-    # IV coefs from Reg A (Clarity + UncRes Full + UncPreCEO display source)
-    print(f"  Reg A IV coefs:")
-    for iv in IVS_REG_A:
-        _stash_iv_to_meta(meta, model_a, iv)
+    print(f"  IV coefs (per-IV directional p_one):")
+    for iv in KEY_IVS:
+        _stash_iv_to_meta(meta, model, iv)
 
-    # IV coefs from Reg B (only the _QtrExp variants flow to display; UncPreCEO from Reg B
-    # captured separately for diagnostics CSV — does NOT overwrite display row).
-    if model_b is not None:
-        print(f"  Reg B IV coefs (_QtrExp display + UncPreCEO diagnostics):")
-        for iv in ["ClarityCEO_QtrExp", "UncResCEO_QtrExp"]:
-            _stash_iv_to_meta(meta, model_b, iv)
-        # Reg B's UncPreCEO + R² for honest disclosure in diagnostics CSV (NOT displayed).
-        if "UncPreCEO" in model_b.params.index:
-            meta["UncPreCEO_beta_qtrexp"] = float(model_b.params["UncPreCEO"])
-            meta["UncPreCEO_se_qtrexp"] = float(model_b.std_errors["UncPreCEO"])
-        else:
-            meta["UncPreCEO_beta_qtrexp"] = np.nan
-            meta["UncPreCEO_se_qtrexp"] = np.nan
-        meta["r2_qtrexp"] = float(model_b.rsquared)
-        meta["adj_r2_qtrexp"] = 1 - (1 - model_b.rsquared) * (model_b.nobs - 1) / model_b.df_resid
-    else:
-        print(f"  WARN: Col {col_num} Reg B is None; QtrExp display cells empty")
-        meta["ClarityCEO_QtrExp_beta"] = np.nan
-        meta["ClarityCEO_QtrExp_se"] = np.nan
-        meta["ClarityCEO_QtrExp_t"] = np.nan
-        meta["ClarityCEO_QtrExp_p_one"] = np.nan
-        meta["UncResCEO_QtrExp_beta"] = np.nan
-        meta["UncResCEO_QtrExp_se"] = np.nan
-        meta["UncResCEO_QtrExp_t"] = np.nan
-        meta["UncResCEO_QtrExp_p_one"] = np.nan
-        meta["UncPreCEO_beta_qtrexp"] = np.nan
-        meta["UncPreCEO_se_qtrexp"] = np.nan
-        meta["r2_qtrexp"] = None
-        meta["adj_r2_qtrexp"] = None
-
-    # Post-merge sanity log: warn if any DISPLAY_IV ended up missing from meta.
-    for iv in DISPLAY_IVS:
-        if f"{iv}_beta" not in meta or pd.isna(meta.get(f"{iv}_beta")):
-            print(f"  WARN: Col {col_num} display IV {iv} missing/NaN — cell will be empty")
-
-    return model_a, model_b, meta
+    return model, meta
 
 
 # ==============================================================================
@@ -692,9 +599,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
     lines.append(r"\midrule")
 
-    # Display IV rows (5 rows in stacked-pair order — see DISPLAY_IVS for locked order).
-    # Each IV gets one coef row + one SE row. Cells pulled from merged meta dict
-    # populated by run_regression: Clarity_QtrExp + UncRes_QtrExp from Reg B; rest from Reg A.
+    # IV rows (3): ClarityCEO + UncResCEO + UncPreCEO. Each IV gets one coef row + one SE row.
     for iv in DISPLAY_IVS:
         label = VARIABLE_LABELS.get(iv, iv)
         # Coefficient row with stars
@@ -774,25 +679,16 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\textit{Notes:} ",
         r"DWZ Eq.5 decomposition of CEO Q\&A uncertainty into a persistent CEO trait ",
         r"component (\textit{ClarityCEO}, the negative of the CEO fixed effect from DWZ Eq.4) ",
-        r"and a within-quarter state component (\textit{UncResCEO}, the residual from DWZ Eq.4). ",
-        r"Two estimation methods reported per cell on the same intersection sample: ",
-        r"the \textit{DWZ-faithful Full} method (rows 1, 3) uses a single full-panel Eq.4 ",
-        r"regression following DWZ; the \textit{quarterly-expanding} variant (rows 2, 4) uses ",
-        r"a recursively-trained Eq.4 to avoid forward-looking contamination. ",
-        r"\textit{UncPreCEO} (row 5, raw presentation-segment uncertainty) enters both ",
-        r"regressions as a third independent IV; the row reports the coefficient from the ",
-        r"Full-method (Reg A) specification. The quarterly-expanding specification's ",
-        r"\textit{UncPreCEO} coefficient and standard error are saved in ",
-        r"\texttt{model\_diagnostics.csv} as \texttt{UncPreCEO\_beta\_qtrexp} / ",
-        r"\texttt{UncPreCEO\_se\_qtrexp} for reader inspection. ",
+        r"and a within-quarter state component (\textit{UncResCEO}, the residual from DWZ Eq.4); ",
+        r"both Full-method (single full-panel Eq.4 fit). ",
+        r"\textit{UncPreCEO} (raw presentation-segment uncertainty) enters as a third IV; ",
+        r"its persistent CEO-trait variance is already absorbed by ClarityCEO so it is not decomposed. ",
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed). ",
-        r"Per-IV directions: \textit{ClarityCEO} (Full + Qtr-Exp) $\beta < 0$; ",
-        r"\textit{UncResCEO} (Full + Qtr-Exp) and \textit{UncPreCEO} $\beta > 0$. ",
+        r"Per-IV directions: \textit{ClarityCEO} $\beta < 0$; ",
+        r"\textit{UncResCEO} and \textit{UncPreCEO} $\beta > 0$. ",
         r"Standard errors (in parentheses) firm-level clustered. ",
         r"Main sample (excludes financial and utility firms). ",
         r"Industry FE uses Fama-French 12 industry dummies. ",
-        r"$N$ and $R^2$ shown for the DWZ-faithful (Reg A) specification; ",
-        r"the quarterly-expanding $R^2$ (\texttt{r2\_qtrexp}) is in \texttt{model\_diagnostics.csv}. ",
         r"Variables winsorized at 1\%/99\% by year at engine level. ",
         r"Unit of observation: individual earnings call.",
         r"\end{minipage}",
@@ -856,25 +752,19 @@ def generate_report(
 ) -> None:
     """Generate markdown report summarising H1 CEO 2-IV results."""
     lines = [
-        "# Stage 4: H1 Cash Holdings — CEO 5-IV Dual Stack (DWZ-Faithful Full + Quarterly-Expanding + Pres)",
+        "# Stage 4: H1 Cash Holdings — CEO 3-IV Decomp (DWZ-Faithful Full + Pres)",
         "",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"**Duration:** {duration:.1f} seconds",
         f"**Unit of observation:** individual earnings call (call-level)",
-        f"**Sample:** Main only (excludes Finance FF12=11, Utility FF12=8); intersection of Full + QtrExp coverage",
+        f"**Sample:** Main only (excludes Finance FF12=11, Utility FF12=8); natural Full sample",
         "",
         "## Model Specifications",
         "",
-        "Five IVs from two simultaneously-estimated specifications per cell:",
-        "- **Reg A (DWZ-faithful Full)**: ClarityCEO + UncResCEO + UncPreCEO + controls + FE",
-        "- **Reg B (No-look-ahead QtrExp)**: ClarityCEO_QtrExp + UncResCEO_QtrExp + UncPreCEO + controls + FE",
-        "",
-        "Display rows (stacked-pair order):",
-        "1. ClarityCEO (Reg A; tail β<0)",
-        "2. ClarityCEO_QtrExp (Reg B; tail β<0)",
-        "3. UncResCEO (Reg A; tail β>0)",
-        "4. UncResCEO_QtrExp (Reg B; tail β>0)",
-        "5. UncPreCEO (Reg A; tail β>0) — Reg B's UncPreCEO + SE in model_diagnostics.csv",
+        "Three IVs estimated jointly per cell:",
+        "- ClarityCEO (DWZ Eq.4 negated CEO FE; persistent trait, tail β<0)",
+        "- UncResCEO (DWZ Eq.4 residual; call-level state, tail β>0)",
+        "- UncPreCEO (raw presentation-segment uncertainty; tail β>0)",
         "",
         "| Col | DV | FE | Controls |",
         "|-----|----|----|----------|",
@@ -887,12 +777,12 @@ def generate_report(
     lines += [
         "",
         "Standard errors: firm-level clustered (cov_type='clustered', cluster_entity=True, cluster_time=False)",
-        "One-tailed tests, per-IV directions: ClarityCEO (Full + QtrExp) β<0; UncResCEO (Full + QtrExp) and UncPreCEO β>0.",
+        "One-tailed tests, per-IV directions: ClarityCEO β<0; UncResCEO + UncPreCEO β>0.",
         "",
-        "## Results Summary (N + R² from Reg A; Reg B R² in CSV as `r2_qtrexp`)",
+        "## Results Summary",
         "",
-        "| Col | DV | FE | Controls | N | R² (Reg A) | Adj R² (Reg A) |",
-        "|-----|----|----|----------|---|------------|----------------|",
+        "| Col | DV | FE | Controls | N | R² | Adj R² |",
+        "|-----|----|----|----------|---|------|--------|",
     ]
 
     for r in all_results:
@@ -939,11 +829,11 @@ def _write_suite_spec_json(
     all_results: List[Dict[str, Any]],
     out_dir: Path,
 ) -> None:
-    """Emit canonical suite_spec_H1.json from runner state.
+    """Emit canonical suite_spec_H1.ceo2.decomp.json from runner state.
 
-    Reads per-col fitted models + meta, maps FE type strings to schema
-    enums, extracts IV + control coefs uniformly, and writes a single
-    validated JSON file for the consolidated renderer to consume.
+    Per-IV directional p_one stitching: ClarityCEO uses negative direction,
+    UncResCEO + UncPreCEO use positive. Controls extracted separately
+    (p_one always None).
     """
     results_by_col = {r["meta"]["col"]: r for r in all_results if r.get("meta")}
 
@@ -959,8 +849,7 @@ def _write_suite_spec_json(
             )
 
         result = results_by_col[col_num]
-        model_a = result["model"]            # Reg A (DWZ-faithful Full)
-        model_b = result.get("model_b")      # Reg B (No-look-ahead QtrExp); may be None
+        model = result["model"]
         meta = result["meta"]
 
         fe_type = spec["fe"]
@@ -990,67 +879,48 @@ def _write_suite_spec_json(
             }
         )
 
-        # ----- Dual-stack 5-IV coef extraction (4 calls per col + dict merge) -----
-        # Reg A POS: UncResCEO + UncPreCEO get p_one for positive direction
-        coefs_a_pos = extract_coefs_panelols(
-            model=model_a,
-            key_ivs=["UncResCEO", "UncPreCEO"],
-            all_vars=IVS_REG_A + control_list,
-            hyp_dir="positive",
-        )
-        # Reg A NEG: ClarityCEO gets p_one for negative direction
-        coefs_a_neg = extract_coefs_panelols(
-            model=model_a,
-            key_ivs=["ClarityCEO"],
-            all_vars=IVS_REG_A + control_list,
-            hyp_dir="negative",
-        )
-        # Reg B POS: UncResCEO_QtrExp gets p_one for positive direction.
-        # all_vars EXCLUDES UncPreCEO (Reg A is the display source for that IV).
-        if model_b is not None:
-            coefs_b_pos = extract_coefs_panelols(
-                model=model_b,
-                key_ivs=["UncResCEO_QtrExp"],
-                all_vars=["ClarityCEO_QtrExp", "UncResCEO_QtrExp"],
-                hyp_dir="positive",
+        # Per-IV directional stitching (mirrors H14c pattern).
+        merged: Dict[str, Dict[str, Any]] = {}
+        for direction in ("positive", "negative"):
+            ivs_for_dir = [
+                iv for iv in KEY_IVS if IV_TAIL_DIRECTION.get(iv) == direction
+            ]
+            if not ivs_for_dir:
+                continue
+            coefs = extract_coefs_panelols(
+                model=model,
+                key_ivs=ivs_for_dir,
+                all_vars=KEY_IVS + control_list,
+                hyp_dir=direction,
             )
-            coefs_b_neg = extract_coefs_panelols(
-                model=model_b,
-                key_ivs=["ClarityCEO_QtrExp"],
-                all_vars=["ClarityCEO_QtrExp", "UncResCEO_QtrExp"],
-                hyp_dir="negative",
-            )
-        else:
-            coefs_b_pos, coefs_b_neg = {}, {}
+            for iv in ivs_for_dir:
+                if iv in coefs:
+                    merged[iv] = coefs[iv]
 
-        # Merge in this order (last write wins for overlapping keys):
-        #   Reg A POS  → seeds 3 IVs (UncRes/UncPre with p_one_pos; Clarity p_one_pos)
-        #   Reg A NEG  → overwrites ClarityCEO with p_one_neg (correct for neg direction)
-        #   Reg B POS  → adds UncResCEO_QtrExp (p_one_pos); ClarityCEO_QtrExp (p_one None)
-        #   Reg B NEG  → overwrites ClarityCEO_QtrExp with p_one_neg
-        merged_coefs: Dict[str, Dict[str, Any]] = dict(coefs_a_pos)
-        if "ClarityCEO" in coefs_a_neg:
-            merged_coefs["ClarityCEO"] = coefs_a_neg["ClarityCEO"]
-        merged_coefs.update(coefs_b_pos)  # adds _QtrExp keys with POS p_one
-        if "ClarityCEO_QtrExp" in coefs_b_neg:
-            merged_coefs["ClarityCEO_QtrExp"] = coefs_b_neg["ClarityCEO_QtrExp"]
+        # Carry-over control coefs (p_one always None).
+        control_coefs = extract_coefs_panelols(
+            model=model,
+            key_ivs=[],
+            all_vars=control_list,
+            hyp_dir="none",
+        )
+        merged.update(control_coefs)
 
-        # Sanity: every DISPLAY_IV ideally present (drop_absorbed may legitimately remove some).
-        for iv in DISPLAY_IVS:
-            if iv not in merged_coefs:
-                print(f"  WARN col {col_num}: display IV '{iv}' missing from coefs "
+        # Sanity: every IV ideally present (drop_absorbed may legitimately remove some).
+        for iv in KEY_IVS:
+            if iv not in merged:
+                print(f"  WARN col {col_num}: IV '{iv}' missing from coefs "
                       f"(likely drop_absorbed by FE) — cell will render empty")
 
-        coefs_per_col.append(merged_coefs)
+        coefs_per_col.append(merged)
 
-    # ivs_payload MUST iterate DISPLAY_IVS (locked stacked-pair render order)
     ivs_payload = [
         {
             "name": iv,
             "label": VARIABLE_LABELS.get(iv, iv).replace("_", r"\_"),
             "tail": "one_neg" if IV_TAIL_DIRECTION.get(iv) == "negative" else "one_pos",
         }
-        for iv in DISPLAY_IVS
+        for iv in KEY_IVS
     ]
     controls_payload = {
         "base": list(BASE_CONTROLS),
@@ -1180,10 +1050,10 @@ def main(panel_path: Optional[str] = None) -> int:
             print(f"  Skipping: too few obs ({len(df_prepared)})")
             continue
 
-        model_a, model_b, meta = run_regression(df_prepared, spec)
+        model, meta = run_regression(df_prepared, spec)
 
-        if model_a is not None and meta:
-            all_results.append({"model": model_a, "model_b": model_b, "meta": meta})
+        if model is not None and meta:
+            all_results.append({"model": model, "meta": meta})
 
     # Save outputs
     diag_df = save_outputs(all_results, out_dir)
