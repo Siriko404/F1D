@@ -90,6 +90,7 @@ suites:
   - H17.r
   - H18
   - H18.r
+  - H18.ceo2.decomp
   - H18b
   - H18b.r
   - H19b
@@ -128,8 +129,9 @@ thesis_suites:
   - H11-Lag2
   # §4.1 driver: market competition (H23)
   - H23
-  # §4.2 reaction (Full method only post-Phase-4) — H14c level table only
+  # §4.2 reaction (Full method only post-Phase-4) — market channel + regulatory channel
   - H14c.ceo2.decomp
+  - H18.ceo2.decomp
   # Macro drivers (driver_matrix consolidates H24/H24b but native tables still needed for spec validation)
   - H24
   - H24b
