@@ -6,17 +6,18 @@ STAGE 4: Test H14c — CEO 2-IV DWZ DECOMP (12-col 2-DV)
 ID: econometric/run_h14c_spread_bgt_level_ceo2iv_decomp
 Description: DWZ-decomposition variant of H14c reaction suite. Replaces the
              4-IV stack (UncAnsCEO + UncPreCEO + UncAnsMgr + UncPreMgr) with
-             the DWZ Eq.5 decomposition: ClarityCEO_QtrExp (persistent CEO
-             trait, = -CEO FE) + UncResCEO_QtrExp (call-level state residual).
-             Both decomp components computed via strict no-look-ahead
-             quarterly-expanding fit of DWZ Eq.4 — see
-             run_h0_3_ceo_clarity_expanding.py.
+             the DWZ Eq.5 decomposition: ClarityCEO (persistent CEO trait,
+             = -CEO FE) + UncResCEO (call-level state residual). Full method:
+             single full-panel DWZ Eq.4 fit. UncPreCEO enters as a third raw IV.
+
+             Per locked design (drivers + reaction = Full method only),
+             companion QtrExp variant NOT built for §4.2 reaction suite.
 
 Tail directions (asymmetric per BGT 2018 + DWZ decomposition logic):
-    ClarityCEO_QtrExp: one-tail NEG
+    ClarityCEO: one-tail NEG
         (high persistent CEO clarity → less market-perceived information
          asymmetry → narrower post-call spreads)
-    UncResCEO_QtrExp: one-tail POS
+    UncResCEO: one-tail POS
         (positive within-quarter uncertainty surprise → more information
          asymmetry → wider post-call spreads; BGT 2018 mechanism)
 
@@ -41,7 +42,8 @@ Sample: Main only (FF12 codes 1-7, 9-10, 12). Decomp parquet merge drops
 
 Inputs:
     - outputs/variables/h14_bidask_spread/latest/h14_bidask_spread_panel.parquet
-    - outputs/econometric/ceo_clarity_expanding/<latest>/ceo_clarity_qtrexp_residuals.parquet
+    - outputs/econometric/ceo_clarity_extended/<latest>/ceo_clarity_residual.parquet
+    - outputs/econometric/ceo_clarity_extended/<latest>/ceo_clarity_fe.parquet
 
 Standard Errors: Firm-level clustered following Petersen (2009).
 
@@ -93,18 +95,16 @@ warnings.filterwarnings(
 # ==============================================================================
 
 KEY_IVS = [
-    "ClarityCEO_QtrExp",
-    "UncResCEO_QtrExp",
+    "ClarityCEO",
+    "UncResCEO",
     "UncPreCEO",
 ]
-# Decomp parquet only carries Clarity + UncRes (UncPreCEO lives in H14 panel).
-DECOMP_IVS_RAW = ["ClarityCEO_QtrExp", "UncResCEO_QtrExp"]
 
 # Per-IV tail directions (asymmetric per DWZ decomposition + BGT 2018 logic).
 IV_TAIL_DIRECTION: Dict[str, str] = {
-    "ClarityCEO_QtrExp": "negative",
-    "UncResCEO_QtrExp": "positive",
-    "UncPreCEO": "positive",
+    "ClarityCEO": "negative",
+    "UncResCEO":  "positive",
+    "UncPreCEO":  "positive",
 }
 
 # Lagged_DV placeholder routed at spec-prep time (PreCallSpread removed)
@@ -134,17 +134,17 @@ EXTENDED_ONLY_CONTROLS = [c for c in EXTENDED_CONTROLS if c not in BASE_CONTROLS
 SUITE_ID = "H14c.ceo2.decomp"
 SUITE_DIR_NAME = "h14c_spread_bgt_level_ceo2iv_decomp"
 SUITE_TITLE = (
-    'H14c CEO 3-IV Decomp: DWZ QA Decomposition + Raw UncPreCEO and '
+    'H14c CEO 3-IV Decomp: DWZ Full QA Decomposition + Raw UncPreCEO and '
     '25-Day Post-Call Bid-Ask Spread Level (call day plus 25 trading days)'
 )
 SUITE_CAPTION = (
-    r'H14c CEO 3-IV Decomp: ClarityCEO + UncResCEO (DWZ Eq.5) + UncPreCEO (raw) and '
+    r'H14c CEO 3-IV Decomp: ClarityCEO + UncResCEO (DWZ Eq.5 Full) + UncPreCEO (raw) and '
     r'25-Day Post-Call Bid-Ask Spread Level ($[0,+25]$, the call day plus 25 trading days)'
 )
 SUITE_LABEL = "tab:h14c_ceo2_decomp"
 SAMPLE_LABEL = (
     "Main sample (excludes financial and utility firms). "
-    "DWZ quarterly-expanding decomposition: Clarity = -CEO FE; UncRes = call-level residual."
+    "DWZ Full decomposition: Clarity = -CEO FE; UncRes = call-level residual."
 )
 HYP_DIR = "positive"  # Suite-level Pydantic placeholder; per-IV via IV_TAIL_DIRECTION + spec stitching.
 CLUSTERING = {"entity": True, "time": False}
@@ -168,17 +168,17 @@ MODEL_SPECS = [
 MIN_CALLS_PER_FIRM = 5
 
 VARIABLE_LABELS = {
-    "ClarityCEO_QtrExp": "CEO Clarity (DWZ, qtr-exp)",
-    "UncResCEO_QtrExp": "CEO Residual Uncertainty (DWZ, qtr-exp)",
-    "UncPreCEO": "CEO Pres Uncertainty",
+    "ClarityCEO": "CEO Clarity (DWZ)",
+    "UncResCEO":  "CEO Residual Uncertainty (DWZ)",
+    "UncPreCEO":  "CEO Pres Uncertainty",
 }
 
 SUMMARY_STATS_VARS = [
     {"col": "BGTLevel_Spread", "label": r"Spread$_{25D,t}$"},
     {"col": "BGTLevel_Spread_lead1", "label": r"Spread$_{25D,t+1}$"},
     {"col": "PreCallSpread", "label": "Pre-Call Spread"},
-    {"col": "ClarityCEO_QtrExp", "label": "CEO Clarity (DWZ qtr-exp)"},
-    {"col": "UncResCEO_QtrExp", "label": "CEO UncRes (DWZ qtr-exp)"},
+    {"col": "ClarityCEO", "label": "CEO Clarity (DWZ)"},
+    {"col": "UncResCEO", "label": "CEO UncRes (DWZ)"},
     {"col": "lnAssets", "label": "Firm Size (log AT)"},
     {"col": "TobinsQ", "label": "Tobin's Q"},
     {"col": "ROA", "label": "ROA"},
@@ -207,13 +207,15 @@ def parse_arguments():
 
 
 def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFrame:
-    """Load H14 panel + merge DWZ decomp parquet on file_name.
+    """Load H14 panel + merge DWZ Full decomp parquets.
 
-    Decomp IVs (ClarityCEO_QtrExp + UncResCEO_QtrExp) are NOT in the H14
-    parquet — they come from the latest H0.3 expanding-window output.
+    Full method 3-IV design:
+      - UncPreCEO: H14 panel (raw).
+      - UncResCEO: ceo_clarity_extended/{latest}/ceo_clarity_residual.parquet (file_name).
+      - ClarityCEO: ceo_clarity_extended/{latest}/ceo_clarity_fe.parquet (ceo_id).
     """
     print("\n" + "=" * 60)
-    print("Loading H14 panel + merging DWZ-decomp parquet")
+    print("Loading H14 panel + merging DWZ Full decomp parquets")
     print("=" * 60)
     if panel_path:
         panel_file = Path(panel_path)
@@ -226,12 +228,11 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     if not panel_file.exists():
         raise FileNotFoundError(f"Panel file not found: {panel_file}")
 
-    # H14 panel: DV + controls + UncPreCEO (3rd IV, raw) + identifiers
-    # (decomp IVs Clarity + UncRes come from merge below)
+    # H14 panel: DV + controls + UncPreCEO + identifiers (incl ceo_id for Full FE merge).
     columns = [
         "file_name",
         "start_date",
-        "gvkey", "year", "fyearq_int", "ff12_code",
+        "gvkey", "ceo_id", "year", "fyearq_int", "ff12_code",
         "cal_yr", "cal_qtr", "cal_yr_qtr",
         "BGTLevel_Spread", "BGTLevel_Spread_lag", "BGTLevel_Spread_lead1",
         "PreCallSpread",
@@ -251,22 +252,27 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> pd.DataFram
     panel["BGTLevel_Spread_lag"] = panel["BGTLevel_Spread_lag"] * 1e4
     panel["BGTLevel_Spread_lead1"] = panel["BGTLevel_Spread_lead1"] * 1e4
 
-    # Merge DWZ decomp parquet (strict no-look-ahead quarterly expanding)
-    decomp_dir = get_latest_output_dir(
-        root_path / "outputs" / "econometric" / "ceo_clarity_expanding",
-        required_file="ceo_clarity_qtrexp_residuals.parquet",
+    # ----- Merge 1: DWZ Full residual (UncResCEO) on file_name -----
+    full_dir = get_latest_output_dir(
+        root_path / "outputs" / "econometric" / "ceo_clarity_extended",
+        required_file="ceo_clarity_residual.parquet",
     )
-    decomp_file = decomp_dir / "ceo_clarity_qtrexp_residuals.parquet"
-    decomp = pd.read_parquet(decomp_file, columns=["file_name", *DECOMP_IVS_RAW])
-    print(f"  Decomp:     {decomp_file}")
-    print(f"  Decomp rows: {len(decomp):,}  "
-          f"non-NaN Clarity: {decomp[DECOMP_IVS_RAW[0]].notna().sum():,}")
+    full_resid_file = full_dir / "ceo_clarity_residual.parquet"
+    full_resid = pd.read_parquet(full_resid_file, columns=["file_name", "UncResCEO"])
+    print(f"  Full residual:   {full_resid_file}")
+    print(f"  Full resid rows: {len(full_resid):,}")
+    panel = panel.merge(full_resid, on="file_name", how="left", validate="one_to_one")
+    print(f"  After Full UncResCEO merge: {panel['UncResCEO'].notna().sum():,} matched")
 
-    before = len(panel)
-    panel = panel.merge(decomp, on="file_name", how="left", validate="one_to_one")
-    matched = panel[DECOMP_IVS_RAW[0]].notna().sum()
-    print(f"  After merge: {len(panel):,} rows ({matched:,} with non-NaN Clarity; "
-          f"{before - matched:,} dropped downstream by complete-case)")
+    # ----- Merge 2: DWZ Full FE (ClarityCEO) on ceo_id (per-CEO constant) -----
+    full_fe_file = full_dir / "ceo_clarity_fe.parquet"
+    full_fe = pd.read_parquet(full_fe_file, columns=["ceo_id", "ClarityCEO"])
+    print(f"  Full FE:         {full_fe_file}")
+    print(f"  Full FE rows:    {len(full_fe):,} CEOs")
+    if panel["ceo_id"].dtype != full_fe["ceo_id"].dtype:
+        full_fe["ceo_id"] = full_fe["ceo_id"].astype(panel["ceo_id"].dtype)
+    panel = panel.merge(full_fe, on="ceo_id", how="left", validate="many_to_one")
+    print(f"  After Full ClarityCEO merge: {panel['ClarityCEO'].notna().sum():,} matched")
 
     return panel
 
@@ -481,8 +487,7 @@ def _save_latex_table(all_results, out_dir):
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. ",
         r"DWZ Eq.5 decomposition variant: replaces UncAnsCEO with ",
         r"\textit{ClarityCEO} (= negated CEO fixed effect from DWZ Eq.4) and ",
-        r"\textit{UncResCEO} (call-level residual), estimated under strict ",
-        r"no-look-ahead quarterly-expanding window. ",
+        r"\textit{UncResCEO} (call-level residual), Full method (single full-panel Eq.4 fit). ",
         r"\textit{UncPreCEO} (raw, presentation-segment uncertainty) is preserved as a ",
         r"third IV from the parent suite (DWZ Eq.4 RHS regressor; not decomposed because ",
         r"its persistent CEO-trait variance is already absorbed by ClarityCEO). ",
@@ -680,7 +685,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print("=" * 80)
     print("STAGE 4: Test H14c CEO 2-IV DECOMP BGTLevel_Spread (12-col 2-DV)")
     print("=" * 80)
-    print(f"IVs:  {', '.join(KEY_IVS)}  (DWZ Eq.5 qtr-expanding)")
+    print(f"IVs:  {', '.join(KEY_IVS)}  (DWZ Eq.5 Full method)")
     print(f"Tails: Clarity NEG / UncRes POS")
 
     panel = load_panel(root, panel_path)
