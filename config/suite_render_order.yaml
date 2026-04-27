@@ -103,3 +103,29 @@ suites:
   - H24
   - H24b
   - H25
+
+# -----------------------------------------------------------------------------
+# Thesis-only subset: suites whose tables go into main.pdf (per_suite/_thesis_input.tex).
+# All 73+ suites still render to per_suite/<slug>_table.tex and the standalone
+# all_tables.pdf fishing deck — this list only narrows what main.tex \input pulls in.
+# Curate by hand. Add a new suite here when the body starts citing its tab:* label.
+# -----------------------------------------------------------------------------
+thesis_suites:
+  # HC main (parent + Full decomp + QtrExp decomp)
+  - H1.ceo2
+  - H1.ceo2.decomp
+  - H1.ceo2.decomp.qtrexp
+  # HFC moderator (parent + Full decomp + QtrExp decomp post-Phase-3)
+  - H1.2.ceo2
+  - H1.2.ceo2.decomp
+  # §4.1 drivers (H11 base + lags via tab:driver_matrix custom build at h24_table.tex slug)
+  - H11
+  - H11-Lag1
+  - H11-Lag2
+  # §4.1 driver: market competition (H23)
+  - H23
+  # §4.2 reaction (Full method only post-Phase-4)
+  - H14c.ceo2.decomp
+  # Macro drivers (driver_matrix consolidates H24/H24b but native tables still needed for spec validation)
+  - H24
+  - H24b
