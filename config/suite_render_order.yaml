@@ -34,6 +34,7 @@ suites:
   # H5 (Wang 2020 dispersion)
   - H5
   - H5.r
+  - H5.ceo2.decomp
 
   # H7 family (Amihud illiquidity — core + BGT 25-day)
   - H7
@@ -128,6 +129,7 @@ thesis_suites:
   - H23
   # §4.2 reaction (Full method only post-Phase-4)
   - H14c.ceo2.decomp
+  - H5.ceo2.decomp
   # Macro drivers (driver_matrix consolidates H24/H24b but native tables still needed for spec validation)
   - H24
   - H24b
