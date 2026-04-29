@@ -60,3 +60,46 @@ For all numerical claims in v6 sections:
 To be flagged in memory:
 - `project_dwz_anchored_framing_locked_2026_04_27.md` — counts at p<.05 are method-confused; v6 prose uses canonical Full + QtrExp side-by-side
 - `project_endogeneity_lit_review_2026_04_28.md` + `project_session_2026_04_29_h_lewbel_iv_complete.md` — Stock-Yogo framing slightly overstated; v6 prose uses corrected wording
+
+## Phase 3 NLM paranoia audit (2026-04-29 LATE×6) — verbatim drift findings
+
+User directive verbatim: *"you must double check with nlm mcp again! this is a sensitive phase. be paranoid! do not trust."*
+
+NotebookLM F1D session `76ff5038` re-verified all primary-source verbatim quotes used in `docs/Draft/sections/section_2_framework.tex` (Phase 3 commit `617832f`). Four verbatim drift errors caught and patched (commit `782b8f5`).
+
+**Drift attribution analysis (verified):**
+
+| # | Paper | Drift item | Drift origin | Lock state |
+|---|---|---|---|---|
+| 1 | DWZ 2021 Table 3 Notes | Omitted "in communication" from "uncertainty resulting from persistent firm characteristics" | **AUTHOR-INTRODUCED** in §2 draft | `feedback_dwz_persistent_style.md` UncPre row had it CORRECT |
+| 2 | ACW 2004 §II.D citation | Attributed §III p.1802 wording to §II.D p.1799 | **LOCK-PROPAGATED** (`reference_almeida_campello_weisbach_2004_verbatim.md` Q3 + `project_h1_h2_theoretical_framing_locked_2026_04_28.md` Step 2) | BOTH locks had wrong section attribution |
+| 3 | OPSW 1999 Section 2.2 p.9 | "financing profitable projects" instead of "investing in profitable projects" | **AUTHOR-INTRODUCED** in §2 draft | `reference_opsw_1999_verbatim.md` Q3 had it CORRECT ("investing") |
+| 4 | BKS 2009 Intro p.1987 | "post-2000 secular increase" mis-dated trend | **AUTHOR-INTRODUCED** in §2 draft | `reference_bks_2009_verbatim.md` Q6 had period CORRECT (1980-2006) |
+
+**Lesson learned (durable rule):** 3 of 4 drifts were author-introduced into the draft when paraphrasing from memory, NOT lock-propagated. Reading-the-lock-and-typing is itself a transcription failure mode (similar to `feedback_no_llm_cell_transcription` for numbers, but for verbatim quotes). Phase 3 verification required the SECOND PASS via NLM despite locks reading correctly. Recorded as `feedback_primary_source_verify_always.md`.
+
+**Files corrected post-Phase-3 audit:**
+- `docs/Draft/sections/section_2_framework.tex` (4 fixes, commit 782b8f5)
+- `reference_almeida_campello_weisbach_2004_verbatim.md` (Q3 location corrected)
+- `project_h1_h2_theoretical_framing_locked_2026_04_28.md` (ACW Step 2 location corrected)
+
+**Verifications PASSED in Phase 3 audit (no fix needed):**
+- BS 2003 R² 77→80%, F p≤.0001, heterogeneity quote
+- DWZ Pres-vs-QA "scripted/improvised" framing (§4.3 p.15)
+- DWZ ClarityCEO "not motivated by business uncertainty" (§1 p.2)
+- DWZ UncRes "explains little of the market reaction" (§1 p.3-4)
+- DWZ UncRes "residual uncertainty…not explained…" (§4.4 p.17)
+- DWZ headline "primarily a function of ClarityCEO" (§5.3 p.29)
+- FP 2006 "credit constrained" vs "capital constrained" (§2.2 p.63)
+- FP 2006 "less debt and slightly more equity" (§2.2 p.63)
+- FP 2006 binary rated-vs-unrated + sample 1986-2000
+- MW 2001 cluster pattern (21% cash, 17.5% median, ~3× control)
+- MW 2001 working paper status, July 9, 2001 draft
+- MW 2001 pecking-order interpretation (NOT precautionary; cluster shared with OPSW)
+- ACW 2004 baseline hypothesis (Abstract p.1777)
+- ACW 2004 §II.D macro-shock evidence (GDP-response coefficients p.1800)
+- OPSW Q3 verbatim re-confirmed ("investing in profitable projects")
+- OPSW Q4 directional prediction ("Uncertainty leads to situations…")
+- BKS Q4 precautionary motive verbatim ("Firms hold cash to better cope with adverse shocks…")
+- BKS Q6 secular trend ("more than doubles…from 10.5% in 1980 to 23.2% in 2006")
+- BKS Q6 two-way clustering (firm + year, Cameron-Gelbach-Miller 2006)
