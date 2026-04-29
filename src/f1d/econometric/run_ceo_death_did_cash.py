@@ -609,7 +609,7 @@ def emit_suite_spec(
         "balance_table": balance.to_dict(orient="records"),
         "parallel_trends_placebo": placebo_result,
     }
-    spec_file = out_dir / f"suite_spec_{SUITE_ID.replace('.', '_')}.json"
+    spec_file = out_dir / f"suite_spec_{SUITE_ID}.json"
     spec_file.write_text(json.dumps(spec, indent=2, default=str))
     print(f"\nWrote {spec_file}")
 
