@@ -61,6 +61,23 @@ To be flagged in memory:
 - `project_dwz_anchored_framing_locked_2026_04_27.md` — counts at p<.05 are method-confused; v6 prose uses canonical Full + QtrExp side-by-side
 - `project_endogeneity_lit_review_2026_04_28.md` + `project_session_2026_04_29_h_lewbel_iv_complete.md` — Stock-Yogo framing slightly overstated; v6 prose uses corrected wording
 
+## Phase 4 user-caught drift (2026-04-29 LATE×7) — stale appendix content
+
+User: *"we DONT include belowIG. we dropped it a long time ago."*
+
+§2.4 + §3.5 v6 draft included "three-way IG/BelowIG/Unrated split" framing imported from `appendix_c_robustness.tex` line 9 subsection "Three-Tier Constraint Moderator: BelowIG Handling". Empirical verification against `per_suite/h1_2_ceo2_decomp_table.tex` and CANONICAL_FACT_SHEET.md H1.2 IV list confirms suite is BINARY (Unrated indicator only; no BelowIG row anywhere). The appendix is v5.1-era stale content describing a design extension never implemented.
+
+Fix shipped commit `9b340cd`:
+- §2.4: "three-way IG/BelowIG/Unrated split in robustness" → "binary rated-versus-unrated scheme directly...rated reference category pools investment-grade and below-investment-grade firms"
+- §3.5: BelowIG paragraph dropped entirely; robustness section reports 2 disclosures instead of 3
+
+Phase 10 cleanup required for `appendix_c_robustness.tex`:
+- §"Three-Tier Constraint Moderator" subsection (lines 9-12) — DELETE or replace with binary disclosure
+- Lines 19+24: "UncAnsCEO" v5.1 IV name → v6 decomp variants
+- Line 12: `\ref{tab:h1_2_ceo2}` → `\ref{tab:h1_2_ceo2_decomp}`
+
+Pattern: appendix files NOT refreshed for v6 are unreliable sources for body prose. Per_suite table files (programmatically generated from current suite_specs) are authoritative for methodological description. Recorded as additional rule in `feedback_primary_source_verify_always.md`.
+
 ## Phase 3 NLM paranoia audit (2026-04-29 LATE×6) — verbatim drift findings
 
 User directive verbatim: *"you must double check with nlm mcp again! this is a sensitive phase. be paranoid! do not trust."*
