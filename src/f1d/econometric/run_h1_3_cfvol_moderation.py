@@ -32,10 +32,11 @@ Tail directions:
     Main UncPreCEO_c: one-tail POS
         (presentation-segment uncertainty → more cash)
     Interaction UncResCEO × HighCFvol: one-tail POS
-        (CFvol amplification at state level — Han-Qiu precautionary mechanism
-         extended to speech uncertainty channel)
+        (CFvol-conditional ACTIVATION at state level — speech uncertainty
+         engages the cash response only among high-CFvol firms; Han-Qiu
+         constrained-vs-unconstrained asymmetry extended to speech channel)
     Interaction UncPreCEO × HighCFvol: one-tail POS
-        (CFvol amplification at presentation level)
+        (CFvol-conditional ACTIVATION at presentation level)
     HighCFvol level dummy: two-tailed (no directional prior on level shift).
 
 Channel: CH-CFvol — Precautionary liquidity amplification by realized cash-flow
@@ -920,13 +921,17 @@ def generate_report(
         "",
         "## Interpretation",
         "",
-        "- ClarityCEO (NEG): persistent CEO clarity -> less precautionary cash (LowCFvol firms baseline)",
-        "- UncResCEO (POS): within-quarter uncertainty surprise -> more cash (LowCFvol firms baseline)",
-        "- UncPreCEO (POS): presentation-segment uncertainty -> more cash",
-        "- INT_UNCRES_HIGHCFVOL (POS): CFvol amplification at state level (Han-Qiu 2007 extended)",
-        "- INT_UNCPRE_HIGHCFVOL (POS): CFvol amplification at presentation level",
+        "- ClarityCEO (NEG): persistent CEO clarity -> less precautionary cash (HC at trait level; main effect)",
+        "- UncResCEO main slope = conditional slope at HighCFvol=0 (LowCFvol baseline) — null in interaction specs",
+        "- UncPreCEO main slope = conditional slope at HighCFvol=0 (LowCFvol baseline) — null in interaction specs",
+        "- INT_UNCRES_HIGHCFVOL (POS): CFvol-CONDITIONAL ACTIVATION at state level (engages only in high-CFvol firms)",
+        "- INT_UNCPRE_HIGHCFVOL (POS): CFvol-CONDITIONAL ACTIVATION at presentation level",
         "- Trait x moderator interaction NOT estimated (theoretically ambiguous direction)",
         "- Reference group: LowCFvol (below ff12-year median) firms; binary moderator per Han-Qiu 2007 design",
+        "",
+        "## Framing note (corrected post-run)",
+        "",
+        "ACTIVATION not AMPLIFICATION: in interaction specs, UncResCEO and UncPreCEO main effects are null at the LowCFvol baseline. The interaction terms therefore measure the EMERGENCE of the speech-uncertainty cash response in high-CFvol firms, not the strengthening of an existing baseline effect. This mirrors Han-Qiu (2007)'s constrained-vs-unconstrained asymmetry: the cash response is absent in low-CFvol firms and activates in high-CFvol firms.",
     ]
 
     with open(out_dir / "report_step4_H1_3_cfvol_moderation.md", "w", encoding="utf-8") as f:
