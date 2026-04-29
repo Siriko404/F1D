@@ -33,7 +33,42 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 COMPUSTAT_PATH = "inputs/comp_na_daily_all/comp_na_daily_all.parquet"
+COMPUSTAT_EXTENDED_DIR = "inputs/Compustat_Quarterly_OCF_Extended"
 WINDOW_QUARTERS = 16  # Han-Qiu verbatim
+
+
+def _load_compustat_quarterly_ocf(root_path: Path) -> pd.DataFrame:
+    """Load Compustat quarterly OCF columns from BOTH:
+       - inputs/comp_na_daily_all/comp_na_daily_all.parquet (2000-2020)
+       - inputs/Compustat_Quarterly_OCF_Extended/*.parquet  (1990-2002, gap fill)
+    Concatenate, dedup on (gvkey, datadate) keeping LATER file (the gap-fill is the
+    authoritative source for the overlap period; same column source from WRDS comp.fundq).
+    """
+    cols = ["gvkey", "datadate", "fyearq", "fqtr", "oancfy"]
+
+    main = pd.read_parquet(root_path / COMPUSTAT_PATH, columns=cols)
+    main["gvkey"] = main["gvkey"].astype(str).str.zfill(6)
+    main["datadate"] = pd.to_datetime(main["datadate"])
+
+    extended_dir = root_path / COMPUSTAT_EXTENDED_DIR
+    extended_frames = []
+    if extended_dir.exists():
+        for ext_file in sorted(extended_dir.glob("*.parquet")):
+            ext = pd.read_parquet(ext_file, columns=cols)
+            ext["gvkey"] = ext["gvkey"].astype(str).str.zfill(6)
+            ext["datadate"] = pd.to_datetime(ext["datadate"])
+            extended_frames.append(ext)
+
+    frames = [main] + extended_frames
+    combined = pd.concat(frames, ignore_index=True)
+
+    # Dedup (gvkey, datadate) — both sources from comp.fundq, identical schema; main first
+    # so duplicates resolved to main file (latest restatement). For pre-2000 dates only
+    # extended is present, so no conflict there.
+    combined = combined.sort_values(["gvkey", "datadate"], kind="stable")
+    combined = combined.drop_duplicates(subset=["gvkey", "datadate"], keep="first")
+    combined = combined.dropna(subset=["fyearq", "fqtr"])
+    return combined
 
 
 def _compute_quarterly_ocf(comp: pd.DataFrame) -> pd.Series:
@@ -92,17 +127,8 @@ class CashFlowVolatilityBuilder(VariableBuilder):
         manifest["year"] = manifest["start_date"].dt.year
         manifest = manifest[manifest["year"].isin(list(years))].copy()
 
-        # Load full Compustat (all dates — need pre-2002 for 16q backfill)
-        comp = pd.read_parquet(
-            root_path / COMPUSTAT_PATH,
-            columns=["gvkey", "datadate", "fyearq", "fqtr", "oancfy"],
-        )
-        comp["gvkey"] = comp["gvkey"].astype(str).str.zfill(6)
-        comp["datadate"] = pd.to_datetime(comp["datadate"])
-        comp = comp.dropna(subset=["fyearq", "fqtr"])
-        # Dedup on (gvkey, datadate) keep last (most-recent restatement)
-        comp = comp.sort_values(["gvkey", "datadate"], kind="stable")
-        comp = comp.drop_duplicates(subset=["gvkey", "datadate"], keep="last")
+        # Load full Compustat (1990-2020) by combining gap-fill + main files
+        comp = _load_compustat_quarterly_ocf(root_path)
 
         cfvol_df = _compute_cfvol(comp)
 
