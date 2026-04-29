@@ -440,7 +440,7 @@ def emit_latex(columns: List[Dict[str, Any]], out_dir: Path) -> Path:
         r"sample $=$ F1D Main industries (FF12 $\notin$ \{Finance, Utility\}). "
         r"\textbf{Endogeneity caveat} (\S 4.3 disclosure): DWZ themselves note this design ``does not completely eliminate endogeneity concerns'' (\S 6); "
         r"because cash is a CEO-discretion choice variable, the endogeneity profile here is more concerning than in DWZ's Tobin's Q application. "
-        r"This table is a robustness companion to the Phase E sudden-death DiD (Table~\ref{tab:h_death_did}); forced/voluntary turnover not separated. "
+        r"This table is a robustness companion to the Phase E sudden-death DiD (Table~\ref{tab:ceo_death_did}); forced/voluntary turnover not separated. "
         r"$p$-value on $\Delta$ ClarityCEO is one-tailed (H1 prior: clarity $\uparrow \Rightarrow$ cash $\downarrow$); other $p$-values two-tailed. "
         r"$^{*}/^{**}/^{***}$ denote $p<0.10/0.05/0.01$."
     )

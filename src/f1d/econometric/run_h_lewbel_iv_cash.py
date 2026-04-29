@@ -382,12 +382,12 @@ def emit_latex(columns: List[Dict[str, Any]], pt_df: pd.DataFrame, out_dir: Path
         + r" \\"
     )
     L.append(
-        "Hansen J $p$ & "
+        "Sargan $p$ & "
         + " & ".join(
             [
                 "n/a"
                 if c["col"] == 1
-                else f"{c['diagnostics'].get('j_p', float('nan')):.3f}"
+                else f"{c['diagnostics'].get('sargan_p', float('nan')):.3f}"
                 for c in columns
             ]
         )
@@ -421,7 +421,7 @@ def emit_latex(columns: List[Dict[str, Any]], pt_df: pd.DataFrame, out_dir: Path
         r"\textbf{Identification scope (\S 4.3 disclosure):} Lewbel addresses omitted TIME-VARYING "
         r"confounders within firm spells (which neither firm-FE nor manager-FE absorbs). For "
         r"reverse-causality concerns (firms hoard cash $\to$ CEO talks more uncertainly about that "
-        r"position), the design is weaker than Phase E sudden-death (Table~\ref{tab:h_death_did}); the "
+        r"position), the design is weaker than Phase E sudden-death (Table~\ref{tab:ceo_death_did}); the "
         r"three designs together cover three different identification threats rather than converge "
         r"on a single coefficient. "
         r"$p$-value on UncResCEO is one-tailed (H1 prior: UncResCEO $\uparrow \Rightarrow$ Cash "

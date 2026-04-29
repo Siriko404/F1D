@@ -46,17 +46,21 @@ file\_name, ceo\_id, ceo\_name, gvkey, ff12\_code, ff12\_name, start\_date & Mas
 \endfoot
 \bottomrule
 \endlastfoot
-NegCall & Entire-call negative sentiment percentage.\par\smallskip\textit{Formula:} Ratio of negative words to total words in the entire call, based on LM 2011 negative-words list. Per DWZ 2021 Appendix Table A.1: 'percentage of negative words in all words spoken by the CEO, CFO and analysts attending the call.' & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (Section 4.4, p.18; Appendix Table A.1, p.54) \\
+ClarityCEO & CEO clarity persistent-style component (DWZ Eqn 5).\par\smallskip\textit{Formula:} ClarityCEO$_i$ = $-\widehat{\mathrm{FE}}_i$ where $\widehat{\mathrm{FE}}_i$ is the CEO-$i$ fixed-effect estimate from the panel regression UncAnsCEO$_{ic}$ = $\alpha + \sum_i \mathrm{FE}_i \cdot \mathbb{1}[\text{CEO}=i] + \mathbf{X}_{ic}\boldsymbol\gamma + \varepsilon_{ic}$ over the call-level Q\&A uncertainty panel; controls $\mathbf{X}$ are the DWZ extended-controls vector. The sign flip on $\widehat{\mathrm{FE}}_i$ makes higher ClarityCEO mean ``CEO speaks more clearly'' (lower mean uncertainty). Persistent CEO trait. & \seqsplit{outputs/econometric/ceo\_clarity\_extended/} & \citet{dzielinski2021} (Section 4.4 Eqn 5, p.16) \\
 \addlinespace[2pt]
-UncAnsCEO & CEO-only Q\&A uncertainty percentage.\par\smallskip\textit{Formula:} CEO Q\&A uncertainty (\%) = UnctWordsAnsCEO / WordsAnsCEO (DWZ 2021 Eqn 2). Uncertainty wordlist = LM 2011 Master Dictionary 'uncertainty' list (297 words, Aug 2014 version). CEO identified via Execucomp ceoann field. & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (Section 4.2, Eqn 2, p.13; Appendix Table A.1, p.54) \\
+ClarityCEO\_QtrExp & ClarityCEO under within-tenure expanding window.\par\smallskip\textit{Formula:} As ClarityCEO, but the CEO fixed-effect regression is re-estimated on an expanding within-CEO window using only calls of CEO $i$ available up to and including focal call $c$. Strictly look-ahead-free. & \seqsplit{outputs/econometric/ceo\_clarity\_expanding/} & thesis QtrExp variant of \citet{dzielinski2021} Eqn 5 \\
 \addlinespace[2pt]
-UncAnsMgr & Manager Q\&A uncertainty percentage (all managers including CEO).\par\smallskip\textit{Formula:} Manager Q\&A uncertainty (\%) = (count of LM 2011 uncertainty-wordlist words spoken by managers in Q\&A segment) / (total words spoken by managers in Q\&A segment). Construction strategy follows DWZ 2021 Eqn (2); manager-pool identification follows BGT 2018 segment-split code (iangow/bgt replication). 'Manager' pool includes CEO plus other managerial speakers, extending DWZ which separates CEO/CFO. & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (measurement strategy, Eqn 2); \citet{bushee2018} (manager-pool identification via iangow/bgt); thesis extension to pooled manager speakers \\
+NegCall & Entire-call negative sentiment percentage.\par\smallskip\textit{Formula:} Ratio of negative words to total words in the entire call, based on LM 2011 negative-words list. Per DWZ 2021 Appendix Table A.1: `percentage of negative words in all words spoken by the CEO, CFO and analysts attending the call.' & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (Section 4.4, p.18; Appendix Table A.1, p.54) \\
 \addlinespace[2pt]
-UncPreCEO & CEO-only presentation uncertainty percentage.\par\smallskip\textit{Formula:} CEO Presentation uncertainty (\%) = UnctWordsPreCEO / WordsPreCEO (DWZ 2021 Eqn 1). Uncertainty wordlist = LM 2011 (297 words). & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (Section 4.2, Eqn 1, p.13; Appendix Table A.1, p.54) \\
+UncAnsCEO & CEO-only Q\&A uncertainty percentage (input to ClarityCEO/UncResCEO residualization).\par\smallskip\textit{Formula:} CEO Q\&A uncertainty (\%) = UnctWordsAnsCEO / WordsAnsCEO (DWZ 2021 Eqn 2). Uncertainty wordlist = LM 2011 Master Dictionary `uncertainty' list (297 words, Aug 2014 version). CEO identified via Execucomp ceoann field. Used in body only as the dependent variable inside the CEO fixed-effect residualization that produces ClarityCEO and UncResCEO. & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (Section 4.2, Eqn 2, p.13) \\
 \addlinespace[2pt]
-UncPreMgr & Manager presentation uncertainty percentage.\par\smallskip\textit{Formula:} Manager Presentation uncertainty (\%) = (count of LM 2011 uncertainty-wordlist words by managers in Presentation segment) / (total manager words in Presentation segment). Construction strategy follows DWZ 2021 Eqn (1); manager-pool identification and Pres/Ans segment split follow BGT 2018 via iangow/bgt replication code. & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (measurement strategy, Eqn 1); \citet{bushee2018} (segment split + manager pool); thesis extension to pooled manager speakers \\
+UncPreCEO & CEO-only presentation-segment uncertainty percentage (DWZ Eqn 1).\par\smallskip\textit{Formula:} CEO Presentation uncertainty (\%) = UnctWordsPreCEO / WordsPreCEO. Uncertainty wordlist = LM 2011 (297 words). & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (Section 4.2, Eqn 1, p.13) \\
 \addlinespace[2pt]
-UncQue & Analyst Q\&A uncertainty percentage.\par\smallskip\textit{Formula:} Analyst Q\&A uncertainty (\%) = UnctWordsQue / WordsQue (DWZ 2021 Eqn 3). Uncertainty wordlist = LM 2011 (297 words). & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (Section 4.2, Eqn 3, p.13; Appendix Table A.1, p.54) \\
+UncQue & Analyst Q\&A uncertainty percentage (DWZ Eqn 3).\par\smallskip\textit{Formula:} Analyst Q\&A uncertainty (\%) = UnctWordsQue / WordsQue. Uncertainty wordlist = LM 2011 (297 words). Used as $\Delta$UncQue control in DWZ first-difference replication. & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (Section 4.2, Eqn 3, p.13) \\
+\addlinespace[2pt]
+UncResCEO & CEO Q\&A residual call-state uncertainty component (DWZ Eqn 4).\par\smallskip\textit{Formula:} $\widehat\varepsilon_{ic}$ = the residual from the panel regression UncAnsCEO$_{ic}$ = $\alpha + \sum_i \mathrm{FE}_i \cdot \mathbb{1}[\text{CEO}=i] + \mathbf{X}_{ic}\boldsymbol\gamma + \varepsilon_{ic}$ that produces ClarityCEO. By OLS first-order conditions, the within-CEO mean of UncResCEO is exactly zero by construction. Captures call-level deviation in CEO Q\&A uncertainty after stripping out the persistent CEO mean. & \seqsplit{outputs/econometric/ceo\_clarity\_extended/} & \citet{dzielinski2021} (Section 4.4 Eqn 4, p.16) \\
+\addlinespace[2pt]
+UncResCEO\_QtrExp & UncResCEO under within-tenure expanding window.\par\smallskip\textit{Formula:} As UncResCEO, but the residualization regression is re-estimated on an expanding within-CEO window. Strictly look-ahead-free. & \seqsplit{outputs/econometric/ceo\_clarity\_expanding/} & thesis QtrExp variant of \citet{dzielinski2021} Eqn 4 \\
 \addlinespace[2pt]
 \end{longtable}
 
@@ -162,6 +166,8 @@ Turnover & Compute share turnover at earnings call date (VECTORIZED).\par\smalls
 \endlastfoot
 BelowIG & Below-IG credit rating subsample indicator (H1.2).\par\smallskip\textit{Formula:} Binary = 1 if firm's S\&P long-term issuer credit rating is below investment grade (BB+ and below) at call date; 0 otherwise. Rated firms only (Unrated firms get separate indicator). & \seqsplit{runtime} & thesis (H1.2 rating subsample) \\
 \addlinespace[2pt]
+HighCFvol & High cash-flow-volatility moderator (H1.3).\par\smallskip\textit{Formula:} Binary = 1 if firm-quarter Han-Qiu (2007) cash-flow-volatility (16-quarter rolling std of OCF / $|$mean$|$ of OCF) is above the within-industry-year median; 0 otherwise. & \seqsplit{runtime} & \citet{hanqiu2007}; thesis (H1.3 split convention) \\
+\addlinespace[2pt]
 HighTSIMM & High product-market-similarity indicator (H1.1).\par\smallskip\textit{Formula:} Binary = 1 if firm-year TotalSimilarity (HP 2016 product market similarity) is above the within-year median; 0 otherwise. & \seqsplit{runtime} & hp2016 (TSIMM construction); thesis (H1.1 split convention) \\
 \addlinespace[2pt]
 Lagged\_DV & Generic lagged-DV control (1Q lag of suite-specific DV).\par\smallskip\textit{Formula:} 1-quarter lag of the dependent variable, constructed at runtime per spec (DV varies per suite). Always included as base control to absorb persistence. & \seqsplit{runtime} & thesis convention (per feedback\_lagged\_dv.md) \\
@@ -251,17 +257,31 @@ RDSales\_lead & 1Q lead of RDSales.\par\smallskip\textit{Formula:} 1-quarter lea
 \addlinespace[2pt]
 RepurchaseIntensity\_lead\_qtr & 1Q lead of RepurchaseIntensity (qtr-aligned).\par\smallskip\textit{Formula:} 1-quarter lead of RepurchaseIntensity (calendar-quarter aligned) & \seqsplit{runtime} & Thesis Advisor Suggestion \\
 \addlinespace[2pt]
-UncAnsMgr\_c & Mean-centered UncAnsMgr.\par\smallskip\textit{Formula:} UncAnsMgr minus its sample mean (mean-centered for interaction interpretability) & \seqsplit{runtime} & thesis (interaction interpretability) \\
+ClarityCEO\_c & Mean-centered ClarityCEO.\par\smallskip\textit{Formula:} ClarityCEO minus its sample mean (mean-centered for interaction interpretability) & \seqsplit{runtime} & thesis (interaction interpretability) \\
 \addlinespace[2pt]
-UncAnsMgr\_c\_x\_BelowIG & Interaction term: UncAnsMgr\_c x BelowIG.\par\smallskip\textit{Formula:} Product: UncAnsMgr\_c * BelowIG & \seqsplit{runtime} & thesis (interaction term) \\
+ClarityCEO\_QtrExp\_c & Mean-centered ClarityCEO\_QtrExp.\par\smallskip\textit{Formula:} ClarityCEO\_QtrExp minus its sample mean & \seqsplit{runtime} & thesis (interaction interpretability) \\
 \addlinespace[2pt]
-UncAnsMgr\_c\_x\_HighTSIMM & Interaction term: UncAnsMgr\_c x HighTSIMM.\par\smallskip\textit{Formula:} Product: UncAnsMgr\_c * HighTSIMM & \seqsplit{runtime} & thesis (interaction term) \\
+Post & DiD post-event-period indicator (Phase E sudden-death).\par\smallskip\textit{Formula:} Binary = 1 if call-quarter is on or after the death-event quarter for the treated firm (and on or after the matched event-quarter for the matched-control firm); 0 otherwise. & \seqsplit{runtime} & \citet{ghafoor2023} \\
 \addlinespace[2pt]
-UncAnsMgr\_c\_x\_IG & Interaction term: UncAnsMgr\_c x IG.\par\smallskip\textit{Formula:} Product: UncAnsMgr\_c * IG & \seqsplit{runtime} & thesis (interaction term) \\
+Treated & DiD treated-firm indicator (Phase E sudden-death).\par\smallskip\textit{Formula:} Binary = 1 if firm experienced a CEO sudden-death event in 2002--2018; 0 if PSM-matched control firm. & \seqsplit{runtime} & \citet{bennedsen2020}; \citet{ghafoor2023} \\
 \addlinespace[2pt]
-UncAnsMgr\_c\_x\_Unrated & Interaction term: UncAnsMgr\_c x Unrated.\par\smallskip\textit{Formula:} Product: UncAnsMgr\_c * Unrated & \seqsplit{runtime} & thesis (interaction term) \\
+Treated\_x\_Post & DiD ATT term (Phase E sudden-death).\par\smallskip\textit{Formula:} Treated $\times$ Post. The coefficient on this product is the average treatment effect on the treated. & \seqsplit{runtime} & \citet{bertrand2004}; \citet{ghafoor2023} \\
 \addlinespace[2pt]
-UncAnsMgr\_c\_x\_zlogTSIMM & Interaction term: UncAnsMgr\_c x zlogTSIMM.\par\smallskip\textit{Formula:} Product: UncAnsMgr\_c * zlogTSIMM & \seqsplit{runtime} & thesis (interaction term) \\
+UncPreCEO\_c & Mean-centered UncPreCEO.\par\smallskip\textit{Formula:} UncPreCEO minus its sample mean (mean-centered for interaction interpretability) & \seqsplit{runtime} & thesis (interaction interpretability) \\
+\addlinespace[2pt]
+UncPreCEO\_c\_x\_HighCFvol & Interaction: UncPreCEO\_c $\times$ HighCFvol (H1.3).\par\smallskip\textit{Formula:} Product: UncPreCEO\_c * HighCFvol & \seqsplit{runtime} & thesis (CFvol moderator interaction) \\
+\addlinespace[2pt]
+UncPreCEO\_c\_x\_Unrated & Interaction: UncPreCEO\_c $\times$ Unrated (HFC).\par\smallskip\textit{Formula:} Product: UncPreCEO\_c * Unrated & \seqsplit{runtime} & thesis (HFC interaction) \\
+\addlinespace[2pt]
+UncResCEO\_c & Mean-centered UncResCEO.\par\smallskip\textit{Formula:} UncResCEO minus its sample mean (mean-centered for interaction interpretability) & \seqsplit{runtime} & thesis (interaction interpretability) \\
+\addlinespace[2pt]
+UncResCEO\_c\_x\_HighCFvol & Interaction: UncResCEO\_c $\times$ HighCFvol (H1.3).\par\smallskip\textit{Formula:} Product: UncResCEO\_c * HighCFvol & \seqsplit{runtime} & thesis (CFvol moderator interaction) \\
+\addlinespace[2pt]
+UncResCEO\_c\_x\_Unrated & Interaction: UncResCEO\_c $\times$ Unrated (HFC).\par\smallskip\textit{Formula:} Product: UncResCEO\_c * Unrated & \seqsplit{runtime} & thesis (HFC interaction) \\
+\addlinespace[2pt]
+UncResCEO\_QtrExp\_c & Mean-centered UncResCEO\_QtrExp.\par\smallskip\textit{Formula:} UncResCEO\_QtrExp minus its sample mean & \seqsplit{runtime} & thesis (interaction interpretability) \\
+\addlinespace[2pt]
+UncResCEO\_QtrExp\_c\_x\_Unrated & Interaction: UncResCEO\_QtrExp\_c $\times$ Unrated (HFC QtrExp).\par\smallskip\textit{Formula:} Product: UncResCEO\_QtrExp\_c * Unrated & \seqsplit{runtime} & thesis (HFC QtrExp interaction) \\
 \addlinespace[2pt]
 \end{longtable}
 
