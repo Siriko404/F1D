@@ -106,17 +106,33 @@ def main() -> int:
         return 1
 
     # Generate per-suite LaTeX chunks.
-    all_tex: list[str] = []
+    # Per-suite failures (e.g., non-canonical schemas in DiD/IV/FD endogeneity
+    # suites) are tolerated: we skip the failed suite + leave its existing
+    # per_suite/<slug>_table.tex fragment in place. Hard-fail only if EVERY
+    # suite fails (likely a schema-wide regression).
+    tex_by_suite: dict[str, str] = {}
+    failed_suites: list[str] = []
     for suite_id in suite_ids:
         print(f"Generating {suite_id}...")
         try:
             spec = load_suite_spec(resolved[suite_id])
             tex = render_suite(spec)
-            all_tex.append(tex)
+            tex_by_suite[suite_id] = tex
             print("  OK")
         except Exception as exc:
-            print(f"  FAILED: {exc}")
-            return 1
+            first_line = str(exc).split("\n", 1)[0]
+            print(f"  FAILED: {first_line}")
+            failed_suites.append(suite_id)
+
+    if failed_suites:
+        print(
+            f"\n[warning] {len(failed_suites)} suite(s) failed to render: "
+            f"{', '.join(failed_suites)}. Their per_suite/<slug>_table.tex "
+            f"fragments retain their previous content."
+        )
+    if not tex_by_suite:
+        print("[error] All suites failed to render.")
+        return 1
 
     # Assemble master document.
     master = [
@@ -131,9 +147,10 @@ def main() -> int:
         r"\pagenumbering{arabic}",
         r"\begin{document}",
     ]
-    for i, tex in enumerate(all_tex):
+    rendered_in_order = [tex_by_suite[sid] for sid in suite_ids if sid in tex_by_suite]
+    for i, tex in enumerate(rendered_in_order):
         master.append(tex)
-        if i < len(all_tex) - 1:
+        if i < len(rendered_in_order) - 1:
             master.append(r"\clearpage")
     master.append(r"\end{document}")
 
@@ -150,10 +167,15 @@ def main() -> int:
 
     # Render every fragment to disk regardless of inclusion scope (so any suite
     # is available for body \input even before being added to thesis_suites).
-    for i, suite_id in enumerate(suite_ids):
+    # Failed suites are skipped — their pre-existing fragment files are kept.
+    n_written = 0
+    for suite_id in suite_ids:
+        if suite_id not in tex_by_suite:
+            continue
         slug = suite_to_slug(suite_id)
         fragment_path = PER_SUITE_DIR / f"{slug}_table.tex"
-        fragment_path.write_text(to_main_chunk(all_tex[i]), encoding="utf-8")
+        fragment_path.write_text(to_main_chunk(tex_by_suite[suite_id]), encoding="utf-8")
+        n_written += 1
 
     # Two include files: full fishing deck (all suites) + thesis-only subset.
     def _write_include(out_name: str, scope_ids: list[str], header_note: str) -> None:
@@ -177,7 +199,7 @@ def main() -> int:
         thesis_suite_ids,
         f"Thesis subset: {len(thesis_suite_ids)} suites cited in main.pdf body / appendices.",
     )
-    print(f"  {len(suite_ids)} fragments + 2 include files written "
+    print(f"  {n_written}/{len(suite_ids)} fragments regenerated + 2 include files written "
           f"(_fishing_deck_input.tex={len(suite_ids)} + _thesis_input.tex={len(thesis_suite_ids)}).")
 
     # Compile PDF.
