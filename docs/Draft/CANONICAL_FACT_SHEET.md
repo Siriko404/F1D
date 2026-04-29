@@ -1,27 +1,27 @@
 # CANONICAL FACT SHEET — v6 thesis rewrite empirical audit
 
-Generated 2026-04-29 13:58:31 via `scripts/adhoc/extract_canonical_facts.py`.
+Generated 2026-04-29 14:28:39 via `scripts/adhoc/extract_canonical_facts.py`.
 
 All numbers programmatically extracted from latest `suite_spec_*.json`.
 AUTHORITY: this file. NOT memory docs. Memory locks are LLM-written and may contain hallucinated counts.
 
 ## Suite spec source files
 
-- **H1.ceo2.decomp**: `h1_cash_holdings_ceo2iv_decomp\2026-04-27_144035\suite_spec_H1.ceo2.decomp.json`
-- **H1.ceo2.decomp.qtrexp**: `h1_cash_holdings_ceo2iv_decomp_qtrexp\2026-04-27_144631\suite_spec_H1.ceo2.decomp.qtrexp.json`
-- **H1.2.ceo2.decomp**: `h1_2_cash_constraint_ceo2iv_decomp\2026-04-27_151718\suite_spec_H1.2.ceo2.decomp.json`
-- **H1.2.ceo2.decomp.qtrexp**: `h1_2_cash_constraint_ceo2iv_decomp_qtrexp\2026-04-27_152524\suite_spec_H1.2.ceo2.decomp.qtrexp.json`
-- **H1.3.cfvol**: `h1_3_cfvol_moderation\2026-04-28_231307\suite_spec_H1.3.cfvol.json`
-- **H11**: `h11_prisk_uncertainty\2026-04-19_214502\suite_spec_H11.json`
-- **H11-Lag**: `h11_prisk_uncertainty_lag\2026-04-19_214745\suite_spec_H11-Lag2.json`
-- **H23**: `h23_competition_uncertainty\2026-04-19_215104\suite_spec_H23.json`
-- **H24**: `h24_us_epu\2026-04-19_215754\suite_spec_H24.json`
-- **H24b**: `h24b_global_epu\2026-04-19_215930\suite_spec_H24b.json`
-- **H14c.ceo2.decomp**: `h14c_spread_bgt_level_ceo2iv_decomp\2026-04-27_152902\suite_spec_H14c.ceo2.decomp.json`
-- **H18.ceo2.decomp**: `h18_cccl_received_ceo2iv_decomp\2026-04-27_180832\suite_spec_H18.ceo2.decomp.json`
-- **H.death.did**: `ceo_death_did_cash\2026-04-29_015106\suite_spec_H.death.did.json`
-- **H.dwz.fd**: `h_dwz_fd_cash\2026-04-29_015412\suite_spec_H.dwz.fd.json`
-- **H.lewbel.iv**: `h_lewbel_iv_cash\2026-04-29_023642\suite_spec_H.lewbel.iv.json`
+- **H1.ceo2.decomp**: `h1_cash_holdings_ceo2iv_decomp\2026-04-29_142735\suite_spec_H1.ceo2.decomp.json`
+- **H1.ceo2.decomp.qtrexp**: `h1_cash_holdings_ceo2iv_decomp_qtrexp\2026-04-29_142736\suite_spec_H1.ceo2.decomp.qtrexp.json`
+- **H1.2.ceo2.decomp**: `h1_2_cash_constraint_ceo2iv_decomp\2026-04-29_142737\suite_spec_H1.2.ceo2.decomp.json`
+- **H1.2.ceo2.decomp.qtrexp**: `h1_2_cash_constraint_ceo2iv_decomp_qtrexp\2026-04-29_142738\suite_spec_H1.2.ceo2.decomp.qtrexp.json`
+- **H1.3.cfvol**: `h1_3_cfvol_moderation\2026-04-29_142744\suite_spec_H1.3.cfvol.json`
+- **H11**: `h11_prisk_uncertainty\2026-04-29_142745\suite_spec_H11.json`
+- **H11-Lag**: `h11_prisk_uncertainty_lag\2026-04-29_142746\suite_spec_H11-Lag2.json`
+- **H23**: `h23_competition_uncertainty\2026-04-29_142747\suite_spec_H23.json`
+- **H24**: `h24_us_epu\2026-04-29_142752\suite_spec_H24.json`
+- **H24b**: `h24b_global_epu\2026-04-29_142753\suite_spec_H24b.json`
+- **H14c.ceo2.decomp**: `h14c_spread_bgt_level_ceo2iv_decomp\2026-04-29_142756\suite_spec_H14c.ceo2.decomp.json`
+- **H18.ceo2.decomp**: `h18_cccl_received_ceo2iv_decomp\2026-04-29_142757\suite_spec_H18.ceo2.decomp.json`
+- **H.death.did**: `ceo_death_did_cash\2026-04-29_142804\suite_spec_H.death.did.json`
+- **H.dwz.fd**: `h_dwz_fd_cash\2026-04-29_142806\suite_spec_H.dwz.fd.json`
+- **H.lewbel.iv**: `h_lewbel_iv_cash\2026-04-29_142811\suite_spec_H.lewbel.iv.json`
 
 ## H1.ceo2.decomp — HC Full method (3-IV decomp)
 
