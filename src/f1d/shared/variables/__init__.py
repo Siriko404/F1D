@@ -128,6 +128,7 @@ from .dividend_payer import DividendPayerBuilder
 from .dividend_payer_quarterly import DividendPayerQuarterlyBuilder
 from .ocf_volatility import OCFVolatilityBuilder
 from .cash_flow_volatility import CashFlowVolatilityBuilder
+from .hedging_needs import HedgingNeedsBuilder
 
 # Quarterly Payout Ratio
 from .payout_ratio_quarterly import PayoutRatioQuarterlyBuilder
@@ -214,6 +215,7 @@ __all__ = [
     "DividendPayerQuarterlyBuilder",
     "OCFVolatilityBuilder",
     "CashFlowVolatilityBuilder",
+    "HedgingNeedsBuilder",
     # Quarterly Payout Ratio
     "PayoutRatioQuarterlyBuilder",
     # Extended control builders

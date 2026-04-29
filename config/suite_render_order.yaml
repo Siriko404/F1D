@@ -25,6 +25,7 @@ suites:
   - H1.2.ceo2.decomp
   - H1.2.ceo2.decomp.qtrexp
   - H1.3.cfvol  # NEW — CFvol moderation (Han-Qiu 2007 16q CV; ff12-year median split)
+  - H1.4.hedging_needs  # NEW — HedgingNeeds moderation (ACW 2007 corr formula; ff12-year median split)
 
   # H4 family (both sub-tables emitted by run_h4_leverage.py)
   - H4a
