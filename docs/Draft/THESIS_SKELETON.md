@@ -6,7 +6,7 @@ Supersedes v5.1 (2026-04-22, archived at git tag `draft-v5.1-pre-rewrite`).
 ## Drivers of v6 (what changed since v5.1)
 
 1. **3-IV decomp framing locked 2026-04-27** (`project_dwz_anchored_framing_locked_2026_04_27.md`): all §3 + §4.2 results report ClarityCEO + UncResCEO + UncPreCEO, NOT joint-IV (UncAnsCEO + UncPreCEO).
-2. **Headline contribution locked 2026-04-27**: "UncResCEO drives 12/12 cash where DWZ found null on prices — same variable, different outcome class, opposite verdict." MUST appear in abstract + §1 + §3 + §5.
+2. **Headline contribution locked 2026-04-27, REVISED 2026-04-29**: "Extending DWZ 2021's three-component speech-uncertainty decomposition to firm-level cash-policy outcomes — a domain DWZ do not test (NLM verbatim 2026-04-29 session e8fab2d7). UncResCEO loads cash 12/12." MUST appear in abstract + §1 + §3 + §5. Position as users/extenders of DWZ's measurement architecture, NOT contrastive to it.
 3. **H1/H2 §2 framing locked 2026-04-28** (`project_h1_h2_theoretical_framing_locked_2026_04_28.md`): precautionary chain = OPSW + BKS + DWZ + BS 2003. H2 amplification anchor = ACW 2004 verbatim (Section II.D).
 4. **§4.2 dual-channel** (locked 2026-04-27): bid-ask spread (H14c.ceo2.decomp, market channel) + SEC comment letter (H18.ceo2.decomp, regulatory channel). Both load UncPreCEO.
 5. **§4.3 endogeneity defense** — NEW section. 3 designs shipped 2026-04-29: Phase E sudden-death DiD (H.death.did), DWZ §6 first-difference (H.dwz.fd), Lewbel 2012 IV (H.lewbel.iv). Plus Option 4 asymmetry footnote.
@@ -22,11 +22,11 @@ Supersedes v5.1 (2026-04-22, archived at git tag `draft-v5.1-pre-rewrite`).
 
 Does CEO speech uncertainty during earnings calls predict firm financing conservatism, and does the response decompose differently across CEO-style vs state-residual vs presentation components?
 
-## Headline contribution (DO NOT BURY)
+## Headline contribution (DO NOT BURY) — REVISED 2026-04-29 (extension framing)
 
-> UncResCEO — which DWZ 2021 found "explains little" of market price reaction — loads positively on cash holdings in 12/12 specifications. Same variable, different outcome class, opposite verdict. The Q&A residual that does not move stock prices does move corporate cash decisions.
+> UncResCEO — one of the three components of DWZ 2021's CEO speech-uncertainty decomposition — loads positively on firm cash holdings in 12/12 specifications. DWZ establish their three-component decomposition on a nine-outcome set (CARs, abnormal volume, analyst forecasts and recommendations, Tobin's Q, ROA, CEO compensation): market reactions, analyst behavior, firm performance, and governance. The present thesis extends DWZ's measurement architecture to a class of outcomes their paper does not test — firm-level financing-policy decisions — and finds that the speech-uncertainty constructs carry signal for the canonical precautionary cash response (Opler 1999, Bates 2009).
 
-This is the single sharpest finding. Every section pulling at it: abstract, §1 contributions, §3 results, §5 synthesis. Supporting evidence: ClarityCEO 8-9/12 NEG sig (persistent CEO style → leaner balance sheets); HFC and CFvol amplify on lead-DV (constrained-firm channel); UncPreCEO null on cash but POS on outsider channels (spread + SEC).
+This is the single sharpest finding. Every section pulling at it: abstract, §1 contributions, §3 results, §5 synthesis. Supporting evidence: ClarityCEO 8-9/12 NEG sig (persistent CEO style → leaner balance sheets); HFC and CFvol amplify on lead-DV (constrained-firm channel); UncPreCEO null on cash but POS on outsider channels (spread + SEC). Position as users/extenders of DWZ's measures, NOT contrastive to DWZ.
 
 ## Formal Hypotheses
 
@@ -68,8 +68,8 @@ Suite: H1.2.ceo2.decomp + H1.2.ceo2.decomp.qtrexp + H1.3.cfvol.
 3. **Approach**: preserve DWZ decomposition, extend outcome set. Apply CEO-specific partition to firm-quarter financing + outsider-reaction outcomes.
 4. **Empirical setting + headline findings** including the contribution sentence
 5. **Contributions** (3):
-   1. UncResCEO 12/12 cash result CONTRASTS DWZ's UncRes-null on prices (headline)
-   2. Insider-outsider channel asymmetry on DWZ's own scripted-vs-improvised theoretical structure
+   1. Extending DWZ's three-component speech-uncertainty decomposition to corporate financing-policy outcomes (cash holdings 12/12); a domain DWZ do not test (headline)
+   2. Channel asymmetry within DWZ's own scripted-vs-improvised theoretical structure: insiders' cash decisions track Q&A components; outsiders' spread/SEC reactions track presentation share
    3. Three-design endogeneity package (sudden-death DiD + DWZ FD + Lewbel IV) addressing three orthogonal threats
 6. **Roadmap**
 

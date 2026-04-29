@@ -120,3 +120,31 @@ NotebookLM F1D session `76ff5038` re-verified all primary-source verbatim quotes
 - BKS Q4 precautionary motive verbatim ("Firms hold cash to better cope with adverse shocks…")
 - BKS Q6 secular trend ("more than doubles…from 10.5% in 1980 to 23.2% in 2006")
 - BKS Q6 two-way clustering (firm + year, Cameron-Gelbach-Miller 2006)
+
+## Phase 5/6 framing pivot (2026-04-29 LATE×9) — extension framing replaces opposite-verdict framing
+
+User directive verbatim: *"i dont like the fact that we are going for an opposite verdict framing! we must NOT attack prior literature in ANY capacity. we are expanding their study by studying the variables they have introduced, with plausible hypotheses, and show that the measures do carry meaningful signal."*
+
+User directive on verification: *"you must VERIFY DWZ thoroughly. find out ALL of their tests, and the right angle for the framing"*
+
+NotebookLM F1D session `e8fab2d7` ran an exhaustive empirical-scope inventory of DWZ 2021. Verified:
+
+**DWZ outcome set is exhaustively 9 variables**: AbnVol, AnResp, ACAR01, CAR01, CAR260, MedRec, Tobin's Q, ROA, Comp. Domain coverage: market reactions + analyst behavior + firm performance + governance.
+
+**DWZ does NOT test (NLM verbatim 2026-04-29)**: cash holdings, leverage, capital structure, dividends, share repurchases, capex, R&D-as-outcome, acquisitions, debt issuance, equity issuance, working capital, hedging, cash flow management, financial conservatism, accruals, earnings management. R&D/intangibles/firm-size enter only as controls predicting ClarityCEO, never as outcomes.
+
+**DWZ make NO claim about UncResCEO predicting firm-level corporate behavior**: their UncResCEO claims are strictly market-scope ("explains little of the market reaction" §1; "neither UncPreCEO nor UncResCEO is significantly associated with stock price or volume responses" §5.2). They do not address firm-policy outcomes, and do not call them out as future research either.
+
+**Implication**: our cash 12/12 finding is NOT contrastive — it is an extension to a previously-untested outcome class. The "same variable, different outcome class, opposite verdict" framing was empirically misaligned: DWZ never claimed UncRes does not predict firm policy, because they did not test that domain.
+
+**Files patched in single atomic commit** (extension framing replaces opposite-verdict framing):
+- `docs/Draft/sections/abstract.tex` (header comment + body — drop "Same variable, different outcome class, opposite verdict")
+- `docs/Draft/sections/section_1_intro.tex` (§1.1 motivation — drop oppositional, replace with neutral DWZ outcome enumeration; §1.4 empirical-setting — drop "headline pattern is the contrast" wording; §1.5 contribution #1 title + body — replace "Same variable, different outcome class, opposite verdict" with "Extending the DWZ three-component decomposition to corporate financing-policy outcomes")
+- `docs/Draft/sections/section_2_framework.tex` (§2.3 measurement — reframe "headline empirical question" as extension; §2.4 H1 development — drop "even where it does not move stock prices" wording)
+- `docs/Draft/sections/section_3_main.tex` (§3.2 quote-block headline — replace "headline finding is the contrast" + drop "same variable, different outcome class, opposite verdict")
+- `docs/Draft/THESIS_SKELETON.md` (lines 9, 27, 71 — drive Phase 6/7/8 prose generation)
+- `~/.claude/.../memory/project_dwz_anchored_framing_locked_2026_04_27.md` (description, table column header, LOCKED PROSE block, headline-contribution-DO-NOT-BURY block, defendable-extension table, referee-defense table — all reframed as extension)
+
+**Files NOT patched (Phase 10 cleanup)**: `appendix_c_robustness.tex` line 12 still has stale BelowIG three-tier subsection — already documented elsewhere in this discrepancies file as Phase 10 cleanup item.
+
+**Lesson for downstream prose generation**: the "extends to a domain DWZ do not test" framing is the canonical phrasing. Position as USERS and EXTENDERS of DWZ's measurement architecture. NEVER frame as "DWZ found null and we found significance" — that comparison is empirically inappropriate because the outcome classes differ. Always cite DWZ's outcome set explicitly when invoking their work, so the extension framing is grounded.
