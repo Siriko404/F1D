@@ -8,12 +8,12 @@ Description: Does product-market competition predict managerial uncertainty
              language? Tests whether Hoberg-Phillips TNIC3 TotalSimilarity
              predicts speech uncertainty in earnings calls.
 
-DV: UncAnsMgr, UncAnsCEO, UncPreMgr, UncPreCEO (firm-year averages).
+DV: UncResCEO, UncPreCEO (firm-year averages; v6 CEO-only DWZ decomp).
 
-8 Model Specifications:
-    Cols 1-4:  Industry + Fiscal Year FE (one per DV)
-    Cols 5-8:  Firm + Fiscal Year FE (one per DV)
-    QA DVs (cols 1,2,5,6): add corresponding Pres uncertainty as control
+4 Model Specifications:
+    Cols 1-2:  Industry + Fiscal Year FE (one per DV)
+    Cols 3-4:  Firm + Fiscal Year FE (one per DV)
+    UncResCEO (Q&A residual) regression adds UncPreCEO (Pres counterpart) as control.
 
 Key IV: log(TotalSimilarity) — log-transformed TNIC3TSIMM.
     Higher TSIMM = more product-market competitors with similar products.
@@ -71,7 +71,7 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 IV = "z_log_TotalSimilarity"
 
-DVS = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO", "UncAnsNoCEO", "UncPreNoCEO"]
+DVS = ["UncResCEO", "UncPreCEO"]
 
 # ------------------------------------------------------------------
 # Suite metadata for suite_spec.json emission (single sub-table, 2-row header).
@@ -94,14 +94,11 @@ CLUSTERING = {"entity": True, "time": False}
 TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
 EXTENDED_ONLY_CONTROLS: List[str] = []  # H23 has no extended set
 
-# Dynamic Pres control for QA DVs (from H11 pattern)
+# Dynamic Pres control: for DV=UncResCEO (residual Q&A component), add
+# UncPreCEO as the Pres counterpart control.
 PRES_CONTROL_MAP = {
-    "UncAnsMgr": "UncPreMgr",
-    "UncAnsCEO": "UncPreCEO",
-    "UncAnsNoCEO": "UncPreNoCEO",
-    "UncPreMgr": None,
+    "UncResCEO": "UncPreCEO",
     "UncPreCEO": None,
-    "UncPreNoCEO": None,
 }
 
 BASE_CONTROLS = [
@@ -119,38 +116,22 @@ BASE_CONTROLS = [
 MIN_FIRM_YEARS = 5
 
 MODEL_SPECS = [
-    # Industry + Fiscal Year FE (cols 1-6)
-    {"col": 1, "dv": "UncAnsMgr", "fe": "industry"},
-    {"col": 2, "dv": "UncAnsCEO", "fe": "industry"},
-    {"col": 3, "dv": "UncPreMgr", "fe": "industry"},
-    {"col": 4, "dv": "UncPreCEO", "fe": "industry"},
-    {"col": 5, "dv": "UncAnsNoCEO", "fe": "industry"},
-    {"col": 6, "dv": "UncPreNoCEO", "fe": "industry"},
-    # Firm + Fiscal Year FE (cols 7-12)
-    {"col": 7, "dv": "UncAnsMgr", "fe": "firm"},
-    {"col": 8, "dv": "UncAnsCEO", "fe": "firm"},
-    {"col": 9, "dv": "UncPreMgr", "fe": "firm"},
-    {"col": 10, "dv": "UncPreCEO", "fe": "firm"},
-    {"col": 11, "dv": "UncAnsNoCEO", "fe": "firm"},
-    {"col": 12, "dv": "UncPreNoCEO", "fe": "firm"},
+    # Industry + Fiscal Year FE (cols 1-2)
+    {"col": 1, "dv": "UncResCEO", "fe": "industry"},
+    {"col": 2, "dv": "UncPreCEO", "fe": "industry"},
+    # Firm + Fiscal Year FE (cols 3-4)
+    {"col": 3, "dv": "UncResCEO", "fe": "firm"},
+    {"col": 4, "dv": "UncPreCEO", "fe": "firm"},
 ]
 
 DV_LABELS = {
-    "UncAnsMgr": "Mgr QA Uncertainty",
-    "UncAnsCEO": "CEO QA Uncertainty",
-    "UncPreMgr": "Mgr Pres Uncertainty",
-    "UncPreCEO": "CEO Pres Uncertainty",
-    "UncAnsNoCEO": "Non-CEO Mgr QA Uncertainty",
-    "UncPreNoCEO": "Non-CEO Mgr Pres Uncertainty",
+    "UncResCEO": "UncResCEO",
+    "UncPreCEO": "UncPreCEO",
 }
 
 SUMMARY_STATS_VARS = [
-    {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
-    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
-    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
+    {"col": "UncResCEO", "label": "CEO Residual Unc. (DWZ)"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
-    {"col": "UncAnsNoCEO", "label": "Non-CEO Mgr QA Uncertainty"},
-    {"col": "UncPreNoCEO", "label": "Non-CEO Mgr Pres Uncertainty"},
     {"col": "TotalSimilarity", "label": "TNIC3TSIMM (raw)"},
     {"col": "log_TotalSimilarity", "label": "$\\log(\\mathrm{TSIMM})$"},
     {"col": "z_log_TotalSimilarity", "label": "$z(\\log(\\mathrm{TSIMM}))$"},
@@ -187,9 +168,9 @@ def parse_arguments():
 
 
 def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.DataFrame, Path]:
-    """Load firm-year H23 panel."""
+    """Load firm-year H23 panel + merge UncResCEO firm-year mean from sidecar."""
     print("\n" + "=" * 60)
-    print("Loading H23 panel")
+    print("Loading H23 panel + merging UncResCEO firm-year mean")
     print("=" * 60)
 
     if panel_path:
@@ -216,6 +197,40 @@ def load_panel(root_path: Path, panel_path: Optional[str] = None) -> Tuple[pd.Da
     n_cal_yr = panel["cal_yr"].notna().sum()
     print(f"  cal_yr range: {panel['cal_yr'].min():.0f}-{panel['cal_yr'].max():.0f} "
           f"({n_cal_yr:,}/{len(panel):,} non-null)")
+
+    # Merge UncResCEO from DWZ ceo_clarity_extended sidecar (call-level).
+    # H23 panel is keyed by (gvkey, fyearq_int) — fiscal year, not calendar year.
+    # Two-step merge: (a) sidecar→H1-panel by file_name to attach fyearq_int per
+    # call; (b) aggregate to firm-fiscal-year mean; (c) merge to H23 panel.
+    # Sidecar is Main-only (~44.9K calls).
+    full_dir = get_latest_output_dir(
+        root_path / "outputs" / "econometric" / "ceo_clarity_extended",
+        required_file="ceo_clarity_residual.parquet",
+    )
+    full_resid_file = full_dir / "ceo_clarity_residual.parquet"
+    side = pd.read_parquet(full_resid_file, columns=["file_name", "gvkey", "UncResCEO"])
+
+    h1_dir = get_latest_output_dir(
+        root_path / "outputs" / "variables" / "h1_cash_holdings",
+        required_file="h1_cash_holdings_panel.parquet",
+    )
+    h1_map = pd.read_parquet(
+        h1_dir / "h1_cash_holdings_panel.parquet",
+        columns=["file_name", "fyearq_int"],
+    )
+    side = side.merge(h1_map, on="file_name", how="left", validate="one_to_one")
+    n_with_fy = side["fyearq_int"].notna().sum()
+    print(f"  Sidecar→H1 file_name match: {n_with_fy:,}/{len(side):,}")
+    side = side.dropna(subset=["fyearq_int"]).copy()
+    side["fyearq_int"] = side["fyearq_int"].astype("int32")
+    side_yr = (
+        side.groupby(["gvkey", "fyearq_int"], as_index=False)["UncResCEO"].mean()
+    )
+    print(f"  Sidecar firm-fiscal-year rows: {len(side_yr):,}")
+    panel = panel.merge(
+        side_yr, on=["gvkey", "fyearq_int"], how="left", validate="one_to_one"
+    )
+    print(f"  After UncResCEO merge: {panel['UncResCEO'].notna().sum():,} matched (Main-only)")
 
     return panel, panel_file
 
@@ -402,7 +417,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         if meta:
             results_by_col[meta["col"]] = meta
 
-    n_cols = 12
+    n_cols = 4
 
     def fmt_coef(val, stars):
         return f"{val:.4f}{stars}" if not np.isnan(val) else ""
@@ -441,10 +456,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     # FE group headers
     lines.append(
-        r" & \multicolumn{6}{c}{Industry + Year FE}"
-        r" & \multicolumn{6}{c}{Firm + Year FE} \\"
+        r" & \multicolumn{2}{c}{Industry + Year FE}"
+        r" & \multicolumn{2}{c}{Firm + Year FE} \\"
     )
-    lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
+    lines.append(r"\cmidrule(lr){2-3} \cmidrule(lr){4-5}")
     lines.append(r"\midrule")
 
     # IV coefficient
@@ -646,12 +661,12 @@ def _write_suite_spec_json(
             )
         )
 
-    base_plus_siblings = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO", "UncPreNoCEO"]
+    base_plus_siblings = list(BASE_CONTROLS) + ["UncPreCEO"]
 
     header_rows = [
         [
-            {"label": "Industry FE", "span": 6},
-            {"label": "Firm FE", "span": 6},
+            {"label": "Industry FE", "span": 2},
+            {"label": "Firm FE", "span": 2},
         ],
         [{"label": spec["dv"], "span": 1} for spec in MODEL_SPECS],
     ]
@@ -687,9 +702,7 @@ def _write_suite_spec_json(
             "base": base_plus_siblings,
             "extended_only": list(EXTENDED_ONLY_CONTROLS),
             "labels": {
-                "UncPreMgr": "UncPreMgr",
                 "UncPreCEO": "UncPreCEO",
-                "UncPreNoCEO": "UncPreNoCEO",
             },
         },
         model_family="PanelOLS",

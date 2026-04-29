@@ -9,10 +9,10 @@ Description: Reverse-direction suite - aggregate Global Economic Policy
              Davis 2016 to a GDP-weighted average of 16 country EPU indices)
              predicts call-level language uncertainty.
 
-8 Model Specifications (matches H23 house pattern):
-    Cols 1-4:  Industry (FF12) + Calendar Year FE  (one per DV)
-    Cols 5-8:  Firm + Calendar Year FE             (one per DV)
-    DVs in order: UncAnsMgr, UncPreMgr, UncAnsCEO, UncPreCEO (contemp only)
+4 Model Specifications (v6 CEO-only DWZ decomp):
+    Cols 1-2:  Industry (FF12) + Calendar Year FE  (one per DV)
+    Cols 3-4:  Firm + Calendar Year FE             (one per DV)
+    DVs in order: UncResCEO, UncPreCEO (contemp only)
 
 IV identification: within-year cross-firm variation in monthly-matched GEPU.
 Calendar Year FE absorbs the year-level mean of GEPU; monthly matching
@@ -119,16 +119,12 @@ CONFIG = {
     "min_calls": 5,
 }
 
-# 4 contemporaneous uncertainty DVs (used across 2 FE types = 8 cols)
-DVS = ["UncAnsMgr", "UncPreMgr", "UncAnsCEO", "UncPreCEO", "UncAnsNoCEO", "UncPreNoCEO"]
+# 2 contemporaneous CEO DWZ-decomp DVs (used across 2 FE types = 4 cols)
+DVS = ["UncResCEO", "UncPreCEO"]
 
 DV_LABELS = {
-    "UncAnsMgr": "Mgr QA",
-    "UncPreMgr": "Mgr Pres",
-    "UncAnsCEO": "CEO QA",
-    "UncPreCEO": "CEO Pres",
-    "UncAnsNoCEO": "NoCEO QA",
-    "UncPreNoCEO": "NoCEO Pres",
+    "UncResCEO": "UncResCEO",
+    "UncPreCEO": "UncPreCEO",
 }
 
 # H11-style base controls (excluding presentation control, which is DV-dependent,
@@ -145,33 +141,21 @@ BASE_CONTROLS = [
     "EarnVol",
 ]
 
-# Presentation-control map: when DV is a Q&A measure, the matching
-# contemporaneous Presentation measure is added as a control.
+# Presentation-control map: for DV=UncResCEO (residual Q&A component), add
+# UncPreCEO as the Pres counterpart control.
 PRES_CONTROL_MAP = {
-    "UncAnsMgr": "UncPreMgr",
-    "UncAnsCEO": "UncPreCEO",
-    "UncAnsNoCEO": "UncPreNoCEO",
-    "UncPreMgr": None,
+    "UncResCEO": "UncPreCEO",
     "UncPreCEO": None,
-    "UncPreNoCEO": None,
 }
 
-# 12 model specifications: 6 DVs x 2 FE types
+# 4 model specifications: 2 DVs x 2 FE types
 MODEL_SPECS = [
-    # Industry + Calendar Year FE (cols 1-6)
-    {"col": 1, "dv": "UncAnsMgr", "fe": "industry"},
-    {"col": 2, "dv": "UncPreMgr", "fe": "industry"},
-    {"col": 3, "dv": "UncAnsCEO", "fe": "industry"},
-    {"col": 4, "dv": "UncPreCEO", "fe": "industry"},
-    {"col": 5, "dv": "UncAnsNoCEO", "fe": "industry"},
-    {"col": 6, "dv": "UncPreNoCEO", "fe": "industry"},
-    # Firm + Calendar Year FE (cols 7-12)
-    {"col": 7, "dv": "UncAnsMgr", "fe": "firm"},
-    {"col": 8, "dv": "UncPreMgr", "fe": "firm"},
-    {"col": 9, "dv": "UncAnsCEO", "fe": "firm"},
-    {"col": 10, "dv": "UncPreCEO", "fe": "firm"},
-    {"col": 11, "dv": "UncAnsNoCEO", "fe": "firm"},
-    {"col": 12, "dv": "UncPreNoCEO", "fe": "firm"},
+    # Industry + Calendar Year FE (cols 1-2)
+    {"col": 1, "dv": "UncResCEO", "fe": "industry"},
+    {"col": 2, "dv": "UncPreCEO", "fe": "industry"},
+    # Firm + Calendar Year FE (cols 3-4)
+    {"col": 3, "dv": "UncResCEO", "fe": "firm"},
+    {"col": 4, "dv": "UncPreCEO", "fe": "firm"},
 ]
 
 
@@ -180,11 +164,7 @@ MODEL_SPECS = [
 # ==============================================================================
 
 SUMMARY_STATS_VARS = [
-    {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
-    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
-    {"col": "UncAnsNoCEO", "label": "Non-CEO Mgr QA Uncertainty"},
-    {"col": "UncPreNoCEO", "label": "Non-CEO Mgr Pres Uncertainty"},
-    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
+    {"col": "UncResCEO", "label": "CEO Residual Unc. (DWZ)"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
     {"col": MACRO_IV_RAW, "label": "GEPU (raw)"},
     {"col": MACRO_IV, "label": "log(GEPU)"},
@@ -224,7 +204,11 @@ def parse_arguments() -> argparse.Namespace:
 
 
 def _required_columns() -> List[str]:
-    """All columns needed from the panel."""
+    """All columns needed from the panel.
+
+    UncResCEO is merged from sidecar (not in panel); UncResCEO_lag is computed
+    inline post-merge via groupby-shift. UncPreCEO + UncPreCEO_lag native to panel.
+    """
     cols: List[str] = [
         "file_name",
         "gvkey",
@@ -243,8 +227,7 @@ def _required_columns() -> List[str]:
         "US_EPU_log",
         "GEPU_log",
     ]
-    cols += DVS
-    cols += [f"{d}_lag" for d in DVS]
+    cols += ["UncPreCEO", "UncPreCEO_lag"]
     cols += BASE_CONTROLS
     seen = set()
     unique: List[str] = []
@@ -453,7 +436,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     def row(label: str, cells: List[str]) -> str:
         return f"{label} & " + " & ".join(cells) + r" \\"
 
-    cols = list(range(1, 13))
+    cols = list(range(1, 5))
     results = [by_col.get(c, {}) for c in cols]
 
     lines = [
@@ -462,10 +445,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         rf"\caption{{{SUITE_CAPTION}}}",
         rf"\label{{{SUITE_LABEL}}}",
         r"\small",
-        r"\begin{tabular}{l" + "c" * 12 + r"}",
+        r"\begin{tabular}{l" + "c" * 4 + r"}",
         r"\toprule",
-        r" & \multicolumn{6}{c}{Industry + Cal.~Year FE} & \multicolumn{6}{c}{Firm + Cal.~Year FE} \\",
-        r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}",
+        r" & \multicolumn{2}{c}{Industry + Cal.~Year FE} & \multicolumn{2}{c}{Firm + Cal.~Year FE} \\",
+        r"\cmidrule(lr){2-3} \cmidrule(lr){4-5}",
         r" & "
         + " & ".join([DV_LABELS[MODEL_SPECS[c - 1]["dv"]] for c in cols])
         + r" \\",
@@ -478,19 +461,19 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
 
     lines.append(r"\midrule")
 
-    lines.append(row("BASE Controls", ["Yes"] * 8))
+    lines.append(row("BASE Controls", ["Yes"] * 4))
     pres_cells = [
         ("Yes" if PRES_CONTROL_MAP.get(MODEL_SPECS[c - 1]["dv"]) else "")
         for c in cols
     ]
     lines.append(row("Pres Control", pres_cells))
-    lines.append(row("Lagged DV", ["Yes"] * 8))
+    lines.append(row("Lagged DV", ["Yes"] * 4))
 
     ind_cells = ["Yes" if MODEL_SPECS[c - 1]["fe"] == "industry" else "" for c in cols]
     firm_cells = ["Yes" if MODEL_SPECS[c - 1]["fe"] == "firm" else "" for c in cols]
     lines.append(row("Industry FE", ind_cells))
     lines.append(row("Firm FE", firm_cells))
-    lines.append(row("Calendar Year FE", ["Yes"] * 8))
+    lines.append(row("Calendar Year FE", ["Yes"] * 4))
 
     lines.append(r"\midrule")
     lines.append(row("Observations", [fmt_int(m) for m in results]))
@@ -596,12 +579,12 @@ def _write_suite_spec_json(
             )
         )
 
-    base_plus_dynamic = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO", "UncPreNoCEO", "Lagged_DV"]
+    base_plus_dynamic = list(BASE_CONTROLS) + ["UncPreCEO", "Lagged_DV"]
 
     header_rows = [
         [
-            {"label": r"Industry + Cal. Year FE", "span": 6},
-            {"label": r"Firm + Cal. Year FE", "span": 6},
+            {"label": r"Industry + Cal. Year FE", "span": 2},
+            {"label": r"Firm + Cal. Year FE", "span": 2},
         ],
         [{"label": spec["dv"], "span": 1} for spec in MODEL_SPECS],
     ]
@@ -631,9 +614,7 @@ def _write_suite_spec_json(
             "base": base_plus_dynamic,
             "extended_only": list(EXTENDED_ONLY_CONTROLS),
             "labels": {
-                "UncPreMgr": "UncPreMgr",
                 "UncPreCEO": "UncPreCEO",
-                "UncPreNoCEO": "UncPreNoCEO",
                 "Lagged_DV": r"Lagged\_DV",
             },
         },
@@ -692,6 +673,23 @@ def main(panel_path: str | None = None) -> int:
 
     if "sample" not in panel.columns or panel["sample"].isna().all():
         panel["sample"] = assign_industry_sample(panel["ff12_code"])
+
+    # Merge UncResCEO from DWZ ceo_clarity_extended sidecar (Main-only, ~44.9K
+    # rows). Then compute UncResCEO_lag via groupby-shift on cal_yr_qtr ordering.
+    full_dir = get_latest_output_dir(
+        root / "outputs" / "econometric" / "ceo_clarity_extended",
+        required_file="ceo_clarity_residual.parquet",
+    )
+    full_resid_file = full_dir / "ceo_clarity_residual.parquet"
+    full_resid = pd.read_parquet(full_resid_file, columns=["file_name", "UncResCEO"])
+    print(f"  Sidecar:         {full_resid_file}")
+    print(f"  Sidecar rows:    {len(full_resid):,}")
+    panel = panel.merge(full_resid, on="file_name", how="left", validate="one_to_one")
+    n_matched = panel["UncResCEO"].notna().sum()
+    print(f"  After UncResCEO merge: {n_matched:,} matched (Main-only)")
+    panel = panel.sort_values(["gvkey", "cal_yr_qtr"]).reset_index(drop=True)
+    panel["UncResCEO_lag"] = panel.groupby("gvkey")["UncResCEO"].shift(1)
+    print(f"  UncResCEO_lag computed: {panel['UncResCEO_lag'].notna().sum():,} non-null")
 
     out_dir.mkdir(parents=True, exist_ok=True)
 

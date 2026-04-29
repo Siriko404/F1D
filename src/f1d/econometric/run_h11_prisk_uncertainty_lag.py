@@ -14,19 +14,16 @@ Model Specification:
     Uncertainty_t ~ PRisk_lag_t + Controls_it + EntityEffects + TimeEffects
     Uncertainty_t ~ PRisk_lag2_t + Controls_it + EntityEffects + TimeEffects
 
-Dependent Variables:
-    1. UncAnsMgr
-    2. UncAnsCEO
-    3. UncPreMgr
-    4. UncPreCEO
+Dependent Variables (v6 CEO-only DWZ decomp):
+    1. UncResCEO  (DWZ Eq.4 Q&A residual; merged from ceo_clarity_extended sidecar)
+    2. UncPreCEO  (raw presentation-segment uncertainty)
 
 Independent Variables:
     - PRisk_lag: Political risk from quarter t-1 (1-quarter lag)
     - PRisk_lag2: Political risk from quarter t-2 (2-quarter lag)
 
 Dynamic Covariates:
-    - If DV is a QA measure, the corresponding Presentation measure is added as a control.
-      (e.g., UncAnsMgr regressions control for UncPreMgr)
+    - For DV=UncResCEO, UncPreCEO is added as a control (Pres counterpart of QA-like state component).
     - UncQue is always included as a control.
 
 Hypothesis Tests (one-tailed):
@@ -93,12 +90,8 @@ warnings.filterwarnings(
 CONFIG = {
     "min_calls": 5,
     "dependent_variables": [
-        "UncAnsMgr",
-        "UncAnsCEO",
-        "UncPreMgr",
+        "UncResCEO",
         "UncPreCEO",
-        "UncAnsNoCEO",
-        "UncPreNoCEO",
     ],
     "samples": ["Main", "Finance", "Utility"],
     "iv_vars": ["PRisk_lag", "PRisk_lag2"],  # Test both lag-1 and lag-2
@@ -118,12 +111,8 @@ BASE_CONTROLS = [
 ]
 
 PRES_CONTROL_MAP = {
-    "UncAnsMgr": "UncPreMgr",
-    "UncAnsCEO": "UncPreCEO",
-    "UncAnsNoCEO": "UncPreNoCEO",
-    "UncPreMgr": None,
+    "UncResCEO": "UncPreCEO",
     "UncPreCEO": None,
-    "UncPreNoCEO": None,
 }
 
 EXTENDED_ONLY_CONTROLS: List[str] = []  # H11-Lag has no extended set
@@ -162,7 +151,7 @@ SUB_TABLE_SPECS = [
 
 # Column ordering within each sub-table: 4 DVs × industry FE, then same × firm FE.
 # Matches the legacy SUITES dict col_files mapping for H11-Lag1/H11-Lag2.
-SUB_TABLE_DV_ORDER = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO", "UncAnsNoCEO", "UncPreNoCEO"]
+SUB_TABLE_DV_ORDER = ["UncResCEO", "UncPreCEO"]
 SUB_TABLE_FE_ORDER = ["industry", "firm"]
 
 
@@ -171,13 +160,9 @@ SUB_TABLE_FE_ORDER = ["industry", "firm"]
 # ==============================================================================
 
 SUMMARY_STATS_VARS = [
-    # Dependent variables (uncertainty measures)
-    {"col": "UncAnsMgr", "label": "Mgr QA Uncertainty"},
-    {"col": "UncAnsCEO", "label": "CEO QA Uncertainty"},
-    {"col": "UncPreMgr", "label": "Mgr Pres Uncertainty"},
+    # Dependent variables (CEO DWZ decomp)
+    {"col": "UncResCEO", "label": "CEO Residual Unc. (DWZ)"},
     {"col": "UncPreCEO", "label": "CEO Pres Uncertainty"},
-    {"col": "UncAnsNoCEO", "label": "Non-CEO Mgr QA Uncertainty"},
-    {"col": "UncPreNoCEO", "label": "Non-CEO Mgr Pres Uncertainty"},
     # Main independent variables (lagged)
     {"col": "PRisk_lag", "label": "Political Risk$_{t-1}$"},
     {"col": "PRisk_lag2", "label": "Political Risk$_{t-2}$"},
@@ -318,9 +303,9 @@ def run_regression(
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     tex_path = out_dir / "h11_prisk_uncertainty_lag_table.tex"
 
-    # Main sample, 4 DVs × 2 lags × 2 FE = 16 cols
-    # Layout: cols 1-4  = lag1 industry,  cols 5-8  = lag1 firm
-    #         cols 9-12 = lag2 industry,  cols 13-16= lag2 firm
+    # Main sample, 2 DVs × 2 lags × 2 FE = 8 cols (v6 CEO-only DWZ decomp).
+    # Layout: cols 1-2 = lag1 industry, cols 3-4 = lag1 firm
+    #         cols 5-6 = lag2 industry, cols 7-8 = lag2 firm
     def get_res(dv, iv, fe):
         for r in all_results:
             if (r.get("sample") == "Main" and r.get("dv") == dv
@@ -328,7 +313,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
                 return r
         return None
 
-    dv_order = ["UncAnsMgr", "UncAnsCEO", "UncPreMgr", "UncPreCEO", "UncAnsNoCEO", "UncPreNoCEO"]
+    dv_order = ["UncResCEO", "UncPreCEO"]
     col_order = (
         [(dv, "PRisk_lag",  "industry") for dv in dv_order]
         + [(dv, "PRisk_lag",  "firm")     for dv in dv_order]
@@ -365,8 +350,8 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         cells = [fmt(extractor(r)) if r else "" for r in col_results]
         return label + " & " + " & ".join(cells) + " \\\\"
 
-    col_nums = " & ".join(f"({i})" for i in range(1, 25))
-    sub_labels = " & ".join(["Mgr QA", "CEO QA", "Mgr Pres", "CEO Pres", "NoCEO QA", "NoCEO Pres"] * 4)
+    col_nums = " & ".join(f"({i})" for i in range(1, 9))
+    sub_labels = " & ".join(["UncResCEO", "UncPreCEO"] * 4)
 
     lines = [
         "\\begin{table}[htbp]",
@@ -374,14 +359,14 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         "\\caption{H11-Lag: Political Risk (Lagged) and Language Uncertainty}",
         "\\label{tab:h11_prisk_uncertainty_lag}",
         "\\scriptsize",
-        "\\begin{tabular}{l" + "c" * 24 + "}",
+        "\\begin{tabular}{l" + "c" * 8 + "}",
         "\\toprule",
-        (" & \\multicolumn{12}{c}{Political Risk$_{t-1}$}"
-         " & \\multicolumn{12}{c}{Political Risk$_{t-2}$} \\\\"),
-        "\\cmidrule(lr){2-13} \\cmidrule(lr){14-25}",
-        (" & \\multicolumn{6}{c}{Industry FE} & \\multicolumn{6}{c}{Firm FE}"
-         " & \\multicolumn{6}{c}{Industry FE} & \\multicolumn{6}{c}{Firm FE} \\\\"),
-        "\\cmidrule(lr){2-7} \\cmidrule(lr){8-13} \\cmidrule(lr){14-19} \\cmidrule(lr){20-25}",
+        (" & \\multicolumn{4}{c}{Political Risk$_{t-1}$}"
+         " & \\multicolumn{4}{c}{Political Risk$_{t-2}$} \\\\"),
+        "\\cmidrule(lr){2-5} \\cmidrule(lr){6-9}",
+        (" & \\multicolumn{2}{c}{Industry FE} & \\multicolumn{2}{c}{Firm FE}"
+         " & \\multicolumn{2}{c}{Industry FE} & \\multicolumn{2}{c}{Firm FE} \\\\"),
+        "\\cmidrule(lr){2-3} \\cmidrule(lr){4-5} \\cmidrule(lr){6-7} \\cmidrule(lr){8-9}",
         f" & {sub_labels} \\\\",
         f" & {col_nums} \\\\",
         "\\midrule",
@@ -400,12 +385,12 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines.append(" & " + " & ".join(se_cells) + " \\\\")
 
     lines.append("\\midrule")
-    lines.append("Controls & " + " & ".join(["Yes"] * 24) + " \\\\")
-    ind_row = ["Yes"] * 6 + [""] * 6 + ["Yes"] * 6 + [""] * 6
-    firm_row = [""] * 6 + ["Yes"] * 6 + [""] * 6 + ["Yes"] * 6
+    lines.append("Controls & " + " & ".join(["Yes"] * 8) + " \\\\")
+    ind_row = ["Yes"] * 2 + [""] * 2 + ["Yes"] * 2 + [""] * 2
+    firm_row = [""] * 2 + ["Yes"] * 2 + [""] * 2 + ["Yes"] * 2
     lines.append("Industry FE & " + " & ".join(ind_row) + " \\\\")
     lines.append("Firm FE & " + " & ".join(firm_row) + " \\\\")
-    lines.append("Calendar Year FE & " + " & ".join(["Yes"] * 24) + " \\\\")
+    lines.append("Calendar Year FE & " + " & ".join(["Yes"] * 8) + " \\\\")
     lines.append("\\midrule")
 
     lines.append(build_row("Observations", lambda r: r["n_obs"], lambda v: f"{v:,}"))
@@ -442,10 +427,10 @@ def _write_suite_spec_json(
 ) -> None:
     """Emit canonical suite_spec_H11-Lag1.json + suite_spec_H11-Lag2.json.
 
-    Each sub-table has 8 Main-sample columns: 4 DVs × 2 FE types (industry, firm).
-    Columns 1-4 = industry FE; columns 5-8 = firm FE. Per-column control sets
-    differ by DV per PRES_CONTROL_MAP (Ans DVs add the matching Pres sibling as
-    a control; Pres DVs add no siblings).
+    Each sub-table has 4 Main-sample columns: 2 DVs × 2 FE types (industry, firm).
+    Columns 1-2 = industry FE; columns 3-4 = firm FE. Per-column control sets
+    differ by DV per PRES_CONTROL_MAP (UncResCEO adds UncPreCEO sibling; UncPreCEO
+    adds no siblings).
     """
     # Build a flat col_metadata + coefs_per_col across both sub-tables.
     # Layout: [Lag1 industry×4, Lag1 firm×4, Lag2 industry×4, Lag2 firm×4]
@@ -505,30 +490,22 @@ def _write_suite_spec_json(
                     )
                 )
 
-    # Build the two sub_tables. Each renders 8 cols from the flat layout.
+    # Build the two sub_tables. Each renders 4 cols from the flat layout.
     sub_tables: List[Dict[str, Any]] = []
     for i, sub in enumerate(SUB_TABLE_SPECS):
-        base_col = 1 + i * 12
-        col_range = list(range(base_col, base_col + 12))
+        base_col = 1 + i * 4
+        col_range = list(range(base_col, base_col + 4))
         # Two-row header: FE groups on top, pipeline DV names on bottom.
         header_rows = [
             [
-                {"label": "Industry FE", "span": 6},
-                {"label": "Firm FE", "span": 6},
+                {"label": "Industry FE", "span": 2},
+                {"label": "Firm FE", "span": 2},
             ],
             [
-                {"label": "UncAnsMgr", "span": 1},
-                {"label": "UncAnsCEO", "span": 1},
-                {"label": "UncPreMgr", "span": 1},
+                {"label": "UncResCEO", "span": 1},
                 {"label": "UncPreCEO", "span": 1},
-                {"label": "UncAnsNoCEO", "span": 1},
-                {"label": "UncPreNoCEO", "span": 1},
-                {"label": "UncAnsMgr", "span": 1},
-                {"label": "UncAnsCEO", "span": 1},
-                {"label": "UncPreMgr", "span": 1},
+                {"label": "UncResCEO", "span": 1},
                 {"label": "UncPreCEO", "span": 1},
-                {"label": "UncAnsNoCEO", "span": 1},
-                {"label": "UncPreNoCEO", "span": 1},
             ],
         ]
         sub_tables.append(
@@ -544,10 +521,7 @@ def _write_suite_spec_json(
             }
         )
 
-    # Include both Pres siblings in `base` so the renderer emits a row for
-    # each. Per-column masking via `col.control_vars` ensures UncPreMgr only
-    # shows values in Mgr-QA columns and UncPreCEO only in CEO-QA columns.
-    base_plus_siblings = list(BASE_CONTROLS) + ["UncPreMgr", "UncPreCEO", "UncPreNoCEO"]
+    base_plus_siblings = list(BASE_CONTROLS) + ["UncPreCEO"]
 
     # Emit each sub-table via a separate write_suite_spec call so each gets
     # its own IV row (PRisk_lag for H11-Lag1, PRisk_lag2 for H11-Lag2).
@@ -572,9 +546,7 @@ def _write_suite_spec_json(
                 "base": base_plus_siblings,
                 "extended_only": list(EXTENDED_ONLY_CONTROLS),
                 "labels": {
-                    "UncPreMgr": "UncPreMgr",
                     "UncPreCEO": "UncPreCEO",
-                    "UncPreNoCEO": "UncPreNoCEO",
                 },
             },
             model_family="PanelOLS",
@@ -617,7 +589,7 @@ def main(panel_path: str | None = None) -> int:
         panel_file = Path(panel_path)
 
     print("\n" + "=" * 60)
-    print("Loading panel")
+    print("Loading panel + merging UncResCEO sidecar")
     print("=" * 60)
     print(f"  Loaded: {panel_file}")
     panel = pd.read_parquet(
@@ -627,13 +599,8 @@ def main(panel_path: str | None = None) -> int:
             "gvkey",
             "year",
             "ff12_code",
-            # Dependent variables (uncertainty measures)
-            "UncAnsMgr",
-            "UncAnsCEO",
-            "UncPreMgr",
+            # CEO-only DWZ decomp DVs (UncResCEO merged below; UncPreCEO native)
             "UncPreCEO",
-            "UncAnsNoCEO",
-            "UncPreNoCEO",
             # Primary predictors (lagged)
             "PRisk_lag",
             "PRisk_lag2",
@@ -649,8 +616,19 @@ def main(panel_path: str | None = None) -> int:
             "EarnVol",
         ],
     )
-    print(f"  Rows: {len(panel):,}")
-    print(f"  Columns: {len(panel.columns)}")
+    print(f"  Rows: {len(panel):,}  Columns: {len(panel.columns)}")
+
+    # Merge UncResCEO from DWZ ceo_clarity_extended sidecar (Main-only).
+    full_dir = get_latest_output_dir(
+        root / "outputs" / "econometric" / "ceo_clarity_extended",
+        required_file="ceo_clarity_residual.parquet",
+    )
+    full_resid_file = full_dir / "ceo_clarity_residual.parquet"
+    full_resid = pd.read_parquet(full_resid_file, columns=["file_name", "UncResCEO"])
+    print(f"  Sidecar:         {full_resid_file}")
+    print(f"  Sidecar rows:    {len(full_resid):,}")
+    panel = panel.merge(full_resid, on="file_name", how="left", validate="one_to_one")
+    print(f"  After UncResCEO merge: {panel['UncResCEO'].notna().sum():,} matched (Main-only)")
 
     if "sample" not in panel.columns:
         panel["sample"] = assign_industry_sample(panel["ff12_code"])
