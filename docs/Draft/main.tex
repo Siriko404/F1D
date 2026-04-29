@@ -18,11 +18,15 @@
 % amssymb omitted — newtxmath provides equivalent symbols and conflicts on \Bbbk
 \usepackage{amsmath}
 
+% ---- UTF-8 input encoding (per_suite/*table.tex contain ± and § characters) ----
+\usepackage[utf8]{inputenc}
+
 % ---- Tables ----
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{multirow}
 \usepackage{longtable}       % multi-page summary stats Table 1
+\usepackage{threeparttable}  % tablenotes environment in per_suite/*_table.tex
 
 % ---- Graphics, floats ----
 \usepackage{graphicx}

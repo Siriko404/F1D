@@ -120,23 +120,24 @@ suites:
 # Curate by hand. Add a new suite here when the body starts citing its tab:* label.
 # -----------------------------------------------------------------------------
 thesis_suites:
-  # HC main (parent + Full decomp + QtrExp decomp)
-  - H1.ceo2
+  # HC main (Full decomp + QtrExp decomp)
   - H1.ceo2.decomp
   - H1.ceo2.decomp.qtrexp
-  # HFC moderator (parent + Full decomp + QtrExp decomp)
-  - H1.2.ceo2
+  # HFC moderator (Full decomp + QtrExp decomp)
   - H1.2.ceo2.decomp
   - H1.2.ceo2.decomp.qtrexp
-  # §4.1 drivers (H11 base + lags via tab:driver_matrix custom build at h24_table.tex slug)
+  # §3.4 CFvol moderator (Han-Qiu 2007)
+  - H1.3.cfvol
+  # §4.1 drivers (H11 base + lag2; H23 competition; H24/H24b macro EPU)
   - H11
-  - H11-Lag1
   - H11-Lag2
-  # §4.1 driver: market competition (H23)
   - H23
-  # §4.2 reaction (Full method only post-Phase-4) — market channel + regulatory channel
-  - H14c.ceo2.decomp
-  - H18.ceo2.decomp
-  # Macro drivers (driver_matrix consolidates H24/H24b but native tables still needed for spec validation)
   - H24
   - H24b
+  # §4.2 reaction (Full method only) — market channel (H14c spread) + regulatory channel (H18 SEC)
+  - H14c.ceo2.decomp
+  - H18.ceo2.decomp
+  # §4.3 endogeneity — sudden-death DiD + DWZ §6 first-difference + Lewbel 2012 IV
+  - H.death.did
+  - H.dwz.fd
+  - H.lewbel.iv
