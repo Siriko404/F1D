@@ -50,12 +50,41 @@ def find_latest_spec(suite_id: str) -> Optional[Path]:
 
 
 def load_spec_panel(suite_id: str, panel_dir_alias: Optional[dict] = None):
-    """Load (spec, panel). If spec.dir_name doesn't have a physical panel
-    (sub-suites that share a parent's panel), consult panel_dir_alias map."""
+    """Load (spec, panel, runner_stats). If spec.dir_name doesn't have a physical
+    panel (sub-suites that share a parent's panel), consult panel_dir_alias map.
+
+    Also loads runner-output summary_stats.csv (sibling of suite_spec_*.json) so
+    runtime-computed IVs (e.g., ClarityCEO, UncResCEO from CEO-FE residualization)
+    can be reported even though they're absent from the panel parquet.
+    """
     spec_path = find_latest_spec(suite_id)
     if spec_path is None:
-        return None, None
+        return None, None, None
     spec = load_suite_spec(spec_path)
+
+    runner_stats = None
+    runner_csv = spec_path.parent / "summary_stats.csv"
+    if runner_csv.exists():
+        try:
+            df = pd.read_csv(runner_csv)
+            if {"Sample", "Col", "N", "Mean", "SD", "Min", "P25", "Median", "P75", "Max"}.issubset(df.columns):
+                df = df[df["Sample"] == "All"] if "Sample" in df.columns else df
+                runner_stats = {
+                    row["Col"]: {
+                        "n": int(str(row["N"]).replace(",", "")),
+                        "mean": float(row["Mean"]),
+                        "sd": float(row["SD"]),
+                        "min": float(row["Min"]),
+                        "p25": float(row["P25"]),
+                        "p50": float(row["Median"]),
+                        "p75": float(row["P75"]),
+                        "max": float(row["Max"]),
+                    }
+                    for _, row in df.iterrows()
+                }
+        except Exception as exc:
+            print(f"  [warn] {suite_id}: runner csv unparseable ({exc})")
+
     alias = (panel_dir_alias or {}).get(suite_id)
     candidates = [alias, spec.dir_name] if alias else [spec.dir_name]
     for dn in candidates:
@@ -70,8 +99,8 @@ def load_spec_panel(suite_id: str, panel_dir_alias: Optional[dict] = None):
             )
         except Exception:
             continue
-        return spec, pd.read_parquet(panel_ts / f"{dn}_panel.parquet")
-    return spec, None
+        return spec, pd.read_parquet(panel_ts / f"{dn}_panel.parquet"), runner_stats
+    return spec, None, runner_stats
 
 
 def detect_unit(panel: pd.DataFrame) -> str:
@@ -116,14 +145,15 @@ def tex_escape(s: str) -> str:
     return s.replace("_", r"\_")
 
 
-def build_panels(include_suites, specs, panels, anchor_overrides, exclude_vars):
+def build_panels(include_suites, specs, panels, runner_stats_map, anchor_overrides, exclude_vars):
     """Classify vars into IV / DV / Control with priority IV > DV > Control.
 
-    Many sub-suites (H7b/c/d/e, H14b-e, H1.1/H1.2, H12b, H19b, H20b, H24/H24b/H25)
-    share a parent suite's panel. The spec's dir_name names a logical runner, not
-    necessarily a physical panel directory. So per-var routing falls through the
-    ordered list of ALL suites mentioning the var, picking the first one that has
-    both a loaded panel AND the column.
+    Resolves each var via TWO paths:
+      (a) panel parquet column (panel-based stats on Main filter)
+      (b) runner summary_stats.csv from the suite output dir (runtime-computed
+          IVs like ClarityCEO/UncResCEO that aren't stored in the panel parquet)
+
+    Path (a) wins when both are available; path (b) is the fallback.
     """
     iv_set, dv_set, control_set = set(), set(), set()
     var_candidates: dict = {}  # var → ordered list of suites that mention it
@@ -149,16 +179,25 @@ def build_panels(include_suites, specs, panels, anchor_overrides, exclude_vars):
     control_set -= exclude_vars | iv_set | dv_set
 
     def resolve_anchor(var: str):
-        """Return (suite_id, panel) for the anchor: config override first, then
-        first candidate suite with a loaded panel containing the column."""
+        """Return (suite_id, panel, runner_stats) for the anchor.
+
+        Tries panel match first; falls back to runner_stats_map (var → stats dict)
+        for runtime-computed IVs not stored in the panel parquet.
+        """
         ordered = []
         if var in anchor_overrides:
             ordered.append(anchor_overrides[var])
         ordered += var_candidates.get(var, [])
+        # Path (a): panel match
         for sid in ordered:
             if sid in panels and var in panels[sid].columns:
-                return sid, panels[sid]
-        return None, None
+                return sid, panels[sid], None
+        # Path (b): runner csv fallback
+        for sid in ordered:
+            csv_stats = runner_stats_map.get(sid) or {}
+            if var in csv_stats:
+                return sid, None, csv_stats[var]
+        return None, None, None
 
     rows = []
     for panel_label, vars_list in [
@@ -167,12 +206,17 @@ def build_panels(include_suites, specs, panels, anchor_overrides, exclude_vars):
         ("C. Firm Controls", sorted(control_set)),
     ]:
         for var in vars_list:
-            sid, panel = resolve_anchor(var)
-            if panel is None:
-                print(f"  [skip] {var}: no loaded panel contains this column")
+            sid, panel, csv_stats = resolve_anchor(var)
+            if panel is None and csv_stats is None:
+                print(f"  [skip] {var}: not in any panel column or runner csv")
                 continue
-            sample = apply_main_filter(panel)
-            stats = compute_stats(sample[var])
+            if panel is not None:
+                sample = apply_main_filter(panel)
+                stats = compute_stats(sample[var])
+                unit = detect_unit(panel)
+            else:
+                stats = csv_stats
+                unit = "C"  # runner CSV stats are call-level by construction
             if stats is None:
                 print(f"  [skip] {var}: all NaN in {sid} Main sample")
                 continue
@@ -180,7 +224,7 @@ def build_panels(include_suites, specs, panels, anchor_overrides, exclude_vars):
                 {
                     "panel": panel_label,
                     "variable": var,
-                    "unit": detect_unit(panel),
+                    "unit": unit,
                     "anchor": sid,
                     **stats,
                 }
@@ -375,30 +419,40 @@ def main() -> int:
     print(f"Suites included: {len(include_suites)}")
     print(f"Excluded vars: {sorted(exclude_vars)}")
 
-    specs, panels = {}, {}
+    specs, panels, runner_stats_map = {}, {}, {}
     for sid in include_suites:
-        s, p = load_spec_panel(sid, panel_dir_alias)
+        s, p, rs = load_spec_panel(sid, panel_dir_alias)
         if s is None:
             print(f"  [miss] {sid}: no spec file found")
             continue
-        if p is None:
-            print(f"  [miss] {sid}: spec OK, panel missing")
-            specs[sid] = s
-            continue
-        specs[sid], panels[sid] = s, p
+        specs[sid] = s
+        if p is not None:
+            panels[sid] = p
+        if rs is not None:
+            runner_stats_map[sid] = rs
+        if p is None and rs is None:
+            print(f"  [miss] {sid}: spec OK, panel + runner csv both missing")
     print(
         f"\nLoaded {len(specs)}/{len(include_suites)} specs, "
-        f"{len(panels)}/{len(include_suites)} panels"
+        f"{len(panels)}/{len(include_suites)} panels, "
+        f"{len(runner_stats_map)}/{len(include_suites)} runner CSVs"
     )
 
-    stats = build_panels(include_suites, specs, panels, anchor_overrides, exclude_vars)
+    stats = build_panels(include_suites, specs, panels, runner_stats_map, anchor_overrides, exclude_vars)
     stats = append_extra_vars(stats, extra_vars, panels)
     print(f"\nVariables summarized: {len(stats)}")
     print(stats.groupby("panel").size().to_string())
 
-    balance = compute_panel_balance(panels["H1"]) if "H1" in panels else {
-        "total_calls": 0, "unique_firms": 0, "year_min": "?", "year_max": "?"
-    }
+    # Anchor balance on whichever HC suite has its panel loaded (v6 thesis-suite first;
+    # legacy H1 fallback for older configs).
+    balance_anchor_candidates = ["H1.ceo2.decomp", "H1.ceo2.decomp.qtrexp", "H1"]
+    balance = None
+    for anchor_sid in balance_anchor_candidates:
+        if anchor_sid in panels:
+            balance = compute_panel_balance(panels[anchor_sid])
+            break
+    if balance is None:
+        balance = {"total_calls": 0, "unique_firms": 0, "year_min": "?", "year_max": "?"}
 
     stats.to_csv(OUT_DIR / "summary_stats.csv", index=False)
     print(f"\n  wrote: docs/Draft/summary_stats.csv")

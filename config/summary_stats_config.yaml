@@ -1,52 +1,93 @@
 # Summary Stats Table 1 configuration
 #
-# Adaptive-scope: script reads ALL suites from config/suite_render_order.yaml.
-# Edit this file to curate (do NOT edit the generator script).
-#
-# include_suites: defaults to all suites in render order. Uncomment to restrict.
-# include_suites:
-#   - H1
-#   - H4a
+# v6 SCOPE LOCK (2026-04-29 LATE×9 user directive: "we DO NOT MENTION ANYTHING
+# WE DONT REPORT"). include_suites RESTRICTED to thesis_suites only — the
+# 14 v6 body suites whose tables are cited in main.pdf. Variable list is
+# whatever those suites' specs declare as IVs/DVs/controls; runtime-computed
+# IVs (ClarityCEO, UncResCEO) sourced from per-suite runner summary_stats.csv
+# fallback.
+
+include_suites:
+  # HC main (Full + QtrExp decomp)
+  - H1.ceo2.decomp
+  - H1.ceo2.decomp.qtrexp
+  # HFC moderator (Full + QtrExp decomp)
+  - H1.2.ceo2.decomp
+  - H1.2.ceo2.decomp.qtrexp
+  # §3.4 CFvol moderator
+  - H1.3.cfvol
+  # §4.1 drivers
+  - H11
+  - H11-Lag2
+  - H23
+  - H24
+  - H24b
+  # §4.2 reaction
+  - H14c.ceo2.decomp
+  - H18.ceo2.decomp
+  # §4.3 endogeneity suites (H.death.did, H.dwz.fd, H.lewbel.iv) have non-
+  # canonical suite_spec schemas + treated/post/event-difference IVs that
+  # don't map to summary-stat reporting. Their cash DV + ClarityCEO/UncResCEO
+  # stats are already provided by H1.ceo2.decomp; no info loss from omission.
 
 # Anchor panel per variable — where to pull observations from for a shared var.
-# Default (unset) = first-encountered suite in render order. H1 has broadest
-# Main sample (65k+ calls) and carries all shared call-level controls + IVs.
+# Default (unset) = first-encountered suite in render order. Sources thesis_suites
+# panels for shared controls; runtime-computed v6 IVs fall back to runner CSV.
 anchor_panel:
-  UncAnsMgr: H1
-  UncPreMgr: H1
-  UncAnsCEO: H1
-  UncPreCEO: H1
-  UncAnsNoCEO: H1.r   # H1 panel rebuilt 2026-04-19 with both NoCEO cols
-  UncPreNoCEO: H1.r
-  lnAssets: H1
-  TobinsQ: H1
-  ROA: H1
-  Leverage: H1
-  Capex: H1
-  DivDummy: H1
-  sCFO: H1
-  CashRatio: H1
-  BookLev: H4a
-  SalesGrowth: H1
-  RDSales: H1
-  CashFlowAt: H1
-  DailyVola: H1
-  CurrentRatio: H1
+  UncPreCEO: H1.ceo2.decomp
+  CashRatio: H1.ceo2.decomp
+  CashRatio_lead: H1.ceo2.decomp
+  lnAssets: H1.ceo2.decomp
+  TobinsQ: H1.ceo2.decomp
+  ROA: H1.ceo2.decomp
+  Leverage: H1.ceo2.decomp
+  Capex: H1.ceo2.decomp
+  DivDummy: H1.ceo2.decomp
+  sCFO: H1.ceo2.decomp
+  SalesGrowth: H1.ceo2.decomp
+  RDSales: H1.ceo2.decomp
+  CashFlowAt: H1.ceo2.decomp
+  DailyVola: H1.ceo2.decomp
 
 # Variables to skip (placeholders, mean-centered duplicates, interactions).
 exclude_vars:
   - Lagged_DV
-  - UncAnsMgr_c
-  - UncPreMgr_c
-  - UncAnsCEO_c
+  - UncResCEO_c
+  - UncResCEO_QtrExp_c
+  - ClarityCEO_c
+  - ClarityCEO_QtrExp_c
   - UncPreCEO_c
+  # HFC interaction terms (runtime constructs)
+  - UncResCEO_c_x_Unrated
+  - ClarityCEO_c_x_Unrated
+  - UncPreCEO_c_x_Unrated
+  - UncResCEO_QtrExp_c_x_Unrated
+  - ClarityCEO_QtrExp_c_x_Unrated
+  # CFvol interaction terms
+  - UncResCEO_c_x_HighCFvol
+  - ClarityCEO_c_x_HighCFvol
+  - UncPreCEO_c_x_HighCFvol
+  - HighCFvol
+  # H23 competition transformations
   - z_log_TotalSimilarity
   - HighTSIMM
   - UncAnsMgr_c_x_zlogTSIMM
   - UncAnsMgr_c_x_HighTSIMM
-  - UncAnsMgr_c_x_BelowIG    # H1.2 interaction; BelowIG is runtime construct
-  - UncAnsMgr_c_x_IG         # same
-  - UncAnsMgr_c_x_Unrated    # same
+  # Legacy v5 IV interactions (parents of decomp)
+  - UncAnsCEO_c
+  - UncAnsMgr_c
+  - UncPreMgr_c
+  - UncAnsMgr_c_x_BelowIG
+  - UncAnsMgr_c_x_IG
+  - UncAnsMgr_c_x_Unrated
+  # Driver/Reaction suites still report 6-DV partition rows in their parents;
+  # body §4.1 (Path a rebuild pending) should drop these. Until rebuild lands,
+  # exclude here so summary stats remain v6-scope-clean.
+  - UncAnsMgr
+  - UncPreMgr
+  - UncAnsCEO
+  - UncAnsNoCEO
+  - UncPreNoCEO
 
 # Sub-suite spec.dir_name → parent builder's actual panel directory.
 # Many runners (H7b/c/d/e, H14b-e, H12b, H18b, H19b, H20b, H1.1/H1.2, H24-H25,
@@ -56,14 +97,25 @@ exclude_vars:
 # (BelowIG, IG, Unrated) are constructed at runtime in the runner from
 # external rating data, NOT stored in any panel. They are absent from Table 1.
 panel_dir_alias:
+  # v6 thesis_suites — all decomp variants reuse h1_cash_holdings panel
+  H1.ceo2.decomp: h1_cash_holdings
+  H1.ceo2.decomp.qtrexp: h1_cash_holdings
+  H1.2.ceo2.decomp: h1_cash_holdings
+  H1.2.ceo2.decomp.qtrexp: h1_cash_holdings
+  H1.3.cfvol: h1_cash_holdings
+  H14c.ceo2.decomp: h14_bidask_spread
+  H18.ceo2.decomp: h18_cccl_received
+  # Endogeneity suites reuse h1_cash_holdings (cash DV)
+  H.dwz.fd: h1_cash_holdings
+  H.lewbel.iv: h1_cash_holdings
+  # Legacy aliases retained for fallback compat (other configs may still resolve them)
   H1.1: h1_cash_holdings
-  H1.1.r: h1_cash_holdings   # CEO partition channel — reuses H1 panel
+  H1.1.r: h1_cash_holdings
   H1.1b: h1_cash_holdings
-  H1.1b.r: h1_cash_holdings  # CEO partition channel binary — reuses H1 panel
+  H1.1b.r: h1_cash_holdings
   H1.2: h1_cash_holdings
-  H1.2.r: h1_cash_holdings   # CEO partition channel constraint — reuses H1 panel
-  H1.2.ceo2.decomp: h1_cash_holdings   # DWZ decomp HFC variant — reuses H1 panel
-  H1.r: h1_cash_holdings   # robustness suite reuses H1 panel (with UncPreNoCEO added)
+  H1.2.r: h1_cash_holdings
+  H1.r: h1_cash_holdings
   H7b: h7_illiquidity
   H7c: h7_illiquidity
   H7d: h7_illiquidity
