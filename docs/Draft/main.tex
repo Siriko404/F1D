@@ -35,12 +35,16 @@
 
 % ---- URL handling for DOIs in bib ----
 \usepackage{url}
+\usepackage{seqsplit}        % \seqsplit macro for breaking long file paths in variable_definitions.tex
 
 % ---- Hyperref before apacite (apacite compatibility requirement) ----
 \usepackage[colorlinks=true,linkcolor=black,citecolor=blue,urlcolor=blue]{hyperref}
 
 % ---- Bibliography (APA 6/7 via apacite — must follow hyperref) ----
 \usepackage{apacite}
+% natbib->apacite compatibility aliases (legacy \citet/\citep in variable_definitions.tex)
+\providecommand{\citet}{\citeA}
+\providecommand{\citep}{\cite}
 
 % ---- Convenience macros ----
 \newcommand{\Var}[1]{\texttt{#1}}        % e.g., \Var{UncAnsMgr}
