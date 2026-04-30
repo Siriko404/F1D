@@ -26,9 +26,9 @@ suites:
   - H1.2.ceo2.decomp.qtrexp
   - H1.3.cfvol  # NEW — CFvol moderation (Han-Qiu 2007 16q CV; ff12-year median split)
   - H1.4.hedging_needs  # NEW — HedgingNeeds moderation (ACW 2007 corr formula; ff12-year median split)
-  # H.death.did DROPPED 2026-04-29 per user direction — tested settled question (CEOs affect cash) with weak design (n=8, pre-trend mean reversion); endo package reduces to DWZ FD + Lewbel
-  - H.dwz.fd  # NEW — DWZ §6 first-difference replication (CEO turnover; 659 pairs; cash adaptation)
-  - H.lewbel.iv  # NEW — Lewbel 2012 heteroskedasticity-based IV (HC main 43k obs; addresses time-varying omitted confounders)
+  # H.death.did DROPPED 2026-04-29 per user direction — tested settled question (CEOs affect cash) with weak design
+  # H.dwz.fd DROPPED 2026-04-29 per user direction — addresses time-invariant firm U redundantly with main-panel firm FE; methodological homage to DWZ §6 only, no new identification
+  - H.lewbel.iv  # NEW — Lewbel 2012 heteroskedasticity-based IV (HC main 43k obs; addresses time-varying omitted confounders + reverse causality)
 
   # H4 family (both sub-tables emitted by run_h4_leverage.py)
   - H4a
@@ -137,6 +137,5 @@ thesis_suites:
   # §4.2 reaction (Full method only) — market channel (H14c spread) + regulatory channel (H18 SEC)
   - H14c.ceo2.decomp
   - H18.ceo2.decomp
-  # §4.3 endogeneity — DWZ §6 first-difference + Lewbel 2012 IV (Death DiD dropped 2026-04-29)
-  - H.dwz.fd
+  # §III.E endogeneity — Lewbel 2012 IV only (Death DiD + DWZ FD both dropped 2026-04-29)
   - H.lewbel.iv

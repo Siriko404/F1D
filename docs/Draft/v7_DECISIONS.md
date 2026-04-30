@@ -69,6 +69,24 @@
 
 ## Decisions log (chronological)
 
+### D26 — 2026-04-29 LATE×14 — DWZ FD dropped entirely from v7
+**Trigger:** during teacher-mode walkthrough of remaining endo suites (DWZ FD + Lewbel) following D25's Death DiD drop. User identified the same redundancy pattern that killed Death DiD: DWZ FD addresses "time-invariant unmeasured firm traits" — a threat that firm FE in the main panel ALREADY mathematically absorbs. Within-firm transformation (firm FE) and first-difference produce equivalent identification of β under classical assumptions. No reviewer would credit FD as an endogeneity defense for a threat firm FE already handles.
+
+**Decision:** DWZ FD removed from v7 entirely. No body §III.E panel. No robustness paragraph in §III.B. No future-work mention. Like Death DiD: "as if it never existed."
+
+**Implications:**
+- §III.E becomes single-suite Lewbel IV (see D15 revision). Not a composite table anymore — a regular regression table.
+- 3 disclosures DROPPED from v7_DISCLOSURES_INVENTORY.md: #5 (FD identifies ClarityCEO only), #6 (FD design deviations FF12/intangibles/Main), #7 (FD applied to cash → endogeneity stronger than Tobin's Q).
+- Disclosures #12 (ID-asymmetry across designs) and #13 (multi-threats package) become OBSOLETE — only one design remains. #12 retired entirely. #13 reframes from "2-threats" → "Lewbel addresses one specific threat: speech-direction reverse causality + measurement error + time-varying confounders, complementing main-panel firm FE coverage of time-invariant U."
+- Code/data preserved on disk: `src/f1d/econometric/run_h_dwz_fd_cash.py` (or whatever the runner is named), `outputs/econometric/h_dwz_fd_cash/`, `docs/Draft/per_suite/h_dwz_fd_table.tex`. NOT cited in v7. Bib entry `dzielinski2021` STAYS — heavily cited elsewhere as our anchor paper.
+- `config/suite_render_order.yaml` — `H.dwz.fd` removed from both `suites:` and `thesis_suites:` lists with comment.
+
+**v7 endo defense after D25 + D26:**
+- Main panel: firm FE + lagged DV + lead DV (the 4-step ladder is itself the primary endo defense)
+- §III.E: Lewbel IV (single suite) — addresses speech-direction reverse causality + measurement error + time-varying confounders
+- Selection threat (firms self-selecting CEOs): orphaned, acknowledged settled in lit
+- Time-invariant firm U: handled by firm FE in main panel (not by §III.E)
+
 ### D25 — 2026-04-29 LATE×13 — Death DiD dropped entirely from v7
 **Trigger:** user pushed back during teacher-mode tutorial. Chain of audit:
 1. Initial framing claimed Death DiD "kills reverse causality." User challenged.
@@ -122,10 +140,11 @@
 **Decision:** Per template line 32-34. One coherent intro narrative — motivation → gap → approach → findings → contributions → roadmap, all in one §I.
 **Implication:** v6 §I had 6 subsections; v7 collapses to one block.
 
-### D15 — 2026-04-29 — §III.E Endogeneity = 1 composite table, 2 panels (REVISED per D25)
+### D15 — 2026-04-29 — §III.E Endogeneity = single Lewbel IV suite (REVISED per D25 + D26)
 **Original decision:** 3 panels (Death DiD + DWZ FD + Lewbel IV).
-**Revised 2026-04-29 LATE×13 per D25:** 2 panels — Panel A DWZ FD; Panel B Lewbel IV. Death DiD dropped entirely.
-**Rationale for 2-panel:** preserves composite-table convention; tightens disclosure load (13 → 8); package now genuinely covers 2 of 3 endo threats (omitted-variable via FD; reverse-causality + measurement-error + time-varying confounders via Lewbel). Selection threat orphaned but settled in lit so not worth defending.
+**Revised 2026-04-29 LATE×13 per D25:** 2 panels (DWZ FD + Lewbel IV). Death DiD dropped.
+**Revised 2026-04-29 LATE×14 per D26:** §III.E becomes single Lewbel IV suite. DWZ FD dropped — redundant with firm FE in the main panel for the time-invariant-firm-trait threat. §III.E is no longer a "composite table" — it's a single regression table for Lewbel IV.
+**Rationale for 1-suite:** firm FE in main panel mathematically absorbs constant-per-firm U; FD adds no new identification angle. Lewbel is the only suite that addresses time-varying confounders + reverse causality + measurement error — threats firm FE does NOT cover. Honest narrow scope.
 
 ### D14 — 2026-04-29 — §IV.A title = "Market Information-Asymmetry Channel: Post-Call Bid-Ask Spread"
 **Decision:** §IV.A subsection title locks mechanism-first naming (BGT 2018 + Amihud 2002 anchor).

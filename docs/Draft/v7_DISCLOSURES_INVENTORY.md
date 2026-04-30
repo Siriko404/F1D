@@ -1,7 +1,8 @@
 # v7 Honest-Disclosures Inventory
 
 **Built:** 2026-04-29 (Step 2B)
-**Revised:** 2026-04-29 LATE×13 — Death DiD dropped entirely per D25. Disclosures #1, #2, #3, #4, #19 are DROPPED. Disclosure #12 revised from 3-design to 2-design ID-asymmetry. Disclosure #13 revised from 3-threats to 2-threats (omitted-variable via FD + reverse-direction via Lewbel). Coverage summary table at bottom updated. Death-specific entries kept below for audit trail with **DROPPED** banners.
+**Revised:** 2026-04-29 LATE×13 — Death DiD dropped entirely per D25. Disclosures #1, #2, #3, #4, #19 DROPPED. #12 revised 3-design → 2-design. #13 revised 3-threats → 2-threats.
+**Revised again:** 2026-04-29 LATE×14 — DWZ FD ALSO dropped entirely per D26 (firm FE in main panel mathematically absorbs the same time-invariant-firm-trait threat). Disclosures #5, #6, #7 DROPPED. #12 RETIRED entirely (only one design remains; nothing to compare). #13 revised again: Lewbel covers one specific threat (speech-direction reverse causality + measurement error + time-varying confounders); main-panel firm FE covers time-invariant U. Coverage table updated.
 **Source:** v6 prose grep + locked memory verbatim
 **Purpose:** preserve every honest disclosure from v6 across the rewrite, with an explicit v7 home assignment for each. Per advisor blocker B1.
 
@@ -40,19 +41,19 @@
 **v7 home:** §III.E Endogeneity — Death DiD panel notes + §V.3 Future Work
 **Status:** KEEP
 
-### 5. DWZ FD identifies ClarityCEO only (not UncResCEO)
+### 5. DWZ FD identifies ClarityCEO only (not UncResCEO) — **DROPPED per D26**
 **1-line:** First-difference annihilates UncResCEO by OLS first-order conditions (within-CEO mean = 0 by construction); FD spec identifies ClarityCEO only.
 **v6 source:** `section_4_additional.tex` line 81: "The first-difference does not identify the UncResCEO effect because the within-CEO mean of UncResCEO is zero by construction…"
 **v7 home:** §III.E Endogeneity — DWZ FD panel notes + ID-asymmetry framing
 **Status:** KEEP
 
-### 6. DWZ FD design deviations (FF12 vs FF48; intangibles omitted; Main industries)
+### 6. DWZ FD design deviations (FF12 vs FF48; intangibles omitted; Main industries) — **DROPPED per D26**
 **1-line:** Three documented deviations from DWZ §6 spec: FF12 not FF48; intangibles-ratio omitted; Main industries only.
 **v6 source:** `section_4_additional.tex` line 81: "Three deviations from the \citeauthor{dzielinski2021} Section 6 specification are documented in Appendix~\ref{app:vardefs}: (i) industry fixed effects use the Fama-French 12 partition rather than \citeauthor{dzielinski2021}'s Fama-French 48 (panel-infrastructure constraint); (ii) the intangibles-ratio control is omitted because it is not constructed in our panel; (iii) the sample restricts to F1D Main industries…"
 **v7 home:** §III.E DWZ FD panel notes + Appendix Variable Definitions
 **Status:** KEEP
 
-### 7. DWZ FD applied to cash → endogeneity concern stronger than DWZ Tobin's Q
+### 7. DWZ FD applied to cash → endogeneity concern stronger than DWZ Tobin's Q — **DROPPED per D26**
 **1-line:** Cash is CEO-discretion choice variable; endogeneity concern stronger than in DWZ's Tobin's Q application.
 **v6 source:** `section_4_additional.tex` line 81: "Cash is also a CEO-discretion choice variable, which makes endogeneity more concerning here than in \citeauthor{dzielinski2021}'s Tobin's Q application. We treat this design as a robustness companion to the Phase E sudden-death DiD rather than as primary identification."
 **v7 home:** §III.E DWZ FD panel notes
@@ -82,15 +83,17 @@
 **v7 home:** §III.E Lewbel panel notes
 **Status:** KEEP
 
-### 12. ID-asymmetry across endogeneity designs — **REVISED per D25 (3-design → 2-design)**
-**1-line (revised):** 2 designs target different speech components by construction: DWZ FD identifies ClarityCEO only (FD annihilates UncResCEO); Lewbel identifies UncResCEO. Coverage gap reflects underlying statistical structure of two components, not a design weakness.
+### 12. ID-asymmetry across endogeneity designs — **RETIRED per D26 (only Lewbel remains; nothing to compare)**
+**Status:** Retired entirely. With DWZ FD dropped per D26 and Death DiD dropped per D25, only Lewbel IV remains. There is no longer a multi-design package to compare ID-asymmetry across. Disclosure not applicable.
 **Original 1-line (pre-D25):** 3 designs target different speech components by construction: Death DiD + DWZ FD identify ClarityCEO only; Lewbel identifies UncResCEO. Coverage gap reflects underlying statistical structure of two components, not a design weakness.
+**Post-D25 1-line (pre-D26):** 2 designs target different speech components by construction: DWZ FD identifies ClarityCEO only; Lewbel identifies UncResCEO.
 **v6 source:** `section_4_additional.tex` line 95: "The three designs target different speech components by construction. The Phase E and DWZ first-difference designs identify ClarityCEO via cross-CEO-pair variation around turnover events; neither identifies UncResCEO, because the residual of a CEO-fixed-effect regression has within-CEO mean exactly zero by OLS first-order conditions… The asymmetry across designs reflects the underlying statistical structure of the two speech components, not a coverage gap in the endogeneity package."
 **v7 home:** §III.E framing paragraph (intro to composite endogeneity table)
 **Status:** KEEP
 
-### 13. Two-threats package, NOT convergence on point estimate — **REVISED per D25 (three → two)**
-**1-line (revised):** Endogeneity package framed as covering two orthogonal identification threats with two pre-specified designs (DWZ FD for time-invariant unobserved heterogeneity; Lewbel IV for reverse causality and time-varying confounders), not as convergence on a single point estimate.
+### 13. Endogeneity defense narrow scope — **REVISED AGAIN per D26 (two-threats → single-threat at §III.E)**
+**1-line (current per D26):** Main panel firm FE absorbs time-invariant unmeasured firm traits. §III.E Lewbel IV addresses one specific additional threat: speech-direction reverse causality plus measurement error plus time-varying confounders. Together they cover the threats relevant to our setup. Selection threat (firms self-selecting CEOs based on cash needs) is acknowledged as orphaned but settled in the literature.
+**Post-D25 1-line (pre-D26):** Endogeneity package framed as covering two orthogonal identification threats with two pre-specified designs (DWZ FD for time-invariant unobserved heterogeneity; Lewbel IV for reverse causality and time-varying confounders), not as convergence on a single point estimate.
 **Original 1-line (pre-D25):** Endogeneity package framed as covering three orthogonal identification threats with three pre-specified designs, not as convergence on a single point estimate.
 **v6 source:** `section_2_framework.tex` line 24 + `section_4_additional.tex` line 63: "The endogeneity package is framed as covering three orthogonal identification threats with three pre-specified designs, not as convergence on a single point estimate."
 **v7 home:** §III.E framing paragraph + §V.2 Limitations
@@ -196,23 +199,26 @@
 
 ---
 
-## Coverage summary — REVISED per D25 (Death DiD dropped)
+## Coverage summary — REVISED per D25 + D26 (Death DiD + DWZ FD both dropped)
 
 | v7 home subsection | Disclosures count |
 |---|---|
 | §II.2 Hypothesis Development | 5 (#14, #15, #16, #25, #26) |
 | §II.2 + §III.C | 1 (#17) |
 | §III.D H1b results | 1 (#18) |
-| §III.E Endogeneity table notes (2-panel: DWZ FD + Lewbel) | 7 (#5, #6, #7, #8, #9, #10, #11, #12 revised) |
-| §III.E framing | 1 (#13 revised: 2-threats not 3) |
+| §III.E Endogeneity table notes (Lewbel IV only) | 4 (#8, #9, #10, #11) |
+| §III.E framing | 1 (#13 revised: narrow scope, single-threat) |
 | §IV.B opening | 1 (#24) |
 | §V.1 Summary | 1 (#22) |
-| §V.2 Limitations | 3 (#20, #21, #23) — #19 DROPPED |
-| §V.3 Future Work | 0 — #4 DROPPED |
+| §V.2 Limitations | 3 (#20, #21, #23) |
+| §V.3 Future Work | 0 |
 
-Active total: 20 disclosures.
-Dropped per D25: 5 (#1, #2, #3, #4, #19) — entries kept above for audit trail with **DROPPED** banner.
-Revised per D25: 2 (#12, #13) — entries above show original + revised text.
+Active total: 17 disclosures.
+Dropped per D25: 5 (#1, #2, #3, #4, #19).
+Dropped per D26: 3 (#5, #6, #7).
+Retired per D26: 1 (#12 — no multi-design comparison applicable).
+Revised per D25 then D26: 1 (#13 — successively narrowed to single-threat scope).
+All retired/dropped entries kept above for audit trail with **DROPPED** or **RETIRED** banners.
 
 ## Pre-D25 totals (audit trail)
 Total: 26 disclosures (some span multiple subsections). 5 disclosures retired entirely + 2 disclosures revised = 7 affected by D25.
