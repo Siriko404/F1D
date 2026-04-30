@@ -69,6 +69,27 @@
 
 ## Decisions log (chronological)
 
+### D25 — 2026-04-29 LATE×13 — Death DiD dropped entirely from v7
+**Trigger:** user pushed back during teacher-mode tutorial. Chain of audit:
+1. Initial framing claimed Death DiD "kills reverse causality." User challenged.
+2. Conceded: Death DiD on cash measures CEO-identity → cash, NOT speech-uncertainty → cash arrow direction.
+3. Reframed as "tests CEO-autonomy prerequisite." User: "OF COURSE CEO AFFECTS CASH! NOBODY WOULD POINT THAT AS AN ERROR!"
+4. User correct — CEO-autonomy is settled (Bertrand-Schoar 2003 onward). Testing settled question with weak design (n=8, pre-trend mean reversion, can't isolate speech, can't kill within-CEO reverse stories like cash→scrutiny→speech) = filler.
+
+**Decision:** Death DiD removed from v7 entirely. No body §III.E panel. No footnote. No future-work mention. Like it never existed in the v7 paper.
+
+**Implications:**
+- §III.E becomes 2-panel composite (DWZ FD + Lewbel IV) — see D15 revision.
+- 5 disclosures DROPPED from v7_DISCLOSURES_INVENTORY.md: #1 (pre-trend mean reversion), #2 (lagged-DV exclusion BMD 2004), #3 (16-cluster threshold), #4 (heterogeneity infeasible at n=8), #19 (Death power-limited in §V Limitations). Disclosure #12 (ID-asymmetry across designs) revised to 2-design package. Disclosure #13 reframed: 2-threat package (omitted-variable + reverse-direction-via-Lewbel).
+- Code/data preserved on disk: `src/f1d/econometric/run_ceo_death_did_cash.py`, `outputs/econometric/ceo_death_did_cash/`, `data/raw/ceo_death_events/`. NOT cited in v7. Available if larger-sample extension is ever revisited.
+- `config/suite_render_order.yaml` — `H.death.did` removed from both `suites:` and `thesis_suites:` lists with comment.
+- Bibliography: `bennedsen2020` and `ghafoor2023` cite-keys orphaned in v7 prose; bib entries stay (low cost).
+
+**Cleaner threat coverage in v7:**
+- DWZ FD: time-invariant unobserved firm traits (omitted-variable from constant-per-firm sources)
+- Lewbel IV: speech → cash direction (kills reverse causality including user-named scrutiny + empire-building mechanisms; also addresses measurement error and time-varying confounders)
+- Selection threat (firms self-selecting CEOs based on cash needs): NOT addressed. Acknowledged as open in §V.2 Limitations if needed; settled in literature so likely no referee push-back.
+
 ### D24 — 2026-04-29 — Pre-Commitment Statement formally killed
 **Decision:** v6 §2.1 Pre-Commitment Statement removed entirely from v7. Pre-registration framing absorbed into §II.2 Hypothesis Development (each hypothesis has its formal statement + theoretical anchors + tail direction stated explicitly).
 **Rationale:** v6 §2.1 was empirical filler — every load-bearing claim was restated in §2.4 (now §II.2) or §1.4 (now §I).
@@ -101,8 +122,10 @@
 **Decision:** Per template line 32-34. One coherent intro narrative — motivation → gap → approach → findings → contributions → roadmap, all in one §I.
 **Implication:** v6 §I had 6 subsections; v7 collapses to one block.
 
-### D15 — 2026-04-29 — §III.E Endogeneity = 1 composite table, 3 panels
-**Decision:** Single §III.E table. Panel A Death DiD; Panel B DWZ FD; Panel C Lewbel IV. Tightens body footprint; matches top-journal endogeneity-package convention.
+### D15 — 2026-04-29 — §III.E Endogeneity = 1 composite table, 2 panels (REVISED per D25)
+**Original decision:** 3 panels (Death DiD + DWZ FD + Lewbel IV).
+**Revised 2026-04-29 LATE×13 per D25:** 2 panels — Panel A DWZ FD; Panel B Lewbel IV. Death DiD dropped entirely.
+**Rationale for 2-panel:** preserves composite-table convention; tightens disclosure load (13 → 8); package now genuinely covers 2 of 3 endo threats (omitted-variable via FD; reverse-causality + measurement-error + time-varying confounders via Lewbel). Selection threat orphaned but settled in lit so not worth defending.
 
 ### D14 — 2026-04-29 — §IV.A title = "Market Information-Asymmetry Channel: Post-Call Bid-Ask Spread"
 **Decision:** §IV.A subsection title locks mechanism-first naming (BGT 2018 + Amihud 2002 anchor).

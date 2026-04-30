@@ -1,6 +1,7 @@
 # v7 Honest-Disclosures Inventory
 
 **Built:** 2026-04-29 (Step 2B)
+**Revised:** 2026-04-29 LATE×13 — Death DiD dropped entirely per D25. Disclosures #1, #2, #3, #4, #19 are DROPPED. Disclosure #12 revised from 3-design to 2-design ID-asymmetry. Disclosure #13 revised from 3-threats to 2-threats (omitted-variable via FD + reverse-direction via Lewbel). Coverage summary table at bottom updated. Death-specific entries kept below for audit trail with **DROPPED** banners.
 **Source:** v6 prose grep + locked memory verbatim
 **Purpose:** preserve every honest disclosure from v6 across the rewrite, with an explicit v7 home assignment for each. Per advisor blocker B1.
 
@@ -15,25 +16,25 @@
 
 ## Endogeneity (§III.E composite-table notes)
 
-### 1. Death DiD pre-trend = mean reversion, not parallel
+### 1. Death DiD pre-trend = mean reversion, not parallel — **DROPPED per D25**
 **1-line:** Pre-period placebo positive both 4q (β=+0.027) and 8q (β=+0.021); post-event ATT negative; pattern consistent with mean reversion not a clean parallel-trends pass.
 **v6 source:** `section_4_additional.tex` line 72: "The pattern is consistent with mean reversion rather than a clean parallel-trends pass; we describe it as such rather than claim 'parallel trends pass.'"
 **v7 home:** §III.E Endogeneity — Death DiD panel notes (or composite table footnote)
 **Status:** KEEP
 
-### 2. Death DiD lagged-DV exclusion (Bertrand-Mullainathan-Duflo 2004)
+### 2. Death DiD lagged-DV exclusion (Bertrand-Mullainathan-Duflo 2004) — **DROPPED per D25**
 **1-line:** DiD specifications omit lagged DV per Bertrand-Mullainathan-Duflo 2004 standard practice (cash highly persistent → including lagged DV mechanically absorbs ATT).
 **v6 source:** `section_4_additional.tex` line 72: "The Phase E specifications omit the lagged dependent variable that is otherwise required in Section…\ref{sec:main}, following the standard DiD practice of \citeA{bertrand2004}…"
 **v7 home:** §III.E Endogeneity — Death DiD panel notes
 **Status:** KEEP
 
-### 3. Death DiD: 16 firm clusters below 30 conventional asymptotic threshold
+### 3. Death DiD: 16 firm clusters below 30 conventional asymptotic threshold — **DROPPED per D25**
 **1-line:** With 16 unique firm clusters (8 treated + 8 controls), cluster-robust SEs are below conventional asymptotic-validity threshold (~30); reported with disclosure.
 **v6 source:** `section_4_additional.tex` line 72: "With sixteen unique firm clusters (eight treated plus eight matched controls), cluster-robust standard errors are below the conventional asymptotic-validity threshold of approximately thirty…"
 **v7 home:** §III.E Endogeneity — Death DiD panel notes
 **Status:** KEEP
 
-### 4. Death DiD: pre-event UncResCEO heterogeneity test infeasible
+### 4. Death DiD: pre-event UncResCEO heterogeneity test infeasible — **DROPPED per D25**
 **1-line:** n=8 events doesn't allow median-split heterogeneity on pre-event UncResCEO (would yield 4/cell). Pooled ATT only; speech-channel-specific decomposition future work.
 **v6 source:** `section_4_additional.tex` line 72: "The originally proposed heterogeneity test on pre-event UncResCEO is not feasible at this sample size…"
 **v7 home:** §III.E Endogeneity — Death DiD panel notes + §V.3 Future Work
@@ -81,14 +82,16 @@
 **v7 home:** §III.E Lewbel panel notes
 **Status:** KEEP
 
-### 12. ID-asymmetry across 3 endogeneity designs
-**1-line:** 3 designs target different speech components by construction: Death DiD + DWZ FD identify ClarityCEO only; Lewbel identifies UncResCEO. Coverage gap reflects underlying statistical structure of two components, not a design weakness.
+### 12. ID-asymmetry across endogeneity designs — **REVISED per D25 (3-design → 2-design)**
+**1-line (revised):** 2 designs target different speech components by construction: DWZ FD identifies ClarityCEO only (FD annihilates UncResCEO); Lewbel identifies UncResCEO. Coverage gap reflects underlying statistical structure of two components, not a design weakness.
+**Original 1-line (pre-D25):** 3 designs target different speech components by construction: Death DiD + DWZ FD identify ClarityCEO only; Lewbel identifies UncResCEO. Coverage gap reflects underlying statistical structure of two components, not a design weakness.
 **v6 source:** `section_4_additional.tex` line 95: "The three designs target different speech components by construction. The Phase E and DWZ first-difference designs identify ClarityCEO via cross-CEO-pair variation around turnover events; neither identifies UncResCEO, because the residual of a CEO-fixed-effect regression has within-CEO mean exactly zero by OLS first-order conditions… The asymmetry across designs reflects the underlying statistical structure of the two speech components, not a coverage gap in the endogeneity package."
 **v7 home:** §III.E framing paragraph (intro to composite endogeneity table)
 **Status:** KEEP
 
-### 13. Three-threats package, NOT convergence on point estimate
-**1-line:** Endogeneity package framed as covering three orthogonal identification threats with three pre-specified designs, not as convergence on a single point estimate.
+### 13. Two-threats package, NOT convergence on point estimate — **REVISED per D25 (three → two)**
+**1-line (revised):** Endogeneity package framed as covering two orthogonal identification threats with two pre-specified designs (DWZ FD for time-invariant unobserved heterogeneity; Lewbel IV for reverse causality and time-varying confounders), not as convergence on a single point estimate.
+**Original 1-line (pre-D25):** Endogeneity package framed as covering three orthogonal identification threats with three pre-specified designs, not as convergence on a single point estimate.
 **v6 source:** `section_2_framework.tex` line 24 + `section_4_additional.tex` line 63: "The endogeneity package is framed as covering three orthogonal identification threats with three pre-specified designs, not as convergence on a single point estimate."
 **v7 home:** §III.E framing paragraph + §V.2 Limitations
 **Status:** KEEP
@@ -135,7 +138,7 @@
 
 ## Conclusion / Limitations (§V.2)
 
-### 19. Death DiD power limitation
+### 19. Death DiD power limitation — **DROPPED per D25**
 **1-line:** Sudden-death sample of 8 viable events below conventional power thresholds; 4 specifications negative in predicted direction but none significant at p<0.10.
 **v6 source:** `section_5_conclusion.tex` line 31 (combined with disclosure 1-4): "the Phase E sudden-death sample size of eight viable events is below conventional power thresholds; the four DiD specifications report negative point estimates in the predicted direction but none statistically significant at p<0.10 one-tailed…"
 **v7 home:** §V.2 Limitations
@@ -193,21 +196,26 @@
 
 ---
 
-## Coverage summary
+## Coverage summary — REVISED per D25 (Death DiD dropped)
 
 | v7 home subsection | Disclosures count |
 |---|---|
 | §II.2 Hypothesis Development | 5 (#14, #15, #16, #25, #26) |
 | §II.2 + §III.C | 1 (#17) |
 | §III.D H1b results | 1 (#18) |
-| §III.E Endogeneity table notes | 12 (#1, #2, #3, #4, #5, #6, #7, #8, #9, #10, #11, #12) |
-| §III.E framing | 1 (#13) |
+| §III.E Endogeneity table notes (2-panel: DWZ FD + Lewbel) | 7 (#5, #6, #7, #8, #9, #10, #11, #12 revised) |
+| §III.E framing | 1 (#13 revised: 2-threats not 3) |
 | §IV.B opening | 1 (#24) |
 | §V.1 Summary | 1 (#22) |
-| §V.2 Limitations | 4 (#19, #20, #21, #23) |
-| §V.3 Future Work | 1 (#4 partial) |
+| §V.2 Limitations | 3 (#20, #21, #23) — #19 DROPPED |
+| §V.3 Future Work | 0 — #4 DROPPED |
 
-Total: 26 disclosures (some span multiple subsections).
+Active total: 20 disclosures.
+Dropped per D25: 5 (#1, #2, #3, #4, #19) — entries kept above for audit trail with **DROPPED** banner.
+Revised per D25: 2 (#12, #13) — entries above show original + revised text.
+
+## Pre-D25 totals (audit trail)
+Total: 26 disclosures (some span multiple subsections). 5 disclosures retired entirely + 2 disclosures revised = 7 affected by D25.
 
 ## Structural-gap flags (advisor F1 check)
 
