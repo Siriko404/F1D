@@ -18,7 +18,7 @@
 - [ ] **Step 2F — endo strategy selection (PAUSED — user branched off to run ChatGPT Deep Research; will return with summary for adversarial audit + discussion + selection + NLM-verify + build)**
 - [ ] Step 2A — per-subsection claim cards (~12-15 cards → v7_CLAIM_CARDS.md) — paused mid-tutorial; needs full restart given §III.E reframe
 - [ ] Step 3 — lock narrative anchor (advisor F5: workshop headline contribution sentence)
-- [ ] Step 4 — archive v6 → `docs/Draft/_archived_v6_2026_04_29/`
+- [x] Step 4 — archive v6 → `docs/Draft/_archived_v6_2026_04_29/` (2026-04-30; 24 renames via git mv: main.tex/main.pdf/sections/* + 7 v6 design+audit md files; nested `_archived_2026_04_22/` consolidated; build artifacts removed)
 - [ ] Step 5 — scaffold blank v7 LaTeX set (two-column top-journal per template)
 - [ ] Step 6 — populate prose big-picture-first
 - [ ] Step 7 — wire generated tables + variable definitions appendix + bibliography
