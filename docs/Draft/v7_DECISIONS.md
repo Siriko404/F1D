@@ -9,15 +9,30 @@
 ## Process / current step
 
 - [x] Step 0a — open decisions ledger
-- [ ] Step 0b — read template + extract structure constraints
-- [ ] Step 1 — lock thesis structure (sections + subsections per template, mapped to thesis content)
-- [ ] Step 2 — inventory empirical findings (in / out)
-- [ ] Step 3 — lock narrative anchor (story arc)
-- [ ] Step 4 — archive old draft into `docs/Draft/_archived_v6/`
-- [ ] Step 5 — scaffold new v7 LaTeX set with locked structure (blank shells, two-column top-journal style per template mandate)
-- [ ] Step 6 — populate big-picture-first (section abstracts → subsection abstracts → ¶ scaffolds → final prose)
+- [x] Step 0b — read template + extract structure constraints
+- [x] Step 1 — lock thesis structure (D1-D24 below)
+- [x] Step 2C — Lerman pub year verification (lerman2024 → lerman2026, commit e6aba60)
+- [x] Step 2B — disclosures inventory (26 items in v7_DISCLOSURES_INVENTORY.md, commit d33bde9)
+- [ ] Step 2A — per-subsection claim cards (~12-15 cards → v7_CLAIM_CARDS.md) **← NEXT**
+- [ ] Step 3 — lock narrative anchor (advisor F5: workshop headline contribution sentence)
+- [ ] Step 4 — archive v6 → `docs/Draft/_archived_v6_2026_04_29/`
+- [ ] Step 5 — scaffold blank v7 LaTeX set (two-column top-journal per template)
+- [ ] Step 6 — populate prose big-picture-first
 - [ ] Step 7 — wire generated tables + variable definitions appendix + bibliography
 - [ ] Step 8 — compile + audit + commit
+
+## Pre-compaction state (2026-04-29 LATE×12)
+
+**Branch:** master at `d33bde9` (5 commits ahead of pre-compact origin).
+
+**Durable artifacts on disk:**
+- `docs/Draft/v7_DECISIONS.md` — this file (D1-D24 ledger)
+- `docs/Draft/v7_DISCLOSURES_INVENTORY.md` — 26 honest disclosures inventoried with v7 home assignments
+- `tmp/suite_spec_index.json` — per-cell β/p/n for 15 body-cited suites
+
+**Memory handoff:** `project_session_2026_04_29_v7_pre_compact.md` (newest CURRENT STATE entry in MEMORY.md).
+
+**User's last instruction before pause:** "your explanation is too long, and too hard to understand. pause here. record EVERYTHING and prepare for compaction thoroughly". Future endogeneity tutorials in Step 2A walkthrough must be SHORTER + simpler step-by-step. User does not know endogeneity well.
 
 ---
 
