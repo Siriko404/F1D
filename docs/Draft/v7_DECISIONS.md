@@ -125,7 +125,7 @@
 ### D8 — 2026-04-29 — §IV.B regulatory channel terminology = CCCL not SEC
 **Trigger:** user correction.
 **Decision:** §IV.B variable is "Conference-Call Comment Letter (CCCL) indicator" per Lerman et al. paper title and v6 prose §4.2.2 line 44 ("conference-call-comment-letter (CCCL) indicator"). Drop "SEC Comment Letter" as the channel name in v7. Use "CCCL" or "Regulatory Channel: CCCL" as subsection title.
-**Verification needed:** Lerman bib entry currently `lerman2024` with `note = {Forthcoming}`. User says paper is now Lerman 2025. Need to verify actual journal publication year and update cite key + year if needed (deferred).
+**Verification COMPLETE 2026-04-29:** Lerman paper publication metadata (per user-provided paper masthead): Received July 5, 2023; Revised October 1, 2024 + June 11, 2025; Accepted July 30, 2025; **Published Online in Articles in Advance January 30, 2026**. Cite key updated `lerman2024` → `lerman2026`; year updated `{2024}` → `{2026}`. Bib note now reads "Articles in Advance, Published online January 30, 2026". 3 v6 prose files updated to `\citeA{lerman2026}`.
 **File reference:** `docs/Draft/references.bib` line 291.
 
 ### D7 — 2026-04-29 — §IV layout = 2 subsections (Spread + CCCL)
