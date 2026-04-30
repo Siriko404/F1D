@@ -10,10 +10,13 @@
 
 - [x] Step 0a — open decisions ledger
 - [x] Step 0b — read template + extract structure constraints
-- [x] Step 1 — lock thesis structure (D1-D24 below)
+- [x] Step 1 — lock thesis structure (D1-D27 below)
 - [x] Step 2C — Lerman pub year verification (lerman2024 → lerman2026, commit e6aba60)
-- [x] Step 2B — disclosures inventory (26 items in v7_DISCLOSURES_INVENTORY.md, commit d33bde9)
-- [ ] Step 2A — per-subsection claim cards (~12-15 cards → v7_CLAIM_CARDS.md) **← NEXT**
+- [x] Step 2B — disclosures inventory (now 11 active + 13 dropped + 2 retired after D25-D27)
+- [x] Step 2D — §III.E endogeneity scrub (D25-D27 dropped Death DiD + DWZ FD + Lewbel IV; §III.E EMPTY pending new design)
+- [x] Step 2E — endo research brief written for ChatGPT Deep Research outsourcing (`docs/Draft/v7_ENDO_RESEARCH_BRIEF.md`, commit bbf147b; red-team audited, all 10 priority edits applied)
+- [ ] **Step 2F — endo strategy selection (PAUSED — user branched off to run ChatGPT Deep Research; will return with summary for adversarial audit + discussion + selection + NLM-verify + build)**
+- [ ] Step 2A — per-subsection claim cards (~12-15 cards → v7_CLAIM_CARDS.md) — paused mid-tutorial; needs full restart given §III.E reframe
 - [ ] Step 3 — lock narrative anchor (advisor F5: workshop headline contribution sentence)
 - [ ] Step 4 — archive v6 → `docs/Draft/_archived_v6_2026_04_29/`
 - [ ] Step 5 — scaffold blank v7 LaTeX set (two-column top-journal per template)
