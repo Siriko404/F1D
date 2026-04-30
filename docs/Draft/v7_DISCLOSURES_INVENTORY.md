@@ -1,8 +1,9 @@
 # v7 Honest-Disclosures Inventory
 
 **Built:** 2026-04-29 (Step 2B)
-**Revised:** 2026-04-29 LATE×13 — Death DiD dropped entirely per D25. Disclosures #1, #2, #3, #4, #19 DROPPED. #12 revised 3-design → 2-design. #13 revised 3-threats → 2-threats.
-**Revised again:** 2026-04-29 LATE×14 — DWZ FD ALSO dropped entirely per D26 (firm FE in main panel mathematically absorbs the same time-invariant-firm-trait threat). Disclosures #5, #6, #7 DROPPED. #12 RETIRED entirely (only one design remains; nothing to compare). #13 revised again: Lewbel covers one specific threat (speech-direction reverse causality + measurement error + time-varying confounders); main-panel firm FE covers time-invariant U. Coverage table updated.
+**Revised:** 2026-04-29 LATE×13 — Death DiD dropped per D25. #1, #2, #3, #4, #19 DROPPED.
+**Revised again:** 2026-04-29 LATE×14 — DWZ FD dropped per D26. #5, #6, #7 DROPPED.
+**Revised again:** 2026-04-29 LATE×15 — Lewbel IV ALSO dropped per D27 (Wu-Hausman fails to reject OLS-consistency; identifying assumption unverified). §III.E now EMPTY pending new design. #8, #9, #10, #11 DROPPED. #21 DROPPED. #13 RETIRED entirely (no §III.E threats-package applicable if §III.E empty). #12 already RETIRED per D26. Coverage table updated.
 **Source:** v6 prose grep + locked memory verbatim
 **Purpose:** preserve every honest disclosure from v6 across the rewrite, with an explicit v7 home assignment for each. Per advisor blocker B1.
 
@@ -59,25 +60,25 @@
 **v7 home:** §III.E DWZ FD panel notes
 **Status:** KEEP
 
-### 8. Lewbel col 3 over-id rejected (Sargan p=0.009)
+### 8. Lewbel col 3 over-id rejected (Sargan p=0.009) — **DROPPED per D27**
 **1-line:** Col 3 (extended-instrument set) Sargan p=0.009 — over-id rejected. Col 2 (six-instrument set, Sargan p=0.92) treated as primary.
 **v6 source:** `section_4_additional.tex` line 90: "The Sargan over-identification test fails to reject the joint-validity null in col 2 (p=0.92) but rejects it at p<0.05 in col 3 (p=0.009); we accordingly treat col 2 as the primary specification…"
 **v7 home:** §III.E Lewbel panel notes
 **Status:** KEEP
 
-### 9. Lewbel col 2 first-stage borderline weak (Stock-Yogo)
+### 9. Lewbel col 2 first-stage borderline weak (Stock-Yogo) — **DROPPED per D27**
 **1-line:** Cragg-Donald F=20.4 in col 2 above F=10 weak-IV threshold but below Stock-Yogo 10%-maximal-IV-size threshold ≈23 → borderline weak.
 **v6 source:** `section_4_additional.tex` line 90: "the col 2 statistic is below the more demanding Stock-Yogo 10%-maximal-IV-size threshold of approximately 23 for one endogenous regressor with six instruments, so we disclose the col 2 first-stage as borderline weak under the Stock-Yogo criterion."
 **v7 home:** §III.E Lewbel panel notes
 **Status:** KEEP
 
-### 10. Lewbel Wu-Hausman = failure to reject (NOT evidence FOR OLS)
+### 10. Lewbel Wu-Hausman = failure to reject (NOT evidence FOR OLS) — **DROPPED per D27**
 **1-line:** Wu-Hausman p=0.24 in col 2 — failure to reject OLS-consistency null; treat as failure-to-reject, not evidence-in-favor.
 **v6 source:** `section_4_additional.tex` line 90: "The Wu-Hausman test of OLS-consistency under exogeneity does not reject the null in col 2 (p=0.24); we treat this as a failure to reject rather than evidence in favor of OLS-consistency."
 **v7 home:** §III.E Lewbel panel notes
 **Status:** KEEP
 
-### 11. Lewbel 2SLS ≈ 5× OLS (consistent with measurement-error attenuation)
+### 11. Lewbel 2SLS ≈ 5× OLS (consistent with measurement-error attenuation) — **DROPPED per D27**
 **1-line:** 2SLS-Lewbel β ≈ 5× OLS β. Consistent with classical ME attenuation in OLS. Not statistically distinguishable at conventional thresholds given wider 2SLS SE.
 **v6 source:** `section_4_additional.tex` line 90: "The 2SLS-Lewbel point estimate is approximately five times the OLS estimate, a magnitude consistent with classical measurement-error attenuation in OLS; the 2SLS-Lewbel and OLS point estimates are not statistically distinguishable from each other at conventional thresholds given the wider 2SLS standard error."
 **v7 home:** §III.E Lewbel panel notes
@@ -91,10 +92,11 @@
 **v7 home:** §III.E framing paragraph (intro to composite endogeneity table)
 **Status:** KEEP
 
-### 13. Endogeneity defense narrow scope — **REVISED AGAIN per D26 (two-threats → single-threat at §III.E)**
-**1-line (current per D26):** Main panel firm FE absorbs time-invariant unmeasured firm traits. §III.E Lewbel IV addresses one specific additional threat: speech-direction reverse causality plus measurement error plus time-varying confounders. Together they cover the threats relevant to our setup. Selection threat (firms self-selecting CEOs based on cash needs) is acknowledged as orphaned but settled in the literature.
-**Post-D25 1-line (pre-D26):** Endogeneity package framed as covering two orthogonal identification threats with two pre-specified designs (DWZ FD for time-invariant unobserved heterogeneity; Lewbel IV for reverse causality and time-varying confounders), not as convergence on a single point estimate.
-**Original 1-line (pre-D25):** Endogeneity package framed as covering three orthogonal identification threats with three pre-specified designs, not as convergence on a single point estimate.
+### 13. Endogeneity defense narrow scope — **RETIRED per D27 (no §III.E content remains; threats-package framing inapplicable)**
+**Status:** Retired. With Death DiD + DWZ FD + Lewbel IV all dropped, §III.E is empty pending new design selection. The "threats-package" framing has nothing to describe at the §III.E level. If a new design replaces §III.E, this disclosure may be reactivated with a fresh formulation.
+**Post-D26 1-line (pre-D27):** Main panel firm FE absorbs time-invariant unmeasured firm traits. §III.E Lewbel IV addresses one specific additional threat: speech-direction reverse causality plus measurement error plus time-varying confounders.
+**Post-D25 1-line (pre-D26):** Two-design endogeneity package covering two orthogonal threats.
+**Original 1-line (pre-D25):** Three-design endogeneity package covering three orthogonal threats.
 **v6 source:** `section_2_framework.tex` line 24 + `section_4_additional.tex` line 63: "The endogeneity package is framed as covering three orthogonal identification threats with three pre-specified designs, not as convergence on a single point estimate."
 **v7 home:** §III.E framing paragraph + §V.2 Limitations
 **Status:** KEEP
@@ -153,7 +155,7 @@
 **v7 home:** §V.2 Limitations + §V.3 Future Work
 **Status:** KEEP
 
-### 21. Lewbel and Bates point estimates not stat-distinguishable
+### 21. Lewbel and Bates point estimates not stat-distinguishable — **DROPPED per D27**
 **1-line:** Lewbel 2SLS β ≈ 5× OLS β, but with wider SE → Wu-Hausman fails to reject OLS-consistency. Treat as failure to reject rather than evidence FOR OLS.
 **v6 source:** `section_5_conclusion.tex` line 31: "the \citeA{lewbel2012} heteroskedasticity-based estimator delivers a 2SLS point estimate approximately five times the OLS estimate but with wider standard errors; the Wu-Hausman test does not reject OLS-consistency, and we treat this as a failure to reject rather than evidence in favor of OLS-consistency."
 **v7 home:** §V.2 Limitations (composite endogeneity disclosure)
@@ -199,25 +201,24 @@
 
 ---
 
-## Coverage summary — REVISED per D25 + D26 (Death DiD + DWZ FD both dropped)
+## Coverage summary — REVISED per D25 + D26 + D27 (all 3 endo suites dropped; §III.E empty pending new design)
 
 | v7 home subsection | Disclosures count |
 |---|---|
 | §II.2 Hypothesis Development | 5 (#14, #15, #16, #25, #26) |
 | §II.2 + §III.C | 1 (#17) |
 | §III.D H1b results | 1 (#18) |
-| §III.E Endogeneity table notes (Lewbel IV only) | 4 (#8, #9, #10, #11) |
-| §III.E framing | 1 (#13 revised: narrow scope, single-threat) |
+| §III.E Endogeneity | 0 — section EMPTY pending new design |
 | §IV.B opening | 1 (#24) |
 | §V.1 Summary | 1 (#22) |
-| §V.2 Limitations | 3 (#20, #21, #23) |
+| §V.2 Limitations | 2 (#20, #23) |
 | §V.3 Future Work | 0 |
 
-Active total: 17 disclosures.
+Active total: 11 disclosures.
 Dropped per D25: 5 (#1, #2, #3, #4, #19).
 Dropped per D26: 3 (#5, #6, #7).
-Retired per D26: 1 (#12 — no multi-design comparison applicable).
-Revised per D25 then D26: 1 (#13 — successively narrowed to single-threat scope).
+Dropped per D27: 5 (#8, #9, #10, #11, #21).
+Retired entirely: 2 (#12 per D26; #13 per D27).
 All retired/dropped entries kept above for audit trail with **DROPPED** or **RETIRED** banners.
 
 ## Pre-D25 totals (audit trail)

@@ -27,8 +27,8 @@ suites:
   - H1.3.cfvol  # NEW — CFvol moderation (Han-Qiu 2007 16q CV; ff12-year median split)
   - H1.4.hedging_needs  # NEW — HedgingNeeds moderation (ACW 2007 corr formula; ff12-year median split)
   # H.death.did DROPPED 2026-04-29 per user direction — tested settled question (CEOs affect cash) with weak design
-  # H.dwz.fd DROPPED 2026-04-29 per user direction — addresses time-invariant firm U redundantly with main-panel firm FE; methodological homage to DWZ §6 only, no new identification
-  - H.lewbel.iv  # NEW — Lewbel 2012 heteroskedasticity-based IV (HC main 43k obs; addresses time-varying omitted confounders + reverse causality)
+  # H.dwz.fd DROPPED 2026-04-29 per user direction — addresses time-invariant firm U redundantly with main-panel firm FE; methodological homage to DWZ §6 only
+  # H.lewbel.iv DROPPED 2026-04-29 per user direction — Wu-Hausman p=0.24 fails to reject OLS-consistency; identifying assumption (heteroskedasticity exogenous to cash equation) not formally validated; insufficient theoretical solidity for §III.E
 
   # H4 family (both sub-tables emitted by run_h4_leverage.py)
   - H4a
@@ -137,5 +137,4 @@ thesis_suites:
   # §4.2 reaction (Full method only) — market channel (H14c spread) + regulatory channel (H18 SEC)
   - H14c.ceo2.decomp
   - H18.ceo2.decomp
-  # §III.E endogeneity — Lewbel 2012 IV only (Death DiD + DWZ FD both dropped 2026-04-29)
-  - H.lewbel.iv
+  # §III.E endogeneity — EMPTY pending new design selection (all three suites dropped 2026-04-29)

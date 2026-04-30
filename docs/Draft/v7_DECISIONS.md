@@ -69,6 +69,26 @@
 
 ## Decisions log (chronological)
 
+### D27 — 2026-04-29 LATE×15 — Lewbel IV dropped entirely; §III.E empty pending new design
+**Trigger:** during teacher-mode walkthrough of remaining endo suite (Lewbel) following D25 + D26. User accepted my honest adversarial assessment: Wu-Hausman p=0.24 fails to reject OLS-consistency; Lewbel's identifying assumption (heteroskedasticity exogenous to cash equation) was not formally validated; the same unobserved factors driving endogeneity in our setting plausibly drive residual heteroskedasticity, which would invalidate the design. Plus: 5× point-estimate gap between OLS and 2SLS not statistically separable from sampling noise.
+
+**Decision:** Lewbel IV removed from v7 entirely. §III.E empty pending new design selection.
+
+**User direction:** "we must look for one real and solid endo test, which addresses the reverse causality problem. the theory needs to be extremely solid, regardless of its findings."
+
+**Implications:**
+- §III.E is empty pending new design choice. Three options live: (a) ARJOA 2004 repatriation cash-shock DiD on speech outcome (tests reverse direction directly), (b) Granger-Sims temporal-precedence VAR test, (c) drop §III.E entirely and rely on main-panel FE ladder + lead-DV.
+- 4 disclosures DROPPED: #8 (Sargan col 3 fail), #9 (Stock-Yogo borderline weak), #10 (Wu-Hausman fail-to-reject), #11 (5× attenuation pattern).
+- Disclosure #21 (Lewbel + Bates not stat-distinguishable) DROPPED.
+- Disclosure #13 RETIRED entirely (no §III.E threats package framing applicable if §III.E empty).
+- Code/data preserved on disk: `src/f1d/econometric/run_h_lewbel_iv_*.py` (or actual filename), `outputs/econometric/h_lewbel_iv_cash/`, `docs/Draft/per_suite/h_lewbel_iv_table.tex`. Bib entry `lewbel2012` STAYS pending decision.
+- `config/suite_render_order.yaml` — `H.lewbel.iv` removed from both `suites:` and `thesis_suites:` lists with comment.
+
+**v7 endo defense after D25 + D26 + D27 (current state):**
+- Main panel: firm FE absorbs time-invariant U + lagged DV + lead DV (4-step FE ladder)
+- §III.E: EMPTY — pending new design proposal
+- Selection threat orphaned (settled in lit)
+
 ### D26 — 2026-04-29 LATE×14 — DWZ FD dropped entirely from v7
 **Trigger:** during teacher-mode walkthrough of remaining endo suites (DWZ FD + Lewbel) following D25's Death DiD drop. User identified the same redundancy pattern that killed Death DiD: DWZ FD addresses "time-invariant unmeasured firm traits" — a threat that firm FE in the main panel ALREADY mathematically absorbs. Within-firm transformation (firm FE) and first-difference produce equivalent identification of β under classical assumptions. No reviewer would credit FD as an endogeneity defense for a threat firm FE already handles.
 
@@ -140,11 +160,11 @@
 **Decision:** Per template line 32-34. One coherent intro narrative — motivation → gap → approach → findings → contributions → roadmap, all in one §I.
 **Implication:** v6 §I had 6 subsections; v7 collapses to one block.
 
-### D15 — 2026-04-29 — §III.E Endogeneity = single Lewbel IV suite (REVISED per D25 + D26)
+### D15 — 2026-04-29 — §III.E Endogeneity = EMPTY pending new design (REVISED per D25 + D26 + D27)
 **Original decision:** 3 panels (Death DiD + DWZ FD + Lewbel IV).
-**Revised 2026-04-29 LATE×13 per D25:** 2 panels (DWZ FD + Lewbel IV). Death DiD dropped.
-**Revised 2026-04-29 LATE×14 per D26:** §III.E becomes single Lewbel IV suite. DWZ FD dropped — redundant with firm FE in the main panel for the time-invariant-firm-trait threat. §III.E is no longer a "composite table" — it's a single regression table for Lewbel IV.
-**Rationale for 1-suite:** firm FE in main panel mathematically absorbs constant-per-firm U; FD adds no new identification angle. Lewbel is the only suite that addresses time-varying confounders + reverse causality + measurement error — threats firm FE does NOT cover. Honest narrow scope.
+**Revised LATE×13 per D25:** 2 panels (DWZ FD + Lewbel IV). Death DiD dropped.
+**Revised LATE×14 per D26:** Single Lewbel IV suite. DWZ FD dropped (redundant with firm FE).
+**Revised LATE×15 per D27:** EMPTY. Lewbel dropped (Wu-Hausman fail; identifying assumption unverified). §III.E pending new design selection per user direction "one real and solid endo test addressing reverse causality with extremely solid theory."
 
 ### D14 — 2026-04-29 — §IV.A title = "Market Information-Asymmetry Channel: Post-Call Bid-Ask Spread"
 **Decision:** §IV.A subsection title locks mechanism-first naming (BGT 2018 + Amihud 2002 anchor).
