@@ -17,7 +17,7 @@
 - [x] Step 2E — endo research brief written for ChatGPT Deep Research outsourcing (`docs/Draft/v7_ENDO_RESEARCH_BRIEF.md`, commit bbf147b; red-team audited, all 10 priority edits applied)
 - [x] Step 2F — endo strategy selection (CLOSED 2026-05-01 per D29+D30+D31; AJCA dropped via DFF 2011 NLM session 17c2f9fc; ACLW 2012 dropped via NLM session a1a6268f; §III.E = H1.2 Unrated × UncResCEO + H1.3 CFvol × UncPreCEO two precautionary triggers + limitation paragraph; no DiD/IV pursued)
 - [ ] Step 2A — per-subsection claim cards (~12-15 cards → v7_CLAIM_CARDS.md) — paused mid-tutorial; needs full restart given §III.E reframe
-- [x] Step 3 — lock narrative anchor (2026-04-30; Option A headline picked + 6-beat contribution paragraph structure populated; beat 6 = endo, PENDING Step 2F)
+- [x] Step 3 — lock narrative anchor (COMPLETE 2026-05-01; all 6 beats locked: Beat 1 headline / Beat 2 DWZ method / Beat 3 two triggers / Beat 4 construct validity / Beat 5 outsider reaction / Beat 6 endogeneity; 7 NLM verbatim verification calls used; D28 per-unit approval honored throughout)
 - [x] Step 4 — archive v6 → `docs/Draft/_archived_v6_2026_04_29/` (2026-04-30; 24 renames via git mv: main.tex/main.pdf/sections/* + 7 v6 design+audit md files; nested `_archived_2026_04_22/` consolidated; build artifacts removed)
 - [ ] Step 5 — scaffold blank v7 LaTeX set (two-column top-journal per template)
 - [ ] Step 6 — populate prose big-picture-first
@@ -104,10 +104,10 @@ The two triggers cover the two load-bearing components of the DWZ 2021 speech-un
 **Trigger:** ChatGPT Deep Research returned Almeida-Campello-Laranjeira-Weisbenner (ACLW) 2012 *Critical Finance Review* "Corporate Debt Maturity and the Real Effects of the 2007 Credit Crisis" as a top DiD candidate after AJCA fell. NotebookLM verification (session a1a6268f) closed against ACLW.
 
 **Verbatim findings:**
-- §2.3 (p.12): "In our base experiment, the outcome variable is the change in firm investment... Investment is defined as the ratio of quarterly capital expenditures (capxy) to the lag of quarterly property, plant and equipment (ppentq)." Cash holdings (cheq) is NOT a regression outcome — only used as a matching control.
+- §2.3: "In our base experiment, the outcome variable is the change in firm investment... Investment is defined as the ratio of quarterly capital expenditures (capxy) to the lag of quarterly property, plant and equipment (ppentq)." Cash holdings (cheq) is NOT a regression outcome — only used as a matching control.
 - Figure 4 ("How Did Treated Firms Pay Off Their Debt?"): treated firms REDUCED cash holdings during the post-shock window (Q1-Q3 2008 vs Q1-Q3 2007) to pay maturing long-term debt.
 - §4.3.1 + Table 6: parallel trends evidence is on INVESTMENT only — not on cash or speech uncertainty.
-- Treated definition (§2.3 p.14): dd1/(dd1+dltt) > 20% (15%/25% robustness). 86 treated, 79 unique controls. Pre = Q1-Q3 2007, Post = Q1-Q3 2008, cutoff = Q4 2007 (BNP Paribas SIV run, August 2007).
+- Treated definition (§2.3): dd1/(dd1+dltt) > 20% (15%/25% robustness). 86 treated, 79 unique controls. Pre = Q1-Q3 2007, Post = Q1-Q3 2008, cutoff = Q4 2007 (BNP Paribas SIV run, August 2007).
 
 **Decision:** ACLW 2012 design dropped from v7 endo strategy search.
 
@@ -119,8 +119,8 @@ The two triggers cover the two load-bearing components of the DWZ 2021 speech-un
 **Trigger:** ChatGPT Deep Research returned the American Jobs Creation Act 2004 (HIA §965) repatriation tax holiday as a top-tier endo candidate (top-tier anchor: Dharmapala-Foley-Forbes 2011 *Journal of Finance*). User asked NLM verification on the cash-response question. NotebookLM session 17c2f9fc on DFF 2011 "Watch What I Do, Not What I Say" closed against AJCA.
 
 **Verbatim findings:**
-- §V.A Footnote 26 (p.772-773): cash holdings did NOT increase in 2005 alone post-AJCA, in either the full sample or the financially-constrained subsample.
-- §V.B Footnote 30 (p.775): three-year average 2005-2007 cash holdings showed NO increase post-AJCA in either subsample (full or financially-constrained).
+- §V.A Footnote 26: cash holdings did NOT increase in 2005 alone post-AJCA, in either the full sample or the financially-constrained subsample.
+- §V.B Footnote 30: three-year average 2005-2007 cash holdings showed NO increase post-AJCA in either subsample (full or financially-constrained).
 
 **Decision:** AJCA dropped from v7 endo strategy search.
 
@@ -222,7 +222,7 @@ The two triggers cover the two load-bearing components of the DWZ 2021 speech-un
 **Format example:** **Hypothesis 1.** *An increase in CEO speech uncertainty during an earnings call is associated with a higher cash-to-assets ratio at the firm.*
 
 ### D18 — 2026-04-29 — §IV.B title = "Disclosure-Insufficiency Channel: CCCL"
-**Verbatim source:** Lerman, Steffen, Zhang (2026?, NLM session 3f2ff407). Abstract: "the SEC primarily references these voluntary disclosures to illustrate **insufficiencies** and, less commonly, **inconsistencies** in mandatory filings". §3.2 p.5: 80% of CCCLs flag insufficient disclosure; 15% flag inconsistent info; 3% concern call disclosures themselves.
+**Verbatim source:** Lerman, Steffen, Zhang (2026?, NLM session 3f2ff407). Abstract: "the SEC primarily references these voluntary disclosures to illustrate **insufficiencies** and, less commonly, **inconsistencies** in mandatory filings". §3.2: 80% of CCCLs flag insufficient disclosure; 15% flag inconsistent info; 3% concern call disclosures themselves.
 **Decision:** §IV.B subsection title = "Disclosure-Insufficiency Channel: Conference-Call Comment Letter (CCCL)". Mechanism: SEC reviewers reference the call to flag gaps in mandatory filings.
 **Variable form:** binary indicator, linear probability model. Sample 2005-2018 AA, n=13,808 / 3,902 firms.
 **v6 framing correction:** v6 §4.2.2 said "we measure SEC scrutiny via CCCL" — empirically loose. CCCL doesn't measure scrutiny generically; it measures specifically whether SEC references the call to flag disclosure-gap (80% of CCCLs).
@@ -369,7 +369,7 @@ Template mandates two-column traditional fin/econ design. Tables are wide (12 co
 
 ---
 
-## Narrative anchor (Step 3 — IN PROGRESS 2026-04-30)
+## Narrative anchor (Step 3 — COMPLETE 2026-05-01)
 
 ### Beat 1 — Headline contribution sentence (APPROVED 2026-04-30; Option A)
 
@@ -387,6 +387,89 @@ Template mandates two-column traditional fin/econ design. Tables are wide (12 co
 - Beat 6 — Endogeneity defense (PENDING Step 2F).
 
 Each remaining beat (2 through 6) requires individual approval per D28 before its sentence content is written below.
+
+### Beat 2 — Methodological provenance (APPROVED 2026-05-01; "method" version)
+
+> Our measurement is built on the CEO speech-uncertainty method of Dzielinski, Wagner, and Zeckhauser (2021), which we extend from market reactions, analyst behavior, firm performance, and governance outcomes to firm financing-policy outcomes.
+
+**Reuse target:** second sentence of §I Introduction; same wording acceptable in Abstract.
+
+**NLM verbatim verified 2026-05-01** (2 calls, F1D notebook):
+- Call 1 (outcome scope) — DWZ tests 9 outcomes (ACAR01, AbnVol, AnResp, CAR01, CAR260, ∆Tobin's Q, ∆ROA, ∆MedRec, ∆Comp) covering market reactions / analyst behavior / firm performance / governance/CEO-compensation. Financing-policy outcomes (cash, leverage, capex, R&D, dividends, repurchases, debt issue, equity issue, working capital, hedging) NOT tested as DV AND not used as controls. Future-work in DWZ §6 anticipates ML/psychology/behavioral directions, NOT firm-policy applications.
+- Call 2 (architecture verbatim) — DWZ §1 verbatim: "Our analysis is the first to explicitly decompose an important feature of CEO communication into TWO components: personal style and the potentially strategic component (the residual)". DWZ describes UncPreCEO as a CONTROL variable in Eq. 4, NOT as a third decomposition component. DWZ uses "method", "approach", "procedure" verbatim. DWZ invites extension §1 verbatim: "Our method can be employed to study the existence and relevance of style in other speech characteristics."
+
+**Drift caught 2026-05-01:** prior locked memory (`project_dwz_anchored_framing_locked_2026_04_27.md` line 38) used "three-component" framing — author paraphrase, NOT DWZ verbatim. Beat 2 wording switched from "decomposition" to "method" to align with DWZ's own architecture language. Memory note pending update.
+
+**UncResCEO honest-disclosure obligations** (load-bearing for §III.E + §V.2 Limitations downstream — NOT Beat 2 itself):
+- §1 verbatim: "residual use of uncertainty words... explains little of the market reaction".
+- §5.2 verbatim: "neither UncPreCEO nor UncResCEO is significantly associated with stock price or volume responses".
+- §5.3 verbatim: "no corresponding effect for the interactions with UncPreCEO and UncResCEO".
+
+**Methodological-extension disclosure pending §II.3:** UncPreCEO is repurposed from DWZ's control to our IV. To disclose in Estimation of Main Variables.
+
+### Beat 3 — Two-trigger amplification (APPROVED 2026-05-01; Option A)
+
+> The cash response amplifies under both financing-friction and cash-flow-volatility stress, consistent with a single precautionary channel triggered by two distinct stress conditions (Almeida, Campello, and Weisbach, 2004; Han and Qiu, 2007).
+
+**Reuse target:** third sentence of §I Introduction; can be tightened for Abstract.
+
+**NLM verbatim verified 2026-05-01** (3 calls, F1D notebook):
+- ACW 2004 authors verified — **Almeida, Campello, and Weisbach** (NOT Acharya). Title "The Cash Flow Sensitivity of Cash". Theoretical prediction §I.C verbatim: positive cash-flow sensitivity of cash for constrained firms; null for unconstrained. Recession asymmetry §Intro verbatim. Constraint schemes #1-#5 (payout / size / bond ratings / commercial paper / KZ index) — our Unrated proxy = Scheme #3.
+- Han-Qiu 2007 — Title "Corporate precautionary cash holdings". §1 verbatim: "This precautionary motive of cash holding creates a positive relationship between cash holdings and cash flow volatility... for a financially constrained firm." CFvol construction §3 verbatim: 16-quarter coefficient of variation = StdDev(OCF) / |Mean(OCF)|.
+- Bates-Kahle-Stulz 2009 — §I verbatim ANCHORS our two-trigger framing: "OPSW find that firms with riskier cash flows AND poor access to external capital hold more cash." Bates explicitly bundles BOTH drivers under the SAME precautionary motive. OPSW 1999 cited as foundational anchor (§I + §IV + §VII verbatim).
+
+**Drift caught 2026-05-01:** prior endo-handoff prose (`project_session_2026_04_30_endo_h1_2_locked.md`) used "Acharya, Almeida, Campello (ACW) 2004" — author drift. Correct authors are **Almeida, Campello, and Weisbach (2004 JF)**. Reference filename in memory was correct; only prose abbreviation drifted. Memory note pending update.
+
+**Verbatim caveat:** ACW 2004 does NOT use "precautionary" verbatim — uses synonyms ("safeguard against future investment needs"; "hedging future cash flows"; "hoarding cash under financial constraints"). The "precautionary channel" framing in Beat 3 anchors on Bates 2009 + Han-Qiu 2007 (both verbatim "precautionary"); ACW 2004 anchors the constrained-vs-unconstrained ASYMMETRY/TRIGGER, not the precautionary label itself.
+
+**Beat 1 retroactive verification:** Bates 2009 NLM Call 3 confirms OPSW 1999 + Bates 2009 are valid precautionary anchors for Beat 1 headline.
+
+### Beat 4 — Construct validity (APPROVED 2026-05-01; Option A)
+
+> External uncertainty drivers covary with the speech-uncertainty measure in the predicted directions, supporting its construct validity.
+
+**Reuse target:** fourth sentence of §I Introduction; can be tightened for Abstract.
+
+**NLM verbatim verified 2026-05-01** (5 calls cumulative; Calls 4 + 5 covered driver anchors):
+- Hassan, Hollander, van Lent, and Tahoun (2019 QJE; print 2020 Vol. 135) — "Firm-Level Political Risk: Measurement and Effects". §III.A verbatim PRisk formula. §III verbatim: "this measure can be interpreted as a proxy for the political risk and **uncertainty** individual firms face." Validation outcomes (firm-level): stock return volatility, investment cuts, capex cuts, hiring cuts, political donations + lobbying.
+- Baker, Bloom, and Davis (2016 QJE Vol. 131 Issue 4) — "Measuring Economic Policy Uncertainty". Abstract verbatim: "We develop a new index of economic policy **uncertainty** (EPU) based on newspaper coverage frequency."
+- Davis (2016 NBER WP 22740, single author) — "An Index of Global Economic Policy Uncertainty". §III verbatim: "GDP-weighted average of the 16 national EPU index values."
+- Hoberg and Phillips (2016 JPE Vol. 124 No. 5) — "Text-Based Network Industries and Endogenous Product Differentiation". §III verbatim TNIC product-cosine-similarity formula. Verbatim characterization of measure as capturing **competition** and **rivals**: "this result suggests that information in the text-based network classification is informative regarding the presence of firms that managers themselves perceive to actually be **rivals**."
+
+**No in-line citations in Beat 4 §I sentence** — anchors deferred to §II.5 Specification and Measurement of Key Constructs (per D5: drivers live in §II.5 construct-validity slot). All 4 anchors above are NLM-verbatim verified for §II.5 prose population (Step 6).
+
+**Citation drift caught 2026-05-01:** locked memory `project_dwz_anchored_framing_locked_2026_04_27.md` line 58 listed "Hassan et al. 2020" — defensible (print year) but endo handoff used 2019 (online year). Standardize to **2019** for consistency with QJE convention. Memory note pending update.
+
+### Beat 5 — Outsider reaction (APPROVED 2026-05-01; Option A)
+
+> Outsider-reaction tests show that post-call bid-ask spreads widen and SEC conference-call comment letters reference the same speech signal, corroborating the precautionary interpretation through market information-asymmetry and disclosure-insufficiency channels (Lerman, Steffen, and Zhang, 2026).
+
+**Reuse target:** fifth sentence of §I Introduction; can be tightened for Abstract.
+
+**NLM verbatim verified 2026-05-01** (7 calls cumulative; Calls 6 + 7):
+- Bushee, Gow, and Taylor (2018) "Linguistic Complexity in Firm Disclosures: Obfuscation or Information?" — *Journal of Accounting Research* 56(1), March 2018. §3.3 verbatim 25-day post-call illiquidity window: "the period starting the day of the call and ending 25 trading days subsequent to the call." §1 Introduction verbatim presentation-vs-Q&A asymmetry: "we separately examine the presentation and the response portions of the call" + "positive relation between managerial Fog in the presentation and information asymmetry. However, we find a negative relation between managerial Fog in the response and information asymmetry." Uses Amihud (2002) illiquidity construct verbatim §3.3.
+- Lerman, Steffen, and Zhang (2026) "Earnings Conference Calls and the SEC Comment Letter Process" — *Management Science*, Articles in Advance January 30, 2026. §3.2 verbatim CCCL classification breakdown: 80% insufficient disclosure; 15% inconsistent information; 3% disclosure in conference call itself; 2% both filing and call. §4.4.3 verbatim: "Receiving a CCCL constitutes a shock to a firm's perceptions of how the SEC scrutinizes its voluntary disclosure choices." §5 Conclusion verbatim: "this type of regulatory scrutiny has a material impact on the filing review process, firms' future mandatory disclosures, and the information environment."
+
+**Methodology disclosure pending §IV.A:** BGT 2018 uses Amihud illiquidity; our pipeline uses bid-ask spread (related but distinct microstructure proxy). We adopt BGT's 25-day post-call window + Pres-vs-Q&A asymmetry framework but substitute bid-ask spread for Amihud illiquidity. To disclose in §IV.A.
+
+**Page-number policy from 2026-05-01 onward:** NLM aggregates page numbers across multiple sources in F1D notebook → unreliable. Section refs only in verification notes; no page numbers cited from NLM responses. (Page numbers stripped from earlier Beat 2-4 + §III.E verification notes 2026-05-01 cleanup.)
+
+### Beat 6 — Endogeneity defense (APPROVED 2026-05-01; Option B)
+
+> Reverse causality is addressed via cross-sectional modus tollens on the two precautionary triggers (Almeida, Campello, and Weisbach, 2004; Han and Qiu, 2007), with the limitation that no exogenous-shock identification is pursued.
+
+**Reuse target:** sixth sentence of §I Introduction; Abstract may compress further or omit.
+
+**Anchors verified earlier in session:** ACW 2004 + Han-Qiu 2007 NLM-verified (Beat 3 verification block).
+
+**Substantive content fully governed by D29 + D30 + D31 (decisions log):**
+- D31: §III.E body = H1.2 Unrated × UncResCEO (financing-friction trigger; ACW 2004) + H1.3 HighCFvol × UncPreCEO (CF-volatility trigger; Han-Qiu 2007). Six DiD/IV designs dropped during search (Death/DWZ-FD/Lewbel/Weather/AJCA/ACLW).
+- D29: AJCA dropped (DFF 2011 verbatim — cash unchanged post-shock; no first stage).
+- D30: ACLW 2012 dropped (dual-mechanism contamination — treated firms reduced cash to pay debt while speech rose via refinancing pressure).
+
+**§III.E + §V.2 Limitations expansions (downstream):** the 6-dropped-design list + 8-element future-DiD requirement set + Hassan 2019 QJE flag are §III.E body / §V.2 Limitations content per D31, NOT compressed into §I Beat 6 itself.
+
+**Methodological disclosure pending §III.D:** Han-Qiu 2007 prediction requires double-conditioning (HighCFvol × constrained firm). Our H1.3 conditions only on CFvol (no constraint interaction) — to disclose in §III.D.
 
 ---
 
