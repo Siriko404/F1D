@@ -17,7 +17,7 @@
 - [x] Step 2E — endo research brief written for ChatGPT Deep Research outsourcing (`docs/Draft/v7_ENDO_RESEARCH_BRIEF.md`, commit bbf147b; red-team audited, all 10 priority edits applied)
 - [ ] **Step 2F — endo strategy selection (PAUSED — user branched off to run ChatGPT Deep Research; will return with summary for adversarial audit + discussion + selection + NLM-verify + build)**
 - [ ] Step 2A — per-subsection claim cards (~12-15 cards → v7_CLAIM_CARDS.md) — paused mid-tutorial; needs full restart given §III.E reframe
-- [ ] Step 3 — lock narrative anchor (advisor F5: workshop headline contribution sentence)
+- [x] Step 3 — lock narrative anchor (2026-04-30; Option A headline picked + 6-beat contribution paragraph structure populated; beat 6 = endo, PENDING Step 2F)
 - [x] Step 4 — archive v6 → `docs/Draft/_archived_v6_2026_04_29/` (2026-04-30; 24 renames via git mv: main.tex/main.pdf/sections/* + 7 v6 design+audit md files; nested `_archived_2026_04_22/` consolidated; build artifacts removed)
 - [ ] Step 5 — scaffold blank v7 LaTeX set (two-column top-journal per template)
 - [ ] Step 6 — populate prose big-picture-first
@@ -71,6 +71,21 @@
 ---
 
 ## Decisions log (chronological)
+
+### D28 — 2026-04-30 — Per-unit approval for thesis design + prose
+**Trigger:** Step 3 unilateral 6-beat write-up triggered user pushback; advisor flagged beat decomposition itself as unapproved content; user clarified scope: "the design and the architecture of the draft also. the entire writing process must keep me in the loop closely."
+**Decision:** All thesis-related substantive work requires per-unit user approval before I write to file or commit. Includes:
+- Prose content (sentences, paragraphs, abstract, headlines)
+- Section/subsection structure (ordering, naming, titling)
+- Decomposition units (e.g., 5-beat vs 3-beat narrative anchor)
+- Scaffold/architecture (LaTeX file organization, layouts)
+- Workflow/process changes affecting writing
+
+**Pattern:** I draft 1-2 candidates + D-anchors → user picks/modifies/rejects via AskUserQuestion → only approved content written → next unit.
+
+**Out of scope (no per-unit approval needed):** trivial maintenance edits only — marking [x] in process tracker, updating tracker line text, fixing typos within already-approved prose, transcribing user picks already made via AskUserQuestion into v7_DECISIONS.md, recording new D-decisions whose substance the user has already articulated in chat.
+
+**Scope refs:** "all future prose work" + "draft writing ONLY, should be with my one by one approval" + "design and architecture of the draft also. the entire writing process must keep me in the loop closely" (user pick chain 2026-04-30).
 
 ### D27 — 2026-04-29 LATE×15 — Lewbel IV dropped entirely; §III.E empty pending new design
 **Trigger:** during teacher-mode walkthrough of remaining endo suite (Lewbel) following D25 + D26. User accepted my honest adversarial assessment: Wu-Hausman p=0.24 fails to reject OLS-consistency; Lewbel's identifying assumption (heteroskedasticity exogenous to cash equation) was not formally validated; the same unobserved factors driving endogeneity in our setting plausibly drive residual heteroskedasticity, which would invalidate the design. Plus: 5× point-estimate gap between OLS and 2SLS not statistically separable from sampling noise.
@@ -297,9 +312,24 @@ Template mandates two-column traditional fin/econ design. Tables are wide (12 co
 
 ---
 
-## Narrative anchor (Step 3 — pending)
+## Narrative anchor (Step 3 — IN PROGRESS 2026-04-30)
 
-(populated after structure + findings locked)
+### Beat 1 — Headline contribution sentence (APPROVED 2026-04-30; Option A)
+
+> We document that within-firm increases in CEO speech uncertainty during earnings calls predict higher precautionary cash holdings, identifying a real-time signal of firm financing-policy adjustment grounded in the precautionary cash motive (Opler, Pinkowitz, Stulz, and Williamson, 1999; Bates, Kahle, and Stulz, 2009).
+
+**Reuse target:** opening sentence of §I Introduction; minor tightening permitted for Abstract.
+
+### Decomposition (APPROVED 2026-04-30 — 5 beats; user pick via AskUserQuestion)
+
+- Beat 1 — Headline (LOCKED above; Option A).
+- Beat 2 — Methodological provenance (DWZ 2021 extension framing).
+- Beat 3 — Two-trigger amplification (single precautionary channel).
+- Beat 4 — Construct validity (external uncertainty drivers).
+- Beat 5 — Outsider reaction (market + regulatory channels).
+- Beat 6 — Endogeneity defense (PENDING Step 2F).
+
+Each remaining beat (2 through 6) requires individual approval per D28 before its sentence content is written below.
 
 ---
 
