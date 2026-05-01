@@ -13,9 +13,9 @@
 - [x] Step 1 — lock thesis structure (D1-D27 below)
 - [x] Step 2C — Lerman pub year verification (lerman2024 → lerman2026, commit e6aba60)
 - [x] Step 2B — disclosures inventory (now 11 active + 13 dropped + 2 retired after D25-D27)
-- [x] Step 2D — §III.E endogeneity scrub (D25-D27 dropped Death DiD + DWZ FD + Lewbel IV; §III.E EMPTY pending new design)
+- [x] Step 2D — §III.E endogeneity scrub (D25-D27 dropped Death DiD + DWZ FD + Lewbel IV; SUPERSEDED by D29+D30+D31 — §III.E populated with H1.2 + H1.3 two-trigger modus-tollens close)
 - [x] Step 2E — endo research brief written for ChatGPT Deep Research outsourcing (`docs/Draft/v7_ENDO_RESEARCH_BRIEF.md`, commit bbf147b; red-team audited, all 10 priority edits applied)
-- [ ] **Step 2F — endo strategy selection (PAUSED — user branched off to run ChatGPT Deep Research; will return with summary for adversarial audit + discussion + selection + NLM-verify + build)**
+- [x] Step 2F — endo strategy selection (CLOSED 2026-05-01 per D29+D30+D31; AJCA dropped via DFF 2011 NLM session 17c2f9fc; ACLW 2012 dropped via NLM session a1a6268f; §III.E = H1.2 Unrated × UncResCEO + H1.3 CFvol × UncPreCEO two precautionary triggers + limitation paragraph; no DiD/IV pursued)
 - [ ] Step 2A — per-subsection claim cards (~12-15 cards → v7_CLAIM_CARDS.md) — paused mid-tutorial; needs full restart given §III.E reframe
 - [x] Step 3 — lock narrative anchor (2026-04-30; Option A headline picked + 6-beat contribution paragraph structure populated; beat 6 = endo, PENDING Step 2F)
 - [x] Step 4 — archive v6 → `docs/Draft/_archived_v6_2026_04_29/` (2026-04-30; 24 renames via git mv: main.tex/main.pdf/sections/* + 7 v6 design+audit md files; nested `_archived_2026_04_22/` consolidated; build artifacts removed)
@@ -71,6 +71,62 @@
 ---
 
 ## Decisions log (chronological)
+
+### D31 — 2026-05-01 — §III.E closed with two precautionary triggers (H1.2 Unrated + H1.3 CFvol); DiD search abandoned; rest acknowledged as limitation
+**Trigger:** After 6 endo strategies dropped (Death/DWZ-FD/Lewbel/Weather/AJCA/ACLW) and a survey of remaining DiD candidates (Hassan 2019 QJE political-risk text, Brexit, 9/11 geographic, hurricanes) showed each likely fails the dual-mechanism contamination test — requirement 2 of the DiD requirement set: shock must operate through speech as a narrow channel, not in parallel with a direct-on-cash mechanism — user closed the endo search.
+
+User: "no need. we will close the endo section with the two precautionary triggers we found significant and recognize the rest as limitation."
+
+**Decision:** §III.E body presents two pre-existing modus-tollens precautionary triggers as the endogeneity defense:
+
+- **H1.2 Unrated × UncResCEO** — financing-constraint precautionary trigger anchored Acharya-Almeida-Campello (ACW) 2004 cash-flow sensitivity asymmetry. Empirical: UncAnsMgr_c × Unrated contemp 4/4 + lead 4/4 cells significant p<0.05 (β +0.004 to +0.011); UncAnsCEO_c × Unrated robustness contemp 4/4 sig (`_partition_findings.csv`).
+- **H1.3 CFvol × UncPreCEO** — cash-flow-volatility precautionary trigger anchored Han-Qiu 2007 16-quarter CV(CF). Empirical: UncPreCEO_c × HighCFvol contemp β=0.0048 p=0.026 sig (`outputs/econometric/h1_3_cfvol_moderation/2026-04-29_142744/regression_results_col5.txt`); UncResCEO × HighCFvol null (β=0.0004, p=0.86).
+
+The two triggers cover the two load-bearing components of the DWZ 2021 speech-uncertainty decomposition: H1.2 forward-direction defense on the **Residual** component (UncResCEO) via constraint amplification; H1.3 forward-direction defense on the **Presentation** component (UncPreCEO) via volatility amplification. Together, the construct's two empirical pieces each carry a separate forward-direction sign-test under modus tollens.
+
+**No DiD test pursued.** Remaining candidates (Hassan 2019 QJE, Brexit, 9/11, hurricanes) are NOT NLM-verified, and the dual-mechanism risk on each is high enough that further search is judged not cost-effective.
+
+**Limitation language (load-bearing for §III.E body or §V.2 Limitations):**
+- Forward speech→cash direction is identified via cross-sectional modus tollens on two pre-registered precautionary triggers, not via an exogenous-shock DiD or external instrument.
+- Six DiD/IV designs were considered and dropped: Death DiD [D25], DWZ first-difference [D26], Lewbel heteroskedasticity-IV [D27], weather-shock, AJCA repatriation [D29], ACLW long-term-debt-maturity [D30]; each failed for design-specific reasons documented in those D-entries.
+- Any future-work DiD-as-IV defense compatible with our forward identification must satisfy the full requirement set: (i) exogenous to firm cash policy, (ii) narrow speech channel — not parallel with a separate direct-on-cash mechanism, (iii) direction-compatibility on any non-speech channels, (iv) first-stage on speech actually fires, (v) cross-sectional intensity variation, (vi) parallel trends on cash AND speech, (vii) top-tier anchor (JF/JFE/RFS/AER/JPE/QJE/JAR/JAE/RAST/CAR/ReStud/JoE/JBES/ReStat/ManSci), (viii) adequate treated-firm count.
+- Hassan-Hollander-vanLent-Tahoun 2019 *QJE* political-risk text data × 2016 election interaction is the strongest a-priori remaining candidate but is not pursued in this paper.
+
+**Implications:**
+- §III.E body prose draft requires Beat-6 narrative anchor + per-unit approval before writing (per D28).
+- D15 ("§III.E EMPTY pending new design") superseded LATE×16 (revised entry below).
+- v7_DISCLOSURES_INVENTORY.md disclosure #13 reframes once more: "Forward direction identified via cross-sectional modus tollens on two precautionary triggers; no DiD or IV pursued; six candidate designs dropped during search."
+- Step 2F closed in process tracker (above).
+
+**Memory:** `project_session_2026_04_30_endo_h1_2_locked.md` updated post-decision; `MEMORY.md` index entry refreshed.
+
+### D30 — 2026-04-30 — ACLW 2012 long-term-debt-maturity DiD dropped (dual-mechanism contamination)
+**Trigger:** ChatGPT Deep Research returned Almeida-Campello-Laranjeira-Weisbenner (ACLW) 2012 *Critical Finance Review* "Corporate Debt Maturity and the Real Effects of the 2007 Credit Crisis" as a top DiD candidate after AJCA fell. NotebookLM verification (session a1a6268f) closed against ACLW.
+
+**Verbatim findings:**
+- §2.3 (p.12): "In our base experiment, the outcome variable is the change in firm investment... Investment is defined as the ratio of quarterly capital expenditures (capxy) to the lag of quarterly property, plant and equipment (ppentq)." Cash holdings (cheq) is NOT a regression outcome — only used as a matching control.
+- Figure 4 ("How Did Treated Firms Pay Off Their Debt?"): treated firms REDUCED cash holdings during the post-shock window (Q1-Q3 2008 vs Q1-Q3 2007) to pay maturing long-term debt.
+- §4.3.1 + Table 6: parallel trends evidence is on INVESTMENT only — not on cash or speech uncertainty.
+- Treated definition (§2.3 p.14): dd1/(dd1+dltt) > 20% (15%/25% robustness). 86 treated, 79 unique controls. Pre = Q1-Q3 2007, Post = Q1-Q3 2008, cutoff = Q4 2007 (BNP Paribas SIV run, August 2007).
+
+**Decision:** ACLW 2012 design dropped from v7 endo strategy search.
+
+**Rationale:** Our forward story is precautionary cash hoarding (speech↑ → cash↑). ACLW shock simultaneously (a) raises CEO speech uncertainty via refinancing pressure AND (b) FORCES cash deployment via the SEPARATE channel of paying maturing debt. Cash moves OPPOSITE the predicted precautionary direction; the two channels run in opposite directions through SEPARATE mechanisms — refinancing-pressure effect on language vs forced-deployment effect on balance sheet. Adapting ACLW for our question contaminates the speech→cash identification with a non-speech channel pulling cash the other way. Additionally: CFR is not in the stated top-tier list (JF/JFE/RFS/AER/JPE/QJE/JAR/JAE/RAST/CAR/ReStud/JoE/JBES/ReStat/ManSci) — yellow flag preceding the verbatim finding.
+
+**Memory references:** `reference_almeida_campello_laranjeira_weisbenner_2012_verbatim.md`; NLM session a1a6268f.
+
+### D29 — 2026-04-30 — AJCA 2004 repatriation tax shock dropped (DFF 2011 cash null)
+**Trigger:** ChatGPT Deep Research returned the American Jobs Creation Act 2004 (HIA §965) repatriation tax holiday as a top-tier endo candidate (top-tier anchor: Dharmapala-Foley-Forbes 2011 *Journal of Finance*). User asked NLM verification on the cash-response question. NotebookLM session 17c2f9fc on DFF 2011 "Watch What I Do, Not What I Say" closed against AJCA.
+
+**Verbatim findings:**
+- §V.A Footnote 26 (p.772-773): cash holdings did NOT increase in 2005 alone post-AJCA, in either the full sample or the financially-constrained subsample.
+- §V.B Footnote 30 (p.775): three-year average 2005-2007 cash holdings showed NO increase post-AJCA in either subsample (full or financially-constrained).
+
+**Decision:** AJCA dropped from v7 endo strategy search.
+
+**Rationale:** Forward story (CEO speech uncertainty → cash) requires the shock to MOVE cash holdings post-treatment so a first stage can identify the speech→cash arrow. DFF 2011 — the load-bearing public-finance paper on AJCA outcomes — verbatim shows cash did not move at any horizon (single-year or three-year) in any subsample. No cash response = no first stage available = AJCA cannot identify the speech→cash arrow even in principle.
+
+**Memory references:** NLM session 17c2f9fc; locked memory `project_session_2026_04_30_endo_h1_2_locked.md`.
 
 ### D28 — 2026-04-30 — Per-unit approval for thesis design + prose
 **Trigger:** Step 3 unilateral 6-beat write-up triggered user pushback; advisor flagged beat decomposition itself as unapproved content; user clarified scope: "the design and the architecture of the draft also. the entire writing process must keep me in the loop closely."
@@ -178,11 +234,12 @@
 **Decision:** Per template line 32-34. One coherent intro narrative — motivation → gap → approach → findings → contributions → roadmap, all in one §I.
 **Implication:** v6 §I had 6 subsections; v7 collapses to one block.
 
-### D15 — 2026-04-29 — §III.E Endogeneity = EMPTY pending new design (REVISED per D25 + D26 + D27)
+### D15 — 2026-04-29 — §III.E Endogeneity = H1.2 + H1.3 two precautionary triggers (REVISED per D25 + D26 + D27 + D29 + D30 + D31)
 **Original decision:** 3 panels (Death DiD + DWZ FD + Lewbel IV).
 **Revised LATE×13 per D25:** 2 panels (DWZ FD + Lewbel IV). Death DiD dropped.
 **Revised LATE×14 per D26:** Single Lewbel IV suite. DWZ FD dropped (redundant with firm FE).
 **Revised LATE×15 per D27:** EMPTY. Lewbel dropped (Wu-Hausman fail; identifying assumption unverified). §III.E pending new design selection per user direction "one real and solid endo test addressing reverse causality with extremely solid theory."
+**Revised 2026-05-01 LATE×16 per D29 + D30 + D31:** §III.E populated with H1.2 Unrated × UncResCEO (ACW 2004 modus tollens; Res-component forward-direction defense) + H1.3 CFvol × UncPreCEO (Han-Qiu 2007 modus tollens; Pre-component forward-direction defense). Two precautionary triggers cover the two load-bearing components of the DWZ speech-uncertainty decomposition. No DiD or IV pursued; six candidate DiD/IV designs dropped during search (D25-D27 + Weather + D29 + D30); limitation language explicit in body. Step 2F closed.
 
 ### D14 — 2026-04-29 — §IV.A title = "Market Information-Asymmetry Channel: Post-Call Bid-Ask Spread"
 **Decision:** §IV.A subsection title locks mechanism-first naming (BGT 2018 + Amihud 2002 anchor).
