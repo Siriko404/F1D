@@ -407,8 +407,19 @@ Each remaining beat (2 through 6) requires individual approval per D28 before it
 
 **Methodological-extension disclosure pending §II.3:** UncPreCEO is repurposed from DWZ's control to our IV. To disclose in Estimation of Main Variables.
 
-### Beat 3 — Two-trigger amplification (APPROVED 2026-05-01; Option A)
+### Beat 3 — Two-trigger amplification (RE-LOCKED 2026-05-01 v2; Option B "robustly + conditionally")
 
+**Original v1 approval (Option A) superseded** after H1.3 FE-dependence audit revealed asymmetric robustness:
+- H1.2 Mgr × Unrated interaction: 8/8 cells sig p<0.05 across firm + industry FE (robust).
+- H1.3 UncPreCEO × HighCFvol interaction: 4/8 sig p<0.10 — INDUSTRY FE ONLY; firm FE specs all null (conditional).
+- H1.3 UncResCEO × HighCFvol interaction: 2/8 sig p<0.10 (lead-DV industry FE only).
+
+v1 "amplifies under both" framing glossed over the H1.3 FE-conditional pattern. v2 makes the asymmetry explicit.
+
+**v2 (LOCKED):**
+> The cash response amplifies robustly under financing-friction stress and conditionally under cash-flow-volatility stress, consistent with a single precautionary channel triggered by two distinct stress conditions (Almeida, Campello, and Weisbach, 2004; Han and Qiu, 2007).
+
+**v1 (SUPERSEDED, kept for audit trail):**
 > The cash response amplifies under both financing-friction and cash-flow-volatility stress, consistent with a single precautionary channel triggered by two distinct stress conditions (Almeida, Campello, and Weisbach, 2004; Han and Qiu, 2007).
 
 **Reuse target:** third sentence of §I Introduction; can be tightened for Abstract.
