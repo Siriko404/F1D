@@ -20,7 +20,7 @@
 - [x] Step 3 — lock narrative anchor (COMPLETE 2026-05-01; all 6 beats locked: Beat 1 headline / Beat 2 DWZ method / Beat 3 two triggers / Beat 4 construct validity / Beat 5 outsider reaction / Beat 6 endogeneity; 7 NLM verbatim verification calls used; D28 per-unit approval honored throughout)
 - [x] Step 4 — archive v6 → `docs/Draft/_archived_v6_2026_04_29/` (2026-04-30; 24 renames via git mv: main.tex/main.pdf/sections/* + 7 v6 design+audit md files; nested `_archived_2026_04_22/` consolidated; build artifacts removed)
 - [x] Step 5 — scaffold blank v7 LaTeX set (COMPLETE 2026-05-01; main.tex + 6 sections/ files; v6 preamble copied + Roman-numeral renewcommand added; appendix_c_robustness drop; first compile 27pp 0 errors; 2 minor apacite warnings (no address in dzielinski2021 + ghafoor2023))
-- [ ] Step 6 — populate prose big-picture-first
+- [ ] Step 6 — populate prose big-picture-first (§I COMPLETE 2026-05-01; §II-V pending)
 - [ ] Step 7 — wire generated tables + variable definitions appendix + bibliography
 - [ ] Step 8 — compile + audit + commit
 
