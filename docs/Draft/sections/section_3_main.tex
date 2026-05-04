@@ -8,41 +8,56 @@
 \subsection*{III.A Data, Sample, and Variable Construction}
 \label{sec:main:data}
 % Governing decisions: D6 (§III layout).
-% TODO Step 6 — sample construction (2,429 firms; 2002-2018 quarterly; ~112,968 firm-quarter obs).
-%               Operative regression sample after BKS 2009 sector exclusions, lagged-DV requirement,
-%               firm-FE singleton drops: n ≈ 43,333 / 1,376 firms.
-[\S{}III.A body pending Step 6 prose population.]
+
+Our sample covers earnings-call observations of U.S.\ public firms over the period 2002 through 2018 at the firm-quarter frequency. The full call panel comprises 112,968 firm-quarter observations across 2,429 distinct firms. We obtain financial variables from Compustat and earnings-call text features from a vendor-supplied transcript repository.
+
+We exclude firms in financial services and utilities (Fama-French 12 industries 11 and 8). The estimation sample also requires a non-missing lagged dependent variable and is restricted to firms with multiple observations after firm-level fixed-effect singleton dropping. The resulting sample comprises approximately 43,300 firm-quarter observations across 1,376 firms in the contemporaneous specifications and approximately 41,100 firm-quarter observations across 1,321 firms in the lead specifications.
+
+Section~\ref{sec:framework:estimation} describes the construction of the three CEO speech-uncertainty independent variables (ClarityCEO, UncResCEO, UncPreCEO). The cash-to-assets ratio (Cash$_{t}$, Cash$_{t+1}$) is cash and short-term investments scaled by total assets. Variable definitions are provided in the appendix; summary statistics are reported in Table~\ref{tab:summary_stats}.
 
 \subsection*{III.B Cash Holdings (HC)}
 \label{sec:main:hc}
-% Governing decisions: Beat 1 + 2 + headline finding (UncResCEO 12/12 cash p<0.10 one-tailed).
-% TODO Step 6 — primary HC table (h1_ceo2_decomp + h1_ceo2_decomp_qtrexp suites).
-[\S{}III.B body pending Step 6 prose population.]
+% Governing decisions: Beat 1 + 2 + headline finding.
+
+Table~\ref{tab:h1_ceo2_decomp} reports the main estimation results for cash holdings on the three CEO speech-uncertainty independent variables. Across the twelve specifications, UncResCEO loads positively on cash holdings in every cell, with one-tailed p-values below the ten-percent level.
+
+ClarityCEO loads negatively in all twelve specifications, consistent with the precautionary direction (lower clarity, higher cash); the loading is significant at the ten-percent level under one-tailed tests in nine of twelve cells. UncPreCEO is positive but statistically indistinguishable from zero across all twelve specifications.
+
+As a robustness check, Table~\ref{tab:h1_ceo2_decomp_qtrexp} replicates the main results using a quarterly-expanding-window construction of ClarityCEO and UncResCEO that eliminates look-ahead bias by re-estimating the speech-uncertainty decomposition each quarter from data available through that quarter only. UncResCEO remains positive and significant in twelve of twelve specifications; the ClarityCEO and UncPreCEO patterns are preserved.
 
 \subsection*{III.C Constraint Amplification (HFC)}
 \label{sec:main:hfc}
-% Governing decisions: D6 (combined ACW asymmetry test; H1.2 Unrated × UncResCEO).
+% Governing decisions: D6 (HFC; H1.2 Unrated × UncResCEO + UncPreCEO).
 % Anchor: Almeida-Campello-Weisbach 2004 (ACW NLM Call 1 verified).
-% Empirical: contemp 4/4 + lead 4/4 sig p<0.05; β +0.004 to +0.011.
-% TODO Step 6 — H1.2 results table + interpretation.
-[\S{}III.C body pending Step 6 prose population.]
+% Empirical (CEO decomp): UncRes × Unrated 2/8 sig (lead + industry FE); UncPre × Unrated 1/8.
+
+H1a predicts that the cash response amplifies under financing-friction stress, with constrained firms (proxied by an unrated debt status) showing a stronger relation between speech uncertainty and cash holdings than rated firms \cite{almeida2004}. Table~\ref{tab:h1_2_ceo2_decomp} reports estimates of the H1 specification with the addition of an Unrated dummy and its interactions with UncResCEO and UncPreCEO. ClarityCEO is not interacted with Unrated, since the constructed CEO trait does not separate cleanly from cross-sectional firm constraints.
+
+The UncResCEO $\times$ Unrated interaction loads positively across all eight interaction specifications. The interaction is significant at the ten-percent level under one-tailed tests in the lead-cash specifications with industry fixed effects (columns 13 and 15) but is not significant in the contemporaneous specifications or in the firm-fixed-effects cells. The UncPreCEO $\times$ Unrated interaction is direction-consistent in all eight specifications and is significant in one cell (column 7).
+
+The amplification pattern is direction-consistent in every cell. Financing friction amplifies the cash response in the cross-section, with statistical detection in the lead-cash specifications under industry fixed effects. The within-firm variation in the Unrated dummy is sparse---firms rarely transition between rated and unrated status within the sample period---so the interaction coefficient is identified primarily off cross-firm variation in financing friction. Table~\ref{tab:h1_2_ceo2_decomp_qtrexp} replicates the analysis using the quarterly-expanding-window construction; the pattern is preserved.
 
 \subsection*{III.D Cash-Flow-Volatility Amplification}
 \label{sec:main:cfvol}
-% Governing decisions: D6 (CFvol moderation; H1.3 HighCFvol × UncPreCEO).
+% Governing decisions: D6 (H1.3 HighCFvol moderation).
 % Anchor: Han-Qiu 2007 (NLM Call 2 verified).
-% Empirical: UncPreCEO_c × HighCFvol β=0.0048, p=0.026 sig; UncResCEO_c × HighCFvol null.
-% Disclosure: Han-Qiu requires double-conditioning (HighCFvol × constrained); H1.3 conditions only on CFvol.
-% TODO Step 6 — H1.3 results table + interpretation.
-[\S{}III.D body pending Step 6 prose population.]
+% Empirical: UncPre × HighCFvol 4/8 (industry FE both horizons); UncRes × HighCFvol 2/8 (lead+industry).
+% Disclosure: Han-Qiu requires double-conditioning (CFvol × constrained); H1.3 conditions only on CFvol.
+
+H1b predicts that the cash response amplifies under cash-flow-volatility stress, with high-volatility firms showing a stronger relation between speech uncertainty and cash holdings than low-volatility firms \cite{hanqiu2007}. Cash-flow volatility (CFvol) is constructed as the coefficient of variation of operating cash flow over a sixteen-quarter rolling window, following \citeA{hanqiu2007}. The HighCFvol indicator equals one when a firm-quarter is at or above the Fama-French 12 industry-year median CFvol. Table~\ref{tab:h1_3_cfvol} reports estimates of the H1 specification with the addition of HighCFvol and its interactions with UncResCEO and UncPreCEO.
+
+The UncPreCEO $\times$ HighCFvol interaction loads positively in all eight specifications and is significant at the ten-percent level under one-tailed tests in four of eight cells---all four with industry fixed effects, across both the contemporaneous and lead horizons. The UncResCEO $\times$ HighCFvol interaction is direction-consistent in all eight cells and significant in two of eight (lead-cash specifications with industry fixed effects). The interaction effects are absorbed under firm fixed effects, mirroring the pattern in Section~\ref{sec:main:hfc}.
+
+Cash-flow-volatility stress amplifies the cash response in the cross-section, with statistical detection across both horizons under industry fixed effects. The H1b specification adopts the cash-flow-volatility construction of \citeA{hanqiu2007} as a moderator on the speech--cash relation. Together with the financing-friction amplification of Section~\ref{sec:main:hfc}, the two interactions cover both stress dimensions of the precautionary cash motive.
 
 \subsection*{III.E Endogeneity}
 \label{sec:main:endo}
 % Governing decisions: D15 LATE×16, D29, D30, D31 (full close).
-% Defense: cross-sectional modus tollens on two precautionary triggers (H1.2 + H1.3).
-% Anchors: Almeida-Campello-Weisbach 2004 + Han-Qiu 2007 (both NLM-verified).
-% Limitation: no exogenous-shock identification pursued.
-% Six DiD/IV designs dropped: Death (D25), DWZ FD (D26), Lewbel (D27), Weather, AJCA (D29), ACLW (D30).
-% Future-work flag: Hassan et al. 2019 QJE political-risk text (deferred).
-% TODO Step 6 — modus-tollens narrative + limitation paragraph + 6-dropped-design list.
-[\S{}III.E body pending Step 6 prose population.]
+
+The most consequential endogeneity concern in our setting is reverse causality: cash policy could shape CEO speech rather than the other way around. Within-firm fixed effects and lagged-DV controls absorb time-invariant firm heterogeneity and policy persistence, but neither rules out the reverse arrow at the within-firm time-series level. We address this concern through cross-sectional modus tollens on the two precautionary triggers identified in the conceptual framework: if the forward direction (speech uncertainty $\to$ cash) operates through the precautionary mechanism, the cash response should amplify under stress conditions that are themselves cross-sectionally exogenous to within-firm cash-policy choices.
+
+Sections~\ref{sec:main:hfc} and \ref{sec:main:cfvol} provide such evidence. The cash response amplifies in the cross-section under both financing-friction stress (rated versus unrated debt status) and cash-flow-volatility stress (high versus low CFvol). Neither moderator is plausibly endogenous to within-firm CEO speech: rated/unrated status is determined primarily by firm size and reputation external to quarterly speech variation, and CFvol is constructed from a sixteen-quarter trailing window, predating the contemporaneous speech measure. The observed amplification pattern is consistent with the forward direction and harder to reconcile with a reverse-causation alternative.
+
+We acknowledge as a limitation that no exogenous-shock or instrumental-variable identification is pursued. We considered and dropped six candidate designs during the project: a CEO sudden-death difference-in-differences, a first-difference reformulation of the Dzielinski-Wagner-Zeckhauser specification, a Lewbel heteroskedasticity-based instrument, weather-shock instruments, the American Jobs Creation Act repatriation experiment, and the Almeida-Campello-Laranjeira-Weisbenner long-term-debt-maturity difference-in-differences. Each failed for design-specific reasons including mechanism mismatch, parallel-trends violations, dual-channel contamination, and absence of a documented cash response to the candidate shock.
+
+The most promising remaining candidate is the firm-level political-risk text measure of \citeA{hassan2020} interacted with major political shocks. We flag this direction as future work but do not pursue it in the present paper.

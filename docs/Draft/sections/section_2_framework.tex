@@ -7,34 +7,58 @@
 
 \subsection*{II.1 Conceptual Framework}
 \label{sec:framework:conceptual}
-% Governing decisions: D12 (precautionary motive overview; OPSW 1999 + Bates 2009 anchor).
-% TODO Step 6 — single precautionary channel framing; points at the two amplification triggers (D10).
-[\S{}II.1 body pending Step 6 prose population.]
+% Governing decisions: D12 (precautionary motive overview; OPSW 1999 + Bates 2009 anchor), D10 (single channel + 2 triggers).
+
+Firms hold cash to insure against future funding shortfalls. The precautionary cash motive predicts that firms with riskier cash flows or poor access to external capital hold more cash \cite{opler1999,bates2009}. The motive operates through a single mechanism: cash buffers allow firms to fund profitable investment without recourse to costly external capital, mitigating underinvestment when internal cash flow falls short of investment needs. Firms most exposed to this risk---those facing the largest gap between expected internal cash flow and expected required investment---optimally hold the largest buffers.
+
+Two stress conditions amplify the precautionary response. The first is financing-friction stress, in which limited debt-market access leads firms to accumulate cash to safeguard future investment \cite{almeida2004}; the second is cash-flow-volatility stress, in which volatile operating cash flows lead firms to hold larger buffers to smooth funding gaps \cite{hanqiu2007}. The two stresses are conceptually distinct: one constrains the supply of external capital, the other increases the variance of internal capital. Both trigger the same precautionary response, generating two testable amplifications of the cash response under stress.
 
 \subsection*{II.2 Hypothesis Development}
 \label{sec:framework:hypotheses}
-% Governing decisions: D11 (H1 / H1a / H1b labels), D12 (anchor citations per hypothesis), D19 (bold + italic format).
-% TODO Step 6 — H1 (main cash response), H1a (financing-friction amplification), H1b (CFvol amplification).
-% Anchors per Beat 3: ACW 2004 (Almeida-Campello-Weisbach) + Han-Qiu 2007.
-[\S{}II.2 body pending Step 6 prose population.]
+% Governing decisions: D11 (H1 / H1a / H1b), D12 (anchor citations per hypothesis), D19 (bold + italic format).
+
+We formalize three hypotheses linking CEO speech uncertainty during earnings calls to firm precautionary cash holdings. The main hypothesis predicts a positive association between speech uncertainty and cash; two amplification hypotheses predict that the association strengthens under each of the two stress triggers identified in Section~\ref{sec:framework:conceptual}.
+
+Speech uncertainty is a candidate real-time signal of the precautionary motive because earnings-call language varies with managerial perceptions of firm conditions \cite{dzielinski2021}, and CEO-specific traits transmit to firm policy through the speaker's own descriptions \cite{bertrand2003}. When CEOs perceive heightened firm-level uncertainty, the precautionary mechanism predicts that firms hold more cash to insure against future funding shortfalls \cite{opler1999,bates2009}.
+
+\noindent\textbf{Hypothesis 1.} \textit{An increase in CEO speech uncertainty during an earnings call is associated with a higher cash-to-assets ratio at the firm.}
+
+\smallskip
+
+The two stress conditions of Section~\ref{sec:framework:conceptual} predict heterogeneous amplification of H1. Financing-friction stress operates through the supply of external capital: rated firms can issue debt at low cost, while unrated firms face binding external-finance constraints and accumulate cash to safeguard future investment \cite{faulkender2006,almeida2004}. Cash-flow-volatility stress operates through the variance of internal capital: firms with volatile operating cash flows hold larger buffers to smooth funding gaps \cite{hanqiu2007}.
+
+\noindent\textbf{Hypothesis 1a.} \textit{The association between CEO speech uncertainty and cash holdings is stronger for firms facing financing-friction stress (unrated firms) than for firms with debt-market access (rated firms).}
+
+\smallskip
+
+\noindent\textbf{Hypothesis 1b.} \textit{The association between CEO speech uncertainty and cash holdings is stronger for firms facing cash-flow-volatility stress (high-volatility firms) than for firms with stable cash flows (low-volatility firms).}
 
 \subsection*{II.3 Estimation of Main Variables}
 \label{sec:framework:estimation}
-% Governing decisions: Beat 2 narrative anchor (DWZ "method" extension framing); D-decisions on three speech-uncertainty IVs.
-% TODO Step 6 — three-component speech-uncertainty construction (DWZ 2021 method).
-%               Disclose: UncPreCEO repurposed from DWZ control to our IV.
-[\S{}II.3 body pending Step 6 prose population.]
+% Governing decisions: Beat 2 (DWZ "method" extension framing); UncPreCEO repurposed disclosure.
+
+We measure CEO speech uncertainty during earnings calls following \citeA{dzielinski2021}. We construct three independent variables from the percentage of uncertainty-words in CEO speech segments: ClarityCEO and UncResCEO are extracted from the unscripted Q\&A segment via the DWZ decomposition; UncPreCEO is the raw percentage in the scripted presentation segment.
+
+ClarityCEO is the negative of the CEO entity fixed effect from a regression of Q\&A-segment uncertainty on call-level controls (DWZ Eq.~5). It captures the CEO's habitual baseline level of uncertainty-language. UncResCEO is the residual from the same family of regressions (DWZ Eq.~4); it captures within-CEO variation in Q\&A uncertainty orthogonal to the baseline. UncPreCEO is the raw percentage of uncertainty-words in the CEO's scripted opening, typically prepared in advance and vetted by investor-relations staff before the call.
+
+Our use of UncPreCEO as an independent variable extends the original method. \citeA{dzielinski2021} use the presentation-segment measure as a control variable in their Q\&A residual extraction. We treat UncPreCEO as an independent variable because it may carry an informative signal about firm conditions. We disclose this departure and report results separately for each of the three independent variables in Section~\ref{sec:main}.
 
 \subsection*{II.4 Methodology}
 \label{sec:framework:methodology}
-% Governing decisions: 2x2x2 robustness grid (entity FE × time FE × DV horizon).
-% TODO Step 6 — panel-OLS specification, fixed-effect ladder, two-way clustering, lagged-DV inclusion.
-[\S{}II.4 body pending Step 6 prose population.]
+% Governing decisions: 12-cell ladder (entity FE × control set × DV horizon), firm-clustered SEs, lagged-DV base control.
+
+We estimate panel regressions of cash holdings on the three CEO speech-uncertainty variables and a vector of firm-level controls. The dependent variable is the cash-to-assets ratio, measured contemporaneously (Cash$_{t}$) and at a one-quarter horizon (Cash$_{t+1}$). Each regression includes ClarityCEO, UncResCEO, and UncPreCEO jointly as independent variables of interest.
+
+For each dependent-variable horizon, we report a six-cell fixed-effects ladder: (i) industry fixed effects with base controls; (ii) firm fixed effects with base controls; (iii)--(iv) the same two specifications with extended controls; and (v)--(vi) the two extended-control specifications with calendar year-quarter fixed effects added. The base control set follows \citeA{bates2009} (firm size, leverage, market-to-book, ROA, capital expenditure, dividend payer, and operating-cash-flow volatility); the extended set adds sales growth, R\&D intensity, cash flow, and stock-return volatility. The lagged dependent variable is included as a base control in all specifications to absorb cash-policy persistence.
+
+Standard errors are clustered at the firm level. Tests of the main hypothesis are one-tailed in the predicted direction; tests of the amplification hypotheses are one-tailed in the predicted direction of the interaction sign.
 
 \subsection*{II.5 Specification and Measurement of Key Constructs}
 \label{sec:framework:constructs}
 % Governing decisions: D5 (drivers as construct-validity tests), D17 (1 composite driver table).
-% TODO Step 6 — construct-validity tests of speech-uncertainty against external uncertainty drivers:
-%               Hassan et al. 2019 (PRisk) + Baker-Bloom-Davis 2016 (US-EPU) +
-%               Davis 2016 (GEPU) + Hoberg-Phillips 2016 (TNIC).
-[\S{}II.5 body pending Step 6 prose population.]
+
+Before turning to the cash analyses, we evaluate the construct validity of the speech-uncertainty measure by testing whether it covaries with established external proxies for firm-relevant uncertainty. If the measure captures uncertainty information rather than mechanical text-frequency artifacts, it should move with proxies that have been validated as uncertainty signals in prior literature.
+
+We use four external proxies: firm-level political-risk exposure measured from earnings-call discussion of political topics \cite{hassan2020}; aggregate U.S.\ economic policy uncertainty constructed from newspaper coverage \cite{baker2016}; global economic policy uncertainty as a GDP-weighted average across countries \cite{davis2016}; and product-market competition intensity from text-based industry-network similarity \cite{hoberg2016}.
+
+We expect UncResCEO and UncPreCEO---the within-CEO time-varying components of the speech-uncertainty measure---to load positively on the four proxies. ClarityCEO is a CEO-level fixed effect and is excluded from this test. The construct-validity results are reported alongside the main empirical analyses.
