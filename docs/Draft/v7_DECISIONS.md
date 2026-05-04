@@ -16,13 +16,13 @@
 - [x] Step 2D — §III.E endogeneity scrub (D25-D27 dropped Death DiD + DWZ FD + Lewbel IV; SUPERSEDED by D29+D30+D31 — §III.E populated with H1.2 + H1.3 two-trigger modus-tollens close)
 - [x] Step 2E — endo research brief written for ChatGPT Deep Research outsourcing (`docs/Draft/v7_ENDO_RESEARCH_BRIEF.md`, commit bbf147b; red-team audited, all 10 priority edits applied)
 - [x] Step 2F — endo strategy selection (CLOSED 2026-05-01 per D29+D30+D31; AJCA dropped via DFF 2011 NLM session 17c2f9fc; ACLW 2012 dropped via NLM session a1a6268f; §III.E = H1.2 Unrated × UncResCEO + H1.3 CFvol × UncPreCEO two precautionary triggers + limitation paragraph; no DiD/IV pursued)
-- [ ] Step 2A — per-subsection claim cards (~12-15 cards → v7_CLAIM_CARDS.md) — paused mid-tutorial; needs full restart given §III.E reframe
+- [ ] Step 2A — per-subsection claim cards (~12-15 cards → v7_CLAIM_CARDS.md) — DEFERRED 2026-05-04; superseded by direct §I-§V prose lockdown via D28 per-unit approval (Steps 3+6 covered the same ground)
 - [x] Step 3 — lock narrative anchor (COMPLETE 2026-05-01; all 6 beats locked: Beat 1 headline / Beat 2 DWZ method / Beat 3 two triggers / Beat 4 construct validity / Beat 5 outsider reaction / Beat 6 endogeneity; 7 NLM verbatim verification calls used; D28 per-unit approval honored throughout)
 - [x] Step 4 — archive v6 → `docs/Draft/_archived_v6_2026_04_29/` (2026-04-30; 24 renames via git mv: main.tex/main.pdf/sections/* + 7 v6 design+audit md files; nested `_archived_2026_04_22/` consolidated; build artifacts removed)
 - [x] Step 5 — scaffold blank v7 LaTeX set (COMPLETE 2026-05-01; main.tex + 6 sections/ files; v6 preamble copied + Roman-numeral renewcommand added; appendix_c_robustness drop; first compile 27pp 0 errors; 2 minor apacite warnings (no address in dzielinski2021 + ghafoor2023))
-- [ ] Step 6 — populate prose big-picture-first (§I COMPLETE 2026-05-01; §II-V pending)
-- [ ] Step 7 — wire generated tables + variable definitions appendix + bibliography
-- [ ] Step 8 — compile + audit + commit
+- [x] Step 6 — populate prose big-picture-first (COMPLETE 2026-05-04; all 17 prose units approved + locked: §I (5 paras) / §II (5 subs) / §III (5 subs) / §IV (2 subs) / §V (3 subs) + Abstract; ClarityCEO trimmed to control)
+- [x] Step 7 — wire generated tables + variable definitions appendix + bibliography (COMPLETE 2026-05-04; 12 thesis tables wired via per_suite/_thesis_input.tex; summary_stats.tex auto-rendered; variable_definitions.tex auto-rendered via deterministic spec-driven generator; references.bib resolved)
+- [x] Step 8 — compile + audit + commit (COMPLETE 2026-05-04; commits da16664 + 9721e71 + c25a3d6: numbers audit fix §III.B+§III.C, 6 missing disclosures inserted + 2 retired, determinism lock advisor 5-fix #1+#2+#5; main.pdf 27pp 0 undef refs/cites; coverage audit script PASSES)
 
 ## Pre-compaction state (2026-04-29 LATE×12)
 

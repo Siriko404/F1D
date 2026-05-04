@@ -187,8 +187,10 @@ HAND_STUBS: Dict[str, Dict] = {
         "source": "runtime",
         "formula": (
             "Binary = 1 if firm-quarter Han-Qiu (2007) cash-flow-volatility "
-            "(16-quarter rolling std of OCF / $|$mean$|$ of OCF) is at or above "
-            "the within-Fama-French-12-industry-year median; 0 otherwise."
+            "(16-quarter rolling std of quarterly OCF $/$ $|$mean$|$ of "
+            "quarterly OCF, lagged one quarter per Han-Qiu Eqn 5 RHS) is at "
+            "or above the within-Fama-French-12-industry-year median; 0 "
+            "otherwise."
         ),
         "reference": "hanqiu2007; thesis (H1.3 split convention)",
         "description": "High cash-flow-volatility moderator (H1.3).",
