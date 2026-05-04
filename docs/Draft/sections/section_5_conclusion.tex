@@ -13,6 +13,8 @@ This paper documents that within-firm increases in CEO speech uncertainty during
 
 The contribution is to establish CEO speech uncertainty as a real-time signal of firm precautionary cash holdings, extending the speech-uncertainty method of \citeA{dzielinski2021} beyond its original scope---market reactions, analyst behavior, firm performance, and governance outcomes---to firm financing-policy outcomes. Outsider reaction corroborates the precautionary interpretation through two channels: post-call bid-ask spreads widen contemporaneously, and the SEC subsequently issues Conference-Call Comment Letters at higher rates following calls with elevated speech uncertainty.
 
+The within-firm cash response loads on the residual Q\&A component (UncResCEO), while the outsider-reaction signal loads on the presentation-segment component (UncPreCEO); the asymmetry sits within the speech-uncertainty decomposition of \citeA{dzielinski2021} rather than being imposed. The within-firm cash response and the outsider-reaction responses operate through theoretically distinct mechanisms; we do not claim a causal bridge between them.
+
 Reverse-causality concerns are addressed through cross-sectional modus tollens on the two precautionary triggers identified in the conceptual framework. We acknowledge as a limitation that no exogenous-shock or instrumental-variable identification is pursued; Section~\ref{sec:conclusion:limitations} discusses this and the candidate designs we considered.
 
 \subsection*{V.2 Limitations}
@@ -24,6 +26,8 @@ The primary limitation of our identification strategy is the absence of an exoge
 Any future exogenous-shock identification compatible with our forward-direction hypothesis must satisfy a strict requirement set: exogeneity to firm cash policy, a narrow speech channel without parallel direct-on-cash mechanisms, direction-compatibility on any non-speech channels, a first stage on speech, cross-sectional intensity variation, parallel trends on both cash and speech, a top-tier journal anchor, and an adequate treated-firm count. The strongest a-priori candidate we are aware of is discussed in Section~\ref{sec:conclusion:future}.
 
 Two methodological-extension disclosures bear noting. We use UncPreCEO as an independent variable, whereas \citeA{dzielinski2021} treat the presentation-segment measure as a control in their residual-extraction step. We extend the speech-uncertainty method to firm financing-policy outcomes; \citeA{dzielinski2021} themselves report null effects of UncResCEO and UncPreCEO on the market-reaction outcomes that motivated the original method, and our positive cash-side findings should be read in light of that scope difference.
+
+The dependent variable follows the linear cash-to-assets specification of \citeA{bates2009}; an OPSW log-of-cash-to-net-assets robustness specification is flagged as a planned extension but is not estimated in the present draft.
 
 \subsection*{V.3 Future Work}
 \label{sec:conclusion:future}

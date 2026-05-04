@@ -105,11 +105,11 @@
 
 ## Hypothesis Development (§II.2)
 
-### 14. ClarityCEO direction interpretive (not pre-registered)
-**1-line:** BS 2003 anchor predicts existence-of-channel only, not specific sign for ClarityCEO. Observed negative direction reported as empirical pattern, not pre-registered theoretical prediction.
-**v6 source:** `section_2_framework.tex` line 18 (¶1 enumerate item 2): "Channel-of-existence pre-registered; specific direction interpretive… anchoring the existence of a CEO-trait → cash channel without committing ex ante to a particular sign for our ClarityCEO construct." + line 49: "The ClarityCEO direction observed in Section…\ref{sec:main:hc} is interpretive rather than pre-registered."
-**v7 home:** §II.2 H1 anchor (ClarityCEO existence vs direction)
-**Status:** ADAPT — D10 reframing keeps the existence-vs-direction distinction; rewrite for new hypothesis labels (H1 not HC)
+### 14. ClarityCEO direction interpretive (not pre-registered) — **RETIRED 2026-05-04 per ClarityCEO control demotion**
+**Status:** Retired. ClarityCEO is now a CONTROL not an IV-of-interest (last-session decision; 8 prose edits applied across §II/§III/§IV/§V). The "existence-vs-direction" disclosure attached to ClarityCEO-as-IV no longer applies — controls do not need pre-registered direction predictions.
+**Original 1-line:** BS 2003 anchor predicts existence-of-channel only, not specific sign for ClarityCEO. Observed negative direction reported as empirical pattern, not pre-registered theoretical prediction.
+**v6 source:** `section_2_framework.tex` line 18 (¶1 enumerate item 2) + line 49.
+**v7 home:** N/A (retired).
 
 ### 15. ACW asymmetry → within-call-shock = hypothesis-development extension
 **1-line:** ACW 2004's anchor is macro-shock asymmetry; our extension to within-call CEO speech uncertainty as the shock signal is a hypothesis-development extension, not a pre-existing theoretical result.
@@ -193,28 +193,32 @@
 **v7 home:** §II.2 framing paragraph + §III.C/D subsection openings
 **Status:** ADAPT (NEW v7 framing per D10)
 
-### 26. H1 nested vs H2/H3 flat — explain WHY
-**1-line:** H1 has nested H1a/H1b sub-hypotheses because both triggers test the SAME precautionary channel. H2 and H3 are flat because they're mechanistically distinct outsider channels (different parties, different processes).
-**v6 source:** N/A (v7-specific structural decision per advisor F1)
-**v7 home:** §II.2 framing paragraph (must explicitly explain the asymmetric labeling)
-**Status:** ADAPT (new v7 prose, no v6 source)
+### 26. H1 nested vs H2/H3 flat — explain WHY — **OBSOLETE 2026-05-04 (no H2/H3 labels in body)**
+**Status:** Obsolete. v7 §IV.A and §IV.B do not use H2/H3 hypothesis labels; subsections are titled by mechanism (Market Information-Asymmetry Channel; Disclosure-Insufficiency Channel). The asymmetric-labeling-explanation question does not arise.
+**Original 1-line:** H1 has nested H1a/H1b sub-hypotheses because both triggers test the SAME precautionary channel. H2 and H3 are flat because they're mechanistically distinct outsider channels.
+**v6 source:** N/A.
+**v7 home:** N/A (obsolete).
 
 ---
 
-## Coverage summary — REVISED per D25 + D26 + D27 (all 3 endo suites dropped; §III.E empty pending new design)
+## Coverage summary — REVISED 2026-05-04 (Step 8 audit + ClarityCEO control demotion + H2/H3-labels obsolescence)
 
 | v7 home subsection | Disclosures count |
 |---|---|
-| §II.2 Hypothesis Development | 5 (#14, #15, #16, #25, #26) |
+| §II.2 Hypothesis Development | 2 (#15, #16) |
 | §II.2 + §III.C | 1 (#17) |
 | §III.D H1b results | 1 (#18) |
-| §III.E Endogeneity | 0 — section EMPTY pending new design |
+| §III.E Endogeneity | 0 — closed via H1.2+H1.3 modus tollens (D31) |
 | §IV.B opening | 1 (#24) |
 | §V.1 Summary | 1 (#22) |
-| §V.2 Limitations | 2 (#20, #23) |
+| §V.1 + §V.2 | 1 (#23) |
+| §V.2 Limitations | 1 (#20) |
 | §V.3 Future Work | 0 |
+| **Single-channel framing (cross-section)** | 1 (#25) |
 
-Active total: 11 disclosures.
+Active total: 9 disclosures (post-2026-05-04 audit).
+Retired 2026-05-04: 2 (#14 ClarityCEO control demotion; #26 H2/H3 labels obsolete).
+2026-05-04 Step 8 audit body-presence verification: 6 missing disclosures added to body (§II.2 H1a, §III.C, §III.D, §V.1, §V.2 — see git history for commit details).
 Dropped per D25: 5 (#1, #2, #3, #4, #19).
 Dropped per D26: 3 (#5, #6, #7).
 Dropped per D27: 5 (#8, #9, #10, #11, #21).
