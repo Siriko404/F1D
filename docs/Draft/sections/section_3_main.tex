@@ -15,7 +15,7 @@ We exclude firms in financial services and utilities (Fama-French 12 industries 
 
 Section~\ref{sec:framework:estimation} describes the construction of the two CEO speech-uncertainty independent variables of interest (UncResCEO and UncPreCEO) and the ClarityCEO control. The cash-to-assets ratio (Cash$_{t}$, Cash$_{t+1}$) is cash and short-term investments scaled by total assets. Variable definitions are provided in the appendix; summary statistics are reported in Table~\ref{tab:summary_stats}.
 
-\subsection*{III.B Cash Holdings (HC)}
+\subsection*{III.B Cash Holdings (H1)}
 \label{sec:main:hc}
 % Governing decisions: Beat 1 + 2 + headline finding.
 
@@ -23,7 +23,7 @@ Table~\ref{tab:h1_ceo2_decomp} reports the main estimation results for cash hold
 
 As a robustness check, Table~\ref{tab:h1_ceo2_decomp_qtrexp} replicates the main results using a quarterly-expanding-window construction of UncResCEO that eliminates look-ahead bias by re-estimating the speech-uncertainty decomposition each quarter from data available through that quarter only. UncResCEO remains positive and significant in twelve of twelve specifications; the UncPreCEO pattern is preserved.
 
-\subsection*{III.C Constraint Amplification (HFC)}
+\subsection*{III.C Constraint Amplification (H1a)}
 \label{sec:main:hfc}
 % Governing decisions: D6 (HFC; H1.2 Unrated × UncResCEO + UncPreCEO).
 % Anchor: Almeida-Campello-Weisbach 2004 (ACW NLM Call 1 verified).
@@ -35,7 +35,7 @@ The UncResCEO $\times$ Unrated interaction loads positively across all eight int
 
 The amplification pattern is direction-consistent in every cell. Financing friction amplifies the cash response in the cross-section, with statistical detection in the lead-cash specifications under industry fixed effects. The within-firm variation in the Unrated dummy is sparse---firms rarely transition between rated and unrated status within the sample period---so the interaction coefficient is identified primarily off cross-firm variation in financing friction. Table~\ref{tab:h1_2_ceo2_decomp_qtrexp} replicates the analysis using the quarterly-expanding-window construction; the pattern is preserved.
 
-\subsection*{III.D Cash-Flow-Volatility Amplification}
+\subsection*{III.D Cash-Flow-Volatility Amplification (H1b)}
 \label{sec:main:cfvol}
 % Governing decisions: D6 (H1.3 HighCFvol moderation).
 % Anchor: Han-Qiu 2007 (NLM Call 2 verified).
