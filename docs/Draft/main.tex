@@ -59,10 +59,12 @@
 % ---- Title block ----
 \title{\textbf{Hold On to Your Cash:}\\
        \large CEO Speech Uncertainty and Financing Conservatism}
-\author{Sina Soleimanipour\thanks{%
-        MSc Student, Management (Finance Concentration), Telfer School of Management, University of Ottawa.
-        Contact: ssole077@uottawa.ca.
-        I thank my coadvisors, Dr.\ Ali Akyol and Dr.\ Harshit Rajaiya, for helpful comments.}}
+% NOTE: \thanks{} silently drops inside \twocolumn[\@twocolumnfalse \maketitle].
+% Use a visible affiliation block under the author name instead.
+\author{Sina Soleimanipour \\
+        \normalsize MSc Student, Management (Finance Concentration) \\
+        \normalsize Telfer School of Management, University of Ottawa \\
+        \normalsize \texttt{ssole077@uottawa.ca}}
 \date{\today}
 
 \begin{document}
@@ -71,6 +73,9 @@
 \twocolumn[
   \begin{@twocolumnfalse}
     \maketitle
+    \begin{center}
+      \small I thank my coadvisors, Dr.~Ali Akyol and Dr.~Harshit Rajaiya, for helpful comments.
+    \end{center}
     \input{sections/abstract.tex}
     \vspace{1em}
   \end{@twocolumnfalse}
