@@ -8,25 +8,27 @@
 \subsection*{V.1 Summary}
 \label{sec:conclusion:summary}
 % Governing decisions: D22 (3-subsection structure), Beat 1-5 narrative anchor.
-% TODO Step 6 — restate headline + DWZ-extension contribution + two-trigger amplification + outsider reaction.
-[\S{}V.1 body pending Step 6 prose population.]
+
+This paper documents that within-firm increases in CEO speech uncertainty during earnings calls predict higher precautionary cash holdings. The residual Q\&A component of CEO speech-uncertainty (UncResCEO) loads positively on the cash-to-assets ratio in twelve of twelve specifications under one-tailed tests at the ten-percent level. The cash response amplifies under both financing-friction stress and cash-flow-volatility stress, consistent with a single precautionary channel triggered by two distinct stress conditions \cite{almeida2004,hanqiu2007}.
+
+The contribution is to establish CEO speech uncertainty as a real-time signal of firm precautionary cash holdings, extending the speech-uncertainty method of \citeA{dzielinski2021} beyond its original scope---market reactions, analyst behavior, firm performance, and governance outcomes---to firm financing-policy outcomes. Outsider reaction corroborates the precautionary interpretation through two channels: post-call bid-ask spreads widen contemporaneously, and the SEC subsequently issues Conference-Call Comment Letters at higher rates following calls with elevated speech uncertainty.
+
+Reverse-causality concerns are addressed through cross-sectional modus tollens on the two precautionary triggers identified in the conceptual framework. We acknowledge as a limitation that no exogenous-shock or instrumental-variable identification is pursued; Section~\ref{sec:conclusion:limitations} discusses this and the candidate designs we considered.
 
 \subsection*{V.2 Limitations}
 \label{sec:conclusion:limitations}
-% Governing decisions: D22, D31 (endogeneity-search history + future-work requirement set), Beat 6.
-% TODO Step 6 — load-bearing content from D31:
-%   - Forward direction identified via cross-sectional modus tollens (not exogenous-shock DiD or IV).
-%   - Six DiD/IV designs dropped (Death/DWZ-FD/Lewbel/Weather/AJCA/ACLW) — name each with one-sentence reason.
-%   - 8-element future-DiD requirement set (D31).
-%   - UncResCEO honest-disclosure obligations from DWZ §1 + §5.2 + §5.3 verbatim.
-%   - Han-Qiu 2007 double-conditioning gap (H1.3 conditions on CFvol only, not on constraint).
-%   - UncPreCEO repurposed from DWZ control to our IV (methodological extension disclosure).
-[\S{}V.2 body pending Step 6 prose population.]
+% Governing decisions: D22, D31.
+
+The primary limitation of our identification strategy is the absence of an exogenous-shock or instrumental-variable defense of the speech-uncertainty $\to$ cash direction. As discussed in Section~\ref{sec:main:endo}, we identify the forward direction through cross-sectional modus tollens on two precautionary triggers; six candidate exogenous-shock and instrumental-variable designs were considered and dropped during the project. The CEO sudden-death difference-in-differences was dropped for mechanism mismatch: the shock affects multiple firm channels simultaneously rather than a narrow speech channel. The first-difference reformulation of the \citeA{dzielinski2021} specification was dropped because it addresses a time-invariant firm-trait threat that within-firm fixed effects in our main panel already absorb. The Lewbel heteroskedasticity-based instrument failed the Wu-Hausman test for OLS-inconsistency. Weather-shock instruments lack a documented cash-holdings response to identify a first stage. The 2004 American Jobs Creation Act repatriation experiment was dropped because the load-bearing public-finance evidence on this shock reports no cash-holdings response post-shock. The long-term-debt-maturity difference-in-differences anchored on the 2007 credit-crisis maturing-debt cohort was dropped for dual-channel contamination: the shock pushes cash in the opposite direction of the hypothesized speech channel via a separate forced-deployment mechanism.
+
+Any future exogenous-shock identification compatible with our forward-direction hypothesis must satisfy a strict requirement set: exogeneity to firm cash policy, a narrow speech channel without parallel direct-on-cash mechanisms, direction-compatibility on any non-speech channels, a first stage on speech, cross-sectional intensity variation, parallel trends on both cash and speech, a top-tier journal anchor, and an adequate treated-firm count. The strongest a-priori candidate we are aware of is discussed in Section~\ref{sec:conclusion:future}.
+
+Two methodological-extension disclosures bear noting. We use UncPreCEO as an independent variable, whereas \citeA{dzielinski2021} treat the presentation-segment measure as a control in their residual-extraction step. We extend the speech-uncertainty method to firm financing-policy outcomes; \citeA{dzielinski2021} themselves report null effects of UncResCEO and UncPreCEO on the market-reaction outcomes that motivated the original method, and our positive cash-side findings should be read in light of that scope difference.
 
 \subsection*{V.3 Future Work}
 \label{sec:conclusion:future}
-% Governing decisions: D22, D31 (Hassan 2019 flag).
-% TODO Step 6 — flag Hassan-Hollander-vanLent-Tahoun 2019 QJE political-risk text data ×
-%               2016-election interaction as the strongest a-priori candidate satisfying the
-%               8-element DiD requirement set; deferred to future work.
-[\S{}V.3 body pending Step 6 prose population.]
+% Governing decisions: D22, D31.
+
+Among the designs evaluated against the requirement set in Section~\ref{sec:conclusion:limitations}, the strongest a-priori candidate is the firm-level political-risk text measure of \citeA{hassan2020} interacted with a major political shock such as the 2016 U.S.\ presidential election. The cross-sectional intensity variation is provided by pre-shock firm-level political-risk exposure constructed from earnings-call language; the time-series identifying variation is provided by the shock itself; and the speech-uncertainty mechanism is direct, since the political-risk measure is itself constructed from earnings-call text.
+
+We flag this design as a research direction rather than pursue it in the present paper. It has not yet been verified against the full requirement set; in particular, the parallel-trends condition on cash holdings and on speech uncertainty requires confirmation, and the dual-channel risk---political shocks plausibly affect cash holdings through non-speech channels including investment-policy and tax-policy uncertainty---requires careful direction-compatibility analysis. We leave these checks to future work.

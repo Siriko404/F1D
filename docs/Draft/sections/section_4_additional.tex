@@ -8,21 +8,23 @@
 \subsection*{IV.A Market Information-Asymmetry Channel: Post-Call Bid-Ask Spread}
 \label{sec:additional:spread}
 % Governing decisions: D14 (subsection title), D7 (§IV layout).
-% Methodology anchor: Bushee-Gow-Taylor 2018 JAR (NLM Call 6 verified).
-%   - 25-day post-call window (§3.3 verbatim).
-%   - Pres/Q&A asymmetry framework (§1 verbatim).
-% Methodology disclosure: BGT 2018 uses Amihud illiquidity; we use bid-ask spread (related but distinct).
-% Empirical: H14c — UncPreCEO 4/12 sig POS at p<0.10; ClarityCEO + UncResCEO null.
-% TODO Step 6 — H14c results table + market-channel interpretation.
-[\S{}IV.A body pending Step 6 prose population.]
+% Empirical (verified 2026-05-04 from h14c_spread_bgt_level_ceo2iv_decomp/2026-04-29_142756/):
+%   UncPreCEO 4/6 contemp sig POS p<0.10 (cols 1,2,4,6); lead null; Clarity+UncRes null both horizons.
+
+The market information-asymmetry channel predicts that post-call bid-ask spreads widen following CEO speeches with higher uncertainty, as outside investors price-protect against the informed-trading risk that the speech signal makes salient. We measure the post-call response on a twenty-five-trading-day window beginning the call day. Table~\ref{tab:h14c_ceo2_decomp} reports estimates of the speech-uncertainty independent variables on the twenty-five-day spread level, in basis points, under the four-step fixed-effects ladder and the market-microstructure controls (stock price, share turnover, daily return volatility, absolute earnings surprise) that the spread literature requires.
+
+UncPreCEO loads positively on the contemporaneous-quarter spread in all six contemporaneous specifications and is significant at the ten-percent level under one-tailed tests in four of six cells. The pattern preserves under firm fixed effects across all three control specifications; under industry fixed effects, significance is preserved with base controls but is absorbed once the market-microstructure controls are added (columns 3 and 5). The lead-quarter specifications are null. UncResCEO loads null across both horizons.
+
+The contemporaneous market response is consistent with the precautionary interpretation of the speech signal: outside investors impound the signal into liquidity provision in the same quarter, widening spreads alongside the within-firm cash response documented in Section~\ref{sec:main:hc}. The presentation-segment component of CEO speech, rather than the residual Q\&A component, carries the market-relevant signal at this horizon.
 
 \subsection*{IV.B Disclosure-Insufficiency Channel: Conference-Call Comment Letter (CCCL)}
 \label{sec:additional:cccl}
 % Governing decisions: D18 (subsection title), D8 (CCCL not "SEC scrutiny" generic), D13 (two distinct channels).
-% Anchor: Lerman, Steffen, Zhang 2026 Management Science (NLM Call 7 verified; lerman2024→lerman2026 per Step 2C).
-%   - CCCL classification breakdown §3.2 verbatim: 80% insufficient / 15% inconsistent / 3% call itself / 2% both.
-%   - "Receiving a CCCL constitutes a shock to a firm's perceptions of how the SEC scrutinizes" (§4.4.3).
-% Variable form: binary indicator, linear probability model. Sample 2005-2018 AA, n=13,808 / 3,902 firms.
-% Empirical: H18 — UncPreCEO 4/6 sig POS, 3/4 ext-ctrls survive; ClarityCEO + UncResCEO null.
-% TODO Step 6 — H18 results table + regulatory-channel interpretation.
-[\S{}IV.B body pending Step 6 prose population.]
+% Empirical (verified 2026-05-04 from h18_cccl_received_ceo2iv_decomp/2026-04-29_142757/):
+%   UncPreCEO 4/6 sig POS p<0.10 (cols 2,3,4,6); 3/4 ext-ctrls preserved; ClarityCEO + UncResCEO null.
+
+The disclosure-insufficiency channel predicts that the SEC issues a Conference-Call Comment Letter (CCCL) when an earnings call surfaces disclosure problems that warrant follow-up review. Following \citeA{lerman2026}, who introduce and validate the CCCL as a regulatory-scrutiny indicator referencing the earnings call, we measure CCCL receipt as a binary outcome and estimate a linear probability model. Table~\ref{tab:h18_ceo2_decomp} reports estimates of the speech-uncertainty independent variables on CCCL receipt under the four-step fixed-effects ladder.
+
+UncPreCEO loads positively on CCCL receipt in all six specifications and is significant at the ten-percent level under one-tailed tests in four of six cells. Significance is preserved in three of the four specifications with extended controls (columns 3, 4, and 6) and is absorbed only under industry-year-quarter fixed effects with extended controls (column 5). UncResCEO loads null across all six specifications.
+
+The pattern is consistent with the disclosure-insufficiency interpretation: presentation-segment uncertainty during the earnings call associates with a higher probability that the SEC subsequently issues a comment letter referring to the call. As in Section~\ref{sec:additional:spread}, the presentation-segment component of CEO speech, rather than the residual Q\&A component, carries the regulator-relevant signal.

@@ -13,17 +13,15 @@ Our sample covers earnings-call observations of U.S.\ public firms over the peri
 
 We exclude firms in financial services and utilities (Fama-French 12 industries 11 and 8). The estimation sample also requires a non-missing lagged dependent variable and is restricted to firms with multiple observations after firm-level fixed-effect singleton dropping. The resulting sample comprises approximately 43,300 firm-quarter observations across 1,376 firms in the contemporaneous specifications and approximately 41,100 firm-quarter observations across 1,321 firms in the lead specifications.
 
-Section~\ref{sec:framework:estimation} describes the construction of the three CEO speech-uncertainty independent variables (ClarityCEO, UncResCEO, UncPreCEO). The cash-to-assets ratio (Cash$_{t}$, Cash$_{t+1}$) is cash and short-term investments scaled by total assets. Variable definitions are provided in the appendix; summary statistics are reported in Table~\ref{tab:summary_stats}.
+Section~\ref{sec:framework:estimation} describes the construction of the two CEO speech-uncertainty independent variables of interest (UncResCEO and UncPreCEO) and the ClarityCEO control. The cash-to-assets ratio (Cash$_{t}$, Cash$_{t+1}$) is cash and short-term investments scaled by total assets. Variable definitions are provided in the appendix; summary statistics are reported in Table~\ref{tab:summary_stats}.
 
 \subsection*{III.B Cash Holdings (HC)}
 \label{sec:main:hc}
 % Governing decisions: Beat 1 + 2 + headline finding.
 
-Table~\ref{tab:h1_ceo2_decomp} reports the main estimation results for cash holdings on the three CEO speech-uncertainty independent variables. Across the twelve specifications, UncResCEO loads positively on cash holdings in every cell, with one-tailed p-values below the ten-percent level.
+Table~\ref{tab:h1_ceo2_decomp} reports the main estimation results for cash holdings on the speech-uncertainty independent variables of interest. Across the twelve specifications, UncResCEO loads positively on cash holdings in every cell, with one-tailed p-values below the ten-percent level. UncPreCEO is positive but statistically indistinguishable from zero across all twelve specifications.
 
-ClarityCEO loads negatively in all twelve specifications, consistent with the precautionary direction (lower clarity, higher cash); the loading is significant at the ten-percent level under one-tailed tests in nine of twelve cells. UncPreCEO is positive but statistically indistinguishable from zero across all twelve specifications.
-
-As a robustness check, Table~\ref{tab:h1_ceo2_decomp_qtrexp} replicates the main results using a quarterly-expanding-window construction of ClarityCEO and UncResCEO that eliminates look-ahead bias by re-estimating the speech-uncertainty decomposition each quarter from data available through that quarter only. UncResCEO remains positive and significant in twelve of twelve specifications; the ClarityCEO and UncPreCEO patterns are preserved.
+As a robustness check, Table~\ref{tab:h1_ceo2_decomp_qtrexp} replicates the main results using a quarterly-expanding-window construction of UncResCEO that eliminates look-ahead bias by re-estimating the speech-uncertainty decomposition each quarter from data available through that quarter only. UncResCEO remains positive and significant in twelve of twelve specifications; the UncPreCEO pattern is preserved.
 
 \subsection*{III.C Constraint Amplification (HFC)}
 \label{sec:main:hfc}
