@@ -334,7 +334,7 @@ variables:
     reference: bks2009, jjl2021
     role: dv
     suites: [H1, H1.1, H1.1b, H1.2, H12, H12b, H13, H13.1, H13.2, H16, H17, H18, H18b, H19b, H20b, H21, H22, H4a, H4b]
-    description: Build RDSales = xrdy_Q4-annual / saley_Q4-annual from Compustat quarterly data, following Bates 2009 / Jiang-John-Larsen 2021 R\&D-over-sales convention.
+    description: Build RDSales = xrdy_Q4-annual / saley_Q4-annual from Compustat quarterly data, following Bates 2009 / Jiang-John-Larsen 2021 R&D-over-sales convention.
 
   roa:
     stage: 3
