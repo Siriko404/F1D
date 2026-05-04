@@ -406,7 +406,10 @@ def main() -> int:
     ss_cfg = yaml.safe_load(SS_CONFIG.read_text(encoding="utf-8")) if SS_CONFIG.exists() else {}
 
     all_suites = list(render.get("suites", []))
-    include_suites = ss_cfg.get("include_suites") or all_suites
+    # Single source of truth: thesis_suites: in suite_render_order.yaml.
+    # The legacy include_suites: in summary_stats_config.yaml is consulted only
+    # as a fallback when thesis_suites is absent (should not happen in v7+).
+    include_suites = list(render.get("thesis_suites") or ss_cfg.get("include_suites") or all_suites)
     anchor_overrides = ss_cfg.get("anchor_panel") or {}
     exclude_vars = set(ss_cfg.get("exclude_vars") or [])
     panel_dir_alias = ss_cfg.get("panel_dir_alias") or {}
@@ -416,7 +419,7 @@ def main() -> int:
     print("Summary Stats Table 1 — adaptive scope")
     print("=" * 70)
     print(f"Suites in render order: {len(all_suites)}")
-    print(f"Suites included: {len(include_suites)}")
+    print(f"Thesis suites (source: suite_render_order.yaml): {len(include_suites)}")
     print(f"Excluded vars: {sorted(exclude_vars)}")
 
     specs, panels, runner_stats_map = {}, {}, {}

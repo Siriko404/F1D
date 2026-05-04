@@ -1,34 +1,15 @@
 # Summary Stats Table 1 configuration
 #
 # v6 SCOPE LOCK (2026-04-29 LATE×9 user directive: "we DO NOT MENTION ANYTHING
-# WE DONT REPORT"). include_suites RESTRICTED to thesis_suites only — the
-# 14 v6 body suites whose tables are cited in main.pdf. Variable list is
-# whatever those suites' specs declare as IVs/DVs/controls; runtime-computed
-# IVs (ClarityCEO, UncResCEO) sourced from per-suite runner summary_stats.csv
-# fallback.
-
-include_suites:
-  # HC main (Full + QtrExp decomp)
-  - H1.ceo2.decomp
-  - H1.ceo2.decomp.qtrexp
-  # HFC moderator (Full + QtrExp decomp)
-  - H1.2.ceo2.decomp
-  - H1.2.ceo2.decomp.qtrexp
-  # §3.4 CFvol moderator
-  - H1.3.cfvol
-  # §4.1 drivers
-  - H11
-  - H11-Lag2
-  - H23
-  - H24
-  - H24b
-  # §4.2 reaction
-  - H14c.ceo2.decomp
-  - H18.ceo2.decomp
-  # §4.3 endogeneity suites (H.death.did, H.dwz.fd, H.lewbel.iv) have non-
-  # canonical suite_spec schemas + treated/post/event-difference IVs that
-  # don't map to summary-stat reporting. Their cash DV + ClarityCEO/UncResCEO
-  # stats are already provided by H1.ceo2.decomp; no info loss from omission.
+# WE DONT REPORT"). Variable list = whatever thesis_suites' specs declare as
+# IVs/DVs/controls; runtime-computed IVs (ClarityCEO, UncResCEO) sourced from
+# per-suite runner summary_stats.csv fallback.
+#
+# 2026-05-04: include_suites: REMOVED.  Single source of truth for which
+# suites enter Table 1 is now `thesis_suites:` in
+# config/suite_render_order.yaml.  generate_summary_stats.py reads
+# render.thesis_suites and falls back to legacy include_suites only if
+# thesis_suites is absent (should never happen in v7+).
 
 # Anchor panel per variable — where to pull observations from for a shared var.
 # Default (unset) = first-encountered suite in render order. Sources thesis_suites

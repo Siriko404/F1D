@@ -38,27 +38,46 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 YAML_PATH = ROOT / "config" / "variables.yaml"
+SUITE_RENDER_ORDER = ROOT / "config" / "suite_render_order.yaml"
 ECONOMETRIC_DIR = ROOT / "outputs" / "econometric"
 OUT_FRAG = HERE / "variable_definitions.tex"
 OUT_STANDALONE = HERE / "variable_definitions_standalone.tex"
 OUT_PDF = HERE / "variable_definitions_standalone.pdf"
 
-# 12 v7 thesis-body suite dirs.  Update when the thesis suite roster changes.
-# Source-of-truth = config/suite_render_order.yaml `thesis_suites:`.
-THESIS_DIRS = [
-    "h1_cash_holdings_ceo2iv_decomp",
-    "h1_cash_holdings_ceo2iv_decomp_qtrexp",
-    "h1_2_cash_constraint_ceo2iv_decomp",
-    "h1_2_cash_constraint_ceo2iv_decomp_qtrexp",
-    "h1_3_cfvol_moderation",
-    "h11_prisk_uncertainty",
-    "h11_prisk_uncertainty_lag",
-    "h23_competition_uncertainty",
-    "h24_us_epu",
-    "h24b_global_epu",
-    "h14c_spread_bgt_level_ceo2iv_decomp",
-    "h18_cccl_received_ceo2iv_decomp",
-]
+
+def load_thesis_suite_ids() -> List[str]:
+    """Read thesis_suites: from suite_render_order.yaml — single source of truth.
+    Replaces the previously-hardcoded THESIS_DIRS list to eliminate drift between
+    the YAML registry and the dir-name list used here.
+    """
+    cfg = yaml.safe_load(SUITE_RENDER_ORDER.read_text(encoding="utf-8"))
+    suite_ids = cfg.get("thesis_suites") or []
+    if not suite_ids:
+        raise RuntimeError(f"No thesis_suites: list in {SUITE_RENDER_ORDER}")
+    return list(suite_ids)
+
+
+def suite_id_to_dir(suite_id: str) -> str:
+    """Find the econometric output dir_name for a given suite_id by globbing
+    for the latest suite_spec_<id>.json under outputs/econometric/.
+    """
+    matches = sorted(ECONOMETRIC_DIR.glob(f"*/*/suite_spec_{suite_id}.json"))
+    if not matches:
+        raise RuntimeError(
+            f"No suite_spec_{suite_id}.json found under {ECONOMETRIC_DIR} "
+            f"(suite registered in thesis_suites but never run)."
+        )
+    return matches[-1].parent.parent.name
+
+
+def derive_thesis_dirs() -> List[str]:
+    """Derive THESIS_DIRS from suite_render_order.yaml `thesis_suites:` list.
+    Single source of truth — eliminates the 3-parallel-list drift risk.
+    """
+    return [suite_id_to_dir(sid) for sid in load_thesis_suite_ids()]
+
+
+THESIS_DIRS = derive_thesis_dirs()  # derived at import; YAML is the spec
 
 # Vars referenced by name inside another vardef's formula — must stay even if
 # they are not directly used in any spec (would create dangling references).
@@ -580,6 +599,26 @@ def main() -> int:
 
     used = collect_used_vars()
     print(f"Used vars from {len(THESIS_DIRS)} thesis specs: {len(used)} (incl. ALWAYS_KEEP).")
+
+    # RAISE-GUARD: every used var MUST have a registry entry or HAND_STUB.
+    # Catches "spec adds a new variable but registry/HAND_STUBS not updated"
+    # silent-skip drift that would leave readers seeing a regression cell with
+    # no appendix definition.
+    registered_cols = set()
+    for v in merged.values():
+        if not isinstance(v, dict):
+            continue
+        c = column_of(v)
+        if c:
+            registered_cols.add(c)
+        for c2 in (v.get("columns") or []):
+            registered_cols.add(c2)
+    unmatched = used - registered_cols
+    if unmatched:
+        raise ValueError(
+            f"Used vars not in variables.yaml or HAND_STUBS: {sorted(unmatched)}\n"
+            f"Add a HAND_STUB entry in this file or extend config/variables.yaml."
+        )
 
     filtered = filter_to_used(merged, used)
     print(f"Filtered registry: {len(filtered)} entries (from {len(merged)}).")
