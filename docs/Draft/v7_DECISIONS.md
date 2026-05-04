@@ -316,50 +316,36 @@ The two triggers cover the two load-bearing components of the DWZ 2021 speech-un
 
 ---
 
-## Pending decisions (to lock in Step 1-3)
+## Pending decisions reconciliation (closed 2026-05-04)
 
-### PD1 — §III subsection count
-Template suggests 4 (Data + 3 analyses). Current empirical body fits 3 main analyses (HC + HFC + CFvol) → matches template. **Lock as 1 + 3 = 4 subsections.**
+### PD1 — §III subsection count — **RESOLVED via D6 + D15 + D31**
+Resolved as **5 subsections**: III.A Data + III.B HC + III.C HFC + III.D CFvol + III.E Endogeneity (D6 layout; D15 LATE×16 + D31 closed §III.E with H1.2+H1.3 modus tollens). One more than the template's 4-suggested; deviation justified by §III.E endogeneity-defense subsection.
 
-### PD2 — §IV subsection count
-Template suggests 2. Current §4 has 3 sub-blocks (drivers + outsider reaction + endogeneity). Three options:
-- (a) Collapse to 2: e.g., "Construct Validity and Outsider Reaction" + "Identification" — drops driver/reaction asymmetry framing
-- (b) Stretch to 3: keep current granularity, deviate from template's 2-suggested
-- (c) Restructure: drivers move to §II (construct validity); §IV is reaction + endogeneity (=2 blocks per template)
-→ NEEDS DECISION
+### PD2 — §IV subsection count — **RESOLVED via D5 + D7 + D13**
+Resolved as **2 subsections**: IV.A Market Information-Asymmetry Channel (Spread) + IV.B Disclosure-Insufficiency Channel (CCCL). Drivers moved to §II.5 construct validity (D5); endogeneity moved to §III.E. Matches template's 2-suggested.
 
-### PD3 — Hypothesis labels (HC / HFC / CFvol)
-v6 has HC + HFC formal labels in §2.4; CFvol no formal label.
-Options:
-- (a) Promote: H1 (HC) / H2 (HFC) / H3 (HCFvol)
-- (b) Demote: drop HC/HFC labels; just use "Hypothesis 1/2/3" with descriptive subsection titles
-- (c) Verbatim hypothesis statements: write each hypothesis as a numbered, italicized declarative sentence
-→ NEEDS DECISION
+### PD3 — Hypothesis labels — **PARTIALLY RESOLVED via D11 + D19**
+Resolved for §II hypothesis-development: **H1 / H1a / H1b** (D11 nested labels; D19 bold + italicized declarative format). NOT fully resolved for §III subsection titles which still parenthetically include legacy labels "(HC)" and "(HFC)" alongside descriptive titles ("Cash Holdings (HC)", "Constraint Amplification (HFC)"). Body prose uses H1/H1a/H1b consistently. Subsection-title cleanup is a pure typography pass; flagged for user decision.
 
-### PD4 — Pre-Commitment Statement (v6 §2.1)
-v6 §2.1 = filler per audit. Options:
-- (a) Drop entirely; absorb pre-registration framing into §2.4 Hypothesis Development
-- (b) Keep as 1-paragraph block at end of §II (compressed to ~80 words)
-→ NEEDS DECISION
+### PD4 — Pre-Commitment Statement (v6 §2.1) — **RESOLVED via D24**
+Resolved: dropped entirely from v7. Pre-registration framing absorbed into §II.2 Hypothesis Development.
 
-### PD5 — Empirical findings inventory — what makes the cut
-v7 §III + §IV must report a tight subset. Currently 14+ suite tables exist. Template suggests 9 max. Need to lock:
-- Body tables (HC main / HFC main / CFvol main) — clear KEEP
-- §IV.drivers (4 drivers: PRisk + US-EPU + GEPU + TSIMM) — KEEP / DROP / which?
-- §IV.reaction (Spread + SEC) — KEEP / DROP / which?
-- §IV.endogeneity (Death DiD + DWZ FD + Lewbel) — KEEP / DROP / which?
-→ NEEDS DECISION
+### PD5 — Empirical findings inventory — **RESOLVED via D5 + D6 + D17 + D31 + per_suite/_thesis_input.tex**
+Resolved: 12 thesis-body tables locked in `per_suite/_thesis_input.tex`:
+- §III.B HC: H1.ceo2.decomp + H1.ceo2.decomp.qtrexp (2 tables)
+- §III.C HFC: H1.2.ceo2.decomp + H1.2.ceo2.decomp.qtrexp (2 tables)
+- §III.D CFvol: H1.3.cfvol (1 table)
+- §II.5 drivers: H11 + H11-Lag2 + H23 + H24 + H24b (5 tables, composite)
+- §IV.A reaction: H14c.ceo2.decomp (1 table)
+- §IV.B reaction: H18.ceo2.decomp (1 table)
+- §III.E: 0 tables (closed via H1.2 + H1.3 reuse per D31)
+Total: 12 tables (3 above template's suggested 9; deviation justified by 5-driver composite + decomp pairs).
 
-### PD6 — Narrative anchor / story arc
-Three candidates:
-- (a) DWZ-extension thesis: "we extend DWZ 2021 from market/governance to firm financing-policy" (current v6 framing)
-- (b) Insider-outsider asymmetry thesis: "two segments of the call carry signals to two audiences" (current v6 secondary framing)
-- (c) Precautionary-cash thesis: "earnings-call CEO speech uncertainty is a real-time precautionary-cash signal" (closer to OPSW/Bates roots)
-→ NEEDS DECISION
+### PD6 — Narrative anchor — **RESOLVED via D4 + Beat 1-6**
+Resolved as **(c) Precautionary-cash thesis** (D4): primary contribution is precautionary-cash signal from CEO speech uncertainty, secondary is DWZ-extension framing. All 6 beats locked + NLM-verbatim verified per Step 3.
 
-### PD7 — Two-column body width: text vs tables
-Template mandates two-column traditional fin/econ design. Tables are wide (12 cols × bordered). Use `sidewaystable*` (current v6 approach) or condense tables to fit two-column? Top journals (JF, JFE, RFS) use sidewaystable for wide regression results — KEEP `sidewaystable*` is current default and template-compatible.
-→ Recommended LOCK: keep `sidewaystable*` for body regression tables.
+### PD7 — Two-column body width — **RESOLVED via D23**
+Resolved: `sidewaystable*` for body regression tables (landscape pages with content upright). Per JF/JFE/RFS standard practice for wide regression tables.
 
 ---
 

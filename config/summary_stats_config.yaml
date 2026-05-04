@@ -30,40 +30,29 @@ anchor_panel:
   CashFlowAt: H1.ceo2.decomp
   DailyVola: H1.ceo2.decomp
 
-# Variables to skip (placeholders, mean-centered duplicates, interactions).
+# Variables to skip from Table 1.
+#
+# 2026-05-04: per advisor 5-fix #4, all vars matching naming patterns are
+# auto-excluded by generate_summary_stats.is_excluded_by_pattern():
+#   - endswith("_c")  -- mean-centered derivatives (runtime constructs)
+#   - "_x_" in name   -- interaction terms (any IV * moderator)
+# Adding a new interaction (e.g., UncResCEO_c_x_NewModerator) auto-excludes
+# without editing this list.  _lead / _lag forms are NOT auto-excluded --
+# body suites report them directly (CashRatio_lead, BGTLevel_Spread_lead1,
+# PRisk_lag2) so they belong in Table 1 unless explicitly listed below.
+#
+# Below: only entries that DON'T match a pattern but are still suppressed
+# (legacy v5 IVs from before the partition split, or transformed forms whose
+# raw analogue is in extra_vars).
 exclude_vars:
+  # Lagged DV indicator -- "Lagged_DV" does not contain "_lag" substring; keep explicit.
   - Lagged_DV
-  - UncResCEO_c
-  - UncResCEO_QtrExp_c
-  - ClarityCEO_c
-  - ClarityCEO_QtrExp_c
-  - UncPreCEO_c
-  # HFC interaction terms (runtime constructs)
-  - UncResCEO_c_x_Unrated
-  - ClarityCEO_c_x_Unrated
-  - UncPreCEO_c_x_Unrated
-  - UncResCEO_QtrExp_c_x_Unrated
-  - ClarityCEO_QtrExp_c_x_Unrated
-  # CFvol interaction terms
-  - UncResCEO_c_x_HighCFvol
-  - ClarityCEO_c_x_HighCFvol
-  - UncPreCEO_c_x_HighCFvol
-  - HighCFvol
-  # H23 competition transformations
+  # H23 transformed forms (raw TotalSimilarity shown via extra_vars instead)
   - z_log_TotalSimilarity
   - HighTSIMM
-  - UncAnsMgr_c_x_zlogTSIMM
-  - UncAnsMgr_c_x_HighTSIMM
-  # Legacy v5 IV interactions (parents of decomp)
-  - UncAnsCEO_c
-  - UncAnsMgr_c
-  - UncPreMgr_c
-  - UncAnsMgr_c_x_BelowIG
-  - UncAnsMgr_c_x_IG
-  - UncAnsMgr_c_x_Unrated
-  # Driver/Reaction suites still report 6-DV partition rows in their parents;
-  # body §4.1 (Path a rebuild pending) should drop these. Until rebuild lands,
-  # exclude here so summary stats remain v6-scope-clean.
+  # H1.3 indicator (binary; raw CFvol not in any suite as primitive)
+  - HighCFvol
+  # Legacy v5 IVs (CEO/Mgr/NoCEO partition; v7 uses CEO-only decomp)
   - UncAnsMgr
   - UncPreMgr
   - UncAnsCEO

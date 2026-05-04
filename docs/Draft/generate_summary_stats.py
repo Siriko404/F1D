@@ -145,6 +145,27 @@ def tex_escape(s: str) -> str:
     return s.replace("_", r"\_")
 
 
+_EXCLUDE_PATTERNS = (
+    # Mean-centered derivatives (runtime constructs; raw form is what readers want)
+    lambda v: v.endswith("_c"),
+    # Interaction terms (product of centered IV * moderator; not a primitive)
+    lambda v: "_x_" in v,
+)
+# NOTE: _lead / _lag forms are NOT auto-excluded -- body suites report them
+# directly as DVs (CashRatio_lead, BGTLevel_Spread_lead1) or as IVs
+# (PRisk_lag2), so they belong in Table 1.  Add explicit exclude_vars
+# entries if a specific lead/lag form should be suppressed.
+
+
+def is_excluded_by_pattern(var: str) -> bool:
+    """Per advisor 5-fix #4: replace hand-curated exclude_vars enumeration
+    with naming-pattern test for centered/interaction derivatives.  Adding
+    a new interaction (e.g., UncResCEO_c_x_NewModerator) auto-excludes
+    without needing to extend exclude_vars in YAML.
+    """
+    return any(pat(var) for pat in _EXCLUDE_PATTERNS)
+
+
 def build_panels(include_suites, specs, panels, runner_stats_map, anchor_overrides, exclude_vars):
     """Classify vars into IV / DV / Control with priority IV > DV > Control.
 
@@ -174,9 +195,14 @@ def build_panels(include_suites, specs, panels, runner_stats_map, anchor_overrid
         for col in spec.columns:
             dv_set.add(col.dv); add(col.dv, sid)
 
-    iv_set -= exclude_vars
-    dv_set -= exclude_vars | iv_set
-    control_set -= exclude_vars | iv_set | dv_set
+    # Per advisor 5-fix #4: combine pattern-test (auto-excludes centered /
+    # interaction / lead / lag forms) with explicit exclude_vars (legacy +
+    # historical entries that don't fit the pattern).
+    pattern_excluded = {v for v in iv_set | dv_set | control_set if is_excluded_by_pattern(v)}
+    full_exclude = exclude_vars | pattern_excluded
+    iv_set -= full_exclude
+    dv_set -= full_exclude | iv_set
+    control_set -= full_exclude | iv_set | dv_set
 
     def resolve_anchor(var: str):
         """Return (suite_id, panel, runner_stats) for the anchor.
@@ -200,6 +226,7 @@ def build_panels(include_suites, specs, panels, runner_stats_map, anchor_overrid
         return None, None, None
 
     rows = []
+    coverage_failures: list[str] = []
     for panel_label, vars_list in [
         ("A. Independent Variables", sorted(iv_set)),
         ("B. Dependent Variables", sorted(dv_set)),
@@ -208,7 +235,11 @@ def build_panels(include_suites, specs, panels, runner_stats_map, anchor_overrid
         for var in vars_list:
             sid, panel, csv_stats = resolve_anchor(var)
             if panel is None and csv_stats is None:
-                print(f"  [skip] {var}: not in any panel column or runner csv")
+                # Per advisor 5-fix #3: COVERAGE FAILURE.  Used vars must have
+                # an anchor panel or runner CSV; silently skipping them leaves
+                # readers with a regression cell whose construct has no row in
+                # Table 1.  Collect all failures, then raise once at end.
+                coverage_failures.append(var)
                 continue
             if panel is not None:
                 sample = apply_main_filter(panel)
@@ -229,6 +260,17 @@ def build_panels(include_suites, specs, panels, runner_stats_map, anchor_overrid
                     **stats,
                 }
             )
+    if coverage_failures:
+        raise RuntimeError(
+            "summary_stats coverage failure -- the following thesis-suite "
+            "variables have no anchor panel column AND no runner CSV row "
+            "(silent-skip would leave Table 1 incomplete):\n  - "
+            + "\n  - ".join(sorted(coverage_failures))
+            + "\nFix steps: (a) add to summary_stats_config.exclude_vars if "
+            "intentionally suppressed (e.g., interaction terms); or (b) add "
+            "an anchor_panel: mapping for the var; or (c) ensure the runner "
+            "emits the var in summary_stats.csv."
+        )
     return pd.DataFrame(rows)
 
 

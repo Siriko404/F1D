@@ -1,5 +1,12 @@
 """Builder for R&D Sales variable.
 
+RDSales = xrdy_Q4-annual / saley_Q4-annual (Bates 2009 / Jiang-John-Larsen
+2021 R&D-over-sales convention; missing xrd treated as zero; non-positive
+sales treated as NaN).  Implementation in src/f1d/shared/variables/
+_compustat_engine.py L984-993.
+
+The earlier xrdq/atq form was deprecated 2026-04-02 in favor of xrdy/saley.
+
 Reads raw Compustat quarterly data via the shared CompustatEngine.
 Returns one column: file_name, RDSales.
 """
@@ -17,9 +24,10 @@ from f1d.shared.path_utils import get_latest_output_dir
 
 
 class RDIntensityBuilder(VariableBuilder):
-    """Build RDSales = xrdq / atq from raw Compustat quarterly data.
+    """Build RDSales = xrdy_Q4-annual / saley_Q4-annual via CompustatEngine.
 
-    Missing R&D (xrdq = NaN) is treated as zero per standard convention.
+    Missing R&D (xrdy = NaN) is treated as zero per standard convention.
+    Non-positive sales -> NaN.
     """
 
     def __init__(self, config: Dict[str, Any]):
@@ -48,7 +56,7 @@ class RDIntensityBuilder(VariableBuilder):
         return VariableResult(
             data=data,
             stats=stats,
-            metadata={"column": "RDSales", "source": "Compustat/xrdq,atq"},
+            metadata={"column": "RDSales", "source": "Compustat/xrdy,saley (Q4-annual)"},
         )
 
 

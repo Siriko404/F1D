@@ -139,7 +139,14 @@ def main() -> int:
     print(f"summary_stats.csv entries: {len(ss_vars)}")
 
     ss_cfg = yaml.safe_load(SUMMARY_CONFIG.read_text(encoding="utf-8")) if SUMMARY_CONFIG.exists() else {}
-    exclude = set(ss_cfg.get("exclude_vars") or [])
+    explicit_exclude = set(ss_cfg.get("exclude_vars") or [])
+    # Mirror generate_summary_stats.is_excluded_by_pattern (advisor 5-fix #4):
+    # auto-exclude centered + interaction derivatives.
+    pattern_exclude = {
+        v for v in used
+        if v.endswith("_c") or "_x_" in v
+    }
+    exclude = explicit_exclude | pattern_exclude
 
     fails = []
 
