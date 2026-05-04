@@ -66,17 +66,21 @@ file\_name, ceo\_id, ceo\_name, gvkey, ff12\_code, ff12\_name, start\_date & Mas
 \endfoot
 \bottomrule
 \endlastfoot
+ClarityCEO & CEO clarity persistent-style component (DWZ Eqn 5).\par\smallskip\textit{Formula:} ClarityCEO$_i$ = $-\widehat{\mathrm{FE}}_i$ where $\widehat{\mathrm{FE}}_i$ is the CEO-$i$ fixed-effect estimate from the panel regression UncAnsCEO$_{ic}$ = $\alpha + \sum_i \mathrm{FE}_i \cdot \mathbb{1}[\text{CEO}=i] + \mathbf{X}_{ic}\boldsymbol\gamma + \varepsilon_{ic}$ over the call-level Q\&A uncertainty panel; controls $\mathbf{X}$ are the DWZ extended-controls vector. The sign flip on $\widehat{\mathrm{FE}}_i$ makes higher ClarityCEO mean ``CEO speaks more clearly'' (lower mean uncertainty). Persistent CEO trait. & \seqsplit{.../ceo\_clarity\_extended/} & \citet{dzielinski2021} (Section 4.4 Eqn 5, p.16) \\
+\addlinespace[2pt]
+ClarityCEO\_QtrExp & ClarityCEO under within-tenure expanding window.\par\smallskip\textit{Formula:} As ClarityCEO, but the CEO fixed-effect regression is re-estimated on an expanding within-CEO window using only calls of CEO $i$ available up to and including focal call $c$. Strictly look-ahead-free. & \seqsplit{.../ceo\_clarity\_expanding/} & thesis QtrExp variant of \citet{dzielinski2021} Eqn 5 \\
+\addlinespace[2pt]
 NegCall & Entire-call negative sentiment percentage.\par\smallskip\textit{Formula:} Ratio of negative words to total words in the entire call, based on LM 2011 negative-words list. Per DWZ 2021 Appendix Table A.1: 'percentage of negative words in all words spoken by the CEO, CFO and analysts attending the call.' & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (Section 4.4, p.18; Appendix Table A.1, p.54) \\
 \addlinespace[2pt]
 UncAnsCEO & CEO-only Q\&A uncertainty percentage.\par\smallskip\textit{Formula:} CEO Q\&A uncertainty (\%) = UnctWordsAnsCEO / WordsAnsCEO (DWZ 2021 Eqn 2). Uncertainty wordlist = LM 2011 Master Dictionary 'uncertainty' list (297 words, Aug 2014 version). CEO identified via Execucomp ceoann field. & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (Section 4.2, Eqn 2, p.13; Appendix Table A.1, p.54) \\
 \addlinespace[2pt]
-UncAnsMgr & Manager Q\&A uncertainty percentage (all managers including CEO).\par\smallskip\textit{Formula:} Manager Q\&A uncertainty (\%) = (count of LM 2011 uncertainty-wordlist words spoken by managers in Q\&A segment) / (total words spoken by managers in Q\&A segment). Construction strategy follows DWZ 2021 Eqn (2); manager-pool identification follows BGT 2018 segment-split code (iangow/bgt replication). 'Manager' pool includes CEO plus other managerial speakers, extending DWZ which separates CEO/CFO. & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (measurement strategy, Eqn 2); \citet{bushee2018} (manager-pool identification via iangow/bgt); thesis extension to pooled manager speakers \\
-\addlinespace[2pt]
 UncPreCEO & CEO-only presentation uncertainty percentage.\par\smallskip\textit{Formula:} CEO Presentation uncertainty (\%) = UnctWordsPreCEO / WordsPreCEO (DWZ 2021 Eqn 1). Uncertainty wordlist = LM 2011 (297 words). & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (Section 4.2, Eqn 1, p.13; Appendix Table A.1, p.54) \\
 \addlinespace[2pt]
-UncPreMgr & Manager presentation uncertainty percentage.\par\smallskip\textit{Formula:} Manager Presentation uncertainty (\%) = (count of LM 2011 uncertainty-wordlist words by managers in Presentation segment) / (total manager words in Presentation segment). Construction strategy follows DWZ 2021 Eqn (1); manager-pool identification and Pres/Ans segment split follow BGT 2018 via iangow/bgt replication code. & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (measurement strategy, Eqn 1); \citet{bushee2018} (segment split + manager pool); thesis extension to pooled manager speakers \\
-\addlinespace[2pt]
 UncQue & Analyst Q\&A uncertainty percentage.\par\smallskip\textit{Formula:} Analyst Q\&A uncertainty (\%) = UnctWordsQue / WordsQue (DWZ 2021 Eqn 3). Uncertainty wordlist = LM 2011 (297 words). & \seqsplit{outputs/2\_Textual\_Analysis/2.2\_Variables} & \citet{dzielinski2021} (Section 4.2, Eqn 3, p.13; Appendix Table A.1, p.54) \\
+\addlinespace[2pt]
+UncResCEO & CEO Q\textbackslash{}\&A residual call-state uncertainty component (DWZ Eqn 4).\par\smallskip\textit{Formula:} $\widehat\varepsilon_{ic}$ = the residual from the panel regression UncAnsCEO$_{ic}$ = $\alpha + \sum_i \mathrm{FE}_i \cdot \mathbb{1}[\text{CEO}=i] + \mathbf{X}_{ic}\boldsymbol\gamma + \varepsilon_{ic}$ that produces ClarityCEO. By OLS first-order conditions, the within-CEO mean of UncResCEO is exactly zero by construction. Captures call-level deviation in CEO Q\&A uncertainty after stripping out the persistent CEO mean. & \seqsplit{.../ceo\_clarity\_extended/} & \citet{dzielinski2021} (Section 4.4 Eqn 4, p.16) \\
+\addlinespace[2pt]
+UncResCEO\_QtrExp & UncResCEO under within-tenure expanding window.\par\smallskip\textit{Formula:} As UncResCEO, but the residualization regression is re-estimated on an expanding within-CEO window. Strictly look-ahead-free. & \seqsplit{.../ceo\_clarity\_expanding/} & thesis QtrExp variant of \citet{dzielinski2021} Eqn 4 \\
 \addlinespace[2pt]
 \end{longtable}
 
@@ -97,16 +101,6 @@ UncQue & Analyst Q\&A uncertainty percentage.\par\smallskip\textit{Formula:} Ana
 \endfoot
 \bottomrule
 \endlastfoot
-BGTAvg\_Amihud & BGT 25-day symmetric average Amihud illiquidity (H7e).\par\smallskip\textit{Formula:} Mean daily Amihud illiquidity over [-25, +25] trading days around call (51-day symmetric window, day 0 INCLUDED). F1D extension to BGT 2018. & \seqsplit{.../variables/bgt\_long\_window\_amihud.py} & bgt2018 (window); F1D extension (symmetric average shape) \\
-\addlinespace[2pt]
-BGTAvg\_Spread & BGT 25-day symmetric average bid-ask spread (H14e).\par\smallskip\textit{Formula:} Mean daily relative bid-ask spread over [-25, +25] trading days around call (51-day symmetric window, day 0 INCLUDED). Spread = (ASK - BID) / ((ASK + BID) / 2). F1D extension to BGT 2018. & \seqsplit{.../variables/bgt\_long\_window\_spread.py} & bgt2018 (window); F1D extension (symmetric average shape) \\
-\addlinespace[2pt]
-BGTDelta\_Amihud & BGT 25-day post-pre Amihud illiquidity change (H7d).\par\smallskip\textit{Formula:} Mean Amihud over post window [+1, +25] minus mean over pre window [-25, -1] trading days (day 0 EXCLUDED). F1D extension to BGT 2018. & \seqsplit{.../variables/bgt\_long\_window\_amihud.py} & bgt2018 (window); F1D extension (delta shape) \\
-\addlinespace[2pt]
-BGTDelta\_Spread & BGT 25-day post-pre bid-ask spread change (H14d).\par\smallskip\textit{Formula:} Mean spread over [+1, +25] minus mean over [-25, -1] trading days (day 0 EXCLUDED). F1D extension to BGT 2018. & \seqsplit{.../variables/bgt\_long\_window\_spread.py} & bgt2018 (window); F1D extension (delta shape) \\
-\addlinespace[2pt]
-BGTLevel\_Amihud & Compute BGT (2018) long-window Amihud illiquidity around earnings calls.\par\smallskip\textit{Formula:} CRSP via get\_raw\_daily\_data (see module: src/f1d/shared/variables/bgt\_long\_window\_amihud.py) & \seqsplit{CRSP via get\_raw\_daily\_data} & Bushee, Gow \& Taylor (2018, JAR) 56(1):85-121 \\
-\addlinespace[2pt]
 BGTLevel\_Spread & Compute BGT (2018) long-window closing bid-ask spread around earnings calls.\par\smallskip\textit{Formula:} CRSP via get\_raw\_daily\_data (closing BID/ASK) (see module: src/f1d/shared/variables/bgt\_long\_window\_spread.py) & \seqsplit{CRSP via get\_raw\_daily\_data} & Bushee, Gow \& Taylor (2018, JAR) [window]; Lee (2016, TAR) [formula] \\
 \addlinespace[2pt]
 Capex & Build Capex = capxy\_annual / atq\_lag from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/capxy\_Q4/atq (see module: src/f1d/shared/variables/capex\_intensity.py) & \seqsplit{Compustat/capxy\_Q4/atq} & Bates, Kahle \& Stulz (2009, JF) \\
@@ -115,39 +109,23 @@ CashFlowAt & Build CashFlow = oancfy / atq from raw Compustat quarterly data.\pa
 \addlinespace[2pt]
 CashRatio & Build CashRatio = cheq / atq from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/cheq/atq (see module: src/f1d/shared/variables/cash\_holdings.py) & \seqsplit{Compustat/cheq/atq} & \citet{bates2009} (Section II, p.1991; BKS use annual che/at --- we use quarterly cheq/atq for panel alignment) \\
 \addlinespace[2pt]
-ChangDebtChoice & ChangDebtChoice (description not in module docstring)\par\smallskip\textit{Formula:} see module: src/f1d/shared/variables/\_compustat\_engine.py & \seqsplit{.../variables/\_compustat\_engine.py} & cdh2006 \\
-\addlinespace[2pt]
-ChangExternalFunding & ChangExternalFunding (description not in module docstring)\par\smallskip\textit{Formula:} see module: src/f1d/shared/variables/\_compustat\_engine.py & \seqsplit{.../variables/\_compustat\_engine.py} & cdh2006 \\
-\addlinespace[2pt]
-DailyVola & Build Volatility from raw CRSP daily stock files via CRSPEngine.\par\smallskip\textit{Formula:} CRSP/RET (see module: src/f1d/shared/variables/volatility.py) & \seqsplit{CRSP/RET} & dwz2021 \\
-\addlinespace[2pt]
-DebtToCapital & Build DebtToCapital = total debt / (equity + total debt).\par\smallskip\textit{Formula:} Compustat/dlcq,dlttq,seqq (see module: src/f1d/shared/variables/debt\_to\_capital.py) & \seqsplit{Compustat/dlcq,dlttq,seqq} & rz1995 \\
+DailyVola & Annualized stock-return volatility computed on the inter-call CRSP daily-return window.\par\smallskip\textit{Formula:} Annualized standard deviation of CRSP daily returns over the inter-call window [prev\_call\_date + 5 days, call start\_date - 5 days], requiring >= 10 trading days. Formula: std(daily\_ret) * sqrt(252) * 100, expressed in percent. & \seqsplit{CRSP/RET} & \citet{dzielinski2021} \\
 \addlinespace[2pt]
 DivDummy & Build DivDummy = (dvy > 0).astype(float) from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/dvy>0 (see module: src/f1d/shared/variables/dividend\_payer.py) & \seqsplit{Compustat/dvy>0} & \citet{bates2009} (Section IV, p.2000; dividend payout dummy based on common dividends) \\
 \addlinespace[2pt]
-DivPayerQ & Build DivPayerQ = (dvpsxq > 0).astype(float) from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/dvpsxq>0 (quarterly ex-date) (see module: src/f1d/shared/variables/dividend\_payer\_quarterly.py) & \seqsplit{Compustat/dvpsxq>0} & Hoberg \& Prabhala (2009, RFS) --- Compustat item 26 (dvpsx) analog \\
-\addlinespace[2pt]
 EarnVol & Builder for Earnings Volatility (earnings\_volatility) variable.\par\smallskip\textit{Formula:} Compustat (see module: src/f1d/shared/variables/earnings\_volatility.py) & \seqsplit{Compustat} & \citet{duong2025} (Appendix B, p.30; 3-year rolling std of qoq asset-scaled earnings) \\
-\addlinespace[2pt]
-EquityDelayCon & Hoberg-Maksimovic (2015) equity-market financing constraint index (H22).\par\smallskip\textit{Formula:} Hoberg-Maksimovic (2015) firm-year equity-market financing constraint measure. Higher values = more constrained firm. Panel column is lowercase `equitydelaycon`; CamelCase name is the spec convention. See docs/provenance/h22.md for merge details. & \seqsplit{inputs/Hoberg\_Maksimovic/} & hm2015 \\
 \addlinespace[2pt]
 FirmMat & Builder for Firm Maturity (firm\_maturity) variable.\par\smallskip\textit{Formula:} Compustat (see module: src/f1d/shared/variables/firm\_maturity.py) & \seqsplit{Compustat} & \citet{biddle2009} (Appendix A, p.130; years since first CRSP appearance); alt \citet{leary2010} (App.\textasciitilde{}A p.354) \\
 \addlinespace[2pt]
-Leverage & Build Leverage = (dlcq + dlttq) / atq (interest-bearing debt only).\par\smallskip\textit{Formula:} Compustat/dlcq,dlttq,atq (see module: src/f1d/shared/variables/book\_lev.py) & \seqsplit{Compustat/dlcq,dlttq,atq} & bks2009, rz1995 \\
+Leverage & Build Leverage = (dlcq + dlttq) / atq (interest-bearing debt only).\par\smallskip\textit{Formula:} Compustat/dlcq,dlttq,atq (see module: src/f1d/shared/variables/book\_lev.py) & \seqsplit{Compustat/dlcq,dlttq,atq} & \citet{bates2009}, rz1995 \\
 \addlinespace[2pt]
-lnAssets & Build Size = ln(atq) from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/atq (see module: src/f1d/shared/variables/size.py) & \seqsplit{Compustat/atq} & dwz2021 \\
+lnAssets & Build Size = ln(atq) from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/atq (see module: src/f1d/shared/variables/size.py) & \seqsplit{Compustat/atq} & \citet{dzielinski2021} \\
 \addlinespace[2pt]
-Loss & Builder for Loss (H5 Control Variable).\par\smallskip\textit{Formula:} Compustat ibq < 0 (see module: src/f1d/shared/variables/loss\_dummy.py) & \seqsplit{Compustat ibq < 0} & \citet{biddle2009} (Appendix A, p.131; indicator for negative net income before extraordinary items) \\
+PRisk & Match quarterly PRisk onto each earnings call by (gvkey, calendar\_quarter).\par\smallskip\textit{Formula:} Hassan et al. (2019) quarterly PRisk (see module: src/f1d/shared/variables/prisk\_q.py) & \seqsplit{Hassan et al.} & \citet{hassan2020} \\
 \addlinespace[2pt]
-PayoutRatio\_q & Build PayoutRatio\_q = (dvpspq $\times$ cshoq) / ibq from Compustat.\par\smallskip\textit{Formula:} Compustat/(dvpspq*cshoq)/ibq (quarterly) (see module: src/f1d/shared/variables/payout\_ratio\_quarterly.py) & \seqsplit{Compustat/} & dds2004 \\
+RDSales & Build RDSales = xrdq / atq from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/xrdq,atq (see module: src/f1d/shared/variables/rd\_intensity.py) & \seqsplit{Compustat/xrdq,atq} & \citet{bates2009}, jjl2021 \\
 \addlinespace[2pt]
-PRisk & Match quarterly PRisk onto each earnings call by (gvkey, calendar\_quarter).\par\smallskip\textit{Formula:} Hassan et al. (2019) quarterly PRisk (see module: src/f1d/shared/variables/prisk\_q.py) & \seqsplit{Hassan et al.} & hhlt2019 \\
-\addlinespace[2pt]
-RDSales & Build RDSales = xrdq / atq from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/xrdq,atq (see module: src/f1d/shared/variables/rd\_intensity.py) & \seqsplit{Compustat/xrdq,atq} & bks2009, jjl2021 \\
-\addlinespace[2pt]
-RepurchaseIntensity & Build RepurchaseIntensity = quarterly\_prstkcy / lagged\_atq from Compustat.\par\smallskip\textit{Formula:} Compustat/quarterly\_prstkcy/lagged\_atq (see module: src/f1d/shared/variables/repurchase\_intensity.py) & \seqsplit{Compustat/quarterly\_prstkcy/lagged\_atq} & Thesis Advisor Suggestion \\
-\addlinespace[2pt]
-ROA & Build ROA = iby\_annual / avg\_assets from Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/iby,atq (see module: src/f1d/shared/variables/roa.py) & \seqsplit{Compustat/iby,atq} & \citet{wang2020}, dwz2021 \\
+ROA & Build ROA = iby\_annual / avg\_assets from Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/iby,atq (see module: src/f1d/shared/variables/roa.py) & \seqsplit{Compustat/iby,atq} & \citet{wang2020}, \citet{dzielinski2021} \\
 \addlinespace[2pt]
 SalesGrowth & Build SalesGrowth from raw Compustat quarterly data (annual Q4 panel).\par\smallskip\textit{Formula:} Compustat/saley\_Q4\_YoY (see module: src/f1d/shared/variables/sales\_growth.py) & \seqsplit{Compustat/saley\_Q4\_YoY} & \citet{biddle2009} (Section 3.2, p.117; pct change in sales) \\
 \addlinespace[2pt]
@@ -180,15 +158,13 @@ Turnover & Compute share turnover at earnings call date (VECTORIZED).\par\smalls
 \endfoot
 \bottomrule
 \endlastfoot
-BelowIG & Below-IG credit rating subsample indicator (H1.2).\par\smallskip\textit{Formula:} Binary = 1 if firm's S\&P long-term issuer credit rating is below investment grade (BB+ and below) at call date; 0 otherwise. Rated firms only (Unrated firms get separate indicator). & \seqsplit{runtime} & thesis (H1.2 rating subsample) \\
-\addlinespace[2pt]
-HighTSIMM & High product-market-similarity indicator (H1.1).\par\smallskip\textit{Formula:} Binary = 1 if firm-year TotalSimilarity (HP 2016 product market similarity) is above the within-year median; 0 otherwise. & \seqsplit{runtime} & hp2016 (TSIMM construction); thesis (H1.1 split convention) \\
+HighCFvol & High cash-flow-volatility moderator (H1.3).\par\smallskip\textit{Formula:} Binary = 1 if firm-quarter Han-Qiu (2007) cash-flow-volatility (16-quarter rolling std of OCF / $|$mean$|$ of OCF) is at or above the within-Fama-French-12-industry-year median; 0 otherwise. & \seqsplit{runtime} & \citet{hanqiu2007}; thesis (H1.3 split convention) \\
 \addlinespace[2pt]
 Lagged\_DV & Generic lagged-DV control (1Q lag of suite-specific DV).\par\smallskip\textit{Formula:} 1-quarter lag of the dependent variable, constructed at runtime per spec (DV varies per suite). Always included as base control to absorb persistence. & \seqsplit{runtime} & thesis convention (per feedback\_lagged\_dv.md) \\
 \addlinespace[2pt]
 Unrated & No-rating subsample indicator (H1.2).\par\smallskip\textit{Formula:} Binary = 1 if firm has no S\&P rating at call date; 0 otherwise. & \seqsplit{runtime} & thesis (H1.2 rating subsample) \\
 \addlinespace[2pt]
-z\_log\_TotalSimilarity & z-scored log of HP 2016 TotalSimilarity (continuous moderator, H1.1).\par\smallskip\textit{Formula:} z-score of log(1 + TotalSimilarity) computed within year. TotalSimilarity = HP 2016 firm-year product market similarity score (sum of pairwise cosine similarities $\times$ 100). & \seqsplit{runtime} & hp2016 \\
+z\_log\_TotalSimilarity & z-scored log of HP 2016 product-market-similarity (IV in H23 competition test).\par\smallskip\textit{Formula:} z-score of log(1 + TotalSimilarity) computed within year. TotalSimilarity = HP 2016 firm-year product market similarity score (sum of pairwise cosine similarities $\times$ 100). & \seqsplit{runtime} & \citet{hoberg2016} \\
 \addlinespace[2pt]
 \end{longtable}
 
@@ -211,81 +187,35 @@ z\_log\_TotalSimilarity & z-scored log of HP 2016 TotalSimilarity (continuous mo
 \endlastfoot
 AbsSurpDec & Absolute earnings surprise quintile magnitude.\par\smallskip\textit{Formula:} abs(SurpDec) --- unsigned magnitude of signed-quintile earnings surprise rank, values 0-5. & \seqsplit{runtime} & thesis (magnitude control independent of sign) \\
 \addlinespace[2pt]
-BGTAvg\_Amihud\_lead1 & 1Q lead of BGTAvg\_Amihud.\par\smallskip\textit{Formula:} 1-quarter lead of BGTAvg\_Amihud & \seqsplit{runtime} & bgt2018 (window); F1D extension (symmetric average shape) \\
-\addlinespace[2pt]
-BGTAvg\_Spread\_lead1 & 1Q lead of BGTAvg\_Spread.\par\smallskip\textit{Formula:} 1-quarter lead of BGTAvg\_Spread & \seqsplit{runtime} & bgt2018 (window); F1D extension (symmetric average shape) \\
-\addlinespace[2pt]
-BGTDelta\_Amihud\_lead1 & 1Q lead of BGTDelta\_Amihud.\par\smallskip\textit{Formula:} 1-quarter lead of BGTDelta\_Amihud & \seqsplit{runtime} & bgt2018 (window); F1D extension (delta shape) \\
-\addlinespace[2pt]
-BGTDelta\_Spread\_lead1 & 1Q lead of BGTDelta\_Spread.\par\smallskip\textit{Formula:} 1-quarter lead of BGTDelta\_Spread & \seqsplit{runtime} & bgt2018 (window); F1D extension (delta shape) \\
-\addlinespace[2pt]
-BGTLevel\_Amihud\_lead1 & 1Q lead of BGTLevel\_Amihud.\par\smallskip\textit{Formula:} 1-quarter lead of BGTLevel\_Amihud & \seqsplit{runtime} & bgt2018 \\
-\addlinespace[2pt]
-BGTLevel\_Spread\_lead1 & 1Q lead of BGTLevel\_Spread.\par\smallskip\textit{Formula:} 1-quarter lead of BGTLevel\_Spread & \seqsplit{runtime} & bgt2018, lee2016 \\
-\addlinespace[2pt]
-Capex\_lead & 1Q lead of Capex.\par\smallskip\textit{Formula:} 1-quarter lead of Capex & \seqsplit{runtime} & Bates, Kahle \& Stulz (2009, JF) \\
-\addlinespace[2pt]
-Capex\_lead2 & 2Q lead of Capex.\par\smallskip\textit{Formula:} 2-quarter lead of Capex & \seqsplit{runtime} & Bates, Kahle \& Stulz (2009, JF) \\
-\addlinespace[2pt]
-Capex\_lead3 & 3Q lead of Capex.\par\smallskip\textit{Formula:} 3-quarter lead of Capex & \seqsplit{runtime} & Bates, Kahle \& Stulz (2009, JF) \\
-\addlinespace[2pt]
-Capex\_lead4 & 4Q lead of Capex.\par\smallskip\textit{Formula:} 4-quarter lead of Capex & \seqsplit{runtime} & Bates, Kahle \& Stulz (2009, JF) \\
+BGTLevel\_Spread\_lead1 & 1Q lead of BGTLevel\_Spread.\par\smallskip\textit{Formula:} 1-quarter lead of BGTLevel\_Spread & \seqsplit{runtime} & \citet{bushee2018}, lee2016 \\
 \addlinespace[2pt]
 CashRatio\_lead & 1Q lead of CashRatio.\par\smallskip\textit{Formula:} 1-quarter lead of CashRatio & \seqsplit{runtime} & see base var \\
 \addlinespace[2pt]
-ChangDebtChoice\_lead & 1Q lead of ChangDebtChoice.\par\smallskip\textit{Formula:} 1-quarter lead of ChangDebtChoice & \seqsplit{runtime} & cdh2006 \\
+ClarityCEO\_c & Mean-centered ClarityCEO.\par\smallskip\textit{Formula:} ClarityCEO minus its sample mean (mean-centered for interaction interpretability). & \seqsplit{runtime} & thesis (interaction interpretability) \\
 \addlinespace[2pt]
-ChangExternalFunding\_lead & 1Q lead of ChangExternalFunding.\par\smallskip\textit{Formula:} 1-quarter lead of ChangExternalFunding & \seqsplit{runtime} & cdh2006 \\
+ClarityCEO\_QtrExp\_c & Mean-centered ClarityCEO\_QtrExp.\par\smallskip\textit{Formula:} ClarityCEO\_QtrExp minus its sample mean. & \seqsplit{runtime} & thesis (interaction interpretability) \\
 \addlinespace[2pt]
-DebtToCapital\_lead & 1Q lead of DebtToCapital.\par\smallskip\textit{Formula:} 1-quarter lead of DebtToCapital & \seqsplit{runtime} & rz1995 \\
+PRisk\_lag2 & 2Q lag of PRisk.\par\smallskip\textit{Formula:} 2-quarter lag of PRisk & \seqsplit{runtime} & \citet{hassan2020} \\
 \addlinespace[2pt]
-DeltaILLIQ\_lead1 & 1Q lead of DeltaILLIQ.\par\smallskip\textit{Formula:} 1-quarter lead of DeltaILLIQ & \seqsplit{runtime} & amihud02 \\
+UncPreCEO\_c & Mean-centered UncPreCEO.\par\smallskip\textit{Formula:} UncPreCEO minus its sample mean (mean-centered for interaction interpretability). & \seqsplit{runtime} & thesis (interaction interpretability) \\
 \addlinespace[2pt]
-DISP\_lag & 1Q lag of DISP.\par\smallskip\textit{Formula:} 1-quarter lag of DISP & \seqsplit{runtime} & \citet{wang2020} \\
+UncPreCEO\_c\_x\_HighCFvol & Interaction: UncPreCEO\_c \$\textbackslash{}times\$ HighCFvol (H1.3).\par\smallskip\textit{Formula:} Product: UncPreCEO\_c * HighCFvol. & \seqsplit{runtime} & thesis (CFvol moderator interaction) \\
 \addlinespace[2pt]
-DISP\_lead & 1Q lead of DISP.\par\smallskip\textit{Formula:} 1-quarter lead of DISP & \seqsplit{runtime} & \citet{wang2020} \\
+UncPreCEO\_c\_x\_Unrated & Interaction: UncPreCEO\_c \$\textbackslash{}times\$ Unrated (HFC).\par\smallskip\textit{Formula:} Product: UncPreCEO\_c * Unrated. & \seqsplit{runtime} & thesis (HFC interaction) \\
 \addlinespace[2pt]
-DivPayerQ\_lead1 & 1Q lead of DivPayerQ.\par\smallskip\textit{Formula:} 1-quarter lead of DivPayerQ & \seqsplit{runtime} & Hoberg \& Prabhala (2009, RFS) -- primary; Chetty \& Saez (2005, QJE) -- secondary (firm-quarter frequency precedent) \\
+UncResCEO\_c & Mean-centered UncResCEO.\par\smallskip\textit{Formula:} UncResCEO minus its sample mean (mean-centered for interaction interpretability). & \seqsplit{runtime} & thesis (interaction interpretability) \\
 \addlinespace[2pt]
-DSPREAD\_lead1 & 1Q lead of DSPREAD.\par\smallskip\textit{Formula:} 1-quarter lead of DSPREAD & \seqsplit{runtime} & lee2016 \\
+UncResCEO\_c\_x\_HighCFvol & Interaction: UncResCEO\_c \$\textbackslash{}times\$ HighCFvol (H1.3).\par\smallskip\textit{Formula:} Product: UncResCEO\_c * HighCFvol. & \seqsplit{runtime} & thesis (CFvol moderator interaction) \\
 \addlinespace[2pt]
-EquityDelayCon\_lead & 1Q lead of EquityDelayCon.\par\smallskip\textit{Formula:} 1-quarter lead of EquityDelayCon & \seqsplit{runtime} & hm2015 \\
+UncResCEO\_c\_x\_Unrated & Interaction: UncResCEO\_c \$\textbackslash{}times\$ Unrated (HFC).\par\smallskip\textit{Formula:} Product: UncResCEO\_c * Unrated. & \seqsplit{runtime} & thesis (HFC interaction) \\
 \addlinespace[2pt]
-Leverage\_lead & 1Q lead of Leverage.\par\smallskip\textit{Formula:} 1-quarter lead of Leverage & \seqsplit{runtime} & bks2009, rz1995 \\
+UncResCEO\_QtrExp\_c & Mean-centered UncResCEO\_QtrExp.\par\smallskip\textit{Formula:} UncResCEO\_QtrExp minus its sample mean. & \seqsplit{runtime} & thesis (interaction interpretability) \\
 \addlinespace[2pt]
-PayoutRatio\_q\_lead\_qtr & 1Q lead of PayoutRatio\_q (qtr-aligned).\par\smallskip\textit{Formula:} 1-quarter lead of PayoutRatio\_q (calendar-quarter aligned) & \seqsplit{runtime} & dds2004 \\
-\addlinespace[2pt]
-PostCallAmihud & Panel-time post-call Amihud illiquidity level (H7b).\par\smallskip\textit{Formula:} Panel-time mean daily Amihud illiquidity over the post-call period (call quarter + N following quarters per H7b runner spec). Computed on panel structure with two-way clustering. & \seqsplit{runtime} & thesis (H7b panel-time post-call construction) \\
-\addlinespace[2pt]
-PostCallAmihud\_lead1 & 1Q lead of PostCallAmihud.\par\smallskip\textit{Formula:} 1-quarter lead of PostCallAmihud & \seqsplit{runtime} & thesis (H7b panel-time post-call construction) \\
-\addlinespace[2pt]
-PostCallSpread & Panel-time post-call bid-ask spread level (H14b).\par\smallskip\textit{Formula:} Panel-time mean daily relative bid-ask spread over the post-call period (call quarter + N following quarters per H14b runner spec). Computed on panel structure with two-way clustering. & \seqsplit{runtime} & thesis (H14b panel-time post-call construction) \\
-\addlinespace[2pt]
-PostCallSpread\_lead1 & 1Q lead of PostCallSpread.\par\smallskip\textit{Formula:} 1-quarter lead of PostCallSpread & \seqsplit{runtime} & thesis (H14b panel-time post-call construction) \\
-\addlinespace[2pt]
-PRisk\_lag & 1Q lag of PRisk.\par\smallskip\textit{Formula:} 1-quarter lag of PRisk & \seqsplit{runtime} & hhlt2019 \\
-\addlinespace[2pt]
-PRisk\_lag2 & 2Q lag of PRisk.\par\smallskip\textit{Formula:} 2-quarter lag of PRisk & \seqsplit{runtime} & hhlt2019 \\
-\addlinespace[2pt]
-RDSales\_lead & 1Q lead of RDSales.\par\smallskip\textit{Formula:} 1-quarter lead of RDSales & \seqsplit{runtime} & bks2009, jjl2021 \\
-\addlinespace[2pt]
-RepurchaseIntensity\_lead\_qtr & 1Q lead of RepurchaseIntensity (qtr-aligned).\par\smallskip\textit{Formula:} 1-quarter lead of RepurchaseIntensity (calendar-quarter aligned) & \seqsplit{runtime} & Thesis Advisor Suggestion \\
-\addlinespace[2pt]
-UncAnsMgr\_c & Mean-centered UncAnsMgr.\par\smallskip\textit{Formula:} UncAnsMgr minus its sample mean (mean-centered for interaction interpretability) & \seqsplit{runtime} & thesis (interaction interpretability) \\
-\addlinespace[2pt]
-UncAnsMgr\_c\_x\_BelowIG & Interaction term: UncAnsMgr\_c x BelowIG.\par\smallskip\textit{Formula:} Product: UncAnsMgr\_c * BelowIG & \seqsplit{runtime} & thesis (interaction term) \\
-\addlinespace[2pt]
-UncAnsMgr\_c\_x\_HighTSIMM & Interaction term: UncAnsMgr\_c x HighTSIMM.\par\smallskip\textit{Formula:} Product: UncAnsMgr\_c * HighTSIMM & \seqsplit{runtime} & thesis (interaction term) \\
-\addlinespace[2pt]
-UncAnsMgr\_c\_x\_IG & Interaction term: UncAnsMgr\_c x IG.\par\smallskip\textit{Formula:} Product: UncAnsMgr\_c * IG & \seqsplit{runtime} & thesis (interaction term) \\
-\addlinespace[2pt]
-UncAnsMgr\_c\_x\_Unrated & Interaction term: UncAnsMgr\_c x Unrated.\par\smallskip\textit{Formula:} Product: UncAnsMgr\_c * Unrated & \seqsplit{runtime} & thesis (interaction term) \\
-\addlinespace[2pt]
-UncAnsMgr\_c\_x\_zlogTSIMM & Interaction term: UncAnsMgr\_c x zlogTSIMM.\par\smallskip\textit{Formula:} Product: UncAnsMgr\_c * zlogTSIMM & \seqsplit{runtime} & thesis (interaction term) \\
+UncResCEO\_QtrExp\_c\_x\_Unrated & Interaction: UncResCEO\_QtrExp\_c \$\textbackslash{}times\$ Unrated (HFC QtrExp).\par\smallskip\textit{Formula:} Product: UncResCEO\_QtrExp\_c * Unrated. & \seqsplit{runtime} & thesis (HFC QtrExp interaction) \\
 \addlinespace[2pt]
 \end{longtable}
 
-\subsection{Stage 9}
+\subsection{Macro / Regulatory Variables}
 
 \begin{longtable}{>{\raggedright\arraybackslash\ttfamily\footnotesize}p{3.8cm} >{\raggedright\arraybackslash}p{11.5cm} >{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{5cm}}
 \toprule
@@ -304,21 +234,9 @@ UncAnsMgr\_c\_x\_zlogTSIMM & Interaction term: UncAnsMgr\_c x zlogTSIMM.\par\sma
 \endlastfoot
 CCCL & SEC comment letter received (binary, forward-looking)\par\smallskip\textit{Formula:} 1 if SEC comment letter received in next quarter, 0 otherwise & \seqsplit{inputs/EDGAR\_CommentLetters} & cdm2013 \\
 \addlinespace[2pt]
-DeltaILLIQ & Change in Amihud illiquidity around earnings call\par\smallskip\textit{Formula:} PostCallILLIQ - PreCallILLIQ over [+1,+3] vs [-3,-1] days & \seqsplit{inputs/CRSP\_DSF} & amihud02 \\
-\addlinespace[2pt]
-DISP & Analyst forecast dispersion (Wang 2020)\par\smallskip\textit{Formula:} SD(latest analyst EPS forecasts in T-31..T-1 window) / prccq\_prior & \seqsplit{inputs/tr\_ibes} & \citet{wang2020} \\
-\addlinespace[2pt]
-DSPREAD & Change in closing bid-ask spread around earnings call\par\smallskip\textit{Formula:} mean(RelSpread[+1,+3]) - mean(RelSpread[-3,-1]) where RelSpread = 2*(ASK-BID)/(ASK+BID) & \seqsplit{inputs/CRSP\_DSF} & lee2016 \\
-\addlinespace[2pt]
 GEPU\_log & Davis (2016, NBER WP 22740) Global Economic Policy Uncertainty (GEPU) index (log-transformed, current-\$ GDP weights)\par\smallskip\textit{Formula:} log(GEPU\_current) --- GDP-weighted average of 16 country EPU indices, matched by calendar month of call start\_date & \seqsplit{inputs/EconomicPolicyUncertaintyIndex/Global} & \citet{davis2016} \\
 \addlinespace[2pt]
-GPR\_log & Caldara \& Iacoviello (2022, AER) headline Geopolitical Risk index (log-transformed, 10-newspaper recent version)\par\smallskip\textit{Formula:} log(GPR) --- recent headline Geopolitical Risk index, matched by calendar month of call start\_date & \seqsplit{inputs/matteoiacoviello/GPR\_Global} & ci2022 \\
-\addlinespace[2pt]
-SEC\_Letters\_fwd & SEC comment letter count (forward-looking)\par\smallskip\textit{Formula:} Count of SEC-originated letters (UPLOAD type) in next calendar quarter & \seqsplit{inputs/EDGAR\_CommentLetters} & cdm2013 (thesis extension to count) \\
-\addlinespace[2pt]
-TotalSimilarity & Hoberg-Phillips total product similarity\par\smallskip\textit{Formula:} Sum of pairwise cosine similarities from 10-K product descriptions & \seqsplit{inputs/TNIC} & hp2016 \\
-\addlinespace[2pt]
-US\_EPU\_log & Baker, Bloom \& Davis (2016, QJE) US News-Based Economic Policy Uncertainty index (log-transformed)\par\smallskip\textit{Formula:} log(News\_Based\_Policy\_Uncert\_Index) matched by calendar month of call start\_date & \seqsplit{inputs/EconomicPolicyUncertaintyIndex/US} & bbd2016 \\
+US\_EPU\_log & Baker, Bloom \& Davis (2016, QJE) US News-Based Economic Policy Uncertainty index (log-transformed)\par\smallskip\textit{Formula:} log(News\_Based\_Policy\_Uncert\_Index) matched by calendar month of call start\_date & \seqsplit{inputs/EconomicPolicyUncertaintyIndex/US} & \citet{baker2016} \\
 \addlinespace[2pt]
 \end{longtable}
 
