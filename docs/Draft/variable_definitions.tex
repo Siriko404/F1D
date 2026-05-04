@@ -103,7 +103,7 @@ lnAssets & Build Size = ln(atq) from raw Compustat quarterly data.\par\smallskip
 \addlinespace[2pt]
 PRisk & Match quarterly PRisk onto each earnings call by (gvkey, calendar\_quarter).\par\smallskip\textit{Formula:} Hassan et al. (2019) quarterly PRisk (see module: src/f1d/shared/variables/prisk\_q.py) & \seqsplit{Hassan et al.} & \citet{hassan2020} \\
 \addlinespace[2pt]
-RDSales & Build RDSales = xrdq / atq from raw Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/xrdq,atq (see module: src/f1d/shared/variables/rd\_intensity.py) & \seqsplit{Compustat/xrdq,atq} & \citet{bates2009}, jjl2021 \\
+RDSales & Build RDSales = xrdy\_Q4-annual / saley\_Q4-annual from Compustat quarterly data, following Bates 2009 / Jiang-John-Larsen 2021 R\textbackslash{}\&D-over-sales convention.\par\smallskip\textit{Formula:} Compustat/xrdy,saley (Q4-annual YTD; missing xrd treated as zero; non-positive sales treated as NaN; see module: src/f1d/shared/variables/\_compustat\_engine.py L984-993) & \seqsplit{Compustat/xrdy,saley} & \citet{bates2009}, jjl2021 \\
 \addlinespace[2pt]
 ROA & Build ROA = iby\_annual / avg\_assets from Compustat quarterly data.\par\smallskip\textit{Formula:} Compustat/iby,atq (see module: src/f1d/shared/variables/roa.py) & \seqsplit{Compustat/iby,atq} & \citet{wang2020}, \citet{dzielinski2021} \\
 \addlinespace[2pt]

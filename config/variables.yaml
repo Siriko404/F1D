@@ -328,13 +328,13 @@ variables:
 
   rdsales:
     stage: 3
-    source: Compustat/xrdq,atq
+    source: Compustat/xrdy,saley
     column: RDSales
-    formula: "Compustat/xrdq,atq (see module: src/f1d/shared/variables/rd_intensity.py)"
+    formula: "Compustat/xrdy,saley (Q4-annual YTD; missing xrd treated as zero; non-positive sales treated as NaN; see module: src/f1d/shared/variables/_compustat_engine.py L984-993)"
     reference: bks2009, jjl2021
     role: dv
     suites: [H1, H1.1, H1.1b, H1.2, H12, H12b, H13, H13.1, H13.2, H16, H17, H18, H18b, H19b, H20b, H21, H22, H4a, H4b]
-    description: Build RDSales = xrdq / atq from raw Compustat quarterly data.
+    description: Build RDSales = xrdy_Q4-annual / saley_Q4-annual from Compustat quarterly data, following Bates 2009 / Jiang-John-Larsen 2021 R\&D-over-sales convention.
 
   roa:
     stage: 3
