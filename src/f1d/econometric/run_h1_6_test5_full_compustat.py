@@ -53,6 +53,11 @@ HASAN_18_STATES = {
 # Configuration
 # ==============================================================================
 
+# Step 4 (E) attempted 2002-2021 (Hasan-verbatim full window) but result
+# was DEGRADED: industry-FE beta +0.01621* p=0.063 (2006-2015) ->
+# +0.00941 p=0.21 (2002-2021). Trump 2016 + TCJA 2017 + Covid 2020
+# contamination dilutes the 2011 redistricting DiD coefficient. Reverting
+# to clean 2006-2015 window where TEST 5 + D recovers significance.
 YEAR_MIN = 2006
 YEAR_MAX = 2015
 
