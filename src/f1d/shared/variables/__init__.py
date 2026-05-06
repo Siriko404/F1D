@@ -282,6 +282,8 @@ __all__ = [
     # H1.5 Trump 2016 DiD design
     "PRiskSubtopicsBuilder",
     "TrumpDiDTreatmentBuilder",
+    # H1.6 Redistricting DiD design
+    "RedistrictingTreatmentBuilder",
     # H24/H24b/H25 Macro Uncertainty (EPU / GEPU / GPR)
     "MacroUncertaintyBuilder",
     # Panel-building utilities
@@ -337,6 +339,9 @@ from .prisk_q_lead2 import PRiskQLead2Builder
 # H1.5 Trump 2016 DiD design — sub-topic PRisk loader + treatment-label builder
 from .political_risk_subtopics import PRiskSubtopicsBuilder
 from .trump_did_treatment import TrumpDiDTreatmentBuilder
+
+# H1.6 Redistricting DiD design (Hasan 2022 Layer 2 replication)
+from .redistricting_treatment import RedistrictingTreatmentBuilder
 
 # H24/H24b/H25 Macro Uncertainty — aggregate monthly macro indices matched by calendar month
 # (Caldara-Iacoviello 2022 GPR, BBD 2016 US EPU, Davis 2016 GEPU)
