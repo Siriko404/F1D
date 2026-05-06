@@ -282,8 +282,10 @@ __all__ = [
     # H1.5 Trump 2016 DiD design
     "PRiskSubtopicsBuilder",
     "TrumpDiDTreatmentBuilder",
-    # H1.6 Redistricting DiD design
+    # H1.6 Redistricting DiD design (ZCTA-CD baseline)
     "RedistrictingTreatmentBuilder",
+    # H1.6 Redistricting DiD TEST 3 — Geocode + Lewis 2013 shapefile variant
+    "RedistrictingTreatmentGeocodeBuilder",
     # H24/H24b/H25 Macro Uncertainty (EPU / GEPU / GPR)
     "MacroUncertaintyBuilder",
     # Panel-building utilities
@@ -342,6 +344,10 @@ from .trump_did_treatment import TrumpDiDTreatmentBuilder
 
 # H1.6 Redistricting DiD design (Hasan 2022 Layer 2 replication)
 from .redistricting_treatment import RedistrictingTreatmentBuilder
+
+# H1.6 Redistricting DiD TEST 3 — Geocode + Lewis 2013 shapefile variant
+# Replaces lossy ZCTA-CD crosswalk path with point-in-polygon spatial join.
+from .redistricting_treatment_geocode import RedistrictingTreatmentGeocodeBuilder
 
 # H24/H24b/H25 Macro Uncertainty — aggregate monthly macro indices matched by calendar month
 # (Caldara-Iacoviello 2022 GPR, BBD 2016 US EPU, Davis 2016 GEPU)
