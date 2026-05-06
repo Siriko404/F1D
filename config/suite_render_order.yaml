@@ -139,4 +139,6 @@ thesis_suites:
   # §4.2 reaction (Full method only) — market channel (H14c spread) + regulatory channel (H18 SEC)
   - H14c.ceo2.decomp
   - H18.ceo2.decomp
-  # §III.E endogeneity — EMPTY pending new design selection (all three suites dropped 2026-04-29)
+  # §III.E endogeneity — auxiliary plausibly-exogenous PRisk shocks (both null/wrong-sign per 2026-05-06 plan v3 phase 2 verification)
+  - H1.5.trump_did
+  - H1.6.redistricting_did
