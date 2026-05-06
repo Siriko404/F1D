@@ -30,6 +30,7 @@ Controls:  Match TEST 3 F1D-canonical-minus-Lagged_DV minus DailyVola
 
 from __future__ import annotations
 
+import argparse
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -42,6 +43,12 @@ from linearmodels.panel import PanelOLS
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables import RedistrictingTreatmentGeocodeBuilder
 
+# Hasan 2022 18 redistricted states (same set as run_h1_6_redistricting_did.py).
+HASAN_18_STATES = {
+    "AZ", "FL", "GA", "NV", "SC", "TX", "UT", "WA",
+    "IA", "IL", "LA", "MA", "MI", "MO", "NJ", "NY", "OH", "PA",
+}
+
 # ==============================================================================
 # Configuration
 # ==============================================================================
@@ -52,11 +59,16 @@ YEAR_MAX = 2015
 KEY_IV = "DiD_Redist"
 LEVEL_DUMMIES = ["Treated_redist", "Post_redist"]
 
-# Match TEST 3 control set exactly minus DailyVola (CRSP-call-window-bound).
+# Match TEST 3 control set exactly minus DailyVola (CRSP-call-window-bound),
+# plus Hasan 2022 verbatim Table 4 controls not in F1D canonical:
+#   NWC = (WCAPQ - CHEQ) / ATQ                  [Hasan §3, Eq.2]
+#   Acquisition = AQCY_quarterly / ATQ          [Hasan §3, Eq.2]
+#   IndustrySigma = 5-yr SIC2 SD of CFO/AT      [Hasan §3, Eq.2; verbatim is 10-yr]
 CONTROLS = [
     "Leverage", "lnAssets", "TobinsQ", "ROA", "Capex",
     "DivDummy", "sCFO",
     "SalesGrowth", "RDSales", "CashFlowAt",
+    "NWC", "Acquisition", "IndustrySigma",
 ]
 
 # Hasan industry exclusions verbatim: SIC 6000-6999 (Financials) +
@@ -107,6 +119,7 @@ def build_full_compustat_panel(root: Path) -> pd.DataFrame:
         "gvkey", "datadate", "fqtr", "sic",
         "atq", "cheq", "dlcq", "dlttq", "ceqq", "cshoq", "prccq",
         "niq", "capxy", "dvy", "saleq", "xrdq", "oancfy",
+        "wcapq", "aqcy",  # Hasan-verbatim NWC + Acquisition
     ]
     df = pd.read_parquet(main_path, columns=cols)
     df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
@@ -131,6 +144,7 @@ def build_full_compustat_panel(root: Path) -> pd.DataFrame:
     numeric_cols = [
         "atq", "cheq", "dlcq", "dlttq", "ceqq", "cshoq", "prccq",
         "niq", "capxy", "dvy", "saleq", "xrdq", "oancfy", "fqtr",
+        "wcapq", "aqcy",
     ]
     for c in numeric_cols:
         if c in df.columns:
@@ -141,6 +155,7 @@ def build_full_compustat_panel(root: Path) -> pd.DataFrame:
     df = _ytd_to_quarterly(df, "capxy", "capx_q")
     df = _ytd_to_quarterly(df, "dvy", "dv_q")
     df = _ytd_to_quarterly(df, "oancfy", "oancf_q")
+    df = _ytd_to_quarterly(df, "aqcy", "aqc_q")
 
     # ---- Compute controls ----
     df["CashRatio"] = df["cheq"] / df["atq"]
@@ -177,10 +192,29 @@ def build_full_compustat_panel(root: Path) -> pd.DataFrame:
         lambda s: s.rolling(20, min_periods=12).std()
     )
 
+    # Hasan-verbatim controls
+    # NWC = (WCAPQ - CHEQ) / ATQ
+    df["NWC"] = (df["wcapq"] - df["cheq"]) / df["atq"]
+    # Acquisition = AQCY_quarterly / ATQ
+    df["Acquisition"] = df["aqc_q"] / df["atq"]
+
     # Calendar year-quarter index — Period -> quarter-end Timestamp so
     # linearmodels PanelOLS recognises it as a date-like time index.
     df["cal_yr"] = df["datadate"].dt.year.astype(int)
     df["cal_yr_qtr"] = df["datadate"].dt.to_period("Q").dt.end_time
+
+    # IndustrySigma: SIC2-level avg SD of cashflow/atq over the past 5 years
+    # (Hasan: 10 years; we use 5 because data starts 2002 and pre-window 2006).
+    df["sic2"] = (df["sic_int"] // 100).astype(int)
+    # Per-firm rolling 5-yr SD of CashFlowAt; then average per (sic2, datadate)
+    df["__cfa_5yr_sd"] = df.groupby("gvkey", sort=False)["__cf_at"].transform(
+        lambda s: s.rolling(20, min_periods=8).std()
+    )
+    industry_sigma = (
+        df.groupby(["sic2", "datadate"])["__cfa_5yr_sd"].mean()
+        .rename("IndustrySigma").reset_index()
+    )
+    df = df.merge(industry_sigma, on=["sic2", "datadate"], how="left")
 
     # Drop helper cols
     drop_helpers = [c for c in df.columns if c.startswith("__")]
@@ -192,7 +226,8 @@ def build_full_compustat_panel(root: Path) -> pd.DataFrame:
 
     # Light winsorization on CashRatio + extreme-tail controls
     for col in ("CashRatio", "Leverage", "TobinsQ", "ROA", "Capex",
-                "CashFlowAt", "RDSales", "SalesGrowth", "sCFO"):
+                "CashFlowAt", "RDSales", "SalesGrowth", "sCFO",
+                "NWC", "Acquisition", "IndustrySigma"):
         if col not in df.columns:
             continue
         lo = df[col].quantile(0.01)
@@ -423,11 +458,72 @@ def run_one_spec(panel: pd.DataFrame, spec: Dict[str, Any]) -> Dict[str, Any]:
 # ==============================================================================
 
 
-def main() -> int:
+def parse_arguments():
+    p = argparse.ArgumentParser(
+        description="TEST 5: H1.6 redistricting DiD on full Compustat panel",
+    )
+    p.add_argument("--hasan18", action="store_true",
+                   help="Restrict to Hasan 2022's 18 redistricted states.")
+    p.add_argument("--drop-unchanged", action="store_true",
+                   help="Drop Treated_redist==0 cohort.")
+    return p.parse_args()
+
+
+def filter_hasan_18(panel: pd.DataFrame, root: Path) -> pd.DataFrame:
+    """Restrict to firms HQ'd in Hasan 18 redistricted states.
+
+    Reads modal pre-period state from the geocode parquet; falls back to
+    Compustat 'state' column on the panel if available.
+    """
+    geo = pd.read_parquet(
+        root / "inputs" / "firm_geocodes" / "firm_lat_lon_full_compustat.parquet",
+        columns=["gvkey", "period", "state"],
+    )
+    geo["gvkey"] = geo["gvkey"].astype(str).str.zfill(6)
+    state_pre = geo[geo["period"] == "pre"][["gvkey", "state"]].rename(
+        columns={"state": "state_pre"}
+    )
+    state_post = geo[geo["period"] == "post"][["gvkey", "state"]].rename(
+        columns={"state": "state_post"}
+    )
+    states = state_pre.merge(state_post, on="gvkey", how="outer")
+    states["firm_state"] = states["state_pre"].fillna(states["state_post"])
+    states = states[["gvkey", "firm_state"]]
+    before = len(panel)
+    panel = panel.merge(states, on="gvkey", how="left")
+    panel = panel[panel["firm_state"].isin(HASAN_18_STATES)].copy()
+    print(
+        f"  Hasan-18 filter: {len(panel):,} / {before:,} firm-qtrs "
+        f"({panel['gvkey'].nunique():,} firms)"
+    )
+    return panel
+
+
+def filter_drop_unchanged(panel: pd.DataFrame) -> pd.DataFrame:
+    before = len(panel)
+    panel = panel[panel["Treated_redist"] != 0].copy()
+    n_pos = int((panel["Treated_redist"] == 1).sum())
+    n_neg = int((panel["Treated_redist"] == -1).sum())
+    print(
+        f"  Drop Treated=0: {len(panel):,} / {before:,} "
+        f"(+1={n_pos:,} -1={n_neg:,}; "
+        f"{panel['gvkey'].nunique():,} firms)"
+    )
+    return panel
+
+
+def main(hasan18: bool = False, drop_unchanged: bool = False) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     start = datetime.now()
     timestamp = start.strftime("%Y-%m-%d_%H%M%S")
+    suffix = ""
+    if hasan18:
+        suffix += "_H18"
+    if drop_unchanged:
+        suffix += "_DROP0"
+    if suffix:
+        timestamp = timestamp + suffix
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "econometric" / "h1_6_test5_full_compustat" / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -438,6 +534,7 @@ def main() -> int:
     print(f"Timestamp:    {timestamp}")
     print(f"Output:       {out_dir}")
     print(f"Outcome:      Cash only (4 specs); no UncResCEO outside F1D call panel")
+    print(f"Diag flags:   hasan18={hasan18} drop_unchanged={drop_unchanged}")
 
     panel = build_full_compustat_panel(root)
     panel = attach_redist_treatment(panel, root)
@@ -448,6 +545,11 @@ def main() -> int:
         f"\n  Treated-labelled firm-quarter rows: {len(panel):,} "
         f"({panel['gvkey'].nunique():,} firms)"
     )
+
+    if hasan18:
+        panel = filter_hasan_18(panel, root)
+    if drop_unchanged:
+        panel = filter_drop_unchanged(panel)
 
     results: List[Dict[str, Any]] = []
     for spec in SPECS:
@@ -479,4 +581,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    args = parse_arguments()
+    sys.exit(main(hasan18=args.hasan18, drop_unchanged=args.drop_unchanged))
