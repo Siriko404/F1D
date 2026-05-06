@@ -85,12 +85,19 @@ from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 KEY_IV = "DiD_Redist"
 LEVEL_DUMMIES = ["Treated_redist", "Post_redist"]
 
-# F1D canonical 12-var controls (matches H1.3 + H1.5).
+# F1D canonical controls — Lagged_DV REMOVED 2026-05-06 LATE EVENING per
+# Hasan 2022 NLM-verified verbatim spec (Q11d + Q12e: "NO LAGGED DEPENDENT
+# VARIABLE IN ANY HASAN 2022 SPECIFICATION"). Rule `feedback_lagged_dv.md`
+# overridden for H1.6 ONLY; H1 main panel + all other suites unaffected.
+# Rationale: H1.6 = exogenous-shock DiD layer aiming to capture cumulative
+# response post-redistricting; Lagged_DV (β=0.864 in prior run) absorbed
+# 35-54 percentage points of cash variance, leaving DiD to fit only the
+# residual after AR(1) — wrong-sign null result. Replication discipline
+# requires matching Hasan's verbatim Eq.2 control set.
 CONTROLS = [
     "Leverage", "lnAssets", "TobinsQ", "ROA", "Capex",
     "DivDummy", "sCFO",
     "SalesGrowth", "RDSales", "CashFlowAt", "DailyVola",
-    "Lagged_DV",
 ]
 
 DISPLAY_IVS = [KEY_IV] + LEVEL_DUMMIES
