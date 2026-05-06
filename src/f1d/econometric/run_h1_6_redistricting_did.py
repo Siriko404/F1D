@@ -199,7 +199,28 @@ def parse_arguments():
     )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--panel-path", type=str, default=None)
+    # Diagnostic flags (Step 1 — B + C combined; default OFF to preserve
+    # canonical TEST 3 / shipped §III.E.4 numbers).
+    parser.add_argument(
+        "--hasan18", action="store_true",
+        help="Restrict sample to Hasan 2022's 18 redistricted states "
+             "(8 gain + 10 lose seats per Census 2010 reapportionment).",
+    )
+    parser.add_argument(
+        "--drop-unchanged", action="store_true",
+        help="Drop firms with Treated_redist == 0 (rank unchanged); keep "
+             "only +1 / -1 cohort for sharper +1-vs-1 contrast.",
+    )
     return parser.parse_args()
+
+
+# Hasan 2022 18 states with 2010 redistricting (8 seat-gain + 10 seat-loss
+# states per Census 2010 reapportionment; 243 districts redrawn).
+# State abbreviations (Compustat addr.state).
+HASAN_18_STATES = {
+    "AZ", "FL", "GA", "NV", "SC", "TX", "UT", "WA",       # 8 gain
+    "IA", "IL", "LA", "MA", "MI", "MO", "NJ", "NY", "OH", "PA",  # 10 lose
+}
 
 
 # ==============================================================================
@@ -337,6 +358,59 @@ def filter_treated_labelled(panel: pd.DataFrame) -> pd.DataFrame:
     keep = panel["Treated_redist"].notna()
     panel = panel[keep].copy()
     print(f"  Treated-labelled: {len(panel):,} / {before:,}")
+    return panel
+
+
+def filter_hasan_18_states(panel: pd.DataFrame, root_path: Path) -> pd.DataFrame:
+    """Diagnostic B — restrict to firms HQ'd in Hasan 2022's 18 redistricted states.
+
+    State per gvkey is read from the geocode parquet (modal pre-period state
+    field, populated by the Census Geocoder pipeline).
+    """
+    geo_path = root_path / "inputs" / "firm_geocodes" / "firm_lat_lon.parquet"
+    geo = pd.read_parquet(geo_path, columns=["gvkey", "period", "state"])
+    geo["gvkey"] = geo["gvkey"].astype(str).str.zfill(6)
+    # Use modal pre-period state per firm; fall back to post if pre missing.
+    state_pre = geo[geo["period"] == "pre"][["gvkey", "state"]].rename(
+        columns={"state": "state_pre"}
+    )
+    state_post = geo[geo["period"] == "post"][["gvkey", "state"]].rename(
+        columns={"state": "state_post"}
+    )
+    states = state_pre.merge(state_post, on="gvkey", how="outer")
+    states["state_eff"] = states["state_pre"].fillna(states["state_post"])
+    states = states[["gvkey", "state_eff"]].rename(
+        columns={"state_eff": "firm_state"}
+    )
+
+    before = len(panel)
+    panel = panel.merge(states, on="gvkey", how="left")
+    panel = panel[panel["firm_state"].isin(HASAN_18_STATES)].copy()
+    n_firms = panel["gvkey"].nunique()
+    print(
+        f"  Hasan-18 state filter: {len(panel):,} / {before:,} calls "
+        f"({n_firms:,} firms; states = "
+        f"{sorted(panel['firm_state'].unique())})"
+    )
+    return panel
+
+
+def filter_drop_unchanged_rank(panel: pd.DataFrame) -> pd.DataFrame:
+    """Diagnostic C — drop firms with Treated_redist == 0 (unchanged rank).
+
+    Sharpens the +1-vs--1 contrast at the cost of N. Firms whose tertile rank
+    didn't shift between pre and post districts contribute zero treatment
+    variance to the DiD interaction by construction.
+    """
+    before = len(panel)
+    panel = panel[panel["Treated_redist"] != 0].copy()
+    n_pos = int((panel["Treated_redist"] == 1).sum())
+    n_neg = int((panel["Treated_redist"] == -1).sum())
+    n_firms = panel["gvkey"].nunique()
+    print(
+        f"  Drop Treated=0 cohort: {len(panel):,} / {before:,} calls "
+        f"(+1: {n_pos:,}  -1: {n_neg:,}; {n_firms:,} firms)"
+    )
     return panel
 
 
@@ -811,11 +885,22 @@ def generate_report(
 # ==============================================================================
 
 
-def main(panel_path: Optional[str] = None) -> int:
+def main(
+    panel_path: Optional[str] = None,
+    hasan18: bool = False,
+    drop_unchanged: bool = False,
+) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     start_time = datetime.now()
     timestamp = start_time.strftime("%Y-%m-%d_%H%M%S")
+    diag_suffix = ""
+    if hasan18:
+        diag_suffix += "_H18"
+    if drop_unchanged:
+        diag_suffix += "_DROP0"
+    if diag_suffix:
+        timestamp = timestamp + diag_suffix
 
     root = Path(__file__).resolve().parents[3]
     out_dir = root / "outputs" / "econometric" / SUITE_DIR_NAME / timestamp
@@ -853,6 +938,12 @@ def main(panel_path: Optional[str] = None) -> int:
     main_n = len(panel)
     panel = filter_treated_labelled(panel)
     tc_n = len(panel)
+
+    # Step 1 diagnostic filters (B + C; default OFF).
+    if hasan18:
+        panel = filter_hasan_18_states(panel, root)
+    if drop_unchanged:
+        panel = filter_drop_unchanged_rank(panel)
 
     print(
         f"\n  Main+TC: {tc_n:,} calls, {panel['gvkey'].nunique():,} firms"
@@ -941,4 +1032,8 @@ def main(panel_path: Optional[str] = None) -> int:
 
 if __name__ == "__main__":
     args = parse_arguments()
-    sys.exit(main(panel_path=args.panel_path))
+    sys.exit(main(
+        panel_path=args.panel_path,
+        hasan18=args.hasan18,
+        drop_unchanged=args.drop_unchanged,
+    ))
