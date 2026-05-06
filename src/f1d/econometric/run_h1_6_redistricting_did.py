@@ -73,7 +73,12 @@ from f1d.shared.outputs import (
     write_suite_spec,
 )
 from f1d.shared.path_utils import get_latest_output_dir
-from f1d.shared.variables import RedistrictingTreatmentBuilder
+# TEST 3 (2026-05-06 LATE EVENING) — swap from ZCTA-CD baseline builder to
+# Geocode + Lewis 2013 shapefile spatial-join builder. Decision rationale +
+# mover-rate diagnostic in commit 26463aa: 16% -> 47% (Hasan-18 apples-to-apples
+# vs Hasan reported 66%). Baseline ZCTA-CD outputs preserved in prior
+# h1_6_redistricting_did/ timestamps.
+from f1d.shared.variables import RedistrictingTreatmentGeocodeBuilder
 from f1d.shared.variables.panel_utils import build_cal_yr_qtr_index
 
 
@@ -134,8 +139,10 @@ SAMPLE_LABEL = (
     "per Hasan 2022 plus post-2011 redistricting effective period; cut at 2015 to avoid "
     "Trump 2016 contamination). Treated$_{redist}$ assigned per Hasan 2022 Section 5.1 "
     "verbatim methodology: firm-rank tertile within congressional district before vs "
-    "after 2011 redistricting (PRE district = 111th-Congress map; POST district = "
-    "113th-Congress map). Post = 1 if year > 2011 (Hasan verbatim)."
+    "after 2011 redistricting. HQ-to-CD via Census Geocoder (Public\\_AR\\_Current "
+    "benchmark) firm HQ lat/lon point-in-polygon spatial join against Lewis et al.\\ "
+    "2013 Congressional District boundary shapefiles (PRE = 111th-Congress; POST = "
+    "113th-Congress). Post = 1 if year > 2011 (Hasan verbatim)."
 )
 HYP_DIR = "positive"
 CLUSTERING = {"entity": True, "time": False}
@@ -246,14 +253,28 @@ def load_panel(
 def load_and_merge_redist(
     panel: pd.DataFrame, root_path: Path, years: range,
 ) -> pd.DataFrame:
-    """Merge redistricting treatment (Treated_redist, Post_redist, DiD_Redist)."""
+    """Merge redistricting treatment (Treated_redist, Post_redist, DiD_Redist).
+
+    TEST 3: uses RedistrictingTreatmentGeocodeBuilder (Lewis 2013 shapefile +
+    geocode point-in-polygon spatial join). The builder emits suffixed
+    columns (Treated_redist_geo, etc.); we rename to the baseline names
+    so the rest of the runner is method-agnostic.
+    """
     print("\n" + "=" * 60)
-    print("Merging Redistricting DiD treatment label")
+    print("Merging Redistricting DiD treatment label (Geocode + Lewis 2013)")
     print("=" * 60)
 
-    builder = RedistrictingTreatmentBuilder({})
+    builder = RedistrictingTreatmentGeocodeBuilder({})
     result = builder.build(years, root_path)
-    redist_df = result.data
+    redist_df = result.data.rename(columns={
+        "Treated_redist_geo": "Treated_redist",
+        "Post_redist_geo": "Post_redist",
+        "DiD_Redist_geo": "DiD_Redist",
+        "pre_cd_geo": "pre_cd",
+        "post_cd_geo": "post_cd",
+        "pre_tertile_geo": "pre_tertile",
+        "post_tertile_geo": "post_tertile",
+    })
 
     before = len(panel)
     panel = panel.merge(redist_df, on="file_name", how="left", validate="one_to_one")
@@ -588,8 +609,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for DiD; two-tailed for level dummies). ",
         r"Standard errors (in parentheses) firm-level clustered. Main sample (excludes financial and utility firms). ",
         r"Sample 2006--2015 (5-yr Hasan pre-window plus post-2011 effective period; capped at 2015 to avoid Trump 2016 contamination). ",
-        r"113th-CD ZCTA crosswalk is unweighted (Census did not publish a population-weighted version); ",
-        r"ZCTAs spanning multiple 113th CDs assigned to first-listed CD per ZCTA.",
+        r"HQ-to-CD assignment via Census Geocoder (Public\_AR\_Current benchmark) firm HQ lat/lon ",
+        r"point-in-polygon spatial join against Lewis et al.\ 2013 Congressional District boundary ",
+        r"shapefiles (\url{https://github.com/JeffreyBLewis/congressional-district-boundaries}; ",
+        r"referenced from cdmaps.polisci.ucla.edu).",
         r"\end{minipage}",
         r"\end{table}",
     ]
@@ -776,7 +799,7 @@ def generate_report(
         "- DiD positive on UncResCEO: redistricting shock activates speech-uncertainty for treated firms (NEW)",
         "- Joint positivity = strongest support for Story B indicator-state framing",
         "- Both null: indicator-state story not detected via redistricting variation",
-        "- Hasan's design = our PRE 111th-CD map ZCTA-CD weighted; POST 113th-CD map ZCTA-CD unweighted (CD-spanning ZCTAs assigned first-listed CD)",
+        "- HQ->CD: Census Geocoder lat/lon + point-in-polygon vs Lewis 2013 shapefile (PRE=111CD; POST=113CD)",
     ]
     with open(out_dir / "report_step4_H1_6_redistricting_did.md", "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
@@ -877,12 +900,15 @@ def main(panel_path: Optional[str] = None) -> int:
         )
         print("  Saved: sample_attrition.csv/.tex")
 
+    # Use a representative file per Lewis 2013 dir (manifest hasher expects files,
+    # not dirs). California is the largest state; if its file changes the dir
+    # very likely changed too, so its hash is a reasonable rev-marker.
     input_paths = {
         "panel": panel_file,
-        "compustat_addzip": root / "inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet",
+        "firm_geocodes": root / "inputs" / "firm_geocodes" / "firm_lat_lon.parquet",
+        "lewis_2013_111cd_california": root / "inputs" / "Lewis2013_CD" / "111" / "California_108_to_112.geojson",
+        "lewis_2013_113cd_california": root / "inputs" / "Lewis2013_CD" / "113" / "California_113_to_114.geojson",
         "prisk_overall": root / "inputs" / "FirmLevelRisk" / "firmquarter_2022q1.csv",
-        "cw_111": root / "inputs" / "Census_CD_Crosswalks" / "zcta_cd111_rel_10.txt",
-        "cw_113": root / "inputs" / "Census_CD_Crosswalks" / "natl_zccd_delim_113.txt",
     }
     generate_manifest(
         output_dir=out_dir, stage="stage4", timestamp=timestamp,
