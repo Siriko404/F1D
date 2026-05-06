@@ -26,6 +26,7 @@ suites:
   - H1.2.ceo2.decomp.qtrexp
   - H1.3.cfvol  # NEW — CFvol moderation (Han-Qiu 2007 16q CV; ff12-year median split)
   - H1.4.hedging_needs  # NEW — HedgingNeeds moderation (ACW 2007 corr formula; ff12-year median split)
+  - H1.5.trump_did  # NEW 2026-05-06 — Trump 2016 DiD endo defense (Hu 2024 RAST template; BothHigh trade x tax)
   # H.death.did DROPPED 2026-04-29 per user direction — tested settled question (CEOs affect cash) with weak design
   # H.dwz.fd DROPPED 2026-04-29 per user direction — addresses time-invariant firm U redundantly with main-panel firm FE; methodological homage to DWZ §6 only
   # H.lewbel.iv DROPPED 2026-04-29 per user direction — Wu-Hausman p=0.24 fails to reject OLS-consistency; identifying assumption (heteroskedasticity exogenous to cash equation) not formally validated; insufficient theoretical solidity for §III.E
