@@ -24,6 +24,12 @@ psutil==7.2.1
 pydantic>=2.0,<3.0
 pydantic-settings>=2.0,<3.0
 python-dateutil==2.9.0.post0
+
+# Geospatial (TEST 3 — H1.6 redistricting DiD geocode-based HQ→CD mapping)
+# Replaces ZCTA-CD crosswalk path with point-in-polygon spatial join.
+geopandas>=1.0.0
+shapely>=2.0.0
+pyogrio>=0.10.0
 # Optional: RapidFuzz for fuzzy string matching (Tier 3 entity linking)
 # Install for improved entity match rates: pip install rapidfuzz>=3.14.0
 # Pipeline runs without it (graceful degradation), but match rate is lower
