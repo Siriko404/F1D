@@ -330,10 +330,10 @@ def attach_redist_treatment(panel: pd.DataFrame, root: Path) -> pd.DataFrame:
     )
     firm_qcount = prisk.groupby("gvkey")["cal_q"].nunique().rename("n_pre")
     firm_prisk = firm_prisk.merge(firm_qcount, on="gvkey", how="left")
-    # F1 attempt (relax to >=1): increased N to 29,045 but DILUTED beta from
-    # +0.01855* to +0.00745 ns. Noisy short-window firms hurt signal.
-    # Reverted to >=8.
-    firm_prisk = firm_prisk[firm_prisk["n_pre"] >= 8].copy()
+    # Hasan 2022 NLM-VERIFIED Q4 EXHAUSTIVE SEARCH: no min-PRisk-obs filter
+    # is mentioned in the paper. We use >=1 (any pre-window PRisk obs) to
+    # match Hasan's silent default.
+    firm_prisk = firm_prisk[firm_prisk["n_pre"] >= 1].copy()
 
     # 5. Tertile rank within district
     firm = firm_cd.merge(
