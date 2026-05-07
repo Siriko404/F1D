@@ -53,13 +53,13 @@ HASAN_18_STATES = {
 # Configuration
 # ==============================================================================
 
-# Step 4 (E) attempted 2002-2021 (Hasan-verbatim full window) but result
-# was DEGRADED on all-50-state sample: industry-FE beta +0.01621* p=0.063
-# (2006-2015) -> +0.00941 p=0.21 (2002-2021). On --hasan18 sample, retry
-# extended window because Hasan's 24,311-obs Table 4 likely uses extended
-# window — 18-state sample has less Trump contamination concentration.
-YEAR_MIN = 2002
-YEAR_MAX = 2021
+# Window narrowed 2026-05-06 NIGHT×2 per N/firm ratio diagnostic:
+# Hasan 24,311 obs / 941 firms = 25.83 q/firm; our 2002-2021 spec gave
+# 51.73 q/firm (2x Hasan). User-flagged narrowing test: Hasan's effective
+# window is ~6-10 years, not 20. Choosing 2006-2015 (5y pre 2011 + 4y post)
+# to match Hasan's 5-year-pre-window classification setup.
+YEAR_MIN = 2006
+YEAR_MAX = 2015
 
 KEY_IV = "DiD_Redist"
 LEVEL_DUMMIES = ["Treated_redist", "Post_redist"]
@@ -69,6 +69,9 @@ LEVEL_DUMMIES = ["Treated_redist", "Post_redist"]
 #   NWC = (WCAPQ - CHEQ) / ATQ                  [Hasan §3, Eq.2]
 #   Acquisition = AQCY_quarterly / ATQ          [Hasan §3, Eq.2]
 #   IndustrySigma = 5-yr SIC2 SD of CFO/AT      [Hasan §3, Eq.2; verbatim is 10-yr]
+# Hasan 2022 Table 4 verbatim 10-control list (Appendix A Table 12).
+# Hasan does NOT include ROA, sCFO, or SalesGrowth — dropped 2026-05-06.
+# PRisk also NOT used as a separate control in Table 4 (NLM Q3+Q4 confirmed).
 # Hasan 2022 Table 4 verbatim 10-control list (Appendix A Table 12).
 # Hasan does NOT include ROA, sCFO, or SalesGrowth — dropped 2026-05-06.
 # PRisk also NOT used as a separate control in Table 4 (NLM Q3+Q4 confirmed).
