@@ -185,7 +185,8 @@ def build_full_compustat_panel(root: Path) -> pd.DataFrame:
     df["Capex"] = df["capx_q"] / df["atq"]
     df["DivDummy"] = (df["dv_q"] > 0).astype(float)
     df["CashFlowAt"] = df["oancf_q"] / df["atq"]
-    df["RDSales"] = df["xrdq"] / df["saleq"].replace({0: np.nan})
+    # Hasan 2022 verbatim: "the value of R&D is set to zero" for missing.
+    df["RDSales"] = (df["xrdq"] / df["saleq"].replace({0: np.nan})).fillna(0.0)
 
     # SalesGrowth: (SALEQ - SALEQ_4q_lag) / |SALEQ_4q_lag|
     df["__sale_4lag"] = df.groupby("gvkey", sort=False)["saleq"].shift(4)
