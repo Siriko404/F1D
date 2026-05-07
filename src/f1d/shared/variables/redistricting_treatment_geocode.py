@@ -281,6 +281,9 @@ class RedistrictingTreatmentGeocodeBuilder(VariableBuilder):
         )
         firm_qcount = prisk.groupby("gvkey")["cal_q"].nunique().rename("n_pre")
         firm_prisk = firm_prisk.merge(firm_qcount, on="gvkey", how="left")
+        # ≥8-quarter PRisk pre-window filter: tested ≥1 relaxation 2026-05-06
+        # NIGHT, hurt signal (β +0.01855→+0.00745 ns; noisy short-window firms
+        # diluted). Reverted to ≥8.
         firm_prisk = firm_prisk[firm_prisk["n_pre"] >= 8].copy()
         print(
             f"    RedistrictingTreatmentGeocodeBuilder: firms with >=8 "
