@@ -54,12 +54,12 @@ HASAN_18_STATES = {
 # ==============================================================================
 
 # Step 4 (E) attempted 2002-2021 (Hasan-verbatim full window) but result
-# was DEGRADED: industry-FE beta +0.01621* p=0.063 (2006-2015) ->
-# +0.00941 p=0.21 (2002-2021). Trump 2016 + TCJA 2017 + Covid 2020
-# contamination dilutes the 2011 redistricting DiD coefficient. Reverting
-# to clean 2006-2015 window where TEST 5 + D recovers significance.
-YEAR_MIN = 2006
-YEAR_MAX = 2015
+# was DEGRADED on all-50-state sample: industry-FE beta +0.01621* p=0.063
+# (2006-2015) -> +0.00941 p=0.21 (2002-2021). On --hasan18 sample, retry
+# extended window because Hasan's 24,311-obs Table 4 likely uses extended
+# window — 18-state sample has less Trump contamination concentration.
+YEAR_MIN = 2002
+YEAR_MAX = 2021
 
 KEY_IV = "DiD_Redist"
 LEVEL_DUMMIES = ["Treated_redist", "Post_redist"]
@@ -69,10 +69,13 @@ LEVEL_DUMMIES = ["Treated_redist", "Post_redist"]
 #   NWC = (WCAPQ - CHEQ) / ATQ                  [Hasan §3, Eq.2]
 #   Acquisition = AQCY_quarterly / ATQ          [Hasan §3, Eq.2]
 #   IndustrySigma = 5-yr SIC2 SD of CFO/AT      [Hasan §3, Eq.2; verbatim is 10-yr]
+# Hasan 2022 Table 4 verbatim 10-control list (Appendix A Table 12).
+# Hasan does NOT include ROA, sCFO, or SalesGrowth — dropped 2026-05-06.
+# PRisk also NOT used as a separate control in Table 4 (NLM Q3+Q4 confirmed).
 CONTROLS = [
-    "Leverage", "lnAssets", "TobinsQ", "ROA", "Capex",
-    "DivDummy", "sCFO",
-    "SalesGrowth", "RDSales", "CashFlowAt",
+    "Leverage", "lnAssets", "TobinsQ",
+    "Capex", "DivDummy",
+    "RDSales", "CashFlowAt",
     "NWC", "Acquisition", "IndustrySigma",
 ]
 
@@ -332,6 +335,9 @@ def attach_redist_treatment(panel: pd.DataFrame, root: Path) -> pd.DataFrame:
     )
     firm_qcount = prisk.groupby("gvkey")["cal_q"].nunique().rename("n_pre")
     firm_prisk = firm_prisk.merge(firm_qcount, on="gvkey", how="left")
+    # F1 attempt (relax to >=1): increased N to 29,045 but DILUTED beta from
+    # +0.01855* to +0.00745 ns. Noisy short-window firms hurt signal.
+    # Reverted to >=8.
     firm_prisk = firm_prisk[firm_prisk["n_pre"] >= 8].copy()
 
     # 5. Tertile rank within district
