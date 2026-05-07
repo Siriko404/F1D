@@ -233,15 +233,9 @@ def build_full_compustat_panel(root: Path) -> pd.DataFrame:
     df = df[df["year"].between(YEAR_MIN, YEAR_MAX)].copy()
     print(f"  After window {YEAR_MIN}-{YEAR_MAX}: {len(df):,}")
 
-    # Light winsorization on CashRatio + extreme-tail controls
-    for col in ("CashRatio", "Leverage", "TobinsQ", "ROA", "Capex",
-                "CashFlowAt", "RDSales", "SalesGrowth", "sCFO",
-                "NWC", "Acquisition", "IndustrySigma"):
-        if col not in df.columns:
-            continue
-        lo = df[col].quantile(0.01)
-        hi = df[col].quantile(0.99)
-        df[col] = df[col].clip(lower=lo, upper=hi)
+    # Hasan 2022 NLM-VERIFIED Q4 EXHAUSTIVE SEARCH: winsorization is ABSENT
+    # from Hasan's paper. We drop our 1/99 winsorization to match Hasan's
+    # silent default (raw values).
 
     print(f"  Final firm-quarter rows: {len(df):,}")
     print(f"  Final firms (gvkey nunique): {df['gvkey'].nunique():,}")
