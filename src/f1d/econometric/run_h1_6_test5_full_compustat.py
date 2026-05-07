@@ -212,15 +212,15 @@ def build_full_compustat_panel(root: Path) -> pd.DataFrame:
     df["cal_yr"] = df["datadate"].dt.year.astype(int)
     df["cal_yr_qtr"] = df["datadate"].dt.to_period("Q").dt.end_time
 
-    # IndustrySigma: SIC2-level avg SD of cashflow/atq over the past 5 years
-    # (Hasan: 10 years; we use 5 because data starts 2002 and pre-window 2006).
+    # IndustrySigma: SIC2-level avg SD of cashflow/atq over the past 10 years
+    # (Hasan 2022 verbatim: "for the past 10 years"). Reverted from 5y after
+    # Hasan-verbatim audit 2026-05-06.
     df["sic2"] = (df["sic_int"] // 100).astype(int)
-    # Per-firm rolling 5-yr SD of CashFlowAt; then average per (sic2, datadate)
-    df["__cfa_5yr_sd"] = df.groupby("gvkey", sort=False)["__cf_at"].transform(
-        lambda s: s.rolling(20, min_periods=8).std()
+    df["__cfa_10yr_sd"] = df.groupby("gvkey", sort=False)["__cf_at"].transform(
+        lambda s: s.rolling(40, min_periods=8).std()
     )
     industry_sigma = (
-        df.groupby(["sic2", "datadate"])["__cfa_5yr_sd"].mean()
+        df.groupby(["sic2", "datadate"])["__cfa_10yr_sd"].mean()
         .rename("IndustrySigma").reset_index()
     )
     df = df.merge(industry_sigma, on=["sic2", "datadate"], how="left")
