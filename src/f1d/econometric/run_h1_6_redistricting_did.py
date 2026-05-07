@@ -105,7 +105,8 @@ CONTROLS = [
     "SalesGrowth", "RDSales", "CashFlowAt", "DailyVola",
 ]
 
-DISPLAY_IVS = [KEY_IV] + LEVEL_DUMMIES
+DISPLAY_IVS = [KEY_IV, "Treated_redist"]
+# Post_redist always absorbed by time FE in every spec → omit from display
 
 IV_TAIL_DIRECTION: Dict[str, str] = {
     KEY_IV:           "positive",
@@ -553,7 +554,18 @@ def run_regression(
         print(f"  Too few obs ({len(df_prep)}); skipping")
         return None, {}
 
-    exog = [KEY_IV] + LEVEL_DUMMIES + all_controls
+    # Per-spec LEVEL_DUMMIES filter — exclude variables that FE absorbs.
+    # Firm FE absorbs Treated_redist (firm-time-invariant). Any time FE
+    # (Year or Year-Quarter) absorbs Post_redist (year>2011 indicator).
+    # All our specs include time FE, so Post is always absorbed.
+    # Pre-filtering is more robust than relying on linearmodels'
+    # drop_absorbed (which can fail under check_rank=False).
+    spec_level_dummies = []
+    if base_fe != "firm":
+        spec_level_dummies.append("Treated_redist")
+    # Post_redist always absorbed by time FE → never include
+
+    exog = [KEY_IV] + spec_level_dummies + all_controls
 
     n_firms = df_prep["gvkey"].nunique()
     n_periods = df_prep.groupby(["gvkey", time_col]).ngroups

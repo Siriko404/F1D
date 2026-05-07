@@ -81,11 +81,11 @@ HYP_DIR = "positive"
 CLUSTERING = {"entity": True, "time": False}
 TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
 
-DISPLAY_IVS = ["DiD_Redist", "Treated_redist", "Post_redist"]
+DISPLAY_IVS = ["DiD_Redist", "Treated_redist"]
+# Post_redist always absorbed by time FE in every spec → omit from display
 IV_TAIL_DIRECTION = {
     "DiD_Redist":     "positive",
     "Treated_redist": "none",
-    "Post_redist":    "none",
 }
 VARIABLE_LABELS = {
     "DiD_Redist":     r"Treated $\times$ Post (DiD)",
@@ -577,7 +577,17 @@ def run_one_spec(panel: pd.DataFrame, spec: Dict[str, Any]) -> Dict[str, Any]:
     print(f"  N={len(df):,}, firms={df['gvkey'].nunique():,}")
 
     df_panel = df.set_index(["gvkey", time_col])
-    exog = [KEY_IV] + LEVEL_DUMMIES + CONTROLS
+    # Per-spec LEVEL_DUMMIES filter — exclude variables that FE absorbs.
+    # Firm FE absorbs Treated_redist (firm-time-invariant). Any time FE
+    # (Year or Year-Quarter) absorbs Post_redist (year>2011 indicator).
+    # All our specs include time FE, so Post is always absorbed.
+    # Pre-filtering is more robust than relying on linearmodels'
+    # drop_absorbed (which can fail under check_rank=False).
+    spec_level_dummies = []
+    if base_fe != "firm":
+        spec_level_dummies.append("Treated_redist")
+    # Post_redist always absorbed by time FE → never include
+    exog = [KEY_IV] + spec_level_dummies + CONTROLS
 
     if base_fe == "industry":
         # 2-digit SIC industry FE via other_effects
