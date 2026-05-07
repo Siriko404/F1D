@@ -42,6 +42,56 @@ from linearmodels.panel import PanelOLS
 
 from f1d.shared.path_utils import get_latest_output_dir
 from f1d.shared.variables import RedistrictingTreatmentGeocodeBuilder
+from f1d.shared.outputs import (
+    extract_coefs_panelols,
+    write_suite_spec,
+)
+
+
+# ==============================================================================
+# Suite metadata (drives generate_all_tables.py rendering)
+# ==============================================================================
+
+SUITE_ID = "H1.6.hasan_verbatim"
+SUITE_DIR_NAME = "h1_6_test5_full_compustat"
+SUITE_TITLE = (
+    "Hasan-Verbatim Redistricting DiD on Full Compustat Universe (Movers Only; "
+    "Hasan 2022 RQFA Layer 2 Replication)"
+)
+SUITE_CAPTION = (
+    r"H1.6 Hasan-Verbatim: Cash $\sim$ Treated$_{redist}$ $\times$ Post(2011); "
+    r"full Compustat post Hasan SIC exclusions; 18 redistricted states; movers "
+    r"only; 2006--2015; Hasan 11-control list verbatim; firm-clustered SEs"
+)
+SUITE_LABEL = "tab:h1_6_hasan_verbatim"
+SAMPLE_LABEL = (
+    "Full Compustat firm-quarter universe post Hasan SIC exclusions (6000--6999, "
+    "4900--4999), restricted to Hasan-2022's 18 redistricted states, restricted "
+    "to firms whose pre/post-redistricting congressional district differs ('these "
+    "moving firms constitute our treated firms', Hasan \\S5.1 verbatim). 2006--2015 "
+    "estimation window. Treated$_{redist}$ assigned per Hasan 2022 \\S5.1 verbatim "
+    "methodology: firm-rank tertile within congressional district before vs after "
+    "2011 redistricting. HQ-to-CD via Census Geocoder (Public\\_AR\\_Current) firm "
+    "lat/lon point-in-polygon spatial join against Lewis et al.\\ 2013 Congressional "
+    "District boundary shapefiles (PRE = 111th-Congress; POST = 113th-Congress). "
+    "Cashflow control = (OIBDPQ--XINTQ--TXTQ--DVY\\_q)/ATQ per Hasan Appendix A "
+    "verbatim formula. IndustrySigma = 10-year SIC2 mean of firm-level SD(CF/AT)."
+)
+HYP_DIR = "positive"
+CLUSTERING = {"entity": True, "time": False}
+TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
+
+DISPLAY_IVS = ["DiD_Redist", "Treated_redist", "Post_redist"]
+IV_TAIL_DIRECTION = {
+    "DiD_Redist":     "positive",
+    "Treated_redist": "none",
+    "Post_redist":    "none",
+}
+VARIABLE_LABELS = {
+    "DiD_Redist":     r"Treated $\times$ Post (DiD)",
+    "Treated_redist": r"Treated (rank shift, $+1/0/-1$)",
+    "Post_redist":    "Post (year > 2011)",
+}
 
 # Hasan 2022 18 redistricted states (same set as run_h1_6_redistricting_did.py).
 HASAN_18_STATES = {
@@ -409,6 +459,103 @@ SPECS = [
 ]
 
 
+def _write_suite_spec_json(results: List[Dict[str, Any]], out_dir: Path) -> None:
+    """Adapt the standard write_suite_spec pipeline to TEST 5's 4-cell cash-only
+    structure (no UncResCEO regressions outside F1D call panel).
+    """
+    col_metadata: List[Dict[str, Any]] = []
+    coefs_per_col: List[Dict[str, Any]] = []
+    for entry in sorted(results, key=lambda r: r["col"]):
+        model = entry["model"]
+        spec = next(s for s in SPECS if s["col"] == entry["col"])
+        fe = spec["fe"]
+        base_fe = fe.replace("_yq", "")
+        fe_entity = "industry" if base_fe == "industry" else "firm"
+        fe_time = ("calendar_year_quarter" if fe.endswith("_yq")
+                   else "calendar_year")
+        try:
+            dv_mean = float(model.model.dependent.dataframe.mean().iloc[0])
+        except Exception:
+            dv_mean = None
+        col_metadata.append({
+            "col": len(col_metadata) + 1,
+            "dv": "CashRatio",
+            "fe_entity": fe_entity,
+            "fe_time": fe_time,
+            "control_vars": list(CONTROLS),
+            "n_obs": int(entry["n_obs"]),
+            "n_firms": int(entry["n_firms"]),
+            "r2": float(entry["r2"]),
+            "adj_r2": float(entry["adj_r2"]),
+            "dv_mean": dv_mean,
+            "cluster_fallback": False,
+        })
+        merged_coefs: Dict[str, Any] = {}
+        # POSITIVE-tail one-tailed for DiD_Redist
+        coefs_pos = extract_coefs_panelols(
+            model=model,
+            key_ivs=["DiD_Redist"],
+            all_vars=list(DISPLAY_IVS),
+            hyp_dir="positive",
+        )
+        merged_coefs.update({k: v for k, v in coefs_pos.items() if k == "DiD_Redist"})
+        # Two-tailed for level dummies
+        coefs_two = extract_coefs_panelols(
+            model=model,
+            key_ivs=[],
+            all_vars=["Treated_redist", "Post_redist"],
+            hyp_dir="none",
+        )
+        merged_coefs.update(coefs_two)
+        # Two-tailed for controls
+        ctrl_coefs = extract_coefs_panelols(
+            model=model, key_ivs=[], all_vars=list(CONTROLS), hyp_dir="none",
+        )
+        merged_coefs.update(ctrl_coefs)
+        coefs_per_col.append(merged_coefs)
+
+    ivs = [
+        {
+            "name": iv,
+            "label": VARIABLE_LABELS.get(iv, iv).replace("_", r"\_"),
+            "tail": (
+                "two" if IV_TAIL_DIRECTION.get(iv, "none") == "none"
+                else "one_pos"
+            ),
+        }
+        for iv in DISPLAY_IVS
+    ]
+
+    header_rows = [[
+        {"label": "Cash Holdings", "span": len(col_metadata)},
+    ]]
+
+    write_suite_spec(
+        output_dir=out_dir,
+        runner_id=SUITE_DIR_NAME,
+        sub_tables=[
+            {
+                "suite_id": SUITE_ID,
+                "dir_name": SUITE_DIR_NAME,
+                "title": SUITE_TITLE,
+                "caption": SUITE_CAPTION,
+                "label": SUITE_LABEL,
+                "col_range": list(range(1, len(col_metadata) + 1)),
+                "header_rows": header_rows,
+                "suite_type": "standard",
+            }
+        ],
+        coefs_per_col=coefs_per_col,
+        col_metadata=col_metadata,
+        sample_label=SAMPLE_LABEL,
+        clustering=CLUSTERING,
+        tail=TAIL,
+        ivs=ivs,
+        controls={"base": list(CONTROLS), "extended_only": []},
+        model_family="PanelOLS",
+    )
+
+
 def run_one_spec(panel: pd.DataFrame, spec: Dict[str, Any]) -> Dict[str, Any]:
     fe = spec["fe"]
     col = spec["col"]
@@ -471,6 +618,7 @@ def run_one_spec(panel: pd.DataFrame, spec: Dict[str, Any]) -> Dict[str, Any]:
         "p_one": p_one, "p_two": p_two,
         "r2": float(model.rsquared), "adj_r2": float(adj_r2),
         "n_obs": int(model.nobs), "n_firms": df["gvkey"].nunique(),
+        "model": model,  # kept for write_suite_spec rendering
     }
 
 
@@ -623,9 +771,15 @@ def main(hasan18: bool = False, drop_unchanged: bool = False,
         )
 
     # Save diagnostics CSV + report
-    diag_df = pd.DataFrame(results)
+    diag_df = pd.DataFrame([
+        {k: v for k, v in r.items() if k != "model"} for r in results
+    ])
     diag_df.to_csv(out_dir / "model_diagnostics.csv", index=False, float_format="%.10f")
     print(f"\n  Saved: {out_dir / 'model_diagnostics.csv'}")
+
+    # Emit suite_spec_<id>.json so generate_all_tables.py renders the table
+    _write_suite_spec_json(results, out_dir)
+    print(f"  Saved: {out_dir / f'suite_spec_{SUITE_ID}.json'}")
 
     duration = (datetime.now() - start).total_seconds()
     print(f"\nDuration: {duration:.1f}s")

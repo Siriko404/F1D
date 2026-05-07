@@ -1,0 +1,62 @@
+\begin{landscape}
+\begin{table}[H]
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.85}
+\centering
+\caption{H1.6 Hasan-Verbatim: Cash $\sim$ Treated$_{redist}$ $\times$ Post(2011); full Compustat post Hasan SIC exclusions; 18 redistricted states; movers only; 2006--2015; Hasan 11-control list verbatim; firm-clustered SEs}
+\label{tab:h1_6_hasan_verbatim}
+\scriptsize
+\begin{tabular}{lcccc}
+\toprule
+ & (1) & (2) & (3) & (4) \\
+ & \multicolumn{4}{c}{Cash Holdings} \\
+\cmidrule(lr){2-5}
+\midrule
+Treated $\times$ Post (DiD) & -0.0152 & -0.0199 & -0.0152 & -0.0199 \\
+ & (0.0095) & (0.0088) & (0.0095) & (0.0088) \\
+Treated (rank shift, $+1/0/-1$) & 0.0012 &  & 0.0012 &  \\
+ & (0.0134) &  & (0.0134) &  \\
+Post (year > 2011) & \textbf{0.8929}$^{***}$ &  &  &  \\
+ & (0.0757) &  &  &  \\
+\midrule
+Leverage & \textbf{-0.1859}$^{***}$ & \textbf{-0.0587}$^{***}$ & \textbf{-0.1860}$^{***}$ & \textbf{-0.0584}$^{***}$ \\
+ & (0.0344) & (0.0193) & (0.0344) & (0.0192) \\
+lnAssets & \textbf{-0.0184}$^{***}$ & -0.0044 & \textbf{-0.0185}$^{***}$ & -0.0046 \\
+ & (0.0036) & (0.0093) & (0.0036) & (0.0093) \\
+TobinsQ & \textbf{0.0205}$^{***}$ & 0.0021 & \textbf{0.0205}$^{***}$ & 0.0019 \\
+ & (0.0053) & (0.0025) & (0.0053) & (0.0025) \\
+Capex & -0.2199 & -0.0716 & -0.2184 & -0.0681 \\
+ & (0.1751) & (0.0634) & (0.1763) & (0.0626) \\
+DivDummy & \textbf{-0.0501}$^{***}$ & -0.0082 & \textbf{-0.0501}$^{***}$ & -0.0082 \\
+ & (0.0131) & (0.0055) & (0.0131) & (0.0055) \\
+RDSales & \textbf{0.0000}$^{***}$ & \textbf{0.0000}$^{***}$ & \textbf{0.0000}$^{***}$ & \textbf{0.0000}$^{***}$ \\
+ & (0.0000) & (0.0000) & (0.0000) & (0.0000) \\
+CashFlowAt & -0.0073 & 0.0018 & -0.0073 & 0.0018 \\
+ & (0.0050) & (0.0027) & (0.0050) & (0.0026) \\
+NWC & \textbf{-0.0713}$^{***}$ & \textbf{-0.0269}$^{***}$ & \textbf{-0.0712}$^{***}$ & \textbf{-0.0269}$^{***}$ \\
+ & (0.0184) & (0.0097) & (0.0184) & (0.0097) \\
+Acquisition & \textbf{-0.3399}$^{***}$ & \textbf{-0.2113}$^{***}$ & \textbf{-0.3401}$^{***}$ & \textbf{-0.2119}$^{***}$ \\
+ & (0.0448) & (0.0279) & (0.0451) & (0.0280) \\
+IndustrySigma & -0.0011 & -0.0005 & -0.0011 & -0.0004 \\
+ & (0.0011) & (0.0009) & (0.0011) & (0.0009) \\
+\midrule
+Industry FE & Yes &  & Yes &  \\
+Firm FE &  & Yes &  & Yes \\
+Year FE & Yes & Yes &  &  \\
+Year-Quarter FE &  &  & Yes & Yes \\
+\midrule
+N & 15,196 & 15,196 & 15,196 & 15,196 \\
+$R^2$ & 0.232 & 0.031 & 0.232 & 0.030 \\
+Adj.~$R^2$ & 0.228 & -0.003 & 0.227 & -0.005 \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{2pt}\scriptsize
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
+ Significant coefficients in \textbf{bold}.
+ Standard errors (in parentheses) clustered at firm level.
+ Full Compustat firm-quarter universe post Hasan SIC exclusions (6000--6999, 4900--4999), restricted to Hasan-2022's 18 redistricted states, restricted to firms whose pre/post-redistricting congressional district differs ('these moving firms constitute our treated firms', Hasan \S5.1 verbatim). 2006--2015 estimation window. Treated$_{redist}$ assigned per Hasan 2022 \S5.1 verbatim methodology: firm-rank tertile within congressional district before vs after 2011 redistricting. HQ-to-CD via Census Geocoder (Public\_AR\_Current) firm lat/lon point-in-polygon spatial join against Lewis et al.\ 2013 Congressional District boundary shapefiles (PRE = 111th-Congress; POST = 113th-Congress). Cashflow control = (OIBDPQ--XINTQ--TXTQ--DVY\_q)/ATQ per Hasan Appendix A verbatim formula. IndustrySigma = 10-year SIC2 mean of firm-level SD(CF/AT).
+ $R^2$ includes absorbed fixed effects (not within-$R^2$).
+\end{minipage}
+\end{table}
+\end{landscape}
