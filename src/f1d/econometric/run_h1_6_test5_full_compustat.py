@@ -128,6 +128,7 @@ def build_full_compustat_panel(root: Path) -> pd.DataFrame:
         "atq", "cheq", "dlcq", "dlttq", "ceqq", "cshoq", "prccq",
         "niq", "capxy", "dvy", "saleq", "xrdq", "oancfy",
         "wcapq", "aqcy",  # Hasan-verbatim NWC + Acquisition
+        "oibdpq", "xintq", "txtq",  # Hasan-verbatim Cashflow components
     ]
     df = pd.read_parquet(main_path, columns=cols)
     df["gvkey"] = df["gvkey"].astype(str).str.zfill(6)
@@ -153,6 +154,7 @@ def build_full_compustat_panel(root: Path) -> pd.DataFrame:
         "atq", "cheq", "dlcq", "dlttq", "ceqq", "cshoq", "prccq",
         "niq", "capxy", "dvy", "saleq", "xrdq", "oancfy", "fqtr",
         "wcapq", "aqcy",
+        "oibdpq", "xintq", "txtq",  # Hasan-verbatim Cashflow components
     ]
     for c in numeric_cols:
         if c in df.columns:
@@ -184,7 +186,13 @@ def build_full_compustat_panel(root: Path) -> pd.DataFrame:
     df["ROA"] = df["__niq_4q"] / df["__atq_4q"]
     df["Capex"] = df["capx_q"] / df["atq"]
     df["DivDummy"] = (df["dv_q"] > 0).astype(float)
-    df["CashFlowAt"] = df["oancf_q"] / df["atq"]
+    # Hasan 2022 verbatim Cashflow formula:
+    # (OIBDP - XINT - TXT - DVC) / AT
+    # Compustat substitution: DVCY not in our parquet, use DVY (total div) as proxy.
+    # Preferred dividends are negligible for non-financial firms in this sample.
+    df["CashFlowAt"] = (
+        df["oibdpq"] - df["xintq"] - df["txtq"] - df["dv_q"]
+    ) / df["atq"]
     # Hasan 2022 verbatim: "the value of R&D is set to zero" for missing.
     df["RDSales"] = (df["xrdq"] / df["saleq"].replace({0: np.nan})).fillna(0.0)
 
@@ -194,12 +202,12 @@ def build_full_compustat_panel(root: Path) -> pd.DataFrame:
         (df["saleq"] - df["__sale_4lag"]) / df["__sale_4lag"].abs()
     )
 
-    # sCFO: rolling 5-year (= 20-quarter) std of (oancf_q / atq_lag)
+    # IndustrySigma input: Hasan-verbatim Cashflow formula scaled by AT lag.
     df["__atq_lag"] = df.groupby("gvkey", sort=False)["atq"].shift(1)
-    df["__cf_at"] = df["oancf_q"] / df["__atq_lag"]
-    df["sCFO"] = df.groupby("gvkey", sort=False)["__cf_at"].transform(
-        lambda s: s.rolling(20, min_periods=12).std()
-    )
+    df["__cf_at"] = (
+        df["oibdpq"] - df["xintq"] - df["txtq"] - df["dv_q"]
+    ) / df["__atq_lag"]
+    # sCFO removed (Task 1: not in Hasan 11-control list).
 
     # Hasan-verbatim controls
     # NWC = (WCAPQ - CHEQ) / ATQ
