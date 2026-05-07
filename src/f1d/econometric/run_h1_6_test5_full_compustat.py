@@ -376,8 +376,12 @@ def attach_redist_treatment(panel: pd.DataFrame, root: Path) -> pd.DataFrame:
         f"-1={n_neg:,} (total={len(firm):,})"
     )
 
-    # 6. Attach to firm-quarter panel
-    keep_cols = ["gvkey", "Treated_redist", "prisk_5yr_pre_mean"]
+    # 6. Attach to firm-quarter panel (incl. state_cd_pre/post for movers
+    # filter per Hasan 2022 verbatim "moving firms constitute our treated firms")
+    keep_cols = [
+        "gvkey", "Treated_redist", "prisk_5yr_pre_mean",
+        "state_cd_pre", "state_cd_post",
+    ]
     panel = panel.merge(firm[keep_cols], on="gvkey", how="left")
     panel["Post_redist"] = (panel["year"] > POST_THRESHOLD_YEAR).astype(float)
     panel["DiD_Redist"] = panel["Treated_redist"] * panel["Post_redist"]
@@ -480,6 +484,11 @@ def parse_arguments():
                    help="Restrict to Hasan 2022's 18 redistricted states.")
     p.add_argument("--drop-unchanged", action="store_true",
                    help="Drop Treated_redist==0 cohort.")
+    p.add_argument("--movers-only", action="store_true",
+                   help="Hasan 2022 verbatim sample restriction: keep only "
+                        "firms whose pre/post congressional district differs "
+                        "(state_cd_pre != state_cd_post). 'These moving firms "
+                        "constitute our treated firms' (Hasan §5.1).")
     return p.parse_args()
 
 
@@ -526,7 +535,28 @@ def filter_drop_unchanged(panel: pd.DataFrame) -> pd.DataFrame:
     return panel
 
 
-def main(hasan18: bool = False, drop_unchanged: bool = False) -> int:
+def filter_movers_only(panel: pd.DataFrame) -> pd.DataFrame:
+    """Hasan 2022 verbatim: 'these moving firms constitute our treated firms'.
+    Sample restricted to firms whose pre- and post-redistricting CD differ
+    (state_cd_pre != state_cd_post). Firms whose CD assignment did not
+    change between 111th and 113th Congress are excluded entirely.
+    """
+    before = len(panel)
+    firms_before = panel["gvkey"].nunique()
+    panel = panel[
+        panel["state_cd_pre"].notna()
+        & panel["state_cd_post"].notna()
+        & (panel["state_cd_pre"] != panel["state_cd_post"])
+    ].copy()
+    print(
+        f"  Movers-only filter: {len(panel):,} / {before:,} firm-qtrs "
+        f"({panel['gvkey'].nunique():,} / {firms_before:,} firms)"
+    )
+    return panel
+
+
+def main(hasan18: bool = False, drop_unchanged: bool = False,
+         movers_only: bool = False) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     start = datetime.now()
@@ -534,6 +564,8 @@ def main(hasan18: bool = False, drop_unchanged: bool = False) -> int:
     suffix = ""
     if hasan18:
         suffix += "_H18"
+    if movers_only:
+        suffix += "_MOVERS"
     if drop_unchanged:
         suffix += "_DROP0"
     if suffix:
@@ -548,7 +580,8 @@ def main(hasan18: bool = False, drop_unchanged: bool = False) -> int:
     print(f"Timestamp:    {timestamp}")
     print(f"Output:       {out_dir}")
     print(f"Outcome:      Cash only (4 specs); no UncResCEO outside F1D call panel")
-    print(f"Diag flags:   hasan18={hasan18} drop_unchanged={drop_unchanged}")
+    print(f"Diag flags:   hasan18={hasan18} drop_unchanged={drop_unchanged} "
+          f"movers_only={movers_only}")
 
     panel = build_full_compustat_panel(root)
     panel = attach_redist_treatment(panel, root)
@@ -562,6 +595,8 @@ def main(hasan18: bool = False, drop_unchanged: bool = False) -> int:
 
     if hasan18:
         panel = filter_hasan_18(panel, root)
+    if movers_only:
+        panel = filter_movers_only(panel)
     if drop_unchanged:
         panel = filter_drop_unchanged(panel)
 
@@ -596,4 +631,8 @@ def main(hasan18: bool = False, drop_unchanged: bool = False) -> int:
 
 if __name__ == "__main__":
     args = parse_arguments()
-    sys.exit(main(hasan18=args.hasan18, drop_unchanged=args.drop_unchanged))
+    sys.exit(main(
+        hasan18=args.hasan18,
+        drop_unchanged=args.drop_unchanged,
+        movers_only=args.movers_only,
+    ))
