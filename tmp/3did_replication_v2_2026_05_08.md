@@ -65,7 +65,7 @@ Predecessor `tmp/3did_replication_instructions_2026_05_08_DEPRECATED.md` had ~60
 
 | Paper                        | PDF p. read   | Spec     | NLM verify | Locked |
 |------------------------------|---------------|----------|------------|--------|
-| Brexit (Campello 2022 JFQA)  | 1-45 of 45 (full read ✓) | chunks 1-3 PDF-locked | ✅ chunk-1 / ⏳ unified Brexit batch | YES (pending NLM batch) |
+| Brexit (Campello 2022 JFQA)  | 1-45 of 45 (full read ✓) | chunks 1-3 PDF-locked + Q-A/Q-B/Q-D NLM-locked | ✅ chunk-1 + unified batch | **LOCKED** (Q-C SIC supplementary = F1D default) |
 | Boasiako 2020 EFM databreach | 0 / 24        | none     | none       | NO     |
 | Chen 2017 JAAF restatement   | 0 / 28        | none     | none       | NO     |
 
@@ -421,11 +421,11 @@ Other variables from same Table 1 footer (all winsorized 1%):
 - TOBIN_Q = (market equity + book assets) / book assets
 - CASH_FLOW = OIBDP / lag(AT)
 - SIZE = ln(AT)
-- SALES_GROWTH = year-on-year % change in **quarterly EPS** ⚠️ likely paper typo
+- SALES_GROWTH = year-on-year % change in **quarterly sales** ✅ (corrected — my prior visual read of "quarterly EPS" was wrong; programmatic + NLM both confirm "sales")
 - CONSENSUS_EARNINGS_FORECAST = standardized mean 1Q-ahead EPS forecast
 - STOCK_RETURNS = quarterly buy-and-hold return
 
-⚠️ **OPEN — SALES_GROWTH oddity**: footer literally says "year-on-year percentage change in quarterly earnings per share" — likely typo (var name SALES_GROWTH but def via EPS). NLM query Q7 below.
+✅ **CORRECTED 2026-05-08 PM-late+3h**: programmatic PyMuPDF text extract from PDF p.21 (j.3198) confirms SALES_GROWTH = "year-on-year percentage change in **quarterly sales**". My prior visual read claimed "quarterly EPS" — wrong. NLM batch Q-B independently confirmed "quarterly sales". NO TYPO. LOCKED. Calibration: visual PDF image reading unreliable for fine wording; programmatic text extract is source-of-truth.
 
 ### 2F. PSM + parallel trends — IN SUPPLEMENTARY (PDF p.20 = journal p.3197) ⚠️
 
@@ -867,6 +867,94 @@ If silent on any sub-question, say "NOT IN PAPER" — I will use F1D defaults.
 ## OBSOLETE: NLM verification queries — chunks 2-3 (Q5-Q9, REPLACED by unified batch)
 
 (Q5-Q9 above subsumed by unified batch above. Don't run Q5-Q9. The unified batch is the canonical source going forward.)
+
+---
+
+## ✅ Brexit unified-batch reconciliation (2026-05-08 PM-late+3h)
+
+Sina ran Q-A through Q-D in NotebookLM `f1d` notebook. Verbatim responses returned. Reconciliation:
+
+### Q-A — CASH definition disambiguation ✅ ALL LOCKED
+
+| Sub-item | NLM verdict | PDF programmatic verify | Status |
+|----------|-------------|--------------------------|--------|
+| (1) Table 8 footer applies to eq (14) | ✅ confirmed verbatim "Table 8 reports output from equation (14)" | ✅ matched | LOCKED |
+| (2) Verbatim CASH def | "CASH is defined as total cash holdings divided by lagged total assets net of cash holdings" | ✅ matched | LOCKED |
+| (3) Parsing | lag(AT − CHE) [BKS-style] per grammatical reading | ✅ same parsing | LOCKED |
+| (4) Numerator components (CHE / CHE+STI / + securities) | NLM silent — "no additional sentence" | paper silent | F1D default = Compustat **#CHEQ** (which is cash + STI combined) |
+
+**LOCKED CASH DV for replication**: `CHEQ_t / lag(ATQ - CHEQ)` — BKS net-assets style.
+
+### Q-B — SALES_GROWTH ✅ LOCKED (with correction to spec)
+
+NLM verbatim: "SALES_GROWTH is defined as the year-on-year percentage change in quarterly sales" → **quarterly SALES, not EPS**.
+
+Programmatic PyMuPDF text extract confirms: PDF p.21 (j.3198) Table 1 footer reads: "SALES_GROWTH is defined as the year-on-year percentage change in **quarterly sales**."
+
+**Spec correction applied**: my prior visual reading of "quarterly EPS" was wrong. No typo. SALES_GROWTH IS sales-based.
+
+✅ **LOCKED**: SALES_GROWTH = year-on-year % change in quarterly sales (Compustat #SALEQ).
+
+### Q-C — SIC ranges + Table C1 supplementary ⚠️ DEFERRED to F1D default
+
+NLM verdict: "The exact Supplementary Material containing Table C1 is not included in the provided sources... You may need to independently verify or upload the supplementary file."
+
+Sina's NotebookLM does not have JFQA Cambridge Core supplementary uploaded.
+
+**Locked F1D default**:
+- Utility firms: SIC 4900-4999 (electric, gas, sanitary, communications)
+- Financial firms: SIC 6000-6999 (depository institutions, securities, insurance, real estate, holding companies)
+- Other filters: F1D defaults (10M$ size cutoff already locked from main paper p.3192)
+
+⚠️ Open: if Table C1 is later acquired (Cambridge Core supplementary download), revisit SIC ranges.
+
+### Q-D — Catch-all ✅ MOSTLY LOCKED + 1 NEW finding
+
+| Sub-item | Verdict | Source |
+|----------|---------|--------|
+| Compustat variant | ✅ "COMPUSTAT Quarterly North America Fundamentals" | NLM verbatim, j.3197 (Table 1 footer); confirmed PDF programmatic |
+| Currency requirements | ✅ NOT a sample filter; FX hedging accounted for via controls | j.3208 (Section VI.A) verbatim "all firms in our sample report using derivatives to hedge against FX risk" |
+| Primary stock listing | ⚠️ NOT IN PAPER (CRSP-based universe; no exchange filter specified) | F1D default = CRSP-Compustat merged sample (no listing-exchange filter) |
+| Active-firm requirements | ⚠️ NOT IN PAPER (likely Table C1) | F1D default = no minimum-quarter requirement |
+| Mergers/spin-offs/delistings | ⚠️ NOT IN PAPER (likely Table C1) | F1D default = standard CRSP delisting handling |
+| Variable transforms (beyond winsorization) | ✅ SIZE = ln(AT); CONSENSUS_EARNINGS_FORECAST standardized; PROFITS = quarterly Δ(OIBDP/Sales); all winsorized 1% | NLM + PDF |
+| Estimation library | ⚠️ NOT IN PAPER (no Stata/SAS/R specified) | F1D default = `linearmodels.PanelOLS` with double-clustered SE |
+| Auxiliary checks beyond headlines | ✅ Footnote 17 (sig-positive β^UK alt threshold) + **Footnote 25 NEW**: Hoberg-Moon 2017 Offshoring Index intersection | PDF p.16 (j.3193) fn 17; PDF p.28 (j.3205) fn 25 |
+
+**NEW FINDING from Q-D — Hoberg-Moon 2017 Offshoring Index 3rd treatment definition:**
+
+Verbatim from PDF p.29 (j.3206), Table 6 description:
+> "the final specification, the treatment group consists of firms with scores of greater than 5 on the Hoberg and Moon (2017) U.K. Offshoring Index summed up over years 2010–2014, considering only output offshoring activities, whereas the control group is made of firms with scores of 0 on this index."
+
+**Interpretation**: Brexit paper has THREE treatment definitions, not just two:
+1. Top-tercile β^UK (449 firms; market-based)
+2. >5 vs 0 Brexit 10-K mentions in 2015 (807/433 firms; text-based)
+3. **>5 vs 0 Hoberg-Moon UK Offshoring Index summed over 2010-2014, OUTPUT only** (text-based; INVESTMENT outcome only; channel decomposition)
+
+For OUR cash-DiD replication: we only need treatments 1 + 2 (cash result is in Table 8 with treatments 1 + 2). Hoberg-Moon Offshoring is an Investment-channel decomposition only, NOT applied to cash.
+
+✅ **NOTED** in spec for completeness; not blocking for cash replication.
+
+### Calibration: NLM accuracy this batch
+
+| Citation given | NLM said | Actual (programmatic) | Match? |
+|----------------|----------|------------------------|--------|
+| Q-A.1 Table 8 → eq 14 | "PDF page 31, Journal page 3208" | PDF p.31 = j.3208 ✓ | ✅ |
+| Q-A.2 cash def | "PDF page 31, Journal page 3208" | PDF p.31 = j.3208 ✓ | ✅ |
+| Q-D.1 Compustat NA | "PDF page 20, Journal page 3197" | PDF p.20 = j.3197 ✓ | ✅ |
+| Q-D.6 SIZE = ln(AT) | "PDF page 20, Journal page 3197" | PDF p.21 = j.3198 (Table 1 footer) | ⚠️ NLM 1-page early on Table 1 footer |
+| Q-D.6 PROFITS def | "PDF page 31, Journal page 3208" | PDF p.31 = j.3208 ✓ | ✅ |
+| Q-D.8 fn 25 Hoberg-Moon | "PDF page 28, Journal page 3205" | PDF p.28 = j.3205 ✓ | ✅ |
+
+**Conclusion**: NLM citations are USUALLY accurate when explicit PDF-page-number demand is in the query. Occasional 1-page-early drift remains on Table 1 footer item. **Discipline confirmed**: keep demanding PDF page (1-45) AND journal page in queries; cross-check programmatically when conflicts arise.
+
+### Brexit verdict — POST FULL VERIFICATION ✅ GO
+
+All locked spec items + F1D defaults documented. 0 deal-breakers surfaced. Cash-as-auxiliary status remains the only documented caveat — handle via §III.E.4 prose framing.
+
+**Brexit replication can proceed.** Phase 1 builders unblocked.
+
+Next paper: Boasiako, O'Connor Keefe (2020) EFM Data Breaches.
 
 ---
 
