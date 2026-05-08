@@ -66,7 +66,7 @@ Predecessor `tmp/3did_replication_instructions_2026_05_08_DEPRECATED.md` had ~60
 | Paper                        | PDF p. read   | Spec     | NLM verify | Locked |
 |------------------------------|---------------|----------|------------|--------|
 | Brexit (Campello 2022 JFQA)  | 1-45 of 45 (full read ✓) | chunks 1-3 PDF-locked + Q-A/Q-B/Q-D NLM-locked | ✅ chunk-1 + unified batch | **LOCKED** (Q-C SIC supplementary = F1D default) |
-| Boasiako 2020 EFM databreach | 0 / 24        | none     | none       | NO     |
+| Boasiako 2021 EFM databreach | 1-24 of 24 (full read ✓) | full PDF locked | ⏳ unified Boasiako batch | partial (online appendix open) |
 | Chen 2017 JAAF restatement   | 0 / 28        | none     | none       | NO     |
 
 ---
@@ -958,9 +958,395 @@ Next paper: Boasiako, O'Connor Keefe (2020) EFM Data Breaches.
 
 ---
 
-# PAPER 2 — Boasiako, O'Connor Keefe (2020) EFM
+# PAPER 2 — Boasiako, O'Connor Keefe (2021) EFM
 
-(Pending — start after Brexit locked.)
+**File:** `docs/papers/boasiako_oconnor_keefe_2020_databreach_efm.pdf`
+**Citation:** European Financial Management, Vol. 27, Issue 3 (2021), pp. 528–551 (©2020 online)
+**DOI:** 10.1111/eufm.12289
+**Title (verbatim p.528):** "Data breaches and corporate liquidity management"
+**Authors:** Kwabena A. Boasiako (Victoria University of Wellington), Michael O'Connor Keefe (corresponding)
+**Pages:** 24 PDF pages = j.528-551 (PDF p.N = j.(527+N))
+**PDF read complete:** 2026-05-08 PM-late+4h (full single-pass per workflow discipline)
+
+---
+
+### B1. Sample — Section 3.1 (PDF p.7 = j.534) ✅
+
+**Disclosure Law sample (eq 1) verbatim:**
+> "we collect initial firm-level data from the merged Center for Research in Security Prices (CRSP)/Compustat database for the period 1997-2015. This period covers the majority of the years in which the states passed data breach disclosure laws. Our sample period begins 5 years before California passed the first state-level data breach disclosure law, in 2002, and ends 5 years after Mississippi passed a similar law, in 2010. Following prior literature (Bates et al., 2009; Opler et al., 1999), we exclude all financial firms—that is, those with Standard Industrial Classification (SIC) codes 6000-6999—because their cash holdings include inventories of marketable securities and they are also required to meet statutory capital requirements. We exclude utility companies (SIC codes 4900-4999) because their cash holdings are possibly subject to regulatory supervision in some states. We further drop observations with negative or missing total book assets. This yields a final sample of 56,646 firm-year observations."
+
+✅ **LOCKED:**
+- Disclosure-law sample: **1997-2015** (annual)
+- Source: merged CRSP/Compustat
+- Industry exclusions: **SIC 6000-6999** (financial) + **SIC 4900-4999** (utility)
+- Drop negative/missing AT
+- N = **56,646 firm-year observations**
+
+**Data Breach sample (eq 2) verbatim (PDF p.7-8 = j.534-535):**
+> "Next, to examine the effect of actual data breaches on corporate cash holdings, we obtain data on data breaches from a chronological listing of disclosed data breaches available from the Privacy Rights Clearinghouse (PRC) for the period 2005-2018. ... We identify 329 nonfinancial business firms as having disclosed a data breach over the 2005-2018 sample period."
+
+✅ **LOCKED:**
+- Data-breach sample: **2005-2018** (annual)
+- Source: Privacy Rights Clearinghouse (PRC) — `https://www.privacyrights.org`
+- N = **329** firms with breach event disclosed; **42,893** firm-year observations total
+- Manually merged with CRSP/Compustat
+
+### B2. Disclosure Law DiD — Equation (1) (PDF p.8 = j.535, Section 3.2) ✅
+
+```
+   ┌────────────────────────────────────────────────────────────────────┐
+   │   Cash_{i,s,t} = α + β · Disclosure_Law(0/1)_{s,t} + γ · X_{i,s,t} │
+   │              + θ_s (state FE) + δ_t (year FE)                      │
+   │              + ρ_j (industry FF49 FE) + v_i (firm FE) + ε         │   (1)
+   └────────────────────────────────────────────────────────────────────┘
+```
+
+Verbatim:
+> "where i, s, and t index firm, state, and time, respectively. The dependent variable, Cash, is cash and marketable securities scaled by total book assets; **Disclosure Law(0/1)_{s,t} is a dummy variable that switches to one the year after the focal state passed the disclosure law**; X_{i,s,t} is a vector of controls; θ_s represents a set of state dummies that account for state-level unobservable factors that could be correlated with the data breach disclosure laws, and thus bias our estimates; δ_t represents year dummies to control for secular shocks in cash holdings coinciding with the passage of the disclosure laws; and ρ_j and v_i capture industry and firm fixed effects, respectively. The term ε_{i,s,t} is a random error term. **We cluster standard errors by state, because the treatment is defined at the state level.**"
+
+✅ **LOCKED Eq (1):**
+- DV: Cash = (cash + marketable securities) / total book assets [BoY]
+- Treatment: Disclosure_Law(0/1)_{s,t} = 1 the **YEAR AFTER** focal state passed law (Y+1 timing)
+- FE: state + year + industry (FF49) + firm (varies by spec)
+- SE clustering: by **STATE** (cols 1-4 baseline); two-way state+year (col 5 alternative); first differences (col 6 alternative)
+- Footnote 5: "The industry dummies are constructed based on the 49-industry classification of Fama and French (1997)."
+
+### B3. State assignment — by HQ state (PDF p.8 = j.535, verbatim) ✅
+
+> "state-level disclosure laws charge firms operating within the state (with data breach laws) with the responsibility of disclosing data breaches. Firms can operate in additional states besides their headquarters state and can thus be partly exposed to a data breach disclosure law before their home state passing a similar law. However, **focusing on the states in which firms are headquartered is a conservative approach, since it essentially downward biases β in Equation (1), which should result in an underestimation of our treatment effect**. In other words, firms that are partly pre-exposed to a data breach disclosure law will have a weaker reaction when a similar law is passed in their home state."
+
+✅ **LOCKED:** State assignment = **HQ state** (Compustat ADDZIP/STATE field). Conservative downward bias acknowledged.
+
+### B4. Data Breach DiD — Equation (2) (PDF p.8 = j.535, Section 3.2) ✅
+
+```
+   ┌──────────────────────────────────────────────────────────────────┐
+   │   Cash_{i,t} = α + β · Breach(0/1)_t + γ · X_{i,t}             │
+   │            + ρ_j (industry FE) + δ_t (year FE) + ε              │   (2)
+   └──────────────────────────────────────────────────────────────────┘
+```
+
+> "where Breach(0/1) is a dummy variable set to one if a firm i discloses a data breach in time t; and zero otherwise. All other variables maintain their previous definitions, and **robust standard errors are estimated by clustering at the firm level**."
+
+✅ **LOCKED Eq (2):**
+- Treatment: Breach(0/1)_t = 1 if firm i year t discloses breach
+- FE: industry FF49 + year (+ firm FE in some specs)
+- SE clustering: by **FIRM** (different from Eq 1's state-cluster)
+
+### B5. Controls + Winsorization (PDF p.9 = j.536, Section 3.3) ✅
+
+Verbatim:
+> "We follow the literature (Bates et al., 2009; Opler et al., 1999) in our empirical testing and control for several variables that affect firm cash policy. Specifically, we control for **Firm Size, Firm Age, Book Leverage, Market-to-book, Cash Flow, Capital Expenditure, Acquisition Expenditure, Dividend Paying Firms(0/1), R&D Expenditure, Net Working Capital, and Industry Cash Flow Volatility**. The definitions of all the variables are detailed in the Appendix. We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers."
+
+✅ **LOCKED CONTROLS (11 total):**
+1. Firm Size = log(AT)
+2. Firm Age = log(years_in_CRSP_Compustat)
+3. Book Leverage = (DLC + DLTT) / AT
+4. Market-to-book = (AT − BVE + MVE) / AT
+5. **Cash Flow** ⚠️ "earnings after interest, dividends, and taxes but before depreciation" / AT — non-standard wording; need NLM for exact Compustat formula
+6. Capital Expenditure = CAPX / lag(AT_BoY) (BoY scaling)
+7. Acquisition Expenditure = AQC / lag(AT_BoY)
+8. Dividend Paying Firms(0/1) = 1 if pays dividends in year
+9. R&D Expenditure = XRD / lag(AT_BoY)
+10. **Net Working Capital** ⚠️ "ratio of net working capital to net assets" — denominator NOT AT; Q for NLM
+11. **Industry Cash Flow Volatility** ⚠️ "SD of industry-AVERAGE cash flows for previous 10 years (≥3 yrs required)" — σ over time of industry-mean (not firm-σ averaged)
+
+⚠️ Winsorize 1% both tails.
+
+### B6. Variable Definitions — Appendix Table A1 (PDF p.24 = j.551) ✅
+
+Verbatim from Appendix A:
+- **Cash**: "Cash and marketable securities scaled by total book assets at the beginning of the year"
+- **External Debt Financing**: (DLTIS − DLTR) / AT_BoY
+- **External Equity Financing**: (SSTK − PRSTKC) / AT_BoY
+- **Disclosure Law(0/1)**: "1 for periods after the enactment of the state-level data breach notification laws, and 0 otherwise"
+  - ⚠️ Section 3.2 says "year after" passage; Table A1 says "after enactment". Y+1 vs Y assignment ambiguous — verify NLM.
+- **Firm Age**: log(years_in_CRSP_Compustat)
+- **Market-to-book**: (AT − BVE + MVE) / AT
+- **Firm Size**: log(AT)
+- **Book Leverage**: (DLC + DLTT) / AT
+- **Cash Flow**: "earnings after interest, dividends, and taxes but before depreciation" / AT — non-standard
+- **Capital Expenditure**: CAPX / AT_BoY
+- **Acquisition Expenditure**: AQC / AT_BoY
+- **Dividend Paying Firms(0/1)**: 1 if firm pays dividends; 0 otherwise (incl. missing → 0)
+- **R&D Expenditure**: XRD / AT_BoY
+- **Net Working Capital**: NWC / NET_ASSETS — denominator unspecified Compustat-side
+- **Industry Cash Flow Volatility**: σ of industry-AVERAGE cash flows over prior 10 years (≥3 yrs required)
+
+### B7. Headline Results — Table 2 Disclosure Law (PDF p.11 = j.538) ✅
+
+| Spec | Disclosure Law(0/1) | SE | FE | N | Adj R² |
+|------|---------------------|------|-----|---|--------|
+| Col 1 (year+ind+state FE) **= BASELINE** | **+0.0076** ** | (0.0031) | year+ind+state | 56,646 | 0.4939 |
+| Col 2 (year+firm FE) | +0.0056** | (0.0027) | year+firm | 56,646 | 0.0691 |
+| Col 3 (excl California — 18% of obs) | +0.0032 NS | (0.0042) | year+ind+state | 47,526 | 0.4658 |
+| Col 4 (excl 2007-2009 crisis) | +0.0078** | (0.0038) | year+ind+state | 48,551 | 0.5083 |
+| Col 5 (two-way SE state+year) | +0.0076*** | (0.0028) | year+ind+state | 56,646 | 0.4287 |
+| Col 6 (first differences) | +0.0026* | (0.0015) | year+ind+state (FD) | 47,117 | 0.1291 |
+
+✅ **HEADLINE: Col 1 baseline β = +0.0076** SE 0.0031** (5% sig)
+
+> "an increase in cash holdings by 0.0076 corresponds to a **3.8% increase from mean cash holdings (0.2008)** and 7.3% of median cash holdings (0.1044) for our sample firms"
+
+⚠️ **Note**: California excluded col 3 → β NS. Footnote 6: "Firms headquartered in California account for 18% of the observations in our sample." Suggests CA-tech-heavy firms drive part of effect.
+
+Other Disclosure Law controls (col 1 verbatim from Table 2 image):
+- Firm Size: -0.0110*** (0.0022)
+- Market-to-book: +0.0080*** (0.0015)
+- Firm Age: -0.0213*** (0.0044)
+- Book Leverage: -0.1400*** (0.0206)
+- Cash Flow: -0.0049*** (0.0018)
+- Capital Expenditure: -0.0709** (0.0280)
+- Acquisition Expenditure: -0.0052 NS (0.0048)
+- Dividend Paying Firms: -0.0072** (0.0028)
+- R&D Expenditure: +0.1909*** (0.0281)
+- Net Working Capital: -0.0001 NS (0.0004)
+- Industry Cash Flow Volatility: +0.0273*** (0.0068)
+
+### B8. Falsification Test — Table 3 (PDF p.12 = j.539) ✅
+
+> "We follow a two-step process. First, for each year, we randomly assign firms to the various states. Next, we randomly assign the states into the distribution of years when the various disclosure laws were passed."
+
+| Spec | Disclosure Law(0/1) | FE | N | Adj R² |
+|------|---------------------|-----|----|--------|
+| Col 1 | +0.0008 NS (0.0024) | year+ind | 56,272 | 0.4613 |
+| Col 2 | +0.0008 NS (0.0023) | year+state | 56,272 | 0.4446 |
+| Col 3 | +0.0007 NS (0.0023) | year+ind+state | 56,272 | 0.4938 |
+| Col 4 | +0.0008 NS (0.0022) | year+firm | 56,272 | 0.0688 |
+
+✅ **Falsification PASS** — random state-year reassignment all NS as expected.
+
+### B9. Financial Constraint Channel — Table 4 (PDF p.14 = j.541) ✅
+
+> "we sort firms into financially constrained and unconstrained groups based on firm size, firm age, and dividend payout ratio. For each year, we rank the firms over the sample period and categorize firms in the bottom terciles of the size, age, and dividend payout distributions as financially constrained."
+
+| Spec | Interaction term | Coef | SE |
+|------|------------------|------|-----|
+| Col 1 | Small Firms × Disclosure_Law | **+0.0344** ** | (0.0153) |
+| Col 2 | Young Firms × Disclosure_Law | **+0.0216*** | (0.0128) |
+| Col 3 | Non-dividend Payer × Disclosure_Law | **+0.0369*** ** | (0.0085) |
+
+✅ **Channel verified**: financial-constraint firms drive cash-buildup response.
+
+### B10. Data Breach Result — Table 6 (PDF p.16 = j.543) ✅
+
+| Spec | Variable | Coef | SE | N | Adj R² |
+|------|----------|------|-----|---|--------|
+| Col 1 | Breach(0/1)_t | **+0.0299*** ** | (0.0101) | 42,893 | 0.4981 |
+| Col 2 | Breach(0/1)_{t-1} | **+0.0282*** ** | (0.0104) | 42,893 | 0.4981 |
+| Col 3 | Severe Breach(0/1)_t | **+0.0348** ** | (0.0151) | 42,878 | 0.4982 |
+|        | Moderate Breach | +0.0285* | (0.0163) | | |
+|        | Low Breach | +0.0224 NS | (0.0170) | | |
+| Col 4 | Severe Breach(0/1)_{t-1} | **+0.0379** ** | (0.0187) | 42,866 | 0.4982 |
+
+> "an increase in cash holdings of 0.03 corresponds to a **13.7% increase from mean cash holdings (0.2185)** in the year following the data breach"
+
+✅ **Severity gradient**: Severe > Moderate > Low — supports causal precautionary interpretation.
+
+### B11. External Financing Channel — Table 7 (PDF p.19 = j.546) ✅
+
+| Spec | Variable | Equity (col 1-2) | Debt (col 3-4) |
+|------|----------|------------------|------------------|
+| Col 1 | Breach(0/1) | -0.0140*** (0.0051) | — |
+| Col 2 | Severe/Mod/Low | -0.0228*** / -0.0132 NS / -0.0056 NS | — |
+| Col 3 | Breach(0/1) | — | -0.0171*** (0.0048) |
+| Col 4 | Severe/Mod/Low | — | -0.0232*** / -0.0179** / -0.0142* |
+
+> "a decrease in External Equity Financing by 0.014 corresponds to a 32% decrease from mean External Equity Financing (0.0436), and a decrease in External Debt Financing by 0.0171 corresponds to a 62% decrease from mean External Debt Financing (0.0275)"
+
+✅ Breached firms cut external financing → cash buildup must come from somewhere → see investment.
+
+### B12. Investment Channel — Table 8 (PDF p.21 = j.548) ✅
+
+| Spec | Variable | CapEx (col 1-2) | Acq (col 3-4) |
+|------|----------|------------------|------------------|
+| Col 1 | Breach(0/1) | -0.0072** (0.0031) | — |
+| Col 2 | Severe/Mod/Low | -0.0092** / -0.0074* / -0.0068 NS | — |
+| Col 3 | Breach(0/1) | — | -0.0209*** (0.0040) |
+| Col 4 | Severe/Mod/Low | — | -0.0219*** / -0.0211*** / -0.0136* |
+
+> "a decrease in Capital Expenditure by 0.0072 corresponds to an 11.8% decrease from mean Capital Expenditure (0.061), and a decrease in Acquisition Expenditure by 0.0209 corresponds to a 52% decrease from mean Acquisition Expenditure (0.0399)"
+
+✅ Investment cuts substitute for cash buildup; precautionary story complete.
+
+### B13. Conclusion + Channel — Section 6 (PDF p.21-22 = j.548-549) ✅
+
+> "we argue that, holding constant the underlying likelihood of experiencing a data breach, mandatory data breach disclosure laws increase the cash flow risk associated with future data breaches, and **firms build up balance sheet liquidity as a precautionary measure**."
+
+> "The finding is also robust to a dynamic effect estimation that addresses the parallel trends assumption."
+
+✅ **CHANNEL = precautionary** (verbatim). Parallel trends + entropy balancing in Online Appendix.
+
+### B14. Online Appendix location — Footnote 7 (PDF p.11 = j.538) ⚠️
+
+> "The Online Appendix is available at https://sites.google.com/site/mockeefe/Data."
+
+⚠️ **OPEN**: Online Appendix not in Sina's NotebookLM upload. Need to access URL for parallel trends + entropy balancing details.
+
+### B15. Open after full PDF read — for Boasiako unified NLM batch
+
+1. **Cash Flow definition** — "earnings after interest, dividends, and taxes but before depreciation" — Compustat fields? (NI + DP)/AT or (NI − DV + DP)/AT?
+2. **NWC scaling** — "ratio of NWC to net assets" — denominator AT−CHE? AT−LIAB? Other?
+3. **Industry Cash Flow Volatility** — exact construction: σ-of-industry-mean over 10 years
+4. **Disclosure_Law timing** — Section 3.2 "year after" vs Table A1 "after enactment" — Y+1 starting?
+5. **Online Appendix accessibility** — parallel trends + entropy balancing details
+6. **Cash numerator** — CHE only? Or CH + IVST separately?
+
+---
+
+## ⚡ UNIFIED Boasiako verification batch (post full-PDF read)
+
+**Discipline**: ALL queries demand BOTH **PDF page (1-24 index in uploaded PDF) AND journal page** (528-551 in header). Cross-check detects drift.
+
+```
+QUERY A — Cash Flow + Cash (DV) Compustat field formulas
+
+In Boasiako & O'Connor Keefe (2021) EFM Appendix Table A1 [j.551]:
+
+(1) Cash Flow definition: "Ratio of earnings after interest, dividends, and
+taxes but before depreciation to book assets"
+   What Compustat fields? Likely candidates:
+   (a) (NI + DP) / AT — standard "cash flow" form (NI is after taxes; DP added back)
+   (b) (NI − DV + DP) / AT — subtracts dividends paid (literal "after dividends")
+   (c) (EBITDA − tax − interest − dividends) / AT — fully literal parsing
+   The "after dividends" wording is unusual; (a) is standard but doesn't match
+   text literally. Confirm exact formula or quote any clarifying text.
+
+(2) Cash (DV) definition: "Cash and marketable securities scaled by total
+book assets at the beginning of the year"
+   Compustat fields for numerator?
+   (a) CHE alone (which is cash + ST investments combined)
+   (b) CH + IVST separately
+   (c) CHE + IVAEQ (long-term investments — unlikely)
+   Confirm "beginning of the year" = lag(AT_t-1).
+
+For each verbatim quote, provide BOTH:
+(a) PDF page (1-24 in the uploaded PDF)
+(b) Journal page printed in the page header
+```
+
+```
+QUERY B — NWC scaling + Industry Cash Flow Volatility construction
+
+In Boasiako & O'Connor Keefe (2021) EFM Table A1 [j.551]:
+
+(1) Net Working Capital: "Ratio of net working capital to net assets"
+   Numerator: NWC = ACT − LCT (current assets minus current liabilities)?
+              Or specific Compustat fields?
+   Denominator "net assets": AT − CHE? AT − LIAB? Other?
+   Both numerator and denominator are non-standard in cash-holdings literature.
+   Confirm exact Compustat formula.
+
+(2) Industry Cash Flow Volatility: "Standard deviation of industry-average
+cash flows for the previous 10 years; at least 3 years of observations
+required"
+   Construction:
+   (a) average cash flow ACROSS FIRMS WITHIN INDUSTRY for each year, then
+       SD over 10-year window? (industry-time series of means)
+   (b) FIRM-σ for each firm, then averaged within industry?
+   The wording "industry-AVERAGE cash flows" suggests (a). Confirm.
+   Industry classification: FF49 (matched eq 1)? Or different?
+   10-year window: rolling or fixed?
+
+For each verbatim quote: PDF page (1-24) AND journal page.
+```
+
+```
+QUERY C — Disclosure_Law(0/1) timing assignment
+
+Two slightly different statements in Boasiako & O'Connor Keefe (2021) EFM:
+
+(1) Section 3.2 [j.535]: "Disclosure Law(0/1)_{s,t} is a dummy variable that
+switches to one **the year after** the focal state passed the disclosure law"
+→ Y+1 timing (e.g., CA passes 2002 → dummy=1 starting 2003).
+
+(2) Table A1 Appendix [j.551]: "Disclosure Law(0/1) — 1 for periods after
+the enactment of the state-level data breach notification laws, and 0
+otherwise"
+→ "after enactment" timing — could be Y or Y+1.
+
+CONFIRM operationally:
+1. If California passed law in 2002 (year of enactment), when does the
+   dummy switch to 1?
+   - 2002 (year of passage)
+   - 2003 (year after passage = Y+1)
+2. Quote any verbatim sentence resolving this ambiguity. Section 3.2 vs
+   Table A1.
+
+PDF page (1-24) AND journal page.
+```
+
+```
+QUERY D — Online Appendix accessibility + parallel trends + entropy balancing
+
+Section 4.1 [j.538] mentions parallel trends test in Online Appendix
+(Footnote 7: https://sites.google.com/site/mockeefe/Data).
+Section 5.2 [j.545] mentions entropy balancing dynamic-effect estimation
+in Online Appendix.
+
+CONFIRM:
+1. Is the Online Appendix available in your NotebookLM? (Or just URL link in
+   the main paper PDF?)
+2. If accessible: quote the EXACT parallel-trends test specification + result
+   (timing dummies? event-study form? coefficient on pre-treatment leads?).
+3. If accessible: quote the entropy-balancing implementation + dynamic effect
+   estimation result.
+4. If NOT in NotebookLM, indicate the URL needs separate retrieval.
+
+PDF page (1-24) AND journal page if Online Appendix is in NLM. Otherwise
+confirm "Online Appendix not in current NotebookLM sources."
+```
+
+```
+QUERY E — Catch-all: anything else for replication?
+
+Post my full 24-page PDF read of Boasiako-O'Connor Keefe (2021) EFM, locked
+spec:
+
+DISCLOSURE LAW DiD (Eq 1)
+- Sample: 1997-2015, CRSP/Compustat, N=56,646 firm-years (annual)
+- Exclusions: SIC 6000-6999 + 4900-4999 + missing AT
+- DV: Cash = (cash + marketable securities) / AT [BoY]
+- Treatment: Disclosure_Law(0/1) Y+1 timing per §3.2 (Y vs Y+1 ambiguous per Table A1)
+- State assignment: HQ state (Compustat ADDZIP/STATE)
+- FE: state + year + industry (FF49) + firm (varies by spec)
+- SE: state-cluster (cols 1-4); two-way state+year (col 5 alt); FD (col 6)
+- Winsorize 1% both tails
+- 11 controls (3 non-standard: Cash Flow, NWC, Industry CF Vol)
+
+DATA BREACH DiD (Eq 2)
+- Sample: 2005-2018, PRC + CRSP/Compustat, N=42,893 firm-years
+- Treatment: Breach(0/1) firm-year
+- SE: firm-cluster
+
+HEADLINE RESULTS
+- Table 2 col 1 (disclosure law): β=+0.0076** SE 0.0031 N=56,646 (3.8% relative ↑)
+- Table 6 col 1 (data breach): β=+0.0299*** SE 0.0101 N=42,893 (13.7% relative ↑)
+- Table 4 financial-constraint channel: small/young/non-div firms drive effect
+- Table 7 external financing channel: equity ↓32%; debt ↓62%
+- Table 8 investment channel: capex ↓11.8%; acq ↓52%
+
+QUESTION: are there any spec items missing from my extraction? Specifically —
+quote any verbatim sentences anywhere in main text + Appendix + Online
+Appendix that describe:
+
+- Compustat variant (NA Fundamentals? Industrial? Annual?)
+- Currency requirements (USD only?)
+- Stock listing requirements (NYSE/AMEX/NASDAQ? Common stocks only?)
+- Active-firm requirements (consecutive years? minimum quarters?)
+- Treatment of mergers, spin-offs, delistings during sample
+- State-assignment edge cases: HQ moves during sample? IPO firms?
+- Multi-state firms (operate in multiple states): how exposure assigned?
+  (Section 3.2 says HQ state = conservative bias, but quote any further detail)
+- Specific state law-passage year crosswalk source (NCSL? legislative records?
+  manually compiled? authors' Online Appendix?)
+- Estimation library/specifics
+- Whether controls are lagged vs contemporaneous
+- Any auxiliary results not in 8 main tables
+
+For each verbatim quote: PDF page (1-24) AND journal page.
+If silent on any sub-question, say "NOT IN PAPER" — I will use F1D defaults.
+```
 
 # PAPER 3 — Chen, Cheng, Lin, Tang (2017) JAAF
 
