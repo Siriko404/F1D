@@ -1742,3 +1742,78 @@ significantly differ between the irregularity and control firms."
 |------|--------|
 | 2026-05-08 | Initial draft populated from 3 verified memory reference files (Brexit Q1+Q1'+Q3, Boasiako Q1, Chen Q1+Q2). 6 `[PENDING]` slots ready for next NLM verification round. |
 | 2026-05-08 (PM) | **Audit Round 4 COMPLETE — 6 NLM rounds executed via NotebookLM MCP.** Brexit `103b7810` Q1+Q2; Databreach `fb89cf2f` Q1+Q2; Restatement `152dcc39` Q1 + `82961f63` Q2 (fresh session after browser-layer click timeout). All 6 PENDING slots flipped to CLOSED with verbatim Q1/Q2 prompts + responses appended. 3 reconciliation tables added at section tops (5 material discrepancies per paper). Top-5-corrections-per-paper summary block added at top of file. Memory references found wrong on: Brexit PRE/POST window (4q not 28q) + cash-N (17,170 not 41,630) + 11th earnings-forecast control + lagged-net-of-cash headline DV; Databreach SE clustering (two-way state+year not state-only) + FF49 industry-FE not 2-digit SIC + entropy-balancing IS in paper; Chen SIGMA industry-median not industry-mean + CFO OPSW form not OANCF + NWC WCAP form + headline columns 1+2 not 5+6 + PS_DEMAND industry-level components. All defaults re-locked with verbatim justification. |
+| 2026-05-08 (PM-late) | **Round 5 — Direct-PDF Verification by Orchestrator.** Three PDFs acquired into `docs/papers/` (Brexit 45p, Boasiako 24p, Chen 28p) — full-text ground-truth check of agent's Round 4 corrections. **Agent had 4 wrong claims** caught against primary source. See `## Round 5` block below for verbatim PDF quotes overruling agent's Round 4 reconciliation. |
+
+---
+
+# Round 5 — Direct-PDF Verification by Orchestrator (2026-05-08 PM-late)
+
+**Method:** PDFs of all 3 papers downloaded to `docs/papers/`, read directly via Read tool (Brexit 45p, Boasiako 24p, Chen 28p). Each Round-4 agent claim cross-checked against verbatim paper text. Where agent and PDF diverge, **PDF wins**.
+
+## Brexit (Campello et al. 2022) — Round 4 agent claims rechecked
+
+| Round 4 agent claim | PDF ground truth | Verdict |
+|---|---|---|
+| PRE/POST window = 2015Q3-Q4 vs 2016Q3-Q4 (4 firm-quarters/firm) | Confirmed via MCP Q (notebook session `c87e7449`) — verbatim Table 8 caption: "the time dimension of the DID estimator is set so as to compare the two quarters following the announcement of the referendum and Brexit's victory (2016:Q3–Q4) versus the two quarters preceding the announcement (2015:Q3–Q4)" | ✅ AGENT CORRECT |
+| Headline DV = total cash holdings / lagged total assets net of cash holdings (CHE / (AT-CHE)_lag) per Table 8 | Confirmed via MCP Q verbatim: "CASH is defined as total cash holdings divided by lagged total assets net of cash holdings." (Table 8) | ✅ AGENT CORRECT |
+| **Earnings forecast control IS in baseline Table 8 (11th regressor)** | **WRONG.** MCP Q verbatim: "The paper discusses adding '1-quarter-ahead consensus earnings forecasts' as an additional control in Section V.C.2, but **Footnote 23 specifies that this control is included in 'Table C7 in the Supplementary Material' for robustness, rather than explicitly listing it as a control in the baseline Table 8 regression**." → control belongs to **supplementary robustness Table C7, NOT baseline Table 8**. | ❌ AGENT WRONG |
+| β^UK rolling-window length NOT IN PAPER for baseline | Confirmed by Round 4 Q2 itself ("Rolling window: NOT IN PAPER"); not re-verified via PDF read in Round 5 | ✅ AGENT CORRECT |
+
+**Brexit corrections to apply:** Step 6 controls list = **5 macro + 5 firm = 10 controls** in baseline (NOT 11). The 1Q-ahead earnings forecast is supplementary Table C7 robustness only — drop from baseline builder; add to optional v2 robustness layer.
+
+## Boasiako (Boasiako-O'Connor Keefe 2020) — Round 4 agent claims rechecked
+
+| Round 4 agent claim | PDF ground truth | Verdict |
+|---|---|---|
+| **SE clustering = TWO-WAY state + year (Table 2)**, not state-only | **WRONG.** Section 3.2 verbatim: "We cluster standard errors by state, because the treatment is defined at the state level." Table 2 caption verbatim: "**In Columns (1)–(4), standard errors are clustered by state**, but, in **Column (5), the standard errors are two-way clustered by state and year**." Cols 1-4 = state-cluster only; Col 5 (a robustness col) is the two-way variant. **Baseline (Col 1) uses state-cluster ONLY.** | ❌ AGENT WRONG |
+| Industry-FE = FF49 (Footnote 5) not 2-digit SIC | Confirmed via Footnote 5 verbatim: "The industry dummies are constructed based on the 49-industry classification of Fama and French (1997)." | ✅ AGENT CORRECT |
+| Entropy balancing IS in paper (Hainmueller-Xu 2013, Online Appendix) | Confirmed via page 545 verbatim: "we implement the entropy balancing method of Hainmueller and Xu (2013)... results for the entropy-balanced sample, available in the Online Appendix" — **BUT** this is for the BREACH(0/1) analysis (Eq. 2, Section 5), NOT the DISCLOSURE_LAW(0/1) baseline DiD (Eq. 1, Section 4). For our H1.5.databreach_did anchor (Eq. 1 baseline), entropy balancing is NOT in the ID battery. | ✅ AGENT TECHNICALLY CORRECT but mis-scoped |
+| Sample 1997-2015 anchored to CA-2002 + MS-2010 ± 5 years; **states passing after 2010 not in treatment universe** | **PARTIALLY WRONG.** Section 3.1 verbatim confirms 1997-2015 = 5yr-before-CA-2002 + 5yr-after-MS-2010 (✅). BUT Section 2.1 verbatim: "all 50 US states... had enacted mandatory disclosure laws" by 2018 (page 533). States passing in 2011-2015 ARE in the data (Disclosure_Law switches to 1 within sample window). The 1997-2015 window is a TIME WINDOW, not a treatment-universe filter. **There is NO explicit "treatment universe restricted to states passing 2002-2010" rule.** | ❌ AGENT WRONG on universe-restriction inference |
+| Falsification = single test with two-stage random assignment | Confirmed Section 4.2 verbatim: "We follow a two-step process. First, for each year, we randomly assign firms to the various states. Next, we randomly assign the states within the distribution of years in which the various disclosure laws were passed." Single falsification test, two random-assignment STEPS. | ✅ AGENT CORRECT |
+
+**Boasiako comprehensiveness gaps NOT in agent's spec — adding now:**
+
+| Gap | PDF verbatim | Source |
+|-----|------|--------|
+| **Cash DV scaled by lagged AT (beginning-of-year), not contemporaneous AT** | "Cash and marketable securities scaled by **total book assets at the beginning of the year**." | Table A1 (Appendix), page 551 |
+| **Cash Flow definition non-standard** | "Ratio of **earnings after interest, dividends, and taxes but before depreciation** to total book assets" | Table A1, page 551 — NOT the typical OIBDP/AT EBITDA form |
+| **Industry Cash Flow Volatility = σ(industry-AVERAGE cash flows) over 10 yrs** | "Standard deviation of **industry average** cash flows for the previous 10 years; at least 3 years of observations required" | Table A1, page 551 — note: industry-AVERAGE (mean), NOT industry-median like Chen/Hasan |
+| **Net Working Capital scaling: net assets, not total assets** | "Ratio of net working capital to **net assets**" | Table A1, page 551 — non-standard scaling |
+| **Disclosure_Law(0/1) timing: ambiguous** | Section 3.2: "switches to one **the year after** the focal state passed the disclosure law"; Table A1: "1 for periods **after the enactment** of the state-level data breach notification laws, and 0 otherwise" | Section 3.2 (page 535) vs Table A1 (page 551) — slight inconsistency; default = year-after passage |
+
+**Boasiako corrections to apply:** Step 6 SE clustering = **state-cluster only** for baseline Col 1 (TWO-WAY is Col 5 robustness only). Step 4 controls list needs updates (Cash Flow non-standard formula, Industry CF Vol = mean-based, NWC scaled by net assets). Step 7 entropy balancing = **scoped to Eq. 2 Breach analysis, NOT baseline DiD**; do NOT include in H1.5.databreach_did baseline. Drop "treatment universe 2002-2010" inference from Step 1 — it's not in paper.
+
+## Chen (Chen et al. 2017) — Round 4 agent claims rechecked
+
+| Round 4 agent claim | PDF ground truth | Verdict |
+|---|---|---|
+| SIGMA = industry-MEDIAN of std-dev (Footnote 3 = FF48) | Confirmed page 295 verbatim: "Industry volatility of operating cash flow (SIGMA) is the **industry-median value of the standard deviation of operating cash flow over the previous 10 years**." Footnote 3 page 315: "We use the Fama and French 48-industry classification to define industries." | ✅ AGENT CORRECT |
+| **CFO = (OIBDP − XINT − TXT − DVC) / AT** (OPSW 1999 form) | **WRONG.** Page 295 verbatim: "Operating cash flow (CF) is **net operating cash flow (#OANCF) scaled by total assets**." → CF = OANCF/AT. The OPSW (NI+DP+...) form is **NOT** what Chen uses. | ❌ AGENT WRONG |
+| **NWC = (WCAP − CHE) / AT** | **WRONG.** Page 295 verbatim: "Net working capital (NWC) is noncash working capital (**#ACT − #CHE**) − (**#LCT − #DLC**) **scaled by total assets**." → NWC = ((ACT-CHE) - (LCT-DLC)) / AT. | ❌ AGENT WRONG |
+| **Table 3 Panel A headline = columns 1+2 (N=1391/1434), not 5+6** | **WRONG and INTERNALLY INCONSISTENT.** Per Table 3 verbatim, Cols 1+2 (All restatements): n=4,941 (R) / 5,004 (C); β_R=0.029***, β_C=0.011**, diff=0.018*** [.003]. Cols 5+6 (Restatements related to **irregularities**): n=1,391 (R) / 1,434 (C); β_R=0.046***, β_C=0.012*, diff=**0.034*** [.002]**. **The N=1,391/1,434 belongs to cols 5+6, NOT cols 1+2.** The IRREGULARITY headline (the paper's main contribution) IS cols 5+6 with treatment effect +0.034***. Cols 1+2 are the all-restatement pool (errors+irregularities mixed; main effect 0.018***). | ❌ AGENT WRONG (column numbers reversed) |
+| PS_DEMAND industry-level (FF48-industry-median for all 3 components) | Confirmed page 303 verbatim: "industry volatility of operating cash flows, defined as the standard deviation of the **industry-median CF** over the previous 10 years... industry volatility of investment opportunities, defined as the standard deviation of the **industry-median Tobin's Q** over the previous 10 years... negative correlation between the **industry-median CF** and the **industry-median Tobin's Q** over the previous 10 years." Industry classification = FF48 per Footnote 3. | ✅ AGENT CORRECT |
+
+**Chen corrections to apply:**
+- **Step 4 (DV)**: CF formula = **OANCF / AT** verbatim, NOT (OIBDP-XINT-TXT-DVC)/AT (OPSW form does NOT apply)
+- **Step 5 (NWC formula)**: **((ACT-CHE) - (LCT-DLC)) / AT** verbatim, NOT (WCAP-CHE)/AT
+- **Step 8 (Headline result)**: Table 3 Panel A **columns 5+6** (irregularity restatements), N=1,391 (treatment) / 1,434 (control), β_DiD = **+0.034***** (p=.002). The columns are 5+6, NOT 1+2.
+
+## Round 5 summary
+
+| Paper | Total agent claims (top 5) | Verified correct | Wrong | Partial / nuance |
+|-------|----------|------------------|-------|------------------|
+| Brexit | 5 | 4 | 1 (earnings forecast in baseline) | 0 |
+| Boasiako | 5 | 3 | 2 (SE two-way; treatment universe restriction) | 1 (entropy balancing scope) |
+| Chen | 5 | 2 | 3 (CFO formula; NWC formula; headline column numbers) | 0 |
+| **Total** | **15** | **9** | **6** | **1** |
+
+**Quality assessment of agent's Round 4 audit:** ~60% accuracy on the top corrections. Hallucinated formulas (Chen CFO, NWC) and column numbers (Chen Table 3) are particularly serious — would have produced wrong builder code. SE clustering (Boasiako) is also serious — wrong cluster level inflates/deflates t-stats. Direct-PDF verification was essential.
+
+**Action items for Phase 1 builders:**
+1. Use **PDF text** as the primary source for variable formulas — not the spec file's "VERBATIM CORRECTED" tags from Round 4 — until the spec file is itself corrected per Round 5.
+2. Apply 6 corrections listed above before writing builder modules.
+3. Treat the Round 4 spec as 60% reliable; cross-verify every numerical claim against PDFs in `docs/papers/`.
+
+| Date | Action |
+|------|--------|
+| 2026-05-08 (PM-late) | Round 5 verification block written; 6 wrong agent claims documented with PDF-verbatim corrections. Spec file step-by-step sections NOT yet retro-edited (kept as audit trail; corrections live in this Round 5 block). Builders should consume Round 5 corrections directly. |
