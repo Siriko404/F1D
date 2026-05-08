@@ -346,6 +346,66 @@ Story B at multiple shock-scale levels.
 SEARCH CLOSED. 8 NLM rounds total (Chen Q1+Q2, Ghaly Q1, Campbell Q1, 
 Boasiako Q1, De Simone Q1, Berg Q1, Chowdhury Q1).
 
+### TURN 21 — Durable-write phase (memory + reference files + commit)
+
+User: "Update memory + commit progress log first" (Recommended).
+
+Files written:
+  + memory/reference_campello_etal_2022_brexit_jfqa_verbatim.md  
+    (NLM Q1+Q2 verbatim from prior session's tmp/h1_5_trump_cash_did_lit_search.md
+     extracted into structured reference format; replication checklist added)
+  + memory/reference_boasiako_oconnor_keefe_2020_efm_verbatim.md
+    (NLM Q1 verbatim from this session turn 14; replication checklist)
+  + memory/reference_chen_etal_2017_jaaf_restatement_verbatim.md
+    (NLM Q1+Q2 verbatim from prior session + this session turn 3-4;
+     replication checklist; CEO/CFO turnover channel partition noted)
+  + memory/project_session_2026_05_08_3did_lineup_locked.md
+    (NEW NEWEST session memory; supersedes prior brexit_pivot file)
+  M memory/MEMORY.md
+    (top entry rewritten; 3 reference files added near hasan/hu/akyol refs;
+     prior brexit_pivot demoted to PREDECESSOR)
+
+Git commit 6a91645 "H1.5 v5 OpenAlex search + 8-NLM-rounds verdict — 
+3-DiD lineup LOCKED":
+  + tmp/openalex_lit_search_v5.py
+  + tmp/openalex_v5_results.csv
+  + tmp/openalex_v5_top.md
+  + tmp/h1_5_3_did_search_progress_2026_05_08.md
+  4 files, 3,253 insertions.
+
+### TURN 22 — Plan deletion + compaction prep
+
+User: "no need for updating the plan. delete it. get ready for compaction 
+extremely thoroughly".
+
+Action:
+  1. DELETED ~/.claude/plans/tender-popping-origami.md (stale; referenced
+     dead Trump-2016 BothHigh×Post spec; H1.6 Phase 5 TEST 3+5 already
+     superseded by 813d735 ship state).
+  2. Updated this progress log + session memory file with compaction
+     readiness checklist.
+  3. Verified durable state.
+
+COMPACTION READINESS:
+
+```
+[✓] tmp/h1_5_3_did_search_progress_2026_05_08.md        committed @ 6a91645
+[✓] memory/project_session_2026_05_08_3did_lineup_locked.md  durable
+[✓] memory/reference_campello_etal_2022_brexit_jfqa_verbatim.md durable
+[✓] memory/reference_boasiako_oconnor_keefe_2020_efm_verbatim.md durable
+[✓] memory/reference_chen_etal_2017_jaaf_restatement_verbatim.md durable
+[✓] memory/MEMORY.md top entry replaced + 3 ref entries added
+[✓] git committed (master @ 6a91645)
+[✓] stale plan deleted (was: tender-popping-origami.md)
+```
+
+POST-COMPACT NEXT ACTIONS:
+   1. User picks first DiD to implement (Brexit / Boasiako / Chen)
+   2. Implementation follows 3 reference verbatim files (per-DiD
+      replication checklist embedded in each reference file)
+   3. Total estimated effort 12-19 days for full 3-DiD ship
+   4. §V update A/B/C choice (carry from 2026-05-06 session) STILL deferred
+
 ---
 
 ## NLM VERIFICATION VERDICT TABLE
