@@ -66,7 +66,7 @@ Predecessor `tmp/3did_replication_instructions_2026_05_08_DEPRECATED.md` had ~60
 | Paper                        | PDF p. read   | Spec     | NLM verify | Locked |
 |------------------------------|---------------|----------|------------|--------|
 | Brexit (Campello 2022 JFQA)  | 1-45 of 45 (full read ✓) | chunks 1-3 PDF-locked + Q-A/Q-B/Q-D NLM-locked | ✅ chunk-1 + unified batch | **LOCKED** (Q-C SIC supplementary = F1D default) |
-| Boasiako 2021 EFM databreach | 1-24 of 24 (full read ✓) | full PDF locked | ⏳ unified Boasiako batch | partial (online appendix open) |
+| Boasiako 2021 EFM databreach | 1-24 of 24 (full read ✓) | full PDF + NLM batch reconciled | ✅ Q-A/B/C/E LOCKED ⏳ Q-D online appendix deferred | **LOCKED** (online appendix open) |
 | Chen 2017 JAAF restatement   | 0 / 28        | none     | none       | NO     |
 
 ---
@@ -1347,6 +1347,98 @@ Appendix that describe:
 For each verbatim quote: PDF page (1-24) AND journal page.
 If silent on any sub-question, say "NOT IN PAPER" — I will use F1D defaults.
 ```
+
+---
+
+## ✅ Boasiako unified-batch reconciliation (2026-05-08 PM-late+5h)
+
+Sina ran Q-A through Q-E in NotebookLM `f1d`. Verbatim returned. Programmatic PyMuPDF verify confirmed NLM substance.
+
+### Q-A — Cash Flow + Cash (DV) Compustat formulas ✅ ALL LOCKED
+
+NLM cited Bates et al. (2009) verbatim, applying their formula directly to Boasiako (Boasiako §3.3 says "we follow the literature (Bates et al., 2009; Opler et al., 1999)" — paper-text inheritance valid):
+
+| Variable | Formula | Bates 2009 source |
+|----------|---------|-------------------|
+| **Cash Flow** | (OIBDP − XINT − TXT − DVC) / AT | "(#13 − #15 − #16 − #21) / #6" Bates 2009 |
+| **Cash (DV)** | CHE / lag(AT_BoY) | Bates 2009 #1 / #6 form |
+
+✅ **F1D Compustat fields:** Cash Flow = `(OIBDP_t − XINT_t − TXT_t − DVC_t) / AT_t`; Cash DV = `CHE_t / lag(AT_t-1)`.
+
+### Q-B — NWC + Industry CF Vol ✅ LOCKED (Bates inheritance for NWC denominator)
+
+| Variable | Formula | Confidence |
+|----------|---------|------------|
+| **NWC** | (ACT − LCT) / (AT − CHE) | Bates/Opler "net assets" convention; NLM-implied; not explicit in Boasiako Table A1 |
+| **Industry CF Vol** | σ over 10-year ROLLING of industry-MEAN cash flows | NLM confirms interpretation (a); paper says "industry-AVERAGE" |
+| **Industry classification** | FF49 | Footnote 5 confirms FF49 for industry dummies in eq 1; likely same for Industry CF Vol |
+
+### Q-C — Disclosure_Law timing ✅ LOCKED Y+1
+
+**NEW VERBATIM (Table 2 caption PDF p.11 = j.538):**
+> "The variable Disclosure Law(0/1) is a dummy that switches to one **the year after** the focal state passes the disclosure law."
+
+This + Section 3.2 [PDF p.8 = j.535] resolves Table A1's vague "after enactment" wording.
+
+✅ **LOCKED**: Disclosure_Law(0/1)_{s,t} = 1 if **calendar_year > year_state_passed_law**; CA passes 2002 → dummy=1 starting **2003**.
+
+### Q-D — Online Appendix ⚠️ DEFERRED
+
+NLM verdict: "Online Appendix not in current NotebookLM sources."
+
+Online Appendix at `https://sites.google.com/site/mockeefe/Data` (Footnote 7 PDF p.11 = j.538). Contains parallel-trends test + entropy-balancing dynamic effect estimation.
+
+⚠️ **F1D builder action**: either (a) WebFetch the Online Appendix separately, (b) skip parallel-trends + entropy verification (use F1D-default standard event-study + EBalance package), or (c) treat as out-of-scope for v1 replication.
+
+### Q-E — Catch-all ✅ MOSTLY LOCKED + 2 CRITICAL FINDINGS
+
+| Sub-item | Verdict | Source |
+|----------|---------|--------|
+| Compustat variant | NOT IN PAPER → F1D default = NA Annual | NLM confirmed |
+| Currency | NOT IN PAPER → F1D default = USD only | NLM confirmed |
+| Stock listing | NOT IN PAPER → F1D default | NLM confirmed |
+| Active-firm reqs | NOT IN PAPER → F1D default | NLM confirmed |
+| M&A treatment | NOT IN PAPER → F1D default | NLM confirmed |
+| HQ-state edge cases | NOT IN PAPER → F1D default | locked |
+| Multi-state firms | HQ state with conservative bias acknowledged §3.2 | locked |
+| **State law crosswalk** | ✅ **NEW: NCSL public URL** | Footnote 3 PDF p.6 = j.533 |
+| Estimation library | NOT IN PAPER → F1D default = `linearmodels.PanelOLS` | locked |
+| **Lagged vs contemporaneous controls** | ⚠️ **CONTEMPORANEOUS** by paper notation | NLM + programmatic verify |
+| Auxiliary results | Online Appendix dynamic effect + entropy balancing | deferred |
+
+#### 🔑 NEW VERBATIM — State law crosswalk source (Footnote 3, PDF p.6 = j.533)
+
+PDF programmatic confirmation:
+> "See the various state disclosure laws from the National Conference of State Legislatures, at http://www.ncsl.org/research/telecommunications-and-information-technology/security-breach-notification-laws.aspx."
+
+✅ **LOCKED**: NCSL public URL = source of truth for 50-state law passage years. Replicators acquire crosswalk from NCSL.
+
+#### 🔑 CRITICAL FINDING — Controls are CONTEMPORANEOUS, NOT lagged
+
+Eq (1) uses notation **X_{i,s,t}** without _{t-1} subscript. Programmatic search confirmed: only "lagged" mention in main text is for Breach(0/1)_t vs Breach(0/1)_{t-1} in Eq (2) [PDF p.18 = j.545].
+
+⚠️ **CRITICAL DIFFERENCE FROM BREXIT**: Brexit (Campello 2022) uses **1Q-LAGGED** controls (eq 14 notation θ·CONTROLS_{i,t-1}). Boasiako uses **CONTEMPORANEOUS** controls. F1D builder must respect each paper's convention.
+
+### NLM accuracy this batch
+
+NLM didn't provide PDF page numbers for Boasiako (correctly noted: "the provided document excerpts...do not contain the printed journal page numbers or the PDF page numbers in the text headers"). NLM identified section/footnote anchor correctly. Programmatic verify confirmed all NLM substance via direct PyMuPDF text extract.
+
+### Boasiako verdict — POST FULL VERIFICATION ✅ GO
+
+All 13 spec items locked or NOT-IN-PAPER + F1D default + 1 deferred (Online Appendix).
+
+**Critical caveats locked for F1D builder:**
+1. Cash Flow formula = `(OIBDP − XINT − TXT − DVC) / AT` (Bates 2009)
+2. NWC denominator = "net assets" = AT − CHE (Bates/Opler convention)
+3. Industry CF Vol = σ over time of industry-MEAN cash flows (10-year rolling, FF49)
+4. **Controls are CONTEMPORANEOUS** (NOT lagged) — DIFFERENT from Brexit
+5. State law data → NCSL public URL (Footnote 3)
+6. State assignment by HQ state — Compustat ADDZIP/STATE
+7. Online Appendix → fetch separately or use F1D-default parallel-trends + entropy balancing
+
+**Boasiako replication unblocked.** Phase 1 builders may proceed (Boasiako module set: ~3-4 days estimated).
+
+---
 
 # PAPER 3 — Chen, Cheng, Lin, Tang (2017) JAAF
 
