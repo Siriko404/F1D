@@ -31,7 +31,7 @@ Predecessor `tmp/3did_replication_instructions_2026_05_08_DEPRECATED.md` had ~60
 
 | Paper                        | PDF p. read   | Spec     | NLM verify | Locked |
 |------------------------------|---------------|----------|------------|--------|
-| Brexit (Campello 2022 JFQA)  | 1-15 of 45    | provisional | PENDING | NO  |
+| Brexit (Campello 2022 JFQA)  | 1-15 of 45    | chunk-1 reconciled | ✅ chunk-1 | partial (need 16-45) |
 | Boasiako 2020 EFM databreach | 0 / 24        | none     | none       | NO     |
 | Chen 2017 JAAF restatement   | 0 / 28        | none     | none       | NO     |
 
@@ -158,6 +158,57 @@ EPU magnitude (verbatim p.3183):
 - SIC ranges defining "utility" and "financial" — F1D default 4900-4999 + 6000-6999; need confirmation from Table C1 (supplementary, NLM-accessible)
 - Cash-DiD sample N differs from 41,630 (cash test in §V is auxiliary; needs separate N) — not yet PDF-verified
 - Whether Compustat Quarterly variants (Compustat NA / Industrial / Financial Services) all included
+
+### 1H. Chunk 1 NLM reconciliation (2026-05-08 PM-late+1.5h)
+
+Sina ran Q1-Q4 in NLM `f1d` notebook (Q1+Q2 ran twice for cross-check). Verbatim responses captured below.
+
+#### Q1 — β^UK eq (13) spec ✅ ALL LOCKED
+
+PDF p.3191 ↔ NLM substance match. Eq (13) form, DV, regressor, controls, per-firm output all confirmed.
+
+⚠️ **NLM-page-citation calibration**: NLM cited eq (13) on **p.3190**; PDF shows eq (13) on **p.3191**. NLM has 1-page-early citation drift on this item. Substance is trustable; **verify pages independently via PDF reads going forward**.
+
+#### Q2 — β^UK estimation details ⚠️ PROVISIONAL LOCK (NLM-cited; PDF chunk 2/3 verify pending)
+
+Items NOT in p.1-15 but provided by NLM:
+
+- **Estimation window**: **2010M1-2014M12** (60 months pre-Brexit). NLM verbatim:
+  > "We use monthly data from 2010:M1 to 2014:M12 so that exposure to the United Kingdom is measured before any major Brexit-related events"
+
+  NLM citation ambiguous: Run-1 said "(Section IV.B, Page 3192)"; Run-2 said "(Section V.B.1)". Will resolve via PDF chunk-2 read.
+
+- **Frequency of t**: **monthly** (returns data; same NLM quote)
+- **Type**: **STATIC baseline** (one β_i^UK per firm). **ROLLING 24-mo** is Section VI.A FX-robustness analogue, NOT baseline. NLM verbatim from fn 27:
+  > "Specifically, we perform our estimation using monthly returns data, with 24-month rolling windows, over the period from 2010:M1 to 2016:M12" (Section VI.A, p.3208-3209, fn 27)
+  > "we estimate a dynamic analogue of equation (13), firm by firm, over our testing period" (p.3208)
+
+- **vol() input frequency/window**: **NOT IN PAPER** ✅ (NLM confirmed silence)
+
+#### Q3 — 10-K keywords + cutoffs ✅ ALL LOCKED
+
+PDF ↔ NLM full match. NEW verbatim quote captured:
+> "We arbitrarily set a cutoff for high Brexit cites at more than 5 entries." (p.3191-3192, NLM-cited)
+
+#### Q4 — 10-K Item scope + matching rules ✅ ALL "NOT IN PAPER" CONFIRMED
+
+NLM confirmed paper silent on Item scope, matching rules, amendments, text source. fn 14 covers spelling variants only.
+
+**Locked F1D defaults for chunk-1 silent items:**
+
+| Item                | Default                                          | Justification |
+|---------------------|--------------------------------------------------|---------------|
+| 10-K Item scope     | whole 10-K                                       | most permissive; paper says "parsing firms' 2015 10-K filings" without restriction |
+| Matching rules      | case-insensitive + whole-word boundary           | standard NLP; fn 14 listing "UK"/"U.K."/"G.B." implies case-insensitive intent |
+| 10-K amendments     | include 10-K, 10-K/A, 10-KT, 10-KT/A             | already filtered in prior-session SRAF archive (9,275 files) |
+| 10-K text source    | SRAF Notre Dame 10-X_C archive                   | acquired prior session; filtered to 9,275 2015 files |
+
+#### Open after chunk 1 (carry to chunks 2/3)
+
+1. PDF-verify "2010M1-2014M12" quote location (NLM cited Section IV.B vs Section V.B.1 ambiguous) — chunk 2 p.3193-3207
+2. PDF-verify fn 27 verbatim (Section VI.A) — chunk 3 p.3208-3209
+3. Cash DiD spec details (DV / POST / FE / SE / N / β / SE) — chunk 2/3
+4. SIC ranges defining utility + financial — Table C1 supplementary (NLM-only; not in paper main text)
 
 ---
 
