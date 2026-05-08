@@ -65,7 +65,7 @@ Predecessor `tmp/3did_replication_instructions_2026_05_08_DEPRECATED.md` had ~60
 
 | Paper                        | PDF p. read   | Spec     | NLM verify | Locked |
 |------------------------------|---------------|----------|------------|--------|
-| Brexit (Campello 2022 JFQA)  | 1-30 of 45 (programmatic verify ✓) | chunks 1-2 PDF-locked | ✅ chunk-1 / ⏳ chunks 2-3 NLM | partial (need 31-45) |
+| Brexit (Campello 2022 JFQA)  | 1-45 of 45 (full read ✓) | chunks 1-3 PDF-locked | ✅ chunk-1 / ⏳ unified Brexit batch | YES (pending NLM batch) |
 | Boasiako 2020 EFM databreach | 0 / 24        | none     | none       | NO     |
 | Chen 2017 JAAF restatement   | 0 / 28        | none     | none       | NO     |
 
@@ -464,9 +464,11 @@ Pre-Brexit avg INV = 1.1% of assets → −0.165 ppt = **15% drop** in investmen
 
 ---
 
-## NLM verification queries — chunks 2-3 (PDF p.16-45)
+## NLM verification queries — chunks 2-3 (Q5-Q9, OBSOLETE — see UNIFIED batch above)
 
 **⚠️ NEW DISCIPLINE**: All queries demand BOTH **PDF page number (1-45 index in uploaded PDF) AND journal page number** (printed in page header). NLM's prior 1-page-early drift on journal pages can be detected by cross-checking against PDF page index.
+
+**⚠️ DO NOT RUN Q5-Q9 BELOW.** They were emitted before full PDF read; most resolved directly via PDF; remainders subsumed in UNIFIED Brexit verification batch above. Kept here only for audit trail.
 
 ```
 QUERY 5 — Cash holdings DiD specification + table
@@ -556,9 +558,315 @@ For each verbatim quote: PDF page (1-45) AND journal page.
 
 ---
 
-## CHUNK 3 — PDF p.31-45 = journal p.3208-3222 (PENDING)
+## CHUNK 3 — PDF p.31-45 = journal p.3208-3222 (Section V.C + VI Robustness + VII + Appendices)
 
-(p.31-45 not yet read; programmatic anchor finds suggest CASH DiD on PDF p.31, fn 27 on PDF p.32, other-country re-estimation on PDF p.39. Will read after chunk-2 NLM verify reconciliation.)
+PDF read complete 2026-05-08 PM-late+2.5h. /pdf skill (pdfplumber) attempted; default + text-strategy table extraction failed for academic-paper layout. Fell back to pymupdf text + visual image read for Table 8 / Table 12 / Table 13 cell values.
+
+### 3A. Cash + NWC + Profits result — Table 8 (PDF p.31 = journal p.3208) ✅✅ THE MONEY RESULT
+
+**Section V.C body text (verbatim p.3208):**
+> "We also study how the 2016 Brexit vote affected other firms' policies, especially their liquidity management. We do so looking at how firms adjusted their cash holdings and NWC. The positive and highly significant coefficients in columns 1 and 2 of Table 8 show that U.K.-exposed firms increased their cash savings in the face of higher uncertainty induced by the Brexit vote. Negative and highly significant coefficients in columns 3 and 4 show that firms concomitantly accumulated less inventory by adjusting their NWC downward. Although not explicitly modeled in our framework, this behavior is consistent with the theoretical underpinnings from the liquidity management literature. In particular, precautionary behavior will lead firms to change the composition of assets on their balance sheets, leading to the accumulation of the most liquid assets."
+
+> "We further use Table 8 to report results on profit growth. The estimates in columns 5 and 6 are not statistically significant, suggesting that the Brexit vote did not affect the profitability of U.K.-exposed American firms relative to those of nonexposed firms. They support the idea that the investment and employment drops previously reported are arguably due to a 'second-moment' shock to income uncertainty, rather than a negative 'first-moment' shock to firms' cash flows."
+
+**Table 8 footer — verbatim CASH definition (PDF p.31 = j.3208):**
+> "Table 8 reports output from equation (14). The dependent variables are CASH, NON_CASH_WORKING_CAPITAL, and PROFITS. **CASH is defined as total cash holdings divided by lagged total assets net of cash holdings.** NON_CASH_WORKING_CAPITAL (NWC) is defined as working capital (net of cash) divided by lagged total assets. PROFITS is defined as the quarterly percentage change in profits (operating income before depreciation divided by sales)."
+
+⚠️⚠️ **CRITICAL — CASH definition DIFFERS between Table 1 footer (descriptive stats) and Table 8 footer (regression):**
+
+| Source | CASH definition | Form |
+|--------|-----------------|------|
+| Table 1 footer (j.3198) | "cash and short-term investments divided by lagged total assets" | CHE / lag(AT) |
+| Table 8 footer (j.3208) | "total cash holdings divided by lagged total assets net of cash holdings" | **CHE / lag(AT − CHE)** |
+
+**Table 8 IS the cash DiD regression table → CHE / lag(AT − CHE) is the regression DV** (BKS-style net-assets scaling, avoids mechanical CHE/AT relationship). This SUPERSEDES the Table 1 footer scaling for replication purposes.
+
+**Table 8 coefficient cells (PDF p.31 = j.3208):**
+
+| Outcome   | CASH (β^UK tercile) | CASH (>5 10-K) | NWC (β^UK tercile) | NWC (>5 10-K) | PROFITS (β^UK) | PROFITS (10-K) |
+|-----------|---------------------|----------------|---------------------|---------------|----------------|----------------|
+| col       | 1                   | 2              | 3                   | 4             | 5              | 6              |
+| POST × HIGH_β^UK | **+0.231*** ** | —             | **−0.687*** **      | —             | −0.135 NS      | —              |
+| POST × HIGH_10K  | —             | **+0.357*** ** | —                  | **−0.608*** ** | —              | 0.343 NS       |
+| SE        | (0.059)             | (0.062)        | (0.281)             | (0.079)       | (0.391)        | (0.550)        |
+| N         | 17,170              | 24,195         | 16,630              | 23,806        | 16,630         | 24,051         |
+| R²        | 0.21                | 0.24           | 0.89                | 0.87          | 0.89           | 0.15           |
+| Controls Firm | Yes             | Yes            | Yes                 | Yes           | Yes            | Yes            |
+| FE Firm   | Yes                 | Yes            | Yes                 | Yes           | Yes            | Yes            |
+| FE Industry × time | Yes        | Yes            | Yes                 | Yes           | Yes            | Yes            |
+
+✅ **LOCKED Cash DiD result (the headline for our replication target):**
+- β^UK tercile spec: **+0.231*** (SE 0.059), N=17,170, R²=0.21**
+- 10-K >5 entries spec: **+0.357*** (SE 0.062), N=24,195, R²=0.24**
+- Both highly significant (1% level)
+- CASH RATIO INCREASES with U.K. exposure post-Brexit → precautionary
+- Profits NS in cols 5-6 → supports second-moment uncertainty interpretation, NOT first-moment cash-flow shock
+
+### 3B. Section VI.A FX-Robustness — Table 9 + Footnote 27 (PDF p.32-33 = j.3209-3210) ✅
+
+**Section VI.A intro verbatim (PDF p.32 = j.3209):**
+> "The Brexit vote was followed by a depreciation of the British pound (9% relative to the U.S. dollar). To the extent that our treatment assignment schemes may be correlated with firms' exposures to U.S. dollar/British pound (henceforth, USD–GBP) fluctuations, our results could reflect U.K.-exposed firms' heterogeneous responses to the British pound depreciation (affecting first-moment expectations) rather than to uncertainty generated by the Brexit vote (second-moment expectations)."
+
+> "First, we estimate a dynamic analogue of equation (13), firm by firm, over our testing period. Instead of regressing the volatility of firm equity returns on the volatilities of U.S. and U.K. equity index returns and the volatility of changes in the USD–GBP FX rate, we regress the levels of firms' equity returns on the levels of U.S. and U.K. equity index returns and USD–GBP FX rate changes."
+
+**Footnote 27 — verbatim (PDF p.32 = j.3209):**
+> "Specifically, we perform our estimation using monthly returns data, with 24-month rolling windows, over the period from 2010:M1 to 2016:M12."
+
+✅ **LOCKED:** rolling 24-month β^UK is **Section VI.A FX-robustness analogue, NOT baseline**. Baseline β^UK is static-per-firm 2010M1-2014M12.
+
+**Table 9 (Investment, FX-controlled, 8 cols × 4 augmentations × 2 treatments):**
+
+Across all 8 specs, POST×HIGH_β^UK ranges −0.097*** to −0.202***; POST×HIGH_10K ranges −0.080*** to −0.111*** — all *** sig. Result: investment cuts are NOT confounded by FX exposure.
+
+### 3C. Section VI.B Financing Costs — Table 10 (PDF p.34-35 = j.3211-3212) ✅
+
+> "We next investigate whether any of the effects we observe may be ascribed to U.K.-exposed firms experiencing higher financing costs as a result of heightened uncertainty induced by the Brexit vote."
+
+4 financing-cost controls in Table 10 (investment outcome): Existing Bond Yields (TRACE), New Bond Yields (SDC), New Syndicated Loan Spreads (DealScan), Equity Discount Rate News (Vuolteenaho 2002). All 8 specs preserve sig.
+
+### 3D. Section VI.C Automation — Table 11 (PDF p.34, 37 = j.3211, 3214) ✅
+
+Two automation measures controlled:
+1. **AUTOMATION_{i∈CZ}**: Acemoglu-Restrepo (2020) commuting-zone-level robot exposure
+2. **AUTOMATION_i**: ln(count of top 100 automation keywords from 10-K Section 1 + 7); LM 2011 dictionary derivation, top-100 keywords from engineering syllabi + Benhabib (2003) textbook
+
+Result: investment + employment + R&D + divestitures coefficients robust to automation channel.
+
+### 3E. Section VI.D Trump's Election (PDF p.36 = j.3213) ✅
+
+> "One could be concerned about confounding uncertainty effects associated with the election of President Donald Trump in the United States. We address this issue in two different ways. First, we consider an alternative event window that excludes 2016:Q4 from our treatment evaluation period. This narrower time window helps mitigate concerns that forward-looking behavior of firms regarding Trump's election in the United States could influence our results... we compare the third quarter of 2016 with the same quarter of 2015. As shown in columns 1 and 2 of Table 12, results are similar to our baseline estimates in Table 2."
+
+> "Second, we look at the recent literature on the effect of Trump's election on U.S. firms. Wagner, Zeckhauser, and Ziegler (2018) detail a methodology identifying what the authors label as 'winners' and 'losers' from that election... Our treatment group based on β_i^UK (10-K mentions) contains 57 (23) 'loser' firms."
+
+### 3F. Section VI.E Falsification — Cameron + Debt Ceiling — Table 12 (PDF p.36, 38 = j.3213, 3215) ✅
+
+> "We also address concerns that our test design is set up in a way that may generate results not necessarily tied to the June 2016 referendum result. In doing so, we reestimate our tests considering two 'treatment periods' that occurred prior to the 2016 Brexit vote: i) David Cameron's election as Prime Minister (2015:Q3) and ii) the U.S. Debt Ceiling Crisis of 2011 (2011:Q2–2011:Q4). The first falsification test mitigates concerns that firms anticipated the process leading to the Brexit referendum at the time of Cameron's election. The second addresses concerns that our investment results could be driven by episodes of uncertainty in the United States (and not the United Kingdom) that affect global firms in general."
+
+> "As shown in columns 5–8 of Table 12, the DID coefficients are statistically insignificant in all such cases."
+
+**Table 12 numerical cells (PDF p.38 = j.3215):**
+
+| Spec | Treatment Window / Event | DID coef | SE | N | R² | Sig? |
+|------|--------------------------|----------|----|---|----|------|
+| col 1 | Excl Trump 2016Q3 vs 2015Q3 (β^UK) | −0.216*** | 0.019 | 17,199 | 0.74 | *** |
+| col 2 | Excl Trump (10-K) | −0.064*** | 0.012 | 21,253 | 0.73 | *** |
+| col 3 | Excl Trump losers 2016Q3-Q4 vs 2015Q3-Q4 (β^UK) | −0.197*** | 0.010 | 15,967 | 0.75 | *** |
+| col 4 | Excl Trump losers (10-K) | −0.074*** | 0.010 | 20,669 | 0.72 | *** |
+| col 5 | Cameron 2015Q3 vs 2014Q3 (β^UK) | **0.018 NS** | 0.011 | 17,199 | 0.74 | NS ✓ |
+| col 6 | Cameron (10-K) | **0.017 NS** | 0.011 | 21,253 | 0.75 | NS ✓ |
+| col 7 | Debt Ceiling 2011Q2-Q4 vs 2010Q2-Q4 (β^UK) | **0.014 NS** | 0.082 | 17,199 | 0.74 | NS ✓ |
+| col 8 | Debt Ceiling (10-K) | N/A (10-K not avail pre-2015) | — | — | — | — |
+
+✅ **LOCKED falsifications**: Cameron + Debt Ceiling NS as expected. Trump-exclusion robust (still highly sig).
+
+### 3G. Section VI.F Other-country falsification — Table 13 (PDF p.39 = j.3216) ✅
+
+> "We conduct a battery of supplementary tests to rule out the possibility that our results on investment cuts in the United States may be driven by coincident, potentially uncertainty-inducing events that take place in economies other than the United Kingdom. To do so, we construct metrics analogous to our baseline U.K. exposure measure, β_i^UK, by reestimating equation (13) for developed and emerging markets with relevant trade ties to the United States: European Union, China, Mexico, Japan, India, and Brazil."
+
+> "In this estimation, performed over the same pre-Brexit sample period of 2010:M1–2014:M12, we control for the FTSE100 volatility, the U.S. dollar/British pound exchange rate volatility, and the volatility in the exchange rate of the U.S. dollar and the currency of each country."
+
+**Table 13 (other-country β-exposure, INVESTMENT outcome, PDF p.39 = j.3216):**
+
+| col | Country | DID coef | SE | N | R² | Sig? |
+|-----|---------|----------|-----|---|----|------|
+| 1 | UK (baseline) | −0.165*** | 0.019 | 17,199 | 0.75 | *** |
+| 2 | EU | −0.066*** | 0.018 | 12,301 | 0.76 | *** |
+| 3 | CHINA | +0.048 | 0.033 | 8,714 | 0.75 | NS ✓ |
+| 4 | MEXICO | +0.069 | 0.044 | 11,870 | 0.76 | NS ✓ |
+| 5 | JAPAN | +0.084 | 0.092 | 8,909 | 0.71 | NS ✓ |
+| 6 | INDIA | +0.058 | 0.036 | 14,694 | 0.74 | NS ✓ |
+| 7 | BRAZIL | −0.054 | 0.045 | 15,485 | 0.74 | NS ✓ |
+
+✅ **LOCKED**: UK + EU sig (geographic spillover plausible); CHN/MEX/JPN/IND/BRA NS — confirms Brexit-specific effect.
+
+### 3H. Sample window — RESOLVED via N inspection (no NLM needed) ✅
+
+**Q6 from chunk-2 batch was: full-panel sample vs 4-quarter restriction?**
+
+**Resolution**:
+- Table 2 col 2 (β^UK tercile) N=17,199; treated 449 + control 360 = 809 firms
+- 4-quarter window would yield 4 × 809 = 3,236 obs → **way less than 17,199**
+- 17,199 / 809 ≈ 21 quarters average per firm → consistent with full 28-quarter panel (2010Q1-2016Q4) with ~25% missing observations from unbalanced entry/exit
+- Trump-exclusion (Table 12 col 1) N=17,199 SAME as baseline → POST_t indicator narrows to 2016Q3 only, sample stays full-panel
+
+✅ **LOCKED:** regression sample = **full panel 2010Q1-2016Q4** restricted to top + bottom tercile β^UK firms (~809 firms × ~21 avg quarters per firm). POST_t = 1 only when t ∈ {2016Q3, 2016Q4}; INDUSTRY_j × QUARTER_t FE absorb common time variation.
+
+### 3I. Section VII Concluding + Appendices A-B Theoretical Proofs (PDF p.40-44 = j.3217-3221)
+
+Concluding summary + theoretical proofs (Lemma 3, Propositions 1-5). Replication-irrelevant — skip.
+
+### 3J. References (PDF p.43-45 = j.3220-3222)
+
+Key references for replication infrastructure:
+- Acharya, Almeida, Campello (2013) — precautionary channel (cited in cash result discussion)
+- Bates, Kahle, Stulz [implicit BKS net-assets cash scaling — Table 8 footer]
+- Bloom (2009, 2014) — uncertainty literature
+- Hoberg-Phillips (2016) — FIC100 industry classification
+- Vuolteenaho (2002) — return decomposition
+- Loughran-McDonald (2011) — 10-K text dictionary
+- Acemoglu-Restrepo (2020) — automation CZ exposure
+- Wagner-Zeckhauser-Ziegler (2018) — Trump winners/losers methodology
+- Alfaro et al. (2018) — USD-GBP first/second-moment instruments
+- Campello-Lin-Ma-Zou (2011) — FX hedging keyword search
+
+### 3K. Items NOT FOUND in 45-page PDF (vs deprecated session memory claims)
+
+- **WZZ 2018 Wang-Zou-Zhao**: deprecated session memory mentions a "WZZ 2018 'Trump losers' filter (DEFER to v2)". Programmatic grep returned nothing. **Not in this paper.** May have been confused with Wagner-Zeckhauser-Ziegler (2018) which IS in the paper for Trump-loser filter.
+
+### 3L. Open after full PDF read (only items needing NLM verify)
+
+1. **Confirm Table 8 cash definition** = CHE / lag(AT − CHE) [BKS net-assets] applies to regression vs Table 1 footer's CHE / lag(AT). Critical for replication.
+2. **SALES_GROWTH definition** — Table 1 footer says "year-on-year % change in **quarterly EPS**"; var name suggests sales-based. Typo or intentional?
+3. **SIC ranges utility/financial** — Table C1 supplementary location.
+4. **Anything I missed?** — catch-all for major spec items not captured in my full read.
+
+---
+
+## ⚡ UNIFIED Brexit verification batch (post full-PDF read)
+
+**Discipline**: ALL queries demand BOTH **PDF page (1-45 index) AND journal page**. Cross-check detects future drift.
+
+**Replaces previously-emitted Q5-Q9** (now subsumed; full PDF read resolved most via direct PDF). Only 4 queries below.
+
+```
+QUERY A — CASH definition disambiguation (Table 1 vs Table 8)
+
+In Campello et al. (2022) JFQA, two CASH definitions appear:
+
+(1) Table 1 footer [journal p.3198]:
+    "CASH is defined as cash and short-term investments divided by lagged
+    total assets" → CHE / lag(AT)
+
+(2) Table 8 footer [journal p.3208]:
+    "CASH is defined as total cash holdings divided by lagged total assets
+    net of cash holdings" → CHE / lag(AT − CHE)  [BKS net-assets style]
+
+Table 8 IS the cash DiD regression table; Table 1 is descriptive statistics.
+
+CONFIRM:
+1. Table 8 footer applies to the cash DiD regression in eq (14)?
+2. Quote the EXACT verbatim Table 8 footer sentence defining CASH.
+3. Is "lagged total assets net of cash holdings" parsed as
+   lag(AT − CHE) [option B, BKS style] or (lag(AT)) − CHE_t [option A]?
+4. Any additional sentence in Section V.C body or Table 8 footer that
+   clarifies the CHE_t numerator (just CHE? or CHE + STI?
+   or include marketable securities)?
+
+Provide PDF page (1-45) AND journal page for each citation.
+```
+
+```
+QUERY B — SALES_GROWTH typo or intentional?
+
+In Campello et al. (2022) JFQA Table 1 footer [journal p.3198],
+SALES_GROWTH is defined verbatim as "year-on-year percentage change in
+quarterly earnings per share."
+
+Variable name says SALES_GROWTH; definition uses EPS. Search Table 1 +
+Section IV.D + supplementary descriptions for ANY clarifying mention.
+
+Is this:
+1. A typo for "quarterly sales"?
+2. An intentional EPS-based metric the authors call SALES_GROWTH?
+3. Some standardization metric (e.g., ΔEPS/Sales)?
+
+Quote any verbatim text + PDF page (1-45) + journal page.
+```
+
+```
+QUERY C — Sample selection filters in Table C1 supplementary
+
+Footnote 15 [journal p.3192] directs to Table C1 in Supplementary Material
+for sample selection details.
+
+Quote verbatim from Table C1 (or anywhere in Supplementary Material):
+1. Exact SIC code RANGES for "utility firms" excluded.
+2. Exact SIC code RANGES for "financial firms" excluded.
+3. Any additional sample filters (Compustat universe restrictions, listing
+   rules, currency, primary stock exchange, etc.).
+4. Where the supplementary material is located in NotebookLM (separate
+   PDF file uploaded? Embedded in main paper PDF? Online via Cambridge
+   Core link?).
+
+PDF page of supplementary (if separate file: indicate file name) AND
+journal page if applicable.
+```
+
+```
+QUERY D — Catch-all: anything else I missed?
+
+Post my full 45-page PDF read of Campello et al. (2022) JFQA, my locked
+spec items are:
+
+SAMPLE
+- Universe: U.S. companies, COMPUSTAT Quarterly, 2010Q1-2016Q4
+- Drop utility + financial firms (SIC ranges in Table C1 supplementary)
+- Drop firms with market value OR book assets < $10M
+- Baseline N = 41,630 firm-quarters
+
+β^UK ESTIMATION (Section IV.A.1, eq 13)
+- Static per-firm OLS over 2010M1-2014M12 (60 monthly obs/firm)
+- vol(r_it) = α_i + β_i^UK · vol(FTSE100_t) + θ · CONTROLS_t + ε
+- CONTROLS = vol(SP500) + vol(FX£)
+- Sources: CRSP firm equity + Bloomberg FTSE100 + Bloomberg USD/GBP
+- Tercile cuts on NONNEGATIVE β^UK only:
+    TREATED  >  0.68 → 449 firms
+    CONTROL  <  0.28 → 360 firms
+
+10-K CLASSIFIER (Section IV.A.2)
+- Filing year: 2015 (Mar-Jun)
+- Keywords: 9 total (3 primary + 6 subsumed via fn 14)
+- TREATED: >5 entries → 807 firms
+- CONTROL: =0 entries → 433 firms
+- Item scope: NOT IN PAPER → F1D default = whole 10-K
+
+DiD MODEL (Section IV.C, eq 14)
+- Y_it = α + δ(POST × HIGH) + θ·CONTROLS_{i,t-1} + FIRM + IND_FIC100×QUARTER + ε
+- POST = 1 if t ∈ {2016Q3, 2016Q4}
+- HIGH = top-tercile β^UK (col 2) OR >5 10-K entries (col 3); separate specs
+- Sample = full 2010Q1-2016Q4 panel (~21 avg quarters/firm), unbalanced
+- Controls (1Q-lagged): 5 macro + 5 firm + 1 add'l (1Q-ahead consensus EPS forecast)
+- FE: FIRM + Hoberg-Phillips FIC100 INDUSTRY × calendar-quarter
+- SE: double-cluster firm + calendar-quarter
+- Variables winsorized 1% level
+
+CASH DIDIT RESULT (Table 8 = THE TARGET)
+- β^UK tercile col 1: POST×HIGH_β^UK = +0.231*** (SE 0.059), N=17,170, R²=0.21
+- 10-K col 2: POST×HIGH_10K = +0.357*** (SE 0.062), N=24,195, R²=0.24
+- DV: CHE / lag(AT − CHE) [BKS net-assets, per Table 8 footer]
+
+ROBUSTNESS LADDER
+- FX exposure: Table 9 (4 augmentations × 2 treatments — all preserve sig)
+- Financial constraints: Table 10 (4 augmentations — all preserve sig)
+- Automation: Table 11 (CZ-level + 10-K-keyword measures — preserve sig)
+- Trump-exclusion: Table 12 cols 1-4 (preserve sig)
+- Cameron + Debt Ceiling falsifications: Table 12 cols 5-8 (NS as expected)
+- Other-country falsification: Table 13 (UK + EU sig; CHN/MEX/JPN/IND/BRA NS)
+
+PSM + parallel trends: in supplementary Tables C2-C5 + Figure C1.
+
+QUESTION: are there ANY important details for replication purposes that
+my spec is missing? Specifically — quote any verbatim sentences anywhere
+in the paper or supplementary that describe:
+- Compustat variant (NA / Industrial / Financial Services / global)
+- Currency requirements (USD only? exchange-rate-hedged?)
+- Primary stock listing requirements
+- Active-firm requirements (consecutive quarters?)
+- Treatment of mergers, spin-offs, delistings during sample period
+- Any other variable transformations beyond winsorization
+- Estimation library/option specifics (Stata reghdfe? OLS-with-cluster?)
+- Auxiliary checks not in headline tables
+
+Quote verbatim with PDF page (1-45) + journal page.
+
+If silent on any sub-question, say "NOT IN PAPER" — I will use F1D defaults.
+```
+
+---
+
+## OBSOLETE: NLM verification queries — chunks 2-3 (Q5-Q9, REPLACED by unified batch)
+
+(Q5-Q9 above subsumed by unified batch above. Don't run Q5-Q9. The unified batch is the canonical source going forward.)
 
 ---
 
