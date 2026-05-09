@@ -437,7 +437,18 @@ def prepare_regression_data(
 
 
 def _fit_one(df_panel: pd.DataFrame, dv: str, exog: List[str], base_fe: str) -> Any:
-    """Single PanelOLS fit. Industry FE via other_effects; Firm FE via from_formula."""
+    """Single PanelOLS fit. Industry FE via other_effects; Firm FE via from_formula.
+
+    SE clustering reads module-level ``CLUSTERING`` dict at fit time
+    (refactored 2026-05-08 for downstream Brexit + Boasiako + Chen DiDs that
+    require non-default cluster configs; Trump default is firm-only).
+    """
+    fit_kwargs: Dict[str, Any] = {"cov_type": "clustered"}
+    if CLUSTERING.get("entity"):
+        fit_kwargs["cluster_entity"] = True
+    if CLUSTERING.get("time"):
+        fit_kwargs["cluster_time"] = True
+
     if base_fe == "industry":
         model_obj = PanelOLS(
             dependent=df_panel[dv],
@@ -448,18 +459,14 @@ def _fit_one(df_panel: pd.DataFrame, dv: str, exog: List[str], base_fe: str) -> 
             drop_absorbed=True,
             check_rank=False,
         )
-        return model_obj.fit(
-            cov_type="clustered", cluster_entity=True, cluster_time=False
-        )
+        return model_obj.fit(**fit_kwargs)
     else:  # firm
         exog_str = " + ".join(exog)
         formula = f"{dv} ~ 1 + {exog_str} + EntityEffects + TimeEffects"
         model_obj = PanelOLS.from_formula(
             formula, data=df_panel, drop_absorbed=True
         )
-        return model_obj.fit(
-            cov_type="clustered", cluster_entity=True, cluster_time=False
-        )
+        return model_obj.fit(**fit_kwargs)
 
 
 def _stash_iv_to_meta(meta: Dict[str, Any], model: Any, iv: str) -> None:
