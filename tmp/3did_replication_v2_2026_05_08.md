@@ -67,7 +67,7 @@ Predecessor `tmp/3did_replication_instructions_2026_05_08_DEPRECATED.md` had ~60
 |------------------------------|---------------|----------|------------|--------|
 | Brexit (Campello 2022 JFQA)  | 1-45 of 45 (full read ✓) | chunks 1-3 PDF-locked + Q-A/Q-B/Q-D NLM-locked | ✅ chunk-1 + unified batch | **LOCKED** (Q-C SIC supplementary = F1D default) |
 | Boasiako 2021 EFM databreach | 1-24 of 24 (full read ✓) | full PDF + NLM batch reconciled | ✅ Q-A/B/C/E LOCKED ⏳ Q-D online appendix deferred | **LOCKED** (online appendix open) |
-| Chen 2017 JAAF restatement   | 0 / 28        | none     | none       | NO     |
+| Chen 2017 JAAF restatement   | 1-28 of 28 (full read ✓) | full PDF locked + NLM Q-A/B/C/D/E reconciled + /pdf-strict pdfplumber re-verify | ✅ all 5 batches LOCKED | **LOCKED** |
 
 ---
 
@@ -1440,6 +1440,518 @@ All 13 spec items locked or NOT-IN-PAPER + F1D default + 1 deferred (Online Appe
 
 ---
 
-# PAPER 3 — Chen, Cheng, Lin, Tang (2017) JAAF
+# PAPER 3 — Chen, Chen, Dhaliwal, Huang (2017/2020) JAAF
 
-(Pending — start after Boasiako locked.)
+> **Authors:** Huili Chen, Zhihong Chen, Dan S. Dhaliwal, Yuan Huang
+> **Title:** Accounting Restatements and Corporate Cash Policy
+> **Journal:** Journal of Accounting, Auditing & Finance, 2020, Vol. 35(2), 290-317
+> **DOI:** 10.1177/0148558X17732654 (online-first 2017; print 2020)
+> **PDF:** `docs/papers/chen_etal_2017_restatement_jaaf.pdf` (28 pages)
+> **PDF→journal mapping:** PDF p.N = journal p.(289+N)
+
+## Section C — Chen Reading Approach (workflow notes)
+
+Following lock-in workflow from Brexit + Boasiako: **full PDF read first → batch NLM verify → reconcile**. /pdf skill via PyMuPDF programmatic text extract (per `feedback_pdf_extraction_discipline.md`).
+
+Old v1 reference file (`memory/reference_chen_etal_2017_jaaf_restatement_verbatim.md`) preserved as audit trail with deprecation banner. Direct-PDF read confirms ~90% of v1 was correct (vs ~60% for Brexit/Boasiako v1). Two minor corrections found below.
+
+## Section C1 — Sample (PDF p.5-6, j.294-295)
+
+**VERBATIM (PDF p.5, j.294):**
+> "We collect the accounting restatement data from Hennes et al. (2008), which include restatements disclosed in Government Accountability Office (GAO) reports from 2003 to 2006. These reports contain restatements announced from January 1997 through June 2006."
+
+**Sample selection (Table 1 Panel A, PDF p.7, j.296):**
+```
+Initial GAO restatements                          2,705
+  Less: Duplicates                                 -203
+  Less: Not in Compustat                           -296
+  Less: Subsequent restatements (keep first only)  -396
+  Less: Financial firms (SIC 6000-6999)            -270
+  Less: Utility firms (SIC 4900-4999)               -60
+  Less: Missing financial data / cash > AT etc.    -496
+  Less: Unmatched control                            -7
+  Less: Missing post-period data                    -28
+  ─────────────────────────────────────────────────────
+  Final                                            949
+    of which IRREGULARITY                          270
+    of which ERROR                                 679
+```
+
+**Industry exclusions:** match F1D convention (SIC 6000-6999 financials + SIC 4900-4999 utilities).
+
+**F1D-overlap:** 2002-Jun 2006 = ~4 years CAVEAT. Hassan PRisk + earnings calls 2002+ vs Chen sample ends Jun 2006.
+
+## Section C2 — Treatment + DV (PDF p.6, j.295)
+
+**Eq. (1) verbatim:**
+```
+CASH_{i,t} = α_i + β·POST_{i,t} + CONTROLS + ε_{i,t}
+```
+
+**Window:**
+> "we compare the cash holdings in the 3 fiscal years after the restatement announcement (i.e., years [+1, +3]) with cash holdings in the 3 fiscal years before the announcement (i.e., years [-3, -1]). We define the fiscal year of the restatement announcement as year 0. Our main test excludes year 0..."
+
+YEAR 0 EXCLUDED. Window: -3 to -1 (pre) vs +1 to +3 (post).
+
+**DV verbatim:**
+> "CASH is the level of cash holdings, defined as cash and short-term investments (Compustat data item #CHE) scaled by total assets (#AT)"
+
+DV = #CHE / #AT.
+
+**Treatment dummy:**
+> "POST is a dummy variable that equals 1 after the restatement, and 0 before the restatement."
+
+## Section C3 — Baseline Controls (PDF p.6, j.295)
+
+VERBATIM definitions:
+
+| Var      | Definition                                                              | Compustat fields                  |
+|----------|-------------------------------------------------------------------------|------------------------------------|
+| Q        | (#AT + (#PRCC_F · #CSHO − #CEQ)) / #AT                                   | AT, PRCC_F, CSHO, CEQ              |
+| SIZE     | ln(#AT)                                                                  | AT                                 |
+| CF       | #OANCF / #AT                                                             | OANCF, AT                          |
+| NWC      | (#ACT − #CHE − #LCT + #DLC) / #AT                                        | ACT, CHE, LCT, DLC, AT             |
+| LEV      | (#DLTT + #DLC) / #AT                                                     | DLTT, DLC, AT                      |
+| **SIGMA**| **industry-MEDIAN of std-dev of OCF over previous 10 yrs** ⚠️ correction | OANCF (or #OIBDP-#XINT-#TXT)/#AT   |
+| NSEG     | count of biz segments (=1 if missing)                                    | (Segment file)                     |
+| AGE      | ln(yrs since first appearance in Compustat)                              | (CRSP/Compustat link)              |
+
+**CORRECTION vs old v1 reference** (locked via PDF-first):
+- Old v1 said SIGMA = "industry MEAN of std-dev OCF, where industry is based on two-digit SIC codes"
+- PDF p.6 says: "industry-MEDIAN value of the standard deviation of operating cash flow over the previous 10 years"
+- Table 4 footer (PDF p.15) says: "based on Fama and French's 48-industry classification" (FF48, NOT SIC2)
+
+## Section C4 — FE + SE (PDF p.6, j.295)
+
+**VERBATIM:**
+> "We include firm fixed effects (a_i) to control for time-invariant unobservable firm heterogeneity, and we cluster standard errors at both the matched pair (of the restatement and control firms) and year levels (Gow, Ormazabal, & Taylor, 2010)."
+
+```
+FE:    firm (α_i)
+SE:    matched-pair × year DOUBLE-CLUSTER (Gow et al 2010)
+```
+
+## Section C5 — PSM Procedure (Appendix A, PDF p.23-25, j.312-314)
+
+**Probit:**
+```
+Pr(RESTATE) = B1·X1 + B2·X2 + B3·X3 + Industry_FE + Year_FE + ε
+```
+
+**X1 (cash determinants per Opler 1999):** SIZE, Q, CF, LEV, NWC, SIGMA, NSEG, AGE, CAPX, R&D, ACQUISITION, DIV.
+
+**X2 (restatement determinants):** SGRW, FINANCE, ΔNWC, LOSS, Z-SCORE, BigN.
+
+**X3 (trend controls per Roberts-Whited 2013):** CASH (level) and ΔCASH.
+
+**Predictor averaging:**
+> "for observations of firm i in year t, all independent variables are measured over year t − 3 to t − 1."
+
+**Industry classification verbatim:**
+> "The industry fixed effects are based on Fama and French's (1997) 48-industry classification."
+
+**Match procedure verbatim:**
+> "For each restatement firm, we select as the matched control firm a non-restatement firm that operates in the same industry based on the Fama and French (1997) 48-industry classification and has the closest propensity score in the year of the restatement announcement (i.e., year 0). Note that the propensity score is estimated based on average firm characteristics over years -3 to -1. If more than one restatement firm matches the same control firm, we select the pair with the smallest difference in the propensity score. We then repeat the above matching procedure after eliminating the selected control firm from the control firm pool (i.e., matching without replacement)."
+
+```
+PSM specs locked:
+  Caliper:   NOT specified verbatim
+  Ratio:     1:1
+  Replace:   NO (without replacement)
+  Industry:  FF48 (within-industry only)
+  Score yr:  year 0
+  Predictor avg: t-3 to t-1
+  Tiebreak: smallest score diff
+```
+
+## Section C6 — Headline Result (Table 3 Panel A, PDF p.11, j.300)
+
+```
+                              POST coef      t-stat       n      Adj R²
+─────────────────────────────────────────────────────────────────────
+ALL restatements (cols 1-2)
+  Restatement firms           +0.029***      (7.21)      4,941   0.156
+  Control firms               +0.011**       (2.20)      5,004   0.141
+  DiD difference              +0.018*** [p=.003]
+
+ERROR restatements (cols 3-4)
+  Restatement firms           +0.020***      (4.89)      3,550   0.157
+  Control firms               +0.011*        (1.80)      3,570   0.134
+  DiD difference              +0.009    [p=.199]   ← INSIGNIFICANT
+
+IRREGULARITY restatements (cols 5-6)  ← HEADLINE
+  Restatement firms           +0.046***      (4.84)      1,391   0.180
+  Control firms               +0.012*        (1.90)      1,434   0.162
+  DiD difference              +0.034*** [p=.002]
+```
+
+**Round-4 audit verdict CONFIRMED via direct PDF:** headline = cols 5+6 (irregularity, β=+0.034*** p=.002), n=1,391/1,434. v1 reference was correct on this.
+
+**Economic significance (PDF p.10, j.299):**
+> "the average increase in cash holdings is 3.4% of total assets greater for irregularity firms than for the control firms... the increase in cash holdings relative to the pre-restatement level is approximately 20% higher for the irregularity firms than for the control firms."
+
+## Section C7 — PS_DEMAND Channel Test (Table 4, PDF p.14-16, j.303-305)
+
+**Construction (verbatim PDF p.14, j.303):**
+> "We construct a proxy for the demand for precautionary savings by considering three variables that characterize the joint distribution of internal funds and investment opportunities (Duchin, 2010). The first variable is the industry volatility of operating cash flows (CF), defined as the standard deviation of the industry-median CF over the previous 10 years. The second variable is the industry volatility of investment opportunities, defined as the standard deviation of the industry-median Tobin's Q over the previous 10 years. The third variable is the negative correlation between the industry-median CF and the industry-median Tobin's Q over the previous 10 years."
+
+> "Our composite measure of demand for precautionary savings (PS_DEMAND) is constructed as the mean of the three ranks."
+
+**Table 4 footer (PDF p.16, j.305):**
+> "IND_STDCF is standard deviation of industry (based on Fama and French's 48-industry classification) median operating cash flows."
+
+```
+PS_DEMAND construction (locked):
+  Industry:      FF48 (Fama-French 1997)
+  Window:        previous 10 years
+  
+  IND_STDCF      = std-dev of industry-MEDIAN OCF over 10 yrs
+  IND_STDQ       = std-dev of industry-MEDIAN Tobin's Q over 10 yrs
+  NEG_IND_CORR   = -1 × corr(industry-MEDIAN OCF, industry-MEDIAN Q) over 10 yrs
+  
+  PS_DEMAND      = mean of percentile ranks of (IND_STDCF, IND_STDQ, NEG_IND_CORR)
+                   (year-by-year percentile ranks → mean)
+```
+
+**Result Panel A:**
+```
+PS_DEMAND HIGH (mean = 0.769):  treatment = +0.064*** [p=.001]   n=689/713
+PS_DEMAND LOW  (mean = 0.391):  treatment = +0.016    [p=.226]   n=702/721
+Difference:                     +0.048** [p=.031]   ← significant
+```
+
+**CORRECTION vs old v1:** 3rd component is neg corr btw industry-median CF and industry-median Q (Duchin 2010 framework). Old v1 called it "ACW corr" (Acharya-Almeida-Campello 2007). ACW is cited as motivation but actual measure follows Duchin 2010 with industry-median series (not firm-level CF/IO arrival timing as in ACW).
+
+## Section C8 — CEO/CFO Turnover Channel (Table 5 Panel A, PDF p.17, j.306)
+
+```
+                    Treatment effect      n        Verdict
+WITH replacement    +0.024  [p=.259]      527/537   INSIGNIFICANT
+WITHOUT replacement +0.038*** [p=.005]    847/884   significant
+Diff (yes - no)     -0.014  [p=.540]                NOT significantly different
+```
+
+**Story B alignment:** effect concentrated in firms WITHOUT CEO/CFO turnover → same person stays + becomes more precautionary post-event. (Note: cross-subsample diff is itself NS at p=.540, but each cell tells the right story.)
+
+## Section C9 — Other Channel Tests
+
+**Table 5 Panel B (DECREASE_OPTION):**
+- HIGH (option pay decreased): treatment = +0.016 [p=.369]
+- LOW (option pay not decreased): treatment = +0.059*** [p=.001]
+- Diff: -0.043* [p=.083]
+
+**Table 5 Panel C (DECREASE_XINV):**
+- HIGH overinvest decrease: +0.018 [p=.216]
+- LOW: +0.065*** [p<.001]
+- Diff: -0.047* [p=.051]
+
+**Table 6 (INV_IRREVERS — real options alternative explanation):**
+- HIGH irreversibility (mean 0.252): +0.032* [p=.059]
+- LOW (mean 0.122): +0.034** [p=.017]
+- Diff: -0.002 [p=.946] → real-options story REJECTED.
+
+## Section C10 — Excess Cash Deployment (Table 7, PDF p.20, j.309)
+
+```
+Eq. (2): DECISION_{i,t} = α_i + β1·EXCASH_{i,t-1} + β2·POST_{i,t}
+                          + β3·POST_{i,t} × EXCASH_{i,t-1} + CONTROLS + ε
+```
+
+EXCASH = residual of CASH on (Q, SIZE, CF, NWC, LEV, SIGMA, NSEG, AGE, IndFE) using all non-fin Compustat firms.
+
+```
+                      β3 (POST×EXCASH)     [p value]
+─────────────────────────────────────────────────────
+Panel A: CAPXACQ      irreg = +0.092      diff = +0.154* [p=.057]
+Panel B: DIVPAY       irreg = +0.001      diff = -0.002  [p=.882]
+Panel C: REPURCHASE   irreg = +0.053***   diff = +0.060** [p=.033]
+```
+
+Investments + repurchases more sensitive to excess cash post-restatement → cash more "valuable".
+
+## Section C11 — Market Value of Cash (Table 8, PDF p.22, j.311)
+
+Faulkender-Wang (2006) framework on R - R^B (excess return).
+
+DCASH × POST diff (irregularity vs control) = +0.855*** [p=.002].
+
+Cash gains higher market value post-restatement → consistent w/ precautionary channel.
+
+## Section C12 — Identification Checks Status
+
+| Check                                  | Status       |
+|----------------------------------------|--------------|
+| Parallel-trends (formal pre-period)    | NOT IN PAPER (acknowledged via PSM-X3 trend controls) |
+| Pseudo-event placebo (random year T)   | MENTIONED but not detailed in main text |
+| Falsification (random treatment)       | NOT IN PAPER |
+| Entropy balancing                      | NOT IN PAPER |
+| IV / 2SLS                              | NOT IN PAPER |
+| Real-options alternative (INV_IRREVERS)| ✓ rejected (Table 6) |
+| Channel: precautionary                 | ✓ YES (PS_DEMAND high vs low) |
+| Channel: shareholder control           | ✓ YES (CEO/CFO turnover, option, overinvestment) |
+| Channel: rating downgrade              | NOT IN PAPER |
+| Channel: financing access              | NOT IN PAPER |
+| Channel: regulator/SEC monitoring      | NOT IN PAPER |
+
+**Identification weaker than Brexit (formal parallel-trends + 2 placebos) and Boasiako (parallel-trends + entropy + falsification).** Acceptable as 3rd-tier robustness layer, not primary identification.
+
+## Section C13 — DiD Fit Verdict
+
+```
+Macro shock?               NO (firm-event)
+State shock?               NO (firm-event)
+Firm-event shock?          ✓ YES (idiosyncratic restatement)
+Outcome = cash?            ✓ YES (#CHE / #AT)
+US firms?                  ✓ YES
+F1D-overlap?               4 yrs (2002-Jun 2006) — CAVEAT
+Channel = precautionary?   ✓ YES (PS_DEMAND partition significant)
+Story B aligned?           ✓ YES (CEO/CFO no-turnover partition)
+Sample size sufficient?    ✓ 1,391 irreg-firm-yr × 1,434 control-firm-yr
+DiD identification depth?  WEAKER than Brexit/Boasiako
+                           - No formal parallel-trends test
+                           - No falsification test
+                           - Only PSM trend controls (X3)
+                           - Real-options alternative rejected (Table 6)
+```
+
+**Verdict: USEFUL** as firm-event tier of 3-tier shock-scale hierarchy. Frame as TIER-3 ROBUSTNESS layer below macro (Brexit) and state (Boasiako).
+
+## Section C14 — NLM Batch Verify Queries
+
+Following discipline locked via Brexit/Boasiako: BOTH PDF page (1-N index) AND journal page demanded in queries. Body-text quotes have 1-page-early NLM drift; tables/headers usually correct.
+
+### Q-A — Sample / Treatment / DV core
+
+> Verify the following from Chen, Chen, Dhaliwal, Huang (2020) "Accounting Restatements and Corporate Cash Policy" Journal of Accounting, Auditing & Finance Vol 35(2) 290-317. For each item, quote VERBATIM from the paper and cite BOTH the PDF page (1-N index where p.1 = title page, p.28 = last page of references) AND the journal page (290-317).
+>
+> 1. Sample window start month + end month + year (with verbatim quote)
+> 2. Source of restatement classification (Hennes et al. 2008 — confirm + verbatim)
+> 3. Industry exclusions: SIC ranges excluded (verbatim quote)
+> 4. Final sample N (total restatements + irregularity count + error count)
+> 5. DV CASH formula in Compustat fields (verbatim)
+> 6. POST dummy timing (year 0 included or excluded?) — verbatim quote
+> 7. Pre-period and post-period years relative to year 0 (verbatim)
+
+### Q-B — Controls + SIGMA precise definition
+
+> From the same paper:
+>
+> 1. Verbatim definition of SIGMA (industry volatility of operating cash flow). Specifically: is it industry-MEAN or industry-MEDIAN of the std-dev? Industry classification = FF48 or SIC2-digit?
+> 2. List of all 8 baseline controls (Panel A regression) with their formulas if given
+> 3. Definition of CF (operating cash flow) in Compustat fields (verbatim)
+> 4. Definition of NWC (net working capital) in Compustat fields (verbatim)
+> 5. Definition of Q (Tobin's Q) in Compustat fields (verbatim)
+> 6. Cite PDF page + journal page for each.
+
+### Q-C — PSM details
+
+> From the same paper Appendix A:
+>
+> 1. Probit predictors X1 (cash determinants) — full list verbatim
+> 2. Probit predictors X2 (restatement determinants) — full list verbatim
+> 3. Probit predictors X3 (trend controls) — full list verbatim
+> 4. Industry classification used for matching (FF48 vs SIC2)? verbatim
+> 5. Match ratio (1:1, 1:N) and replacement scheme (with vs without replacement) — verbatim
+> 6. Caliper if specified — verbatim or "not specified"
+> 7. Time period over which probit predictors are averaged (e.g., t-3 to t-1?) — verbatim
+> 8. Diagnostic statistics quality after matching (probit p-value, Pseudo R², covariate balance).
+> 9. Cite PDF page + journal page for each.
+
+### Q-D — PS_DEMAND construction (channel test)
+
+> From Table 4 of the same paper:
+>
+> 1. Verbatim definition of IND_STDCF (industry CF volatility component)
+> 2. Verbatim definition of IND_STDQ (industry investment-opp volatility component)
+> 3. Verbatim definition of NEG_IND_CORR (third component)
+> 4. Verbatim formula for PS_DEMAND composite (mean of percentile ranks?)
+> 5. Industry classification used (FF48 or SIC2) — verbatim from Table 4 footer
+> 6. Time window of std-dev / correlation (10 years?) — verbatim
+> 7. Whether components use industry-MEDIAN, industry-MEAN, or firm-level CF/Q
+> 8. Cite PDF page + journal page for each.
+
+### Q-E — Headline + identification
+
+> From the same paper:
+>
+> 1. Table 3 Panel A col 5 (irregularity restatement firms) POST coefficient + t-stat + n
+> 2. Table 3 Panel A col 6 (irregularity control firms) POST coefficient + t-stat + n
+> 3. Test of difference btw col 5 and col 6 coefficient + p-value
+> 4. SE clustering scheme (matched-pair × year? state? firm?) — verbatim
+> 5. FE structure (firm only? firm + year?) — verbatim
+> 6. Whether parallel-trends test exists in paper (Yes/No + page if yes)
+> 7. Whether falsification / placebo tests exist (verbatim quote if yes)
+> 8. Whether IV/2SLS test exists (Yes/No)
+> 9. Cite PDF page + journal page for each.
+
+## Section C15 — NLM Batch Reconciliation + /pdf-strict pdfplumber Re-Verify
+
+NLM batch executed 2026-05-08. All 5 queries (Q-A through Q-E) returned. Reconciliation:
+
+```
+                                               PyMuPDF   pdfplumber   /pdf-strict
+                                               (initial) (re-verify)  verdict
+─────────────────────────────────────────────────────────────────────────────────
+Q-A.1 sample window                            ✓         ✓            CONFIRMED
+Q-A.2 Hennes-LM source                         ✓         ✓            CONFIRMED
+Q-A.3 industry exclusions                      ✓         ✓            CONFIRMED
+Q-A.4 final n=949 (270 irreg + 679 err)        ✓         ✓            CONFIRMED
+Q-A.5 CASH = #CHE/#AT                          ✓         ✓            CONFIRMED
+Q-A.6 POST: year 0 EXCLUDED                    ✓         ✓            CONFIRMED
+Q-A.7 -3 to -1 vs +1 to +3                     ✓         ✓            CONFIRMED
+
+Q-B.1 SIGMA = industry-MEDIAN  (CORRECTION 1)  ✓         ✓            CONFIRMED
+Q-B.1c FF48 (NOT SIC2)                         ✓         ✓            CONFIRMED
+Q-B.2 control formulas (Q,SIZE,CF,NWC,LEV)     ✓         ✓            CONFIRMED
+
+Q-C.5 1:1 no-replacement                       ✓         ✓            CONFIRMED
+Q-C.5 closest score (no caliper)               ✓         ✓            CONFIRMED
+Q-C.7 t-3 to t-1 predictor averaging           ✓         ✓            CONFIRMED
+Q-C.10 year-0 score                            ✓         ✓            CONFIRMED
+
+Q-D.1 IND_STDCF = std-dev of industry-MEDIAN   ✓         ✓            CONFIRMED
+Q-D.2 IND_STDQ = std-dev of industry-MEDIAN    ✓         ✓            CONFIRMED
+Q-D.3 NEG_IND_CORR  (CORRECTION 2)             ✓         ✓            CONFIRMED
+Q-D.4 PS_DEMAND = mean of percentile ranks     ✓         ✓            CONFIRMED
+Q-D.5 FF48 in Table 4 footer                   ✓         ✓            CONFIRMED
+
+Q-E.1 col 5 β=0.046*** t=4.84 n=1,391          ✓         ✓ (chars)    CONFIRMED
+Q-E.2 col 6 β=0.012* t=1.90 n=1,434            ✓         ✓ (chars)    CONFIRMED
+Q-E.3 DiD diff = +0.034*** [p=.002]            ✓         ✓ (chars)    CONFIRMED
+Q-E.4 SE matched-pair × year (Gow 2010)        ✓         ✓            CONFIRMED
+Q-E.5 FE = firm only                           ✓         ✓            CONFIRMED
+
+Q-E.6 parallel-trends pre-test in published?   ✗ no      ✗ no         CONFIRMED ABSENT
+Q-E.7 random-treatment falsification?          ✗ no      ✗ no         CONFIRMED ABSENT
+Q-E.8 pseudo-event placebo?  (CORRECTION 3)    ✗ no      ✗ no         CONFIRMED ABSENT (in WP only)
+Q-E.9 IV / 2SLS?                               ✗ no      ✗ no         CONFIRMED ABSENT
+Q-E.10 entropy balancing?                      ✗ no      ✗ no         CONFIRMED ABSENT
+Q-E.11 lines-of-credit channel? (WP-only)      ✗ no      ✗ no         CONFIRMED ABSENT
+```
+
+### /pdf-strict tool note
+
+Per `~/.claude/skills/pdf/SKILL.md`, primary text-extraction tool is `pdfplumber.page.extract_text()`; for table cells, `page.extract_tables()` or `page.chars` brute search. PyMuPDF (`fitz`) is NOT in /pdf — appears in `reference.md` only as the thing `pypdfium2` *replaces*.
+
+Initial extraction used PyMuPDF (deviation from /pdf-strict). Sina caught this; re-ran via pdfplumber. All substantive findings hold. Whitespace divergences (hyphenated words, concatenated tokens in Table 4 footer) caused 5 false-NOT-FOUND results in pdfplumber regex match — manual region inspection confirmed substance present in all 5. Table 3 cell values (n=1,391 etc.) extracted via `pdfplumber.page.chars` brute char-stream search.
+
+Verification scripts durable in repo:
+- `tmp/chen_pdf_verify.py` — initial PyMuPDF version (acknowledged non-strict)
+- `tmp/chen_pdf_verify_pdfplumber.py` — /pdf-strict pdfplumber `extract_text()` re-verify
+- `tmp/chen_pdfplumber_diagnose.py` — diagnostic for whitespace divergences
+- `tmp/chen_table3_verify.py` — `extract_tables()` + `page.chars` for Table 3 cells
+
+### NLM page-citation calibration (Chen — consistent w/ Brexit/Boasiako 1-page-early drift)
+
+| Item                             | NLM said          | PDF actual         | Drift |
+|----------------------------------|-------------------|--------------------|-------|
+| Sample window quote              | PDF p.4 j.293     | PDF p.5 j.294      | -1    |
+| Hennes-LM source quote           | PDF p.6 j.295     | PDF p.7 j.296      | -1    |
+| Industry exclusions              | PDF p.4 j.293     | PDF p.5 j.294      | -1    |
+| Final n=949                      | PDF p.5 j.294     | PDF p.6 j.295      | -1    |
+| CASH formula                     | PDF p.5 j.294     | PDF p.6 j.295      | -1    |
+| POST timing                      | PDF p.5 j.294     | PDF p.6 j.295      | -1    |
+| Table 3 numbers                  | PDF p.12 j.299    | PDF p.11 j.300     | +1/-1 |
+| SIGMA defn (Q-B)                 | PDF Index 49 j.291| PDF p.6 j.295      | hallucinated |
+
+Pattern: body-text 1-page-early drift HOLDS (consistent w/ Brexit/Boasiako). NLM's "PDF Index 49" is library source ID (not within-paper page). Discipline locked: demand within-paper PDF page (1-N) AND journal page in queries.
+
+### Mixed-version flag (NLM)
+
+NLM blended:
+- `chen-et-al-2017-accounting-restatements-and-corporate-cash-policy.pdf` (published JAAF)
+- `Huang_Accounting_Restatements_Corporate.pdf` (working paper version)
+
+WP-only material in NLM responses (NOT in published JAAF):
+1. Variable label "CFO" instead of "CF" (Q-C.1)
+2. Variable label "RDSALE" instead of "R&D" (Q-C.1)
+3. Pseudo-event placebo verbatim "we assign year T before..." (Q-E.8)
+4. Lines-of-credit channel test "unused lines of credit" (Q-E.11)
+
+Decision: lock to PUBLISHED JAAF version only. F1D replication uses CF / R&D variable names. Pseudo-event placebo + lines-of-credit channel NOT replicated (WP-only).
+
+## Section C16 — LOCKED Spec for H1.5.restatement_did
+
+```
+DV:        CHE / AT                                    [#CHE / #AT]
+Treatment: POST_{i,t} = 1 after restatement, 0 before
+           Year 0 (announcement year) EXCLUDED
+Window:    [-3, -1] pre  vs  [+1, +3] post
+
+Sample:    Hennes-LM (2008) GAO restatement set, 1997-Jun 2006
+           Industry excl: SIC 6000-6999 + 4900-4999
+           Final n = 949 (270 irregularity + 679 error)
+           HEADLINE = irregularity subsample only
+
+PSM:       1:1 no-replacement, FF48 within-industry, closest score
+           Predictors averaged over t-3 to t-1
+           Score year = year 0
+           Probit: X1 ∪ X2 ∪ X3 with industry+year FE
+             X1 = SIZE, Q, CF, LEV, NWC, SIGMA, NSEG, AGE,
+                  CAPX, R&D, ACQUISITION, DIV
+             X2 = SGRW, FINANCE, ΔNWC, LOSS, Z-SCORE, BigN
+             X3 = CASH (level), ΔCASH
+
+Controls:  Baseline (Panel A) — 8 vars: Q SIZE CF NWC LEV SIGMA NSEG AGE
+           Expanded (Panel B) — adds: CAPX ACQUISITION R&D DIV
+                                       DEBT_XFIN EQUITY_XFIN MATURITY
+                                       NO_LOAN N_FINCOV N_GENCOV BigN
+
+SIGMA:     INDUSTRY-MEDIAN of std-dev of OCF over previous 10 years
+           Industry classification: FF48 (Fama-French 1997)
+
+FE:        firm (α_i) only
+SE:        DOUBLE-CLUSTER matched-pair × year (Gow-Ormazabal-Taylor 2010)
+
+Headline:  β_DiD irregularity = +0.034*** [p=.002]
+           cols 5+6: irreg β=+0.046*** (t=4.84) n=1,391
+                     ctrl  β=+0.012*   (t=1.90) n=1,434
+
+Channel partitions (all FF48):
+  PS_DEMAND        — composite mean of percentile ranks of:
+                       IND_STDCF      = std-dev (10y) of industry-median OCF
+                       IND_STDQ       = std-dev (10y) of industry-median Q
+                       NEG_IND_CORR   = -1 × corr (10y) of industry-median OCF
+                                                      with industry-median Q
+                     HIGH (0.769)→+0.064*** [p=.001]
+                     LOW  (0.391)→+0.016    [p=.226]
+                     diff +0.048**  [p=.031]    ✓ precautionary channel
+  
+  CEO/CFO turnover — WITHOUT replacement +0.038*** [p=.005]
+                     WITH               +0.024    [p=.259]
+                     diff -0.014       [p=.540]   (Story B aligned)
+  
+  DECREASE_OPTION  — option pay decreased subsample → smaller effect
+                     LOW (no decrease)  +0.059*** [p=.001]
+                     diff               -0.043*   [p=.083]
+  
+  DECREASE_XINV    — overinvest decreased subsample → smaller effect
+                     LOW (no decrease)  +0.065*** [p<.001]
+                     diff               -0.047*   [p=.051]
+  
+  INV_IRREVERS     — real-options alternative REJECTED
+                     diff               -0.002    [p=.946]    ← not different
+
+Excess cash deployment (Table 7):
+  CAPXACQ × POST × EXCASH:    diff +0.154* [p=.057]
+  REPURCHASE × POST × EXCASH: diff +0.060** [p=.033]
+  DIVPAY × POST × EXCASH:     diff -0.002  [p=.882]   (no effect)
+
+Market value of cash (Table 8):
+  DCASH × POST diff: +0.855*** [p=.002]
+
+Identification depth (CONFIRMED ABSENT in published):
+  - Formal parallel-trends pre-test: NO (only PSM X3 trend controls)
+  - Random-treatment falsification: NO
+  - Pseudo-event placebo: NO  (in WP only — DROPPED from published)
+  - IV / 2SLS: NO
+  - Entropy balancing: NO
+
+→ WEAKER identification than Brexit (formal parallel-trends + 2 placebos)
+  and Boasiako (parallel-trends + entropy + falsification).
+  Frame as TIER-3 firm-event ROBUSTNESS, NOT primary identification.
+
+F1D-overlap caveat: 4 yrs (2002-Jun 2006); ~120 irregularity events available.
+```
+
+**Chen replication unblocked.** Phase 1 builders may proceed (Chen module set: ~3-5 days estimated).

@@ -1,0 +1,2650 @@
+=== PDF p.1 (journal p.290) ===
+Journal of Accounting,
+Auditing & Finance
+2020, Vol. 35(2) 290–317
+The Author(s) 2017
+Article reuse guidelines:
+sagepub.com/journals-permissions
+DOI: 10.1177/0148558X17732654
+journals.sagepub.com/home/JAF
+Accounting Restatements and
+Corporate Cash Policy
+Huili Chen1, Zhihong Chen2, Dan S. Dhaliwal3,
+and Yuan Huang4
+Abstract
+Using a difference-in-differences approach, we find that the cash holdings of firms increase
+significantly after announcements of irregularity-related restatements. The increase is larger
+for firms with a higher demand for precautionary savings and is smaller for firms with less
+pronounced increase in shareholder control after the restatements. Investments and
+repurchases of irregularity firms become more sensitive to excess cash after the restate-
+ments. In addition, we find that the market value of cash holdings increases after restate-
+ments. Overall, the evidence suggests that strengthened shareholder control reduces cash
+holdings, but this effect is weaker than the increase in cash holdings due to exacerbated
+precautionary savings concerns. Our study contributes to the literature on the effect of
+financial reporting credibility on real corporate decisions.
+Keywords
+financial statement restatements, financial reporting credibility, cash holdings, fund
+allocation, precautionary savings, shareholder control, real effect
+Introduction
+In a perfect capital market, firms do not need to reserve cash because they can raise exter-
+nal capital when required. Due to market frictions including information asymmetry and
+moral hazard, however, raising external capital from the spot market is costly (Jensen &
+Meckling, 1976; Myers & Majluf, 1984). This creates a ‘‘precautionary savings motive’’ to
+hoard cash as a safeguard against future cash flow shortfalls (Holmstrom & Tirole, 1998;
+Keynes, 1936). In addition, self-interested managers have incentives to hoard excess cash
+for private benefits (Dittmar, Mahrt-Smith, & Servaes, 2003).
+1South China University of Technology, Guangzhou, China
+2Hong Kong University of Science and Technology, Kowloon, Hong Kong
+3The University of Arizona, Tucson, USA
+4Hong Kong Polytechnic University, Hung Hom, Hong Kong
+Corresponding Author:
+Zhihong Chen, Department of Accounting, Hong Kong University of Science and Technology, HKUST, Kowloon,
+Hong Kong.
+Email: aczh@ust.hk
+Article
+
+=== PDF p.2 (journal p.291) ===
+A fundamental objective of financial reporting is to reduce information asymmetry and
+facilitate the monitoring of the management. However, little empirical research investigates
+how financial reporting quality affects a firm’s cash policy. Thus, this study examines the
+change in corporate cash holdings after accounting restatements. On one hand, perceived
+information asymmetry between managers and outside investors increases after a restate-
+ment can decrease financial reporting credibility (Chen, Cheng, & Lo, 2014). Thus, raising
+future external financing from the spot market becomes more costly, and the value of cash
+reserves as insurance against future cash shortfalls is magnified. This suggests that firms
+should reserve more cash after restatements. On the other hand, because restatements pro-
+vide an adverse signal to market participants, managers are likely to be subjected to more
+intensive market scrutiny. In addition, internal and external governance mechanisms are
+strengthened after restatement announcements (e.g., Cheng & Farber, 2008; Farber, 2005).
+Consequently, managers may reduce cash holdings because the private benefits of holding
+excess cash are lower. Thus, accounting restatements result in conflicting incentives with
+regard to corporate cash holdings, and the combined effect is ultimately an empirical
+question.
+To test the effect of accounting restatements on corporate cash policy, we identify a
+sample of 949 firms that announced accounting restatements from 1997 through 2006
+(GAO, 2003, 2006). Following Hennes, Leone, and Miller (2008), we partition the restate-
+ments into those related to accounting irregularities and those related to errors. Our final
+sample contains 270 irregularity-related restatements and 679 error-related restatements. To
+ensure that any change in cash holdings after a restatement is not driven by an intertem-
+poral trend in cash holdings (Bates, Kahle, & Stulz, 2009), we match each restatement firm
+with a non-restatement firm based on a propensity score, and we conduct a difference-in-
+differences test. We include a number of covariates that are associated with accounting
+restatements and corporate cash holdings to estimate the propensity score (Roberts &
+Whited, 2013).
+We find that the announcement of accounting restatements has a statistically significant
+effect on firm cash holdings. Specifically, we find that restatement firms increase their cash
+holdings after a restatement announcement, and this increase is significantly higher than
+the contemporaneous increase in cash for the matched non-restatement firms. We also find
+that the effect is concentrated in the irregularity sample and is insignificant in the error
+sample. This is consistent with findings that irregularity-related restatements are more
+damaging than error restatements to financial reporting credibility (e.g., Chen, Cheng, &
+Lo, 2013; Hennes et al., 2008). The effect is also economically significant. The increase in
+cash holdings after the announcement of an irregularity restatement is higher than the con-
+temporaneous increase in cash holdings for the control firms by 3.4% of total assets. Stated
+alternatively and using average cash holdings before restatements as a benchmark, the rela-
+tive increase in cash holdings for the irregularity firms is 20% higher than that for the con-
+trol firms.
+Precautionary savings theory contends that cash holdings are more sensitive to informa-
+tion asymmetry when the risk of a future internal shortfall is higher; that is, when the
+demand for precautionary savings is higher (Acharya, Almeida, & Campello, 2007). Prior
+research suggests that the demand for precautionary savings is higher when operating cash
+flows (Opler, Pinkowitz, Stulz, & Wiliamson, 1999) and investment opportunities (Duchin,
+2010) are more volatile, and when investment opportunities tend to arrive when operating
+cash flows are low (Acharya et al., 2007; Duchin, 2010). We construct a composite mea-
+sure of the demand for precautionary savings as the mean value of the percentile ranks of
+Chen et al.
+291
+
+=== PDF p.3 (journal p.292) ===
+three variables: the industry volatility of operating cash flows, the industry volatility of
+investment opportunities, and the negative correlation between operating cash flows and
+investment opportunities at the industry level. We then partition the irregularity firms into
+two subsamples based on this composite measure, and examine how the change in cash
+holdings varies across the two subsamples. Consistent with the precautionary savings
+hypothesis, we find that the effect of irregularity-related restatements on cash holdings is
+highly significant for firms with a high demand for precautionary savings, but the effect is
+statistically insignificant for the firms with a low demand for precautionary savings.
+We also partition the sample based on proxies for the change in shareholder control
+around restatements. We consider the CEO/CFO turnover, change in CEO compensation,
+and change in investment behavior (Cheng & Farber, 2008; Farber, 2005; Hennes et al.,
+2008). Firms with more pronounced increases in shareholder control are more likely to
+replace the top management team and cancel their planned overinvestment (Hennes et al.,
+2008). These firms are also more likely to reduce option compensation after restatements
+because excessive option compensation is likely to increase managers’ incentives to misre-
+port (Cheng & Farber, 2008). We find that the increase in cash holdings after restatements
+is greater and highly significant for irregularity firms with a less pronounced increase in
+shareholder control. In contrast, the increase in cash holdings is statistically insignificant
+for irregularity firms with a more pronounced increase in shareholder control. Overall, our
+evidence suggests that strengthened shareholder control reduces cash holdings, but the
+effect of strengthened shareholder control is weaker than that of increased precautionary
+savings concerns. This results in an overall increase in cash holdings.
+To further identify the mechanisms through which the restatements affect cash policy,
+we examine whether and how irregularity firms change the way they deploy excess cash
+after restatements. We find a significant greater increase in the sensitivity of investment to
+excess cash for irregularity firms compared with that of control firms. This is consistent
+with the notion that cash holdings are more valuable in mitigating underinvestment after
+restatements (Denis & Sibilkov, 2010), supporting the precautionary savings hypothesis.
+We also find that irregularity firms increase their propensity to distribute excess cash to
+shareholders after restatements. This is consistent with the notion that strengthened share-
+holder control reduces the private benefits of cash holdings or forces managers to disgorge
+excess cash (Faleye, 2004; Harford, Mansi, & Maxwell, 2008).
+Finally, we examine the change in the market value of cash holdings after restatements.
+We find an increase in the market value of cash holdings after restatements which is more
+pronounced for irregularity firms than for the control firms. This further supports the
+notion that cash reserves are more valuable in mitigating underinvestment problems after
+restatements.
+Our article makes several important contributions to the literature: First, we contribute
+to the literature that investigates the economic consequences of financial reporting credibil-
+ity in general and of accounting restatements in particular. We show how accounting resta-
+tements affect an important component of corporate liquidity management—corporate cash
+policy (Tirole, 2006). Recent studies highlight the effect of liquidity management on a
+firm’s investment decisions and on performance (e.g., Duchin, Ozbas, & Sensoy, 2010).
+We demonstrate how a reduction in financial reporting credibility could affect a firm’s
+optimal consumption2investment choices, and consequently, its cash management policies.
+Prior literature suggests that agency costs and precautionary savings benefits are two
+important economic forces that shape corporate cash policy (e.g., Opler et al., 1999). The
+relative importance of these two forces is likely to vary by context. Gao, Harford, and
+292
+Journal of Accounting, Auditing & Finance
+
+=== PDF p.4 (journal p.293) ===
+Li (2013) find that private firms hold less cash than public firms despite higher financing
+frictions. Huang, Elkinawy, and Jain (2013) find that firms cross-listed in the United States,
+which have lower financing constraints and less severe agency problems, hold more cash and
+enjoy a higher market value of cash. Their evidence suggests that it is optimal for sharehold-
+ers to allow managers to hold more cash when binding mechanisms are more effective.
+Chen, Chen, Schipper, Xu, and Xue (2012) find that the split-share reform in China reduces
+Chinese firms’ cash holdings by lowering private benefits and precautionary savings benefits.
+Our article contributes to the literature by examining changes in cash holdings after account-
+ing restatements and identifying the mechanisms leading to these changes.
+The remainder of this article is organized as follows: The next section develops our
+hypothesis. The Research Design section describes our sample selection procedure and
+other aspects of our research design. The next three sections present the results from our
+empirical tests, and the last section concludes.
+Related Literature and Hypothesis Development
+The Determinants of Corporate Cash Holdings
+Precautionary savings and agency problems are two prominent explanations for corporate
+cash holdings (Bates et al., 2009; Harford et al., 2008; Opler et al., 1999). Due to market
+frictions, firms may be unable to raise sufficient funds from spot markets when the need
+arises (Holmstrom & Tirole, 1998). Cash reserves provide insurance against future short-
+falls (Acharya et al., 2007) and reduce the deadweight loss of underinvestment resulting
+from costly (or unavailable) external financing in future periods. However, carrying cash
+also requires forgoing profitable investment opportunities in the current period. Therefore,
+optimal cash holdings equate the marginal benefit of reducing future underinvestment and
+the marginal cost of forgoing current investment opportunities. As information asymmetry
+increases, future external financing becomes more costly, leading to a greater potential risk
+of underinvestment (Opler et al., 1999). This suggests that higher information asymmetry
+resulting from a restatement should lead to an increase in cash holdings.
+Harford et al. (2008) argue that agency conflicts between shareholders and managers
+can either decrease or increase cash holdings. On one hand, excess cash typically exacer-
+bates agency problems, so shareholders may prefer cash levels to be lowered. Consistent
+with this, Chen et al. (2012) find that Chinese firms reduced cash holdings after improve-
+ments in governance from the split-share reform. Faleye (2004) finds that cash-rich firms
+are more likely to be proxy contest targets, and they distribute more cash to shareholders
+after the contest. On the other hand, self-interested managers may prefer current overinvest-
+ment to the ability to invest cash reserves in the future, and may find ways to spend any
+cash reserves. If so, more effective control over managers would prevent them from
+making overinvestments, leading to increased cash reserves (Stulz, 1990). Consistent with
+this, Huang et al. (2013) find that foreign firms cross-listed in the United States hold more
+cash, and Harford et al. (2008) find that firms with weaker shareholder rights have lower
+cash holdings and are more likely to invest excess cash.
+Accounting Restatements and Corporate Cash Holdings
+One of the fundamental goals of financial reporting is to reduce the information asymmetry
+between
+managers
+and outside capital providers. Accounting restatements damage
+Chen et al.
+293
+
+=== PDF p.5 (journal p.294) ===
+management reputation, and cast doubt on the reliability and credibility of financial report-
+ing (Palmrose, Richardson, & Scholz, 2004). Therefore, investors reduce their reliance on
+the information contained in financial reports when making decisions (Chen et al., 2014),
+and this decreased reliance typically worsen the information environment (Griffin, 2003)
+and increases the cost of external financing (Graham, Li, & Qiu, 2008; Hribar & Jenkins,
+2004). Hence, the precautionary savings benefits of cash holdings increase, and firms
+should hold more cash (the precautionary savings hypothesis).
+Accounting restatements also affect cash holdings because of agency problems.
+Restatements send an adverse signal to outside investors and increase market scrutiny. In
+addition, restatement firms may improve their corporate governance to restore investor con-
+fidence (Cheng & Farber, 2008; Collins, Masli, Reitenga, & Sanchez, 2009; Farber, 2005;
+Hennes, Leone, & Miller, 2014). These changes strengthen shareholder control over man-
+agers which may increase or decrease cash holdings. On one hand, strengthened control
+reduces managers’ private benefits of cash holdings and, therefore, their incentives to hold
+cash. In addition, strengthened control may force managers to disgorge excess cash. On the
+other hand, strengthened control reduces managers’ overinvestment. To the extent that
+these funds are not distributed to shareholders or used to pay down debt, cash holdings will
+increase. Thus, strengthened control after restatements could either increase or decrease
+cash holdings (the strengthened control hypothesis).
+Overall, accounting restatements result in conflicting economic forces that could change
+cash holdings in either direction. The above discussion leads to our hypothesis, stated in
+the null form, as follows:
+Hypothesis 1: The level of cash holdings does not change after an accounting
+restatement.
+Research Design
+Sample Selection and Propensity Score Matching
+We collect the accounting restatement data from Hennes et al. (2008), which include resta-
+tements disclosed in Government Accountability Office (GAO) reports from 2003 to 2006.
+These reports contain restatements announced from January 1997 through June 2006. We
+conduct a difference-in-differences test to ensure that any change in cash holdings is not
+driven by a time trend (Bates et al., 2009). Specifically, we match each restatement firm to
+a non-restatement firm based on a propensity score (Roberts & Whited, 2013). We provide
+the details of the matching procedure and the diagnostic statistics in the appendix.
+Panel A of Table 1 presents the sample selection procedure. Our initial sample contains
+2,705 accounting restatement observations from GAO (2003, 2006). We first delete 203
+duplicate restatements and 296 restatements for firms not in Compustat. Second, if a firm
+announces multiple restatements in the sample period, we retain only the first restatement
+to ensure that the pre-restatement period is not contaminated by previous restatements. This
+removes 396 restatements. Third, we remove 270 restatements from financial firms
+(Standard Industrial Classification code [SIC] 6000-6999) and 60 restatements from utility
+firms (SIC 4900-4999). Fourth, we eliminate observations with missing financial data, cash
+holdings exceeding the value of total assets, total assets and market value of equity below
+US $10 million, or growth in assets or sales exceeding 100%. This removes another 496
+294
+Journal of Accounting, Auditing & Finance
+
+=== PDF p.6 (journal p.295) ===
+restatements from the sample. Finally, we remove seven restatements without matched con-
+trol firm observations and 28 without data in the post-restatement periods. This yields a
+final sample of 949 restatements, of which 679 are related to errors and 270 are related to
+irregularities.
+The Baseline Regression Models
+To examine the change in cash holdings after a restatement, we compare the cash holdings
+in the 3 fiscal years after the restatement announcement (i.e., years [ + 1, + 3]) with cash
+holdings in the 3 fiscal years before the announcement (i.e., years [23, 21]). We define
+the fiscal year of the restatement announcement as year 0. Our main test excludes year 0
+because it is not clear whether there is sufficient time for a restatement firm to adjust its
+cash holdings in this year. We estimate the following baseline regression separately for the
+restatement firms and the control firms (McInnis & Collins, 2011):
+CASHi, t = ai + bPOSTi, t + CONTROLS + ei, t,
+ð1Þ
+where CASH is the level of cash holdings, defined as cash and short-term investments
+(Compustat data item #CHE) scaled by total assets (#AT), and POST is a dummy variable
+that equals 1 after the restatement, and 0 before the restatement. The treatment effect of the
+restatements on the level of cash holdings is captured by the difference in the coefficient
+on POST (b) between the restatement and control firms.
+Following Opler et al. (1999), we include a number of control variables. Tobin’s Q (Q)
+is defined as the book value of total assets (#AT) plus the difference between the market
+value of equity (#PRCC_F 3 #CSHO) and the book value of equity (#CEQ), all scaled by
+book value of total assets. Firm size (SIZE) is the natural logarithm of total assets.
+Operating cash flow (CF) is net operating cash flow (#OANCF) scaled by total assets. Net
+working capital (NWC) is noncash working capital (#ACT 2 #CHE) 2 (#LCT 2 #DLC)
+scaled by total assets. Leverage (LEV) is the sum of long-term debt (#DLTT) and short-
+term debt (#DLC) scaled by total assets. Industry volatility of operating cash flow (SIGMA)
+is the industry-median value of the standard deviation of operating cash flow over the pre-
+vious 10 years. Number of business segments (NSEG) is the count of business segments
+with nonzero identifiable assets, set to 1 if the value is missing. Firm age (AGE) is the nat-
+ural logarithm of the number of years since the firm first appeared in Compustat. We
+include firm fixed effects (ai) to control for time-invariant unobservable firm heterogeneity,
+and we cluster standard errors at both the matched pair (of the restatement and control
+firms) and year levels (Gow, Ormazabal, & Taylor, 2010).
+Accounting Restatements and the Level of Cash Holdings
+Summary Statistics and Univariate Tests
+Panel B of Table 1 presents summary statistics, and Table 2 presents the results from uni-
+variate tests. For each restatement and matched control firm, we first compute the average
+value of CASH in the pre-restatement and post-restatement periods. We then compute the
+change in the firm-specific average value of CASH from the pre- to post-restatement peri-
+ods. Finally, we examine the difference in the change in average CASH between the resta-
+tement firms and the matched control firms.
+Chen et al.
+295
+
+=== PDF p.7 (journal p.296) ===
+Table 1.
+Sample Selection and Summary Statistics.
+Panel A: Sample Selection.
+All accounting restatements from 1997 through 2006 from GAO (2003, 2006)
+2,705
+Less:
+Duplicate announcements
+(203)
+Firms nonlisted in COMPUSTAT
+(296)
+Subsequent restatements
+(396)
+Financial firms (SICs between 6000 and 6999)
+(270)
+Utility firms (SICs between 4900 and 4999)
+(60)
+Firms with missing variables used to estimate the propensity scores
+(496)
+Firms that cannot be matched to a control firm
+(7)
+Firms missing in the post-restatement period
+(28)
+Restatements included in the final sample
+949
+Irregularity and error restatements as identified by Hennes, Leone, and Miller (2008)
+Irregularity firms
+270
+Error firms
+679
+Panel B: Summary Statistics.
+Variable
+Error sample
+Irregularity sample
+n
+Mean
+Median
+n
+Mean
+Median
+CASH
+7,120
+0.165
+0.094
+2,825
+0.166
+0.088
+POST
+7,120
+0.498
+0.000
+2,825
+0.494
+0.000
+Q
+7,120
+1.883
+1.495
+2,825
+1.969
+1.512
+SIZE
+7,120
+5.951
+5.851
+2,825
+6.390
+6.399
+CF
+7,120
+0.069
+0.084
+2,825
+0.068
+0.076
+NWC
+7,120
+0.113
+0.089
+2,825
+0.112
+0.103
+LEV
+7,120
+0.219
+0.171
+2,825
+0.220
+0.192
+SIGMA
+7,120
+0.067
+0.068
+2,825
+0.071
+0.071
+NSEG
+7,120
+4.898
+3.000
+2,825
+5.110
+3.000
+AGE
+7,120
+2.638
+2.565
+2,825
+2.658
+2.565
+CAPX
+7,120
+0.060
+0.042
+2,825
+0.050
+0.036
+ACQUISITION
+7,120
+0.021
+0.000
+2,825
+0.025
+0.000
+R&D
+7,120
+0.087
+0.000
+2,825
+0.081
+0.007
+DIV
+7,120
+0.006
+0.000
+2,825
+0.006
+0.000
+DEBT_XFIN
+7,107
+0.003
+0.000
+2,823
+0.001
+20.001
+EQUITY_XFIN
+6,998
+0.031
+0.006
+2,776
+0.031
+0.007
+MATURITY
+7,119
+0.349
+0.207
+2,822
+0.343
+0.193
+NO_LOAN
+7,120
+0.690
+1.000
+2,825
+0.647
+1.000
+N_FINCOV
+7,120
+0.471
+0.000
+2,825
+0.526
+0.000
+N_GENCOV
+7,120
+1.044
+0.000
+2,825
+1.228
+0.000
+BigN
+7,120
+0.855
+1.000
+2,825
+0.880
+1.000
+CAPXACQ
+6,778
+0.095
+0.057
+2,645
+0.090
+0.049
+REPURCHASE
+6,778
+0.022
+0.000
+2,645
+0.022
+0.000
+DIVPAY
+6,778
+0.007
+0.000
+2,645
+0.006
+0.000
+EXCASH
+6,778
+20.005
+20.017
+2,645
+20.016
+20.026
+R – RB
+6,352
+0.000
+20.088
+2,404
+0.013
+20.071
+DCASH
+6,352
+0.007
+0.002
+2,404
+0.008
+0.003
+DE
+6,352
+0.017
+0.006
+2,404
+0.020
+0.007
+DNA
+6,352
+0.004
+0.028
+2,404
+0.012
+0.028
+DRD
+6,352
+0.000
+0.000
+2,404
+20.001
+0.000
+(continued)
+296
+Journal of Accounting, Auditing & Finance
+
+=== PDF p.8 (journal p.297) ===
+Panel A presents the results for all restatement firms and matched control firms. The
+increase in CASH for the restatement firms is 0.016 (0.179 2 0.163), significant at the 1%
+level based on both the t test (t = 4.58) and the Wilcoxon rank sum test (Z = 4.86). In con-
+trast, the change in CASH is not significantly different from 0 for the matched control
+firms. The difference in the change in CASH between the restatement and control firms is
+significant at the 1% level (t = 3.22; Z = 3.30). We repeat this test for the error restatements
+(Panel B) and irregularity restatements (Panel C) separately. Both sets of firms experience
+a significant increase in cash holdings after the restatement, but the matched control firms
+do not. The difference in the change in CASH is also statistically significant.
+Multivariate Regression Analysis
+Table 3 presents results from multivariate regression investigating the average effects of
+accounting restatements on corporate cash holdings. Panel A presents results from the
+Table 1. (continued)
+Panel B: Summary Statistics.
+Variable
+Error sample
+Irregularity sample
+n
+Mean
+Median
+n
+Mean
+Median
+DI
+6,352
+0.000
+0.000
+2,404
+0.000
+0.000
+DD
+6,352
+0.000
+0.000
+2,404
+0.000
+0.000
+lagCASH
+6,352
+0.155
+0.084
+2,404
+0.145
+0.077
+L
+6,352
+0.199
+0.128
+2,404
+0.209
+0.139
+NF
+6,352
+0.003
+0.000
+2,404
+0.005
+20.001
+Note. CASH is defined as the ratio of cash and cash equivalent to total assets. POST is a dummy variable that equals
+1 for the post-restatement period, and 0 otherwise. Q is Tobin’s Q, SIZE is the natural logarithm of total assets, CF
+is the operating cash flow scaled by total assets. NWC is the net working capital scaled by total assets. LEV is the
+sum of long-term and short-term debts scaled by total assets. SIGMA is the industry volatility of cash flow, NSEG is
+the number of business segments, AGE is firm age, CAPX is capital expenditures scaled by total assets, ACQUISITION
+is acquisitions scaled by total assets, R&D is research and development expenditures scaled by sales, DIV is
+dividends scaled by total assets, DEBT_XFIN is external debt financing, EQUITY_XFIN is external equity financing,
+MATURITY is the proportion of long-term debt due within 3 years to total long-term debt. NO_LOAN is an
+indicator variable that equals 1 if there is no bank loan obtained in the fiscal year, and 0 otherwise. N_FINCOV is
+the weighted average of the number of financial covenants, and N_GENCOV is that of general covenants of all bank
+loans obtained in the fiscal year, where the weight is the deal amount of each loan. If no bank loan is borrowed,
+then N_FINCOV and N_GENCOV are set to 0. BigN is an indicator variable that equals 1 if the annual report is
+audited by one of the Big 5 (or 4) auditors and 0 otherwise. CAPXACQ is net capital expenditure plus acquisition
+(#CAPX – #SPPE + #AQC) scaled by lagged total assets (#AT). DIVPAY is cash dividends (#DV) scaled by lagged total
+assets. REPURCHASE is repurchase (#PRSTKC) scaled by lagged total assets. EXCASH is the residual value of annual
+regressions of CASH on Q, SIZE, CF, NWC, LEV, SIGMA, NSEG, AGE, and industry fixed effects using all nonfinancial
+firms in Compustat. R is stock return over the fiscal year, and RB is the benchmark portfolio return over the same
+period. We use the 25 Fama and French portfolios formed on size and book-to-market as the benchmark
+portfolio. DCASH is the change in cash and short-term investment. DE is the change in earnings, where earnings is
+defined as earnings before extraordinary items (#IB) plus interest expense (#XINT), deferred taxes (#TXDI), and
+investment tax credit (#ITCI). DNA is the change in noncash assets (#AT – #CHE). DRD is the change in R&D
+expenditures (#XRD), DI is the change in interest expenses (#XINT), DD is the change in dividends (#DVC). L is the
+total debt, defined as the sum of long-term debt (#DLTT) and short-term debt (#DLC). NF is net external financing,
+defined as total equity issuance (SSTK), minus repurchases (PRSTKC), plus debt issuance (DLTIS), minus debt
+redemption (DLTR). lagCASH is lagged cash and cash equivalent. DCASH, DE, DNA, DRD, DI, DD, L, NF, and lagCASH
+are scaled by lagged market value of equity. GAO = Government Accountability Office; SIC = Standard Industrial
+Classification code.
+Chen et al.
+297
+
+=== PDF p.9 (journal p.298) ===
+baseline regressions, and columns 1 and 2 present results for restatement and matched con-
+trol firms, respectively. The coefficient on POST in column 1 is positive and significant
+(0.029, t = 7.21), revealing that restatement firms significantly increase their cash holdings
+after restatements. Consistent with a general increasing trend in the cash holdings of U.S.
+firms (Bates et al., 2009), the coefficient on POST is also positive for the control firms
+(0.011, t = 2.20). Most importantly, the treatment effect of restatements is highly significant
+(0.018; p = .003).
+We repeat these tests separately for the error and irregularity restatement samples.
+Column 3 reveals that error firms experience a statistically significant increase in cash
+holdings. The coefficient on POST is positive and significant (0.020, t = 4.89). Column 4
+reveals that the control firms also experience an increase in cash holdings (0.011; t = 1.80),
+but the treatment effect is insignificant (0.009; p = .199). In column 5, the coefficient on
+POST for the irregularity firms is positive and highly significant (0.046, t = 4.84) and in
+column 6, the corresponding coefficient for the control firms is positive but smaller (0.012,
+t = 1.90). The treatment effect of irregularity-related restatements is significant (0.034; p =
+.002). These analyses reveal that the effect of accounting restatements on cash holdings is
+concentrated in the irregularity sample. The treatment effect of the restatements on cash
+Table 2.
+Univariate Tests.
+Mean value of CASH
+Test of difference
+Pre-restatement
+[1]
+Post-restatement
+[2]
+Post–pre
+[3]
+t statistics
+[4]
+Z statistics
+[5]
+Panel A: All restatements
+Restatement firms (R)
+0.163
+0.179
+0.016
+4.58***
+4.86***
+Matched firms (C)
+0.168
+0.169
+0.001
+0.27
+0.86
+(R) – (C)
+20.005
+0.011
+0.016
+3.22***
+3.30***
+Panel B: Restatements due to errors
+Restatement firms (R)
+0.162
+0.175
+0.014
+3.24***
+3.16***
+Matched firms (C)
+0.168
+0.168
+0.000
+0.01
+0.43
+(R) – (C)
+20.006
+0.007
+0.014
+2.36**
+2.14**
+Panel C: Restatements due to irregularities
+Restatement firms (R)
+0.166
+0.189
+0.023
+3.47***
+4.07***
+Matched firms (C)
+0.167
+0.170
+0.003
+0.50
+0.92
+(R) – (C)
+20.001
+0.019
+0.020
+2.33**
+2.81***
+Note. This table presents the results of the univariate tests of the change in CASH after the restatements. CASH is
+defined as cash and short-term investment scaled by total assets. For each restatement firm and its matched
+control firm, we compute the average value of CASH in the pre- and post-restatement periods. The first row in
+each panel presents the mean value of the average CASH for the restatement firms in the pre- (column 1) and
+post-restatement periods (column 2), the difference between the post- and pre-restatement periods (column 3),
+and the t statistics of the t test (column 4) and the Z statistics of the Wilcoxon rank sum test (column 5) for the
+null hypothesis that the difference between the post-restatement period and the pre-restatement period (column
+3) equals 0. The second row in each panel presents the corresponding statistics for the matched firms, and the
+third row presents the corresponding statistics for the difference between the matched pair. The sample in Panel
+A includes all restatement and matched control firms, and the sample in Panel B (C) includes all restatements
+related to errors (irregularities) and the corresponding matched control firms.
+*, **, and *** indicate significance at the 10%, 5%, and 1% levels, respectively.
+298
+Journal of Accounting, Auditing & Finance
+
+=== PDF p.10 (journal p.299) ===
+holdings is also economically significant. For example, the results in columns 5 and 6
+reveal that the average increase in cash holdings is 3.4% of total assets greater for irregular-
+ity firms than for the control firms. In addition, the increase in cash holdings relative to the
+pre-restatement level is approximately 20% higher for the irregularity firms than for the
+control firms.1
+Opler et al. (1999) show that cash holdings are associated with investments and divi-
+dends. In addition, recent studies find that accounting restatements affect firms’ financing
+behavior (Chen et al., 2013; Graham et al., 2008), which may affect their cash holdings
+(Harford, Klasa, & Maxwell, 2014). In the baseline regression, we do not control for invest-
+ments and dividends because these variables are jointly determined with cash holdings
+(Duchin, 2010). However, as a robustness check, we test whether the results in Panel A
+hold after controlling for variables related to investments, external financing, and divi-
+dends. The results, reported in Panel B of Table 3, are qualitatively similar. CAPX is capital
+expenditure (#CAPX) scaled by total assets, ACQUISITION is acquisition (#AQC) scaled
+by total assets, R&D is research and development (#XRD) scaled by total sales (#SALE),
+and DIV is dividends (#DVC) scaled by total assets. DEBT_XFIN is net long-term debt
+issuance (#DLTIS 2 #DLTR) plus change in current debt (#DLCCH) scaled by total assets
+(#AT). EQUITY_XFIN is sale of common and preferred stock (#SSTK) scaled by total
+assets. MATURITY is the ratio of long-term debt due within 3 years (sum of #DD1, #DD2,
+and #DD3) to total long-term debt (#DLTT + #DD1). N_FINCOV is the weighted average
+number of financial covenants, and N_GENCOV is the weighted average number of general
+covenants for all bank loans obtained in the fiscal year, where the weight is the deal
+amount of each loan, both set to 0 when no bank loan was obtained. NO_LOAN is an indi-
+cator variable that equals 1 if no bank loan was obtained in the fiscal year, and 0 otherwise.
+We also include a Big-N auditor (BigN) indicator because the proportion of firms audited
+by the Big-N differs significantly between the restatement and control firms (Table A1).
+The increase in cash holdings is significantly greater for the restatement firms than for the
+control firms. In addition, the effect is concentrated in the sample of restatements related to
+irregularities, and its economic significance is similar to that inferred from Panel A.
+Cross-Sectional Analyses
+Findings in Table 3 are consistent with the view that both increased precautionary savings
+concerns and strengthened control increase cash holdings. However, it is possible that the
+strengthened control reduces cash holdings, but the effect is weaker than that of increased
+precautionary savings concerns. Thus, in this section, we conduct cross-sectional analyses
+to separate the precautionary savings and strengthened shareholder control hypotheses.
+Precautionary savings. The precautionary savings hypothesis predicts that firms hold cash
+to insure against future shortfalls which could prevent them from investing in profitable
+projects (Opler et al., 1999). According to this hypothesis, corporate cash holdings should
+be more sensitive to information asymmetry when the risk of internal funds running out in
+future periods is higher (Acharya et al., 2007). Therefore, the increase in cash holdings
+after restatements should be greater when the demand for precautionary savings is higher.
+The demand for precautionary savings is determined by the joint distribution of invest-
+ment opportunities and internal cash flows over time (Duchin, 2010). Other things being
+equal, the demand is larger when future cash flows and investment opportunities are more
+volatile, and when future internal funds and investment opportunities tend to arrive at
+Chen et al.
+299
+
+=== PDF p.11 (journal p.300) ===
+Table 3.
+Average Effect of Accounting Restatements on Cash Holdings.
+Panel A: Baseline Model.
+Variable
+All restatements
+Restatements related to errors
+Restatements related to irregularities
+Restatement firms
+Control firms
+Restatement firms
+Control firms
+Restatement firms
+Control firms
+[1]
+[2]
+[3]
+[4]
+[5]
+[6]
+POST
+0.029***
+0.011**
+0.020***
+0.011*
+0.046***
+0.012*
+(7.21)
+(2.20)
+(4.89)
+(1.80)
+(4.84)
+(1.90)
+Test of difference in the coefficient of POST
+[1] 2 [2]
+[3] 2 [4]
+[5] 2 [6]
+Coefficient difference
+0.018***
+0.009
+0.034***
+[p value]
+[.003]
+[.199]
+[.002]
+Control variables
+Q
+0.009***
+0.011***
+0.005**
+0.009***
+0.017***
+0.013***
+(3.65)
+(4.32)
+(2.10)
+(3.51)
+(2.66)
+(3.25)
+SIZE
+20.024***
+20.004
+20.018**
+20.006
+20.035***
+0.001
+(23.38)
+(20.72)
+(22.00)
+(20.85)
+(23.12)
+(0.09)
+CF
+0.097***
+0.007
+0.105***
+0.014
+0.064
+20.010
+(3.93)
+(0.30)
+(3.83)
+(0.51)
+(1.32)
+(20.19)
+NWC
+20.325***
+20.430***
+20.347***
+20.432***
+20.287***
+20.430***
+(211.14)
+(213.59)
+(29.43)
+(210.18)
+(25.32)
+(27.77)
+LEV
+20.103***
+20.116***
+20.136***
+20.108***
+20.048*
+20.139***
+(25.46)
+(26.08)
+(25.44)
+(24.31)
+(21.70)
+(24.31)
+SIGMA
+0.656
+1.013***
+0.352
+1.143***
+1.421**
+0.732
+(1.49)
+(2.88)
+(0.66)
+(2.80)
+(2.13)
+(1.39)
+NSEG
+20.001**
+20.001
+20.001
+20.002
+20.002*
+20.001
+(21.99)
+(21.35)
+(21.59)
+(21.63)
+(21.80)
+(20.36)
+AGE
+20.044***
+20.031***
+20.032**
+20.028**
+20.069**
+20.039**
+(23.50)
+(22.88)
+(22.40)
+(22.32)
+(22.35)
+(22.17)
+Firm fixed effects
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Adjusted R2
+.156
+.141
+.157
+.134
+.180
+.162
+n
+4,941
+5,004
+3,550
+3,570
+1,391
+1,434
+(continued)
+300
+
+=== PDF p.12 (journal p.301) ===
+Table 3.
+(continued)
+Panel B: Expanded Model.
+Variable
+All restatements
+Restatements related to errors
+Restatements related to irregularities
+Restatement firms
+Control firms
+Restatement firms
+Control firms
+Restatement firms
+Control firms
+[1]
+[2]
+[3]
+[4]
+[5]
+[6]
+POST
+0.025***
+0.011**
+0.017***
+0.009*
+0.041***
+0.014**
+(6.83)
+(2.18)
+(3.96)
+(1.67)
+(4.64)
+(2.26)
+Test of difference in the coefficient of POST
+[1] 2 [2]
+[3] 2 [4]
+[5] 2 [6]
+Coefficient difference
+0.014**
+0.008
+0.027***
+p value
+[.012]
+[.300]
+[.008]
+Control variables
+Q
+0.007***
+0.008***
+0.004
+0.007***
+0.012**
+0.011***
+(2.89)
+(3.80)
+(1.41)
+(2.97)
+(2.13)
+(2.90)
+SIZE
+20.020***
+20.005
+20.014
+20.005
+20.029***
+0.000
+(22.75)
+(20.72)
+(21.61)
+(20.72)
+(22.64)
+(0.01)
+CF
+0.185***
+0.101***
+0.192***
+0.110***
+0.152***
+0.087
+(8.50)
+(3.46)
+(6.73)
+(3.53)
+(3.48)
+(1.32)
+NWC
+20.316***
+20.415***
+20.336***
+20.425***
+20.281***
+20.409***
+(29.87)
+(213.54)
+(28.51)
+(210.28)
+(25.06)
+(27.20)
+LEV
+20.117***
+20.145***
+20.154***
+20.141***
+20.064**
+20.160***
+(25.98)
+(27.01)
+(26.25)
+(25.45)
+(22.28)
+(24.83)
+SIGMA
+0.510
+0.794**
+0.263
+0.954**
+1.025*
+0.370
+(1.21)
+(2.45)
+(0.51)
+(2.38)
+(1.83)
+(0.79)
+NSEG
+20.002**
+20.001
+20.001*
+20.002**
+20.002*
+0.000
+(22.11)
+(21.61)
+(21.66)
+(22.06)
+(21.69)
+(20.29)
+AGE
+20.048***
+20.041***
+20.036***
+20.037***
+20.071***
+20.056***
+(23.97)
+(23.55)
+(22.64)
+(22.77)
+(22.61)
+(23.05)
+CAPX
+20.468***
+20.436***
+20.472***
+20.448***
+20.456***
+20.435***
+(28.90)
+(29.12)
+(27.60)
+(26.63)
+(24.83)
+(24.04)
+ACQUISITION
+20.275***
+20.354***
+20.328***
+20.362***
+20.184***
+20.349***
+(29.56)
+(28.81)
+(29.89)
+(27.90)
+(23.91)
+(26.81)
+(continued)
+301
+
+=== PDF p.13 (journal p.302) ===
+Table 3. (continued)
+Panel B: Expanded Model.
+Variable
+All restatements
+Restatements related to errors
+Restatements related to irregularities
+Restatement firms
+Control firms
+Restatement firms
+Control firms
+Restatement firms
+Control firms
+[1]
+[2]
+[3]
+[4]
+[5]
+[6]
+R&D
+0.068***
+0.068***
+0.049**
+0.071**
+0.084*
+0.068
+(2.67)
+(2.71)
+(2.29)
+(2.15)
+(1.75)
+(1.61)
+DIV
+0.260*
+20.226
+0.251
+20.003
+0.292
+20.952***
+(1.94)
+(21.34)
+(1.36)
+(20.01)
+(1.16)
+(23.66)
+DEBT_XFIN
+0.176***
+0.242***
+0.206***
+0.241***
+0.130**
+0.248***
+(7.23)
+(9.77)
+(9.23)
+(9.05)
+(2.37)
+(5.95)
+EQUITY_XFIN
+0.194***
+0.187***
+0.192***
+0.189***
+0.183***
+0.189***
+(7.68)
+(6.34)
+(5.45)
+(7.18)
+(3.56)
+(2.49)
+MATURITY
+20.012**
+20.009**
+20.009
+20.010**
+20.016
+20.004
+(22.21)
+(22.12)
+(21.48)
+(22.16)
+(21.64)
+(20.34)
+NO_LOAN
+0.013***
+0.007**
+0.011**
+0.006*
+0.017***
+0.009
+(4.18)
+(2.15)
+(2.45)
+(1.69)
+(2.61)
+(1.17)
+N_FINCOV
+20.003*
+0.000
+20.003
+20.001
+20.004
+0.005
+(21.86)
+(0.01)
+(21.25)
+(20.58)
+(21.11)
+(0.96)
+N_GENCOV
+0.002*
+20.001
+0.001
+0.000
+0.002
+20.003
+(1.86)
+(20.95)
+(1.51)
+(20.13)
+(1.06)
+(21.64)
+BigN
+0.007
+20.017*
+0.005
+20.023**
+0.011
+0.013
+(0.72)
+(21.75)
+(0.41)
+(22.03)
+(0.83)
+(0.83)
+Firm fixed effects
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Adjusted R2
+.230
+.230
+.235
+.221
+.237
+.261
+n
+4,855
+4,900
+3,490
+3,494
+1,365
+1,406
+Note. The dependent variable is CASH, defined as the ratio of cash and cash equivalent to total assets. POST is a dummy variable that equals 1 for the post-restatement period,
+and 0 otherwise. Q is Tobin’s Q, SIZE is the natural logarithm of total assets, CF is operating cash flow scaled by total assets. NWC is net working capital scaled by total assets.
+LEV is the sum of long-term and short-term debts scaled by total assets. SIGMA is the industry volatility of cash flow, NSEG is the number of business segments, AGE is firm age,
+CAPX is capital expenditures scaled by total assets, ACQUISITION is acquisitions scaled by total assets, R&D is research and development expenditures scaled by sales, DIV is
+dividends scaled by total assets, DEBT_XFIN is external debt financing, EQUITY_XFIN is external equity financing, MATURITY is the proportion of long-term debt due within 3
+years to total long-term debt. NO_LOAN is an indicator variable that equals 1 if there is no bank loan obtained in the fiscal year, and 0 otherwise. N_FINCOV is the weighted
+average of the number of financial covenants, and N_GENCOV is that of general covenants of all bank loans obtained in the fiscal year, where the weight is the deal amount of
+each loan. If no bank loan is borrowed, then N_FINCOV and N_GENCOV are set to 0. BigN is an indicator variable that equals 1 if the annual report is audited by one of the Big 5
+(or 4) auditors and 0 otherwise. The t statistics (in parentheses) and p values (in brackets) are based on standard errors adjusted for clustering at both the matched pair and
+year levels, with the regressions of the restatement and control samples estimated simultaneously.
+*, **, and *** indicate significance at the 10%, 5%, and 1% levels, respectively.
+302
+
+=== PDF p.14 (journal p.303) ===
+different times (i.e., when the correlation is low).2 We construct a proxy for the demand for
+precautionary savings by considering three variables that characterize the joint distribution
+of internal funds and investment opportunities (Duchin, 2010). The first variable is the
+industry volatility of operating cash flows (CF), defined as the standard deviation of the
+industry-median CF over the previous 10 years.3 The second variable is the industry volati-
+lity of investment opportunities, defined as the standard deviation of the industry-median
+Tobin’s Q over the previous 10 years. The third variable is the negative correlation between
+the industry-median CF and the industry-median Tobin’s Q over the previous 10 years. For
+each variable, a higher value suggests higher demand for precautionary savings, other
+things being equal. In each year, we convert the above three variables into percentile ranks.
+Our composite measure of demand for precautionary savings (PS_DEMAND) is constructed
+as the mean of the three ranks.
+We partition the irregularity firms into two subsamples (high and low) based on
+PS_DEMAND, and we assign the matched control firms to the same subsample as the cor-
+responding restatement firms. We reestimate the baseline regressions within each parti-
+tioned sample and present the results in Panel A of Table 4 (reporting the statistics for
+POST for brevity).
+For
+the
+subsample
+of
+firms
+with
+high
+precautionary
+savings
+demand
+(mean
+PS_DEMAND = 0.769), the treatment effect of irregularity restatements is larger and
+highly significant (0.064; p = .001), but for firms with low demand for precautionary sav-
+ings (mean PS_DEMAND = 0.391), the treatment effect is smaller (0.016; p = .226). A
+formal test reveals that the difference in the treatment effects is significant (0.048; p =
+.031). This provides evidence consistent with the precautionary savings hypothesis.
+We also partition the sample based on each individual measure of the demand for pre-
+cautionary savings. The results, reported in Panel B, are qualitatively similar but less signif-
+icant. One possible reason is that the demand for precautionary savings is determined by
+the joint distribution of internal funds and investment opportunities, but each individual
+measure only captures one dimension of the joint distribution, resulting in lower testing
+power.
+Strengthened shareholder control. As discussed previously, strengthened shareholder con-
+trol over managers can increase or decrease cash holdings (Harford et al., 2008). To further
+investigate the effect of strengthened shareholder control, we partition the sample based on
+proxies for the increase in shareholder control. We consider three proxies. The first proxy
+is a dummy variable for whether the irregularity firms replace their CEO/CFO in the year
+of or after the restatement announcement because newly appointed managers may be sub-
+jected to more monitoring (Coles, Daniel, & Naveen, 2014). Firms that replace the manage-
+ment team are also more likely to reduce overinvestment planned by the previous
+management.
+The
+second
+proxy
+is
+the
+decrease
+in
+option
+compensation
+of
+the
+CEO
+(DECREASE_OPTION) because Cheng and Farber (2008) suggest that restatements are
+linked to excessive option compensation, and restatement firms that decrease the use of
+option compensation experience better post-restatement performance improvements. We
+define
+DECREASE_OPTION
+as
+the
+average
+percentage
+of
+option
+compensation
+(OPTION_PER) for the CEO over years t 2 3 to t 2 1 minus OPTION_PER in year t +
+1.4 A positive (negative) value for DECREASE_OPTION indicates a decrease (an increase)
+in options as a percentage of total CEO compensation.
+Chen et al.
+303
+
+=== PDF p.15 (journal p.304) ===
+Table 4.
+Cross-Sectional Analysis to Test the Precautionary Savings Hypothesis.
+Panel A: Partition Based on the Composite Measure PS_DEMAND.
+Coefficient (t stat) of POST in
+each subsample
+Partitioned by PS_DEMAND
+Difference (high – low)
+[p value]
+High
+(Mean = 0.769)
+Low
+(Mean = 0.391)
+Irregularity firms (R)
+0.070***
+0.029***
+0.041**
+(4.26)
+(2.97)
+[.024]
+n = 689
+n = 702
+Control firms (C)
+0.006
+0.013
+20.007
+(0.64)
+(1.32)
+[.607]
+n = 713
+n = 721
+Difference (R – C)
+0.064***
+0.016
+0.048**
+[p value]
+[.001]
+[.226]
+[.031]
+Panel B: Partition Based on Individual Measures of Demand for Precautionary Savings.
+Coefficient (t stat) of POST in
+each subsample
+Partitioned by IND_STDCF
+Difference (high – low)
+[p value]
+High
+(Mean = 0.026)
+Low
+(Mean = 0.014)
+Irregularity firms (R)
+0.048***
+0.041***
+0.007
+(3.70)
+(3.44)
+[.661]
+n = 698
+n = 693
+Control firms (C)
+0.007
+0.014
+20.007
+(0.74)
+(1.56)
+[.609]
+n = 718
+n = 716
+Difference (R – C)
+0.041***
+0.027*
+0.013
+[p value]
+[.009]
+[.077]
+[.525]
+Coefficient (t stat) of POST in
+each subsample
+Partitioned by IND_STDQ
+Difference (high – low)
+[p value]
+High
+(Mean = 0.427)
+Low
+(Mean = 0.143)
+Irregularity firms (R)
+0.071***
+0.028***
+0.043**
+(4.50)
+(2.94)
+[.016]
+n = 692
+n = 699
+Control firms (C)
+0.013
+0.011
+0.002
+(1.22)
+(1.20)
+[.854]
+n = 713
+n = 721
+Difference (R – C)
+0.058***
+0.017
+0.041*
+[p value]
+[.003]
+[.134]
+[.057]
+Coefficient (t stat) of POST
+in each subsample
+Partitioned by NEG_IND_CORR
+Difference (high – low)
+[p value]
+High
+(Mean = 0.512)
+Low
+(Mean = 20.137)
+Irregularity firms (R)
+0.060***
+0.034***
+0.026
+(4.04)
+(3.43)
+[.145]
+n = 714
+n = 677
+(continued)
+304
+Journal of Accounting, Auditing & Finance
+
+=== PDF p.16 (journal p.305) ===
+The third proxy is the decrease in overinvestment (DECREASE_XINV). A detailed defi-
+nition is provided in the note to Table 5. A positive (negative) value for DECREASE_XINV
+indicates a decrease (an increase) in overinvestment. An advantage of DECREASE_XINV is
+that it captures the effect of all governance mechanisms on overinvestment.
+Panel A of Table 5 reports the results from partitions based on CEO/CFO turnover. The
+treatment effect for firms without CEO/CFO replacement is positive and significant (0.038;
+p = .005), and the effect is insignificant for firms with CEO/CFO replacement (0.024; p =
+.259), but the difference in the treatment effects between the two subsamples is not signifi-
+cant (p = .540).
+Panel B reveals that the treatment effect of irregularity restatements is larger (0.059, p =
+.001) for firms with low DECREASE_OPTION (Mean = 20.155) than for firms with high
+DECREASE_OPTION (Mean = 0.323), where the treatment effect is insignificant (0.016,
+p = .369). The difference in the treatment effect is significant (p = .083).
+Panel C presents the results after splitting the sample based on DECREASE_XINV. For
+firms with low DECREASE_XINV (Mean = 20.154), the treatment effect is larger and
+highly significant (0.065, p \ .001). In contrast, for firms with high DECREASE_XINV
+(Mean = 0.169), the treatment effect is insignificant (0.018; p = .216), and the difference is
+significant (p = .051).
+Overall, the results in Tables 3 through 5 suggest that there are two mechanisms through
+which restatements affect cash holdings. On one hand, restatements increase the demand
+for precautionary savings. This effect leads firms to increase cash holdings. On the other
+hand, shareholders tighten control over managers. This effect leads to a decrease in cash
+holdings. However, the first effect (precautionary savings) is greater than the second (share-
+holder control), resulting in a net increase in cash holdings.
+Alternative
+explanation—Managers’
+uncertainty
+about
+investment
+opportunities.
+Restatements can increase managers’ uncertainty about investment opportunities. Real
+option theory (Dixit & Pindyck, 1994) suggests that this uncertainty decreases a firm’s
+(partially) irreversible investment. The effect of uncertainty is more pronounced for
+Table 4.
+(continued)
+Control firms (C)
+0.008
+0.015*
+20.007
+(0.94)
+(1.80)
+[.548]
+n = 731
+n = 703
+Difference (R – C)
+0.052***
+0.019
+0.033
+[p value]
+[.003]
+[.132]
+[.132]
+Note. The dependent variable is CASH, defined as the ratio of cash and cash equivalent to total assets. POST is a
+dummy variable that equals 1 for the post-restatement period, and 0 otherwise. Q is Tobin’s Q, SIZE is the natural
+logarithm of total assets, CF is operating cash flow scaled by total assets. NWC is net working capital scaled by
+total assets. LEV is sum of long-term and short-term debts scaled by total assets. SIGMA is the industry volatility of
+cash flow, NSEG is the number of business segments, and AGE is firm age. IND_STDCF is standard deviation of
+industry (based on Fama and French’s 48-industry classification) median operating cash flows. IND_STDQ is
+standard deviation of industry-median Tobin’s Q. NEG_IND_CORR is the negative correlation between industry-
+median operating cash flows and industry-median Tobin’s Q. PS_DEMAND is the mean value of the percentile ranks
+of IND_STDCF, IND_STDQ, and NEG_IND_CORR. The t statistics (in parentheses) and p values (in brackets) are
+based on standard errors adjusted for clustering at both the matched pair and year levels, with the regressions of
+the restatement and control samples estimated simultaneously.
+*, **, and *** indicate significance at the 10%, 5%, and 1% levels, respectively.
+Chen et al.
+305
+
+=== PDF p.17 (journal p.306) ===
+Table 5.
+Cross-Section Analysis to Test the Strengthened Shareholder Control Hypothesis.
+Panel A: Partition Based on CEO/CFO Replacement After the Restatements.
+Coefficient (t stat) of POST in
+each subsample
+Do the irregularity firms replace
+CEO/CFO till year + 1?
+Difference (yes – no)
+[p value]
+Yes
+No
+Irregularity firms (R)
+0.041**
+0.049***
+20.008
+(2.51)
+(4.15)
+[.665]
+n = 527
+n = 847
+Control firms (C)
+0.017
+0.010
+0.007
+(1.60)
+(1.43)
+[.600]
+n = 537
+n = 884
+Difference (R – C)
+0.024
+0.038***
+20.014
+[p value]
+[.259]
+[.005]
+[.540]
+Panel B: Partition by Decrease in the Portion of Option Pay of the CEO (DECREASE_OPTION).
+Coefficient (t stat) of POST in
+each subsample
+Partitioned by DECREASE_OPTION
+Difference (high – low)
+[p value]
+High
+(Mean = 0.323)
+Low
+(Mean = 20.155)
+Irregularity firms (R)
+0.028**
+0.061***
+20.033*
+(2.09)
+(4.40)
+[.088]
+n = 617
+n = 620
+Control firms (C)
+0.012
+0.002
+0.010
+(1.02)
+(0.25)
+[.486]
+n = 640
+n = 623
+Difference (R – C)
+0.016
+0.059***
+20.043*
+[p value]
+[.369]
+[.001]
+[.083]
+Panel C: Partition Based on Decrease in Overinvestment After the Restatements (DECREASE_XINV).
+Coefficient (t stat) of POST in
+each subsample
+Partitioned by DECREASE_XINV
+Difference (high – low)
+[p value]
+High
+(Mean = 0.169)
+Low
+(Mean = 20.154)
+Irregularity firms (R)
+0.034***
+0.069***
+20.035**
+(3.44)
+(4.75)
+[.050]
+n = 656
+n = 658
+Control firms (C)
+0.016
+0.004
+0.012
+(1.48)
+(0.49)
+[.410]
+n = 658
+n = 674
+Difference (R – C)
+0.018
+0.065***
+20.047*
+[p value]
+[.216]
+[.000]
+[.051]
+Note. The dependent variable is CASH, defined as the ratio of cash and cash equivalent to total assets. POST is a
+dummy variable that equals 1 for the post-restatement period, and 0 otherwise. Q is Tobin’s Q, SIZE is the natural
+logarithm of total assets, CF is operating cash flow scaled by total assets. NWC is net working capital scaled by
+total assets. LEV is the sum of long-term and short-term debts scaled by total assets. SIGMA is the industry
+volatility of cash flow, NSEG is the number of business segments, and AGE is firm age. DECREASE_OPTION is
+decrease in the percentage of option compensation of CEO (OPTION_PER), measured by the mean OPTION_PER of
+years 23 to 21 minus OPTION_PER of year + 1. A positive (negative) number of DECREASE_OPTION means
+decrease (increase) in the percentage of option compensation. OPTION_PER is measured as the ratio of
+306
+Journal of Accounting, Auditing & Finance
+
+=== PDF p.18 (journal p.307) ===
+investments that are more irreversible (Badertscher, Shroff, & White, 2013). To the extent
+that any funds reallocated from investment opportunities are saved as cash, restatements
+will increase firms’ cash holdings.5 In this case, the increase in cash holdings should be
+more pronounced for firms operating in industries where investments are more irreversible.
+We
+follow
+Badertscher
+et
+al.
+(2013)
+and
+measure
+investment
+irreversibility
+(INV_IRREVERS) as industry return comovement.6 An asset’s liquidity, defined as the gap
+between its selling price and its value in best use, depends on how other firms in the same
+industry are performing (Shleifer & Vishny, 1992). If firms that are likely to be the next
+best users of the assets for sale are also experiencing financial difficulty, it will be difficult
+for a selling firm to find a buyer within the industry willing to pay a price close to the
+value in best use. Thus, the seller may have to look to buyers in different industries (i.e.,
+outsiders). Because outsiders know less than firms in the industry about the quality of the
+assets, they will only buy at a considerably lower price than the value in best use. This
+makes asset illiquidity (i.e., investment irreversibility) higher in industries that are more
+often hit by common shocks than in other industries.
+We partition the sample based on industry investment irreversibility (INV_IRREVERS)
+and present key results from our tests in Table 6. The treatment effect of irregularity restate-
+ments on cash holdings for the subsample with high INV_IRREVERS (Mean = 0.252) is
+0.032 (p = .059), but the treatment effect is similar (0.034, p = .017) for the subsample with
+low INV_IRREVERS (Mean = 0.122) and the difference between the two subsamples is insig-
+nificant (p = .946). This suggests that the increase in cash holdings after restatements is not
+driven by an increase in management uncertainty about investment opportunities.
+Irregularity Restatements and How Excess Cash Is Deployed
+To further understand the channels through which the restatements affect cash holdings, we
+examine how restatements affect the way in which firms deploy excess cash. Specifically,
+we examine changes in the sensitivity of investments and payouts to excess cash. The pre-
+cautionary savings hypothesis suggests that investment is more sensitive to cash holdings
+for more financially constrained firms, suggesting an increase in the sensitivity of invest-
+ment to excess cash after restatements. In contrast, the strengthened shareholder control
+hypothesis predicts the opposite because managers are less likely to waste cash.
+If strengthened shareholder control reduces the private benefits of holding excess cash
+or allows shareholders to force managers to disgorge excess cash, we would observe a
+Black2Scholes value of option grant to total compensation. We collect CEO compensation data from Execcomp.
+For firms not covered by Execcomp, we collect the compensation data manually from proxy statements.
+DECREASE_XINV is defined as the mean XINV over years 23 to 21 minus the mean XINV over years + 1 to + 3. A
+positive (negative) number of DECREASE_XINV implies decrease (increase) in XINV. Following McNichols and
+Stubben (2008), XINV is defined as the residual term from the following annual regression estimated within each
+industry based on Fama and French’s (1997) 48-industry classification. INVt = a + b1Qt1 + b2Qt13QTR2 +
+b3Qt13QTR3 + b4Qt13QTR4 + b5CFt + b6GRWt1 + b7INVt1 + et. We follow McNichols and Stubben (2008), and
+define INV as capital expenditure scaled by lagged net property, plant, and equipment. GRW is the natural logarithm
+of the assets growth rate. QTR2, QTR3, and QTR4 are indicator variables that equal 1 if Qt21 is in the second, third,
+and fourth quartile within the industry, and 0 otherwise. The t statistics (in parentheses) and p values (in brackets)
+are based on standard errors adjusted for clustering at both the matched pair and year levels, with the regressions
+of the restatement and control samples estimated simultaneously.
+*, **, and *** indicate significance at the 10%, 5%, and 1% levels, respectively.
+Chen et al.
+307
+
+=== PDF p.19 (journal p.308) ===
+higher sensitivity of payouts to excess cash after restatements. Higher information asymme-
+try also implies a stronger need to mitigate investor concerns about agency conflicts and/or
+adverse selection (Hail, Tahoun, & Wang, 2014). Therefore, the precautionary savings
+hypothesis also predicts an increase in the sensitivity of payouts to excess cash after restate-
+ments. In contrast, if shareholders allow managers to hold more cash reserves when they
+have tighter control (Harford et al., 2008), the sensitivity of payouts to excess cash is
+expected to be lower after restatements.
+We estimate the following regression separately for the irregularity firms and control
+firms:
+DECISIONi, t = ai + b1EXCASHi, t1 + b2POSTi, t + b3POSTi, t3EXCASHi, t1
++ CONTROLS + ei, t,
+ð2Þ
+where DECISION is CAPXACQ, DIVPAY, or REPURCHASE. CAPXACQ is the sum of net
+capital expenditures and acquisitions (#CAPX 2 #SPPE + #ACQ), DIVPAY is cash divi-
+dends (#DV), and REPURCHASE is the sum of the repurchase of preferred and common
+Table 6.
+Investment Irreversibility and the Effect of Restatements on Cash Holdings.
+Coefficient (t stat) of POST in each subsample
+Partitioned by INV_IRREVERS
+Difference (high – low)
+[p value]
+High
+(Mean = 0.252)
+Low
+(Mean = 0.122)
+Irregularity firms (R)
+0.056***
+0.031***
+0.025
+(4.09)
+(2.93)
+[.188]
+n = 658
+n = 656
+Control firms (C)
+0.024**
+20.003
+0.027*
+(2.25)
+(20.32)
+[.053]
+n = 674
+n = 658
+Difference (R – C)
+0.032*
+0.034**
+20.002
+[p value]
+[.059]
+[.017]
+[.946]
+Note. The dependent variable is CASH, defined as the ratio of cash and cash equivalent to total assets. POST is a
+dummy variable that equals 1 for the post-restatement period, and 0 otherwise. Q is Tobin’s Q, SIZE is the natural
+logarithm of total assets, CF is operating cash flow scaled by total assets. NWC is net working capital scaled by
+total assets. LEV is the sum of long-term and short-term debts scaled by total assets. SIGMA is the industry
+volatility of cash flow, NSEG is the number of business segments, and AGE is firm age. INV_IRREVERS is industry
+investment irreversibility measured by industry return comovement. We follow Badertscher, Shroff, and White
+(2013) to compute industry return comovement for each industry (based on Fama and French, 1997, 48-industry
+classification) and each restatement announcement year. For each firm in the industry, we compute the partial
+correlation coefficient between monthly firm returns and monthly industry returns, controlling for the monthly
+market returns. We use the monthly return data in the 5 years before the restatement year and require at least
+30 observations. The industry returns are defined as the equal-weighted monthly returns of all firms in the same
+industry. The industry comovement is defined as the mean value of the partial correlation coefficients of all firms
+in the same industry. Higher industry comovement means that firms in the industry are likely to suffer common
+shocks more severely, and that idiosyncratic shocks are less important. Thus, high industry comovement implies
+higher industry investment irreversibility. Mean value of INV_IRREVERS of each subsample is reported. The t
+statistics (in parentheses) and p values (in brackets) are based on standard errors adjusted for clustering at both
+the matched pair and year levels, with the regressions of the restatement and control samples estimated
+simultaneously.
+*, **, and *** indicate significance at the 10%, 5%, and 1% levels, respectively.
+308
+Journal of Accounting, Auditing & Finance
+
+=== PDF p.20 (journal p.309) ===
+stocks (#PRSTKC). All three variables are scaled by lagged total assets. EXCASH is the
+residual term from the annual regression of cash holdings on Tobin’s Q (Q), firm size
+(SIZE), operating cash flows (CF), net working capital (NWC), leverage (LEV), industry
+cash flow volatility (SIGMA), number of business segments (NSEG), firm age (AGE), and
+industry fixed effects using all nonfinancial firms in Compustat. The optimal value of cash
+holdings is defined as the cash holdings predicted by the annual regressions. The control
+variables (CONTROLS) include Q, SIZE, CF, and LEV, as defined in the third section. To
+test for the effect of restatements on financial decisions, we focus on the difference in b3
+between the irregularity firms and control firms.
+The results are reported in Table 7. Panel A reveals that the increase in the sensitivity of
+CAPXACQ to excess cash for the irregularity firms is significantly greater than that for the
+matched control firms (p = .057). This is consistent with the notion that cash reserves are
+more valuable in reducing underinvestment after restatements, supporting the precautionary
+savings hypothesis. In contrast, the results do not support the shareholder control
+hypothesis.
+Panel B reveals that the increase in the sensitivity of dividend payout (DIVPAY) to
+excess cash after the restatements is not significantly different for the irregularity firms
+than for the control firms (p = .882). In contrast, Panel C reveals a greater increase in the
+sensitivity of REPURCHASE to excess cash for the irregularity firms than for the control
+firms (p = .033). These results jointly suggest that irregularity firms attempt to reduce
+investor concerns about agency problems by increasing the distribution of excess cash but
+do so in a way that avoids future payout commitments (Harford et al., 2008).
+Overall, the results suggest that the economic forces that incent firms to reduce their
+cash holdings become stronger after restatements. However, these forces are weaker than
+the increase in precautionary savings benefits, resulting in a net increase in cash.
+Irregularity Restatements and the Market Value of Cash Holdings
+Faulkender and Wang (2006) find that the value of cash holdings is greater for firms with
+tighter external financing constraints. Because accounting restatements magnify external
+financing constraints, we should observe an increase in the market value of cash holdings
+after restatements. However, investors may not place a higher value on cash holdings after
+restatements because restatements reveal agency problems, and Dittmar and Mahrt-Smith
+(2007) find that cash holdings have a lower market value when agency problems are more
+severe. Although internal governance and external discipline improve after restatements, it
+is not clear whether this is sufficient to offset the negative effect of perceived agency prob-
+lems. Keeping this caveat in mind, we estimate the following regressions separately for the
+irregularity firms and the control firms.
+Ri, t  RB
+i, t = h0 + h1POSTi, t + h2DCASHi, t + h3DCASHi, t3POSTi, t + CONTROL + ei, t,
+ð3Þ
+where Ri,t is the compound return of firm i over the fiscal year t, and RB
+i, t is the compound
+return of the benchmark portfolio over the same period. We use the 25 Fama and French
+portfolios formed on size and book-to-market as the benchmark. DCASHi,t is the change in
+cash and short-term investment from year t 2 1 to year t, scaled by the market value of
+common shares outstanding at the end of year t 2 1. We include the following control
+Chen et al.
+309
+
+=== PDF p.21 (journal p.310) ===
+variables (CONTROL): the change in earnings before extraordinary items plus interest,
+deferred tax credits, and investment tax credits (DEi,t), change in noncash assets (DNAi,t),
+change in R&D expenditures (DRDi,t), change in interest expense (DIi,t), change in total
+dividends (DDi,t), net external financing (NFi,t), lagged total cash (lagCASHi,t), and total
+debt (Li,t). We scale all control variables by the lagged market value of equity (MVi,t21).
+Following Faulkender and Wang (2006), we also include the interaction between DCASHi,t
+and lagged cash (CASHi,t21), and the interaction between DCASHi,t and total debt (Li,t).
+As seen in Table 8, the coefficient on DCASH 3 POST for the irregularity firms is sig-
+nificantly greater than that for the matched control firms (0.855; p = .002). Because prior
+studies about the relation between internal control weaknesses and the value of cash hold-
+ings present mixed evidence (Gao & Jia, 2016; Huang, Guo, Ma, & Zhang, 2015), we
+delete observations with material internal control weaknesses in their Sarbanes–Oxley Act
+Section 404 report. The results, reported in columns 3 and 4, are essentially the same, and
+are consistent with the precautionary savings hypothesis.
+Table 7.
+Irregularity Restatements and the Financial Decisions.
+Irregularity firms
+[1]
+Control firms
+[2]
+Difference ([1] 2 [2])
+[p value]
+Panel A: CAPXACQ
+CAPXACQi, t = ai + b1EXCASHi, t1 + b2POSTi, t + b3POSTi, t3EXCASHi, t1 + CONTROL + ei, t:
+POSTi,t 3 EXCASHi,t21
+0.092
+20.062
+0.154*
+(1.48)
+(21.23)
+[.057]
+Control variables and firm fixed effects
+Yes
+Yes
+Panel B: Dividend
+DIVPAYi, t = ai + b1EXCASHi, t1 + b2POSTi, t + b3POSTi, t3EXCASHi, t1 + CONTROL + ei, t:
+POSTi,t 3 EXCASHi,t21
+0.001
+0.003
+20.002
+(0.30)
+(0.39)
+[.882]
+Control variables and firm fixed effects
+Yes
+Yes
+Panel C: Repurchase
+REPURCHASEi, t = ai + b1EXCASHi, t1 + b2POSTi, t + b3POSTi, t3EXCASHi, t1 + CONTROL + ei, t:
+POSTi,t 3 EXCASHi,t21
+0.053***
+20.007
+0.060**
+(2.91)
+(20.30)
+[.033]
+Control variables and firm fixed effects
+Yes
+Yes
+Note. CAPXACQ is net capital expenditure plus acquisition (#CAPX – #SPPE + #AQC) scaled by lagged total assets
+(#AT). DIVPAY is cash dividends (#DV) scaled by lagged total assets. REPURCHASE is repurchase (#PRSTKC) scaled by
+lagged total assets. POST is a dummy variable that equals 1 for the post-restatement period, and 0 otherwise.
+Control variables (CONTROL) include Tobin’s Q (Q), the natural logarithm of total asset (SIZE), operating cash flow
+scaled by lagged total assets (CF), and the sum of long-term and short-term debts scaled by total assets (LEV).
+POST is a dummy variable that equals 1 for the post-restatement period, and 0 otherwise. EXCASH is the residual
+value of annual regressions of CASH on Q, SIZE, CF, NWC, LEV, SIGMA, NSEG, AGE (see the note to Table 3 for
+definition) and industry fixed effects using all nonfinancial firms in Compustat. The t statistics (in parentheses) and
+p values (in brackets) are based on standard errors adjusted for clustering at both the matched pair and year
+levels, with the regressions of the restatement and control samples estimated simultaneously.
+*, **, and *** indicate significance at the 10%, 5%, and 1% levels, respectively.
+310
+Journal of Accounting, Auditing & Finance
+
+=== PDF p.22 (journal p.311) ===
+Table 8.
+Change in the Market Value of Cash Holdings After Irregularity Restatements.
+Variable
+Including all observations
+Excluding observations identified as having material
+weaknesses in internal control system
+Irregularity firms
+[1]
+Control firms
+[2]
+Irregularity firms
+[3]
+Control firms
+[4]
+Coefficient
+t stat
+Coefficient
+t stat
+Coefficient
+t stat
+Coefficient
+t stat
+POST
+0.015
+(0.44)
+20.04
+(21.59)
+0.017
+(0.46)
+20.04
+(21.56)
+DCASH
+2.301***
+(3.98)
+1.826***
+2(5.84)
+2.514***
+(5.25)
+1.793***
+(5.62)
+DCASH 3 POST
+0.397
+(1.57)
+20.458*
+(21.67)
+0.476*
+(1.65)
+20.415
+(21.36)
+Test of difference in the coefficient of DCASH 3 POST
+[1] 2 [2]
+[3] 2 [4]
+Coefficient difference
+0.855***
+0.891***
+[p value]
+[.002]
+[.003]
+Control variables
+DE
+0.539***
+(4.16)
+0.826***
+(5.06)
+0.514***
+(3.87)
+0.824***
+(5.06)
+DNA
+0.172***
+(2.64)
+0.231***
+(3.59)
+0.152**
+(2.38)
+0.225***
+(3.47)
+DRD
+0.187
+(0.15)
+20.585
+(21.63)
+0.259
+(0.22)
+20.515
+(21.44)
+DI
+23.426***
+(23.76)
+22.317***
+(23.54)
+23.437***
+(23.23)
+22.216***
+(23.36)
+DD
+23.526
+(21.09)
+1.973
+(0.65)
+22.258
+(20.62)
+1.827
+(0.57)
+NF
+20.211*
+(21.92)
+20.132
+(21.29)
+20.251**
+(22.29)
+20.131
+(21.26)
+lagCASH
+0.766***
+(6.42)
+0.448***
+(3.31)
+0.779***
+2(6.77)
+0.489***
+(3.70)
+L
+20.403***
+(23.00)
+20.383***
+(23.87)
+20.397***
+(22.76)
+20.387***
+(23.86)
+DCASH 3 lagCASH
+20.846*
+(21.95)
+20.371
+(20.97)
+21.063***
+(22.63)
+20.196
+(20.57)
+DCASH 3 L
+22.344***
+(23.77)
+22.153***
+(23.61)
+22.474***
+(24.44)
+22.200***
+(23.78)
+Adjusted R2
+.244
+.194
+.249
+.195
+n
+1,095
+1,309
+991
+1,281
+Note. The dependent variable is R – RB, where R is stock return over the fiscal year, and RB is the benchmark portfolio return over the same period. We use the 25 Fama and
+French portfolios formed on size and book-to-market as the benchmark portfolio. POST is a dummy variable that equals 1 for the post-restatement period, and 0 otherwise.
+DCASH is the change in cash and short-term investment. DE is the change in earnings, where earnings is defined as earnings before extraordinary items (#IB) plus interest
+expense (#XINT), deferred taxes (#TXDI) and investment tax credit (#ITCI). DNA is the change in noncash assets (#AT – #CHE). DRD is the change in R&D expenditures
+(#XRD), DI is the change in interest expenses (#XINT), DD is the change in dividends (#DVC). L is total debt, defined as the sum of long-term debt (#DLTT) and short-term debt
+(#DLC). NF is net external financing, defined as total equity issuance (SSTK), minus repurchases (PRSTKC), plus debt issuance (DLTIS), minus debt redemption (DLTR). lagCASH is
+lagged cash scaled by market value of equity. All the above independent variables are scaled by the lagged market value of equity. POST is a dummy variable that equals 1 for the
+post-restatement period, and 0 otherwise. The t statistics (in parentheses) and p values (in brackets) are based on standard errors adjusted for clustering at both the matched
+pair and year levels, with the regressions of the restatement and control samples estimated simultaneously.
+*, **, and *** indicate significance at the 10%, 5%, and 1% levels, respectively.
+311
+
+=== PDF p.23 (journal p.312) ===
+Conclusion
+Using a difference-in-differences approach, we find that firms increase their cash holdings
+after announcements of accounting restatements. The effect is concentrated in restatements
+related to accounting irregularities rather than accounting errors. The effect of irregularity
+restatements on the cash holdings of firms is more pronounced when firms have a higher
+demand for precautionary savings, and the effect is less pronounced when firms experience
+a greater decrease in CEO option compensation or a greater decrease in overinvestment.
+We also find a smaller increase in cash holdings for firms that replace their CEO/CFO. Our
+analyses related to financial decisions reveal that irregularity firms’ investments and
+repurchases become more sensitive to excess cash after restatements.
+Overall, our results suggest that restatements affect cash holdings through two channels.
+On one hand, firms increase cash holdings after the restatements due to a higher demand
+for precautionary savings. On the other hand, strengthened shareholder control after restate-
+ments forces managers to disgorge excess cash and reduce cash holdings. The effect of pre-
+cautionary savings dominates the effect of strengthened shareholder control, so we observe
+a net increase in cash. Finally, we find a higher market value of cash holdings after restate-
+ments. Our study contributes to the literature on the effect of financial reporting credibility
+on real corporate decisions.
+Appendix
+Propensity Score Matching
+We first estimate the following probit model:
+Pr RESTATE
+ð
+Þ = B1X1 + B2X2 + B3X3 + industry fixed effects + year fixed effects + e,
+where RESTATE is an indicator variable that equals 1 for the restatement firms and 0 for
+the non-restatement firms. We review the prior literature on cash holdings and restatements
+to select the covariates included in the propensity score model. X1 includes the variables
+associated with corporate cash holdings (Opler, Pinkowitz, Stulz, & Wiliamson, 1999):
+firm size (SIZE), Tobin’s Q (Q), operating cash flows (CF), leverage (LEV), net working
+capital (NWC), industry volatility of operating cash flows (SIGMA), number of business
+segments (NSEG), firm age (AGE), capital expenditure (CAPX), R&D expenditure (R&D),
+acquisition (ACQUISITION), and dividend (DIV). Prior studies that study economic conse-
+quence of restatements typically match firm size, age, and performance. Other studies that
+examine the economic determinants of restatements usually control for industry member-
+ship, firm size, firm age, market valuation, growth, financing and investing activities, per-
+formance, accruals, auditor quality, leverage, and default risk. Some firm characteristics
+overlap with those that affect cash holdings. Thus, X2 includes the following additional
+variables that may affect the restatements: sales growth rate (SGRW), net amount of exter-
+nal financing (FINANCE), change in net working capital (DNWC), an indicator of loss
+(LOSS), Altman’s (1968) Z-score (Z-SCORE), and an indicator of a Big-N auditor (BigN).
+We also include the level of and the change in cash holdings (CASH and DCASH) in the
+regression (X3) to control for the trends in the cash holdings before the restatements
+(Roberts & Whited, 2013). The industry fixed effects are based on Fama and French’s
+(1997) 48-industry classification. For the restatement firms, we only include the
+312
+Journal of Accounting, Auditing & Finance
+
+=== PDF p.24 (journal p.313) ===
+Table A1.
+Comparison of Firm Characteristics Between the Restatement Firms and the Non-Restatement Firms Before and After Matching.
+Variable
+Mean value before matching
+Mean value after matching
+Probit regression of RESTATE
+Restatement
+firms
+Control
+firms
+t stat
+for
+[1] 2 [2]
+Restatement
+firms
+Control
+firms
+t stat
+for
+[3] 2 [4]
+Before matching
+After matching
+[1]
+[2]
+[3]
+[4]
+Coeff.
+t stat
+Coeff.
+t stat
+PSCORE
+0.093
+0.044
+33.75***
+0.092
+0.090
+0.79
+SIZE
+5.849
+4.811
+20.79***
+5.855
+5.839
+0.20
+0.172***
+211.41
+0.025
+21.10
+Q
+2.080
+2.398
+25.52***
+2.065
+2.101
+20.55
+0.029**
+21.97
+0.000
+0.00
+CF
+0.052
+0.008
+7.84***
+0.054
+0.064
+21.86*
+0.713***
+23.16
+20.376
+20.75
+NWC
+0.116
+0.126
+21.69*
+0.118
+0.124
+20.69
+0.385**
+22.34
+20.115
+20.39
+LEV
+0.232
+0.205
+3.96***
+0.232
+0.215
+1.79*
+20.265**
+22.49
+0.208
+21.11
+SIGMA
+0.062
+0.064
+21.97**
+0.063
+0.062
+0.60
+0.410
+20.24
+3.681
+21.28
+NSEG
+5.000
+3.741
+11.38***
+5.048
+5.105
+20.28
+0.016***
+23.03
+20.002
+20.21
+AGE
+2.690
+2.510
+8.34***
+2.691
+2.704
+20.44
+20.026
+20.79
+0.008
+20.14
+CAPX
+0.062
+0.060
+1.08
+0.062
+0.060
+0.84
+20.122
+20.30
+0.689
+20.88
+ACQUISITION
+0.028
+0.026
+1.40
+0.028
+0.027
+0.61
+20.643
+21.47
+0.228
+20.27
+R&D
+0.188
+0.471
+24.85***
+0.150
+0.158
+20.19
+20.015
+20.90
+20.027
+20.62
+DIV
+0.005
+0.005
+20.11
+0.005
+0.005
+21.32
+24.620***
+22.77
+22.829
+21.01
+SGRW
+0.151
+0.197
+23.78***
+0.154
+0.145
+0.69
+20.051
+20.78
+0.020
+20.15
+FINANCE
+0.052
+0.096
+27.96***
+0.050
+0.040
+1.74*
+0.593***
+22.82
+0.266
+20.55
+DNOX
+20.009
+20.004
+23.19***
+20.009
+20.009
+20.21
+21.569***
+23.96
+20.316
+20.37
+LOSS
+0.354
+0.413
+24.44***
+0.350
+0.325
+1.44
+0.108*
+21.76
+0.000
+0.00
+Z-SCORE
+7.232
+9.723
+27.14***
+7.238
+7.913
+21.89*
+20.009***
+23.02
+20.002
+20.32
+BigN
+0.840
+0.823
+1.42
+0.840
+0.868
+21.76*
+20.082
+21.57
+20.177*
+21.87
+CASH
+0.167
+0.239
+29.13***
+0.163
+0.168
+20.69
+20.225
+21.51
+20.144
+20.50
+DCASH
+20.006
+20.001
+22.31**
+20.006
+20.004
+20.70
+21.787***
+26.27
+20.206
+20.32
+Industry and year fixed effects
+Yes
+Yes
+p value of the model
+.000
+1.000
+Pseudo R2
+.101
+.007
+n
+984
+20,217
+949
+949
+21,201
+1,898
+*, **, and *** indicate significance at the 10%, 5%, and 1% levels, respectively.
+313
+
+=== PDF p.25 (journal p.314) ===
+observations in the year of the announcement of the restatement (i.e., year 0). The non-
+restatement firms are those that did not announce accounting restatements during our
+sample period. We include all annual observations of the non-restatement firms during our
+sample period. All independent variables are measured as the mean value over the previous
+years. That is, for observations of firm i in year t, all independent variables are measured
+over year t 2 3 to t 2 1.
+For each restatement firm, we select as the matched control firm a non-restatement firm
+that operates in the same industry based on the Fama and French (1997) 48-industry classi-
+fication and has the closest propensity score in the year of the restatement announcement
+(i.e., year 0). Note that the propensity score is estimated based on average firm characteris-
+tics over years 23 to 21. If more than one restatement firm matches the same control
+firm, we select the pair with the smallest difference in the propensity score. We then repeat
+the above matching procedure after eliminating the selected control firm from the control
+firm pool (i.e., matching without replacement).
+The first six columns of Table A1 present the univariate comparison of firm characteris-
+tics between the restatement firms and the non-restatement firms before and after matching.
+We find that before matching, the restatement firms and the control firms differ systemati-
+cally in a number of characteristics. After matching, the restatement firms and the matched
+control firms do not show significant differences in most of these firm characteristics.
+There are only a few exceptions in which the difference is significant at the 10% level
+based on a t test. The last four columns of Table A1 present the results of the probit regres-
+sion before and after matching. Before matching, 11 of 20 independent variables have coef-
+ficients that are significant at the 5% or 1% level. After matching, none of the independent
+variables have a coefficient that is significant at the 5% or 1% level. Only the coefficient
+of the indicator of a Big-N auditor is significant at the 10% level. In addition, the p value
+of the probit model before matching is less than 0.1%, showing joint significance of the
+independent variables. The p value of the probit model after matching is almost 1, suggest-
+ing that the independent variables do not have joint explanatory power for the selection. In
+general, the diagnostics suggest that the propensity score matching is reasonably well
+implemented.
+Authors’ Note
+All remaining errors are the responsibility of the authors.
+Acknowledgments
+We thank Bharat Sarath (the editor in chief), Linda Myers (the editor), and two anonymous reviewers
+for many insightful comments and suggestions. We also thank Jeff Callen, Kevin Chen, Agnes Cheng,
+Qiang Cheng, Mingyi Hung, He´nock Louis, Grace Pownall, Joshua Ronen, Katherine Schipper, John
+Wei, and workshop participants at the Hong Kong University of Science and Technology, Tsinghua
+University, the 2016 European Accounting Association Annual Meeting, and the 2016 Journal of
+Accounting, Auditing and Finance Conference for their helpful comments and suggestions.
+Declaration of Conflicting Interests
+The author(s) declared no potential conflicts of interest with respect to the research, authorship, and/
+or publication of this article.
+314
+Journal of Accounting, Auditing & Finance
+
+=== PDF p.26 (journal p.315) ===
+Funding
+The author(s) disclosed receipt of the following financial support for the research, authorship, and/or
+publication of this article: Financial support from the Research Grants Council of Hong Kong
+(General Research Fund Grant, Project No. 15502614), Natural Science Foundation of Guangdong
+Province, China (Project 2016A030310417 and 2017A030310015), and China Postdoctoral Science
+Foundation (Project 2016M590791) is gratefully acknowledged.
+Notes
+1. The level of cash holdings in the pre-restatement period is 0.166 for the irregularity firms and
+0.167 for the control firms (see Table 2). Thus, the increase in cash holdings over the pre-restate-
+ment level is 27.7% (0.046/0.166) for the irregularity firms and 7.2% (0.012/0.167) for the con-
+trol firms.
+2. Consistent with this prediction, extant empirical studies find that firms operating in industries
+with more volatile operating cash flows and investment opportunities hold more cash (Duchin,
+2010; Opler, Pinkowitz, Stulz, & Wiliamson, 1999). In addition, Duchin (2010) finds that diver-
+sified firms hold less cash, and the smaller cash holdings correspond to a higher cross-division
+correlation between investment opportunities and operating cash flows. Finally, Acharya,
+Almeida, and Campello (2007) find that financially constrained firms save more cash from their
+operating cash flows when the correlation between operating cash flows and investment opportu-
+nities is lower.
+3. We use the Fama and French 48-industry classification to define industries.
+4. OPTION_PER is measured as the ratio of Black2Scholes value of the option grant scaled by
+total compensation. We collect CEO compensation data from Execcomp and supplement this
+with hand-collected data from proxy statements.
+5. We thank an anonymous reviewer for raising this point.
+6. See the notes to Table 6 for details.
+References
+Acharya, V., Almeida, H., & Campello, M. (2007). Is cash negative debt? A hedging perspective on
+corporate financial policies. Journal of Financial Intermediation, 16, 515-554.
+Altman, E. I. (1968). Financial ratios, discriminant analysis and the prediction of corporate bank-
+ruptcy. Journal of Finance, 24, 589-609.
+Badertscher, B., Shroff, N., & White, H. (2013). Externalities of public firm presence: Evidence from
+private firms’ investment decisions. Journal of Financial Economics, 109, 682-706.
+Bates, T., Kahle, K., & Stulz, R. (2009). Why do U.S. firms hold so much more cash than they used
+to? Journal of Finance, 64, 1985-2021.
+Chen, Q., Chen, X., Schipper, K., Xu, Y., & Xue, J. (2012). The sensitivity of corporate cash holdings
+to corporate governance. Review of Financial Studies, 25, 3610-3644.
+Chen, X., Cheng, Q., & Lo, A. (2013). Accounting restatement and external financing choices.
+Contemporary Accounting Research, 30, 750-779.
+Chen, X., Cheng, Q., & Lo, A. (2014). Is the decline in the information content of earnings following
+restatements short-lived? The Accounting Review, 89, 177-207.
+Cheng, Q., & Farber, D. (2008). Earnings restatements, change in CEO compensation, and firm per-
+formance. The Accounting Review, 83, 1217-1250.
+Coles, J., Daniel, N., & Naveen, L. (2014). Co-opted boards. Review of Financial Studies, 27, 1751-
+1796.
+Collins, D., Masli, A., Reitenga, A. L., & Sanchez, J. M. (2009). Earnings restatements, the Sarbanes-
+Oxley Act, and the disciplining of chief financial officers. Journal of Accounting, Auditing &
+Finance, 24, 1-34.
+Chen et al.
+315
+
+=== PDF p.27 (journal p.316) ===
+Denis, D. J., & Sibilkov, V. (2010). Financial constraints, investment, and the value of cash holdings.
+Review of Financial Studies, 23, 247-269.
+Dittmar, A., & Mahrt-Smith, J. (2007). Corporate governance and the value of cash holdings. Journal
+of Financial Economics, 83, 599-634.
+Dittmar, A., Mahrt-Smith, J., & Servaes, H. (2003). International corporate governance and corporate
+cash holdings. Journal of Financial and Quantitative Analysis, 38, 111-133.
+Dixit, A., & Pindyck, R. (1994). Investment under uncertainty. Princeton, NJ: Princeton University
+Press.
+Duchin, R. (2010). Cash holdings and corporate diversification. Journal of Finance, 65, 955-992.
+Duchin, R., Ozbas, O., & Sensoy, B. (2010). Costly external finance, corporate investment, and the
+subprime mortgage credit crisis. Journal of Financial Economics, 97, 418-435.
+Faleye, O. (2004). Cash and corporate control. Journal of Finance, 59, 2041-2060.
+Fama, E., & French, K. (1997). Industry costs of equity. Journal of Financial Economics, 43, 153-
+193.
+Farber, D. (2005). Restoring trust after fraud: Does corporate governance matter? The Accounting
+Review, 80, 539-561.
+Faulkender, M., & Wang, R. (2006). Corporate financial policy and the value of cash. Journal of
+Finance, 61, 1957-1990.
+General Accounting Office (GAO). 2003. Financial statement restatements: trends, market impacts,
+regulatory
+responses,
+and
+remaining
+challenges.
+GAO-03-138.
+Washington,
+DC:
+General
+Accounting Office.
+General Accounting Office (GAO). 2006. Financial statement restatements: updates of public com-
+pany trends, market impacts, and regulatory enforcement actions. GAO-06-678. Washington, DC:
+Government Accountability Office.
+Gao, H., Harford, J., & Li, K. (2013). Determinants of corporate cash policy: Insights from private
+firms. Journal of Financial Economics, 69, 623-639.
+Gao, X., & Jia, Y. (2016). Internal control over financial reporting and the safeguarding of corporate
+resources: Evidence from the value of cash holdings. Contemporary Accounting Research, 33,
+783-814.
+Gow, I., Ormazabal, G., & Taylor, D. (2010). Correcting for cross-sectional and time-series depen-
+dence in accounting research. The Accounting Review, 85, 483-512.
+Graham, J., Li, S., & Qiu, J. (2008). Corporate misreporting and bank loan contracting. Journal of
+Financial Economics, 89, 44-61.
+Griffin, P. (2003). A league of their own? Financial analysts’ responses to restatements and corrective
+disclosures. Journal of Accounting, Auditing & Finance, 18:, 479-517.
+Hail, L., Tahoun, A., & Wang, C. (2014). Dividend payouts and information shocks. Journal of
+Accounting Research, 52, 403-456.
+Harford, J., Klasa, S., & Maxwell, W. (2014). Refinancing risk and cash holdings. Journal of
+Finance, 69, 975-1012.
+Harford, J., Mansi, S., & Maxwell, W. (2008). Corporate governance and firm cash holdings in the
+US. Journal of Financial Economics, 87, 535-555.
+Hennes, K., Leone, A., & Miller, B. (2008). The importance of distinguishing errors from irregulari-
+ties in restatement research: The case of restatements and CEO/CFO turnover. The Accounting
+Review, 83, 1487-1519.
+Hennes, K., Leone, A., & Miller, B. (2014). Auditor dismissals after accounting restatements. The
+Accounting Review, 89, 1051-1082.
+Holmstrom, B., & Tirole, J. (1998). Public and private supply of liquidity. Journal of Political
+Economy, 106, 1-40.
+Hribar, P., & Jenkins, N. (2004). The effect of accounting restatements on earnings revisions and the
+estimated cost of capital. Review of Accounting Studies, 9, 337-356.
+316
+Journal of Accounting, Auditing & Finance
+
+=== PDF p.28 (journal p.317) ===
+Huang, P., Guo, J., Ma, T., & Zhang, Y. (2015). Does the value of cash holdings deteriorate or
+improve with material weaknesses in internal control over financial reporting? Journal of Banking
+& Finance, 54, 30-45.
+Huang, Y., Elkinawy, S., & Jain, P. (2013). Investor protection and cash holdings: Evidence from
+U.S. cross-listing. Journal of Banking & Finance, 37, 937-951.
+Jensen, M., & Meckling, W. (1976). Theory of the firm: Managerial behavior, agency costs and own-
+ership structure. Journal of Financial Economics, 3, 305-360.
+Keynes, J. M. (1936). The general theory of employment, interest, and money. New York, NY:
+Macmillan Cambridge University Press.
+McInnis, J., & Collins, D. (2011). The effect of cash flow forecasts on accrual quality and benchmark
+beating. Journal of Accounting & Economics, 51, 219-239.
+McNichols, M., & Stubben, S. (2008). Does earnings management affect firms’ investment decisions?
+The Accounting Review, 83, 1571-1603.
+Myers, S., & Majluf, N. (1984). Corporate financing and investment decisions when firms have infor-
+mation that investors do not have. Journal of Financial Economics, 13, 187-221.
+Opler, T., Pinkowitz, L., Stulz, R., & Wiliamson, R. (1999). The determinants and implications of
+corporate cash holdings. Journal of Financial Economics, 52, 3-46.
+Palmrose, Z., Richardson, V., & Scholz, S. (2004). Determinants of market reactions to restatement
+announcements. Journal of Accounting & Economics, 37, 59-89.
+Roberts, M., & Whited, T. (2013). Endogeneity in empirical corporate finance. In G. Constantinides,
+M. Harris, & S. Stulz (Eds.), Handbook of the economics of finance (Vol. 2) (pp. 493-572).
+Elsevier.
+Shleifer, A., & Vishny, R. (1992). Asset liquidity and debt capacity. Journal of Finance, 47, 1343-
+1366.
+Stulz, R. (1990). Managerial discretion and optimal financing policies. Journal of Financial
+Economics, 26, 3-27.
+Tirole, J. (2006). The theory of corporate finance. Princeton, NJ: Princeton University Press.
+Chen et al.
+317
