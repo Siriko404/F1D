@@ -42,7 +42,7 @@ class IbesEngine:
         # Configuration thresholds based on standard literature (e.g. Diether et al 2002)
         self.numest_min = 2
         self.meanest_min = 0.05
-        self.fpi_valid = ["6", "7"]  # FPI 6 = current quarter, 7 = next quarter
+        self.fpi_valid = ["6", "7"]  # FPI 6 = FQ1 (1-quarter-ahead per IBES Detail convention); 7 = FQ2 (2-quarters-ahead)
         self.max_stale_days = 180
 
     def get_data(self, root_path: Path) -> pd.DataFrame:

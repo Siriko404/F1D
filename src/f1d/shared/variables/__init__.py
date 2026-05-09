@@ -286,6 +286,18 @@ __all__ = [
     "RedistrictingTreatmentBuilder",
     # H1.6 Redistricting DiD TEST 3 — Geocode + Lewis 2013 shapefile variant
     "RedistrictingTreatmentGeocodeBuilder",
+    # H1.5 Brexit DiD design (Campello et al 2022 JFQA verbatim)
+    "BrexitBetaUKBuilder",
+    "Brexit10KTreatmentBuilder",
+    "BrexitMacroControlsBuilder",
+    "BrexitConsensusEPSBuilder",
+    "HobergPhillipsFIC100Builder",
+    "BrexitTobinsQBuilder",
+    "BrexitSalesGrowthBuilder",
+    "BrexitStockReturnBuilder",
+    "BrexitCashFlowBuilder",
+    "BrexitPSMMatchingBuilder",
+    "run_parallel_trends_test",
     # H24/H24b/H25 Macro Uncertainty (EPU / GEPU / GPR)
     "MacroUncertaintyBuilder",
     # Panel-building utilities
@@ -348,6 +360,19 @@ from .redistricting_treatment import RedistrictingTreatmentBuilder
 # H1.6 Redistricting DiD TEST 3 — Geocode + Lewis 2013 shapefile variant
 # Replaces lossy ZCTA-CD crosswalk path with point-in-polygon spatial join.
 from .redistricting_treatment_geocode import RedistrictingTreatmentGeocodeBuilder
+
+# H1.5 Brexit DiD design (Campello et al 2022 JFQA verbatim) — modules #1-#12 + utility
+from .brexit_treatment_beta_uk import BrexitBetaUKBuilder
+from .brexit_treatment_10k import Brexit10KTreatmentBuilder
+from .brexit_macro_controls import BrexitMacroControlsBuilder
+from .brexit_consensus_eps import BrexitConsensusEPSBuilder
+from .hoberg_phillips_fic100 import HobergPhillipsFIC100Builder
+from .brexit_tobins_q import BrexitTobinsQBuilder
+from .brexit_sales_growth import BrexitSalesGrowthBuilder
+from .brexit_stock_return import BrexitStockReturnBuilder
+from .brexit_cash_flow import BrexitCashFlowBuilder
+from .brexit_psm_matching import BrexitPSMMatchingBuilder
+from .brexit_parallel_trends import run_parallel_trends_test
 
 # H24/H24b/H25 Macro Uncertainty — aggregate monthly macro indices matched by calendar month
 # (Caldara-Iacoviello 2022 GPR, BBD 2016 US EPU, Davis 2016 GEPU)
