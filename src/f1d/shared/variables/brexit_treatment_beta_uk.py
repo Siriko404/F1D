@@ -276,7 +276,12 @@ def _vectorized_ols(
 
     Returns:
         beta: (n_firms, k) OLS coefficients.
-        se:   (n_firms, k) classical OLS standard errors (homoskedastic).
+        se:   (n_firms, k) classical homoskedastic OLS standard errors —
+              DIAGNOSTIC ONLY; not used downstream by treatment classifier
+              (which keys off the point estimate β^UK and tercile rank only).
+              For inference on β^UK itself we would prefer Newey-West or
+              heteroskedasticity-robust SE; not implemented here since the
+              treatment dummy HIGH_BETA_UK doesn't read the SE column.
     """
     n_obs, k = X.shape
     # M = (X'X)^-1 X' — shape (k, n_obs). Compute once.

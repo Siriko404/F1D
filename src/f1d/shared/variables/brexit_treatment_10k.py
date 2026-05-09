@@ -12,6 +12,30 @@ lines 159-160 of ``tmp/3did_replication_v2_2026_05_08.md``):
 The ETL stage already deduplicated to one filing per gvkey (latest by
 filing_date per audit MINOR-5). This builder only reads + thresholds.
 
+CAMPELLO REPRODUCTION GAP (evidence-based, advisor 2026-05-08).
+F1D 9-keyword pure-tally on Compustat-mapped 2015 10-Ks produces HIGH_10K=2,847
+(vs Campello 807) and HIGH_10K=0=261 (vs Campello 433). Diagnostic localization:
+
+    full 9-keyword pure tally:                              2,847 firms (>5)
+    drop 'uncertainty' + 'uncertain' from tally:              994 firms (>5)
+    pure brexit/referendum/great-britain only:                  5 firms (>5)
+    n_brexit = 0 across all 3,820 firms (CORRECT — 2015 10-Ks pre-date the
+                Feb 2016 referendum announcement; "Brexit" rarely used yet).
+
+The 2,847 vs 807 gap is NOT a "different universe" issue — both samples are
+Compustat-mapped (LINKPRIM='P', LINKTYPE in {LU,LC} per audit MAJOR-5). The
+likely mechanism is that Campello's "uncertainty" + "uncertain" matching had
+an undisclosed constraint (context-windowed proximity to UK/Brexit, or
+Item-scope restriction to risk-factors only) that my pure-9-keyword tally
+does not implement. The published methodology (spec §1F + footnote 14) does
+NOT describe such a constraint, so this builder follows verbatim spec.
+
+WITHIN-FIRM SIGNAL PRESERVATION. While absolute counts differ from Campello,
+the relative ranking of firms by Brexit exposure remains informative — firms
+with multi-keyword presence in their 10-K disclose more UK/uncertainty
+exposure than firms with zero entries. The DiD identification reads the
+treatment-vs-control contrast within the panel, not the absolute count.
+
 Output:
     outputs/variables/brexit_treatment_10k/<ts>/treatment_10k_per_firm.parquet
     schema: gvkey (zfill-6 str), total_count (int), HIGH_10K (float64)
