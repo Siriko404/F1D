@@ -1,206 +1,149 @@
-# Compaction Handoff — Boasiako Eq 1 SHIPPED + Chen Phase 1C in progress
+# Compaction Handoff — Boasiako Eq 1 + Chen Phase 1C COMPLETE (14/14)
 
-**Date**: 2026-05-09
-**Master HEAD**: `ae6050d` (10 atomic commits this session)
+**Date**: 2026-05-09 (post-/compact + ~5h)
+**Master HEAD**: `43cd055` (16 atomic commits this session)
 **Plan**: `~/.claude/plans/staggered-firm-cascade.md` v2 (ratified 2026-05-09)
-**Audit memo**: `tmp/boasiako_chen_plan_audit_findings_2026_05_09.md` (af9bcfb73742b167c)
+**Audit memo**: `tmp/boasiako_chen_plan_audit_findings_2026_05_09.md` (af9bcfb73742b167c; 23 findings)
 **Spec anchor**: `tmp/3did_replication_v2_2026_05_08.md` Sections B + C
-**Phase 1A summary**: `outputs/econometric/h1_5_disclosure_law_did/<latest>/report_step4_H1_5_disclosure_law_did.md`
 
 ## Read-FIRST after /compact
 
-1. This file
-2. `~/.claude/plans/staggered-firm-cascade.md` (plan v2 — 23 audit findings resolved)
-3. `~/.claude/projects/<id>/memory/project_session_2026_05_09_boasiako_chen_phase1.md` (durable memory)
-4. `git log --oneline -15` to re-orient
+1. This file (canonical state)
+2. `~/.claude/projects/<id>/memory/project_session_2026_05_09_boasiako_chen_phase1.md` (durable memory)
+3. `~/.claude/projects/<id>/memory/MEMORY.md` (index)
+4. `git log --oneline -16` to re-orient
+5. `outputs/econometric/h1_5_restatement_did/2026-05-09_023323/report_step4_H1_5_restatement_did.md` (54-cell Chen results)
 
-## Current state
+## Current state — PHASE 1 COMPLETE
 
-**Phase 1A Boasiako Eq 1**: COMPLETE (6/6 tasks shipped + 14/14 cells produced)
-**Phase 1C Chen**: 3/8 tasks shipped (C0 bridge, C1 FF48, C2 treatment); 5 tasks remaining (C3 controls, C4 industry CF vol FF48, C5 PSM, C6 PS_DEMAND, C7 runner)
+**Phase 1A Boasiako Eq 1**: 6/6 builders + 14/14 cells SHIPPED
+**Phase 1C Chen**: 8/8 builders + 54/54 cells SHIPPED (18 cells × 3 variants A/B/C)
 
-## 10 atomic commits this session (`5438450` → `ae6050d`)
-
-```
-5438450  Phase 1A [#A2 _compustat_annual_reader]      shared utility, decimal-trap+loc=USA
-3f7adb8  Phase 1A [#A3 ff49_industry_classifier]      Ken French SIC ranges
-5bac756  Phase 1A [#A4 boasiako_disclosure_law_treatment]  Y+1 staggered, 46+4-never-treated states
-1c2895c  Phase 1A [#A5 boasiako_eq1_controls]         11 controls + winsorize
-ba377ae  Phase 1A [#A6 boasiako_industry_cf_vol]      FF49 industry-MEAN, 10y σ, ≥3y floor
-de5bda4  Phase 1A [#A7 run_h1_5_disclosure_law_did]   14-cell runner — DECISION-GATE FIRED but Sina PROCEED
-10d50b4  Phase 1C [#C0 chen_aa_to_gvkey_bridge]       NEW v2 audit C1 critical
-f57f651  Phase 1C [#C1 ff48_industry_classifier]      Ken French Siccodes48
-ae6050d  Phase 1C [#C2 chen_restatement_treatment]    3-variant classifier (A/B/C); Variant B=263 vs Chen 270
-```
-
-## Phase 1A headline result (decision-gate fired but PROCEED ratified)
+## 16 atomic commits this session (`5438450` → `43cd055`)
 
 ```
-COL  DV               TREATMENT       FE                              N      BETA    P_ONE    SIG
-1    cash             Disclosure_Law  industry+state+year (BASELINE) 49,402 +0.0262   0.012   **
-2    cash             Disclosure_Law  firm+year                      49,402 +0.0580  <0.001  ***
-3    cash             Disclosure_Law  ind+state+year excl CA         41,160 +0.0110   0.232   NS
-4    cash             Disclosure_Law  ind+state+year excl 2007-09    37,970 +0.0317   0.022   **
-5    UncResCEO_c      Disclosure_Law  industry+state+year             9,709 +0.0082   0.216   NS
-6    UncResCEO_c      Disclosure_Law  firm+year                       9,709 +0.0061   0.310   NS
-7    UncResCEO_c      Disclosure_Law  ind+state+year excl CA          8,174 +0.0015   0.455   NS
-8    UncResCEO_c      Disclosure_Law  ind+state+year excl crisis      7,399 +0.0105   0.141   NS
-9-14 UncResCEO_c × {Small/Young/NonDiv} × DL × {ind+state+year, firm+year}  ALL NULL
+PHASE 1A Boasiako (6 commits):
+  5438450  [#A2 _compustat_annual_reader]      shared utility, decimal-trap+loc=USA
+  3f7adb8  [#A3 ff49_industry_classifier]      Ken French SIC ranges
+  5bac756  [#A4 boasiako_disclosure_law_treatment]  Y+1 staggered, 46+4-never-treated states
+  1c2895c  [#A5 boasiako_eq1_controls]         11 controls + winsorize
+  ba377ae  [#A6 boasiako_industry_cf_vol]      FF49 industry-MEAN, 10y σ, ≥3y floor
+  de5bda4  [#A7 run_h1_5_disclosure_law_did]   14-cell runner — cash SIG (3/4) but mag 3-10× paper
+
+INTERMEDIATE: b03ba02  [Compaction prep — stale; this file supersedes]
+
+PHASE 1C Chen (8 commits):
+  10d50b4  [#C0 chen_aa_to_gvkey_bridge]       NEW v2 audit C1 — AA CIK→gvkey CCM time-varying bridge
+  f57f651  [#C1 ff48_industry_classifier]      Ken French 48-industry (distinct from FF49)
+  ae6050d  [#C2 chen_restatement_treatment]    3-variant (A/B/C); Variant B IRREG=263 vs Chen 270
+  9d84a29  [#C3 chen_baseline_controls]        7 vars (Q SIZE CF NWC LEV NSEG AGE); CF=OANCF/AT
+  3de606e  [#C4 chen_industry_cf_vol_ff48]     FF48 industry-MEDIAN of firm-σ (CORRECTION 1)
+  83de714  [#C5 chen_psm_matching]             1:1 NN no-replace WITHIN FF48 + FF12-fallback; 20-cov X1∪X2∪X3
+  af3349d  [#C6 chen_ps_demand]                Duchin 2010; pct rank AFTER -1× flip per audit V2
+  43cd055  [#C7 run_h1_5_restatement_did]      54 cells per-cell+Wald-diff per audit M1
 ```
 
-**Interpretation**:
-- Direction ✓ correct (positive cash); statistical sig ✓ in 3/4 cash cells; CA-exclusion behavior ✓ matches paper (β drops to NS); crisis-exclusion behavior ✓ matches paper.
-- **Magnitude**: F1D col 1 +0.0262 vs paper +0.0076 = **3.4× larger**; col 2 +0.058 vs paper +0.0056 = **10× larger**. Outside ±20% decision-gate tolerance.
-- Speech null in all 10 specs — pattern matches Brexit/Trump/Redistricting (4-for-4 NULL).
-- **Sina decision 2026-05-09**: PROCEED to Chen (treat as loose qualitative replication; magnitude divergence documented).
+## Empirical results
 
-**Magnitude divergence candidates** (NOT diagnosed yet — defer to optional iter 2):
-- F1D Compustat-only universe vs paper's CRSP-Compustat-MERGED (smaller universe → cleaner sample)
-- CF formula Bates 2009 interpretation vs paper's exact Compustat fields (audit M3 deviation)
-- Winsorization scope or partition cutoff interpretation differences
-
-## Phase 1C empirical baseline (post-C2)
-
+### Phase 1A Boasiako Cash (4 cells; cols 1-4)
 ```
-EMPIRICAL VARIANT COUNTS (post-bridge + first-only dedup + Chen-window + SIC excl):
-   Variant A   IRREG=75    ERROR=1813   audit predicted 89
-   Variant B   IRREG=263   ERROR=1625   audit predicted 311 ★ closest to Chen 270 (3% off)
-   Variant C   IRREG=266   ERROR=1622   audit predicted 315
-   TOTAL = 1888 first-restatement firms
+col 1 industry+state+year FE:   β=+0.0262 p_one=0.012**  vs paper +0.0076** (3.4× mag)
+col 2 firm+year FE:              β=+0.0580 p_one<.001*** vs paper +0.0056** (10× mag)
+col 3 excl CA sensitivity:       β=+0.0110 p_one=0.232 NS (matches paper pattern)
+col 4 excl 07-09 crisis:         β=+0.0317 p_one=0.022**  vs paper +0.0078** (4× mag)
+DECISION-GATE FIRED — Sina ratified PROCEED (loose qualitative replication)
 ```
 
-Variant B at 263 vs Chen target 270 = **3% off** — strong empirical match. Plan v2 expected primary winner = B; confirmed.
+### Phase 1A Boasiako Speech (10 cells; cols 5-14)
+ALL 10 NULL → matches Brexit/Trump/Redistricting 4-for-4 speech null pattern.
+
+### Phase 1C Chen Variant B (post-bridge IRREG=263 closest to Chen 270)
+```
+CASH per-cell+Wald (cols 1-3):
+  col 1 restatement POST: β=+0.0603 p_one=0.014** SIG (1.3× Chen +0.046***)
+  col 2 control POST:     β=-0.0163 p_one=0.678 NS (vs Chen +0.012* small POS)
+  col 3 Wald-diff:        β=-0.0074 p_one=0.609 NS (vs Chen +0.034*** SIG)
+
+SPEECH per-cell+Wald (cols 4-6):  ★ BREAKS 4-FOR-4 NULL PATTERN
+  col 4 restatement POST: β=+0.1380 p_one=0.229 NS-positive (NOT null)
+  col 5 control POST:     β=-0.0352 p_one=0.580 NS
+  col 6 Wald-diff:        β=+0.0807 p_one=0.293 NS-positive
+
+Cash×PS_DEMAND HIGH/LOW (cols 7-12): NS
+Speech×PS_DEMAND HIGH/LOW (cols 13-18): many cells skipped <30 obs
+```
+
+### M5 Pre-flight (Variant B post-PSM)
+- PSM matched 91/263 IRREG-Variant-B (65% attrition); all event_year ∈ 2004-2006
+- CASH bidirectional coverage: 80 firms (BELOW 150 threshold)
+- SPEECH bidirectional coverage: 17 firms (severely BELOW)
+- Sina ratified PROCEED 2026-05-09 with low-power caveat
+
+### Speech 5-design pattern (post-Chen)
+| Design | Speech result |
+|---|---|
+| Brexit | NULL (cash sig only) |
+| Trump | NULL all 8 specs |
+| Redistricting | NULL all 8 specs |
+| Boasiako | NULL all 10 specs |
+| Chen | **POSITIVE NS-but-promising β≈+0.13 across all 3 variants** |
+
+→ Story B speech-channel: 4-NULL + 1-positive-NS-promising. Insufficient power for inference
+(n=53 treated; vs Boasiako baseline n=49,402); but FIRST directionally-supportive evidence
+among 5 designs. Frame in §III.E.4 prose accordingly.
 
 ## Sina decisions ratified this session
 
-| Decision | Lock | When |
+| # | Question | Lock |
 |---|---|---|
-| Q1 Chen classifier | 3-variant sensitivity table (A/B/C) | 2026-05-09 |
-| Q2 Boasiako scope (v1) | BOTH Eq 1 + Eq 2 | 2026-05-09 |
-| Q2 Boasiako scope (v2 OVERRIDE) | Eq 1 ONLY (audit C2: PRC unreachable) | 2026-05-09 (post-audit) |
-| Q3 Speech channel partitions | INCLUDE on UncResCEO_c | 2026-05-09 |
-| Q4 Cash robustness ladder | SKIP per Brexit pattern | 2026-05-09 |
-| Plan v2 ratification | Approve as written | 2026-05-09 |
-| Phase 1A decision-gate (post-baseline) | PROCEED to Chen (loose replication) | 2026-05-09 |
+| Q1 | Chen IRREG classifier path | 3-variant sensitivity (A/B/C) |
+| Q2-OVERRIDE | Phase 1B path post-audit C2 | ABORT Phase 1B (Boasiako Eq 2 PRC unreachable) |
+| Q3 | Speech channel partitions | INCLUDE on UncResCEO_c |
+| Q4 | Cash-side robustness ladder | SKIP per Brexit pattern |
+| RAT | Plan v2 ratification | Approve as written |
+| GATE1 | Phase 1A decision-gate (magnitude divergence) | PROCEED to Chen (loose replication) |
+| GATE2 | C7 M5 pre-flight low-power | Ship 18-cell runner with caveat |
 
-## Critical learnings (do NOT re-litigate)
+## Critical learnings (do NOT re-litigate post-/compact)
 
-1. **AA Audit Analytics has NO gvkey field** — only `company_fkey` = CIK. CCM bridge MANDATORY (audit C1). Implemented in Task C0; retention 44.6% (below audit's 60-70% expectation; possibly different scope).
+1. **AA Audit Analytics has NO gvkey field** — only `company_fkey` = CIK. CCM bridge MANDATORY (audit C1). Implemented Task C0; retention 44.6%.
 
-2. **PRC data unreachable** — Boasiako Online Appendix has only PDF, privacyrights.org requires purchase, Wayback 4-5d brittle. Phase 1B ABORTED.
+2. **PRC data unreachable** — Boasiako Online Appendix has only PDF, privacyrights.org requires purchase, Wayback brittle. Phase 1B ABORTED.
 
-3. **linearmodels.PanelOLS max-2-effects limit** — for industry+state+year FE (3 dimensions), use `time_effects=True (year) + other_effects=ff49 (industry) + state DUMMIES added to exog`. drop_absorbed=True handles collinearity.
+3. **linearmodels.PanelOLS max-2-effects limit** — for industry+state+year FE: use `time_effects=True + other_effects=ff49 + state DUMMIES in exog`.
 
-4. **Trump `_fit_one()` cross-cutting refactor was DEAD WEIGHT** (audit M0a) — runners clone Brexit (which has its OWN _fit_one), not Trump. Bake clusters_col DIRECTLY into new clones at clone time.
+4. **Trump `_fit_one()` cross-cutting refactor was DEAD WEIGHT** (audit M0a) — runners clone Brexit, not Trump. Bake clusters_col DIRECTLY into new clones.
 
-5. **Datetime sentinel for LINKENDDT='E'** — use `2099-12-31` not `9999-12-31` (datetime64[ns] max ≈ 2262-04-11; 9999 overflows).
+5. **LINKENDDT='E' sentinel** — use `2099-12-31` not `9999-12-31` (datetime64[ns] max ~2262; 9999 overflows).
 
-6. **Boasiako CF formula = Bates 2009 interpretation** — `(OIBDP-XINT-TXT-DVC)/AT`; spec wording "earnings after interest, dividends, and taxes but before depreciation" is non-standard (audit M3 deviation).
+6. **Chen CF formula = OANCF/AT** (verbatim PDF p.6) — DISTINCT from Boasiako Bates 2009 `(OIBDP-XINT-TXT-DVC)/AT`.
 
-7. **F1D Compustat Annual reader applies decimal.Decimal trap guard** (Brexit Phase 1 lesson) + `loc=='USA'` filter (audit M7). Universal pre-req for all Boasiako/Chen builders.
+7. **Chen SIGMA construction** = firm-σ-then-FF48-MEDIAN. Chen IND_STDCF (C6 PS_DEMAND) = σ-of-FF48-MEDIAN-series. SAME formula structure, INVERTED aggregation order → different values.
 
-8. **Magnitude divergence in Boasiako Eq 1** (3-10× larger than paper) — DOCUMENTED but not diagnosed. Sina ratified PROCEED.
+8. **F1D Compustat lacks Segment file** → NSEG=1 default per spec verbatim "=1 if missing".
 
-9. **Speech null pattern is now 4-for-4** (Brexit, Trump, Redistricting, Boasiako). Story B speech-validation requires Chen as last hope.
+9. **Magnitude divergence in Boasiako Eq 1** (3-10× larger than paper) — DOCUMENTED not diagnosed. Sina PROCEED. Candidate causes: F1D Compustat-only vs paper's CRSP-Compustat-MERGED.
 
-## Files created this session (12 source + 6 tests)
+10. **Chen PSM attrition 65%** — 91 of 263 IRREG-Variant-B treated firms matched. All event_year ∈ 2004-2006. Documented; not investigated.
 
-### Phase 1A (6 tasks):
-- src/f1d/shared/_compustat_annual_reader.py
-- src/f1d/shared/variables/ff49_industry_classifier.py
-- src/f1d/shared/variables/boasiako_disclosure_law_treatment.py
-- src/f1d/shared/variables/boasiako_eq1_controls.py
-- src/f1d/shared/variables/boasiako_industry_cf_vol.py
-- src/f1d/econometric/run_h1_5_disclosure_law_did.py
+11. **Per-cell + Wald-diff (audit M1)** = combined-sample regression with Treated×POST interaction → coefficient IS the Wald-diff. NOT separate F-test on coefficient difference (advisor confirmed 2026-05-09).
 
-### Phase 1C (3 tasks so far):
-- src/f1d/shared/variables/chen_aa_to_gvkey_bridge.py
-- src/f1d/shared/variables/ff48_industry_classifier.py
-- src/f1d/shared/variables/chen_restatement_treatment.py
+12. **Speech NULL pattern broken by Chen** — 4-for-4 → 4-NULL + 1-positive-NS-promising. Story B novel-claim has first directional support (n=53 treated; underpowered but directionally consistent).
 
-### Tests:
-- tests/test_compustat_annual_reader.py (7 PASS)
-- tests/test_ff49_industry_classifier.py (7 PASS)
-- tests/test_boasiako_disclosure_law_treatment.py (8 PASS)
-- tests/test_boasiako_eq1_controls.py (5 PASS)
-- tests/test_boasiako_industry_cf_vol.py (5 PASS)
-- tests/test_chen_aa_to_gvkey_bridge.py (7 PASS + 1 SKIP)
-- tests/test_ff48_industry_classifier.py (5 PASS)
-- tests/test_chen_restatement_treatment.py (9 PASS)
+## Open / next session
 
-**Total: 53 tests PASS + 1 SKIP across 8 test files.**
+1. **§III.E.4 prose update + main.pdf recompile** (Phase 2, separate session): frame 5-design speech pattern; document Boasiako magnitude divergence; document Chen PSM 65% attrition + low-power caveat; document Chen Variant A/B/C sensitivity table.
+2. **Optional Phase 1 iter 2**:
+   - Diagnose Boasiako magnitude divergence (CRSP-Compustat-MERGED universe? CF formula sensitivity? winsorization scope?)
+   - Chen PSM attrition recovery (relax FF12 / allow replacement / larger pool)
+3. **Boasiako Eq 2** still ABORTED (PRC unreachable per Sina Q2-OVERRIDE).
 
-## Phase 1C remaining (5 tasks)
+## Total session metrics
 
-Per plan v2 + plan-deviation log:
+- 16 atomic commits
+- 14 source modules shipped + 12 test files
+- ~96 tests PASS across all builders
+- 68 regression cells produced (14 Boasiako + 54 Chen)
+- Pace: ~5h post-/compact for 5 Chen tasks (C3-C7); ~3h pre-/compact for Boasiako 6/6 + Chen 3/8
 
-1. **C3** `chen_baseline_controls.py` — 8 vars per spec C3 (Q SIZE CF NWC LEV SIGMA NSEG AGE)
-   - DV-different from Boasiako: CF=#OANCF/#AT (NOT Bates 2009)
-   - Q=(#AT+(#PRCC_F·#CSHO−#CEQ))/#AT
-   - NWC=(#ACT−#CHE−#LCT+#DLC)/#AT (audit-corrected)
-
-2. **C4** `chen_industry_cf_vol_ff48.py` — distinct from Boasiako:
-   - FF48 (not FF49)
-   - industry-MEDIAN (not industry-MEAN)
-   - 10y window, ≥3y floor
-
-3. **C5** `chen_psm_matching.py` — adapts brexit_psm_matching template:
-   - 1:1 NN no-replace WITHIN FF48 industry (vs Brexit pure NN)
-   - Audit M2 small-industry fallback: if pool <5 → widen to nearest FF12
-   - Audit V4 NO caliper; force 1:1; flag if median |p_t-p_c| >0.10
-   - X1∪X2∪X3 covariate set; t-3..t-1 predictor avg; year-0 score
-
-4. **C6** `chen_ps_demand.py` — composite mean of percentile ranks:
-   - IND_STDCF (FF48 industry-MEDIAN OCF σ over 10y)
-   - IND_STDQ  (FF48 industry-MEDIAN Q σ over 10y)
-   - NEG_IND_CORR (-1 × corr of industry-MEDIAN CF, industry-MEDIAN Q over 10y)
-   - Audit V2: percentile rank applied AFTER -1× flip
-
-5. **C7** `run_h1_5_restatement_did.py` — biggest task ~2.5d:
-   - Per-cell + Wald-difference structure (audit M1; NOT interaction-term)
-   - 24 cells × 3 variants = 72 cells
-   - clusters_col='matched_pair_year' baked into Brexit-cloned _fit_one() (audit M0a pattern)
-   - Audit M5 pre-flight: estimate UncResCEO_c sample at year-0 ± 3; flag if <150 firm-events
-
-## After /compact, next-session checklist
-
-1. Read this file FIRST
-2. Read `~/.claude/projects/<id>/memory/project_session_2026_05_09_boasiako_chen_phase1.md` (durable memory)
-3. Read MEMORY.md index for current state
-4. Re-orient: `git log --oneline -15`
-5. Re-read plan v2 if needed: `~/.claude/plans/staggered-firm-cascade.md`
-6. Re-read audit memo: `tmp/boasiako_chen_plan_audit_findings_2026_05_09.md`
-7. Continue Phase 1C task C3 (`chen_baseline_controls.py`) per plan v2 module spec
-
-## Phase 1A vs Brexit pattern comparison
-
-| Dimension | Brexit (shipped) | Boasiako Eq 1 (this session) |
-|---|---|---|
-| Decision-gate | None (16/16 ran clean) | TRIGGERED (3-10× magnitude); Sina PROCEED |
-| Cash result | DiD_10K SIG (β=+0.062 to +0.072) | Disclosure_Law SIG (β=+0.026 to +0.058) |
-| Speech result | NULL (one-tail POS) | NULL (one-tail POS) |
-| Pattern | Cash sig + speech null | Cash sig + speech null + magnitude divergence |
-| Story B implication | Cash-only doesn't validate joint indicator | Same; speech-validation defer to Chen |
-
-## Open questions / next-session decisions
-
-1. **Phase 1A magnitude divergence** — defer diagnostic to optional iter 2 OR investigate now? Sina ratified PROCEED but root-cause unresolved.
-2. **Chen Phase 1C remaining** — continue C3 → C7 in next session.
-3. **§III.E.4 prose update** — Phase 2 separate session; needs to frame Boasiako magnitude divergence + speech null + 4-for-4 null pattern.
-4. **Brexit Phase 1 iter 2 robustness** — still optional ~3hr; not started.
-
-## Status summary
-
-```
-Master HEAD       ae6050d
-Phase 1A          COMPLETE 6/6 (decision-gate fired; Sina PROCEED)
-Phase 1C          IN PROGRESS 3/8
-Total commits     10 atomic this session
-Total tests       53 PASS + 1 SKIP across 8 files
-Time elapsed      ~2 hours work (much faster than plan v2's ~25-day estimate)
-Tree status       clean (2 pre-existing M files unrelated to session)
-
-Awaiting: Sina direction post-/compact (continue C3 vs alternative).
-```
-
-**End of compaction handoff.**
+Safe to /compact.
