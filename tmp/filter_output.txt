@@ -1,0 +1,42 @@
+
+[Q3a BoardEx Individual] streaming fwakz2kpthiqwo7k.csv.zip ...
+[Q3a BoardEx Individual] done: 1,253,441 scanned -> 18,848 matched in 1.5s
+
+[Q2 Audit Analytics] streaming u4s63x3i773cgalg.csv.zip ...
+[Q2 Audit Analytics] done: 357,511 scanned -> 0 matched in 3.7s
+
+[Q3b BoardEx Employment] streaming f9cpt7kmzuhc8p7l.csv.zip ...
+[Q3b BoardEx Employment] done: 7,691,504 scanned -> 428,677 matched in 10.0s
+
+[Q1 Capital IQ Key Developments] streaming n9rbimggotfxzglk.csv.zip ...
+[Q1 Capital IQ Key Developments] done: 20,562,242 scanned -> 669 matched in 83.7s
+
+SUMMARY written to C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\data\raw\ceo_death_events\filter_summary.json
+
+======================================================================
+FINAL SUMMARY
+======================================================================
+
+Q3a BoardEx Individual
+  scanned: 1,253,441
+  matched: 18,848 (1.5037%)
+  elapsed: 1.5s (0.836 M rows/sec)
+  output:  C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\data\raw\ceo_death_events\q3a_boardex_individual_filtered.parquet
+
+Q2 Audit Analytics
+  scanned: 357,511
+  matched: 0 (0.0%)
+  elapsed: 3.7s (0.097 M rows/sec)
+  output:  C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\data\raw\ceo_death_events\q2_audit_filtered.parquet
+
+Q3b BoardEx Employment
+  scanned: 7,691,504
+  matched: 428,677 (5.5734%)
+  elapsed: 10.0s (0.769 M rows/sec)
+  output:  C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\data\raw\ceo_death_events\q3b_boardex_employment_ceo.parquet
+
+Q1 Capital IQ Key Developments
+  scanned: 20,562,242
+  matched: 669 (0.0033%)
+  elapsed: 83.7s (0.246 M rows/sec)
+  output:  C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D\data\raw\ceo_death_events\q1_capiq_filtered.parquet

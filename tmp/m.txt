@@ -1,0 +1,669 @@
+● Query 1 — Hasan, Alam, Paramati, Islam (2022) RQFA
+
+
+For Hasan, Alam, Paramati, and Islam (2022), "Does firm-level political
+risk
+affect cash holdings?" Review of Quantitative Finance and Accounting
+59(1),
+DOI 10.1007/s11156-022-01049-9, please answer each question below with a
+
+
+VERBATIM quote and explicit section/table/page reference. If a question
+cannot be answered from the paper, say "NOT IN PAPER" with verbatim
+evidence.
+
+
+REDISTRICTING DiD (Section 5.1, Table 4):
+
+
+Q1. Quote the EXACT verbatim definition of the "After" indicator
+variable
+used in the redistricting DiD. Specifically: is After = 1 starting
+in
+"after 2011" or "after 2013"? Include the full Table 4 footnote
+text.
+
+
+Q2. List EVERY control variable used in the redistricting DiD
+specification
+in Table 4, with their formulas. Quote the controls list verbatim.
+
+
+Q3. Is "Industry sigma" or industry-level cash flow volatility (e.g.,
+the
+average within-industry standard deviation of cash flow as in Bates,
+
+
+  Kahle, Stulz 2009) included as a control in Table 4? Quote verbatim
+  confirmation OR denial.
+
+Q4. Are pre-trends tested for the redistricting DiD? If yes, what is the
+
+
+  exact methodology (placebo years tested? F-test on pre-period
+  treatment-by-period dummies?) and the verbatim result?
+
+Q5. What clustering structure is used for standard errors in the
+redistricting DiD: firm-clustered, year-clustered, two-way
+(firm + year), or other? Quote verbatim.
+
+
+Q6. What is the SAMPLE SIZE (number of firm-quarter or firm-year
+observations) for the redistricting DiD specifically (Table 4)?
+
+
+Q7. How is district-level political risk computed? Quote the verbatim
+methodology. Specifically: does it aggregate firm-level PRisk to
+district level? If so, does the aggregation include the focal firm
+(creating circularity)?
+
+
+Q8. What industries are excluded? Quote verbatim SIC code list.
+
+
+OVERALL SAMPLE & METHODOLOGY:
+
+
+Q9. Quote the verbatim sample period start and end (e.g., "2002Q1 to
+2021Q3").
+
+
+Q10. List the EXHAUSTIVE Bates 2009 control set used in the BASELINE OLS
+
+
+   regression (NOT the DiD), with formulas. Verbatim.
+
+Q11. For the 2SLS PCI-IV (Section 5.2 or similar), quote verbatim: the
+first-stage F-statistic, the second-stage beta on PRisk, and the
+exclusion restriction defense.
+
+
+Q12. For PSM analysis, quote verbatim the matching variables and the
+matching ratio (1:1, 1:5, etc.).
+
+
+Q13. Is reverse causality explicitly addressed? Quote verbatim the
+relevant
+paragraph(s).
+
+REDISTRICTING DiD (Section 5.1, Table 4)
+Q1. EXACT verbatim definition of the "After" indicator variable:
+Definition: "After, an indicator variable, equals to 1 after 2011, and 0 otherwise"
+. Furthermore, a footnote explains the timing: "The proposed new district lines of the 2010 census were settled in court in 2011. Thus, we consider 2011 when redistricting was implemented"
+.
+Full Table 4 Footnote Text: "The table presents the regression results for DID analysis of firm cash holdings on political risk based on congressional redistricting. Treated is a categorical variable, ranging from + 1 to −1. + 1 if firm-level political risk has increased due to congressional redistricting, zero if political risk has remained unchanged, and −1 if political risk has decreased due to redistricting. After, an indicator variable, equals to 1 after 2011, and 0 otherwise. Appendix A provides definitions for control variables. We cluster standard errors at the firm level. The symbols ***, **, and * indicate levels of significance at the 1%, 5%, and 10% levels, respectively"
+. (Section 5.1, Page 325)
+Q2. EVERY control variable used in the redistricting DiD specification in Table 4, with formulas:
+List of variables in Table 4: PRisk, Size, M/B, Cashflow, NWC, R&D, Capex, Leverage, Dividend dummy, Acquisition, Industry sigma
+.
+Formulas/Definitions (Section 3, Page 317):
+Size: "Size is measured as the natural logarithm of the book value of total assets."
+M/B: "The ratio of the market value of assets to the book value of assets is our market-to-book (M/B) ratio."
+Cashflow: "We calculate cash flow (Cashflows) as the ratio of earnings after interest, dividends, and taxes but before depreciation to the book value of assets."
+NWC: "Networking capital (NWC) is the difference between working capital and cash, all scaled by the book value of total assets."
+R&D: "Research and development (R&D) is R&D expenses scaled by sales."
+Capex: "Capital expenditure (Capex) is corporate capital expenditure scaled by the book value of total assets."
+Leverage: "Leverage is the ratio of sum of long-term debt and debt in current liabilities to total assets."
+Dividend dummy: "Dividend dummy is an indicator variable which is 1 if firms pay dividends to common shareholders, and 0 otherwise."
+Acquisition: "Acquisition is corporate acquisition expenditure scaled by the book value of total assets."
+Industry sigma: "Industry sigma is the average standard deviation of cashflow of a firm in each industry... The standard deviation of cash flow is firm-level cash flow scaled by total assets for the past 10 years."
+Q3. Is "Industry sigma" included as a control in Table 4?
+Confirmation: Yes.
+Verbatim Quote: "Industry sigma 0.006*** (0.000) 0.006*** (0.000)"
+. (Table 4, Page 326)
+Q4. Are pre-trends tested for the redistricting DiD?
+NOT IN PAPER. The text does not mention or report any parallel trend or placebo pre-trend tests for the redistricting DiD
+.
+Q5. What clustering structure is used for standard errors in the redistricting DiD?
+Clustering Structure: Firm-clustered.
+Verbatim Quote: "We cluster standard errors at the firm level."
+. (Table 4 Footnote, Page 325)
+Q6. What is the SAMPLE SIZE for the redistricting DiD specifically (Table 4)?
+Sample Size: 24,311.
+Verbatim Quote: "N 24,311 24,311"
+. (Table 4, Page 326)
+Q7. How is district-level political risk computed?
+Methodology: The authors do not aggregate a single district-level score; rather, they compute firm-level rankings within the district.
+Verbatim Quote: "For this design, we take all firms located in a given congressional district five years prior to redistricting and classify them into three groups as per their ranking of political risk. For all firms located in the new districts, we use their political risk ranking and then repeat the process as measured over the five years preceding the redistricting."
+. (Section 5.1, Page 324)
+Q8. What industries are excluded?
+NOT IN PAPER. The provided text does not contain a verbatim list of excluded SIC codes for the sample
+.
+
+--------------------------------------------------------------------------------
+OVERALL SAMPLE & METHODOLOGY:
+Q9. Verbatim sample period start and end:
+Verbatim Quote: "...from 2002Q1 to 2021Q3."
+. (Abstract and Section 1, Page 311-312)
+Q10. BASELINE OLS regression EXHAUSTIVE control set, with formulas:
+Verbatim Quote: "Following extant literature (Phan et al. 2019; Devos and Rahman 2018; Bates et al. 2009), we control firm characteristics documented to have a significant impact on corporate cash holdings."
+ The exhaustive set listed verbatim is: "Size is measured as the natural logarithm of the book value of total assets. The ratio of the market value of assets to the book value of assets is our market-to-book (M/B) ratio. We calculate cash flow (Cashflows) as the ratio of earnings after interest, dividends, and taxes but before depreciation to the book value of assets. Networking capital (NWC) is the difference between working capital and cash, all scaled by the book value of total assets. Research and development (R&D) is R&D expenses scaled by sales. Capital expenditure (Capex) is corporate capital expenditure scaled by the book value of total assets. Leverage is the ratio of sum of long-term debt and debt in current liabilities to total assets. Dividend dummy is an indicator variable which is 1 if firms pay dividends to common shareholders, and 0 otherwise. Acquisition is corporate acquisition expenditure scaled by the book value of total assets. Industry sigma is the average standard deviation of cashflow of a firm in each industry."
+. (Section 3, Page 317)
+Q11. 2SLS PCI-IV quotes:
+First-stage F-statistic: "Endogeneity test: Wu-Hausman F-statistic 9333.890***"
+ and "Weak identification test: Kleibergen-Paap rk Wald F-statistic 21.918***"
+.
+Second-stage beta on PRisk: "PRisk fitted 0.912*** (0.000)"
+.
+Exclusion restriction defense: NOT IN PAPER. The text states they use the PCI as an IV but does not include a verbatim defense of the exclusion restriction
+.
+Q12. PSM analysis matching variables and matching ratio:
+Matching variables verbatim: "We control all explanatory variables as considered in the baseline models in Table 2."
+.
+Matching ratio verbatim: "...match each firm-quarter observation with high political risk and a firm-quarter observation with low political risk"
+. (This indicates a 1:1 match). (Section 5.3, Page 328)
+Q13. Is reverse causality explicitly addressed?
+NOT IN PAPER for the exact phrase "reverse causality". However, the concept is explicitly addressed as "jointly determined" (simultaneity).
+Verbatim Quote: "Another possible reason for the endogeneity is that the relationship between firm political risk and cash holdings may be jointly determined, making our estimated coefficients prone to be biased and inconsistent."
+. (Section 5, Page 320)
+How is hedging needs defined in the study?
+What differentiates cash from negative debt in this model?
+How do financial constraints affect a firm's cash savings?
+Query 2 — Hu, Kang, Li, Lin (2024) RAST
+
+
+For Hu, Kang, Li, and Lin (2024), "Trump election and minority CEO
+pessimism," Review of Accounting Studies, DOI
+10.1007/s11142-024-09843-7,
+please answer each question below with a VERBATIM quote and explicit
+section/table/page reference. If a question cannot be answered from the
+paper, say "NOT IN PAPER" with verbatim evidence.
+
+
+TREATMENT + IDENTIFICATION:
+
+
+Q1. What is the EXACT verbatim definition of the "Post" indicator for
+Trump 2016? Does Post = 1 starting Q4 2016 (election quarter), Q1
+2017
+(Trump inauguration), or another quarter? Quote the table footnote
+or methodology section verbatim.
+
+
+Q2. Quote the verbatim definition of "MinorityCEO" treatment indicator.
+Which ethnic categories qualify as minority? Source of the data?
+
+
+Q3. Quote the verbatim sample period start and end (Q3 2014 to Q4 2018?
+Confirm). Include reasoning for endpoint choice.
+
+
+Q4. Was the 2016 Trump election outcome "unexpected"? Quote the verbatim
+
+
+pre-election prediction-market or polling statistic the paper cites
+(e.g., "Wolfers-Zitzewitz pre-election prediction-markets: Clinton
+
+~70%").
+
+
+CONTROLS:
+
+
+Q5. List EVERY firm-level control variable used in the main regression,
+verbatim with formulas. State whether each is at firm-quarter level.
+
+
+Q6. List EVERY CEO-level control variable used in the main regression,
+verbatim with formulas.
+
+
+Q7. Are Bates 2009 controls (lnAssets, M/B, Cashflow, NWC, R&D, Capex,
+Leverage, DivDummy, Acquisition, Industry sigma) used? Specifically:
+
+
+is the Bates 2009 control set used or a different set? Quote
+
+verbatim.
+
+
+DEPENDENT VARIABLE:
+
+
+Q8. What is the EXACT verbatim formula for the "Net_Negative" outcome?
+Is it Q&A_Negative − Pres_Negative? Or another specification?
+
+
+Q9. Is cash holdings (or any cash-related variable) included as a
+dependent variable, control, or in summary statistics? Quote
+verbatim.
+If NOT mentioned, confirm with verbatim evidence.
+
+
+ROBUSTNESS:
+
+
+Q10. Quote the verbatim pre-trends test methodology (placebo dummies?
+F-test? specific tables/columns).
+
+
+Q11. Quote the verbatim 1:5 matching procedure: which variables are
+matched
+on, and what is the matching method?
+
+
+Q12. Quote the verbatim list of robustness checks (e.g., "11 robustness
+checks" — list each).
+
+
+Q13. What clustering structure is used for standard errors? Quote
+verbatim.
+
+
+Q14. What industries are excluded? Quote verbatim.
+
+TREATMENT + IDENTIFICATION:
+Q1. Section 4.1 (Page 965) defines the indicator as: "Post is an indicator that equals one for the post-Trump election period (fourth quarter of 2016 onwards) and zero otherwise"
+. Table 10 (Page 988) similarly defines it verbatim as: "An indicator that equals one for the post-Trump Election period (fourth quarter of 2016 onwards), and zero otherwise"
+.
+Q2. Section 3.2.2 (Page 960) states verbatim: "For this study, we classify a CEO as an ethnic minority (MinorityCEO) if he or she comes from one of the following categories: African American, Asian (including Hindu and South Asian, Sikh and East Asian), Latino/Hispanic, and Middle Eastern Muslim"
+. Regarding the data source, Table 10 (Page 988) states: "We identify a CEO’s ethnicity based on his/her origin of name in the spirit of Liu (2016). Data source: OriginsInfo Ltd. We use ISS (formerly RiskMetrics) to perform a random check"
+.
+Q3. Section 3.1 (Page 959) confirms the sample period verbatim as: "...over the period from the third quarter of 2014 to the fourth quarter of 2018..."
+. The reasoning for the endpoint is provided in Section 3.1 (Page 958): "We choose this sample period to ensure the presence of sufficient observations in both the pre- and post-Trump election windows to draw reliable inferences. We exclude observations from 2019 onwards to avoid the impact of the escalating trade war between the US and China in 2019 and the outbreak of Covid-19 in early 2020"
+.
+Q4. Section 1 (Page 951) explicitly notes the unexpected nature of the election by citing a prediction market statistic verbatim: "First, Trump’s election outcome was unexpected. On the morning of election day (November 9, 2016), Trump’s probability of winning was only 17% on Betfair"
+.
+
+--------------------------------------------------------------------------------
+CONTROLS:
+Q5. Table 10 (Page 988) lists the firm-level control variables verbatim along with their aggregation levels
+:
+Size: "The logarithm of the market value of equity for each firm in a quarter."
+Leverage: "Total liabilities divided by total assets in a quarter."
+Dloss: "An indicator that equals one if a firm-quarter experiences a loss in operating income before depreciation, and zero otherwise."
+MB: "The market value of equity divided by the book value of equity."
+Std_Earning: "The standard deviation of quarterly ROE over the previous 16 quarters"
+AnalysFollowing: "The number of unique analysts following a firm in a year."
+InstitHolding: "Percentage of shares owned by institutional holders in a quarter."
+Std_Ret: "The standard deviation of daily stock returns in a quarter." Additionally, LogHorizon is used as a control: "Natural logarithm of the average of the forecast horizons of all management forecasts"
+. Most variables are measured at the firm-quarter level, aside from AnalysFollowing (yearly) and Std_Earning (rolling 16 quarters)
+.
+Q6. Table 10 (Page 988) lists the CEO-level control variables verbatim
+:
+CEOAge: "Age of a CEO in a fiscal year."
+ExecuDir: "An indicator that equals one if a CEO serves as a director on the board in a fiscal year, and zero otherwise."
+LogSalary: "The logarithm of salary and bonus for a given CEO in a fiscal year."
+CEOGender: "An indicator that equals one if the gender of a CEO is male, and zero otherwise."
+Q7. NOT IN PAPER. The exact Bates 2009 control set is not used or mentioned. The firm uses a different set of controls detailed in Table 10 (Page 988), which specifically includes Size, Leverage, Dloss, MB, Std_Earning, AnalysFollowing, InstitHolding, and Std_Ret
+.
+
+--------------------------------------------------------------------------------
+DEPENDENT VARIABLE:
+Q8. Table 10 (Page 987) defines the outcome verbatim as: "Net_Negative: Negative minus the number of negative-tone words net of positive-tone words used in presentation sections by CEOs. It is a refined measure for Negative"
+. Section 4.2.2 (Page 973) also details the formula: "we subtract the number of negative-tone words net of positive-tone words used in the managers’ presentation sections led by CEOs from Negative... to obtain a refined measure to proxy CEO pessimism, Net_Negative"
+.
+Q9. NOT IN PAPER. The provided document does not mention cash holdings or any cash-related variable as a dependent variable, control variable, or in the summary statistics
+.
+
+--------------------------------------------------------------------------------
+ROBUSTNESS:
+Q10. Section 4.2.1 (Page 970) details the pre-trends test methodology verbatim: "To formally test for parallel trends, we include in Panel A of Table 4 MinorityCEO × Pre, in which Pre is an indicator that equals one for the two quarters before the Trump election and zero otherwise. Thus, the coefficient on MinorityCEO × Pre captures whether minority CEOs react two quarters prior to the election. For the parallel trends assumption of the DiD approach to hold, we would expect an insignificant coefficient on MinorityCEO × Pre"
+.
+Q11. Section 4.2.3 (Page 974) outlines the matching procedure verbatim: "Specifically, we match a firm with a minority CEO to its closest five peer firms that have non-minority CEOs, are in the same industry, and have a comparable firm size"
+.
+Q12. The paper does not offer a numbered list (e.g., "11 robustness checks"), but Section 1 (Page 952) lists the robustness checks verbatim as: "First, we exploit the properties of disclosures and use the inverse of precision and specificity of forecasts as an alternative measure... As supplemental evidence, we apply textual analysis techniques to quantify the pessimistic tones of CEOs... Second, we document the prevalence of minority CEO pessimism among different minority groups... Third, pre-existing trends between the treated group and the control group before the election do not drive our main finding"
+. Section 4.2.3 (Page 974) introduces further "Alternative specifications" verbatim: "we conduct a 1:5 matching procedure", "we control, in our baseline regression, whether an observation falls into a CEO turnover window", and "we restrict the regression sample to a subset of firms with the same CEOs in office around the Trump election"
+.
+Q13. Section 4.1 (Page 966) details the standard error clustering structure verbatim: "As our research explores variation in CEOs’ ethnicity, we cluster standard error by ethnicity groups to address autocorrelation"
+. This is reiterated in the notes for Table 3 (Page 968) as: "Standard errors are clustered by ethnic groups"
+.
+Q14. NOT IN PAPER. Section 3.1 (Pages 958-959) describes the "Data and sample selection" process but does not mention excluding any specific industries (such as financials or utilities) from the analysis
+.
+What is the relationship between cash and debt according to Acharya et al. (2007)?
+How do hedging needs specifically influence a constrained firm's cash flow sensitivity of debt?
+Why are unconstrained firms indifferent between cash and debt capacity in this model?
+Query 3 — Hassan, Hollander, van Lent, Tahoun (2019) QJE
+
+
+For Hassan, Hollander, van Lent, and Tahoun (2019), "Firm-Level
+Political
+Risk: Measurement and Effects," Quarterly Journal of Economics 134(4),
+DOI 10.1093/qje/qjz021, please answer each question below with a
+VERBATIM
+quote and explicit section/table/page reference. If a question cannot be
+
+
+answered from the paper, say "NOT IN PAPER" with verbatim evidence.
+
+
+OUTCOMES:
+
+
+Q1. List EVERY dependent variable tested in the paper. Be exhaustive —
+main analysis + robustness + appendix. Include: investment, hiring,
+capex, lobbying, donations, stock return volatility, and ANY others.
+
+
+Q2. Is ANY speech-related outcome tested as a DV? Examples: Q&A
+duration,
+presentation length, speech tone, sentiment, language uncertainty,
+or similar linguistic feature of earnings calls? Quote verbatim
+confirmation OR denial — if denial, confirm with exhaustive verbatim
+
+
+search.
+
+Q3. Are cash holdings, repurchases, or dividends tested as a DV anywhere
+
+
+in the paper (main, robustness, or appendix)? Verify NEGATIVE with
+verbatim — do they explicitly NOT mention these outcomes?
+
+PRISK SUB-TOPICS:
+
+
+Q4. List the 8 PRisk sub-topics by EXACT name as they appear in the
+paper
+(e.g., "trade", "tax", "economic policy & budget", etc.). Quote the
+sentence that lists them all.
+
+
+Q5. Quote the verbatim training-library description for each sub-topic.
+
+
+Q6. Are sub-topics validated independently? Quote any verbatim
+validation
+procedure.
+
+
+REVERSE CAUSALITY:
+
+
+Q7. Quote verbatim every passage where the paper acknowledges or
+addresses
+reverse causality concerns.
+
+
+Q8. Does the paper explicitly DISCLAIM causal interpretation? Quote
+verbatim the disclaimer.
+
+
+TRUMP 2016:
+
+
+Q9. Quote EVERY mention of Trump or the 2016 election in the paper.
+State
+the context (validation? identification? case study?).
+
+
+Q10. Is Trump 2016 used as an identification source (DiD, IV, event
+study)?
+Or only as a validation episode? Quote verbatim.
+
+
+PRISK CONSTRUCT:
+
+
+Q11. Quote the verbatim PRisk construction formula and word-list
+methodology.
+
+
+Q12. Quote the verbatim sample period (e.g., "2002 to 2016").
+
+
+Q13. What was the 89.6% standard-deviation jump verbatim quote? Specify
+the quarter and context.
+
+Here are the answers to your questions regarding the Hassan, Hollander, van Lent, and Tahoun (2019) paper, based strictly on the provided excerpts:
+OUTCOMES:
+Q1. Dependent Variables Tested The paper tests the following dependent variables:
+Volatility: "Realized volatility_{i,t}" and "Implied volatility_{i,t}" (Table IV, p. 2165)
+.
+Investment and Operations: "I 
+i,t
+​
+ /K 
+i,t−1
+​
+ ∗100", "capexg_{i,t}" (Capital expenditure growth), "emp_{i,t}" (Employment growth), and "sales_{i,t}" (Sales growth) (Table V, Panel A, p. 2167)
+.
+Political Actions: "Log(1+lobby 
+i,t+1
+​
+ )"and"Log(1+donations_{i,t+1})" (Table VII, Panel B, p. 2174)
+; "# of recipients_{i,t+1}" and "Hedge_{i,t+1}" (Table VII, Panel C, p. 2175)
+.
+Q2. Speech-Related Outcomes as Dependent Variables NOT IN PAPER. The paper does not test any speech-related outcome as a dependent variable. Linguistic features are strictly used as the independent variables (e.g., PRisk 
+i,t
+​
+ ) to explain the financial and real outcomes listed above. Verbatim evidence confirms they are on the right side of the equation:
+"The dependent variables are defined as in the preceding tables. Each regression specification controls for ... and PRisk 
+i,t
+​
+ " (Table VII Notes, p. 2175)
+.
+Q3. Cash Holdings, Repurchases, or Dividends as Dependent Variables NOT IN PAPER. These variables are neither tested as dependent variables nor explicitly disclaimed in the provided text. A verbatim search of the paper's excerpts yields no mentions of "cash holdings", "repurchases", or "dividends" being measured or excluded. (Note: Other sources in your notebook, such as Akyol & Wei (2024)
+ and Hasan et al. (2022)
+, use Hassan's metric to test these exact outcomes, but Hassan et al. (2019) themselves do not).
+
+--------------------------------------------------------------------------------
+PRISK SUB-TOPICS:
+Q4. List of 8 PRisk Sub-Topics
+"From the material provided on the website, we distilled training libraries for eight political topics: “economic policy & budget,” “environment,” “trade,” “institutions & political process,” “health care,” “security & defense,” “tax policy,” and “technology & infrastructure.”" (Section VI, p. 2191)
+.
+Q5. Training-Library Description for Each Sub-Topic
+"To implement equation (6), we rely on the collection of newspaper articles, speeches, press releases, and bill sponsorships, compiled by OnTheIssues.org, which is a nonpartisan not-for-profit organization that uses this information to educate voters about the positions politicians take on key topics. We believe this source is particularly useful because it includes a wide variety of written texts and transcripts of spoken language." (Section VI, p. 2191)
+.
+Q6. Validation of Sub-Topics Yes, they are validated independently using the following procedure:
+"Online Appendix Table XX shows the top 15 bigrams most indicative of each of our eight political topics: the bigrams with the highest f 
+b,P 
+T
+​
+ 
+​
+ /B 
+P 
+T
+​
+ 
+​
+ log(Z/f 
+b,Z
+​
+ ). [...] As before, the table shows the text surrounding the highest-scoring bigrams within the three highest-scoring transcripts for each topic, which also give an impression as to each transcript’s content... Although our approach yields the expected results, we note a few minor exceptions." (Section VI.A. Validation, pp. 2191-2192)
+.
+
+--------------------------------------------------------------------------------
+REVERSE CAUSALITY:
+Q7. Acknowledging Reverse Causality Concerns The authors address the endogeneity/reverse causality concern that managers might use political risk as an excuse for poor performance:
+"We thus find no evidence that managers’ incentives to blame political risks for bad performances affect our results. Taken together, these results bolster our confidence that PRisk 
+it
+​
+  correctly identifies variation in the second moment (risk), rather than the expected realization of political shocks." (Section IV.A, p. 2173)
+.
+Q8. Disclaimer of Causal Interpretation The authors explicitly disclaim identifying causal effects in the current paper:
+"Our results leave a number of avenues for future research. In particular, we hope the ability to measure firm-level variation in political risk will contribute to identifying and quantifying causal effects of political risk in future work, for example, by combining our data with information about natural experiments affecting the degree of political risk associated with particular topics." (Section VII Conclusion, p. 2199)
+.
+
+--------------------------------------------------------------------------------
+TRUMP 2016:
+Q9. Mentions of Trump / 2016 Election Trump is mentioned purely in the context of validating the PRisk measure's ability to capture contemporary political risk spikes:
+"The same is true for firms that mention the words “Trump” and “Twitter” or “tweet” in the fourth quarter of 2016 (on average by 89.6% of a standard deviation)." (Section III.D Validation, p. 2160)
+.
+Q10. Trump 2016 Identification vs. Validation Trump 2016 is used only as a validation episode, not as an identification source (like DiD or IV).
+"The conclusion from this first set of validation exercises is that transcripts with the highest PRisk 
+i,t
+​
+  indeed center on the discussion of political risks... The same is true for firms that mention the words “Trump” and “Twitter” or “tweet” in the fourth quarter of 2016" (Section III.D Validation, pp. 2160-2166)
+.
+
+--------------------------------------------------------------------------------
+PRISK CONSTRUCT:
+Q11. PRisk Construction Formula and Methodology Formula:
+"PRisk 
+it
+​
+ =∑ 
+b
+B 
+it
+​
+ 
+​
+ (1[b∈P\N]×1[∣b−r∣<10]× 
+B 
+P
+​
+ 
+f 
+b,P
+​
+ 
+​
+ )/B 
+it
+​
+ " (Section III.A, p. 2148)
+. Methodology: "Specifically, we construct our measure of overall political risk by first defining a training library of political text, archetypical of the discussion of politics, P, and another training library of nonpolitical text, archetypical of the discussion of nonpolitical topics, N. Each training library is the set of all adjacent two-word combinations (bigrams) contained in the respective political and nonpolitical texts... We count the number of occurrences of bigrams indicating discussion of a given political topic within the set of 10 words surrounding a synonym for “risk” or “uncertainty” on either side, and divide by the total number of bigrams in the transcript:" (Section III.A, pp. 2147-2148)
+.
+Q12. Sample Period NOT IN PAPER. The explicit start and end years of the overall sample (e.g., "2002 to 2016") are absent from the provided excerpts of the Hassan et al. paper itself. The text does state that there are N=176,173 firm-quarter observations (Table I, p. 2145)
+ and references specific call dates ranging from "May 2006" to the "fourth quarter of 2016"
+, but it does not supply a verbatim bounding sample period phrase.
+Q13. 89.6% Standard-Deviation Jump
+"The same is true for firms that mention the words “Trump” and “Twitter” or “tweet” in the fourth quarter of 2016 (on average by 89.6% of a standard deviation)." This jump occurred in the fourth quarter of 2016. The context was a validation test confirming that the PRisk measure effectively captured immediate, real-world spikes in political uncertainty driven by specific contemporary events and actors (Section III.D Validation, p. 2160)
+.
+What is the 'hedging motive' behind firm cash policies?
+How are 'hedging needs' measured in the empirical tests?
+Why is cash not considered equivalent to negative debt?
+Query 4 — Akyol & Wei (2024) SSRN
+
+
+For Akyol and Wei (2024), "Firm-Level Political Risk and Stock
+Repurchases"
+SSRN Working Paper, DOI 10.2139/ssrn.4954055, please answer each
+question
+below with a VERBATIM quote and explicit section/table/page reference.
+If
+a question cannot be answered from the paper, say "NOT IN PAPER" with
+verbatim evidence.
+
+
+DEPENDENT VARIABLE + SAMPLE:
+
+
+Q1. What is the EXACT verbatim dependent variable formula? (Stock
+repurchases scaled by what?)
+
+
+Q2. Quote the verbatim sample period (start and end years).
+
+
+Q3. What industries are excluded? Quote verbatim SIC codes.
+
+
+IDENTIFICATION:
+
+
+Q4. Is the 2016 Trump election used as an identification source
+(DiD, IV, event study)? Quote verbatim every mention of "Trump" or
+"2016" or "election" in the paper.
+
+
+Q5. Quote the verbatim polarization-IV first-stage statistics
+(F-statistic, beta on PRisk in second stage).
+
+
+Q6. Quote the verbatim exclusion-restriction defense for the
+polarization IV.
+
+
+Q7. Is reverse causality explicitly addressed? Quote verbatim.
+
+
+CONTROLS:
+
+
+Q8. List EVERY control variable used in the main regression, verbatim
+with formulas.
+
+
+Q9. Are Bates 2009 controls used? Quote verbatim — match the exact
+Bates 2009 list (lnAssets, M/B, Cashflow, NWC, R&D, Capex, Leverage,
+
+
+DivDummy, Acquisition, Industry sigma).
+
+DESIGN OVERLAP:
+
+
+Q10. Does the paper include CEO speech uncertainty (UncResCEO,
+UncAnsCEO,
+ClarityCEO, or any DWZ-style residual) as a variable? Quote
+verbatim confirmation OR denial.
+
+
+Q11. Does the paper include cash holdings as a DV or control variable?
+Quote verbatim.
+
+
+Q12. Does the paper test interactions of PRisk with sub-categorical
+PRisk
+(PRiskT_trade, PRiskT_tax, etc.) or with any "BothHigh" /
+"exposure × time" indicator? Verbatim.
+
+
+Q13. Does the paper anywhere construct a "BothHigh trade × tax" or
+similar combinatorial exposure measure? Verbatim.
+
+
+CLUSTERING + STANDARD ERRORS:
+
+
+Q14. What clustering structure is used? Verbatim.
+
+
+Q15. What is the sample size of the main regression?
+
+DEPENDENT VARIABLE + SAMPLE:
+Q1. What is the EXACT verbatim dependent variable formula? (Stock repurchases scaled by what?) "We focus on the repurchases under the firm’s repurchase program and measure it as the total quarterly repurchased shares as a percentage of the total number of shares outstanding."
+ In the regression tables, it is measured as: "The dependent variable in the regression analysis is the shares of repurchases scaled by total number of shares outstanding, times 100."
+ (Table 2 Note).
+Q2. Quote the verbatim sample period (start and end years). The authors mention two slightly different periods in the text: Section 1 states: "Using a sample of U.S. publicly listed firms from 2004 – 2018"
+. Section 3.1 states: "we differentiate our study from others by collecting firms’ monthly open-market stock repurchases from 2002 to the first quarter of 2018"
+.
+Q3. What industries are excluded? Quote verbatim SIC codes. "In the analysis, we exclude the financial firms (SIC code 6000 – 6999) and utility firms (SIC code 4900 – 4999) as they have unique corporate payout regulations."
+ (Section 3.1).
+
+--------------------------------------------------------------------------------
+IDENTIFICATION:
+Q4. Is the 2016 Trump election used as an identification source (DiD, IV, event study)? Quote verbatim every mention of "Trump" or "2016" or "election" in the paper. NOT IN PAPER. The paper does not use the 2016 Trump election as an identification source, and the words "Trump", "2016", and "election" do not appear in the provided text
+.
+Q5. Quote the verbatim polarization-IV first-stage statistics (F-statistic, beta on PRisk in second stage).
+F-statistic: "The first-stage regression shows a Kleibergen-Paap Wald rk F statistic of 7.801."
+ (Table 9 Note).
+Beta on PRisk (second stage): "Political Risk (fitted) 1.441** (2.410)"
+ (Table 9).
+Q6. Quote the verbatim exclusion-restriction defense for the polarization IV. "Meanwhile, we believe this instrument is also exogenous to the dependent variable as the political polarization based on the house votes should not directly affect individual firm’s repurchase activities especially the repurchases under the firm’s repurchase programs."
+ (Section 4.6).
+Q7. Is reverse causality explicitly addressed? Quote verbatim. NOT IN PAPER. The exact phrase "reverse causality" is not explicitly used. However, the authors generally address related endogeneity/selection issues verbatim: "we conduct a propensity score matching (PSM) test to alleviate the concern of selection bias"
+ and "we further address the endogeneity issue by conducting a 2SLS instrumental variable regression analysis"
+.
+
+--------------------------------------------------------------------------------
+CONTROLS:
+Q8. List EVERY control variable used in the main regression, verbatim with formulas. "Specifically, we include the firm size, market-to-book value, corporate leverage, cash ratio, cash flow, sales growth, return on asset (ROA), research & development (R&D) intensity, capital expenditure, tangibility, ROA volatility, and Altman’s Z-score dummy (Altman, 1968)."
+ (Section 3.1). (Note: Full explicit formulas are NOT IN PAPER as the "Appendix A: Variable Definitions" section provided in the text is truncated after the dependent variable
+).
+Q9. Are Bates 2009 controls used? Quote verbatim — match the exact Bates 2009 list (lnAssets, M/B, Cashflow, NWC, R&D, Capex, Leverage, DivDummy, Acquisition, Industry sigma). NOT IN PAPER. The paper does not use the Bates 2009 list. It explicitly states: "The control variables we include in the baseline regressions come from Ahmad et al. (2023)."
+ (Section 3.1).
+
+--------------------------------------------------------------------------------
+DESIGN OVERLAP:
+Q10. Does the paper include CEO speech uncertainty (UncResCEO, UncAnsCEO, ClarityCEO, or any DWZ-style residual) as a variable? Quote verbatim confirmation OR denial. NOT IN PAPER. The paper does not use CEO speech uncertainty metrics. It relies solely on the Hassan et al. (2019) measure: "our measure of firm-level political risk comes from Hassan et al. (2019). This metric indicates the percentage of a company's earnings conference call devoted to discussions about political risks."
+ (Section 3.1).
+Q11. Does the paper include cash holdings as a DV or control variable? Quote verbatim. Yes, as a control variable. "Specifically, we include the firm size, market-to-book value, corporate leverage, cash ratio, cash flow..."
+ (Section 3.1). In the regression tables, it is denoted verbatim as "Cash/Total Assets"
+ (Table 4).
+Q12. Does the paper test interactions of PRisk with sub-categorical PRisk (PRiskT_trade, PRiskT_tax, etc.) or with any "BothHigh" / "exposure × time" indicator? Verbatim. NOT IN PAPER. While the paper examines subcategories independently ("The positive association also exists in the subcategories of political risk related to economics, environment, institutions, security, tax, and technology."
+), it does not interact them or utilize a "BothHigh" exposure measure.
+Q13. Does the paper anywhere construct a "BothHigh trade × tax" or similar combinatorial exposure measure? Verbatim. NOT IN PAPER
+.
+
+--------------------------------------------------------------------------------
+CLUSTERING + STANDARD ERRORS:
+Q14. What clustering structure is used? Verbatim. "Finally, we adjust the standard errors for heteroskedasticity, and they are clustered at the firm level to account for the potential non-independence and non-identical distribution of errors."
+ (Section 3.2).
+Q15. What is the sample size of the main regression? "the final sample consists of 2,109 unique firms and 29,717 firm-quarter observations throughout the entire sample period."
+ (Section 3.1). Table 2 confirms: "Observations 29,717"
+.

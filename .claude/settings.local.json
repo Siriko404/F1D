@@ -17,7 +17,14 @@
       "Skill(gsd:plan-phase)",
       "Skill(gsd:plan-phase:*)",
       "Bash(python:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(rm -rf tmp_preview)",
+      "Bash(rm -f main.aux main.log main.bbl main.blg main.out)",
+      "Bash(rm -f main.aux main.bbl main.blg)",
+      "Bash(pdflatex -interaction=nonstopmode main.tex)",
+      "Bash(bibtex main *)",
+      "Bash(echo \"Exit: $?\")",
+      "Read(//tmp/**)"
     ]
   }
 }

@@ -1,5 +1,5 @@
-❯ spawn a red team agent with an extremely thoroughly designed with complete context, to make
-  the agent perform an audit of your plan which is: 1. Adverserial 2. HARDNOSED assuming
+❯ spawn a red team peer review agent with an extremely thoroughly designed with complete context, to make
+  the agent perform an audit which is: 1. Adverserial 2. HARDNOSED assuming
   EVERYTHING is wrong until proven otherwise 3. systematic and thorough 4. MANUAL! no bulk
   process is allowed! adhoc targetted commands are allowed. /// GIVE THE AGENT EVERYTHING IT
   NEEDS FOR PERFORMING A COMPLETE DILLIGENT AUDIT /// make the red team WORK EXTRA HARD!

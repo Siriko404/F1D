@@ -1,0 +1,96 @@
+# learn-codebase progress tracker (claude-mem front-load pass)
+# Protocol: read batches per session, /compact between, resume from marker.
+# claude-mem PostToolUse hook fires per Read → observation persists across sessions.
+#
+# Inventory source: tmp/f1d_source_inventory.txt (449 files total)
+# After /compact: Future-Claude reads this file FIRST, finds last completed line,
+# resumes from next file in inventory.
+#
+# Format: one absolute file path per line. Comments start with #.
+# ============================================================================
+
+# Session 1 (2026-05-12) — initial 20 files
+pyproject.toml
+config/project.yaml
+config/variables.yaml
+config/summary_stats_config.yaml
+config/suite_render_order.yaml
+scripts/_patch_liquidity_runners.py
+scripts/audit_cross_panel_identity.py
+scripts/clone_bgt_runners.py
+scripts/compute_missing_sumstats.py
+src/f1d/__init__.py
+src/f1d/sample/__init__.py
+src/f1d/sample/assemble_manifest.py
+src/f1d/sample/build_sample_manifest.py
+src/f1d/sample/build_tenure_map.py
+src/f1d/sample/clean_metadata.py
+src/f1d/sample/link_entities.py
+src/f1d/sample/utils.py
+src/f1d/text/__init__.py
+src/f1d/text/build_linguistic_variables.py
+src/f1d/text/tokenize_transcripts.py
+
+# Batch 3 (2026-05-12) — scripts/adhoc first 10
+scripts/adhoc/audit_thesis_artifact_coverage.py
+scripts/adhoc/audit_v7_body_numbers.py
+scripts/adhoc/audit_vardefs_completeness.py
+scripts/adhoc/build_appendix_b.py
+scripts/adhoc/build_driver_matrix.py
+scripts/adhoc/build_phase_b_template.py
+scripts/adhoc/build_review_evidence_base.py
+scripts/adhoc/cohort_measure_correlations.py
+scripts/adhoc/count_section_paragraphs.py
+scripts/adhoc/crosswalk_ceo_deaths_a1.py
+
+# Batch 4 (2026-05-12) — scripts/adhoc next 10
+scripts/adhoc/dedup_ceo_deaths_a3.py
+scripts/adhoc/diag_h18_funnel.py
+scripts/adhoc/diag_hasan_verbatim_explain.py
+scripts/adhoc/download_lewis2013_cd_geojson.py
+scripts/adhoc/extract_canonical_facts.py
+scripts/adhoc/filter_ceo_death_zips.py
+scripts/adhoc/filter_vardefs_thesis.py
+scripts/adhoc/geocode_firm_hq_addresses.py
+scripts/adhoc/geocode_full_compustat_hq.py
+scripts/adhoc/panel_filter_ceo_deaths_a2.py
+
+# ============================================================================
+# SESSION 1 END — 40 files done. /compact executed.
+# ============================================================================
+
+# Session 2 (2026-05-12 post-compact) — adhoc tail + brexit start
+# Batch 5 — adhoc remaining 9 + brexit __init__
+scripts/adhoc/phase_e_precheck.py
+scripts/adhoc/role_textual_summary_stats.py
+scripts/adhoc/triage_tier1_phase_b.py
+scripts/adhoc/verify_section_4_1.py
+scripts/adhoc/viz_ff12_timeseries.py
+scripts/adhoc/viz_role_textual_stats.py
+scripts/adhoc/wire_h1_2_ceo2_table.py
+scripts/adhoc/wire_h1_ceo2_table.py
+scripts/adhoc/xref_audit.py
+scripts/brexit/__init__.py
+
+# Batch 6 — scripts/brexit remaining 8
+scripts/brexit/build_beta_uk.py
+scripts/brexit/parse_10k_keywords.py
+scripts/brexit/build_treatment_10k.py
+scripts/brexit/build_macro_controls.py
+scripts/brexit/build_consensus_eps.py
+scripts/brexit/build_fic100.py
+scripts/brexit/build_brexit_controls.py
+scripts/brexit/build_psm.py
+
+# ============================================================================
+# SESSION 2 END — 58/449 files done (13%). scripts/ FULLY COMPLETE.
+# Coverage so far: configs, scripts/ root, scripts/adhoc, scripts/brexit,
+#                  src/f1d/__init__, src/f1d/sample/, src/f1d/text/.
+# Next session targets: src/f1d/econometric/ (~95 files incl _archived) —
+#                       runners + brexit/boasiako/chen-related modules.
+# Recommended next batch: src/f1d/econometric/run_h1_5_brexit_did.py first
+#                         (the central runner the brexit scripts call into),
+#                         then run_h1_5_trump_did.py (clone source),
+#                         then panel_ols.py / clustering helpers.
+# claude-mem observations persist via PostToolUse hook.
+# ============================================================================

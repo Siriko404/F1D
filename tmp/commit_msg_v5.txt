@@ -1,0 +1,60 @@
+H1.5 v5 OpenAlex search + 8-NLM-rounds verdict — 3-DiD lineup LOCKED
+
+Post-compaction continuation of H1.5 systematic literature search. User
+clarified scope (H1.6 Hasan stays separate; need 3 NEW DiDs). Brexit
+confirmed for slot #1 from pre-compact verification. Search continued
+for slots #2 + #3 via v5 OpenAlex pass + 4 additional NLM rounds.
+
+KEY ARTIFACT: tmp/h1_5_3_did_search_progress_2026_05_08.md
+  20-turn step-by-step log + verdict table + 3-DiD spec + 3-tier framing
+  + implementation scaffold + outstanding durable-write task list
+
+KEY DATA-VERIFIED CORRECTION:
+  F1D earnings-call window CORRECTED to 2002-01-16 → 2018-12-22
+  (was claimed 2002-2021 throughout prior session). Source: programmatic
+  read of outputs/variables/h1_cash_holdings/2026-04-19_182724/
+  h1_cash_holdings_panel.parquet. Implication: drop post-2018 shocks
+  (COVID, Russia-Ukraine, SVB) from search; pre-2018 shocks preferred.
+
+V5 SEARCH:
+  tmp/openalex_lit_search_v5.py — 50 queries + 8 anchors,
+    polarity-sentinel filter, macro-shock filter, US-only filter
+  tmp/openalex_v5_results.csv — 2,207 unique works
+  tmp/openalex_v5_top.md — Tier 1 + Tier 2 candidate report
+  Funnel: 2,207 → 47 cash+broader-DiD/shock/IV → 16 tier-A
+  4 strong NEW candidates surfaced (Boasiako, De Simone, Berg, Chowdhury)
+
+8 NLM ROUNDS THIS SESSION (full-PDF verbatim verification):
+  Pre-compact:
+    Chen 2017 JAAF Restatements (Q1+Q2)         → ACCEPT slot #3 fallback
+    Brexit Campello 2022 JFQA (already verified)  → ACCEPT slot #1
+  Post-compact:
+    Ghaly 2017 RFS Katrina (Q1)                 → KILL opposite polarity
+    Campbell 2025 RAST TCJA (Q1)                → KILL Faulkender-Wang
+    Boasiako 2020 EFM Data Breaches (Q1)        → ACCEPT slot #2
+    De Simone 2018 RFS Repatriation (Q1)        → KILL tax-arbitrage
+    Berg 2018 RFS Got Rejected? (Q1)            → KILL German SMEs
+    Chowdhury 2021 JCF Stakeholder (Q1)         → KILL Faulkender-Wang
+                                                    + opposite polarity
+                                                    + zero ID checks
+
+3-DiD LOCKED LINEUP (3-tier shock-scale hierarchy):
+  [#1] H1.5.brexit_did       MACRO international policy (Brexit 2016)
+  [#2] H1.5.databreach_did   STATE-LEVEL US legal regime (data-breach)
+  [#3] H1.5.restatement_did  FIRM-EVENT idiosyncratic shock (restatements)
+
+Each layer adds parallel UncResCEO_c regression as OUR Story B novelty.
+
+DURABLE MEMORY UPDATES (outside this repo):
+  memory/project_session_2026_05_08_3did_lineup_locked.md (NEW NEWEST)
+  memory/reference_campello_etal_2022_brexit_jfqa_verbatim.md (NEW)
+  memory/reference_boasiako_oconnor_keefe_2020_efm_verbatim.md (NEW)
+  memory/reference_chen_etal_2017_jaaf_restatement_verbatim.md (NEW)
+  memory/MEMORY.md updated (top entry replaced; 3 new ref entries added)
+
+NO CODE CHANGES. Master HEAD remains 721b0f7 (lit-search artifacts only).
+Implementation phase next: 5 NEW builders + 3 NEW runners + 3 suite IDs +
+§III.E.4 prose + §V rewrite. Total estimated effort 12-19 days.
+
+Plan v3 at ~/.claude/plans/tender-popping-origami.md still references
+dead Trump-2016 BothHigh×Post spec; needs v4 update next session.
