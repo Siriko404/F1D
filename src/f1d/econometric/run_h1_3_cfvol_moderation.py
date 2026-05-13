@@ -224,6 +224,21 @@ MODEL_SPECS = [
     {"col": 14, "dv": "CashRatio_lead", "fe": "firm",        "extra_controls": [], "interactions": True},
     {"col": 15, "dv": "CashRatio_lead", "fe": "industry_yq", "extra_controls": [], "interactions": True},
     {"col": 16, "dv": "CashRatio_lead", "fe": "firm_yq",     "extra_controls": [], "interactions": True},
+    # OVB-Defense Robustness specs (2026-05-13) — Spec A/B/C × 2 DVs × (unconditional + interaction)
+    # Unconditional OVB (needed for _write_suite_spec_json merging pattern)
+    {"col": 17, "dv": "CashRatio",      "fe": "ind_yr_robust",  "extra_controls": [], "interactions": False},
+    {"col": 18, "dv": "CashRatio",      "fe": "ind_qtr_robust", "extra_controls": [], "interactions": False},
+    {"col": 19, "dv": "CashRatio",      "fe": "firm_yr_robust", "extra_controls": [], "interactions": False},
+    {"col": 20, "dv": "CashRatio_lead", "fe": "ind_yr_robust",  "extra_controls": [], "interactions": False},
+    {"col": 21, "dv": "CashRatio_lead", "fe": "ind_qtr_robust", "extra_controls": [], "interactions": False},
+    {"col": 22, "dv": "CashRatio_lead", "fe": "firm_yr_robust", "extra_controls": [], "interactions": False},
+    # Interaction OVB (displayed)
+    {"col": 23, "dv": "CashRatio",      "fe": "ind_yr_robust",  "extra_controls": [], "interactions": True},
+    {"col": 24, "dv": "CashRatio",      "fe": "ind_qtr_robust", "extra_controls": [], "interactions": True},
+    {"col": 25, "dv": "CashRatio",      "fe": "firm_yr_robust", "extra_controls": [], "interactions": True},
+    {"col": 26, "dv": "CashRatio_lead", "fe": "ind_yr_robust",  "extra_controls": [], "interactions": True},
+    {"col": 27, "dv": "CashRatio_lead", "fe": "ind_qtr_robust", "extra_controls": [], "interactions": True},
+    {"col": 28, "dv": "CashRatio_lead", "fe": "firm_yr_robust", "extra_controls": [], "interactions": True},
 ]
 
 DV_TEX = {
@@ -440,7 +455,14 @@ def prepare_regression_data(
     all_controls = CONTROLS + extra_controls
 
     # Determine time column based on FE type
-    time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
+    if fe == "ind_qtr_robust":
+        time_col = "cal_yr_qtr"
+    elif fe in ("ind_yr_robust", "firm_yr_robust"):
+        time_col = "cal_yr"
+    elif fe.endswith("_yq"):
+        time_col = "cal_yr_qtr"
+    else:
+        time_col = "cal_yr"
 
     # Create Lagged_DV: always lag of the base DV (t-1), regardless of t/t+1
     base_dv = dv.replace("_lead", "")
@@ -452,7 +474,7 @@ def prepare_regression_data(
 
     # Natural Full sample: require 3 raw + 3 centered Full IVs non-NaN.
     required = ([dv] + IVS_REG_A_RAW + IVS_REG_A_CENTERED + [MOD_HIGH_CFVOL]
-                + all_controls + ["gvkey", time_col, "ff12_code"])
+                + all_controls + ["gvkey", time_col, "ff12_code", "cal_yr"])
 
     missing = [c for c in required if c not in panel.columns]
     if missing:
@@ -528,8 +550,62 @@ def _extract_coef(model, name: str) -> Tuple[float, float, float]:
 
 
 def _fit_one(df_panel: pd.DataFrame, dv: str, exog: List[str], base_fe: str) -> Any:
-    """Single PanelOLS fit. Industry FE via other_effects; Firm FE via from_formula."""
-    if base_fe == "industry":
+    """Single PanelOLS fit. Industry FE via other_effects; Firm FE via from_formula.
+
+    base_fe values:
+        "industry"       — FF12 additive FE + time FE
+        "firm"           — entity + time FE (from_formula)
+        "ind_yr_robust"  — Spec A: FF12 × cal_yr interaction; firm FE retained
+        "ind_qtr_robust" — Spec B: FF12 × cal_yr_qtr interaction; firm FE retained
+        "firm_yr_robust" — Spec C: gvkey × cal_yr; subsumes firm + time FE
+    """
+    if base_fe == "ind_yr_robust":
+        df_panel = df_panel.copy()
+        df_panel["ind_yr_id"] = (
+            df_panel["ff12_code"].astype(str) + "_" +
+            df_panel.index.get_level_values(1).astype(str)  # time index = cal_yr
+        )
+        model_obj = PanelOLS(
+            dependent=df_panel[dv],
+            exog=df_panel[exog],
+            entity_effects=True,
+            other_effects=df_panel["ind_yr_id"].astype("category"),
+            drop_absorbed=True,
+            check_rank=False,
+        )
+        return model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
+    elif base_fe == "ind_qtr_robust":
+        df_panel = df_panel.copy()
+        df_panel["ind_qtr_id"] = (
+            df_panel["ff12_code"].astype(str) + "_" +
+            df_panel.index.get_level_values(1).astype(str)  # time index = cal_yr_qtr
+        )
+        model_obj = PanelOLS(
+            dependent=df_panel[dv],
+            exog=df_panel[exog],
+            entity_effects=True,
+            other_effects=df_panel["ind_qtr_id"].astype("category"),
+            drop_absorbed=True,
+            check_rank=False,
+        )
+        return model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
+    elif base_fe == "firm_yr_robust":
+        df_panel = df_panel.copy()
+        df_panel["firm_yr_id"] = (
+            df_panel.index.get_level_values(0).astype(str) + "_" +
+            df_panel.index.get_level_values(1).astype(str)  # time index = cal_yr
+        )
+        model_obj = PanelOLS(
+            dependent=df_panel[dv],
+            exog=df_panel[exog],
+            entity_effects=False,
+            time_effects=False,
+            other_effects=df_panel["firm_yr_id"].astype("category"),
+            drop_absorbed=True,
+            check_rank=False,
+        )
+        return model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
+    elif base_fe == "industry":
         model_obj = PanelOLS(
             dependent=df_panel[dv],
             exog=df_panel[exog],
@@ -602,9 +678,24 @@ def run_regression(
     extra_controls = spec["extra_controls"]
     all_controls = CONTROLS + extra_controls
 
-    time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
+    if fe == "ind_qtr_robust":
+        time_col = "cal_yr_qtr"
+    elif fe in ("ind_yr_robust", "firm_yr_robust"):
+        time_col = "cal_yr"
+    elif fe.endswith("_yq"):
+        time_col = "cal_yr_qtr"
+    else:
+        time_col = "cal_yr"
     base_fe = fe.replace("_yq", "")
-    fe_label = f"{'Firm' if base_fe == 'firm' else 'Industry(FF12)'} + {'CalYrQtr' if fe.endswith('_yq') else 'CalYear'}"
+    _fe_display_map = {
+        "ind_yr_robust": "FF12×CalYr (ind_yr)",
+        "ind_qtr_robust": "FF12×CalYrQtr (ind_qtr)",
+        "firm_yr_robust": "Firm×CalYr (firm_yr)",
+    }
+    if fe in _fe_display_map:
+        fe_label = _fe_display_map[fe]
+    else:
+        fe_label = f"{'Firm' if base_fe == 'firm' else 'Industry(FF12)'} + {'CalYrQtr' if fe.endswith('_yq') else 'CalYear'}"
 
     print(f"\n{'=' * 60}")
     print(f"Col ({col_num}) | DV={dv} | FE={fe_label}")
@@ -724,8 +815,10 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         if abs(val) < 0.001: return f"{val:.2e}"
         return f"{val:.3f}"
 
-    display_cols = [5, 6, 7, 8, 13, 14, 15, 16]
+    # 14 display cols: baseline 5-8, 13-16 + OVB 23-25, 26-28
+    display_cols = [5, 6, 7, 8, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28]
     metas = [results_by_col.get(c, {}) for c in display_cols]
+    n_display = len(display_cols)
 
     lines = [
         r"\begin{table}[htbp]",
@@ -733,11 +826,14 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\caption{" + SUITE_CAPTION + r"}",
         r"\label{" + SUITE_LABEL + r"}",
         r"\scriptsize",
-        r"\begin{tabular}{l" + "c" * 8 + "}",
+        r"\begin{tabular}{l" + "c" * n_display + "}",
         r"\toprule",
-        " & " + " & ".join(f"({i})" for i in range(1, 9)) + r" \\",
-        r" & \multicolumn{4}{c}{Cash Holdings$_t$} & \multicolumn{4}{c}{Cash Holdings$_{t+1}$} \\",
-        r"\cmidrule(lr){2-5} \cmidrule(lr){6-9}",
+        " & " + " & ".join(f"({i})" for i in range(1, n_display + 1)) + r" \\",
+        (r" & \multicolumn{4}{c}{Cash Holdings$_t$}"
+         r" & \multicolumn{4}{c}{Cash Holdings$_{t+1}$}"
+         r" & \multicolumn{3}{c}{Cash Hld$_t$ (Robust FE)}"
+         r" & \multicolumn{3}{c}{Cash Hld$_{t+1}$ (Robust FE)} \\"),
+        r"\cmidrule(lr){2-5} \cmidrule(lr){6-9} \cmidrule(lr){10-12} \cmidrule(lr){13-15}",
         r"\midrule",
     ]
 
@@ -756,20 +852,38 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         lines.append(f" & {' & '.join(parts_se)} \\\\")
 
     lines.append(r"\midrule")
-    lines.append(r"Controls & " + " & ".join(["Ext"] * 8) + r" \\")
-    # FE indicator rows
-    ind_cells = ["Yes" if results_by_col.get(c, {}).get("fe", "").startswith("industry") else ""
+    lines.append(r"Controls & " + " & ".join(["Ext"] * n_display) + r" \\")
+
+    # FE indicator rows — handle new OVB FE type strings
+    def _fe_cell(fe_str, row_type):
+        if row_type == "industry":
+            return "Yes" if fe_str in ("industry", "industry_yq") else ""
+        if row_type == "firm":
+            return "Yes" if fe_str in ("firm", "firm_yq") else ""
+        if row_type == "yr":
+            return "Yes" if fe_str in ("industry", "firm") else ""
+        if row_type == "yq":
+            return "Yes" if fe_str.endswith("_yq") else ""
+        if row_type == "ind_yr":
+            return "Yes" if fe_str == "ind_yr_robust" else ""
+        if row_type == "ind_qtr":
+            return "Yes" if fe_str == "ind_qtr_robust" else ""
+        if row_type == "firm_yr":
+            return "Yes" if fe_str == "firm_yr_robust" else ""
+        return ""
+
+    for row_label, row_type in [
+        ("Industry FE", "industry"),
+        ("Firm FE", "firm"),
+        ("Calendar Year FE", "yr"),
+        ("Calendar Year-Quarter FE", "yq"),
+        (r"FF12$\times$Year FE", "ind_yr"),
+        (r"FF12$\times$Qtr FE", "ind_qtr"),
+        (r"Firm$\times$Year FE", "firm_yr"),
+    ]:
+        cells = [_fe_cell(results_by_col.get(c, {}).get("fe", ""), row_type)
                  for c in display_cols]
-    firm_cells = ["Yes" if results_by_col.get(c, {}).get("fe", "").startswith("firm") else ""
-                  for c in display_cols]
-    yr_cells = ["Yes" if not results_by_col.get(c, {}).get("fe", "").endswith("_yq") else ""
-                for c in display_cols]
-    yq_cells = ["Yes" if results_by_col.get(c, {}).get("fe", "").endswith("_yq") else ""
-                for c in display_cols]
-    lines.append(r"Industry FE & " + " & ".join(ind_cells) + r" \\")
-    lines.append(r"Firm FE & " + " & ".join(firm_cells) + r" \\")
-    lines.append(r"Calendar Year FE & " + " & ".join(yr_cells) + r" \\")
-    lines.append(r"Calendar Year-Quarter FE & " + " & ".join(yq_cells) + r" \\")
+        lines.append(f"{row_label} & {' & '.join(cells)} \\\\")
     lines.append(r"\midrule")
 
     n_row = " & ".join(f"{m.get('n_obs', 0):,}" for m in metas)
@@ -962,16 +1076,20 @@ def _write_suite_spec_json(
     col_metadata: List[Dict[str, Any]] = []
     coefs_per_col: List[Dict[str, Dict[str, Any]]] = []
 
-    display_cols = [5, 6, 7, 8, 13, 14, 15, 16]
+    # Baseline display: interaction cols 5-8 (CashRatio_t) + 13-16 (CashRatio_lead)
+    # OVB-defense display: interaction cols 23-25 (CashRatio_t) + 26-28 (CashRatio_lead)
+    display_cols = [5, 6, 7, 8, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28]
+    _unconditional_override = {23: 17, 24: 18, 25: 19, 26: 20, 27: 21, 28: 22}
+
     for interaction_col in display_cols:
         if interaction_col not in results_by_col:
             raise RuntimeError(
-                f"H1.2.ceo2 spec build: missing interaction result for col {interaction_col}"
+                f"H1.3 spec build: missing interaction result for col {interaction_col}"
             )
-        unconditional_col = interaction_col - 4
+        unconditional_col = _unconditional_override.get(interaction_col, interaction_col - 4)
         if unconditional_col not in results_by_col:
             raise RuntimeError(
-                f"H1.2.ceo2 spec build: missing unconditional result for col {unconditional_col}"
+                f"H1.3 spec build: missing unconditional result for col {unconditional_col}"
             )
 
         int_entry = results_by_col[interaction_col]
@@ -983,10 +1101,19 @@ def _write_suite_spec_json(
         spec = next(s for s in MODEL_SPECS if s["col"] == interaction_col)
         fe = spec["fe"]
         base_fe = fe.replace("_yq", "")
-        fe_entity = "industry" if base_fe == "industry" else "firm"
-        fe_time = (
-            "calendar_year_quarter" if fe.endswith("_yq") else "calendar_year"
-        )
+        # Map to schema-valid enums (FEEntity: "industry"|"firm"|"none")
+        if fe == "ind_yr_robust":
+            fe_entity = "industry"
+            fe_time = "calendar_year"
+        elif fe == "ind_qtr_robust":
+            fe_entity = "industry"
+            fe_time = "calendar_year_quarter"
+        elif fe == "firm_yr_robust":
+            fe_entity = "firm"
+            fe_time = "calendar_year"
+        else:
+            fe_entity = "industry" if base_fe == "industry" else "firm"
+            fe_time = "calendar_year_quarter" if fe.endswith("_yq") else "calendar_year"
 
         extra_controls = spec.get("extra_controls", [])
         control_vars = list(CONTROLS) + list(extra_controls)
@@ -1081,11 +1208,13 @@ def _write_suite_spec_json(
         for iv in DISPLAY_IVS
     ]
 
-    # 8 display cols: 4 CashRatio_t + 4 CashRatio_lead
+    # 14 display cols: 4 CashRatio_t + 4 CashRatio_lead + 3 CashRatio (OVB) + 3 CashRatio_lead (OVB)
     header_rows = [
         [
             {"label": "CashRatio", "span": 4},
             {"label": r"CashRatio\_lead", "span": 4},
+            {"label": r"CashRatio (Robust FE)", "span": 3},
+            {"label": r"CashRatio\_lead (Robust FE)", "span": 3},
         ]
     ]
 
