@@ -150,16 +150,25 @@ CLUSTERING = {"entity": True, "time": False}
 TAIL = {"direction": HYP_DIR, "applies_to": "ivs_only"}
 EXTENDED_ONLY_CONTROLS: List[str] = []
 
-# 8 model specs: 4 FE x 2 DVs (Cash + Speech).
+# 12 model specs: 4 baseline FE x 2 DVs (Cash + Speech) + 2 OVB robust FE x 2 DVs.
+# OVB-Defense FE Rollout (2026-05-13): Spec A (ind_yr_robust) + Spec B (ind_qtr_robust).
+# Spec C (firm_yr_robust) EXCLUDED for redistricting: Post_redist is year-level
+# (all firm-year cells have homogeneous Post) → mechanically unidentifiable.
 MODEL_SPECS: List[Dict[str, Any]] = [
-    {"col": 1, "dv": "CashRatio",   "fe": "industry",    "extra_controls": []},
-    {"col": 2, "dv": "CashRatio",   "fe": "firm",        "extra_controls": []},
-    {"col": 3, "dv": "CashRatio",   "fe": "industry_yq", "extra_controls": []},
-    {"col": 4, "dv": "CashRatio",   "fe": "firm_yq",     "extra_controls": []},
-    {"col": 5, "dv": "UncResCEO_c", "fe": "industry",    "extra_controls": []},
-    {"col": 6, "dv": "UncResCEO_c", "fe": "firm",        "extra_controls": []},
-    {"col": 7, "dv": "UncResCEO_c", "fe": "industry_yq", "extra_controls": []},
-    {"col": 8, "dv": "UncResCEO_c", "fe": "firm_yq",     "extra_controls": []},
+    {"col": 1,  "dv": "CashRatio",   "fe": "industry",        "extra_controls": []},
+    {"col": 2,  "dv": "CashRatio",   "fe": "firm",            "extra_controls": []},
+    {"col": 3,  "dv": "CashRatio",   "fe": "industry_yq",     "extra_controls": []},
+    {"col": 4,  "dv": "CashRatio",   "fe": "firm_yq",         "extra_controls": []},
+    {"col": 5,  "dv": "UncResCEO_c", "fe": "industry",        "extra_controls": []},
+    {"col": 6,  "dv": "UncResCEO_c", "fe": "firm",            "extra_controls": []},
+    {"col": 7,  "dv": "UncResCEO_c", "fe": "industry_yq",     "extra_controls": []},
+    {"col": 8,  "dv": "UncResCEO_c", "fe": "firm_yq",         "extra_controls": []},
+    # OVB Spec A: FF12 × CalYear interaction cells (firm FE retained)
+    {"col": 9,  "dv": "CashRatio",   "fe": "ind_yr_robust",   "extra_controls": []},
+    {"col": 10, "dv": "UncResCEO_c", "fe": "ind_yr_robust",   "extra_controls": []},
+    # OVB Spec B: FF12 × CalYrQtr interaction cells (firm FE retained)
+    {"col": 11, "dv": "CashRatio",   "fe": "ind_qtr_robust",  "extra_controls": []},
+    {"col": 12, "dv": "UncResCEO_c", "fe": "ind_qtr_robust",  "extra_controls": []},
 ]
 
 DV_TEX = {
@@ -428,7 +437,14 @@ def prepare_regression_data(
     extra_controls = spec["extra_controls"]
     all_controls = CONTROLS + extra_controls
 
-    time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
+    if fe == "ind_qtr_robust":
+        time_col = "cal_yr_qtr"
+    elif fe in ("ind_yr_robust",):
+        time_col = "cal_yr"
+    elif fe.endswith("_yq"):
+        time_col = "cal_yr_qtr"
+    else:
+        time_col = "cal_yr"
 
     if dv == "CashRatio":
         lag_col = "CashRatio_lag"
@@ -442,8 +458,12 @@ def prepare_regression_data(
     required = (
         [dv, KEY_IV, "Treated_redist", "Post_redist"]
         + all_controls
-        + ["gvkey", time_col, "ff12_code"]
+        + ["gvkey", "cal_yr", "ff12_code"]
     )
+    if fe == "ind_qtr_robust":
+        required = required + ["cal_yr_qtr"]
+    elif fe.endswith("_yq"):
+        required = required + ["cal_yr_qtr"]
     miss = [c for c in required if c not in panel.columns]
     if miss:
         raise ValueError(f"Missing cols: {miss}")
@@ -484,7 +504,37 @@ def prepare_regression_data(
 
 
 def _fit_one(df_panel: pd.DataFrame, dv: str, exog: List[str], base_fe: str) -> Any:
-    if base_fe == "industry":
+    if base_fe == "ind_yr_robust":
+        df_panel = df_panel.copy()
+        df_panel["ind_yr_id"] = (
+            df_panel["ff12_code"].astype(str) + "_"
+            + df_panel.index.get_level_values(1).astype(str)
+        )
+        m = PanelOLS(
+            dependent=df_panel[dv],
+            exog=df_panel[exog],
+            entity_effects=True,
+            other_effects=df_panel["ind_yr_id"].astype("category"),
+            drop_absorbed=True,
+            check_rank=False,
+        )
+        return m.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
+    elif base_fe == "ind_qtr_robust":
+        df_panel = df_panel.copy()
+        df_panel["ind_qtr_id"] = (
+            df_panel["ff12_code"].astype(str) + "_"
+            + df_panel.index.get_level_values(1).astype(str)
+        )
+        m = PanelOLS(
+            dependent=df_panel[dv],
+            exog=df_panel[exog],
+            entity_effects=True,
+            other_effects=df_panel["ind_qtr_id"].astype("category"),
+            drop_absorbed=True,
+            check_rank=False,
+        )
+        return m.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
+    elif base_fe == "industry":
         m = PanelOLS(
             dependent=df_panel[dv],
             exog=df_panel[exog],
@@ -539,12 +589,24 @@ def run_regression(
     extra_controls = spec["extra_controls"]
     all_controls = CONTROLS + extra_controls
 
-    time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
+    if fe == "ind_qtr_robust":
+        time_col = "cal_yr_qtr"
+    elif fe in ("ind_yr_robust",):
+        time_col = "cal_yr"
+    elif fe.endswith("_yq"):
+        time_col = "cal_yr_qtr"
+    else:
+        time_col = "cal_yr"
     base_fe = fe.replace("_yq", "")
-    fe_label = (
-        f"{'Firm' if base_fe == 'firm' else 'Industry(FF12)'}"
-        f" + {'CalYrQtr' if fe.endswith('_yq') else 'CalYear'}"
-    )
+    if fe == "ind_yr_robust":
+        fe_label = "FF12×Year + Firm FE"
+    elif fe == "ind_qtr_robust":
+        fe_label = "FF12×Qtr + Firm FE"
+    else:
+        fe_label = (
+            f"{'Firm' if base_fe == 'firm' else 'Industry(FF12)'}"
+            f" + {'CalYrQtr' if fe.endswith('_yq') else 'CalYear'}"
+        )
 
     print(f"\n{'=' * 60}")
     print(f"Col ({col_num}) | DV={dv} | FE={fe_label}")
@@ -557,13 +619,15 @@ def run_regression(
     # Per-spec LEVEL_DUMMIES filter — exclude variables that FE absorbs.
     # Firm FE absorbs Treated_redist (firm-time-invariant). Any time FE
     # (Year or Year-Quarter) absorbs Post_redist (year>2011 indicator).
-    # All our specs include time FE, so Post is always absorbed.
+    # All our specs include time FE (or ind×time cells), so Post is always absorbed.
+    # OVB specs (ind_yr_robust, ind_qtr_robust) include firm FE → Treated absorbed.
     # Pre-filtering is more robust than relying on linearmodels'
     # drop_absorbed (which can fail under check_rank=False).
+    has_firm_fe = base_fe in ("firm", "ind_yr_robust", "ind_qtr_robust")
     spec_level_dummies = []
-    if base_fe != "firm":
+    if not has_firm_fe:
         spec_level_dummies.append("Treated_redist")
-    # Post_redist always absorbed by time FE → never include
+    # Post_redist always absorbed by time FE or ind×time cells → never include
 
     exog = [KEY_IV] + spec_level_dummies + all_controls
 
@@ -627,7 +691,22 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         if abs(v) < 0.001: return f"{v:.2e}"
         return f"{v:.3f}"
 
-    display_cols = [1, 2, 3, 4, 5, 6, 7, 8]
+    def _fe_cell(fe: str, check: str) -> str:
+        if check == "industry_fe":
+            return "Yes" if fe in ("industry", "industry_yq") else ""
+        if check == "firm_fe":
+            return "Yes" if fe in ("firm", "firm_yq", "ind_yr_robust", "ind_qtr_robust") else ""
+        if check == "yr_fe":
+            return "Yes" if fe in ("industry", "firm") else ""
+        if check == "yq_fe":
+            return "Yes" if fe in ("industry_yq", "firm_yq") else ""
+        if check == "ind_yr_fe":
+            return "Yes" if fe == "ind_yr_robust" else ""
+        if check == "ind_qtr_fe":
+            return "Yes" if fe == "ind_qtr_robust" else ""
+        return ""
+
+    display_cols = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     metas = [results_by_col.get(c, {}) for c in display_cols]
 
     lines = [
@@ -636,37 +715,37 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         r"\caption{" + SUITE_CAPTION + r"}",
         r"\label{" + SUITE_LABEL + r"}",
         r"\scriptsize",
-        r"\begin{tabular}{l" + "c" * 8 + "}",
+        r"\begin{tabular}{l" + "c" * 12 + "}",
         r"\toprule",
-        " & " + " & ".join(f"({i})" for i in range(1, 9)) + r" \\",
-        r" & \multicolumn{4}{c}{Cash Holdings} & \multicolumn{4}{c}{UncResCEO} \\",
-        r"\cmidrule(lr){2-5} \cmidrule(lr){6-9}",
+        " & " + " & ".join(f"({i})" for i in range(1, 13)) + r" \\",
+        r" & \multicolumn{4}{c}{Cash Holdings} & \multicolumn{4}{c}{UncResCEO}"
+        r" & \multicolumn{2}{c}{Cash (Robust FE)} & \multicolumn{2}{c}{UncRes (Robust FE)} \\",
+        r"\cmidrule(lr){2-5} \cmidrule(lr){6-9} \cmidrule(lr){10-11} \cmidrule(lr){12-13}",
         r"\midrule",
     ]
     for iv in DISPLAY_IVS:
         label = VARIABLE_LABELS.get(iv, iv).replace("_", r"\_")
-        d = IV_TAIL_DIRECTION.get(iv, "positive")
-        stars_fn = _sig_stars_one if d != "none" else _sig_stars_one
-        # both use same thresholds; direction stored in meta p_one
         parts_b, parts_se = [], []
         for m in metas:
             beta = m.get(f"{iv}_beta", np.nan)
             p_one = m.get(f"{iv}_p_one", np.nan)
-            parts_b.append(fmt_coef(beta, stars_fn(p_one)))
+            parts_b.append(fmt_coef(beta, _sig_stars_one(p_one)))
             parts_se.append(fmt_se(m.get(f"{iv}_se", np.nan)))
         lines.append(f"{label} & {' & '.join(parts_b)} \\\\")
         lines.append(f" & {' & '.join(parts_se)} \\\\")
 
     lines.append(r"\midrule")
-    lines.append(r"Controls & " + " & ".join(["F1D"] * 8) + r" \\")
-    ind_cells = ["Yes" if results_by_col.get(c, {}).get("fe", "").startswith("industry") else "" for c in display_cols]
-    firm_cells = ["Yes" if results_by_col.get(c, {}).get("fe", "").startswith("firm") else "" for c in display_cols]
-    yr_cells = ["Yes" if not results_by_col.get(c, {}).get("fe", "").endswith("_yq") else "" for c in display_cols]
-    yq_cells = ["Yes" if results_by_col.get(c, {}).get("fe", "").endswith("_yq") else "" for c in display_cols]
-    lines.append(r"Industry FE & " + " & ".join(ind_cells) + r" \\")
-    lines.append(r"Firm FE & " + " & ".join(firm_cells) + r" \\")
-    lines.append(r"Calendar Year FE & " + " & ".join(yr_cells) + r" \\")
-    lines.append(r"Calendar Year-Quarter FE & " + " & ".join(yq_cells) + r" \\")
+    lines.append(r"Controls & " + " & ".join(["F1D"] * 12) + r" \\")
+    for check, label_str in [
+        ("industry_fe", "Industry FE"),
+        ("firm_fe", "Firm FE"),
+        ("yr_fe", "Calendar Year FE"),
+        ("yq_fe", "Calendar Year-Quarter FE"),
+        ("ind_yr_fe", r"FF12$\times$Year FE"),
+        ("ind_qtr_fe", r"FF12$\times$Qtr FE"),
+    ]:
+        cells = [_fe_cell(results_by_col.get(c, {}).get("fe", ""), check) for c in display_cols]
+        lines.append(f"{label_str} & " + " & ".join(cells) + r" \\")
     lines.append(r"\midrule")
     n_row = " & ".join(f"{m.get('n_obs', 0):,}" for m in metas)
     lines.append(f"N (calls) & {n_row} \\\\")
@@ -744,7 +823,7 @@ def save_outputs(all_results: List[Dict[str, Any]], out_dir: Path) -> pd.DataFra
 def _write_suite_spec_json(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     results_by_col = {r["meta"]["col"]: r for r in all_results if r.get("meta")}
     col_metadata, coefs_per_col = [], []
-    display_cols = [1, 2, 3, 4, 5, 6, 7, 8]
+    display_cols = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     for col in display_cols:
         if col not in results_by_col:
             raise RuntimeError(f"H1.6 spec build: missing result for col {col}")
@@ -754,8 +833,16 @@ def _write_suite_spec_json(all_results: List[Dict[str, Any]], out_dir: Path) -> 
         spec = next(s for s in MODEL_SPECS if s["col"] == col)
         fe = spec["fe"]
         base_fe = fe.replace("_yq", "")
-        fe_entity = "industry" if base_fe == "industry" else "firm"
-        fe_time = ("calendar_year_quarter" if fe.endswith("_yq") else "calendar_year")
+        if fe in ("ind_yr_robust", "ind_qtr_robust"):
+            fe_entity = "industry"
+        else:
+            fe_entity = "industry" if base_fe == "industry" else "firm"
+        if fe == "ind_qtr_robust":
+            fe_time = "calendar_year_quarter"
+        elif fe == "ind_yr_robust":
+            fe_time = "calendar_year"
+        else:
+            fe_time = ("calendar_year_quarter" if fe.endswith("_yq") else "calendar_year")
         extra_controls = spec.get("extra_controls", [])
         control_vars = list(CONTROLS) + list(extra_controls)
         try:
@@ -814,6 +901,8 @@ def _write_suite_spec_json(all_results: List[Dict[str, Any]], out_dir: Path) -> 
     header_rows = [[
         {"label": "Cash Holdings", "span": 4},
         {"label": "UncResCEO", "span": 4},
+        {"label": "Cash (Robust FE)", "span": 2},
+        {"label": "UncRes (Robust FE)", "span": 2},
     ]]
 
     paths = write_suite_spec(
