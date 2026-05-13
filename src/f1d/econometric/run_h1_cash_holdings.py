@@ -4,17 +4,26 @@
 STAGE 4: Test H1 Cash Holdings Hypothesis
 ================================================================================
 ID: econometric/test_h1_cash_holdings
-Description: Run H1 Cash Holdings hypothesis test using 12 model specifications
+Description: Run H1 Cash Holdings hypothesis test using 18 model specifications
              with 4 simultaneous uncertainty IVs, varying DV, FE type,
              and control set. Main sample only.
 
-Model Specifications (12 columns in one table):
+Model Specifications (18 columns in one table):
     Cols 1-4: DV = CashRatio (contemporaneous), Calendar Year FE
     Cols 5-6: DV = CashRatio (contemporaneous), Calendar Year-Quarter FE
     Cols 7-10: DV = CashRatio_lead (t+1), Calendar Year FE
     Cols 11-12: DV = CashRatio_lead (t+1), Calendar Year-Quarter FE
     Odd cols (1-4,7-10): Industry FE + Year FE / Even: Firm FE + Year FE
     Cols 5-6, 11-12: Extended controls only, YQ FE
+
+    OVB-Defense Robustness Columns (added 2026-05-13):
+    Cols 13-15: DV = CashRatio (contemporaneous), new interaction FE
+    Cols 16-18: DV = CashRatio_lead (t+1), new interaction FE
+      Col 13/16: FF12 × cal_yr (ind_yr_robust) — Spec A
+      Col 14/17: FF12 × cal_yr_qtr (ind_qtr_robust) — Spec B
+      Col 15/18: gvkey × cal_yr (firm_yr_robust) — Spec C
+    Spec C pre-flight 2026-05-13: median within-FY SD / overall SD = 0.43–0.60
+    for all 4 IVs (threshold 5%); 94% firm-year cells have >=2 calls. KEPT.
 
 Key Independent Variables (4, all enter simultaneously):
     UncAnsCEO, UncPreCEO,
@@ -139,6 +148,13 @@ MODEL_SPECS = [
     # Year-Quarter FE specs (Extended controls only)
     {"col": 11, "dv": "CashRatio_lead", "fe": "industry_yq", "controls": "extended"},
     {"col": 12, "dv": "CashRatio_lead", "fe": "firm_yq",     "controls": "extended"},
+    # OVB-Defense Robustness specs (2026-05-13) — Spec A/B/C × 2 DVs
+    {"col": 13, "dv": "CashRatio",      "fe": "ind_yr_robust",  "controls": "extended"},
+    {"col": 14, "dv": "CashRatio",      "fe": "ind_qtr_robust", "controls": "extended"},
+    {"col": 15, "dv": "CashRatio",      "fe": "firm_yr_robust", "controls": "extended"},
+    {"col": 16, "dv": "CashRatio_lead", "fe": "ind_yr_robust",  "controls": "extended"},
+    {"col": 17, "dv": "CashRatio_lead", "fe": "ind_qtr_robust", "controls": "extended"},
+    {"col": 18, "dv": "CashRatio_lead", "fe": "firm_yr_robust", "controls": "extended"},
 ]
 
 MIN_CALLS_PER_FIRM = 5
@@ -280,8 +296,8 @@ def prepare_regression_data(
     panel = panel.copy()
     panel["Lagged_DV"] = panel[lag_col]
 
-    required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
-    if fe_type.endswith("_yq"):
+    required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code", "cal_yr"]
+    if fe_type.endswith("_yq") or fe_type == "ind_qtr_robust":
         required.append("cal_yr_qtr")
 
     # Check required columns exist
@@ -364,9 +380,30 @@ def run_regression(
     exog = KEY_IVS + controls
 
     # Determine time index based on FE type
-    time_col = "cal_yr_qtr" if fe_type.endswith("_yq") else "cal_yr"
+    if fe_type == "ind_qtr_robust":
+        time_col = "cal_yr_qtr"
+    elif fe_type in ("ind_yr_robust", "firm_yr_robust"):
+        time_col = "cal_yr"
+    elif fe_type.endswith("_yq"):
+        time_col = "cal_yr_qtr"
+    else:
+        time_col = "cal_yr"
+
     base_fe = fe_type.replace("_yq", "")
-    fe_label = f"{'Industry(FF12)' if base_fe == 'industry' else 'Firm'} + {'CalYrQtr' if fe_type.endswith('_yq') else 'CalYear'}"
+
+    _fe_display = {
+        "industry": "Industry(FF12) + CalYear",
+        "firm": "Firm + CalYear",
+        "ind_yr_robust": "FF12×CalYr (ind_yr)",
+        "ind_qtr_robust": "FF12×CalYrQtr (ind_qtr)",
+        "firm_yr_robust": "Firm×CalYr (firm_yr)",
+    }
+    if fe_type.endswith("_yq") and base_fe == "industry":
+        fe_label = "Industry(FF12) + CalYrQtr"
+    elif fe_type.endswith("_yq") and base_fe == "firm":
+        fe_label = "Firm + CalYrQtr"
+    else:
+        fe_label = _fe_display.get(fe_type, fe_type)
 
     print(f"  FE: {fe_label}")
     print(f"  N calls: {len(df_prepared):,}  |  N firms: {df_prepared['gvkey'].nunique():,}")
@@ -378,7 +415,54 @@ def run_regression(
     df_panel = df_prepared.set_index(["gvkey", time_col])
 
     try:
-        if base_fe == "industry":
+        if fe_type == "ind_yr_robust":
+            # Spec A: FF12 × cal_yr interaction; firm FE retained
+            df_panel = df_panel.copy()
+            df_panel["ind_yr_id"] = (
+                df_panel["ff12_code"].astype(str) + "_" + df_panel.index.get_level_values("cal_yr").astype(str)
+            )
+            model_obj = PanelOLS(
+                dependent=df_panel[dv],
+                exog=df_panel[exog],
+                entity_effects=True,
+                other_effects=df_panel["ind_yr_id"].astype("category"),
+                drop_absorbed=True,
+                check_rank=False,
+            )
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
+        elif fe_type == "ind_qtr_robust":
+            # Spec B: FF12 × cal_yr_qtr interaction; firm FE retained
+            df_panel = df_panel.copy()
+            df_panel["ind_qtr_id"] = (
+                df_panel["ff12_code"].astype(str) + "_" + df_panel.index.get_level_values("cal_yr_qtr").astype(str)
+            )
+            model_obj = PanelOLS(
+                dependent=df_panel[dv],
+                exog=df_panel[exog],
+                entity_effects=True,
+                other_effects=df_panel["ind_qtr_id"].astype("category"),
+                drop_absorbed=True,
+                check_rank=False,
+            )
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
+        elif fe_type == "firm_yr_robust":
+            # Spec C: gvkey × cal_yr interaction; subsumes firm FE + time FE
+            df_panel = df_panel.copy()
+            df_panel["firm_yr_id"] = (
+                df_panel.index.get_level_values("gvkey").astype(str) + "_" +
+                df_panel.index.get_level_values("cal_yr").astype(str)
+            )
+            model_obj = PanelOLS(
+                dependent=df_panel[dv],
+                exog=df_panel[exog],
+                entity_effects=False,
+                time_effects=False,
+                other_effects=df_panel["firm_yr_id"].astype("category"),
+                drop_absorbed=True,
+                check_rank=False,
+            )
+            model = model_obj.fit(cov_type="clustered", cluster_entity=True, cluster_time=False)
+        elif base_fe == "industry":
             # Use constructor API with other_effects to ABSORB industry FE
             # (not C(ff12_code) dummies which spam the coefficient table)
             dependent_data = df_panel[dv]
@@ -464,11 +548,13 @@ def _sig_stars(p: float) -> str:
 
 
 def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
-    """Write unified 12-column LaTeX table with stars + SE in parentheses.
+    """Write unified 18-column LaTeX table with stars + SE in parentheses.
 
     Layout:
-        Cols 1-6: CashRatio (contemporaneous) — 4 Year FE + 2 YQ FE
-        Cols 7-12: CashRatio_lead (t+1) — 4 Year FE + 2 YQ FE
+        Cols 1-6:   CashRatio (contemporaneous) — 4 Year FE + 2 YQ FE
+        Cols 7-12:  CashRatio_lead (t+1) — 4 Year FE + 2 YQ FE
+        Cols 13-15: CashRatio — OVB-defense robustness (Spec A/B/C)
+        Cols 16-18: CashRatio_lead — OVB-defense robustness (Spec A/B/C)
         Rows: 4 key IVs (coeff + SE), controls indicator, FE indicators, N, R²
     """
     # Sort results by column number
@@ -478,7 +564,7 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
         if meta:
             results_by_col[meta["col"]] = meta
 
-    n_cols = 12
+    n_cols = 18
 
     def fmt_coef(val: float, stars: str) -> str:
         if np.isnan(val):
@@ -515,11 +601,15 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     lines.append(f" & {col_nums} " + r"\\")
 
     # DV headers with multicolumn
+    # Cols 1-6: CashRatio baseline, 7-12: CashRatio_lead baseline
+    # Cols 13-15: CashRatio OVB-robust, 16-18: CashRatio_lead OVB-robust
     lines.append(
         r" & \multicolumn{6}{c}{Cash Holdings$_t$}"
-        r" & \multicolumn{6}{c}{Cash Holdings$_{t+1}$} \\"
+        r" & \multicolumn{6}{c}{Cash Holdings$_{t+1}$}"
+        r" & \multicolumn{3}{c}{Cash Hld$_t$ (Robust FE)}"
+        r" & \multicolumn{3}{c}{Cash Hld$_{t+1}$ (Robust FE)} \\"
     )
-    lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13}")
+    lines.append(r"\cmidrule(lr){2-7} \cmidrule(lr){8-13} \cmidrule(lr){14-16} \cmidrule(lr){17-19}")
     lines.append(r"\midrule")
 
     # Key IV rows (coefficient + SE for each)
@@ -556,19 +646,28 @@ def _save_latex_table(all_results: List[Dict[str, Any]], out_dir: Path) -> None:
     firm_fe_cells = []
     year_fe_cells = []
     yr_qtr_fe_cells = []
+    ind_yr_cells = []
+    ind_qtr_cells = []
+    firm_yr_cells = []
     for c in range(1, n_cols + 1):
         meta = results_by_col.get(c, {})
         fe = meta.get("fe", "")
         base_fe = fe.replace("_yq", "") if fe else ""
         is_yq = fe.endswith("_yq") if fe else False
-        ind_fe_cells.append("Yes" if base_fe == "industry" else "")
-        firm_fe_cells.append("Yes" if base_fe == "firm" else "")
-        year_fe_cells.append("Yes" if not is_yq else "")
+        ind_fe_cells.append("Yes" if base_fe == "industry" and fe not in ("ind_yr_robust", "ind_qtr_robust") else "")
+        firm_fe_cells.append("Yes" if base_fe == "firm" and fe not in ("firm_yr_robust",) else "")
+        year_fe_cells.append("Yes" if not is_yq and fe not in ("ind_yr_robust", "ind_qtr_robust", "firm_yr_robust") else "")
         yr_qtr_fe_cells.append("Yes" if is_yq else "")
+        ind_yr_cells.append("Yes" if fe == "ind_yr_robust" else "")
+        ind_qtr_cells.append("Yes" if fe == "ind_qtr_robust" else "")
+        firm_yr_cells.append("Yes" if fe == "firm_yr_robust" else "")
     lines.append(r"Industry FE & " + " & ".join(ind_fe_cells) + r" \\")
     lines.append(r"Firm FE & " + " & ".join(firm_fe_cells) + r" \\")
     lines.append(r"Calendar Year FE & " + " & ".join(year_fe_cells) + r" \\")
     lines.append(r"Year-Quarter FE & " + " & ".join(yr_qtr_fe_cells) + r" \\")
+    lines.append(r"FF12$\times$Year FE & " + " & ".join(ind_yr_cells) + r" \\")
+    lines.append(r"FF12$\times$Qtr FE & " + " & ".join(ind_qtr_cells) + r" \\")
+    lines.append(r"Firm$\times$Year FE & " + " & ".join(firm_yr_cells) + r" \\")
 
     lines.append(r"\midrule")
 
@@ -770,10 +869,25 @@ def _write_suite_spec_json(
 
         fe_type = spec["fe"]
         base_fe = fe_type.replace("_yq", "")
-        fe_entity = "industry" if base_fe == "industry" else "firm"
-        fe_time = (
-            "calendar_year_quarter" if fe_type.endswith("_yq") else "calendar_year"
-        )
+        # Map to schema enums (FEEntity: "industry"|"firm"|"none";
+        # FETime: "calendar_year"|"calendar_year_quarter"|"none"|"year"|"year_quarter")
+        # OVB-defense interaction FE types: map entity/time to nearest valid value;
+        # the interaction nature is recorded in the LaTeX table FE rows, not the schema.
+        if fe_type == "ind_yr_robust":
+            fe_entity = "industry"
+            fe_time = "calendar_year"
+        elif fe_type == "ind_qtr_robust":
+            fe_entity = "industry"
+            fe_time = "calendar_year_quarter"
+        elif fe_type == "firm_yr_robust":
+            fe_entity = "firm"
+            fe_time = "calendar_year"
+        elif base_fe == "industry":
+            fe_entity = "industry"
+            fe_time = "calendar_year_quarter" if fe_type.endswith("_yq") else "calendar_year"
+        else:
+            fe_entity = "firm"
+            fe_time = "calendar_year_quarter" if fe_type.endswith("_yq") else "calendar_year"
 
         control_list = (
             list(BASE_CONTROLS) if spec["controls"] == "base" else list(EXTENDED_CONTROLS)
@@ -815,6 +929,8 @@ def _write_suite_spec_json(
         [
             {"label": "CashRatio", "span": 6},
             {"label": r"CashRatio\_lead", "span": 6},
+            {"label": r"CashRatio (Robust FE)", "span": 3},
+            {"label": r"CashRatio\_lead (Robust FE)", "span": 3},
         ]
     ]
 
@@ -918,7 +1034,7 @@ def main(panel_path: Optional[str] = None) -> int:
     print("  Saved: summary_stats.csv")
     print("  Saved: summary_stats.tex")
 
-    # Run regressions: 8 model specifications
+    # Run regressions: 18 model specifications (12 baseline + 6 OVB-defense)
     all_results: List[Dict[str, Any]] = []
 
     for spec in MODEL_SPECS:
