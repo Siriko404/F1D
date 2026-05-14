@@ -514,13 +514,18 @@ def _fit_one(df: pd.DataFrame, dv: str, treatment: str, exog_cols: List[str], fe
 
 
 def run_baseline_specs(panel: pd.DataFrame) -> List[Dict[str, Any]]:
-    """2 baseline cells = 1 DV (cash) x 2 treatments x 1 FE (Campello-exact).
+    """1 baseline cell = cash × β^UK × Campello-exact FE.
 
-    Sina decision 2026-05-14 (Problem 1): Brexit DiD is cash-only on Compustat
-    universe. Speech extension moved to Boasiako.
+    Sina decision 2026-05-14:
+      - Problem 1: cash-only on Compustat universe (no speech).
+      - Wave 3 close-out: drop 10-K arm entirely. Wave 3 investigation
+        confirmed no public Campello replication code exists; the 2,847 vs
+        807 HIGH gap is irreducible from public sources. Brexit replication
+        is therefore pure β^UK (recovers 115% of Campello's +0.231 magnitude).
+        Speech extension + 10-K text-mining moved out of scope for Brexit.
     """
     DVS = ["cash_brexit_dv"]
-    TREATMENTS = [KEY_IV_BETA_UK, KEY_IV_10K]
+    TREATMENTS = [KEY_IV_BETA_UK]  # 10-K dropped per Wave 3 close-out
     results: List[Dict[str, Any]] = []
     col = 0
     for dv in DVS:
@@ -705,18 +710,16 @@ def _emit_canonical_suite_spec(
         {"name": KEY_IV_BETA_UK,
          "label": _TREAT_LABEL[KEY_IV_BETA_UK],
          "tail":  "one_pos"},
-        {"name": KEY_IV_10K,
-         "label": _TREAT_LABEL[KEY_IV_10K],
-         "tail":  "one_pos"},
+        # 10-K IV dropped per Wave 3 close-out 2026-05-14.
     ]
 
-    # 2 cells (Campello-exact, cash-only): col 1 Cash×β^UK, col 2 Cash×10K.
-    # FE = firm + FIC100 × cal_yr_qtr. Speech extension moved to Boasiako per
-    # Sina decision 2026-05-14 (Problem 1).
+    # 1 cell (Campello-exact, cash-only, β^UK only): col 1 Cash × β^UK.
+    # FE = firm + FIC100 × cal_yr_qtr. 10-K dropped per Wave 3 close-out
+    # 2026-05-14 (irreducible 2,847 vs 807 HIGH gap from no public code).
+    # Speech extension moved to Boasiako per Sina decision (Problem 1).
     header_rows = [
         [
             {"label": r"Cash Holdings: $\beta^{UK}$ treatment", "span": 1},
-            {"label": r"Cash Holdings: 10-K treatment",          "span": 1},
         ],
     ]
 
@@ -805,7 +808,7 @@ def main() -> int:
 
     cell_panel = assemble_panel(universe, raw_comp, builders)
 
-    print("\n  --- Running 2 baseline cells (Cash × β^UK + Cash × 10-K) ---")
+    print("\n  --- Running 1 baseline cell (Cash × β^UK) ---")
     results = run_baseline_specs(cell_panel)
 
     write_outputs(results, out_dir)
