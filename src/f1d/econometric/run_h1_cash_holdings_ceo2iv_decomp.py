@@ -333,11 +333,27 @@ def prepare_regression_data(
     fe_type = spec["fe"]
     controls = BASE_CONTROLS if spec["controls"] == "base" else EXTENDED_CONTROLS
 
-    # Create Lagged_DV: always lag of the base DV (t-1)
-    base_dv = dv.replace("_lead_qtr", "").replace("_lead", "")
-    lag_col = f"{base_dv}_lag"
+    # Create Lagged_DV: one-period lag of the DV (most recent past observation
+    # of the underlying time series, BEFORE the prediction period).
+    #
+    # For DV = CashRatio (Cash_t):       Lagged_DV = Cash_{t-1} = panel["CashRatio_lag"]
+    # For DV = CashRatio_lead (Cash_{t+1}): Lagged_DV = Cash_t   = panel["CashRatio"]
+    #
+    # PRIOR BUG (fixed 2026-05-13): formula `base_dv.replace("_lead", "")` + `_lag`
+    # produced Cash_{t-1} for BOTH DVs. In the Cash_{t+1} regression this left
+    # Cash_t uncontrolled, wounding the temporal-asymmetry RC defense
+    # (Cash_t can reverse-cause UncResCEO_t AND drive Cash_{t+1} via residual
+    # persistence beyond Cash_{t-1}).
     panel = panel.copy()
-    panel["Lagged_DV"] = panel[lag_col]
+    if dv == "CashRatio_lead":
+        panel["Lagged_DV"] = panel["CashRatio"]
+    elif dv == "CashRatio":
+        panel["Lagged_DV"] = panel["CashRatio_lag"]
+    else:
+        raise ValueError(
+            f"Unsupported DV for Lagged_DV construction: {dv!r}. "
+            f"Expected 'CashRatio' or 'CashRatio_lead'."
+        )
 
     # Natural Full sample: require 3 Full IVs non-NaN (UncResCEO + ClarityCEO + UncPreCEO).
     required = [dv] + KEY_IVS + controls + ["gvkey", "fyearq_int", "ff12_code"]
