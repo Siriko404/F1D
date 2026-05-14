@@ -628,17 +628,30 @@ def _emit_canonical_suite_spec(
 
         merged_coefs: Dict[str, Dict[str, Any]] = {}
         if model is not None:
+            # In channel cells (cols 9-14), Disclosure_Law is still in the
+            # regression as a level control alongside the moderator interaction.
+            # Extract it WITH p_one (same precautionary-positive tail interpretation)
+            # so the table shows its β + SE + p_one across all 14 columns and
+            # canonical schema validation passes (declared tail=one_pos in `ivs`).
+            iv_extract_set = list(ivs_this_cell)
+            if headline != KEY_IV and KEY_IV not in iv_extract_set:
+                iv_extract_set.append(KEY_IV)
             iv_coefs = extract_coefs_panelols(
                 model=model,
-                key_ivs=ivs_this_cell,
-                all_vars=ivs_this_cell,
+                key_ivs=iv_extract_set,
+                all_vars=iv_extract_set,
                 hyp_dir="positive",
             )
             merged_coefs.update(iv_coefs)
+            # Controls extracted without directional p_one. In channel cells,
+            # `control_vars` includes Disclosure_Law via `level_terms` — the IV
+            # extract above already overrode it with p_one, so drop the
+            # ctrl-extracted DL entry to avoid clobbering.
+            ctrl_vars_for_extract = [c for c in control_vars if c != KEY_IV]
             ctrl_coefs = extract_coefs_panelols(
                 model=model,
                 key_ivs=[],
-                all_vars=control_vars,
+                all_vars=ctrl_vars_for_extract,
                 hyp_dir="none",
             )
             merged_coefs.update(ctrl_coefs)
@@ -650,12 +663,6 @@ def _emit_canonical_suite_spec(
             and v.get("p_two") is not None
             and not (isinstance(v["p_two"], float) and np.isnan(v["p_two"]))
         }
-        # In channel cells (cols 9-14), Disclosure_Law is a level control (not
-        # the headline IV) — drop it from coefs so schema validation doesn't
-        # require directional p_one on a row where the IV-of-interest is the
-        # interaction term.
-        if headline != KEY_IV and KEY_IV in merged_coefs:
-            del merged_coefs[KEY_IV]
         coefs_per_col.append(merged_coefs)
 
     ivs = [
