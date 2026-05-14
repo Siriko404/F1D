@@ -77,6 +77,14 @@ N_REGRESSORS = 3
 # Output column for HIGH_BETA_UK treatment dummy.
 TREATMENT_COL = "HIGH_BETA_UK"
 
+# Campello's reported treated + control counts (paper p.3193). 449 + 360 are
+# DESCRIPTIVE of his universe (β^UK > 0.68 and β^UK < 0.28). For F1D-universe
+# replication, top + bottom of the nonneg β^UK distribution at these COUNTS
+# reproduces magnitude (Sina decision 2026-05-14 Problem 2: top-N=449/449
+# match → β ≈ +0.267, 115% of Campello +0.231).
+N_TREATED_CAMPELLO = 449
+N_CONTROL_CAMPELLO = 449  # symmetric top/bottom of nonneg; NOT Campello's 360 negatives
+
 
 def _to_log_return(price: pd.Series) -> pd.Series:
     """Daily log-return = ln(P_t / P_{t-1}). Drops first row (NaN)."""
@@ -302,8 +310,17 @@ def _vectorized_ols(
 
 def _assign_terciles_nonneg(
     beta_uk: pd.Series,
+    use_campello_absolute: bool = False,
 ) -> Tuple[pd.Series, Dict[str, float]]:
     """Tercile cuts on NONNEGATIVE β^UK only (per spec line 812).
+
+    Two modes:
+      use_campello_absolute=True (default 2026-05-13):
+        Campello-verbatim absolute cuts: top tercile β^UK > 0.68, bottom < 0.28.
+        Replicates Campello et al. 2022 JFQA Section IV.C.1 verbatim.
+      use_campello_absolute=False:
+        F1D-relative terciles within nonneg β^UK distribution. Original 2026-05-08
+        decision before sign-flip discovery; kept as a sensitivity option.
 
     Returns (HIGH_BETA_UK assignment, breakpoints dict).
     HIGH_BETA_UK = 1 if top tercile (treated), 0 if bottom tercile (control), NaN else.
@@ -313,19 +330,71 @@ def _assign_terciles_nonneg(
         logger.warning(f"Only {len(nonneg)} nonneg β^UK values; tercile cuts unreliable.")
         return pd.Series(np.nan, index=beta_uk.index), {}
 
+    if use_campello_absolute:
+        # Campello verbatim: bottom < 0.28, top > 0.68
+        p33 = 0.28
+        p67 = 0.68
+    else:
+        p33 = float(nonneg.quantile(1 / 3))
+        p67 = float(nonneg.quantile(2 / 3))
+
     breakpoints = {
-        "p33_nonneg": float(nonneg.quantile(1 / 3)),
-        "p67_nonneg": float(nonneg.quantile(2 / 3)),
+        "p33_used": p33,
+        "p67_used": p67,
+        "mode": "campello_absolute" if use_campello_absolute else "f1d_relative",
         "n_nonneg": int(len(nonneg)),
         "n_negative_dropped": int((beta_uk < 0).sum()),
+        "p33_f1d_relative": float(nonneg.quantile(1 / 3)),
+        "p67_f1d_relative": float(nonneg.quantile(2 / 3)),
     }
-    p33 = breakpoints["p33_nonneg"]
-    p67 = breakpoints["p67_nonneg"]
 
     high = pd.Series(np.nan, index=beta_uk.index)
     high[(beta_uk >= 0) & (beta_uk <= p33)] = 0.0  # bottom tercile = control
     high[(beta_uk >= 0) & (beta_uk >= p67)] = 1.0  # top tercile = treated
     # Middle tercile + negatives stay NaN (excluded from regression).
+    return high, breakpoints
+
+
+def _assign_top_n_match(
+    beta_uk: pd.Series,
+    n_treated: int = N_TREATED_CAMPELLO,
+    n_control: int = N_CONTROL_CAMPELLO,
+) -> Tuple[pd.Series, Dict[str, float]]:
+    """Top-N matched assignment per Sina decision 2026-05-14 Problem 2.
+
+    Sort nonneg β^UK ascending; bottom n_control firms → HIGH=0 (control),
+    top n_treated firms → HIGH=1 (treated). Middle + negatives stay NaN.
+
+    Falls back to tercile mode if nonneg pool < n_treated + n_control.
+
+    Diagnostic result (Compustat universe, 2026-05-14):
+        β = +0.2667 (115% of Campello +0.231***)
+        n = 7,104, p_one = 0.190 NS
+    """
+    nonneg = beta_uk[beta_uk >= 0].dropna().sort_values()
+    if len(nonneg) < (n_treated + n_control):
+        logger.warning(
+            f"Only {len(nonneg)} nonneg β^UK values; insufficient for top-N="
+            f"{n_treated}+{n_control}. Falling back to tercile mode."
+        )
+        return _assign_terciles_nonneg(beta_uk)
+
+    top_threshold = float(nonneg.iloc[-n_treated])         # smallest β^UK in top-N
+    bottom_threshold = float(nonneg.iloc[n_control - 1])   # largest β^UK in bottom-N
+
+    breakpoints = {
+        "mode": "top_n_match",
+        "n_treated_target": n_treated,
+        "n_control_target": n_control,
+        "top_threshold_beta_uk": top_threshold,
+        "bottom_threshold_beta_uk": bottom_threshold,
+        "n_nonneg": int(len(nonneg)),
+        "n_negative_dropped": int((beta_uk < 0).sum()),
+    }
+
+    high = pd.Series(np.nan, index=beta_uk.index)
+    high[(beta_uk >= 0) & (beta_uk >= top_threshold)] = 1.0
+    high[(beta_uk >= 0) & (beta_uk <= bottom_threshold)] = 0.0
     return high, breakpoints
 
 
@@ -385,8 +454,9 @@ class BrexitBetaUKBuilder(VariableBuilder):
             }
         )
 
-        # Tercile assignment.
-        high, bp = _assign_terciles_nonneg(out["beta_uk"])
+        # Top-N=449/449 assignment per Sina decision 2026-05-14 (Problem 2).
+        # Tercile modes (_assign_terciles_nonneg) preserved for sensitivity.
+        high, bp = _assign_top_n_match(out["beta_uk"])
         out[TREATMENT_COL] = high
         logger.info(
             f"  β^UK distribution: mean={out['beta_uk'].mean():.4f}, "

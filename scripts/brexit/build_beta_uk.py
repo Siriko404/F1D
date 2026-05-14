@@ -26,6 +26,8 @@ from f1d.shared.variables.brexit_treatment_beta_uk import BrexitBetaUKBuilder
 
 
 def main() -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("."), help="Project root")
     parser.add_argument(
@@ -68,7 +70,17 @@ def main() -> int:
     print(f"     n_rows: {len(result.data):,}")
     print(f"     n_treated (HIGH_BETA_UK=1): {(result.data['HIGH_BETA_UK']==1).sum():,}")
     print(f"     n_control (HIGH_BETA_UK=0): {(result.data['HIGH_BETA_UK']==0).sum():,}")
-    print(f"     tercile breakpoints: p33={result.metadata['tercile_breakpoints']['p33_nonneg']:.4f}, p67={result.metadata['tercile_breakpoints']['p67_nonneg']:.4f}")
+    bp = result.metadata.get("tercile_breakpoints", {}) or {}
+    mode = bp.get("mode", "unknown")
+    print(f"     classifier mode: {mode}")
+    if mode == "top_n_match":
+        print(f"     top threshold β^UK   ≥ {bp.get('top_threshold_beta_uk', float('nan')):.4f}")
+        print(f"     bottom threshold β^UK ≤ {bp.get('bottom_threshold_beta_uk', float('nan')):.4f}")
+        print(f"     nonneg pool: {bp.get('n_nonneg', 0):,}; negatives dropped: {bp.get('n_negative_dropped', 0):,}")
+    else:
+        p33 = bp.get("p33_used", bp.get("p33_nonneg", float("nan")))
+        p67 = bp.get("p67_used", bp.get("p67_nonneg", float("nan")))
+        print(f"     tercile breakpoints: p33={p33:.4f}, p67={p67:.4f}")
     return 0
 
 
