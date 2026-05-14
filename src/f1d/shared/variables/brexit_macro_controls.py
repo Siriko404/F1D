@@ -4,14 +4,17 @@ Replicates Campello et al. 2022 JFQA Section II.D 5 quarterly macro controls
 verbatim per spec lines 824-832 of ``tmp/3did_replication_v2_2026_05_08.md``,
 all entered into the DiD as 1Q-lagged contemporaneous controls:
 
-    1. usd_gbp_lag1     BoE USD/GBP daily (XUDLUSS)        quarterly mean
-    2. vix_lag1         CBOE VIX daily close                quarterly mean
-    3. gdp_fcst_1y_lag1 Philly Fed Livingston (RGDPX_1Y)    biannual → quarterly ffill
-    4. umcsent_lag1     UMich UMCSENT monthly               quarterly mean
-    5. ads_lag1         Philly Fed ADS Index daily          quarterly mean
-                        (LEI substitute — Philly Fed has no national LEI series;
-                         memory-locked default per project memory file
-                         feedback_pdf_extraction_discipline.md / data acquisition log)
+    1. usd_gbp_lag1      BoE USD/GBP daily (XUDLUSS)        quarterly mean
+    2. vix_lag1          CBOE VIX daily close               quarterly mean
+    3. gdp_fcst_1y_lag1  Philly Fed Livingston (RGDPX_1Y)   biannual → quarterly ffill
+    4. umcsent_lag1      UMich UMCSENT monthly              quarterly mean
+    5. state_lei_lag1    Philly Fed US Leading Index        quarterly mean
+                         (Sina decision 2026-05-14 Problem 5: switched from
+                          ADS Business Conditions Index to the Philly Fed
+                          national VAR-based Leading Index — the actual LEI
+                          Campello cites. ADS is a coincident index, not
+                          leading; ADS substitution was a prior misstep.
+                          Source: State_Leading_Revised.xls, "US" column.)
 
 Window: 2010Q1 through 2016Q4 (28 quarters). 1Q-lag means we need
 contemporaneous values for 2009Q4 through 2016Q3 (28 quarters) and shift
@@ -43,7 +46,7 @@ WINDOW_END_YQ = 20164    # 2016Q4
 CONTEMP_START = pd.Timestamp("2009-10-01")  # for 2009Q4 lag-1 input to 2010Q1
 CONTEMP_END = pd.Timestamp("2016-09-30")    # for 2016Q3 lag-1 input to 2016Q4
 
-INPUT_VAR_COLUMNS = ["usd_gbp_lag1", "vix_lag1", "gdp_fcst_1y_lag1", "umcsent_lag1", "ads_lag1"]
+INPUT_VAR_COLUMNS = ["usd_gbp_lag1", "vix_lag1", "gdp_fcst_1y_lag1", "umcsent_lag1", "state_lei_lag1"]
 
 
 def _yq_int(date: pd.Timestamp) -> int:
@@ -140,17 +143,26 @@ def _load_umcsent(root_path: Path) -> pd.DataFrame:
     return _lag1_yq(q, "umcsent", "umcsent_lag1")
 
 
-def _load_ads(root_path: Path) -> pd.DataFrame:
-    """Philly Fed ADS Index (LEI substitute per project memory)."""
-    p = root_path / "inputs" / "Brexit_replication" / "PhillyFed" / "ADS_Index_current.xlsx"
-    df = pd.read_excel(p)
-    df.columns = [c.strip() for c in df.columns]
-    df = df.rename(columns={"Date": "date", "ADS_Index": "ads"})
-    df["date"] = pd.to_datetime(df["date"], format="%Y:%m:%d", errors="coerce")
-    df = df.dropna(subset=["date", "ads"])
+def _load_state_lei(root_path: Path) -> pd.DataFrame:
+    """Philly Fed US Leading Index — the actual LEI Campello cites.
+
+    Source: ``State_Leading_Revised.xls`` (Philly Fed, last release 2020-02-01,
+    discontinued post-COVID). Column ``US`` is the VAR-based national leading
+    index from Philly Fed's vector-autoregression model. Monthly frequency,
+    coverage 1982 onwards. Aggregated to quarterly mean then 1Q-lagged.
+
+    Sina decision 2026-05-14 (Problem 5): replace ADS Business Conditions Index
+    (a coincident index) with the proper Philly Fed Leading Index. Closes one
+    audit DESIGN deviation.
+    """
+    p = root_path / "inputs" / "Brexit_replication" / "PhillyFed" / "State_Leading_Revised.xls"
+    df = pd.read_excel(p, sheet_name="Indexes")
+    df = df[["Date", "US"]].rename(columns={"Date": "date", "US": "state_lei"})
+    df["date"] = pd.to_datetime(df["date"])
+    df = df.dropna(subset=["date", "state_lei"])
     df = df[(df["date"] >= CONTEMP_START) & (df["date"] <= CONTEMP_END)]
-    q = _quarterly_mean(df, "date", "ads")
-    return _lag1_yq(q, "ads", "ads_lag1")
+    q = _quarterly_mean(df, "date", "state_lei")
+    return _lag1_yq(q, "state_lei", "state_lei_lag1")
 
 
 class BrexitMacroControlsBuilder(VariableBuilder):
@@ -168,12 +180,12 @@ class BrexitMacroControlsBuilder(VariableBuilder):
         vix = _load_vix(root_path)
         gdp = _load_livingston_gdp(root_path)
         umc = _load_umcsent(root_path)
-        ads = _load_ads(root_path)
+        lei = _load_state_lei(root_path)
 
         out = gbp.merge(vix, on="cal_yr_qtr", how="outer")
         out = out.merge(gdp, on="cal_yr_qtr", how="outer")
         out = out.merge(umc, on="cal_yr_qtr", how="outer")
-        out = out.merge(ads, on="cal_yr_qtr", how="outer")
+        out = out.merge(lei, on="cal_yr_qtr", how="outer")
         out = out[(out["cal_yr_qtr"] >= WINDOW_START_YQ) & (out["cal_yr_qtr"] <= WINDOW_END_YQ)]
         out = out.sort_values("cal_yr_qtr").reset_index(drop=True)
 
@@ -192,7 +204,12 @@ class BrexitMacroControlsBuilder(VariableBuilder):
             "window": f"{WINDOW_START_YQ}-{WINDOW_END_YQ}",
             "n_quarters": int(len(out)),
             "n_nan_per_column": n_nan,
-            "lei_substitute_note": "ADS Index used as LEI substitute (Philly Fed has no national LEI series)",
+            "lei_source": (
+                "Philly Fed US Leading Index ('US' column of State_Leading_Revised.xls; "
+                "VAR-based national leading index; discontinued 2020 post-COVID). "
+                "Replaces prior ADS Business Conditions Index (coincident, not leading) "
+                "per Sina decision 2026-05-14 Problem 5."
+            ),
             "lag_convention": "1Q-lagged (each value labeled by the cal_yr_qtr where it serves as the lag1 control)",
             "column": self.column,
             "all_columns": INPUT_VAR_COLUMNS,

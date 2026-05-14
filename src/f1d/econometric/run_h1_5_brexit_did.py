@@ -99,7 +99,9 @@ KEY_IV_BETA_UK = "DiD_BetaUK"
 KEY_IV_10K = "DiD_10K"
 
 # 5 macro controls (1Q-lagged, all already _lag1 in builder output).
-MACRO_CONTROLS = ["usd_gbp_lag1", "vix_lag1", "gdp_fcst_1y_lag1", "umcsent_lag1", "ads_lag1"]
+# state_lei_lag1 = Philly Fed US Leading Index (replaces ADS substitution per
+# Sina decision 2026-05-14 Problem 5).
+MACRO_CONTROLS = ["usd_gbp_lag1", "vix_lag1", "gdp_fcst_1y_lag1", "umcsent_lag1", "state_lei_lag1"]
 
 # 5 Brexit-verbatim firm controls (1Q-lagged at panel-assembly).
 FIRM_CONTROLS_NAMES = [
