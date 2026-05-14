@@ -49,25 +49,82 @@ ZSCORE_START = pd.Timestamp("2000-01-01")
 ZSCORE_END = pd.Timestamp("2025-12-31")
 
 
-def _load_cusip_to_gvkey_map(root_path: Path) -> pd.Series:
-    """Build CUSIP8 → gvkey lookup from CCM with primary or canonical links."""
+def _load_ccm_full(root_path: Path) -> pd.DataFrame:
+    """Load CCM with broadened filter (LINKPRIM in {P, C}) + date-ranges.
+
+    Sina decision 2026-05-14 'all 4 fixes': broaden link-primary filter from
+    'P' only to {P, C} (canonical + conditional). Add LINKDT/LINKENDDT for
+    time-varying CUSIP→gvkey resolution.
+    """
     ccm_path = root_path / "inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet"
-    ccm = pd.read_parquet(ccm_path, columns=["cusip", "gvkey", "LINKPRIM", "LINKTYPE"])
-    ccm = ccm[(ccm["LINKPRIM"] == "P") & (ccm["LINKTYPE"].isin(["LU", "LC"]))].copy()
+    ccm = pd.read_parquet(ccm_path,
+                          columns=["cusip", "tic", "gvkey", "LINKPRIM", "LINKTYPE",
+                                   "LINKDT", "LINKENDDT"])
+    ccm = ccm[ccm["LINKPRIM"].isin(["P", "C"]) & ccm["LINKTYPE"].isin(["LU", "LC"])].copy()
     ccm["cusip8"] = ccm["cusip"].astype(str).str[:8]
     ccm["gvkey"] = ccm["gvkey"].astype(int).astype(str).str.zfill(6)
-    ccm = ccm.dropna(subset=["cusip8", "gvkey"])
+    ccm["tic"] = ccm["tic"].astype(str).str.upper().str.strip()
+    ccm["LINKDT"] = pd.to_datetime(ccm["LINKDT"], errors="coerce")
+    ccm["LINKENDDT"] = pd.to_datetime(
+        ccm["LINKENDDT"].astype(str).replace({"E": "2099-12-31"}), errors="coerce"
+    )
+    ccm = ccm.dropna(subset=["gvkey", "LINKDT", "LINKENDDT"])
+    return ccm
+
+
+def _load_cusip_to_gvkey_map(root_path: Path) -> pd.DataFrame:
+    """CUSIP8 + (LINKDT, LINKENDDT) → gvkey table for time-varying lookup."""
+    ccm = _load_ccm_full(root_path)
+    ccm = ccm.dropna(subset=["cusip8"])
     ccm = ccm[ccm["cusip8"].str.match(r"^[A-Za-z0-9]{8}$")]
-    # Keep first per cusip8 (most CUSIPs map to a single gvkey).
-    return ccm.drop_duplicates(subset=["cusip8"], keep="first").set_index("cusip8")["gvkey"]
+    return ccm[["cusip8", "gvkey", "LINKDT", "LINKENDDT"]]
 
 
-def _load_yearly_ibes_fpi6(year_file: Path, cusip_to_gvkey: pd.Series) -> Optional[pd.DataFrame]:
-    """Load one yearly IBES file → filter MEASURE=EPS + FPI=6 → aggregate to (gvkey, fpedats)."""
+def _load_ticker_to_gvkey_map(root_path: Path) -> pd.DataFrame:
+    """TICKER + (LINKDT, LINKENDDT) → gvkey table for time-varying lookup."""
+    ccm = _load_ccm_full(root_path)
+    ccm = ccm.dropna(subset=["tic"])
+    return ccm[["tic", "gvkey", "LINKDT", "LINKENDDT"]]
+
+
+def _timevar_lookup(df: pd.DataFrame, key_col: str, lookup: pd.DataFrame,
+                    lookup_key: str, date_col: str = "fpedats") -> pd.Series:
+    """Time-varying CCM lookup: match df[key_col] → gvkey where LINKDT ≤ df[date_col] ≤ LINKENDDT.
+
+    Returns Series of gvkey aligned with df.index. If multiple matches per
+    (key, date), keeps the first by LINKDT.
+    """
+    if key_col not in df.columns:
+        return pd.Series(index=df.index, dtype="object")
+    sub = df[[key_col, date_col]].copy()
+    sub["_orig_idx"] = sub.index
+    merged = sub.merge(lookup, left_on=key_col, right_on=lookup_key, how="left")
+    valid = (merged["LINKDT"].isna()) | (
+        (merged[date_col] >= merged["LINKDT"]) & (merged[date_col] <= merged["LINKENDDT"])
+    )
+    merged = merged[valid]
+    merged = merged.sort_values("LINKDT").drop_duplicates(subset=["_orig_idx"], keep="first")
+    out = pd.Series(index=df.index, dtype="object")
+    out.loc[merged["_orig_idx"]] = merged["gvkey"].values
+    return out
+
+
+def _load_yearly_ibes_fpi6(
+    year_file: Path,
+    cusip_lookup: pd.DataFrame,
+    ticker_lookup: pd.DataFrame,
+) -> Optional[pd.DataFrame]:
+    """Load one yearly IBES file → MEASURE=EPS + FPI=6 → aggregate to (gvkey, fpedats).
+
+    Mapping chain (Sina decision 2026-05-14 'all 4 fixes'):
+        1. CUSIP8 → gvkey (time-varying via LINKDT/LINKENDDT, LINKPRIM in {P,C})
+        2. OFTIC ticker → gvkey (time-varying) — fallback for foreign CUSIPs
+        3. TICKER (IBES internal) → gvkey (time-varying) — third fallback
+    """
     import pyarrow.compute as pc
     import pyarrow.dataset as ds
 
-    cols = ["CUSIP", "ANALYS", "VALUE", "MEASURE", "FPI", "FPEDATS"]
+    cols = ["CUSIP", "OFTIC", "TICKER", "ANALYS", "VALUE", "MEASURE", "FPI", "FPEDATS"]
     dataset = ds.dataset(year_file, format="parquet")
     available = dataset.schema.names
     load_cols = [c for c in cols if c in available]
@@ -77,19 +134,26 @@ def _load_yearly_ibes_fpi6(year_file: Path, cusip_to_gvkey: pd.Series) -> Option
     if len(df) == 0:
         return None
 
-    df = df.dropna(subset=["CUSIP", "VALUE", "FPEDATS"])
+    df = df.dropna(subset=["VALUE", "FPEDATS"])
+    df["fpedats"] = pd.to_datetime(df["FPEDATS"], errors="coerce")
+    df = df.dropna(subset=["fpedats"])
     df["cusip8"] = df["CUSIP"].astype(str).str[:8]
-    df = df[~df["cusip8"].isin(["00000000", "nan", "NaN", "None", ""])]
-    df["gvkey"] = df["cusip8"].map(cusip_to_gvkey)
+    df["cusip8"] = df["cusip8"].where(~df["cusip8"].isin(["00000000", "nan", "NaN", "None", ""]))
+    df["oftic_up"] = df["OFTIC"].astype(str).str.upper().str.strip() if "OFTIC" in df.columns else None
+    df["ticker_up"] = df["TICKER"].astype(str).str.upper().str.strip() if "TICKER" in df.columns else None
+
+    # Time-varying lookups for all 3 keys.
+    g_cusip = _timevar_lookup(df, "cusip8", cusip_lookup, "cusip8")
+    g_oftic = _timevar_lookup(df, "oftic_up", ticker_lookup, "tic")
+    g_ticker = _timevar_lookup(df, "ticker_up", ticker_lookup, "tic")
+
+    df["gvkey"] = g_cusip.fillna(g_oftic).fillna(g_ticker)
     df = df.dropna(subset=["gvkey"]).copy()
     df["VALUE"] = pd.to_numeric(df["VALUE"], errors="coerce")
     df = df.dropna(subset=["VALUE"])
-    df["fpedats"] = pd.to_datetime(df["FPEDATS"], errors="coerce")
-    df = df.dropna(subset=["fpedats"])
     if len(df) == 0:
         return None
 
-    # Aggregate to (gvkey, fpedats): mean of MEANEST across analysts.
     grouped = df.groupby(["gvkey", "fpedats"], observed=True)["VALUE"].mean().reset_index()
     grouped = grouped.rename(columns={"VALUE": "mean_eps"})
     return grouped
@@ -123,8 +187,12 @@ class BrexitConsensusEPSBuilder(VariableBuilder):
     def build(self, years: range, root_path: Path) -> VariableResult:
         del years  # window-fixed at Brexit panel; full IBES sample for z-score.
 
-        cusip_to_gvkey = _load_cusip_to_gvkey_map(root_path)
-        logger.info(f"BrexitConsensusEPSBuilder: CUSIP-to-gvkey map: {len(cusip_to_gvkey):,} unique cusip8")
+        cusip_lookup = _load_cusip_to_gvkey_map(root_path)
+        ticker_lookup = _load_ticker_to_gvkey_map(root_path)
+        logger.info(
+            f"BrexitConsensusEPSBuilder: CUSIP CCM rows: {len(cusip_lookup):,}; "
+            f"ticker CCM rows: {len(ticker_lookup):,} (time-varying lookups)"
+        )
 
         ibes_dir = root_path / "inputs" / "tr_ibes"
         year_files = sorted(ibes_dir.glob("tr_ibes_*.parquet"))
@@ -133,7 +201,7 @@ class BrexitConsensusEPSBuilder(VariableBuilder):
             year = int(yf.stem.split("_")[-1])
             if year < 2000 or year > 2025:
                 continue
-            chunk = _load_yearly_ibes_fpi6(yf, cusip_to_gvkey)
+            chunk = _load_yearly_ibes_fpi6(yf, cusip_lookup, ticker_lookup)
             if chunk is not None and len(chunk) > 0:
                 chunks.append(chunk)
                 logger.info(f"  {yf.name}: {len(chunk):,} (gvkey, fpedats) aggregated rows")
