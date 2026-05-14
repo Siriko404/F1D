@@ -450,11 +450,23 @@ def prepare_regression_data(
     # Determine time column based on FE type
     time_col = "cal_yr_qtr" if fe.endswith("_yq") else "cal_yr"
 
-    # Create Lagged_DV: always lag of the base DV (t-1), regardless of t/t+1
-    base_dv = dv.replace("_lead", "")
-    lag_col = f"{base_dv}_lag"
+    # Create Lagged_DV: one-period lag of the DV (most recent past observation
+    # of the underlying time series, BEFORE the prediction period).
+    # See run_h1_cash_holdings_ceo2iv_decomp.py for the same fix and rationale
+    # (commit c6686fb 2026-05-13). The prior pattern
+    #   base_dv = dv.replace("_lead", ""); lag_col = f"{base_dv}_lag"
+    # produced Cash_{t-1} for both Cash_t and Cash_{t+1} regressions, leaving
+    # Cash_t uncontrolled in the lead spec.
     panel = panel.copy()
-    panel["Lagged_DV"] = panel[lag_col]
+    if dv == "CashRatio_lead":
+        panel["Lagged_DV"] = panel["CashRatio"]
+    elif dv == "CashRatio":
+        panel["Lagged_DV"] = panel["CashRatio_lag"]
+    else:
+        raise ValueError(
+            f"Unsupported DV for Lagged_DV construction: {dv!r}. "
+            f"Expected 'CashRatio' or 'CashRatio_lead'."
+        )
 
     use_interactions = spec.get("interactions", True)
 
