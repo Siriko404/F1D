@@ -19,7 +19,6 @@ Pipeline:
                     all_tables.tex (master doc) + pdflatex
 """
 
-import json
 import subprocess
 from pathlib import Path
 
@@ -36,125 +35,6 @@ PER_SUITE_DIR = Path(__file__).resolve().parent / "per_suite"
 def suite_to_slug(suite_id: str) -> str:
     """Filename-safe slug for suite IDs (H11-Lag1 → h11_lag1, H1.1 → h1_1)."""
     return suite_id.lower().replace(".", "_").replace("-", "_")
-
-
-def _parse_md_table(md_text: str) -> tuple[list[str], list[list[str]]]:
-    """Parse the FIRST GitHub-style markdown table out of md_text."""
-    headers: list[str] | None = None
-    rows: list[list[str]] = []
-    in_table = False
-    for ln in md_text.splitlines():
-        ln = ln.strip()
-        if ln.startswith("|") and ln.endswith("|"):
-            cells = [c.strip() for c in ln.strip("|").split("|")]
-            if headers is None:
-                headers = cells
-                in_table = True
-            elif all(set(c) <= set("-:") for c in cells if c):
-                continue
-            else:
-                rows.append(cells)
-        elif in_table and not ln.startswith("|"):
-            break
-    return headers or [], rows
-
-
-def _sig_stars(p_one_str: str) -> str:
-    try:
-        p = float(p_one_str)
-    except (ValueError, TypeError):
-        return ""
-    if p < 0.01:
-        return r"$^{***}$"
-    if p < 0.05:
-        return r"$^{**}$"
-    if p < 0.10:
-        return r"$^{*}$"
-    return ""
-
-
-def _render_did_stub(suite_spec_path: Path) -> str | None:
-    """Fallback renderer for DiD suites whose suite_spec.json is a stub
-    (no `columns` array). Reads the report_step4_*.md sibling and produces a
-    landscape LaTeX table block. Returns None if the suite is not a recognised
-    stub (so the caller can fall through to the normal failure branch).
-    """
-    try:
-        spec_obj = json.loads(suite_spec_path.read_text(encoding="utf-8"))
-    except Exception:
-        return None
-    if "columns" in spec_obj or ("treatments" not in spec_obj and "treatment" not in spec_obj):
-        return None  # not a DiD stub — let caller handle as a real failure
-
-    out_dir = suite_spec_path.parent
-    md_candidates = list(out_dir.glob("report_step4_*.md"))
-    if not md_candidates:
-        return None
-    headers, rows = _parse_md_table(md_candidates[0].read_text(encoding="utf-8"))
-    if not headers or not rows:
-        return None
-
-    suite_id = spec_obj.get("suite_id", "?")
-    title = spec_obj.get("title", suite_id)
-    label = spec_obj.get("label", f"tab:{suite_to_slug(suite_id)}")
-    n_cells = len(rows)
-
-    # Locate columns by header name (resilient to extra columns like `block`).
-    def col_idx(name: str) -> int | None:
-        for i, h in enumerate(headers):
-            if h.lower() == name:
-                return i
-        return None
-
-    i_col, i_dv, i_tr, i_fe, i_n, i_beta, i_p = (
-        col_idx("col"), col_idx("dv"), col_idx("treatment"),
-        col_idx("fe"), col_idx("n"), col_idx("beta"), col_idx("p_one"),
-    )
-    if None in (i_col, i_dv, i_tr, i_fe, i_n, i_beta, i_p):
-        return None
-
-    cspec = "".join(["c"] * n_cells)
-    col_nums = " & ".join(f"({r[i_col]})" for r in rows)
-    dv_row = " & ".join(r[i_dv].replace("_", r"\_") for r in rows)
-    tr_row = " & ".join(r[i_tr].replace("_", r"\_") for r in rows)
-    fe_row = " & ".join(r[i_fe].replace("_", r"\_") for r in rows)
-    n_row = " & ".join(f"{int(r[i_n].replace(',','')):,}" for r in rows)
-
-    beta_cells, p_cells = [], []
-    for r in rows:
-        beta_s = r[i_beta]
-        p_one = r[i_p]
-        stars = _sig_stars(p_one)
-        wrapped = f"\\textbf{{{beta_s}}}{stars}" if stars else beta_s
-        beta_cells.append(wrapped)
-        p_cells.append(f"[{p_one}]" if p_one not in ("nan", "") else "[--]")
-
-    return "\n".join([
-        r"\begin{table}[htbp]",
-        r"\setlength{\tabcolsep}{3pt}",
-        r"\renewcommand{\arraystretch}{0.9}",
-        r"\centering",
-        r"\caption{" + title.replace("_", r"\_") + "}",
-        r"\label{" + label + "}",
-        r"\scriptsize",
-        r"\begin{tabular}{l" + cspec + "}",
-        r"\toprule",
-        r" & " + col_nums + r" \\",
-        r"Dependent var & " + dv_row + r" \\",
-        r"Treatment & " + tr_row + r" \\",
-        r"FE specification & " + fe_row + r" \\",
-        r"\midrule",
-        r"Treatment $\times$ Post (DiD) & " + " & ".join(beta_cells) + r" \\",
-        r" & " + " & ".join(p_cells) + r" \\",
-        r"\midrule",
-        r"N (obs) & " + n_row + r" \\",
-        r"\bottomrule",
-        r"\end{tabular}",
-        r"\\[2pt]",
-        r"\scriptsize\textit{Note: One-tailed $p$-values in brackets. Sig: $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. SEs not surfaced in stub-schema runners; full per-cell output in \texttt{regression\_results\_col*.txt}.}",
-        r"\end{table}",
-        "",
-    ])
 
 
 def to_main_chunk(chunk: str) -> str:
@@ -226,8 +106,8 @@ def main() -> int:
         return 1
 
     # Generate per-suite LaTeX chunks.
-    # Per-suite failures (e.g., non-canonical schemas in DiD/IV/FD endogeneity
-    # suites) are tolerated: we skip the failed suite + leave its existing
+    # All suites (including DiDs) emit canonical SuiteSpec via write_suite_spec().
+    # Per-suite failures are tolerated: skip the failed suite + leave its existing
     # per_suite/<slug>_table.tex fragment in place. Hard-fail only if EVERY
     # suite fails (likely a schema-wide regression).
     tex_by_suite: dict[str, str] = {}
@@ -240,17 +120,9 @@ def main() -> int:
             tex_by_suite[suite_id] = tex
             print("  OK")
         except Exception as exc:
-            # Fallback: DiD stub-schema suites (Brexit, Boasiako disclosure-law)
-            # emit minimal suite_spec.json without `columns`. Render directly from
-            # their report_step4_*.md sibling.
-            stub_tex = _render_did_stub(resolved[suite_id])
-            if stub_tex is not None:
-                tex_by_suite[suite_id] = stub_tex
-                print("  OK (DiD stub fallback)")
-            else:
-                first_line = str(exc).split("\n", 1)[0]
-                print(f"  FAILED: {first_line}")
-                failed_suites.append(suite_id)
+            first_line = str(exc).split("\n", 1)[0]
+            print(f"  FAILED: {first_line}")
+            failed_suites.append(suite_id)
 
     if failed_suites:
         print(
