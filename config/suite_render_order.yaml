@@ -28,6 +28,7 @@ suites:
   - H1.4.hedging_needs  # NEW — HedgingNeeds moderation (ACW 2007 corr formula; ff12-year median split)
   - H1.5.trump_did  # NEW 2026-05-06 — Trump 2016 DiD endo defense (Hu 2024 RAST template; BothHigh trade x tax)
   - H1.5.brexit_did # NEW 2026-05-08 — Brexit Referendum DiD endo defense (Campello 2022 JFQA verbatim; HIGH_BETA_UK + HIGH_10K x Post 2016Q3)
+  - H1.5.disclosure_law_did # NEW 2026-05-09 — Boasiako disclosure-law DiD endo defense (Boasiako 2020 EFM)
   - H1.6.redistricting_did  # NEW 2026-05-06 — Redistricting DiD endo defense (Hasan 2022 RQFA Layer 2; firm-rank within CD)
   - H1.6.hasan_verbatim     # NEW 2026-05-06 NIGHT×2 — Full Hasan-verbatim replication (movers only + Hasan controls + Hasan Cashflow formula); fishing deck only
   # H.death.did DROPPED 2026-04-29 per user direction — tested settled question (CEOs affect cash) with weak design
@@ -124,12 +125,10 @@ suites:
 # Curate by hand. Add a new suite here when the body starts citing its tab:* label.
 # -----------------------------------------------------------------------------
 thesis_suites:
-  # HC main (Full decomp + QtrExp decomp)
+  # HC main (Full decomp only — QtrExp dropped per 2026-05-13 scope cut)
   - H1.ceo2.decomp
-  - H1.ceo2.decomp.qtrexp
-  # HFC moderator (Full decomp + QtrExp decomp)
+  # HFC moderator (Full decomp only)
   - H1.2.ceo2.decomp
-  - H1.2.ceo2.decomp.qtrexp
   # §3.4 CFvol moderator (Han-Qiu 2007)
   - H1.3.cfvol
   # §4.1 drivers (H11 base + lag2; H23 competition; H24/H24b macro EPU)
@@ -141,7 +140,6 @@ thesis_suites:
   # §4.2 reaction (Full method only) — market channel (H14c spread) + regulatory channel (H18 SEC)
   - H14c.ceo2.decomp
   - H18.ceo2.decomp
-  # §III.E endogeneity — auxiliary plausibly-exogenous PRisk shocks (Trump+Redistricting null/wrong-sign per 2026-05-06 plan v3 phase 2 verification; Brexit cash SIG / speech NS per 2026-05-08 Phase 1 baseline)
-  - H1.5.trump_did
+  # §III.E endogeneity — 2 plausibly-exogenous shocks (locked 2026-05-13 scope cut: Brexit + Boasiako only; Trump + Redistricting + Chen dropped)
   - H1.5.brexit_did
-  - H1.6.redistricting_did
+  - H1.5.disclosure_law_did

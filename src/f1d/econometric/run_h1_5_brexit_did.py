@@ -88,6 +88,7 @@ import pandas as pd
 from linearmodels.panel import PanelOLS
 
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.outputs import extract_coefs_panelols, write_suite_spec
 
 
 # ==============================================================================
@@ -490,18 +491,159 @@ def write_outputs(results: List[Dict[str, Any]], out_dir: Path) -> None:
     (out_dir / "report_step4_H1_5_brexit_did.md").write_text("\n".join(lines), encoding="utf-8")
     print(f"  Saved: report_step4_H1_5_brexit_did.md")
 
-    # Suite spec JSON for thesis-table autogen.
-    suite_spec = {
-        "suite_id": SUITE_ID,
-        "dir_name": SUITE_DIR_NAME,
-        "title": SUITE_TITLE,
-        "label": SUITE_LABEL,
-        "n_cells": len(results),
-        "clustering": CLUSTERING,
-        "treatments": DID_COLS,
-    }
-    (out_dir / f"suite_spec_{SUITE_ID}.json").write_text(json.dumps(suite_spec, indent=2))
-    print(f"  Saved: suite_spec_{SUITE_ID}.json")
+    # Canonical SuiteSpec emission (replaces prior stub dict 2026-05-13).
+    # Produces standard suite_spec_<id>.json with per-cell columns array, so
+    # docs/Draft/generate_all_tables.py renders this through render_suite()
+    # uniformly with all other thesis suites (no stub fallback needed).
+    _emit_canonical_suite_spec(results, out_dir)
+
+
+# ------------------------------------------------------------------------------
+
+# DV / treatment / FE display labels (paper-readable, not internal slugs).
+_DV_LABEL = {
+    "cash_brexit_dv": "Cash Holdings",
+    "UncResCEO_c":    "UncResCEO",
+}
+_TREAT_LABEL = {
+    "DiD_BetaUK": r"$\beta^{UK}$ tercile $\times$ Post",
+    "DiD_10K":    r"10-K UK-mention $\times$ Post",
+}
+_FE_ENTITY_TIME = {
+    "industry":    ("industry", "calendar_year"),
+    "firm":        ("firm",     "calendar_year"),
+    "industry_yq": ("industry", "calendar_year_quarter"),
+    "firm_yq":     ("firm",     "calendar_year_quarter"),
+}
+
+
+def _emit_canonical_suite_spec(
+    results: List[Dict[str, Any]], out_dir: Path,
+) -> None:
+    """Build standard SuiteSpec from per-cell results + call write_suite_spec().
+
+    Per-column coefs include the treatment IV (DiD_BetaUK or DiD_10K) and all
+    controls; the OTHER treatment is null-extracted because the model wasn't
+    fit with it. The renderer skips null-valued cells.
+    """
+    col_metadata: List[Dict[str, Any]] = []
+    coefs_per_col: List[Dict[str, Dict[str, Any]]] = []
+
+    for r in results:
+        meta = r["meta"]
+        model = r.get("model")
+        treatment = meta["treatment"]
+        dv = meta["dv"]
+        fe = meta["fe"]
+        fe_entity, fe_time = _FE_ENTITY_TIME[fe]
+        level_dummy = "HIGH_BETA_UK" if treatment == KEY_IV_BETA_UK else "HIGH_10K"
+        control_vars = ALL_CONTROLS_LAG1 + ["Post_brexit", level_dummy]
+
+        adj_r2 = None
+        n_firms = None
+        dv_mean = None
+        if model is not None:
+            try:
+                adj_r2 = float(model.rsquared)
+            except Exception:
+                pass
+            try:
+                dv_mean = float(model.model.dependent.dataframe.mean().iloc[0])
+            except Exception:
+                pass
+
+        col_metadata.append({
+            "col":          meta["col"],
+            "dv":           dv,
+            "fe_entity":    fe_entity,
+            "fe_time":      fe_time,
+            "control_vars": control_vars,
+            "n_obs":        int(meta.get("n_obs", 0)),
+            "n_firms":      n_firms,
+            "r2":           float(meta.get("r2", float("nan"))),
+            "adj_r2":       adj_r2,
+            "dv_mean":      dv_mean,
+            "cluster_fallback": False,
+        })
+
+        merged_coefs: Dict[str, Dict[str, Any]] = {}
+        if model is not None:
+            tcoefs = extract_coefs_panelols(
+                model=model,
+                key_ivs=[treatment],
+                all_vars=[treatment],
+                hyp_dir="positive",
+            )
+            merged_coefs.update(tcoefs)
+            ctrl_coefs = extract_coefs_panelols(
+                model=model,
+                key_ivs=[],
+                all_vars=control_vars,
+                hyp_dir="none",
+            )
+            merged_coefs.update(ctrl_coefs)
+        # Drop coefs whose SE / p_two is NaN (variable absorbed by FE or
+        # singular). Pydantic schema requires float; renderer can't display
+        # NaN coefficients anyway.
+        merged_coefs = {
+            k: v for k, v in merged_coefs.items()
+            if v.get("se") is not None
+            and not (isinstance(v["se"], float) and np.isnan(v["se"]))
+            and v.get("p_two") is not None
+            and not (isinstance(v["p_two"], float) and np.isnan(v["p_two"]))
+        }
+        coefs_per_col.append(merged_coefs)
+
+    ivs = [
+        {"name": KEY_IV_BETA_UK,
+         "label": _TREAT_LABEL[KEY_IV_BETA_UK],
+         "tail":  "one_pos"},
+        {"name": KEY_IV_10K,
+         "label": _TREAT_LABEL[KEY_IV_10K],
+         "tail":  "one_pos"},
+    ]
+
+    # 4 block headers: cols 1-4 Cash×β^UK, 5-8 Cash×10K, 9-12 Speech×β^UK, 13-16 Speech×10K.
+    header_rows = [
+        [
+            {"label": r"Cash Holdings: $\beta^{UK}$ treatment", "span": 4},
+            {"label": r"Cash Holdings: 10-K treatment",          "span": 4},
+            {"label": r"UncResCEO: $\beta^{UK}$ treatment",      "span": 4},
+            {"label": r"UncResCEO: 10-K treatment",              "span": 4},
+        ],
+    ]
+
+    paths = write_suite_spec(
+        output_dir=out_dir,
+        runner_id=SUITE_DIR_NAME,
+        sub_tables=[{
+            "suite_id":    SUITE_ID,
+            "dir_name":    SUITE_DIR_NAME,
+            "title":       SUITE_TITLE,
+            "caption":     SUITE_TITLE,
+            "label":       SUITE_LABEL,
+            "col_range":   list(range(1, len(col_metadata) + 1)),
+            "header_rows": header_rows,
+            "suite_type":  "standard",
+        }],
+        coefs_per_col=coefs_per_col,
+        col_metadata=col_metadata,
+        sample_label=(
+            "Brexit window 2010Q1-2016Q4. Treated firms: top tercile of "
+            r"$\beta^{UK}$ (cols 1-4, 9-12) or >5 UK-mentions in 2015 10-K "
+            "(cols 5-8, 13-16). Excludes financial + utility firms."
+        ),
+        clustering=CLUSTERING,
+        tail={"direction": "positive", "applies_to": "ivs_only"},
+        ivs=ivs,
+        controls={
+            "base": list(ALL_CONTROLS_LAG1) + ["Post_brexit", "HIGH_BETA_UK", "HIGH_10K"],
+            "extended_only": [],
+        },
+        model_family="PanelOLS",
+    )
+    for path in paths:
+        print(f"  Saved: {path.name}")
 
 
 # ==============================================================================

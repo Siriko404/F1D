@@ -1,0 +1,28 @@
+\begin{landscape}
+\begin{table}[H]
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.85}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.9}
+\centering
+\caption{Boasiako Disclosure Law Difference-in-Differences: Cash Holdings + CEO Speech Uncertainty (Boasiako-O'Connor Keefe 2020 EFM verbatim)}
+\label{tab:h1_5_disclosure_law_did}
+\scriptsize
+\begin{tabular}{lcccccccccccccc}
+\toprule
+ & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) & (10) & (11) & (12) & (13) & (14) \\
+Dependent var & cash & cash & cash & cash & UncResCEO\_c & UncResCEO\_c & UncResCEO\_c & UncResCEO\_c & UncResCEO\_c & UncResCEO\_c & UncResCEO\_c & UncResCEO\_c & UncResCEO\_c & UncResCEO\_c \\
+Treatment & Disclosure\_Law & Disclosure\_Law & Disclosure\_Law & Disclosure\_Law & Disclosure\_Law & Disclosure\_Law & Disclosure\_Law & Disclosure\_Law & Small\_x\_DL & Small\_x\_DL & Young\_x\_DL & Young\_x\_DL & NonDiv\_x\_DL & NonDiv\_x\_DL \\
+FE specification & industry\_state\_year & firm\_year & industry\_state\_year\_excl\_ca & industry\_state\_year\_excl\_crisis & industry\_state\_year & firm\_year & industry\_state\_year\_excl\_ca & industry\_state\_year\_excl\_crisis & industry\_state\_year & firm\_year & industry\_state\_year & firm\_year & industry\_state\_year & firm\_year \\
+\midrule
+Treatment $\times$ Post (DiD) & \textbf{+0.0262}$^{**}$ & \textbf{+0.0580}$^{***}$ & +0.0110 & \textbf{+0.0317}$^{**}$ & +0.0082 & +0.0061 & +0.0015 & +0.0105 & -0.0577 & -0.0647 & +0.0025 & +0.0025 & +0.0017 & +0.0057 \\
+ & [0.012] & [0.000] & [0.232] & [0.022] & [0.216] & [0.310] & [0.455] & [0.141] & [0.802] & [0.689] & [0.391] & [0.452] & [0.429] & [0.332] \\
+\midrule
+N (obs) & 49,402 & 49,402 & 41,160 & 37,970 & 9,709 & 9,709 & 8,174 & 7,399 & 9,709 & 9,709 & 9,709 & 9,709 & 9,709 & 9,709 \\
+\bottomrule
+\end{tabular}
+\\[2pt]
+\scriptsize\textit{Note: One-tailed $p$-values in brackets. Sig: $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. SEs not surfaced in stub-schema runners; full per-cell output in \texttt{regression\_results\_col*.txt}.}
+\end{table}
+
+\end{landscape}

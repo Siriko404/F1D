@@ -74,6 +74,7 @@ import pandas as pd
 from linearmodels.panel import PanelOLS
 
 from f1d.shared.path_utils import get_latest_output_dir
+from f1d.shared.outputs import extract_coefs_panelols, write_suite_spec
 from f1d.shared._compustat_annual_reader import read_compustat_annual
 from f1d.shared.variables.boasiako_disclosure_law_treatment import (
     BoasiakoDisclosureLawTreatmentBuilder,
@@ -538,23 +539,186 @@ def write_outputs(results: List[Dict[str, Any]], out_dir: Path) -> None:
     )
     print(f"  Saved: report_step4_H1_5_disclosure_law_did.md")
 
-    # Suite spec JSON for thesis-table autogen
-    suite_spec = {
-        "suite_id": SUITE_ID,
-        "dir_name": SUITE_DIR_NAME,
-        "title": SUITE_TITLE,
-        "label": SUITE_LABEL,
-        "n_cells": len(results),
-        "clustering": CLUSTERING,
-        "treatment": KEY_IV,
-        "blocks": {
-            "cash_baseline": "cols 1-4 (DV=cash, Disclosure_Law, 4 FE)",
-            "speech_baseline": "cols 5-8 (DV=UncResCEO_c, Disclosure_Law, 4 FE)",
-            "speech_channel": "cols 9-14 (Small/Young/NonDiv x DL, 2 FE each)",
+    # Canonical SuiteSpec emission (replaces prior stub dict 2026-05-13).
+    # Per-cell columns array with β + SE + p_two + p_one for every IV + control.
+    # Renders through docs/Draft/generate_all_tables.py:render_suite() uniformly
+    # with all other thesis suites (no stub fallback needed).
+    _emit_canonical_suite_spec(results, out_dir)
+
+
+# ------------------------------------------------------------------------------
+
+# FE label → (entity, time) mapping. Sample-exclusion variants share the same
+# FE entity/time as their baseline counterpart; the sample restriction is
+# captured separately in the column's effective sample size.
+_FE_ENTITY_TIME = {
+    "industry_state_year":              ("industry", "calendar_year"),
+    "firm_year":                        ("firm",     "calendar_year"),
+    "industry_state_year_excl_ca":      ("industry", "calendar_year"),
+    "industry_state_year_excl_crisis":  ("industry", "calendar_year"),
+}
+
+_PARTITION_LEVEL = {
+    "Small_x_DL":  "tercile_small",
+    "Young_x_DL":  "tercile_young",
+    "NonDiv_x_DL": "non_dividend",
+}
+
+_IV_LABEL = {
+    "Disclosure_Law": r"Disclosure Law $\times$ Post",
+    "Small_x_DL":     r"Small $\times$ Disclosure Law",
+    "Young_x_DL":     r"Young $\times$ Disclosure Law",
+    "NonDiv_x_DL":    r"Non-dividend $\times$ Disclosure Law",
+}
+
+
+def _emit_canonical_suite_spec(
+    results: List[Dict[str, Any]], out_dir: Path,
+) -> None:
+    """Build standard SuiteSpec from per-cell results + call write_suite_spec()."""
+    col_metadata: List[Dict[str, Any]] = []
+    coefs_per_col: List[Dict[str, Dict[str, Any]]] = []
+
+    for r in results:
+        meta = r["meta"]
+        model = r.get("model")
+        dv = meta["dv"]
+        fe = meta["fe"]
+        block = meta.get("block", "")
+        fe_entity, fe_time = _FE_ENTITY_TIME[fe]
+        # Headline coefficient (1st treatment term in _fit_one call).
+        headline = meta.get("treatment_headline", KEY_IV)
+
+        # Per-cell IVs: just the headline gets one-tailed; other treatment
+        # terms (level dummies in channel block) are two-tailed controls.
+        if headline == KEY_IV:
+            ivs_this_cell = [KEY_IV]
+            level_terms: List[str] = []
+        else:
+            level_terms = [_PARTITION_LEVEL[headline], KEY_IV]
+            ivs_this_cell = [headline]
+
+        control_vars = level_terms + list(ALL_CONTROLS)
+
+        adj_r2 = None
+        dv_mean = None
+        if model is not None:
+            try:
+                adj_r2 = float(model.rsquared)
+            except Exception:
+                pass
+            try:
+                dv_mean = float(model.model.dependent.dataframe.mean().iloc[0])
+            except Exception:
+                pass
+
+        col_metadata.append({
+            "col":          meta["col"],
+            "dv":           dv,
+            "fe_entity":    fe_entity,
+            "fe_time":      fe_time,
+            "control_vars": control_vars,
+            "n_obs":        int(meta.get("n_obs", 0)),
+            "n_firms":      None,
+            "r2":           float(meta.get("r2", float("nan"))),
+            "adj_r2":       adj_r2,
+            "dv_mean":      dv_mean,
+            "cluster_fallback": False,
+        })
+
+        merged_coefs: Dict[str, Dict[str, Any]] = {}
+        if model is not None:
+            iv_coefs = extract_coefs_panelols(
+                model=model,
+                key_ivs=ivs_this_cell,
+                all_vars=ivs_this_cell,
+                hyp_dir="positive",
+            )
+            merged_coefs.update(iv_coefs)
+            ctrl_coefs = extract_coefs_panelols(
+                model=model,
+                key_ivs=[],
+                all_vars=control_vars,
+                hyp_dir="none",
+            )
+            merged_coefs.update(ctrl_coefs)
+        # Drop coefs with NaN SE / p_two (variable absorbed or singular).
+        merged_coefs = {
+            k: v for k, v in merged_coefs.items()
+            if v.get("se") is not None
+            and not (isinstance(v["se"], float) and np.isnan(v["se"]))
+            and v.get("p_two") is not None
+            and not (isinstance(v["p_two"], float) and np.isnan(v["p_two"]))
+        }
+        # In channel cells (cols 9-14), Disclosure_Law is a level control (not
+        # the headline IV) — drop it from coefs so schema validation doesn't
+        # require directional p_one on a row where the IV-of-interest is the
+        # interaction term.
+        if headline != KEY_IV and KEY_IV in merged_coefs:
+            del merged_coefs[KEY_IV]
+        coefs_per_col.append(merged_coefs)
+
+    ivs = [
+        {"name": "Disclosure_Law", "label": _IV_LABEL["Disclosure_Law"], "tail": "one_pos"},
+        {"name": "Small_x_DL",     "label": _IV_LABEL["Small_x_DL"],     "tail": "one_pos"},
+        {"name": "Young_x_DL",     "label": _IV_LABEL["Young_x_DL"],     "tail": "one_pos"},
+        {"name": "NonDiv_x_DL",    "label": _IV_LABEL["NonDiv_x_DL"],    "tail": "one_pos"},
+    ]
+
+    # Block headers: Cash 4 + Speech 4 + Speech × {Small, Young, NonDiv} (2 each).
+    header_rows = [
+        [
+            {"label": r"Cash Holdings (Disclosure Law)",      "span": 4},
+            {"label": r"UncResCEO (Disclosure Law)",          "span": 4},
+            {"label": r"UncResCEO $\times$ Small",            "span": 2},
+            {"label": r"UncResCEO $\times$ Young",            "span": 2},
+            {"label": r"UncResCEO $\times$ Non-dividend",     "span": 2},
+        ],
+    ]
+
+    # Boasiako uses state-clustered SE (CLUSTERING={'clusters_col':'state'}),
+    # which doesn't fit the entity/time binary contract of write_suite_spec.
+    # Pass a placeholder + post-edit the emitted JSON to set the correct footer.
+    paths = write_suite_spec(
+        output_dir=out_dir,
+        runner_id=SUITE_DIR_NAME,
+        sub_tables=[{
+            "suite_id":    SUITE_ID,
+            "dir_name":    SUITE_DIR_NAME,
+            "title":       SUITE_TITLE,
+            "caption":     SUITE_TITLE,
+            "label":       SUITE_LABEL,
+            "col_range":   list(range(1, len(col_metadata) + 1)),
+            "header_rows": header_rows,
+            "suite_type":  "standard",
+        }],
+        coefs_per_col=coefs_per_col,
+        col_metadata=col_metadata,
+        sample_label=(
+            f"State data-breach disclosure-law staggered DiD, {WINDOW_FYEAR_MIN}-"
+            f"{WINDOW_FYEAR_MAX} (annual). Cols 3-4 + 7-8 exclude California and "
+            "crisis-period observations respectively. Boasiako-O'Connor Keefe 2020 "
+            "EFM verbatim controls."
+        ),
+        clustering={"entity": False, "time": False},  # placeholder; overridden below
+        tail={"direction": "positive", "applies_to": "ivs_only"},
+        ivs=ivs,
+        controls={
+            "base": list(ALL_CONTROLS) + ["tercile_small", "tercile_young", "non_dividend"],
+            "extended_only": [],
         },
-    }
-    (out_dir / f"suite_spec_{SUITE_ID}.json").write_text(json.dumps(suite_spec, indent=2))
-    print(f"  Saved: suite_spec_{SUITE_ID}.json")
+        model_family="PanelOLS",
+    )
+    # Post-edit: override clustering footer with state-cluster note.
+    for path in paths:
+        spec = json.loads(path.read_text(encoding="utf-8"))
+        spec["clustering"] = {
+            "entity": False,
+            "time": False,
+            "footer_note": "Standard errors (in parentheses) clustered at state level.",
+        }
+        path.write_text(json.dumps(spec, indent=2), encoding="utf-8")
+        print(f"  Saved: {path.name}")
 
 
 # ==============================================================================
