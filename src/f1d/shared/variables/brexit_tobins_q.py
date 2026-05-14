@@ -59,17 +59,24 @@ class BrexitTobinsQBuilder(VariableBuilder):
         del years
         comp_path = root_path / "inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
         logger.info(f"BrexitTobinsQBuilder: reading {comp_path} ...")
-        df = pd.read_parquet(comp_path, columns=["gvkey", "datadate", "atq", "cshoq", "prccq"])
+        df = pd.read_parquet(comp_path, columns=["gvkey", "datadate", "atq", "cshoq", "prccq", "ceqq", "txditcq"])
         # Compustat stores numerics as decimal.Decimal in object cols — coerce.
-        for c in ["atq", "cshoq", "prccq"]:
+        for c in ["atq", "cshoq", "prccq", "ceqq", "txditcq"]:
             df[c] = pd.to_numeric(df[c], errors="coerce")
         df["datadate"] = pd.to_datetime(df["datadate"])
         df["cal_yr_qtr"] = df["datadate"].dt.year * 10 + df["datadate"].dt.quarter
         df = df[(df["cal_yr_qtr"] >= WINDOW_START_YQ) & (df["cal_yr_qtr"] <= WINDOW_END_YQ)]
         df = df.dropna(subset=["atq", "cshoq", "prccq"]).copy()
         df = df[df["atq"] > 0]  # avoid div-by-0
+        # ceqq / txditcq missing → impute 0 (Campello-faithful: missing book-equity
+        # or deferred-tax adjustment items conventionally treated as zero).
+        df["ceqq"] = df["ceqq"].fillna(0)
+        df["txditcq"] = df["txditcq"].fillna(0)
 
-        df[COL_NAME] = (df["atq"] + df["cshoq"] * df["prccq"]) / df["atq"]
+        # Campello et al. 2022 JFQA Table 1 footer (j.3198) verbatim:
+        #   "market value of equity + book value of assets − book value of equity
+        #    + deferred taxes, all divided by book value of assets"
+        df[COL_NAME] = (df["cshoq"] * df["prccq"] + df["atq"] - df["ceqq"] + df["txditcq"]) / df["atq"]
         df["gvkey"] = df["gvkey"].astype(int).astype(str).str.zfill(6)
 
         df = df[["gvkey", "cal_yr_qtr", COL_NAME]].dropna(subset=[COL_NAME])
@@ -84,7 +91,7 @@ class BrexitTobinsQBuilder(VariableBuilder):
         stats = self.get_stats(df[COL_NAME], COL_NAME)
         metadata = {
             "source": "Campello et al. 2022 JFQA Section II.E (Tobin's Q)",
-            "formula": "(atq + cshoq*prccq) / atq",
+            "formula": "(cshoq*prccq + atq - ceqq + txditcq) / atq",
             "winsorization": f"{WINSOR_PCT*100}% within cal_yr_qtr",
             "n_rows": int(len(df)),
             "n_unique_gvkeys": int(df["gvkey"].nunique()),

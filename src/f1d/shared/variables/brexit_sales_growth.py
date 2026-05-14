@@ -69,11 +69,17 @@ class BrexitSalesGrowthBuilder(VariableBuilder):
             subset=["gvkey", "cal_yr_qtr"], keep="last"
         ).reset_index(drop=True)
 
-        # Quarterly YoY: saleq_t / saleq_{t-4}. shift(4) within firm is robust to gaps
-        # only if quarters are consecutive — for unbalanced panels we should use
-        # cal_yr_qtr-aware lag. Here we use shift(4) AFTER sorting + assume gaps drop NaN.
-        df["saleq_lag4"] = df.groupby("gvkey")["saleq"].shift(4)
-        df[COL_NAME] = (df["saleq"] - df["saleq_lag4"]) / df["saleq_lag4"].abs()
+        # Quarterly YoY: saleq_t / saleq_{calendar t-4Q}. Calendar-aware merge (NOT
+        # row-order shift) is correct for unbalanced panels. Per Campello j.3198
+        # verbatim: "year-on-year percentage change in quarterly sales" → denom
+        # is signed saleq_{t-4Q} (no |.|).
+        df["cal_yr_qtr"] = df["cal_yr_qtr"].astype("int64")
+        df["prev_yr_qtr_id"] = ((df["cal_yr_qtr"] // 10 - 1) * 10 + (df["cal_yr_qtr"] % 10)).astype("int64")
+        lag_src = df[["gvkey", "cal_yr_qtr", "saleq"]].rename(
+            columns={"cal_yr_qtr": "prev_yr_qtr_id", "saleq": "saleq_lag4"}
+        )
+        df = df.merge(lag_src, on=["gvkey", "prev_yr_qtr_id"], how="left")
+        df[COL_NAME] = (df["saleq"] - df["saleq_lag4"]) / df["saleq_lag4"]
         df = df[(np.isfinite(df[COL_NAME]))].dropna(subset=[COL_NAME])
 
         # Restrict output to Brexit window proper (2010Q1-2016Q4) AFTER lag computation.
@@ -86,7 +92,7 @@ class BrexitSalesGrowthBuilder(VariableBuilder):
         stats = self.get_stats(df[COL_NAME], COL_NAME)
         metadata = {
             "source": "Campello et al. 2022 JFQA Section II.E (Sales Growth)",
-            "formula": "(saleq_t - saleq_{t-4}) / |saleq_{t-4}| quarterly YoY",
+            "formula": "(saleq_t - saleq_{calendar t-4Q}) / saleq_{calendar t-4Q} (signed denom; calendar-merged lag)",
             "winsorization": f"{WINSOR_PCT*100}% within cal_yr_qtr",
             "n_rows": int(len(df)),
             "n_unique_gvkeys": int(df["gvkey"].nunique()),

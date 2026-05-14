@@ -77,7 +77,20 @@ class BrexitStockReturnBuilder(VariableBuilder):
             subset=["gvkey", "cal_yr_qtr"], keep="last"
         ).reset_index(drop=True)
 
-        df["adj_prccq_lag1"] = df.groupby("gvkey")["adj_prccq"].shift(1)
+        # Calendar-prev-Q merge (NOT row-order shift) — bug-fix 2026-05-14 for
+        # gappy panels (firms missing a quarter would pull wrong reference price
+        # under row-order shift). Per Campello j.3198 verbatim "quarterly
+        # buy-and-hold return".
+        def _prev_yq(yq: int) -> int:
+            yr, q = yq // 10, yq % 10
+            if q == 1: return (yr - 1) * 10 + 4
+            return yr * 10 + (q - 1)
+        df["cal_yr_qtr"] = df["cal_yr_qtr"].astype("int64")
+        df["prev_qtr_id"] = df["cal_yr_qtr"].map(_prev_yq).astype("int64")
+        lag_src = df[["gvkey", "cal_yr_qtr", "adj_prccq"]].rename(
+            columns={"cal_yr_qtr": "prev_qtr_id", "adj_prccq": "adj_prccq_lag1"}
+        )
+        df = df.merge(lag_src, on=["gvkey", "prev_qtr_id"], how="left")
         df[COL_NAME] = df["adj_prccq"] / df["adj_prccq_lag1"] - 1
         df = df[np.isfinite(df[COL_NAME])].dropna(subset=[COL_NAME])
 
