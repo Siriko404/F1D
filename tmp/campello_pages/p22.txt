@@ -1,0 +1,82 @@
+                             Campello, Cortes, d'Almeida, and Kankanhalli 3199                           https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+                             TABLE 1 (continued)
+                              Summary Statistics
+
+                                                           Textual-Search-Based Approach
+                                                        (More than Five 10-K Entries on Brexit)
+
+Panel D. Treated Firms:      0.01  0.02  0.01  0.01                                              35,828
+                                                                                                  8,004
+INVESTMENT                   0.08  0.30  0.03  0.17
+EMPLOYMENT_GROWTH (Annual)                                                                       19,988
+R&D                          0.03  0.04  0.02  0.04                                              29,009
+DIVESTITURES (Â100)                                                                              36,985
+CASH                         0.05  0.26  0.00  0.00                                              36,292
+NON_CASH_WORKING_CAPITAL                                                                         34,108
+TOBIN_Q                      0.23  0.25  0.13  0.29                                              35,432
+CASH_FLOW                                                                                        37,002
+SIZE (Log Assets)            0.01  0.20  0.02  0.20                                              33,647
+SALES_GROWTH                                                                                     26,008
+CONSENSUS_EARNINGS_FORECAST  2.10  1.59  1.55  1.29                                              29,983
+STOCK_RETURNS
+                             0.01  0.07  0.02  0.04                                               9,389
+Panel E. Control Firms:                                                                           2,248
+                             6.08  2.06  6.02  3.12                                               4,745
+INVESTMENT                                                                                        7,377
+EMPLOYMENT_GROWTH (Annual)   0.17  0.66  0.06  0.25                                               9,533
+R&D                                                                                               9,260
+DIVESTITURES (Â100)          0.04  3.46  0.04  2.06                                               9,138
+CASH                                                                                              9,240
+NON_CASH_WORKING_CAPITAL     0.02  0.25  0.01  0.27                                               9,533
+TOBIN_Q                                                                                           8,835
+CASH_FLOW                          Textual-Search-Based Approach                                  6,929
+SIZE (Log Assets)                                                                                 8,523
+SALES_GROWTH                             (Zero 10-K Entries on Brexit)
+CONSENSUS_EARNINGS_FORECAST
+STOCK_RETURNS                0.01  0.02  0.01  0.01
+
+                             0.08  0.30  0.03  0.16
+
+                             0.03  0.04  0.01  0.03
+
+                             0.05  0.24  0.00  0.00
+
+                             0.22  0.24  0.12  0.26
+
+                             0.06  0.19  0.04  0.21
+
+                             2.06  1.54  1.55  1.17
+
+                             0.01  0.07  0.02  0.04
+
+                             5.95  2.15  5.86  3.23
+
+                             0.17  0.67  0.05  0.22
+
+                             0.01  4.46  0.04  1.79
+
+                             0.03  0.24  0.02  0.24
+
+regarding the investment process is provided in Figure C1 in the Supplementary
+Material. Tables C4 and C5 in the Supplementary Material report formal tests
+supporting the presence of parallel trends across all outcome variables.
+
+V. Results
+
+A. The Impact of the Brexit Vote on U.S. Firms' Investment, Labor, R&D,
+     and Divestitures
+
+      Results from our baseline estimations for investment and employment are
+shown in Table 2. We begin with a firm-fixed effects estimation in which iUK enters
+the specification as a linear continuous-treatment variable in column 1, allowing for
+the entire range of Ui K values. The POSTÂUi K interaction coefficient is negative
+and highly significant, consistent with Prediction 1. In short, it points to the inter-
+pretation that a higher exposure to the United Kingdom is linked to lower
+investment spending following the 2016 Brexit vote. We move to our baseline
+specification in column 2, which considers the nonnegative range of Ui K parti-
+tioned in terciles. The model includes time-varying industry-fixed effects by
+way of interacting Hoberg and Phillips (2016) industries (FIC 100) and calendar-
+quarter dummy variables. The POST Â HIGH_Ui K coefficient is again negative
+and statistically significant. Finally, we consider our text-based approach to
+

@@ -1,0 +1,68 @@
+         Campello, Cortes, d'Almeida, and Kankanhalli 3221                                           https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+B.4. Proof of Proposition 4
+
+Proof. Let us define
+     H ðn; Þ = vi1 þ E½vi2 À ð þ Þn À E½ max ðvi2 À ð þ Þn, 0Þ = 0:
+
+By the Implicit Function Theorem,
+
+                             dn     =  À  H n      :
+                             d            H 
+
+Considering first the numerator, we know from Proposition 1 that:
+
+                                    H  <    0:
+                                    n
+
+Next, considering the denominator,
+
+H  =  À  n  À                    E½  max  ðvi2  À  ð     þ  Þn,  0Þ
+                                                                    !
+
+   = À n À E                           max  ðvi2  À   ð  þ  Þn,  0Þ
+                                  
+
+   = À n À E½ max ðvi2 À n, 0Þ
+
+   < 0:
+
+Putting these together, we have:
+
+                             dn  =  À  H n        <  0:
+                             d         H 
+
+B.5. Proof of Proposition 5
+
+Proof. Symmetric to the case of capital.
+
+Supplementary Material
+
+      To view supplementary material for this article, please visit http://doi.org/
+10.1017/S0022109022000308.
+
+References
+
+Acemoglu, D., and P. Restrepo. "Robots and Jobs: Evidence from US Labor Markets." Journal of
+    Political Economy, 128 (2020), 2188­2244.
+
+Acharya, V. V.; H. Almeida; and M. Campello. "Aggregate Risk and the Choice Between Cash and Lines
+    of Credit." Journal of Finance, 68 (2013), 2059­2116.
+
+Alfaro, I.; N. Bloom; and X. Lin. "The Finance Uncertainty Multiplier." NBER Working Paper No.
+    24571 (2018).
+
+Baker, S. R.; N. Bloom; and S. J. Davis. "Measuring Economic Policy Uncertainty." Quarterly Journal
+    of Economics, 131 (2016), 1593­1636.
+
+Bar-Ilan, A., and W. Strange. "Investment Lags." American Economic Review, 86 (1996), 610­622.
+Bar-Ilan, A., and W. Strange. "A Model of Sequential Investment." Journal of Economic Dynamics and
+
+    Control, 22 (1998), 437­463.
+Becker, S. O.; T. Fetzer; and D. Novy. "Who Voted for Brexit? A Comprehensive District-Level
+
+    Analysis." Economic Policy, 32 (2017), 601­650.
+Benhabib, B. Manufacturing: Design, Production, Automation, and Integration. Boca Raton, FL: CRC
+
+    Press (2003).
+

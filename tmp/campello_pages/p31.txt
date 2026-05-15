@@ -1,0 +1,65 @@
+3208 Journal of Financial and Quantitative Analysis                                                                                       https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+                                                       TABLE 8
+The Impact of the Brexit Vote on Cash Holdings, Noncash Working Capital, and Profitability
+
+Table 8 reports output from equation (14). The dependent variables are CASH, NON_CASH_WORKING_CAPITAL, and
+
+PROFITS. CASH is defined as total cash holdings divided by lagged total assets net of cash holdings. NON_CASH_
+
+WORKING_CAPITAL (NWC) is defined as working capital (net of cash) divided by lagged total assets. PROFITS is defined
+
+as the quarterly percentage change in profits (operating income before depreciation divided by sales). In the first specification,
+
+the treatment group is composed    by the top tercile of iUK,  whereas the  control group is composed by firms in the  bottom tercile of
+Ui K. The second specification is  a textual-search-based      measure of   U.K. exposure that sums up the number      of Brexit-related
+
+words in firms' 2015 10-K forms. The treatment group is made of firms with more than five entries, whereas the control group
+
+are firms with zero entries. The time dimension of the DID estimator is set so as to compare the two quarters following the
+
+announcement of the referendum and Brexit's victory (2016:Q3­Q4) versus the two quarters preceding the announcement
+
+(2015:Q3­Q4). T -statistics are computed using robust standard errors (in parentheses) double-clustered at the firm and
+
+calendar quarter levels. *, **, and *** indicate statistical significance at the 10%, 5%, and 1% levels, respectively.
+
+                                   CASH                                     NWC           PROFITS
+
+POST Â HIGH_Ui K                   Treatment   Treatment is    Treatment    Treatment is  Treatment                     Treatment is
+                                     is Top     > 5 Brexit       is Top      > 5 Brexit     is Top                       > 5 Brexit
+POST Â HIGH_10ÀK_ENTRIES             Tercile    Entries in       Tercile     Entries in     Tercile                      Entries in
+                                     of iUK        10-Ks         of iUK         10-Ks       of iUK                          10-Ks
+Controls                                1             2             3              4           5                               6
+   Firm                              0.231***                                              À0.135
+                                                  0.357***     À0.687***     À0.608***      (0.391)                         0.343
+Fixed effects                       (0.059)      (0.062)        (0.281)       (0.079)                                      (0.550)
+   Firm                                                                                       Yes
+   Industry Â time                     Yes          Yes            Yes           Yes                                         Yes
+                                                                                              Yes
+No. of obs.                            Yes          Yes            Yes           Yes          Yes                            Yes
+R2                                     Yes          Yes            Yes           Yes        16,630                           Yes
+                                   17,170       24,195         16,630         23,806         0.89                         24,051
+                                     0.21         0.24           0.89          0.87                                         0.15
+
+C. Other Firm Policies and Outcomes
+
+      We also study how the 2016 Brexit vote affected other firms' policies, espe-
+cially their liquidity management. We do so looking at how firms adjusted their cash
+holdings and NWC. The positive and highly significant coefficients in columns
+1 and 2 of Table 8 show that U.K.-exposed firms increased their cash savings in the
+face of higher uncertainty induced by the Brexit vote. Negative and highly signif-
+icant coefficients in columns 3 and 4 show that firms concomitantly accumulated
+less inventory by adjusting their NWC downward. Although not explicitly modeled
+in our framework, this behavior is consistent with the theoretical underpinnings
+from the liquidity management literature. In particular, precautionary behavior will
+lead firms to change the composition of assets on their balance sheets, leading to the
+accumulation of the most liquid assets.
+
+      We further use Table 8 to report results on profit growth. The estimates in
+columns 5 and 6 are not statistically significant, suggesting that the Brexit vote did
+not affect the profitability of U.K.-exposed American firms relative to those of
+nonexposed firms. They support the idea that the investment and employment drops
+previously reported are arguably due to a "second-moment" shock to income
+uncertainty, rather than a negative "first-moment" shock to firms' cash flows.
+

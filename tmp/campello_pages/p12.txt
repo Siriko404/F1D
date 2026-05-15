@@ -1,0 +1,52 @@
+                 Campello, Cortes, d'Almeida, and Kankanhalli 3189                        https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+Proposition 2. Increased uncertainty leads to greater R&D investment at t ¼ 0. For
+
+r0 > r, namely when GðÁ, r0Þ is obtained by an MPS of GðÁ, rÞ, mðr0Þ > mðrÞ. That
+     dm
+is,   dr  >  0.
+
+      Proposition 2 states that an increase in uncertainty increases the set of R&D-
+type projects that the firm is willing to undertake, given that the potential upside has
+increased and the downside is capped by the ability to abandon a project upon
+observing an interim signal as to its future profitability, and avoid paying part of the
+investment costs. This is in contrast to capital investment, whose initial costs, once
+paid, are largely lost.
+
+      It is worth concluding our theoretical analysis with a discussion contrasting
+"uncertainty" about future cash flows and "expectations" about future cash flows.
+A decline in expected cash flows produces similar implications in terms of a decline
+in capital investment and employment. Notably, however, a decline in expected
+cash flows provides contrasting implications in terms of an increase in disinvest-
+ment and a decline in R&D, counter to the effects of increased uncertainty on these
+decisions predicted by our framework.
+
+C. Testable Predictions
+
+      Our framework implies that an increase in aggregate uncertainty reduces firm
+investments in standard-type projects, and that the effect is modulated by the
+degree of exposure to uncertainty, i. In the context of the impact of U.K.-born
+uncertainty onto U.S.-based firms, we state our first testable prediction.
+
+Prediction 1. American firms with a higher exposure to U.K. uncertainty (high
+U.K.-exposure firms) will disproportionately reduce their investment in capital and
+labor in response to the Brexit vote.
+
+      Our analysis also indicates that an increase in aggregate uncertainty triggers
+firm investment in R&D-type projects through a growth-options channel, and the
+effect is modulated by the degree of exposure to uncertainty, i. Translating this to
+our test setting, we state our second testable prediction.
+
+Prediction 2. American firms with a higher exposure to U.K. uncertainty (high
+U.K.-exposure firms) will disproportionately increase their investment in R&D in
+response to the Brexit vote.
+
+      The theoretical framework further implies that an increase in aggregate
+uncertainty reduces firm capital disinvestment, and the effect is modulated by
+the degree of firm-level exposure to uncertainty. This translates into our third
+testable prediction.
+
+Prediction 3. American firms with a higher exposure to U.K. uncertainty (high
+U.K.-exposure firms) will disproportionately reduce their disinvestment in fixed
+capital in response to the Brexit vote.
+

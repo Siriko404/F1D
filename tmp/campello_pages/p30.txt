@@ -1,0 +1,67 @@
+                          Campello, Cortes, d'Almeida, and Kankanhalli 3207                                                           https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+                                         TABLE 7
+
+Amplification Mechanism: The Impact of Capital and Labor Adjustment
+         Costs on Corporate Investment and Employment Growth
+
+Table 7 reports the results of the amplification effect of capital and labor adjustment costs on investment and employment
+
+growth, respectively. The proxy for capital adjustment costs is the asset redeployability index of Kim and Kung (2016). The
+
+proxy for labor adjustment costs is the labor unionization rate from the Bureau of Economic Analysis. The treatment group is
+composed by firms in the top tercile of iUK, the measure of U.K. exposure, whereas the control group is composed by firms in
+the bottom tercile of Ui K. High capital irreversibility is defined as the top tercile of the Kim and Kung (2016) index of asset
+redeployability (at the firm level). High labor irreversibility is defined as the top tercile of the labor unionization rate (at the
+
+industry level). The time dimension of the DID estimator is set so as to compare the two quarters following the announcement
+of the referendum and Brexit's victory (2016:Q3­Q4) versus the two quarters preceding the announcement (2015:Q3­Q4).
+T -statistics are computed using robust standard errors (in parentheses) double-clustered at the firm and calendar quarter
+
+levels. *, **, and *** indicate statistical significance at the 10%, 5%, and 1% levels, respectively.
+
+                                           INVESTMENT                  EMPLOYMENT_GROWTH
+
+                          Asset Redeployability                        Labor Unionization
+
+POST Â HIGH_iUK                High             Low           Pooled        High             Low           Pooled
+                          Irreversibility  Irreversibility   Sample    Irreversibility  Irreversibility   Sample
+POST Â HIGH_Ui KÂHIGH_    Subsample        Subsample                   Subsample        Subsample
+   INPUT_IRREVERSIBILITY                                         3                                            6
+                                 1                2                           4                5
+Controls                   À0.463***                        À0.037      À3.447***          À0.067          0.177
+   Firm                      (0.077)           0.001         (0.031)      (0.957)           (0.751)       (0.808)
+                                              (0.019)       À0.397***                                    À3.577***
+Fixed effects                  Yes                           (0.044)        Yes              Yes          (0.712)
+   Firm                                         Yes
+   Industry                    Yes                              Yes          No               No             Yes
+   Time                         No              Yes                         Yes              Yes
+   Industry Â time              No               No             Yes         Yes              Yes             No
+                               Yes               No             No           No               No             Yes
+No. of obs.                   5,394             Yes             No         1,491             1,112           Yes
+R2                            0.76             6,377            Yes        0.11              0.14            No
+                                               0.77         12,222                                         2,603
+                                                              0.75                                         0.12
+
+that is, firms with plausibly less irreversible investment. The DID coefficient is
+insignificant for this group of firms. The estimation under column 3 uses the entire
+sample of firms, introducing a dummy variable High Irreversibility that equals 1 if
+the firm is in the high irreversibility group. The coefficient on this variable can be
+interpreted as a third difference in a differences-test framework, that is, as a
+difference-in-difference-in-differences (DIDID) estimate. The coefficient for the
+triple interaction in column 3 is negative and highly significant, implying that cross-
+group responses are economically and statistically distinct, in line with Prediction 4.
+
+      We next turn to the impact of labor adjustment costs, using industry-level
+unionization rates as a proxy for such costs. Columns 4­6 of Table 7 show that the
+response of firms in more unionized industries is significantly different from that of
+firms in less unionized industries.26 This analysis suggests that the effect of uncer-
+tainty on U.S. corporate employment following the 2016 Brexit vote was modu-
+lated by input irreversibility, as implied by Prediction 5. In all, the results of Table 7
+confirm the theoretical prior that capital and labor adjustment costs significantly
+affected U.S. firms' responses to Brexit-induced uncertainty.
+
+    26The pooled sample in column 6 has significantly fewer observations than that in column 3
+owing to the fact that investment is reported quarterly, whereas employment is reported annually in
+COMPUSTAT.
+

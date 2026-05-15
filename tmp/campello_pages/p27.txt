@@ -1,0 +1,35 @@
+                                                                                         TABLE 5                                                                                                                                        3204 Journal of Financial and Quantitative Analysis
+Result Characterization: The Impact of the Brexit Vote on Employment Growth, Establishment Turnover, and Labor Skills in the United States
+
+Table 5 reports output from equation (14) considering establishment-level employment growth in the United States and results on the cross-sectional effect of labor skills on employment growth by firms in the baseline
+
+sample. The dependent variable is EMPLOYMENT_GROWTH. EMPLOYMENT_GROWTH is the percentage change in the number of employees (annual). Labor skills are measured by the labor skills index (LSI) defined
+in Ghaly et al. (2017). The LSI is constructed as the weighted average O*NET occupational skills classification (1­5 scale), weighted by the fraction of employees in a given industry engaged in a given occupation,
+averaged across all occupations in that industry. Low (high) skills firms are defined as firms in the bottom (top) tercile of the 2015 LSI (at the industry level). In the first specification, the treatment group is composed by the
+top tercile of iUK, whereas the control group is composed by firms in the bottom tercile of Ui K. The second specification is a textual-search-based measure of U.K. exposure that sums up the number of Brexit-related
+words in firms' 2015 10-K forms. The treatment group is made of firms with more than five entries, whereas the control group are firms with zero entries. The time dimension of the DID estimator is set so as to compare the
+two quarters following the announcement of the referendum and Brexit's victory (2016:Q3­Q4) versus the two quarters preceding the announcement (2015:Q3­Q4). T -statistics are computed using robust standard
+errors (in parentheses) double-clustered at the firm and calendar quarter levels. *, **, and *** indicate statistical significance at the 10%, 5%, and 1% levels, respectively.
+
+                    ESTABLISHMENT_LEVEL_                       ESTABLISHMENT_TURNOVER                       Low Skills Subsample                        High Skills Subsample
+                    EMPLOYMENT_GROWTH                                                                     EMPLOYMENT_GROWTH                           EMPLOYMENT_GROWTH
+
+POST Â HIGH_iUK     Treatment is Top  Treatment is > 5 Brexit  Treatment is Top  Treatment is > 5 Brexit  Treatment is Top   Treatment is > 5 Brexit  Treatment is Top  Treatment is > 5 Brexit
+                      Tercile of iUK      Entries in 10-Ks       Tercile of iUK      Entries in 10-Ks       Tercile of Ui K      Entries in 10-Ks       Tercile of iUK      Entries in 10-Ks
+POST Â HIGH_                  1                     2                    3                     4                    5                      6                    7                     8
+   10ÀK_ENTRIES         À5.094***                                  À2.252***                                  À5.861***                                    À2.333
+                         (1.375)              À4.603***             (0.719)               À1.547**             (0.370)               À7.260***               (1.689)               2.316
+Controls                                       (1.431)                                     (0.765)                                    (0.563)                                     (2.032)
+   Firm                     Yes                                        Yes                                        Yes                                         Yes
+                                                  Yes                                        Yes                                         Yes                                        Yes
+Fixed effects               Yes                                        Yes                                         No                                          No
+   Firm                     Yes                   Yes                  Yes                   Yes                   No                     No                   No                    No
+   Industry Â time           No                   Yes                   No                   Yes                  Yes                     No                  Yes                    No
+   Industry                  No                    No                   No                    No                  Yes                    Yes                  Yes                   Yes
+   Time                   3,540                    No                3,588                    No                1,323                    Yes                  1,568                 Yes
+                          0.33                  4,173                0.46                   4,184               0.10                   1,229                  0.14                  705
+No. of obs.                                     0.32                                        0.43                                       0.29                                        0.41
+R2
+
+                                                                                                          https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+

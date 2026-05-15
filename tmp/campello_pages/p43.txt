@@ -1,0 +1,63 @@
+3220 Journal of Financial and Quantitative Analysis                                                                                                                                                                                                                                                                                                https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+  Next, considering the derivative of H with respect to r, we have:
+
+                                                                             H    ðn; rÞ     =    À     E½   max                                                                        ðvi2  À  ð  þ  Þn,  0Þ;  r:
+                                                                                  r                  r
+
+  Because GðÁ,r0Þ is a MPS of GðÁ, rÞ, for any convex function J ðÁÞ,
+                                            Z
+
+                           E½J ðvi2Þ; r0 = J ðvi2ÞdGðvi2, r0Þ
+                                           Z
+
+                                          J ðvi2ÞdGðvi2, rÞ
+
+                                                                                                           = E½J ðvi2Þ; r:
+
+  Since maxðvi2 À ð þ Þn, 0Þ is convex in vi2, it follows that:
+       E½ max ðvi2 À ð þ Þn, 0Þ; r0E½ max ðvi2 À ð þ Þn, 0Þ; rr0 > r:
+
+  This implies
+
+                                                                                           E½  max   ðvi2  À                                 ð                                          þ  Þn,   0Þ;  r0:
+                                                                                        r
+
+  Thus,
+
+                                                                             Hðn; rÞ         =    À     E½   max                                                                        ðvi2  À ð þ Þn,0Þ; r
+                                                                                 r                   r
+
+                                                                                              0:
+
+  Putting these conditions together, we have:
+
+                                                                                                  dn    =  À                                 H n                                              <  0:
+                                                                                                  dr                                         H r
+
+B.3. Proof of Proposition 2
+
+  Proof. Rearranging equation (10), we get:
+
+            0                                                                                                                                                                                                                                                                 11
+                                                                                                        pffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffi "                                                                                                       !# À1
+            B@Bui1                                                                                          2i ðrÞ þ 2x                                                                                                                                                       ACC :
+  m   =  1                                                                À  d1   À  d2  þ   ui1  þ         pdffiffi2ffiffiÀffiffiuffiffiiffi1ffiffiffiffiffi                                            pffidffiffiffi2ffiffiÀffiffiffiffiuffiffiffiiffi1ffiffiffiffiffiffi
+                                                                                                                                                                                                            i2ðrÞ þ x2
+                                                                                                     1  À
+                                                                                                                                                                                        i2 ðrÞþ x2
+
+  It  can  be   shown                                                             that  dm   >  0  as:
+                                                                                         dr
+
+                                                                          2                                                                                                             3
+
+                                                                       !  4661 À  pdffiffi2ffiffiÀffiffiuffiffiiffi1ffiffiffiffiffi  pffidffi2ffiffiÀffiffiuffiffiiffi1ffiffiffiffiffi  757 À 0                    !                                                                    !
+                                                                                                                                                                                                    pffidffiffiffi2ffiffiÀffiffiffiffiuffiffiffiiffi1ffiffiffiffiffiffi  pffidffiffiffi2ffiffiÀffiffiffiffiuffiffiffiiffi1ffiffiffiffiffiffi > 0:
+  pffidffiffiffi2ffiffiÀffiffiffiffiuffiffiffiiffi1ffiffiffiffiffiffi                 i2 ðrÞþ x2         i2 ðrÞþ x2
+  2i ðrÞ   þ    2                                                                                                                                                                                      2i ðrÞ þ x2                                                          i2ðrÞ þ 2x
+                x                                                                    1 À  pdffiffi2ffiffiÀffiffiuffiffiiffi1ffiffiffiffiffi
+
+                                                                                                   2i  ðrÞþ  2
+                                                                                                             x
+

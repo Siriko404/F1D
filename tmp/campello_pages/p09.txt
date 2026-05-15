@@ -1,0 +1,56 @@
+3186 Journal of Financial and Quantitative Analysis                                                        https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+approximation, this matches the reality of several types of R&D projects, including
+the "race to patent" a certain idea or bring a new technology to the market. Second,
+the firm is able to stage its investment in the projects. If the firm wishes to buy the
+option to invest in m projects, it pays an upfront cost of m, which is convex in the
+size of its R&D portfolio (i.e.,  > 1). In addition, it must pay a development cost dt
+for each period in which the project remains alive. That is, in order to earn t ¼ 1
+revenue ui1, it must pay d1; similarly, in order to earn t ¼ 2 revenue ui2, it must pay
+d2. However, at t ¼ 1, the firm observes the first-stage revenue, ui1, which serves as
+a signal of the second-stage revenue of the project.7 Based on this signal, the firm
+may choose either to abandon the project at the end of t ¼ 1, or invest and take it to
+completion at t ¼ 2. In the former case, it does not receive any revenue from the
+project at t ¼ 2; that is, ui2 ¼ 0. On the other hand, if, at the end of t ¼ 1, it chooses to
+continue the project, then it must pay the second period development cost, d2, to
+receive ui2. This, too, matches the reality of certain types of R&D projects (e.g.,
+pharmaceutical trials and corporate venture capital funds), in which decisions are
+made in stages, and the firm does not need to precommit to follow through on all
+stages at once. Notably, the joint absence of i) the option to delay and ii) irreversible,
+fixed costs generates a positive effect of uncertainty on R&D investment.8
+
+      Finally, the firm can choose at time t ¼ 0 or t ¼ 1 to disinvest (sell) any of its
+existing endowment of projects, w. If the firm sells a project at time t, it must pay
+a scrapping cost w, but receives the cash flow from disinvestment of sit. Else, for
+each period t that the project remains alive, the firm earns a known xit (e.g., rent
+accruing from a real-estate holding). The process of disinvesting a project is
+irreversible, and as with capital investment, this irreversibility induces a negative
+effect of uncertainty on disinvestment.
+
+B. Model Analysis and Results
+
+      In what follows, we present analysis and results corresponding to the firm's
+standard investment problem and R&D decision.9
+
+1. Capital and Labor Investment Decisions
+
+      In solving the firm's capital investment problem, we first consider its decision
+at t ¼ 1. If the firm had initiated any projects at t ¼ 0, it obtains the second period
+revenue vi2 per project. Among those projects that were not undertaken at t ¼ 0, the
+firm can choose to initiate any of them at t ¼ 1 and earn vi2 À ð þ Þn per project.
+Else, it can discard any uninvested projects and earn 0. The firm will rationally
+discard a given project, en, when its expected revenue is less than the associated
+costs of investment and hiring. The firm will cease operations at the end of t ¼ 2,
+
+    7As noted in Section III.A.1, the revenues at the first and second stages both have a common
+component, driven by i, and an idiosyncratic, mean-zero, IID component. As a result, the first-stage
+revenue is a noisy but unbiased signal of the second-stage revenue.
+
+    8This modeling is consistent with theories showing a positive effect of uncertainty on growth-
+options-type investment (see, e.g., Bar-Ilan and Strange (1996), (1998), Grossman and Shapiro
+(1986), and Kulatilaka and Perotti (1998)).
+
+    9In Appendix A, we model the firm's decision to disinvest and derive results on the cross-sectional
+implications of the role played by the degree of input irreversibility. Proofs of propositions and lemmas
+are in Appendix B.
+

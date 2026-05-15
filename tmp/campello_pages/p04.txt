@@ -1,0 +1,55 @@
+                                     Campello, Cortes, d'Almeida, and Kankanhalli 3181                     https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+R&D spending. Looking at employment, our estimations show that labor force
+growth declined from 3.4% in 2015 to À1.5% for U.K.-exposed firms in 2016.
+That is, the Brexit vote outcome led to a slowdown in net job creation among
+U.K.-exposed firms in the United States.
+
+      We set out to characterize our findings on U.S. companies' investment and
+employment decisions following the Brexit vote by identifying whether those
+decisions affected their U.S.-based operations or their foreign-based operations
+using establishment-level employment data. We find that investment cuts and jobs
+losses took place within U.S. borders. We further examine the workforce charac-
+teristics of the firms in our sample. Our tests show that workers with lower skills are
+those most likely to be terminated by firms hit by U.K.-borne uncertainty. Brexit
+also affected U.K.-exposed firms' establishment turnover decisions, with the open-
+ing and closures of U.S. establishments falling by around 2%.
+
+      We finally delve into an analysis of offshoring activities in our sample firms.
+This analysis reveals that investment cuts are undertaken primarily by U.S. firms
+with a high degree of input (rather than output) offshoring activity with the United
+Kingdom. The evidence we present shows that the 2016 Brexit vote had a mean-
+ingful, multifaceted impact on the U.S. labor market.
+
+      Along the lines of our framework, we also find that the investment behavior
+of U.K.-exposed firms was modulated by capital adjustment costs. Specifically,
+the investment drop caused by the Brexit vote was a function of the nature of
+the assets U.S. firms operated ­ it was more acute for firms in industries where
+fixed capital is highly irreversible (nonredeployable). Labor adjustment costs also
+seemed to modulate the extent to which U.K.-exposed firms hired and fired workers.
+In particular, exposed firms in industries with higher unionization rates (where
+workforce adjustments are costlier) registered a significantly lower job growth.
+
+      Looking beyond investment and employment, we examine several auxiliary
+firm policies and find that U.K.-exposed firms also saved more cash and accumu-
+lated less inventory (noncash working capital (NWC)) in the aftermath of the Brexit
+vote. Our estimates imply that following the vote, U.K.-exposed firms increased
+their cash holdings by 12% relative to their baseline level. The results we report are
+in line with literature on corporate liquidity management suggesting that, in times of
+heightened volatility, firms with higher market exposure are likely to increase liquid
+asset holdings for precautionary reasons (e.g., Acharya, Almeida, and Campello
+(2013)).
+
+      Throughout our analysis, we strive to account for the larger context in which
+Brexit affected U.S. firms. For example, one of the immediate effects of the Brexit
+vote was a 9% depreciation of the British pound relative to the U.S. dollar. Virtually,
+all firms in our sample report using derivatives to hedge against foreign exchange
+(FX) risk.3 Nonetheless, we control for possible heterogeneous effects of the pound
+depreciation on U.K.-exposed firms in several ways. Our results are robust to the
+inclusion of FX exposure metrics, suggesting that the 2016 Brexit vote entailed an
+unhedgeable source of economic uncertainty to American corporations, beyond
+hedgeable fluctuations in FX markets.
+
+    3Note that since both our treatment and control groups comprise firms domiciled in the United States,
+any homogeneous effects of the pound depreciation on U.S. firms are differenced out in our estimations.
+

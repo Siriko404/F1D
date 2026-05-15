@@ -1,0 +1,66 @@
+3188 Journal of Financial and Quantitative Analysis                                                                                                                                             https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+2. R&D Investment Decisions
+
+      Consider the firm's decision at t ¼ 0, when it may opt to invest in a portfolio of
+
+R&D projects. The profits from an R&D portfolio of size me can be expressed as
+
+                    8                                                                                                                                               ðNoInvestmentÞ,
+                    <> 0
+
+(7)    i2 ðme Þ  ¼  :>  ui1  À  d1 þ  ui2                            À  d2,          if E½ui2jui1 ¼ u > d2                                                          ðInvest Both StagesÞ,
+                        ui1  À  d1,                                                  if E½ui2jui1 ¼ u  d2                                                           ðInvest First Stage OnlyÞ:
+
+      The firm will invest in a portfolio of R&D projects of size m at t ¼ 0 to
+maximize the following:
+
+(8)                     max     m  Â  E½                             max             ðui2  À  d2  ,  0Þ  þ                                                 mui1  À  md1  À  m:
+
+                          m
+
+      The first-order condition of equation (8) implicitly defines the optimal R&D
+portfolio size, m, by the following:
+
+(9)                             E½ max ðui2 À d2, 0Þ þ ui1 ¼ d1 þ mÀ1:
+
+      Noting that the first-stage revenue, ui1, is a noisy but unbiased signal of the
+
+second-stage revenue, ui2, and assuming that these variables are normally distrib-
+uted, we can simplify equation (9) as10
+
+(10)                            E½ui1 À d2jui1 > d2 þ ui1 ¼ d1 þ mÀ1,
+
+                    pffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffi "                                                                        !#
+                        2i ðrÞ þ 2x  
+      ui1 þ                                                                          p ffidffiffiffi2ffiffiÀffiffiffiffiuffiffiffiiffi1ffiffiffiffiffiffi      þ ui1 ¼ d1 þ d2 þ mÀ1:
+                                                                                        2i ðrÞ þ 2x
+             1 À  pffidffi2ffiffiÀffiffiuffiffiiffi1ffiffiffiffiffi
+
+                             2i ðrÞþx2
+
+In Lemma 2, we prove the existence of the optimal R&D investment level m.
+
+Lemma 2. The optimal R&D investment level m at t ¼ 0 is given by equation (10)
+for  > 1.
+
+      The breakeven condition in equation (10) implies that the firm invests in a
+
+portfolio of R&D projects up to the point at which benefits are expected to exceed
+costs. Since at t ¼ 1 the firm can (upon observing a signal of the projects' future
+
+revenues) choose to abandon any project, and if so, avoid paying the second-stage
+development cost, the decision to invest in the R&D projects at t ¼ 0 is equivalent to
+the decision to buy a portfolio of call options expiring at t ¼ 1. At the breakeven
+R&D investment level, m, the price of the option equals its value. Increased
+
+uncertainty in the distribution of uit increases the value of this option, thereby
+increasing the breakeven project threshold m, expanding the set of R&D projects
+
+the firm undertakes. This argument is formalized in Proposition 2.
+
+    10We assume (without loss of generality) normality for analytical tractability. This allows us to write
+
+ui2 as ui1 plus an IID zero-mean normal noise with variance x2 and to provide a closed-form expression
+for the firm's breakeven R&D project in equation (10).
+

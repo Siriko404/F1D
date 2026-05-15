@@ -1,0 +1,60 @@
+      Campello, Cortes, d'Almeida, and Kankanhalli 3185                                           https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+investment projects that it had invested in prior to t ¼ 0. The menu of existing
+projects is indexed by w, on the interval ½0,W . There is no time discounting.
+
+1. Investment Income
+
+      If the firm decides to invest in a capital project n, its income at t ¼ 1, 2, vðitnÞ > 0,
+is an independent and identically distributed (IID) random variable:
+
+(1)   viðtnÞ ¼ vit ¼ iV t þ it:
+
+      If the firm decides to invest in an R&D project m, its income at t ¼ 1,2,
+uðitmÞ > 0, is
+
+(2)   uðitmÞ ¼ uit ¼ iV t þ it:
+
+      Finally, the firm's income from disinvesting (selling) an existing project from
+its capital endowment, w, at t ¼ 1, 2, is denoted by sðitwÞ > 0, such that
+
+(3)   sðitwÞ ¼ sit ¼ iV t þ  it:
+
+      In this setting, V t > 0 represents the time-varying aggregate demand curve
+
+facing the firm and i ð0, 1 is the firm's sensitivity to demand. it, it, and  it are
+independent, idiosyncratic, mean-zero sÀhocksÁ, with variances 2, 2, and 2 ,
+respectively. V t is distributed as V t $ G V t,r , where the mean of V t is equal
+
+to V  t, the variance is equal to 2ðrÞ,   aRnd  r is an index of   the  MPS.  Specifically,
+r0 >  rGðÁ, r0Þ is an MPS of GðÁ, rÞ and    V   tdGðÁ, rÞ ¼ V tr.
+
+      The firm's revenue from each capital investment project it decides to invest in
+
+can be characterized as an MPS with distribution vit $ Pðvit, rÞ and mean
+vit ¼ i Â V t, with variance i2ðrÞ ¼ 2i Â 2ðrÞ þ 2 . Likewise, each R&D project's
+revenue can be characterized as an MPS with distribution uit $ Qðuit, rÞ and mean
+uit ¼ i Â V t, with variance i2ðrÞ ¼ 2i Â 2ðrÞ þ 2. Finally, the proceeds from
+
+disinvesting each existing project can be characterized as an MPS with distribution
+
+sit $ Rðsit, rÞ and mean sit ¼ i Â V t, with variance i2ðrÞ ¼ 2i Â 2ðrÞ þ 2.
+
+2. Investment Costs
+
+      In order to undertake investment project n, the firm must incur a one-time
+fixed cost of capital, denoted by FiKð, nÞ ¼ n, and a one-time fixed cost of labor,
+denoted by FiLð, nÞ ¼ n. The parameters  > 0 and  > 0 capture the degree of
+irreversibility of input fixed costs, which scale with n. If it chooses to invest in
+capital project n, the firm can either invest at t ¼ 0 or t ¼ 1. If it invests in n at t ¼ 0, it
+incurs the fixed costs n þ n at t ¼ 1, and earns the revenues vi1 þ vi2. If it does not
+invest at t ¼ 0, choosing instead to invest at t ¼ 1, it incurs the fixed costs n þ n
+at t ¼ 2, earning the revenue vi2. The negative effect of uncertainty on capital
+investment arises from the joint presence of the option to delay and irreversible
+fixed costs.
+
+      Growth-option-type projects, m, differ from capital investment-type projects,
+n, in two key ways. First, the option to invest in these projects is only available at
+t ¼ 0. That is, the firm has only one chance to decide whether to invest. If it declines,
+these projects cease to become available in the future (t ¼ 1 or 2). To a first-order
+

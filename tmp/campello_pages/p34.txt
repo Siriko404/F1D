@@ -1,0 +1,55 @@
+                                     Campello, Cortes, d'Almeida, and Kankanhalli 3211                  https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+ability to raise financing in the debt and equity markets following the Brexit vote. In
+particular, we reestimate the analysis of Table 2 controlling for yields on existing
+bonds (obtained from TRACE), yields on new bond issues (from SDC), markups on
+new syndicated loans (from DealScan), and for the discount rate news component
+of returns (from the decomposition of returns news into cash flow news and
+discount rate news components as in Vuolteenaho (2002)).
+
+      Results in Table 10 indicate that our findings continue to obtain when
+accounting for possible tightening of firms' financing costs. For instance, results
+in columns 1 and 2 produce DID coefficients ranging between À0.07 and À0.17,
+which closely resemble those in columns 2 and 3 of Table 2. Our evidence
+suggests that observed investment cuts are driven primarily by the real-options
+channel, and are not subsumed by firms' financing costs.
+
+C. Exposure to Automation Technology
+
+      An alternative channel that could explain our investment, employment, and
+R&D results is firms' concurrent adoption of automation technologies. Firms
+implementing a more automated production process may experience higher inno-
+vation spending related to building technologies that replace employees and reduce
+the dependence on fixed assets. We test for this channel using two different
+approaches. First, borrowing from Acemoglu and Restrepo (2020), we adopt a
+geographic perspective on the exposure to automation. Those authors rely on data
+compiled by Leigh and Kraft (2018), who scrape the web to obtain the location and
+employment of robot integrators (companies that install, program, and maintain
+robots). Using these novel data, Acemoglu and Restrepo (2020) construct estimates
+of robot integrator activity in all commuting zones (CZs) of the continental United
+States.28 We define our first, geography-based variable capturing firms' exposure to
+automation technologies, AUTOMATIONfiCZg, by matching each firm i in our
+sample to a CZ (based on the firm's headquarters location).
+
+      Second, going beyond geographical exposure, we construct a more granular,
+firm-level measure of exposure to automation borrowing from the textual analysis
+literature in corporate finance (e.g., Loughran and McDonald (2011)).29 We define
+AUTOMATIONi as a continuous variable that measures how frequently the top
+100 automation keywords appear in each firm's business description (10-K
+Section 1) and management discussion (10-K Section 7). To capture cases in which
+a firm discusses automation efforts in only 1 year, we average the word count across
+the pre-Brexit years in our sample (2010­2015).
+
+    28For a map of the CZ-level exposure measure, see Panel A of Figure 4 in Acemoglu and Restrepo
+(2020).
+
+    29To do so, we define a dictionary of keywords that capture automation at the firm level. We first
+gather the syllabuses of many courses on "Industrial Automation and Integration" taught at top
+engineering schools. We then read each syllabus to identify the most frequently adopted textbook.
+This analysis points to Benhabib's (2003) "Manufacturing: Design, Production, Automation, and
+Integration" as one of the most commonly required textbooks. We parse the full text content of the
+textbook for the 100 most distinctive keywords related to automation (based on the TextRank algorithm;
+see Mihalcea and Tarau (2004)) and use them as a dictionary for parsing firms' 10-Ks. In Appendix E in
+the Supplementary Material, we list the keywords used, detail the construction of the firm-level
+automation exposure variable, and plot its distribution.
+

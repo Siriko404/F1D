@@ -1,0 +1,50 @@
+3184 Journal of Financial and Quantitative AnalysisUK Economic Policy Uncertainty Index                                                                                                            https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+                                                      FIGURE 22010:Q1
+                              U.K. Economic Policy Uncertainty (2010­2017)2010:Q2
+                                               2010:Q2
+Figure 2 shows a 7-day moving average of the Economic Policy Uncertainty index of Baker, Bloom, Davis (2016) for the United2010:Q3
+Kingdom. The shaded area marks the period of Brexit-related events, starting with the Feb. 2016 announcement of the date of2010:Q4
+the referendum.                                             2011:Q1
+                                                                 2011:Q2
+   2,000                                                             2011:Q3
+   1,800                                                                  2011:Q4
+   1,600                                                                      2012:Q1
+   1,400                                                                           2012:Q2
+   1,200                                                                               2012:Q3
+   1,000                                                                                    2012:Q4
+                                                                                                2013:Q1
+      800                                                                                            2013:Q2
+      600                                                                                                2013:Q3
+      400                                                                                                     2013:Q4
+      200                                                                                                         2014:Q1
+                                                                                                                       2014:Q2
+        0                                                                                                                  2014:Q3
+                                                                                                                                2014:Q4
+problematic. Under Prime Minister Theresa May, it became clear that conditions                                                      2015:Q1
+under which the United Kingdom would leave the European Union regarding                                                                  2015:Q2
+agreements on trade, migration, and financial relations, among others, remained                                                              2015:Q3
+unsettled. Voicing her intention to proceed with the will of the voters, Prime Minister                                                           2015:Q4
+May triggered the formal exit process provided by Article 50 of the Lisbon Treaty on                                                                  2016:Q1
+Mar. 29, 2017.                                                                                                                                             2016:Q2
+                                                                                                                                                               2016:Q3
+III. Theoretical Framework                                                                                                                                          2016:Q4
+                                                                                                                                                                        2017:Q1
+      We develop a simple theoretical framework to guide our tests of the impact                                                                                             2017:Q2
+of uncertainty on various types of corporate activities. To this end, we characterize                                                                                            2017:Q3
+increases in uncertainty using the concept of mean-preserving spread (MPS).6                                                                                                          2017:Q4
+                                                                                                                                                                                          2018:Q1
+A. Setup
+
+      Consider the investment decision of a firm, i, that operates for three periods,
+t ¼ 0, 1, and 2. The firm chooses whether and when to invest in two types of
+projects: standard-type investments ("capital" or "labor") and growth option-type
+investments ("R&D"). The menu of potential capital investment projects is indexed
+by n, which lies on the interval ½0, N . The menu of potential R&D projects is
+indexed by m, on the interval ½0, M . The firm has an endowment of existing capital
+
+    6An uncertainty-increasing MPS only requires that a zero-mean, nondegenerate source of random-
+ness has been added to the distribution of the uncertain outcome. This approach allows us to derive a set
+of results that hold with generality, while remaining agnostic about the functional forms governing the
+distribution and moments of the outcomes of interest (see also Lee and Shin (2000)).
+

@@ -1,0 +1,36 @@
+                                                                                        TABLE 12
+                                                                        Robustness and Falsification Tests
+
+Table 12 reports output from equation (14) under alternative treatment windows and alternative treatment samples. The dependent variable is INVESTMENT. In the first specification, the treatment group is composed by              Campello, Cortes, d'Almeida, and Kankanhalli 3215
+the top tercile of Ui K, whereas the control group is composed by firms in the bottom tercile of iUK. The second specification is a textual-search-based measure of U.K. exposure that sums up the number of Brexit-related
+words in firms' 2015 10-K forms. The treatment group is made of firms with more than five entries, whereas the control group are firms with zero entries. In the first two columns, the time dimension of the DID estimator is set
+so as to compare 2016:Q3 versus 2015:Q3. In the second two columns, the time dimension of the DID estimator is set so as to compare 2016:Q3­Q4 versus 2015:Q3­Q4, excluding firms deemed as "losers" from
+Trump's election as in Wagner et al. (2018). In the next two columns, the time dimension of the DID estimator is set so as to compare 2015:Q3 versus 2014:Q3. In the final two columns, the time dimension of the DID
+estimator is set so as to compare 2011:Q2­Q4 versus 2010:Q2­Q4. T -statistics are computed using robust standard errors (in parentheses) double-clustered at the firm and calendar quarter levels. *, **, and *** indicate
+
+statistical significance at the 10%, 5%, and 1% levels, respectively.
+
+                                                Robustness                                                                       Falsification
+
+Treatment              2016:Q3 vs. 2015:Q3                            2016:Q3­Q4 vs. 2015:Q3­Q4             2015:Q3 vs. 2014:Q3                      2011:Q2­Q4 vs. 2010:Q2­Q4
+Window:             Excluding Trump's Election                  Excluding Losers from Trump's Election       Cameron's Election                          U.S. Debt Ceiling Crisis
+
+  Event:
+
+POST Â HIGH_iUK     Treatment is Top   Treatment is > 5 Brexit  Treatment is Top   Treatment is > 5 Brexit  Treatment is Top  Treatment is > 5 Brexit  Treatment is Top   Treatment is > 5 Brexit
+                      Tercile of Ui K      Entries in 10-Ks       Tercile of Ui K      Entries in 10-Ks       Tercile of iUK      Entries in 10-Ks       Tercile of Ui K      Entries in 10-Ks
+POST Â HIGH_                  1                      2                    3                      4                    5                     6                    7                      8
+   10ÀK_ENTRIES         À0.216***                                                                                  0.018
+                         (0.019)               À0.064***            À0.197***              À0.074***              (0.011)                0.017                0.014                   N/A
+Controls                                        (0.012)              (0.010)                (0.010)                                     (0.011)              (0.082)
+   Firm                     Yes                                                                                     Yes
+                                                   Yes          Yes                Yes                                                    Yes            Yes
+Fixed effects               Yes                                                                                     Yes
+   Firm                     Yes                    Yes             Yes                Yes                           Yes                   Yes            Yes
+   Industry Â time       17,199                    Yes             Yes                Yes                         17,199                  Yes            Yes
+                          0.74                  21,253                                                             0.74                 21,253         17,199
+No. of obs.                                      0.73           15,967             20,669                                                0.75           0.74
+R2                                                               0.75               0.72
+
+                                                                                                            https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+

@@ -1,0 +1,51 @@
+                                     Campello, Cortes, d'Almeida, and Kankanhalli 3197                    https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+      CONTROLSi,t¿1 is a vector of macroeconomic and firm-level control vari-
+ables. Macro controls include the lagged U.S. dollar/British pound FX rate, the
+lagged VIX implied volatility index, the lagged mean GDP growth 1-year-ahead
+forecast from the Federal Reserve Bank of Philadelphia's Livingstone Survey, the
+lagged Consumer Sentiment Index from the University of Michigan, and the lagged
+Leading Economic Indicator from the Federal Reserve Bank of Philadelphia.
+Firm-level controls include lagged stock returns, Tobin's Q, cash flow, logged
+assets, and sales growth. As an additional control for first-moment effects of Brexit,
+we add 1-quarter-ahead consensus earnings forecasts to our model. FIRMi repre-
+sents firm-fixed effects, INDUSTRYj is a dummy for each industry category j of
+the Hoberg and Phillips (2016) classification (FIC 100),21 and QUARTERt are
+calendar-quarter dummies. Standard errors are double-clustered by firm and cal-
+endar quarters.
+
+D. Descriptive Statistics
+
+      Table 1 presents our sample summary statistics. Firm-level accounting vari-
+ables are normalized by lagged total assets. We begin with Panel A presenting the
+statistics for the universe of COMPUSTAT firms in the pre-Brexit sample period
+(2010:Q1≠2015:Q4). Using our baseline market-based Ui K criterion, Panel B
+summarizes the data for treated firms as defined by Ui K (those in the top tercile
+of iUK), whereas Panel C reports statistics for control firms as defined by iUK
+(bottom tercile of Ui K). Panels D and E report summary statistics for treatment and
+control firms, respectively, as defined by mentions of Brexit-related words in firms'
+10-K filings (our text-based approach).
+
+      The reported statistics show that our sample firms do not display salient
+discrepancies relative to the universe of COMPUSTAT firms. Comparisons across
+subsamples suggest that treated and control firms (as defined by iUK) differ across a
+few characteristics: firms in the treatment group are smaller as measured by total
+assets and invest more than control firms. However, firms in the treated group as
+defined by 10-K mentions of Brexit-related words are, if anything, larger than those
+in the control group, although their investment appears to be similar. Treatment
+and control firms share similarities on a number of dimensions across both assign-
+ment schemes we use. They display economically similar R&D expenditures, cash
+holdings, Tobin's Q, and employment growth. To ensure that differences in firm
+characteristics do not drive our results, we redo all of our tests on propensity score
+matched samples in which firm-level characteristics are balanced before any esti-
+mations are conducted. Table C2 in the Supplementary Material displays the
+summary statistics of the matched samples. Table C3 in the Supplementary Material
+reports the results of our main estimations on these matched samples. To further
+verify that treated and control firms are not fundamentally different, we examine the
+validity of the parallel trends assumption. Visual evidence for that assumption
+
+    21These industries are formed by grouping firms with textually similar product descriptions in their
+10-Ks. Hoberg and Phillips (2016) show that the resulting industry classification is more granular and
+captures the locus of product-market competitors of a given firm better than the standard SIC or NAICS
+industry schemes.
+

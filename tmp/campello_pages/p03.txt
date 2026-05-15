@@ -1,0 +1,52 @@
+3180 Journal of Financial and Quantitative Analysis                                                      https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+are phenomena of much interest, yet of poorly understood consequences. This
+article sheds novel light into an array of cross-border connections between polit-
+ical uncertainty and economic activity. It does so gauging the impact of the 2016
+Brexit vote on businesses located outside of the U.K.­EU geographical bound-
+aries, in particular, firms domiciled in the United States. The U.S. economy serves
+as a candidate to study the cross-border effects of Brexit for several reasons. First,
+although EU ties are at the root of Brexit, and effects observed across European
+economies may be endogenous to the referendum itself, this is plausibly not true
+of the United States. Second, there exist long-standing, strong ties between the
+U.S. and U.K. economies, making potential outcomes more easily measurable.2
+Finally, it is uniquely informative to look at the world's largest economy to gauge
+the global impact of a consequential event like Brexit.
+
+      We begin our study on firm-level externalities of events like Brexit by estab-
+lishing relevant microeconomic underpinnings. Within a real-options framework,
+we first sketch out a negative relation between uncertainty and firm job creation, as
+well as fixed capital investment and divestitures, as firms have a greater incentive
+to "wait and see" before committing to these decisions. The framework predicts
+stronger effects for firms with higher labor (capital) adjustment costs on employ-
+ment (investment). Critically, we also model the impact of uncertainty on "growth
+options" activities, such as R&D investing. We uniquely show how these activities
+are positively affected by aggregate uncertainty. The framework we study is impor-
+tant in that it provides predictions for second-moment ("uncertainty") shocks onto
+a wide range of corporate decisions, notably employment and R&D, independent
+of changes to first-moment expectations (e.g., "bad news").
+
+      We derive testable predictions from the framework to examine how
+"U.K.-exposed" firms in the United States (identified through market- and
+textual-search-based measures) conduct decisions regarding investment, dives-
+titures, employment, and R&D spending in the aftermath of the 2016 Brexit vote.
+Using forward-looking financial analysts' forecast data, we find that there was no
+decline in the expected profitability of U.K.-exposed firms, but an increase in
+profit dispersion ­ suggesting that Brexit embedded a "second-moment" innova-
+tion. We subsequently use an empirical approach that allows for Brexit potentially
+having both first- and second-moment effects on U.S. firms. Our base difference-
+in-differences (DID) estimates show that in the last two quarters of 2016 alone, the
+investment-to-assets rates of U.K.-exposed firms fell by 0.16 percentage points
+more than the investment rates of comparable non-U.K.-exposed firms. Given
+that the average quarterly investment rate in 2015 was 1.1% of assets, this decline
+represents a drop of 15% in baseline investment spending. U.K.-exposed firms
+also reduced their divestitures by nearly 30% of the average annual rate. Consis-
+tent with our theoretical framework, we also observe an increase in R&D spend-
+ing by U.K.-exposed firms following the Brexit vote. Specifically, those firms
+increased their R&D-to-asset ratios by 0.2 percentage points more than non-U.K.-
+exposed firms in the second half of 2016, implying an increase of 7% in annual
+
+    2The United Kingdom is the 5th top destination of U.S. exports and the 7th top U.S. import partner.
+BIS data show that the U.S. banking system has its strongest links with banks from the United Kingdom,
+and vice versa.
+

@@ -1,0 +1,51 @@
+3182 Journal of Financial and Quantitative Analysis                                                     https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+      Our results are also robust to several alternative testing strategies, including
+alternative firm-level measurements of exposure to U.K. uncertainty, sampling
+periods, estimation methodologies, and falsification checks. For example, DID
+analyses featuring the exclusion of Trump's election or focusing on the election
+of David Cameron suggest that the increase in uncertainty brought about by the
+Brexit vote is the reason behind the documented behavior of U.K.-exposed
+American firms around June 2016. We also find no change in investment by U.S.
+firms exposed to major trading partners (such as China, Mexico, Japan, India, and
+Brazil) that did not witness significant increases in uncertainty at the same time
+of the 2016 vote. Our results also continue to hold when we use nonparametric
+propensity score matching estimations. In additional robustness checks, we con-
+sider whether tightening financing constraints for U.K.-exposed firms in the wake
+of the Brexit vote played a role in explaining the effects we observe. We utilize a
+number of metrics that speak to firms' ability to raise funding following the Brexit
+vote and reestimate our models with their inclusion. We also consider whether a
+concurrent adoption of automation technologies by U.K.-exposed firms may
+explain the simultaneous drops in capital investment and hiring, and increases
+in R&D expenditures. We rely upon novel geographic- and text-based proxies of
+firms' exposures to automatization, and show that our findings continue to obtain
+controlling for their presence.
+
+      Our study builds upon a growing literature on the effects of political uncer-
+tainty. Macroeconomic studies on uncertainty and real activity include recent
+contributions by Bloom (2009) and Bloom, Floetotto, Jaimovich, Saporta-Eksten,
+and Terry (2018). Work on the effect of uncertainty on corporate investment and
+bank lending include Julio and Yook (2012), Gulen and Ion (2016), and Berg,
+Saunders, Schäfer, and Steffen (2019). Our article advances the existing knowledge
+on several fronts, but particularly as we focus on the international transmission of
+uncertainty, rather than on its domestic effects. The literature is particularly silent on
+the international transmission of uncertainty at the firm level, which limits our
+knowledge on how domestic firms respond to foreign-born uncertainty events and
+which mechanisms aggravate these responses.4 On that dimension, our article sheds
+light on the micro-level mechanisms that led U.S. firms to cut American jobs and
+investment in response to a political event overseas. This, while being prompted to
+seek innovation. Through our analysis, we uncover the importance of U.S. firms'
+input exposures, which drive the bulk of corporate investment cuts following
+Brexit. Our establishment-level employment data are further informative about
+how job destruction and establishment turnover operated inside U.S. borders in
+
+    4Studies on international spillover effects of policy uncertainty have focused on aggregate, time-
+series evidence (e.g., Klössner and Sekkel (2014), Bernal, Gnabo, and Guilmin (2016)). Recently,
+Hassan, Hollander, van Lent, and Tahoun (2020) study the international effects of Brexit relying
+exclusively on firms' "conference calls" to gauge their exposure to Brexit. In contrast, our textual
+analysis of mandatory 10-K filings is complemented by a market-based approach in order to compre-
+hensively gauge a firm's exposure to events in the United Kingdom. We choose not to rely on conference
+calls in light of ample evidence on severe problems with the information content of such calls (see
+Hollander, Pronk, and Roelofsen (2010), Matsumoto, Pronk, and Roelofsen (2011), and Bushee, Jung,
+and Miller (2011)).
+

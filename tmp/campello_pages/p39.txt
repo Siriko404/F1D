@@ -1,0 +1,64 @@
+3216 Journal of Financial and Quantitative Analysis                                                                                    https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+F. Uncertainty in the Global Economy
+
+      We conduct a battery of supplementary tests to rule out the possibility that
+our results on investment cuts in the United States may be driven by coincident,
+potentially uncertainty-inducing events that take place in economies other than
+the United Kingdom. To do so, we construct metrics analogous to our baseline
+U.K. exposure measure, Ui K, by reestimating equation (13) for developed and
+emerging markets with relevant trade ties to the United States: European Union,
+China, Mexico, Japan, India, and Brazil. In other words, we repeat our tests
+classifying firms based on a given criterion (Ei U, Ci HINA, iMEXICO, iJAPAN, IiNDIA,
+and iBRAZIL) according to the sensitivity of their equity returns volatility to the
+respective region's main equity index return volatility. In this estimation, per-
+formed over the same pre-Brexit sample period of 2010:M1­2014:M12, we
+control for the FTSE100 volatility, the U.S. dollar/British pound exchange rate
+volatility, and the volatility in the exchange rate of the U.S. dollar and the
+currency of each country.
+
+      Results are reported in Table 13. Column 1 repeats our baseline estimate from
+Table 2 to ease comparisons. In column 2, we find that American firms exposed to
+EU uncertainty also experienced significant investment declines. The much smaller
+Ei U estimate is sensible and consistent with the fact that Brexit-related events
+induced political uncertainty in the European Union as well as the United Kingdom.
+Results in columns 3­6 show that U.S. firms exposed to uncertainty in several
+other economies experienced no significant change in their investments in the
+quarters following the announcement of the Brexit referendum. Our main results
+are unlikely to be driven by American firms' exposures to events other than the
+2016 Brexit vote in the United Kingdom.
+
+                                               TABLE 13
+                               Robustness and Falsification Tests
+
+Table 13 reports output from equation (14) under alternative treatment assignments. The dependent variable is INVESTMENT.
+In the first column, we report our baseline estimates as in Table 2. In the next columns, treated firms are in the highest tercile of
+positive values of exposure of firm-level volatility to equity index volatility in the European Union, China, Mexico, Japan, India,
+and Brazil, respectively. The time dimension of the DID estimator is set so as to compare the two quarters following the
+announcement of the referendum and Brexit's victory (2016:Q3­Q4) versus the two quarters preceding the announcement
+(2015:Q3­Q4). T -statistics are computed using robust standard errors (in parentheses) double-clustered at the firm and
+calendar quarter levels. *, **, and *** indicate statistical significance at the 10%, 5%, and 1% levels, respectively.
+
+                    Baseline Robustness                          Falsification
+
+                    Treatment  Treatment  Treatment  Treatment   Treatment      Treatment   Treatment
+                      is Top     is Top     is Top     is Top      is Top         is Top      is Top
+                      Tercile    Tercile    Tercile
+                      of iUK     of Ei U             Tercile of  Tercile of     Tercile of  Tercile of
+                                          of iCHINA   iMEXICO      iJAPAN          iINDIA     iBRAZIL
+                         1          2
+                                               3          4           5              6           7
+
+POST Â HIGH_        À0.165***  À0.066***  0.048       0.069      0.084           0.058      À0.054
+   Ci OUNTRY         (0.019)    (0.018)   (0.033)    (0.044)     (0.092)        (0.036)      (0.045)
+
+Controls                Yes        Yes      Yes        Yes         Yes            Yes         Yes
+   Firm
+                        Yes        Yes      Yes        Yes         Yes            Yes         Yes
+Fixed effects           Yes        Yes      Yes        Yes         Yes            Yes         Yes
+   Firm             17,199     12,301     8,714      11,870      8,909          14,694      15,485
+   Industry Â time    0.75       0.76     0.75        0.74       0.71            0.74         0.74
+
+No. of obs.
+R2
+

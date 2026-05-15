@@ -1,0 +1,65 @@
+                                     Campello, Cortes, d'Almeida, and Kankanhalli 3195EPS Forecast (1-Year Ahead)                               https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+                                                      FIGURE 42015Q1
+                         Analysts' Earnings per Share Forecasts Around Brexit2015Q2
+                                                           2015Q3
+Figure 4 shows how analyst earnings per share forecasts behaved around Brexit's key dates. Confidence intervals are2015Q4
+calculated as Æ1:5-standard-deviations from the mean forecast. Each line represents a group of firms sorted by exposure to2016Q1
+the U.K. economy as measured by Ui K: The shaded area marks the beginning of Brexit-related events with the announcement2016Q2
+of the date of the U.K.­EU referendum by PM David Cameron (2016:Q1). Both series are normalized to take the value of 0 in2016Q3
+2016:Q1.                                                                                                                                2016Q4
+
+                           2.5
+                                                Low Beta UK Mean Forecast
+
+                             2
+                                                High Beta UK Mean Forecast
+
+                           1.5
+
+                             1
+
+                            .5
+
+                             0
+
+                         ­0.5
+
+                            ­1
+
+                         ­1.5
+
+                            ­2
+
+                         ­2.5
+
+outcome, nonetheless, seems to quell uncertainty forecasts. In particular, the 1-year-
+ahead implied volatility immediately after the vote date is not significantly different
+from that registered back in Dec. 2014.
+
+      Having examined market uncertainty in the United Kingdom based on
+implied options volatility, we set out to verify in our U.S. firm-level data if this period
+coincided with increased perceived income uncertainty for HIGH_UK_ EXPOSURE
+firms. We do so using data on analysts' forecasts from the I/B/E/S database. Begin-
+ning in 2015:Q1, we obtain the 1-year-ahead earnings per share (EPS) forecasts for
+each firm in our sample and compute the mean and standard deviation of forecasts. We
+quantify earnings forecast uncertainty for firms in the high and low iUK groups by
+constructing Æ1:5-standard-deviation intervals around their group mean forecasts in
+Figure 4. The figure shows no discernible difference in mean forecasted earnings
+between high and low iUK firms, suggesting analysts did not expect U.K.-exposed
+firms to do any worse, on average, in terms of earnings performance following the
+Brexit vote.19 The fact that mean EPS forecasts stay virtually the same over the 2-
+year window for both high and low iUK firms suggests that there is no clear sign of
+a "first-moment" (negative) effect of Brexit on U.S. corporate earnings. That same
+earnings forecasts evidence points to the Brexit vote having a "second-moment"
+effect in terms of increased uncertainty regarding U.K.-exposed firms' expecta-
+tions in 2016:Q1­Q2. In particular, EPS forecast dispersion of
+HIGH_UK_EXPOSURE firms increases significantly in early 2016.
+
+      In our empirical tests, we compare two quarters before versus two quarters
+after the two key Brexit events we have just identified (Feb. 22 and June 23, 2016).
+We focus on a relatively short window around the Brexit vote as Bloom (2009)
+
+    19In formal tests, we confirm that the differences in consensus EPS forecasts between high and low
+iUK firms are not statistically significant in the pre-Brexit vote period.
+

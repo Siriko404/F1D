@@ -1,0 +1,54 @@
+3192 Journal of Financial and Quantitative Analysis                                                         https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+Brexit cites at more than 5 entries. There are 807 firms citing Brexit more than
+5 times in their 10-Ks. On the other hand, 433 do not cite any Brexit-related terms in
+their public filings. Although the heuristic cutoff we consider is naturally arbitrary,
+our results are robust to many sensible alternative choices.
+
+3. Capital and Labor Irreversibility Measures
+
+      Our predicted uncertainty­investment relationships are modulated by fixed
+costs FiK, which capture the degree of irreversibility of capital. To empirically
+measure capital irreversibility, we use an index of capital redeployability proposed
+by Kim and Kung (2016). That index classifies fixed capital liquidity in terms of
+salability of assets in secondary markets. The premise is that when a firm operates
+assets that are used across several industries, there are more potential buyers should
+the firm decide to revert investment decisions by selling off its assets. The same is
+not true for a firm that operates highly specialized assets. Higher values of the asset
+redeployability index are associated with a lower degree of capital irreversibility,
+corresponding to a lower value of FiK in our framework.
+
+      Our next task is to find an empirical proxy for the irreversibility of labor, FiL.
+We resort to the use of worker unionization as an empirical proxy for frictions in
+labor input. We do so as ample research highlights the difficulties faced by firms
+with unionized employees in adjusting their workforce in response to changes in
+aggregate conditions (see, among others, Bloom (2009)). In using this strategy, we
+measure the percentage of total employees who are unionized at the 4-digit SIC
+level using data from the Bureau of Economic Analysis. We expect firms with a
+greater share of unionized workers to have lower labor flexibility and incur greater
+costs in adjusting the size of their workforce.
+
+B. Data Sources and Sample Construction
+
+      We use COMPUSTAT Quarterly to gather basic information on firm invest-
+ment and financial data. We consider U.S. companies from the first calendar quarter
+of 2010 to the fourth quarter of 2016. We drop utility and financial firms, as well as
+companies whose market value or book assets are lower than $10 million. The
+sample used in our baseline investment tests consists of 41,630 observations (firm-
+quarters).15 For additional analysis on firms' investment in the United States, we
+obtain subsidiary-level investment data from the Bureau van Dijk's Orbis data set
+(see Cravino and Levchenko (2016)). We use Orbis's company search tool to match
+parent firms in our COMPUSTAT sample to ultimate owner firms in Orbis. By
+doing so, we obtain separate information on their U.S.-based and U.K.-based
+subsidiaries. The Orbis sample we use consists of 6,203 observations (firm-years).
+
+      Firm-level employment data are taken from COMPUSTAT's Annual Fun-
+damentals. We measure employment growth based on the change in the number
+of employees of the firm. Our employment sample consists of 11,345 observa-
+tions (firm-years).16 We rely on the Your-Economy Time-Series (YTS) database,
+maintained by the Business Dynamics Research Consortium at the University
+
+    15For details of the sample selection filters, see Table C1 in the Supplementary Material.
+    16The same filters described in Table C1 in the Supplementary Material are also applied to obtain this
+sample.
+

@@ -140,8 +140,8 @@ FE_LADDER = ["campello_exact"]
 SUITE_ID = "H1.5.brexit_did"
 SUITE_DIR_NAME = "h1_5_brexit_did"
 SUITE_TITLE = (
-    "Brexit Referendum Difference-in-Differences: Cash Holdings + CEO Speech "
-    "Uncertainty (Campello et al. 2022 JFQA verbatim)"
+    "Brexit Referendum Difference-in-Differences: Cash Holdings "
+    "(Campello et al. 2022 JFQA verbatim, Wave 5)"
 )
 SUITE_LABEL = "tab:h1_5_brexit_did"
 
@@ -739,12 +739,13 @@ def _emit_canonical_suite_spec(
         coefs_per_col=coefs_per_col,
         col_metadata=col_metadata,
         sample_label=(
-            "Brexit window 2010Q1-2016Q4. Treated firms: top tercile of "
-            r"$\beta^{UK}$ (cols 1, 3) or >5 UK-mentions in 2015 10-K "
-            r"(cols 2, 4). Campello 2022 JFQA verbatim spec: firm FE + "
-            r"Hoberg-Phillips FIC100 $\times$ calendar-quarter FE, "
-            "double-clustered SE (firm, calendar quarter). Excludes "
-            "financial + utility firms."
+            "Brexit window 2010Q1-2016Q4. POST = 2016Q3-Q4. Treated firms: "
+            r"HIGH $\beta^{UK} > 0.68$; control firms: $\beta^{UK} < 0.28$ "
+            r"(Campello \S IV.A.2 absolute thresholds, Wave 5 lock). "
+            r"Campello 2022 JFQA verbatim spec: firm FE + Hoberg-Phillips "
+            r"FIC100 $\times$ calendar-quarter FE, double-clustered SE "
+            r"(firm, calendar quarter). Excludes financial + utility firms "
+            r"(SIC 4900-4999, 6000-6999) per \S 1G pre-classifier filter."
         ),
         clustering=CLUSTERING,
         tail={"direction": "positive", "applies_to": "ivs_only"},

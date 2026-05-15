@@ -1,0 +1,62 @@
+JOURNAL OF FINANCIAL AND QUANTITATIVE ANALYSIS Vol. 57, No. 8, Dec. 2022, pp. 3178­3222                    https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+© The Author(s), 2022. Published by Cambridge University Press on behalf of the Michael G. Foster
+School of Business, University of Washington. This is an Open Access article, distributed under the terms
+of the Creative Commons Attribution licence (https://creativecommons.org/licenses/by/4.0), which permits
+unrestricted re-use, distribution and reproduction, provided the original article is properly cited.
+doi:10.1017/S0022109022000308
+
+Exporting Uncertainty: The Impact of Brexit
+on Corporate America
+
+Murillo Campello
+
+Cornell University SC Johnson Graduate School of Management and NBER
+campello@cornell.edu (corresponding author)
+
+Gustavo S. Cortes
+
+University of Florida Warrington College of Business
+gustavo.cortes@warrington.ufl.edu
+
+Fabrício d'Almeida
+
+Purdue University Krannert School of Management
+fdalmeid@purdue.edu
+
+Gaurav Kankanhalli
+
+University of Pittsburgh Katz Graduate School of Business
+gkankanhalli@katz.pitt.edu
+
+Abstract
+
+We show that the 2016 Brexit Referendum had multifaceted consequences for corporate
+America, shaping employment, investment, divestitures, R&D, and savings. The unexpected
+vote outcome led U.S. firms to cut jobs and investment within U.S. borders. Using establishment-
+level data, we document that these effects were modulated by the reversibility of capital and
+labor. American-based job destruction was particularly pronounced in industries with less
+skilled and more unionized workers. U.K.-exposed firms with less redeployable capital and
+high input-offshoring dependence cut investment the most. Data on the near universe of U.S.
+establishments also point to measurable, negative effects on establishment turnover (open-
+ings and closings). Our results demonstrate how foreign-born political uncertainty is trans-
+mitted across international borders, shaping domestic capital formation and labor allocation.
+
+I. Introduction
+
+      On June 23, 2016, voters in the United Kingdom elected to leave the European
+Union. The outcome of the Brexit referendum was surprising since most opinion
+
+    We thank an anonymous referee and Jarrad Harford (the editor) for insightful suggestions. We are
+also grateful to Warren Bailey, Craig Brown, Charles Calomiris, Danilo Cascaldi-Garcia, Steven Davis,
+Price Fishback, Janet Gao, Jesús Gorrín, John Graham, Darien Huang, Tim Johnson, Hyunseob Kim,
+Mauricio Larrain, Angie Low, Pradeep Muthukrishnan, Diogo Palhares, Minchul Shin, Felipe Silva,
+Allan Timmermann, and seminar participants at the Bank of Portugal, Bristol Workshop on Banking,
+Cambridge University, George Washington University, Hoover Institution, KU Leuven, LUBRAFIN
+Conference, Manchester Business School, National Bank of Belgium, Penn State, SFS Cavalcade,
+Syracuse University, University of Connecticut, University of Georgia, University of Illinois, University
+of Kentucky, Warwick Business School, and Washington University St. Louis for many useful com-
+ments. We also thank the Business Dynamics Research Consortium for providing the Your-Economy
+Time-Series establishment data.
+
+                                                   3178
+

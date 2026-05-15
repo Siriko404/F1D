@@ -1,0 +1,53 @@
+3190 Journal of Financial and Quantitative Analysis                                                          https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+      Finally, the negative relationship between uncertainty and investment is
+affected by fixed costs FiK and FiL, which capture the degree of irreversibility of
+capital and labor, respectively. It implies that higher input adjustment costs in each
+factor modulates the effect of uncertainty in investment in that input. This gives rise
+to our fourth and fifth testable predictions.
+
+Prediction 4. American firms with a higher exposure to U.K. uncertainty (high
+U.K.-exposure firms) facing higher capital adjustment costs will reduce their capital
+investment more pronouncedly in response to the Brexit vote.
+
+Prediction 5. American firms with a higher exposure to U.K. uncertainty (high
+U.K.-exposure firms) facing higher labor adjustment costs will reduce their hiring
+more pronouncedly in response to the Brexit vote.
+
+      In the next section, we translate the above predictions into their empirical
+counterparts, describe our data, and lay out associated test strategies.
+
+IV. Data and Methodology
+
+A. Empirical Counterparts
+
+      The implementation of our tests calls for identifying empirical counterparts to
+
+the constructs of our theoretical framework. We first introduce an empirical coun-
+terpart to the sensitivity parameter i, which captures individual firms' responses
+to changes in aggregate uncertainty. We adopt two approaches. The first follows
+the framework very closely, yielding an empirical proxy for i that is derived from
+the capital markets. The second is based on expectations of corporate decision-
+makers regarding uncertainty, taken from firms' disclosures to market investors.11
+After defining empirical counterparts for i, we present measures of capital and
+labor irreversibility, corresponding to  and , respectively.
+
+1. Theoretical Framework-Based Measure of Uncertainty
+
+      In the context of our study, the increase in aggregate uncertainty, V t, comes
+from the rise in uncertainty associated with the Brexit vote. Accordingly, we take
+variances on both sides of equation (1) (alternatively, equation (2)) to capture the
+notion of uncertainty in the MPS framework:
+
+(11)  varðvitÞ ¼ 2i varðV tÞ þ 2:
+
+    11We also consider firm sales to the United Kingdom from accounting data sources like
+COMPUSTAT's Segment Files. However, careful examination of 10-K forms shows that such data
+are often incomplete and inconsistently tabulated. Aggravating this problem, sales that take place in the
+United Kingdom are known to be invoiced in other countries (such as Ireland) for tax purposes. As such,
+our main analyses rely on information from other sources. In Section V.B.2, however, we resort to an
+alternative textual-search-based analysis that goes beyond financial statements contained in 10-K forms
+in identifying exposure to the United Kingdom (cf. Hoberg and Moon (2017)). That approach allows us
+to identify offshoring activities, as reported by firms in the text of their disclosures (information often
+missing from their tabulated financial statements).
+

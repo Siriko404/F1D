@@ -1,0 +1,63 @@
+                             Campello, Cortes, d'Almeida, and Kankanhalli 3219                 https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+(A.4)             nðr, , Þ > nðr0, , Þ > nðr0, 0, Þ,
+                  nðr, , Þ > nðr0, , Þ > nðr0, , 0Þ:
+
+      The above conditions state that an increase in uncertainty reduces the set of
+projects the firm is willing to invest in at t = 0, electing to wait until uncertainty is
+partially resolved at t = 1 before deciding whether to invest. Notably, when the firm faces
+higher irreversible costs, it invests even less at t = 0. Differently put, an increase in
+uncertainty reduces investment in the first period, and the effect is modulated by the
+degree of irreversibility of capital or labor.
+
+Appendix B. Proofs
+
+B.1. Proof of Lemma 1
+
+Proof. Let us define
+
+       H ðnÞ = vi1 þ E½vi2 À ð þ Þn À E½ max ðvi2 À ð þ Þn, 0Þ:
+
+      To guarantee the existence of n as characterized by equation (6), it suffices to
+show that HðnÞ = 0 for some n  ½0, N . Since HðÁÞ is a sum of continuous functions, it
+
+is itself continuous. Since vi1 > 0 and vi2 > 0, it follows that:
+
+               H ð0Þ = vi1 þ E½vi2 À E½ max ðvi2, 0Þ = vi1 > 0:
+
+Finally, for N ! , we have that:
+
+lim HðN  Þ  =  Nli!mðvi1  þ  E½vi2  À  ð  þ  ÞN Þ  þ  lim ðE½  max   ðvi2  À ð     þ ÞN , 0ÞÞ
+
+N !                                                   N !
+
+            = À  þ 0 = À :
+
+                                                                     ÀÁ
+Thus, there must exist an N   such that, for N > N, H N < 0. Putting these
+
+conditions together with the continuity of HðÁÞ over ½0, N , the Intermediate Value
+Theorem guarantees that there exists an n  ½0, N  such that HðnÞ = 0.
+
+B.2. Proof of Proposition 1
+
+Proof. Let us define
+    H ðn; rÞ = vi1 þ E½vi2 À ð þ Þn À E½ max ðvi2 À ð þ Þn, 0Þ; r = 0
+
+By the Implicit Function Theorem,
+
+                                    dn    =  À  H n   :
+                                    dr          H r
+
+Considering first the derivative of H with respect to n, we have:
+
+         Hðn; rÞ  =       À  ð  þ  Þ  À      E½ max ðvi2  À  ð  þ  Þn, 0Þ; r
+            n                            n                                     !
+
+                  = À ð þ Þ À E                 max   ðvi2  À  ð  þ  Þn    ,  0Þ;  r
+                                             n
+
+                  = À ð þ Þ À E½ max ðvi2 À ð þ Þ,0Þ; r
+
+                  < 0:
+

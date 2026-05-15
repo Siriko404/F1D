@@ -1,0 +1,79 @@
+3200 Journal of Financial and Quantitative Analysis                                                                                  https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+                                                  TABLE 2
+
+                    The Impact of the Brexit Vote on U.S. Investment and
+                          Employment Growth: Baseline Specification
+
+Table 2 reports output from equation (14). The dependent variables are INVESTMENT and EMPLOYMENT_GROWTH.
+
+INVESTMENT is defined as capital expenditures divided by lagged total assets (quarterly). EMPLOYMENT_GROWTH is
+the percentage change in the number of employees (annual). In the first specification, the measure of U.K. exposure (Ui K)
+enters the regression as a linear continuous variable. In the second specification, the treatment group is composed by the top
+tercile of iUK, whereas the control group is composed by firms in the bottom tercile of Ui K. The third specification is a textual-
+search-based measure of U.K. exposure that sums up the number of Brexit-related words in firms' 2015 10-K forms. The
+
+treatment group is made of firms with more than five entries, whereas the control group are firms with zero entries. The time
+
+dimension of the DID estimator is set so as to compare the two quarters following the announcement of the Brexit referendum
+
+victory (2016:Q3­Q4) versus the two quarters preceding the announcement of the vote date (2015:Q3­Q4). T -statistics are
+
+computed using robust standard errors (in parentheses) double-clustered at the firm and calendar quarter levels. *, **, and ***
+
+indicate statistical significance at the 10%, 5%, and 1% levels, respectively.
+
+                                INVESTMENT                                    EMPLOYMENT_GROWTH
+
+                      Linear      Treatment       Treatment is      Linear      Treatment       Treatment is
+                    Ui K Model      is Top         > 5 Brexit     Ui K Model      is Top         > 5 Brexit
+
+                          1     Tercile of iUK  Entries in 10-Ks        4     Tercile of iUK  Entries in 10-Ks
+
+                                        2                3                            5                6
+
+POST                À0.022                                          1.055
+POSTÂiUK             (0.020)                                       (2.843)
+POST Â HIGH_Ui K
+                    À0.047***                                     À4.173**
+                     (0.010)                                       (2.133)
+
+                                À0.165***                                     À4.912***
+                                 (0.019)                                       (1.552)
+
+POST Â HIGH_           Yes          Yes         À0.077***          Yes         Yes            À2.617***
+   10ÀK_ENTRIES        Yes          No           (0.008)           Yes          No             (0.402)
+
+Controls               Yes          Yes             Yes            Yes         Yes                Yes
+   Firm                 No          Yes             No             No          Yes                No
+   Macroeconomic    43,025      17,199                            9,143       3,540
+                     0.67         0.75              Yes           0.35        0.45                Yes
+Fixed effects                                       Yes                                           Yes
+   Firm                                         21,253                                          4,173
+   Industry Â time                                0.73                                          0.45
+
+No. of obs.
+R2
+
+measure firm-level exposure to the United Kingdom in column 3. The POST Â
+HIGH_ 10-K_ENTRIES coefficient is once again negative. The investment reduc-
+tions reported in all of these estimations are not only statistically significant, but
+also economically significant. Given that the pre-Brexit (2015) average investment
+was 1.1% of firms' assets, the DID estimate of À0.165 implies a drop of up to 15%
+in investment rates. As a first-order approximation, the dollar magnitude of aggre-
+gate investment cuts implied by this estimate is around $2 billion.22 Estimates under
+columns 1­3 show that following the Brexit vote victory, U.K.-exposed American
+firms significantly cut their investment vis-à-vis non-U.K.-exposed counterparts.23
+
+    22The 449 firms in the top tercile of iUK had average assets of $2.81 billion in 2016:Q2. A decline in
+their investment-to-assets ratio of 0.165 percentage points implies a drop in investment of $4.64 million
+
+per firm, or $2.08 billion in total.
+    23In Table C7 in the Supplementary Material, we show that our baseline findings are robust to the
+
+inclusion of numerous controls for simultaneous changes in the first-moment component of the Brexit
+shock. These include Tobin's Q, Cash Flow, Sales Growth, Consensus Earnings Forecasts, and 1-year
+Stock Returns. In addition, we include the firm-level first-moment instruments for the USD­GBP
+exchange rate, the price of oil, and the Treasury rate from alfaro2018. These variables jointly serve as
+proxies for changes in firms' expected profitability coinciding with the Brexit vote.
+

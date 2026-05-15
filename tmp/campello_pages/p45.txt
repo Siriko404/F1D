@@ -1,0 +1,90 @@
+3222 Journal of Financial and Quantitative Analysis                                                       https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+Berg, T.; A. Saunders; L. Schäfer; and S. Steffen. "Brexit and the Contraction of Syndicated Lending."
+    Journal of Financial Economics, 141 (2020), 66­82.
+
+Bernal, O.; J.-Y. Gnabo; and G. Guilmin. "Economic Policy Uncertainty and Risk Spillovers in the
+    Eurozone." Journal of International Money and Finance, 65 (2016), 24­45.
+
+Bloom, N. "The Impact of Uncertainty Shocks." Econometrica, 77 (2009), 623­685.
+Bloom, N. "Fluctuations in Uncertainty." Journal of Economic Perspectives, 28 (2014), 153­175.
+Bloom, N.; M. Floetotto; N. Jaimovich; I. Saporta-Eksten; and S. J. Terry. "Really Uncertain Business
+
+    Cycles." Econometrica, 86 (2018), 1031­1065.
+Bushee, B. J.; M. J. Jung; and G. S. Miller. "Conference Presentations and the Disclosure Milieu."
+
+    Journal of Accounting Research, 49 (2011), 1163­1192.
+Campbell, J. Y., and R. J. Shiller. "The Dividend­Price Ratio and Expectations of Future Dividends and
+
+    Discount Factors. Review of Financial Studies, 1 (1988), 195­228.
+Campello, M.; C. Lin; Y. Ma; and H. Zou. "The Real and Financial Implications of Corporate Hedging."
+
+    Journal of Finance, 66 (2011), 1615­1647.
+Cravino, J., and A. A. Levchenko. "Multinational Firms and International Business Cycle
+
+    Transmission." Quarterly Journal of Economics, 132 (2016), 921­962.
+Davis, S. J. "An Index of Global Economic Policy Uncertainty." Working Paper, University of Chicago
+
+    Booth School of Business (2017).
+Dumas, B.; J. Fleming; and R. E. Whaley. "Implied Volatility Functions: Empirical Tests." Journal of
+
+    Finance, 53 (1998), 2059­2106.
+Ghaly, M.; V. A. Dang; and K. Stathopoulos. "Cash Holdings and Labor Heterogeneity: The Role of
+
+    Skilled Labor." Review of Financial Studies, 30 (2017), 3636­3668.
+Gilchrist, S.; J. W. Sim; and E. Zakrajsek. "Uncertainty, Financial Frictions, and Investment Dynamics."
+
+    NBER Working Paper No. 20038 (2014).
+Grossman, G., and C. Shapiro. "Optimal Dynamic R&D Programs." Rand Journal of Economics,
+
+    17 (1986), 581­593.
+Gulen, H., and M. Ion. "Policy Uncertainty and Corporate Investment." Review of Financial Studies,
+
+    29 (2016), 523­564.
+Hassan, T. A.; S. Hollander; L. van Lent; and A. Tahoun. "The Global Impact of Brexit Uncertainty."
+
+    NBER Working Paper No. 26609 (2020).
+Hoberg, G., and S. K. Moon. "Offshore Activities and Financial vs. Operational Hedging." Journal of
+
+    Financial Economics, 125 (2017), 217­244.
+Hoberg, G., and G. Phillips. "Text-Based Network Industries and Endogenous Product Differentiation."
+
+    Journal of Political Economy, 124 (2016), 1423­1465.
+Hollander, S.; M. Pronk; and E. Roelofsen. "Does Silence Speak? An Empirical Analysis of Disclosure
+
+    Choices During Conference Calls." Journal of Accounting Research, 48 (2010), 531­563.
+Julio, B., and Y. Yook. "Political Uncertainty and Corporate Investment Cycles." Journal of Finance,
+
+    67 (2012), 45­83.
+Kim, H., and H. Kung. "The Asset Redeployability Channel: How Uncertainty Affects Corporate
+
+    Investment." Review of Financial Studies, 30 (2016), 245­280.
+Klössner, S., and R. Sekkel. "International Spillovers of Policy Uncertainty." Economics Letters,
+
+    124 (2014), 508­512.
+Kulatilaka, N., and E. Perotti. "Strategic Growth Options." Management Science, 44 (1998),
+
+    1021­1031.
+Lee, J., and K. Shin. "The Role of a Variable Input in the Relationship Between Investment and
+
+    Uncertainty." American Economic Review, 90 (2000), 667­680.
+Leigh, N. G., and B. R. Kraft. "Emerging Robotic Regions in the United States: Insights for Regional
+
+    Economic Evolution." Regional Studies, 52 (2018), 804­815.
+Loughran, T., and B. McDonald. "When Is a Liability Not a Liability? Textual Analysis, Dictionaries,
+
+    and 10-Ks." Journal of Finance, 66 (2011), 35­65.
+Matsumoto, D.; M. Pronk; and E. Roelofsen. "What Makes Conference Calls Useful? The Information
+
+    Content of Managers' Presentations and Analysts' Discussion Sessions." Accounting Review, 86
+    (2011), 1383­1414.
+Mihalcea, R., and P. Tarau. "TextRank: Bringing Order into Text." In Proceedings of the 2004 Confer-
+
+    ence on Empirical Methods in Natural Language Processing. Barcelona, Spain: Association for
+    Computational Linguistics (2004), 404­411.
+Mixon, S.. "The Implied Volatility Term Structure of Stock Index Options." Journal of Empirical
+    Finance, 14 (2007), 333­354.
+Vuolteenaho, T.. "What Drives Firm-Level Stock Returns?" Journal of Finance, 57 (2002), 233­264.
+Wagner, A.; R. J. Zeckhauser; and A. Ziegler. "Company Stock Reactions to the 2016 Election Shock:
+    Trump, Taxes and Trade." Journal of Financial Economics, 130 (2018), 428­451.
+

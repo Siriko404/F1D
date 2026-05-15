@@ -1,0 +1,54 @@
+                                     Campello, Cortes, d'Almeida, and Kankanhalli 3213                   https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+      Table 11 shows our baseline DID specifications augmented with both controls
+for exposure to automation. Our coefficients of interest remain statistically signif-
+icant, suggesting that our results are robust to accounting for the automation
+technology channel.30
+
+D. Accounting for Trump's Election
+
+      One could be concerned about confounding uncertainty effects associated
+with the election of President Donald Trump in the United States. We address this
+issue in two different ways. First, we consider an alternative event window that
+excludes 2016:Q4 from our treatment evaluation period. This narrower time win-
+dow helps mitigate concerns that forward-looking behavior of firms regarding
+Trump's election in the United States could influence our results (Trump's victory
+was an unlikely event as of 2016:Q3). Accordingly, we compare the third quarter of
+2016 with the same quarter of 2015. As shown in columns 1 and 2 of Table 12,
+results are similar to our baseline estimates in Table 2. The patterns we report are
+consistent with relatively short-lived, "drop-and-rebound" effects of uncertainty.
+
+      Second, we look at the recent literature on the effect of Trump's election on
+U.S. firms. Wagner, Zeckhauser, and Ziegler (2018) detail a methodology identifying
+what the authors label as "winners" and "losers" from that election. We use their
+method, which is based on 10-day cumulative capital asset pricing model (CAPM)-
+adjusted abnormal stock returns around the Trump election date, to check for the
+presence of either of these sets of firms in our sample. Our treatment group based on
+iUK (10-K mentions) contains 57 (23) "loser" firms. In columns 3 and 4 of Table 11,
+we replicate our baseline tests on investment omitting firms labeled as "losers" by
+Wagner et al. (2018), that is, firms that might invest less because of Trump's election.
+The estimates show that our inferences are unaffected by these firms.31
+
+E. Falsification Tests
+
+      We also address concerns that our test design is set up in a way that may
+generate results not necessarily tied to the June 2016 referendum result. In doing so,
+we reestimate our tests considering two "treatment periods" that occurred prior to
+the 2016 Brexit vote: i) David Cameron's election as Prime Minister (2015:Q3) and
+ii) the U.S. Debt Ceiling Crisis of 2011 (2011:Q2­2011:Q4). The first falsification
+test mitigates concerns that firms anticipated the process leading to the Brexit
+referendum at the time of Cameron's election. The second addresses concerns that
+our investment results could be driven by episodes of uncertainty in the United
+States (and not the United Kingdom) that affect global firms in general. As shown in
+columns 5­8 of Table 12, the DID coefficients are statistically insignificant in
+all such cases.
+
+    30In Appendix E in the Supplementary Material, we further verify whether firms' automation
+exposure changed coinciding with the Brexit vote, using a time-varying analogue of Automationi,
+Automationi,t as the dependent variable in our baseline specification. The results, reported in
+Table E2 in the Supplementary Material, provide suggestive evidence that U.K.-exposed firms increased
+their exposure to automation technologies following the Brexit vote.
+
+    31For completeness, we repeat our analysis also excluding "winner" firms and find no changes in our
+results.
+

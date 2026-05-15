@@ -1,0 +1,32 @@
+                                                                                      TABLE 10                                                                                                                                 3212 Journal of Financial and Quantitative Analysis
+                                       The Impact of the Brexit Vote on Investment Accounting for Financial Constraints
+
+Table 10 reports output from equation (14), accounting for measures of financial constraints. The dependent variable is INVESTMENT. Each pair of columns reports results under two specifications. In the first
+specification, the treatment group is composed by the top tercile of Ui K, whereas the control group is composed by firms in the bottom tercile of Ui K. The second specification is a textual-search-based measure of U.K.
+exposure that sums up the number of Brexit-related words in firms' 2015 10-K forms. The treatment group is made of firms with more than five entries, whereas the control group are firms with zero entries. The first two
+columns consider the subset of firms with existing bonds traded, and include their yields to maturity as an additional control. The next two columns consider the subset of firms which issue new bonds, and include their
+
+yields to maturity as an additional control. The next two columns consider the subset of firms which take on new syndicated loans, and include their all-drawn-in spreads as an additional control. The final two columns
+include the innovations in equity discount rate news, obtained as the residual from the Campbell­Shiller decomposition of firm equity returns, as an additional control. The time dimension of the DID estimator is set so as
+to compare the two quarters following the announcement of the Brexit referendum victory (2016:Q3­Q4) versus the two quarters preceding the announcement of the vote date (2015:Q3­Q4). T -statistics are computed
+using robust standard errors (in parentheses) double-clustered at the firm and calendar quarter levels. *, **, and *** indicate statistical significance at the 10%, 5%, and 1% levels, respectively.
+
+                    Existing Bond Yields                        New Bond Yields                             New Syndicated Loan Spreads                 Equity Discount Rate News
+
+POST Â HIGH_iUK     Treatment is Top   Treatment is > 5 Brexit  Treatment is Top   Treatment is > 5 Brexit  Treatment is Top   Treatment is > 5 Brexit  Treatment is Top  Treatment is > 5 Brexit
+                      Tercile of Ui K      Entries in 10-Ks       Tercile of Ui K      Entries in 10-Ks       Tercile of Ui K      Entries in 10-Ks       Tercile of iUK      Entries in 10-Ks
+POST Â HIGH_                  1                      2                    3                      4                    5                      6                    7                     8
+   10ÀK_ENTRIES         À0.168***                                   À0.148***                                   À0.169***                                   À0.172***
+                         (0.022)               À0.072***             (0.018)               À0.159***             (0.041)               À0.157***             (0.022)              À0.079***
+Controls                                        (0.009)                                     (0.070)                                     (0.032)                                    (0.005)
+   Firm                     Yes                                         Yes                                         Yes                                         Yes
+                                                   Yes                                         Yes                                         Yes                                        Yes
+Fixed effects               Yes                                         Yes                                         Yes                                         Yes
+   Firm                     Yes                    Yes                  Yes                    Yes                  Yes                    Yes                  Yes                   Yes
+   Industry Â time       15,199                    Yes                9,546                    Yes                8,846                    Yes               15,199                   Yes
+                          0.78                  19,253                0.91                   9,551                0.77                   8,966                0.78                 19,253
+No. of obs.                                      0.76                                        0.92                                        0.91                                       0.76
+R2
+
+                                                                                                            https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+

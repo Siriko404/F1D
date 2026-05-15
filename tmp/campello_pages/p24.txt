@@ -1,0 +1,53 @@
+                                     Campello, Cortes, d'Almeida, and Kankanhalli 3201      https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+      The impact of the Brexit vote on corporate employment is also reported in
+Table 1. Using the specifications previously adopted, columns 4­6 display negative
+and significant DID coefficients for employment growth. The estimated coeffi-
+cients imply a drop of between 2.6 and 4.9 percentage points. Given that pre-Brexit
+(2015) sample average employment growth was 3.4%, our results suggest that the
+Brexit vote contributed to a measurable slowdown in net job creation in some
+segments of the U.S. economy, with the upper bound estimate pointing to a reduction
+in employment for U.K.-exposed firms. This is a notable finding given the steady
+growth in employment observed across the United States since 2010, particularly
+during 2016.
+
+      Next, we study the effects of the Brexit vote on U.K.-exposed firms' innovation
+policies. Columns 1­3 of Table 2 show that, for all specifications of U.K. exposure,
+there is a positive and highly significant response of R&D spending to Brexit. This
+result is consistent with the growth-options channel discussed in our theoretical
+framework. The results for R&D are also economically significant, reaching an
+increase of 0.24 percentage points relative to the pre-Brexit average of 3.2% of assets.
+
+      Finally, we look into the effects of the Brexit vote on U.K.-exposed firms'
+disinvestment (the sales of plant, property, and equipment scaled by lagged total assets).
+Columns 4­6 of Table 2 suggest that Brexit led to substantial reductions in divestitures
+for U.K.-exposed firms. The magnitudes here are notable, with a decline of up to 0.03
+percentage points, representing 33% of the average divestiture rate of the pre-Brexit
+period. Confirming the predictions of our framework, Brexit-induced uncertainty led to
+a reduction in both capital investment and disinvestment by affected U.S. firms.
+
+B. Result Characterization
+
+1. Tracing Investment and Labor Cuts
+
+      Since we are looking at multinational firms, it is important that we identify
+whether investment and job reductions occur within U.S. borders or stem from
+cuts in foreign operations. In this section, we first investigate whether investment
+cuts observed among American firms exposed to the United Kingdom affected
+operations that take place in the United States. We then look at the location of
+jobs affected by the Brexit vote. We also study the types of U.S. jobs and workers
+affected by the 2016 British vote.
+
+a. Location of Investment Cuts
+      We determine the location of investment cuts using data from Orbis. With
+
+these data, we are able to conduct our baseline analysis on investment looking
+squarely at U.S.-based operations of companies domiciled in the United States. The
+total number of U.S.-based subsidiaries in our sample is 51,750. For each parent
+firm, in each year, we compute their U.S.-based investment by summing fixed capital
+spending across their U.S. subsidiaries. We then repeat the analysis of Table 2 using
+U.S.-based investment as the dependent variable. Results in columns 1 and 2
+of Table 3 indicate that U.K.-exposed American firms cut investment in their
+U.S.-located subsidiaries in response to the Brexit vote. The magnitudes of the
+investment cuts are larger than those reported in Table 2 (annualized), implying
+

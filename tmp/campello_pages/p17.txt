@@ -1,0 +1,57 @@
+3194 Journal of Financial and Quantitative Analysis                                                                                                                                          https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+                                                      FIGURE 3
+                               Term Structure of FTSE100 Implied Volatility
+
+Figure 3 shows the term structure of the FTSE100 Index at three different dates. The term structure at each date is constructed
+from average Black­Scholes implied volatilities derived from quoted prices of at-the-money options on the FTSE100 Index.
+The values plotted reflect the market's expectation of the volatility of the FTSE100 Index over various maturities considered.
+
+FTSE100 ATM Implied Volatility (%)  23
+
+                                    21
+
+                                    19
+
+                                    17
+
+                                    15
+
+                                    1  Week  Mon2thMont3hsMont4hsMont5hsMont6hsMont7hsMont8hsMont9hsMon1th0sMon1t1hsMonths  1  Y1e3arMon1t4hsMon1t5hsMon1t6hsMon1t7hsMon1t8hsMonths2  Years
+                                          1
+
+                                             Maturity
+
+                                             Dec 31, 2014 (Benchmark, Pre-brexit)
+                                             Feb 22, 2016 (Day After Brexit Vote Date Announcement)
+                                             Jun 24, 2016 (Day After Brexit Victory)
+
+volatility for the FTSE100 Index. The dynamics described in this figure help us
+identify dates in which uncertainty surrounding the Brexit referendum seems to be
+incorporated into market expectations.18
+
+      The first (dotted blue) curve in Figure 3 represents the term structure as of Dec.
+31, 2014, which is the last date of our iUK estimation period. We use this curve
+as a benchmark since expectations at that time were uncontaminated by Brexit.
+As is typical for equities during normal economic conditions, the term structure is
+upward sloping, indicating the market expects greater volatility at longer horizons. The
+curve hovers smoothly around the 15%­16% range, suggesting that no abrupt changes
+are expected by options market participants over a maturity horizon of up to 2 years.
+
+      Responses to official news about the exact referendum date suggest that
+market participants were quick to incorporate uncertainty embedded by Brexit in
+their trading activity (before the actual outcome of the vote). In particular, options
+trading taking place on Feb. 22, 2016 (continuous red curve in Figure 3), the first
+trading day following David Cameron's announcement of the Brexit vote date, were
+priced to reflect a significant drop in market volatility for the period leading up to
+the Brexit vote date (on June 23), only to show a spike in volatility right after the
+vote. On June 24, 2016 (dashed yellow curve), the first trading day following the
+vote, market uncertainty seemed unusually high. Resolution about the vote
+
+    18The implied volatility term structure serves as a metric of market uncertainty over time as it
+expresses the range of movements in the FTSE100 that investors expect over various horizons (see
+Dumas, Fleming, and Whaley (1998), Mixon (2007)). The values in Figure 3 reflect the market's
+expectation of the volatility of the FTSE100 over different maturities. For example, if annualized implied
+vÂolÀatility pfoffirffi 2 yÁearÀs is 15p%ffi,ffitÁheÃmarket expects that prices will move over the next 2 years within a band
+ À 15 Â 2% ,þ 15 Â 2 % with 68% probability (1-standard-deviation).
+

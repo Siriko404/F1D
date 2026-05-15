@@ -417,8 +417,13 @@ def _fit_one(
     return result, meta
 
 
-def run_14_cells(panel: pd.DataFrame) -> List[Dict[str, Any]]:
-    """14 cells = 8 baseline (4 cash + 4 speech) + 6 channel (3 partitions × 2 FE)."""
+def run_8_cells(panel: pd.DataFrame) -> List[Dict[str, Any]]:
+    """8 cells = 4 cash baseline + 4 speech baseline (channel partitions dropped 2026-05-14).
+
+    Two specs per Sina directive: paper-verbatim cash spec + speech-as-DV spec.
+    Channel partitions (Small/Young/NonDiv) deferred — paper has them on CASH
+    (Table 4); F1D's prior emission ran them on SPEECH which was a deviation.
+    """
     results: List[Dict[str, Any]] = []
     col = 0
 
@@ -449,25 +454,6 @@ def run_14_cells(panel: pd.DataFrame) -> List[Dict[str, Any]]:
         meta["block"] = "speech_baseline"
         results.append({"model": model, "meta": meta})
         _print_cell(meta)
-
-    # Block 3: SPEECH × FINANCIAL CONSTRAINT × Disclosure_Law (6 cells)
-    for partition_label, partition_col in PARTITIONS.items():
-        for fe in FE_LADDER_CHANNEL:
-            col += 1
-            interaction_col = f"{partition_label}_x_DL"
-            panel_w = panel.copy()
-            panel_w[interaction_col] = (panel_w[partition_col] * panel_w[KEY_IV])
-            model, meta = _fit_one(
-                panel_w, dv="UncResCEO_c",
-                treatment_terms=[interaction_col, partition_col, KEY_IV],
-                extra_controls=ALL_CONTROLS,
-                fe=fe,
-            )
-            meta["col"] = col
-            meta["block"] = f"speech_channel_{partition_label}"
-            meta["partition"] = partition_label
-            results.append({"model": model, "meta": meta})
-            _print_cell(meta)
 
     return results
 
@@ -667,19 +653,13 @@ def _emit_canonical_suite_spec(
 
     ivs = [
         {"name": "Disclosure_Law", "label": _IV_LABEL["Disclosure_Law"], "tail": "one_pos"},
-        {"name": "Small_x_DL",     "label": _IV_LABEL["Small_x_DL"],     "tail": "one_pos"},
-        {"name": "Young_x_DL",     "label": _IV_LABEL["Young_x_DL"],     "tail": "one_pos"},
-        {"name": "NonDiv_x_DL",    "label": _IV_LABEL["NonDiv_x_DL"],    "tail": "one_pos"},
     ]
 
-    # Block headers: Cash 4 + Speech 4 + Speech × {Small, Young, NonDiv} (2 each).
+    # Block headers: Cash 4 + Speech 4 (channel partitions dropped 2026-05-14).
     header_rows = [
         [
-            {"label": r"Cash Holdings (Disclosure Law)",      "span": 4},
-            {"label": r"UncResCEO (Disclosure Law)",          "span": 4},
-            {"label": r"UncResCEO $\times$ Small",            "span": 2},
-            {"label": r"UncResCEO $\times$ Young",            "span": 2},
-            {"label": r"UncResCEO $\times$ Non-dividend",     "span": 2},
+            {"label": r"Cash Holdings (Disclosure Law)",  "span": 4},
+            {"label": r"UncResCEO (Disclosure Law)",      "span": 4},
         ],
     ]
 
@@ -711,7 +691,7 @@ def _emit_canonical_suite_spec(
         tail={"direction": "positive", "applies_to": "ivs_only"},
         ivs=ivs,
         controls={
-            "base": list(ALL_CONTROLS) + ["tercile_small", "tercile_young", "non_dividend"],
+            "base": list(ALL_CONTROLS),
             "extended_only": [],
         },
         model_family="PanelOLS",
@@ -768,7 +748,7 @@ def main() -> int:
         return 0
 
     print("\n  --- Running 14 regressions ---")
-    results = run_14_cells(panel)
+    results = run_8_cells(panel)
 
     print(f"\n  --- Writing outputs to {out_dir} ---")
     write_outputs(results, out_dir)

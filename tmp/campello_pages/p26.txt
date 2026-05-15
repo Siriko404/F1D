@@ -1,0 +1,63 @@
+                            Campello, Cortes, d'Almeida, and Kankanhalli 3203                                                   https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+                                          TABLE 4
+
+Result Characterization: The Impact of the Brexit Vote on Investment of
+                    U.S.-Based and U.K.-Based Subsidiaries
+
+Table 4 reports output from equation (14) considering only U.S.-based and U.K.-based subsidiaries of the parent firms in
+the baseline sample. The dependent variable is INVESTMENT. In the first and third specifications, the treatment group is
+composed by the top tercile of iUK, whereas the control group is composed by firms in the bottom tercile of iUK. In the second
+and fourth specifications, we consider a textual-search-based measure of U.K. exposure that sums up the number of Brexit-
+related words in firms' 2015 10-K forms. The treatment group is made of firms with more than five entries, whereas the control
+group are firms with zero entries. The first two columns consider only U.S.-based subsidiaries, and the last two columns
+consider only U.K.-based subsidiaries. The time dimension of the DID estimator is set so as to compare the two quarters
+following the announcement of the referendum and Brexit's victory (2016:Q3­Q4) versus the two quarters preceding the
+announcement (2015:Q3­Q4). T -statistics are computed using robust standard errors (in parentheses) double-clustered
+at the firm and calendar quarter levels. *, **, and *** indicate statistical significance at the 10%, 5%, and 1% levels,
+respectively.
+
+                                                                                                INVESTMENT
+
+Subsidiaries Located in:           United States                 United Kingdom
+
+POST Â HIGH_Ui K            Treatment is Top  Treatment is > 5   Treatment is Top   Treatment is > 5
+POST Â HIGH_10 À K_ENTRIES    Tercile of iUK  Brexit Entries in    Tercile of Ui K  Brexit Entries in
+                                      1                                    3
+                                                    10-Ks             À0.367**            10-Ks
+                                À0.286***               2              (0.149)                4
+                                 (0.090)
+                                                  À0.463***              Yes            À0.571***
+Controls                     Yes                   (0.107)                               (0.082)
+   Firm                                                                  Yes
+                             Yes                      Yes                Yes                Yes
+Fixed effects                Yes                                        1,840
+   Firm                     3,611                     Yes               0.80                Yes
+   Industry Â time          0.80                      Yes                                   Yes
+                                                    3,611                                 1,840
+No. of obs.                                         0.80                                  0.84
+R2
+
+reduced their employment in the United States following the Brexit vote. The
+magnitude of the employment cuts reported in columns 1 and 2 of Table 5 are
+larger than those reported in columns 5 and 6 of Table 2, suggesting that effects on
+employment measured at the aggregate U.S.-domiciled firm level are likely to be
+driven by employment declines in their U.S.-based operations. Relatedly, real
+options theory predicts an increase in the option value of "wait and see" in response
+to uncertainty. We thus analyze if Brexit affected exposed firms' decisions on
+opening and closing establishments in the United States, which we define as estab-
+lishment turnover.24 Columns 3 and 4 display negative and significant coefficients,
+suggesting that U.K.-exposed firms indeed reduce their establishment turnover and
+confirms our predictions about firm inaction.
+
+      We delve into the nature of employment cuts by considering whether the
+reductions in employment following the Brexit vote were felt primarily among
+the higher or lower skilled workforce. As a proxy for labor skills, we use the
+industry-level labor skills index (LSI) proposed by Ghaly, Dang, and Stathopoulos
+(2017). The LSI is based on data from the Occupational Employment Statistics
+compiled by the Bureau of Labor Statistics (BLS) and the Department of Labor's
+O*NET program classification. The O*NET classification allocates occupations
+
+    24Establishment turnover is defined as the sum of establishment openings and closings, divided by
+the lagged number of total establishments.
+

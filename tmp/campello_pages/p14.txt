@@ -1,0 +1,62 @@
+      Campello, Cortes, d'Almeida, and Kankanhalli 3191                                                           https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+      We can employ a regression-like approach to operationalize an empirical
+
+counterpart to i. Specifically, taking square roots of both sides of equation (11),
+we obtain
+
+      pffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffi
+(12)  volðvitÞivolðV tÞ þ  À 2 Â ivolðV tÞ Â :
+
+      Following Bloom (2014), we use stock market volatility as a gauge of aggre-
+gate uncertainty and estimate equation (12) for each firm i as12
+
+(13)  volðritÞ ¼ i þ Ui K volðFTSE100tÞ þ CONTROLSt þ it:
+
+      Equation (13) uses the volatility of equity returns, volðritÞ, as a proxy for firm
+income volatility, volðvitÞ. It also uses the volatility of the FTSE100 Index as a
+
+proxy for uncertainty in the U.K. (the relevant source of aggregate uncertainty in
+
+our setting). We include control variables, CONTROLSt, consisting of volðSP500Þ
+and vol(FX$£) into equation (13) to absorb effects arising through firms' exposure
+
+to the domestic U.S. market and exchange rate fluctuations between the U.S. dollar
+and the British pound. For each firm, we take the estimated value of iUK from
+regression (13) as the empirical counterpart to i in our framework.13
+
+2. Textual-Search-Based Measure of Uncertainty
+
+      As an alternative measure of U.S. firms' exposure to Brexit-induced
+uncertainty, we develop a textual-search-based metric that is constructed by
+parsing firms' 2015 10-K filings. In particular, we look for the number of entries
+of keywords related to uncertainty about Brexit ("Brexit," "Great Britain," and
+"Uncertainty") in firms' disclosures, classifying firms with a "high" number of
+entries as HIGH_UK_EXPOSURE firms, and those with zero entries as control
+firms.14 Notably, the vast majority of firms file their 10-Ks with the SEC between
+March and June of each year. By computing these wordcounts from firms' 10-K
+disclosures (before the actual vote takes place, yet after the referendum is
+announced), we build a measure of exposure to the United Kingdom based on
+what firms consider relevant to communicate to their investors on the eve of the
+2016 Brexit vote.
+
+      Textual analysis reveals that most firms cite concerns about Brexit a half dozen
+times or more in their 10-Ks, or not at all. As such, we arbitrarily set a cutoff for high
+
+    12Bloom (2014) shows that stock market volatility exhibits a high degree of commonality with other
+observed proxies for uncertainty including those derived from bond markets, exchange rates, and GDP
+forecasts.
+
+    13The last term in equation (12) is subsumed by the idiosyncratic volatility term, it, in equation (13).
+We note that the volatility of equity returns may be an imperfect proxy for the volatility of firm income as
+returns are driven by news on both cash flows and discount rates (Campbell and Shiller (1988)).
+Following Vuolteenaho (2002), we also decompose the volatility of each firm's returns into cash flow
+and discount rate components and reestimate equation (13) with the cash flow component (only) as the
+dependent variable, obtaining an alternative uncertainty measure, iU,CKF . The estimates for Ui K and Ui,CKF
+have a rank correlation of 0.8, and there is an 86% overlap in the set of firms at the top tercile of both iUK
+and iU,CKF . As shown in Table C6, our inferences are unchanged whether using iUK or Ui,CKF to conduct
+our tests.
+
+    14Entries like "Referendum," "Uncertain," "United Kingdom," "UK," "U.K.," and "G.B." are
+subsumed by the above wording.
+

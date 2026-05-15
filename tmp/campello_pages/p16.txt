@@ -1,0 +1,66 @@
+                       Campello, Cortes, d'Almeida, and Kankanhalli 3193                                    https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+of Wisconsin, for information on U.S.-based employment. The YTS database is
+compiled from historical business files from Infogroup and are linked longitu-
+dinally to track establishment location, employment, and sales information at
+the establishment-year level for public and private firms in the United States. We
+match our sample firms (both parents and their U.S. subsidiaries) to YTS primar-
+ily using tickers, and augment this match through manual searches by firm name.
+The firms in our sample collectively operated 757,083 unique establishments, and
+this results in 1,809,301 establishment-year observations over the 2010≠2016
+period. We aggregate YTS employment growth at the firm level, giving a final
+U.S. establishment-level employment growth sample of 11,345 firm-years.
+
+      We use CRSP stock price data and Bloomberg equity index and currency data
+to compute our theoretical framework-based measure of firm exposure to the United
+Kingdom (see equation (13)). We use monthly data from 2010:M1 to 2014:M12 so
+that exposure to the United Kingdom is measured before any major Brexit-related
+events. Analyst forecast data are obtained from I/B/E/S. Data on bond yields are
+from TRACE and SDC, whereas syndicated loan spreads are drawn from WRDS≠
+Reuters DealScan. Macroeconomic variables are taken from the Federal Reserve
+Bank of St. Louis' FRED database.
+
+C. Test Strategy and Empirical Specification
+
+1. Identification
+
+We use a standard DID approach to assess the impact of the 2016 Brexit vote
+
+on American firms. Following our framework, in our base analysis, we characterize
+
+firms as treated (control) units if they are in the upper (bottom) tercile of the
+
+nonnegative range of the iUK distribution. For group contrasting, we do not
+
+include firms that benefit from uncertainty in the United Kingdom in the control
+
+group (firms with Ui K < 0) as this could lead to overestimation biases attached to
+
+the treatment effects we seek to identify. Nevertheless, in specifications where we
+
+use Ui K as a continuous treatment variable, we relax this restriction and include
+all values of Ui K.17
+are assigned to the    Utrenadteerdthciastemgaorrkyet¿-biUaKse>d  appr¡oach, a total of 449  unique  firms
+                                                                  0:68 . In contrast, 360    unique  firms
+
+are assigned to the control category (iUK < 0:28). We also consider an alternative,
+
+text-based measure of exposure to Brexit. Under this approach, 807 firms are
+
+assigned to the treated category (2015 10-K mentions of Brexit terms > 5).
+
+A total of 433 firms in the control category have no mentions of Brexit-related
+
+terms in their 10-Ks.
+
+2. Timeline
+
+      Once firms are identified as exposed and nonexposed, we need to set the time
+frame of our DID analysis. We make this determination by mapping key events
+of our institutional setting into market-based measures of perceived uncertainty.
+In Figure 3, we plot three point-in-time snapshots of the term structure of implied
+
+    17In unreported tests, we only label those firms with statistically significant positive iUK estimates
+as treated firms, and those with iUK statistically indistinguishable from 0 as controls. We find that our
+results hold across a range of sensible treatment assignment thresholds.
+

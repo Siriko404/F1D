@@ -1,0 +1,40 @@
+                                                                                   TABLE 11                                                                                                                                           3214 Journal of Financial and Quantitative Analysis
+                    The Impact of the Brexit Vote on Investment, Employment, R&D, and Divestitures: Automation Exposure
+
+Table 11 reports output from equation (14) with additional controls for exposure to automation technology. The dependent variables are INVESTMENT, EMPLOYMENT_GROWTH, R&D, and DIVESTITURES.
+
+AUTOMATIONfi CZg is the Acemoglu and Restrepo (2020) commuting-zone-level exposure to robots for all firms i headquartered in commuting zone CZ. AUTOMATIONi is constructed from a dictionary of
+
+keywords that capture exposure to automation at the firm level, as described in Section VI.C. This text-based continuous variable is the logarithm of the total number of automation-related keywords that appear in
+
+firm is business description (10-K Section 1)    and management discussion (10-K Section 7). In   the first specification, the treatment group  is composed by     the top tercile of Ui K, whereas the control group is composed by
+firms in the bottom tercile of Ui K. The second  specification is a textual-search-based measure  of U.K. exposure that sums up the number      of Brexit-related  words in firms' 2015 10-K forms. The treatment group is made of
+
+firms with more than five entries, whereas the control group are firms with zero entries. The time dimension of the DID estimator is set so as to compare the two quarters following the announcement of the referendum and
+
+Brexit's victory (2016:Q3­Q4) versus the two quarters preceding the announcement (2015:Q3­Q4). T -statistics are computed using robust standard errors (in parentheses) double-clustered at the firm and calendar
+
+quarter levels. *, **, and *** indicate statistical significance at the 10%, 5%, and 1% levels, respectively.
+
+                    INVESTMENT                                            EMPLOYMENT_GROWTH                                                     R&D                      DIVESTITURES
+
+POST Â HIGH_iUK     Treatment is Top             Treatment is > 5 Brexit  Treatment is Top        Treatment is > 5 Brexit  Treatment is Top     Treatment is > 5 Brexit  Treatment is Top   Treatment is > 5 Brexit
+                      Tercile of Ui K                Entries in 10-Ks       Tercile of Ui K           Entries in 10-Ks       Tercile of iUK         Entries in 10-Ks       Tercile of Ui K      Entries in 10-Ks
+POST Â HIGH_                  1                                2                    3                           4                    5                        6                    7                      8
+   10ÀK_ENTRIES         À0.092***                                             À2.367***                                          0.152***                                    À0.005***
+                         (0.014)                         À0.039***             (0.125)                    À0.930***             (0.034)                  0.192***             (0.000)               À0.004***
+AUTOMATIONfi CZg                                          (0.009)                                          (0.156)                                      (0.041)                                      (0.000)
+                        À0.029                           À0.028                 0.233                     À0.296                 0.261***                0.146               À0.001                 À0.002**
+AUTOMATIONi              (0.026)                          (0.024)              (0.311)                     (0.192)              (0.093)                 (0.092)               (0.001)                (0.001)
+                        À0.052                           À0.010                 0.578                     À0.377                 0.081                   0.036               À0.001                   0.000
+Controls                 (0.031)                          (0.019)              (0.369)                     (0.295)              (0.080)                 (0.048)               (0.001)                (0.001)
+   Firm
+                            Yes                              Yes                  Yes                         Yes                  Yes                      Yes                  Yes                    Yes
+Fixed effects
+   Industry Â time          Yes                              Yes                  Yes                         Yes                  Yes                      Yes                  Yes                    Yes
+                         17,199                          21,253                 3,540                       4,173                5,528                   9,066                16,187                19,923
+No. of obs.                                                                     0.286                       0.253                0.651                   0.636
+R2                        0.465                            0.416                                                                                                               0.167                  0.149
+
+                                                                                                                           https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+

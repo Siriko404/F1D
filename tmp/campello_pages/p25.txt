@@ -1,0 +1,73 @@
+3202 Journal of Financial and Quantitative Analysis                                                                                 https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+                                                       TABLE 3
+The Impact of the Brexit Vote on R&D Expenditures and Divestitures: Baseline Specification
+
+Table 3 reports output from equation (14). The dependent variables are R&D and DIVESTITURES. R&D is defined as total R&D
+
+expenditures divided by lagged total assets. DIVESTITURES are defined as the value of SPP&E (Sale of Plant, Property, and
+Equipment) divided by lagged total assets. In the first specification, the measure of U.K. exposure (Ui K) enters the regression
+as a linear continuous variable. In the second specification, the treatment group is composed by the top tercile of Ui K, whereas
+the control group is composed by firms in the bottom tercile of Ui K. The third specification is a textual-search-based measure
+of U.K. exposure that sums up the number of Brexit-related words in firms' 2015 10-K forms. The treatment group is made of
+firms with more than five entries, whereas the control group are firms with zero entries. The time dimension of the DID estimator
+is set so as to compare the two quarters following the announcement of the referendum and Brexit's victory (2016:Q3­Q4)
+versus the two quarters preceding the announcement (2015:Q3­Q4). T -statistics are computed using robust standard errors
+(in parentheses) double-clustered at the firm and calendar quarter levels. *, **, and *** indicate statistical significance at the
+
+10%, 5%, and 1% levels, respectively.
+
+                                R&D                                           DIVESTITURES
+
+                      Linear      Treatment        Treatment is      Linear     Treatment       Treatment is
+                    iUK Model       is Top          > 5 Brexit     iUK Model      is Top         > 5 Brexit
+
+                          1     Tercile of Ui K  Entries in 10-Ks        4    Tercile of iUK  Entries in 10-Ks
+
+                                        2                 3                           5                6
+
+POST                À0.002                                           0.002
+POSTÂUi K            (0.131)                                        (0.001)
+POST Â HIGH_Ui K
+                      0.361***                                     À0.012***
+                     (0.026)                                        (0.004)
+
+                                0.238***                                      À0.027**
+                                (0.055)                                        (0.011)
+
+POST Â HIGH_           Yes         Yes           0.213***             Yes       Yes           À0.027***
+   10ÀK_ENTRIES        Yes          No           (0.058)              Yes        No            (0.005)
+
+Controls               Yes         Yes              Yes               Yes       Yes               Yes
+   Firm                 No         Yes               No                No       Yes               No
+   Macroeconomic    17,121      5,528                              40,054     16,187
+                     0.86       0.88                Yes             0.21       0.33               Yes
+Fixed effects                                       Yes                                           Yes
+   Firm                                          9,066                                        19,923
+   Industry Â time                               0.92                                           0.29
+
+No. of obs.
+R2
+
+that effects on investment measured at the parent firm level are driven in large part
+by investment cuts in their U.S. operations.
+
+      As a further check, we investigate whether these U.K.-exposed American
+firms cut investment in their U.K.-based subsidiaries as well. Using Orbis, we
+identify U.K. subsidiaries of our U.S.-domiciled firms. We similarly calculate the
+total U.K.-based investment of each U.S. parent firm by summing spending figures
+across U.K. subsidiaries. We then repeat our baseline analysis with this measure of
+U.K. investment as the dependent variable. Results in columns 3 and 4 of Table 4
+suggest that U.K.-exposed American firms cut investment in their U.K.-based
+subsidiaries even more than they do across their U.S.-based subsidiaries. This result
+is sensible and consistent with a strong, direct effect of Brexit-induced uncertainty
+on U.K.-based operations.
+
+b. The Location and Nature of Employment Cuts and Establishment Turnover
+      We are able to identify the location of employment cuts made by American
+
+firms using the YTS database. We first repeat the analysis of Table 2 using estab-
+lishment-level employment growth calculated based on YTS data on the number of
+employees across all establishments operated by sample firms in the United States.
+Results in columns 1 and 2 of Table 5 suggest that U.K. exposed American firms
+

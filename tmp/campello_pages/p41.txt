@@ -1,0 +1,64 @@
+3218 Journal of Financial and Quantitative Analysis                                             https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+choosing instead to wait till t = 1 to decide, is xi1 ş E½ max ğsi2 ş xi2 À we, xi2Ş. Simpli-
+fying these two expressions, the firm disinvests project we at t = 0 if:
+
+(A.2)                       si1 À we  xi2 ş E½ max ğsi2 À we, 0Ş:
+
+      The breakeven condition for determining the optimal disinvestment level w
+at t = 0 is:
+
+(A.3)                    si1 À w = xi2 ş E½ max ğsi2 À w, 0Ş:
+
+In Lemma 3, we prove the existence of the optimal t = 0 investment level, w.
+
+Lemma 3. The optimal disinvestment level w at t = 0 is given by equation (A.3)
+for sufficiently large W .
+
+      The breakeven condition in equation (A.3) implies that at t = 0 the firm sells all
+projects up to project w, as the benefits of doing so, si1, are expected to exceed the costs.
+Costs are made of two components: (1) the cost of selling the project, w, and (2) the
+
+option value of waiting to choose whether to disinvest. The embedded optionality in the
+firm's disinvestment decision is key in generating a negative relation between uncer-
+
+tainty and disinvestment, as is the case with investment. As before, while the addition of
+
+a zero-mean spread does not change the left-hand side of equation (A.2), it increases the
+right-hand side of that inequality given the firm's option to forgo disinvestment in high
+
+income states. An increase in uncertainty in the distribution of sit reduces the breakeven
+project level w, and correspondingly shrinks the set of projects the firm disinvests at
+t = 0, namely the interval ½0, wŞ. We establish this result in Proposition 3.
+
+Proposition 3. Increased uncertainty leads to less disinvestment at t = 0. For r0 > r,
+
+namely when GğÁ,r0Ş is obtained by a mean-preserving spread of GğÁ,rŞ,
+                            dw
+wğr0Ş  <  wğrŞ.  That  is,   dr  <  0.
+
+      Taken together, the results of Proposition 1 and 3 imply that by increasing the value
+of the option to wait, greater uncertainty leads to decreases in both investment and
+disinvestment.
+
+A.2. The Effect of Input Irreversibility
+
+      We now address the role played by the degree of irreversibility of capital and labor,
+as captured by their associated fixed costs. We do so by way of two propositions.
+
+Proposition 4. An increase in the degree of irreversibility of capital leads to less
+
+investment  for  higher  levels     of  uncertainty  in  the  first  period;  i.e.,  dn  <  0:
+                                                                                     d
+
+Proposition 5. An increase in the degree of irreversibility of labor leads to less
+
+investment  for  higher  levels     of  uncertainty  in  the  first  period;  i.e.,  dn  <  0:
+                                                                                     d
+
+      Combining the last two propositions with Proposition 1, we have that for an
+increase in uncertainty in the MPS sense (i.e., r0 > r) and for greater degree of input
+irreversibility ğ0 >  and 0 > Ş, the following conditions hold with respect to
+
+investment:
+

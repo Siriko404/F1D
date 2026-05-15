@@ -1,0 +1,53 @@
+                                     Campello, Cortes, d'Almeida, and Kankanhalli 3183                   https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+the aftermath of the 2016 U.K. vote.5 As the British anti-integration referendum
+has inspired similar national-centric movements in several other countries, it is
+important that researchers and policymakers are able to gauge its economic
+implications.
+
+II. Background on the 2016 Brexit Referendum
+
+      The 2016 Brexit referendum is said to be rooted in long-standing political
+and social tensions within Europe, fueled by nationalistic and populist move-
+ments in the United Kingdom (see, e.g., Becker et al. (2017)). In the early 2000s,
+attempts by the European Union to deepen integration among its members
+sparked British opposition against the oversight of a supranational entity. The
+rise of the U.K. Independence Party (UKIP) captured this sentiment. As Britons
+voted for representatives in the EU parliament, the UKIP achieved the third place
+in 2004, second in 2009, and first in 2014. This was the first time in modern
+British history that a party other than the Labour or Conservative parties took the
+largest share of a nationwide election. Facing the rise of the UKIP in 2013, Prime
+Minister David Cameron announced a contingent (nonbinding) plan: If the Con-
+servative Party were to win the general elections of May 2015, he would commit to
+a referendum on Britain's membership in the European Union before 2017. Granted
+another term on a narrow victory, Cameron fulfilled his electoral promise, and on
+June 2015, the House of Commons approved the European Union Referendum Act.
+Appendix D in the Supplementary Material presents a timeline of events leading to
+the U.K.­EU referendum ("Brexit").
+
+      David Cameron was against the United Kingdom's exit from the European
+Union and vowed to resign if Brexit passed. On Feb. 20, 2016, he announced that
+voting would take place on June 23, 2016. In the months leading up to the
+referendum, the polls indicated that the chances of the United Kingdom leaving
+the European Union were slim. A few weeks before the referendum, the "leave"
+vote led, for the first time, only to trail again after the assassination of a "remain"
+supporter (Labour MP Jo Cox) by a "leave" extremist. On the eve of the referen-
+dum, bookmakers' odds showed chances of more than 90% that the United
+Kingdom would remain in the European Union. The vote result prompted Camer-
+on's immediate resignation.
+
+      The political upheaval around the Brexit referendum process was unprece-
+dented. The uncertainty it generated regarding economic policy in the United
+Kingdom can be gauged from the Baker, Bloom, and Davis (2016) EPU index (see
+Figure 2). The average quarterly U.K. EPU index before 2016 was 133 (starting
+from the beginning of the modern series in 1997). The index jumped by 410 points
+in 2016 (nearly 4 times the baseline average, or a 3.4-standard-deviation from the
+series). Although the June 23 vote resolved the uncertainty about the referendum
+per se, Brexit's nonbinding mandate and unspecified procedures were still
+
+    5Our establishment-level data allow us to transparently observe employment within U.S. borders.
+This is in contrast to recent articles that rely on employment data from COMPUSTAT (e.g., Hassan et al.
+(2020)). Critically, COMPUSTAT aggregates data on workers from all foreign affiliates (including those
+located in the United Kingdom), confounding employment results as a mix of both the international and
+the domestic effects of Brexit.
+

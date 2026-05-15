@@ -1,0 +1,118 @@
+3198 Journal of Financial and Quantitative Analysis                                                                                    https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+                                    TABLE 1
+                             Summary Statistics
+
+Table 1 reports summary statistics for the main variables used in our empirical analyses. The final sample is a match between
+COMPUSTAT Quarterly North America Fundamentals and the estimated iUK sample for the period from 2010:Q1 to 2015:Q4.
+Each panel reports the mean, standard deviation, median, interquartile range (IQR), and the number of observations
+conditional on firms belonging to each subsample. INVESTMENT is defined as capital expenditures divided by lagged total
+assets. EMPLOYMENT_GROWTH is defined as the percentage change in the number of employees (annual). R&D is defined
+as R&D expenditures divided by lagged total assets, considering only firms with non-missing R&D expenditures.
+DIVESTITURES is defined as the value of sale of plant, property, and equipment divided by lagged total assets. CASH is
+defined as cash and short-term investments divided by lagged total assets. NON_CASH_WORKING_CAPITAL is defined as
+working capital (net of cash) divided by lagged total assets. TOBIN_Q is defined as the market value of assets divided by the
+book value of assets, and is calculated as the market value of equity plus the book value of assets minus book value of equity
+plus deferred taxes, all divided by book value of assets. CASH_FLOW is defined as operating income before depreciation
+divided by lagged total assets. SIZE is defined as the logarithm of total assets. SALES_GROWTH is defined as the year-on-
+year percentage change in quarterly sales. CONSENSUS_EARNINGS_FORECAST is defined as the standardized mean 1-
+quarter ahead earnings per share forecast. STOCK_RETURNS are defined as the quarterly buy-and-hold return. All variables
+are winsorized at the 1% level. Panel A summarizes data for the universe of COMPUSTAT firms. Panel B shows summary
+statistics for the sample of treated firms as defined by Ui K (top tercile of Ui K ). Panel C shows summary statistics for the sample
+of control firms as defined by iUK (bottom tercile of Ui K ). Panel D shows summary statistics for the sample of treated firms as
+defined by mentions of Brexit-related words in their 2015 10-K filings (more than five 10-K entries). Panel E shows summary
+statistics for the sample of control firms as defined by mentions of Brexit-related words in their 2015 10-K filings (zero 10-K
+entries).
+
+                                                                                                             Universe
+
+      Firm-Level Variables   Mean  SD                Median                IQR   N
+
+Panel A. COMPUSTAT
+
+INVESTMENT                   0.01  0.02              0.01                  0.01  76,094
+
+EMPLOYMENT_GROWTH (Annual)   0.08  0.28              0.03                  0.16  17,620
+
+R&D                          0.03  0.04              0.02                  0.04  40,864
+
+DIVESTITURES (Â100)          0.06  0.28              0.00                  0.00  61,151
+
+CASH                         0.22  0.25              0.12                  0.27  78,044
+
+NON_CASH_WORKING_CAPITAL     0.04  0.19              0.03                  0.20  76,323
+
+TOBIN_Q                      2.11  1.59              1.57                  1.26  73,353
+
+CASH_FLOW                    0.01  0.06              0.03                  0.04  75,287
+
+SIZE (Log Assets)            6.19  2.08              6.15                  3.08  78,062
+
+SALES_GROWTH                 0.16  0.62              0.06                  0.23  71,637
+
+CONSENSUS_EARNINGS_FORECAST  0.07  3.51              0.09                  2.05  42,031
+
+STOCK_RETURNS                0.03  0.24              0.02                  0.25  67,226
+
+                                                 Market-Based Approach
+
+                                                 (Top Tercile of iUK)
+
+Panel B. Treated Firms:
+
+INVESTMENT                   0.02  0.02              0.01                  0.02  11,083
+
+EMPLOYMENT_GROWTH (Annual)   0.08  0.29              0.03                  0.19  2,659
+
+R&D                          0.03  0.04              0.02                  0.04  5,019
+
+DIVESTITURES (Â100)          0.10  0.38              0.00                  0.00  8,604
+
+CASH                         0.20  0.24              0.11                  0.26  11,176
+
+NON_CASH_WORKING_CAPITAL     0.05  0.18              0.04                  0.19  10,846
+
+TOBIN_Q                      1.92  1.51              1.41                  1.01  11,090
+
+CASH_FLOW                    0.01  0.06              0.02                  0.04  10,972
+
+SIZE (Log Assets)            6.11  1.87              6.12                  2.86  11,176
+
+SALES_GROWTH                 0.18  0.71              0.06                  0.31  10,624
+
+CONSENSUS_EARNINGS_FORECAST  0.01  3.40              0.01                  1.83  8,963
+
+STOCK_RETURNS                0.02  0.27              0.00                  0.30  11,088
+
+                                                 Market-Based Approach
+
+                                                 (Bottom Tercile of Ui K)
+
+Panel C. Control Firms:
+
+INVESTMENT                   0.01  0.01              0.01                  0.01  12,067
+
+EMPLOYMENT_GROWTH (Annual)   0.06  0.20              0.03                  0.11  2,965
+
+R&D                          0.02  0.03              0.01                  0.02  6,200
+
+DIVESTITURES (Â100)          0.08  0.32              0.00                  0.01  9,422
+
+CASH                         0.17  0.18              0.11                  0.19  12,097
+
+NON_CASH_WORKING_CAPITAL     0.08  0.16              0.07                  0.20  11,738
+
+TOBIN_Q                      1.98  1.25              1.62                  1.07  12,055
+
+CASH_FLOW                    0.03  0.04              0.03                  0.03  11,871
+
+SIZE (Log Assets)            7.25  1.99              7.25                  2.65  12,097
+
+SALES_GROWTH                 0.10  0.36              0.06                  0.16  11,969
+
+CONSENSUS_EARNINGS_FORECAST  0.07  2.33              0.04                  2.40  10,720
+
+STOCK_RETURNS                0.04  0.18              0.03                  0.20  12,063
+
+                                                                       (continued on next page)
+

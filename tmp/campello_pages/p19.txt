@@ -1,0 +1,64 @@
+3196 Journal of Financial and Quantitative Analysis                                                                                 https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+highlights the sharp yet short-lived nature of the economic effects triggered by
+uncertainty.20 We limit our analysis to the end of 2016 due to the start of the Trump
+administration in Jan. 2017. We show in later robustness checks that results also
+hold for a window that excludes Trump's election.
+
+3. Empirical Model
+
+      We compare differences in outcomes of interest between treated (HIGH_
+UK_EXPOSURE) and control (LOW_UK_EXPOSURE) firms. Differences over
+the 2016:Q3­Q4 period are taken relative to the same two quarters in the previous
+year (2015:Q3­Q4) in order to minimize the impact of seasonal effects. This is
+equivalent to estimating the following model:
+
+(14) Y i,t ¼  þX½POSTt ÂX HIGXH_ÂUK_EXPOSUREi þ CONÃTROLSi,tÀ1
+þ FIRMi þ      INDUSTRYj Â QUARTERt þ i,t:
+
+       i   jt
+
+      The outcomes of interest, Y i,t, are fixed capital investment, employment
+growth, R&D expenditures, divestitures, cash holdings, and NWC. HIGH_UK_
+
+EXPOSUREi is a dummy variable that equals 1 if firm i is U.K.-exposed, and
+
+0 otherwise. A firm is considered to be U.K.-exposed according to two measures: i)
+if it belongs to the top tercile of Ui K (market-based measure); or ii) if it has a
+high number of Brexit-related entries in its 2015 10-K form (textual-search-based
+measure). POSTt equals 1 if the time period is in the 2016:Q3­Q4 window.
+
+                                                      FIGURE 5
+                      Corporate Investment Trends around Brexit-related Events
+
+This figure displays coefficients of investment regressions for the timeline of the main events related to Brexit. The shaded area
+marks the beginning of Brexit-related events, with the announcement of the date of the UK-EU referendum (2016:Q1).
+
+ 0.25
+ 0.15
+ 0.05
+­0.05
+­0.15
+­0.25
+­0.35
+­0.45
+­0.55
+
+       2015Q1
+                 2015Q2
+                           2015Q3
+                                     2015Q4
+                                               2016Q1
+                                                         2016Q2
+                                                                   2016Q3
+                                                                             2016Q4
+                                                                                       2017Q1
+                                                                                                 2017Q2
+                                                                                                           2017Q3
+
+    20Figure 5 shows differences in investment trends between treated and control firms in the window
+surrounding the vote. Brexit-induced uncertainty led to a significant, yet temporary, drop in investment
+for affected U.S. firms for a period of three quarters, followed by a rebound to near normalcy in the
+following three quarters. This "drop-and-rebound" behavior matches the pattern of domestic uncertainty
+shocks discussed in Bloom (2009).
+

@@ -1,0 +1,40 @@
+                                                                                             TABLE 9                                                                                                                            3210 Journal of Financial and Quantitative Analysis
+                                       The Impact of the Brexit Vote on Investment Accounting for Foreign Exchange Exposures
+
+Table 9 reports output from equation (14), accounting for measures of exposure to USD­GBP FX fluctuations. The dependent variable is INVESTMENT. Each pair of columns reports results under two specifications. In
+the first specification, the treatment group is composed by the top tercile of iUK, whereas the control group is composed by firms in the bottom tercile of iUK. The second specification is a textual-search-based measure
+of U.K. exposure that sums up the number of Brexit-related words in firms' 2015 10-K forms. The treatment group is made of firms with more than five entries, whereas the control group are firms with zero entries. The first
+
+two columns include firms' quarterly equity returns exposure to changes in the British pound (Fi,Xt £ ) as an additional control. The next two columns include the Alfaro et al. (2018) firm-level USD­GBP first- and second-
+moment instruments as additional controls. The next two columns include, as an additional control, an annual dummy for whether a firm reports utilizing FX hedging in its most recent 10-K form. The final two columns
+
+include, as an additional control, the intensity of FX hedging measured by mentions of FX hedging-related words listed in Campello et al. (2011). The time dimension of the DID estimator is set so as to compare the two
+
+quarters following the announcement of the Brexit referendum victory (2016:Q3­Q4) versus the two quarters preceding the announcement of the vote date (2015:Q3­Q4). T -statistics are computed using robust
+
+standard errors (in parentheses) double-clustered at the firm and calendar quarter levels. *, **, and *** indicate statistical significance at the 10%, 5%, and 1% levels, respectively.
+
+                    GBP Exposure (Fi,Xt £ )                     Alfaro et al. (2018) GBP Instruments                   FX Hedging                                                         FX Hedging Intensity
+
+                    Treatment is Top   Treatment is > 5 Brexit  Treatment is Top   Treatment is > 5 Brexit  Treatment is Top   Treatment is > 5 Brexit  Treatment is Top                  Treatment is > 5 Brexit
+                      Tercile of Ui K      Entries in 10-Ks       Tercile of Ui K      Entries in 10-Ks       Tercile of Ui K      Entries in 10-Ks       Tercile of iUK                      Entries in 10-Ks
+
+                              1                      2                    3                      4                    5                      6                    7                                     8
+
+POST Â HIGH_Ui K    À0.172***          À0.080***                À0.145***          À0.097***                À0.201***          À0.111***                À0.202***                         À0.110***
+                     (0.019)            (0.009)                  (0.026)            (0.010)                  (0.030)            (0.014)                  (0.031)                           (0.014)
+POST Â HIGH_
+   10ÀK_ENTRIES         Yes                Yes                      Yes                Yes                      Yes                Yes                      Yes                               Yes
+
+Controls                Yes                Yes                      Yes                Yes                      Yes                Yes                      Yes                               Yes
+   Firm                 Yes                Yes                      Yes                Yes                      Yes                Yes                      Yes                               Yes
+                    16,581             20,540                   16,473             20,582                   11,151             12,882                   11,151                            12,882
+Fixed effects         0.75               0.73                     0.77               0.69                     0.76               0.75                     0.76                              0.75
+   Firm
+   Industry Â time
+
+No. of obs.
+R2
+
+                                                                                                            https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+

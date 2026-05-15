@@ -1,0 +1,54 @@
+                                     Campello, Cortes, d'Almeida, and Kankanhalli 3205                   https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+into five categories where scores of 1 (5) correspond to the lowest (highest) skilled
+occupations, based on the extent of education, experience, and training required to
+perform each occupation. An industry's LSI is computed as the weighted average
+O*NET classification across all occupations in that industry, where the weights
+correspond to the fraction of workers engaged in each occupation.
+
+      Columns 5­8 of Table 5 report results on the effect of the Brexit vote on
+employment growth in subsamples of firms partitioned into two groups based on
+the 2015 (pre-Brexit) LSI. Firms in the Low Skills subsample are in industries which
+fall within the lowest tercile of LSI, and firms in the High Skills subsample are in
+industries which fall within the highest tercile of LSI. The results in columns 5 and
+6 show that U.K.-exposed American firms in Low Skill industries (including food,
+chemical, and primary metal manufacturing, mining, and clothing retail) cut their
+employment substantially more (relative to control firms). Conversely, the esti-
+mates in columns 7 and 8 indicate that firms in High Skill industries (computer and
+electronic product manufacturing, telecommunications and information services,
+and professional, technical, and scientific services) show no statistically significant
+effect.
+
+2. Input Versus Output Channels
+
+      We next study whether the effect of U.K.-based uncertainty on U.S. corporate
+investment was driven by firms that were importers from the United Kingdom or
+exporters to the United Kingdom. We do this using the index of firms' offshoring
+activities developed by Hoberg and Moon (2017). This index, derived from firms'
+10-K filings, counts mentions of words related to the purchase of inputs ("Input")
+and sale of outputs ("Output") from each country a firm does business with within a
+year. For each sample firm, we compute the sum of the Input and Output indices
+associated with the United Kingdom over the 2010­2014 period (similar to our iUK
+estimation window). We consider each of the Input and Output indices separately,
+as well as combined (Total). We define as highly U.K.-offshoring-exposed firms
+those with a value of greater than 5 on a given offshoring index.25 Control firms are
+those with scores of 0 on the same index.
+
+      The first two columns of Table 6 report our baseline results on the effects of
+the Brexit vote on investment for ease of comparison, whereas the next 3 columns
+report analogous results for treatment schemes based on offshoring activities to the
+United Kingdom. The estimate in column 3 indicates that U.S. firms with a high
+degree of total offshoring activity with the United Kingdom significantly cut their
+investment relative to U.S. firms with no U.K. offshoring. The magnitude of this
+effect is remarkably similar to those of our base tests. In columns 4 and 5, we
+consider Input and Output indices separately. This more detailed analysis is impor-
+tant in revealing that the aggregate cut in investment that we identified was driven
+by firms with high Input exposure to the United Kingdom. A closer examination
+of disclosure data reveals that these firms have more operations in the United
+
+    25Although this threshold is arbitrary and meant to follow our previous approach to textual-search-
+based measurement of exposure to the United Kingdom, our findings are robust to alternative choices.
+The sample sizes in columns 3­5 are enlarged due to greater coverage of the Hoberg and Moon (2017)
+offshoring data. We confirm that the findings hold in the subsample comprising the intersection of our
+baseline sample (in columns 1 and 2) with the Hoberg and Moon (2017) offshoring data.
+
