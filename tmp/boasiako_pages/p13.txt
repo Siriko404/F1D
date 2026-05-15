@@ -1,0 +1,86 @@
+|
+540
+EUROPEAN
+BOASIAKOANDKEEFE
+FINANCIAL MANAGEMENT
+TABLE 3 Randomizationofstate‐leveldatabreachdisclosurelaws
+ThistablereportstheestimationresultsofEquation(1)withrandomizeddisclosurelaws.Wefollowatwo‐step
+processintherandomizationtest.First,foreachyear,werandomlyassignfirmstothevariousstates.Next,we
+randomlyassignthestateswithinthedistributionofyearsinwhichthevariousdisclosurelawswerepassed.We
+thusmaintaintheactualdistributionofyearsinwhichthevariousstatespassedthedisclosurelaws;however,
+thisapproachdisruptsthecorrectassignmentofthestatestotheyearsinwhichthelawswerepassed.The
+dependentvariableinallthecolumnsisCash,measuredascashandmarketablesecuritiesscaledbytotalbook
+assetsatthebeginningoftheyear.Standarderrorsclusteredbystatearereportedinparentheses,with1%,5%,
+and10%levelsofstatisticalsignificancedenotedby***,**,and*,respectively.
+Dependentvariable:Cash
+Variables (1) (2) (3) (4)
+DisclosureLaw(0/1) 0.0008 0.0008 0.0007 0.0008
+(0.0024) (0.0023) (0.0023) (0.0022)
+FirmSize –0.0104*** –0.0109*** –0.0110*** –0.0095***
+(0.0022) (0.0027) (0.0022) (0.0020)
+Market‐to‐book 0.0083*** 0.0094*** 0.0079*** 0.0023***
+(0.0016) (0.0018) (0.0015) (0.0008)
+FirmAge –0.0232*** –0.0241*** –0.0212*** –0.0319***
+(0.0050) (0.0039) (0.0044) (0.0051)
+BookLeverage –0.1464*** –0.1531*** –0.1399*** –0.0849***
+(0.0220) (0.0221) (0.0207) (0.0116)
+CashFlow –0.0048** –0.0052** –0.0049*** –0.0005
+(0.0019) (0.0020) (0.0018) (0.0006)
+CapitalExpenditure –0.0747** –0.1026*** –0.0706** –0.0218
+(0.0293) (0.0366) (0.0280) (0.0134)
+AcquisitionExpenditure –0.0055 –0.0054 –0.0052 –0.0023
+(0.0050) (0.0049) (0.0048) (0.0023)
+DividendPayingFirms(0/1) –0.0139*** –0.0185*** –0.0073** 0.0092***
+(0.0035) (0.0048) (0.0028) (0.0033)
+R&DExpendituretoassets 0.2076*** 0.2838*** 0.1909*** 0.0202***
+(0.0307) (0.0377) (0.0281) (0.0072)
+NetWorkingCapital –0.0002 –0.0002 –0.0001 –0.0162***
+(0.0004) (0.0005) (0.0004) (0.0022)
+IndustryCashFlowVolatility 0.0273*** 0.0908*** 0.0272*** –0.0031
+(0.0068) (0.0071) (0.0068) (0.0064)
+Yearfixedeffects Yes Yes Yes Yes
+Industryfixedeffects Yes No Yes No
+Statefixedeffects No Yes Yes No
+Firmfixedeffects No No No Yes
+Observations 56,272 56,272 56,272 56,272
+Adj.R2 0.4613 0.4446 0.4938 0.0688
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

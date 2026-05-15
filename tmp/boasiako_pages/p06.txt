@@ -1,0 +1,83 @@
+|
+BOASIAKOANDKEEFE
+EUROPEAN
+533
+FINANCIAL MANAGEMENT
+balances when the competition for talent intensifies. Falato and Sim (2014) exploit the stag-
+geredstate‐levelchangesinresearchanddevelopment(R&D)taxcreditstoexaminetheimpact
+of innovation on corporate cash holdings. They find that firms increase (decrease) cash
+balances in response to increase (cuts) in R&D tax credits. We advance that data breaches
+represent a key operational risk that financial managers need to hedge against.
+The remainder of the paper is structured as follows. Section 2 provides background
+information on the state‐level disclosure laws. Section 3 describes the data and methodology.
+Sections 4 and 5 discuss the empirical results. Section 6 concludes the paper.
+2 | BACKGROUND
+2.1 | State‐level data breach disclosure laws in the United States
+In the United States, the requirement to disclose data breaches is mainly governed by state
+laws.Before2002,USfirmswerenotobligatedtodisclosedatabreaches.Motivatedbythedata
+breachincidentattheStephenP.TealeDataCenter,whichaffectedthepersonallyidentifiable
+information of all 265,000 state employees, in 2002 California became the first state in the
+UnitedStatestoenactadatabreachdisclosurelaw.TheCaliforniadatabreachnotificationlaw
+was the first of its kind and has since served as the model for many other state‐level dis-
+closure laws.
+Asof29March2018,all50USstates,theDistrictofColumbia,andtheUSterritoriesofthe
+Virgin Islands, Puerto Rico, and Guam had enacted mandatory disclosure laws requiring
+business and non‐business entities to disclose and notify affected parties of data security
+breaches.3 Although details vary across states, the primary objective of all state‐level data
+securitybreachdisclosurelawsistoobligatefirmstopubliclydisclosedatabreachesinvolving
+non‐public personally identifiable information, such as Social Security numbers (Romanosky
+et al., 2011). Since the reasons for the changes in the state‐level data breach disclosure laws
+were unrelated to the financing policies of firms, employing these legal reforms as exogenous
+shocks helps mitigate potential endogeneity concerns.
+2.2 | Related literature
+Ourworkcontributes tothegrowingliteratureondatabreach disclosurelawsandactual data
+breaches. A number of papers study the effects of mandatory data breach disclosure laws. For
+instance, Ashraf and Sunder (2018) examine the net effect of data breach disclosure laws on
+shareholderrisk. They focuson explaining changesin thecost of equityfollowing thepassage
+of data breach laws and find that the cost of equity is significantly impacted by data breach
+laws, consistent with the idea that the increase in risk exposure prompts firms to react
+proactively to reduce exposure to data breach risks. Our paper complements this study
+by examining the link between mandatory data breach disclosure laws, data breaches, and
+corporate cash holdings.
+3SeethevariousstatedisclosurelawsfromtheNationalConferenceofStateLegislatures,athttp://www.ncsl.org/
+research/telecommunications-and-information-technology/security-breach-notification-laws.aspx.
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

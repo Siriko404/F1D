@@ -1,0 +1,85 @@
+|
+546
+EUROPEAN
+BOASIAKOANDKEEFE
+FINANCIAL MANAGEMENT
+whichfirmsbuildupcash.Specifically,weexaminewhetherexternalfinancingandinvestment
+activitiesarepossibleunderlyingmechanismsthroughwhichbreachedfirmsaccumulatecash.
+5.3.1 | Data breaches and external financing
+Firmsthatexperiencedatabreachescouldbuilduptheircashbalancesbyincreasingtheiruse
+ofexternaldebtandequityfinancing.However,giventhatbreachedfirmsareprobablyviewed
+as a higher credit risk by the financial markets and therefore face higher costs of capital, we
+expect that they would find it difficult to raise external financing, and, therefore, external
+financing activities should decline after the disclosure of a breach incident. To test this, we
+specify the following model:
+External Finance = α + βBreach(0/1) + γX + ρ + δ + ε . (3)
+i,t t i,t j t i,t
+FollowingDierkeretal.(2019),weusetwomeasuresofexternalfinancing:(1)ExternalEquity
+Financing, estimated as the ratio of the difference between the sale of common and preferred
+stocks(SSTK)andthepurchaseofcommonandpreferredstocks(PRSTKC)tototalassetsatthe
+beginningoftheyear,and(2)ExternalDebtFinancing,estimatedastheratiooflong‐termdebt
+issuance(DLTIS)minuslong‐termdebtreduction(DLTR)tototalassetsatthebeginningofthe
+year. The term X is a vector of controls. All other variables maintain their previous defini-
+i,t
+tions, and robust standard errors are estimated by clustering at the firm level.
+Table 7 reports the estimation results for the effects of data breaches on external fi-
+nancing activities. In Columns (1) and (3), we examine the effect of data breaches on
+external financing. The coefficients of Breach(0/1) for External Equity Financing and Ex-
+ternal Debt Financing are –0.014 and –0.0171, respectively, both statistically significant at
+the 1% level, as well as economically important. Given Breach(0/1) coefficients of –0.014
+and –0.0171, respectively, for External Equity Financing and External Debt Financing, all
+else being equal, a decrease in External Equity Financing by 0.014 corresponds to a 32%
+decrease from mean External Equity Financing (0.0436), and a decrease in External Debt
+Financing by 0.0171 corresponds to a 62% decrease from mean External Debt Financing
+(0.0275). In Columns (2) and (4), we examine the impact of data breach severity on the
+external financing activities of firms. Overall, the results show that external financing
+declines following a data breach incident, and firms are even less likely to raise external
+finance when they experience an unusually severe breach incident.
+5.3.2 | Data breaches and corporate investment
+Giventhelackofincreaseinexternalfinancingafteradatabreachincident,anaturalfollow‐up
+mechanism that requires testing is whether breached firms forgo investment to build up cash
+afteradatabreachincident.Thatis,dofirmsforgoinvestmenttoaccumulatecashafteradata
+breachincident?Toexaminethispossibility,wefollowArenaandJulio(2015)andestimatethe
+investment regression
+Investment = α + βBreach(0/1) + γX + ρ + δ + ε , (4)
+i,t t i,t j t i,t
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

@@ -1,0 +1,94 @@
+|
+BOASIAKOANDKEEFE
+EUROPEAN
+549
+FINANCIAL MANAGEMENT
+Exploiting a series of natural experiments regarding staggered state‐level data breach dis-
+closure laws, we show that the passage of mandatory data breach disclosure laws leads to an
+increaseincorporatecashholdings,particularlyamongfinanciallyconstrainedfirms.Although
+we cannot entirely rule out the possibility that an omitted variable affected by data breach
+disclosure laws is driving firm cash holdings, the staggered nature of the state‐level laws and
+theevidencefromafalsificationtestmakesuchapossibilityunlikely.Thefindingisalsorobust
+to a dynamic effect estimation that addresses the parallel trends assumption. Additionally, we
+probe the impact of actual data breaches on corporate cash holdings and find that firms
+increase their cash balances following a data breach, as well as decrease their external finan-
+cing and investment activities.
+REFERENCES
+Acharya,V.,Davydenko,S.A.,&Strebulaev,I.A.(2012).Cashholdingsandcreditrisk.TheReviewofFinancial
+Studies,25(12),3572–3609.
+Almeida,H.,Campello,M.,&Weisbach,M.S.(2004).Thecashflowsensitivityofcash.TheJournalofFinance,
+59(4),1777–1804.
+Arena, M., & Julio, B. (2015). The effects of securities class action litigation on corporate liquidity and
+investmentpolicy.JournalofFinancialandQuantitativeAnalysis,50(1),251–275.
+Ashraf,M.,&Sunder,J.(2018).Mandatorydisclosureofcyberincidentsandthecostofequity.SSRN.
+Bates,T.W.,Kahle,K.M.,&Stulz,R.M.(2009).WhydoUSfirmsholdsomuchmorecashthantheyusedto?
+TheJournalofFinance,64(5),1985–2021.
+Beck,T.,Levine,R.,&Levkov,A.(2010).Bigbadbanks?Thewinnersandlosersfrombankderegulationinthe
+UnitedStates.TheJournalofFinance,65(5),1637–1667.
+Brav, A., Graham, J. R., Harvey, C. R., & Michaely, R. (2005). Payout policy in the 21st century. Journal of
+FinancialEconomics,77(3),483–527.
+Chen, H., Yang, D., Zhang,J. H., & Zhou, H. (2020). Internal controls, risk management, andcash holdings.
+JournalofCorporateFinance,64(1),1–20.
+Cornaggia, J., Mao, Y., Tian, X., & Wolfe, B. (2015). Does banking competition affect innovation? Journal of
+FinancialEconomics,115(1),189–209.
+Dierker,M.,Lee,I., &Seo,S.W.(2019).Risk changesandexternal financingactivities:Testsofthedynamic
+trade‐offtheoryofcapitalstructure.JournalofEmpiricalFinance,52,178–200.
+Doyle,J.,Ge,W.,&McVay,S.(2007).Determinantsofweaknessesininternalcontroloverfinancialreporting.
+JournalofAccountingandEconomics,44(1),193–223.
+Falato,A.,&Sim,J.W.(2014).Whydoinnovativefirmsholdsomuchcash?EvidencefromchangesinstateR&D
+taxcredits (FEDSWorkingPaperNo.2014‐72).AvailableatSSRN:https://ssrn.com/abstract=2503457or
+https://doi.org/10.2139/ssrn.2503457
+Fama,E.F.,&French,K.R.(1997).Industrycostsofequity.JournalofFinancialEconomics,43(2),153–193.
+Farre‐Mensa, J., & Ljungqvist, A. (2016). Do measures of financial constraints measure financial constraints?
+TheReviewofFinancialStudies,29(2),271–308.
+Francis,B.,Hasan,I.,&Wang,H.(2014).Bankingderegulation,consolidation,andcorporatecashholdings:US
+evidence.JournalofBanking&Finance,41,45–56.
+Froot,K.A.,&Stein,J.C.(1998).Riskmanagement,capitalbudgeting,andcapitalstructurepolicyforfinancial
+institutions:Anintegratedapproach.JournalofFinancialEconomics,47(1),55–82.
+Fuhrmans, V. (2017). A newworry for CEOs: A career‐ending cyberattack. TheWall StreetJournal. Advance
+online publication. https://www.wsj.com/articles/cybersecurity‐tops‐priority‐list‐for‐ceos‐after‐string‐of‐
+high‐profile‐hacks‐1507821018
+Garg, P. (2019). Cybersecurity breaches and cash holdings: Spillover effect. Financial Management, 49(2),
+503–519.
+Gatzlaff, K. M., & McCullough, K. A. (2010). The effect of data breaches on shareholder wealth. Risk
+ManagementandInsuranceReview,13(1),61–83.
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

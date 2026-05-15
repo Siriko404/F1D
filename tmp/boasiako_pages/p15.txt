@@ -1,0 +1,86 @@
+|
+542
+EUROPEAN
+BOASIAKOANDKEEFE
+FINANCIAL MANAGEMENT
+TABLE 4 Disclosurelawsandcorporatecashholdings:Roleoffinancialconstraints
+Thistablereportstheroleoffinancialconstraintsintheeffectofdatabreachdisclosurelawsoncashholdings.
+Foreachyear,werankthefirmsoverthesampleperiodandcategorizethoseinthebottomtercilesofthesize,
+age,anddividendpayoutdistributionsasfinanciallyconstrained.Wethencreatedummyvariablesforthethree
+financialconstraintmeasures.WecreatethedummyvariablesSmallFirms(0/1),YoungFirms(0/1),and
+Non‐dividendPayer(0/1)andsetthemtoequaloneforfirmsinthebottomofthesize,age,anddividendpayout
+distributions,andzerootherwise.Standarderrorsclusteredbystatearereportedinparentheses,with1%,5%,
+and10%levelsofstatisticalsignificancedenotedby***,**,and*,respectively.
+Dependentvariable:Cash
+Variables (1) (2) (3)
+DisclosureLaw(0/1) –0.0219 –0.0052 0.0276***
+(0.0162) (0.0099) (0.0089)
+SmallFirms(0/1)×DisclosureLaw(0/1) 0.0344**
+(0.0153)
+YoungFirms(0/1)×DisclosureLaw(0/1) 0.0216*
+(0.0128)
+Non‐dividendPayer(0/1)×DisclosureLaw(0/1) 0.0369***
+(0.0085)
+FirmSize 0.0901*** 0.0872*** 0.0871***
+(0.0170) (0.0159) (0.0159)
+Market‐to‐book –0.0018 –0.0018 –0.0018
+(0.0040) (0.0040) (0.0040)
+FirmAge –0.0444*** –0.0440*** –0.0371**
+(0.0156) (0.0147) (0.0152)
+BookLeverage –0.1634*** –0.1644*** –0.1644***
+(0.0305) (0.0305) (0.0307)
+CashFlow 0.0022 0.0022 0.0022
+(0.0021) (0.0021) (0.0021)
+CapitalExpenditure 1.2590* 1.2606* 1.2594*
+(0.6937) (0.6937) (0.6937)
+AcquisitionExpenditure –0.0613** –0.0601** –0.0597**
+(0.0299) (0.0298) (0.0297)
+DividendPayingFirms(0/1) –0.0159** –0.0166** –0.0326***
+(0.0073) (0.0071) (0.0076)
+R&DExpenditure 1.1079*** 1.1076*** 1.1076***
+(0.2035) (0.2034) (0.2033)
+NetWorkingCapital –0.0403* –0.0403* –0.0403*
+(0.0203) (0.0203) (0.0203)
+IndustryCashFlowVolatility –0.0003 0.0035 0.0067
+(0.0227) (0.0235) (0.0228)
+Yearfixedeffects Yes Yes Yes
+Firmfixedeffects Yes Yes Yes
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

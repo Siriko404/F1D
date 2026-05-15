@@ -1,0 +1,80 @@
+|
+BOASIAKOANDKEEFE
+EUROPEAN
+551
+FINANCIAL MANAGEMENT
+APPENDIX A
+Table A1
+TABLE A1 Variabledefinitions
+Thistablereportsthedefinitionsofthekeyvariables.TheaccountingdataarefromCompustatandthebreach
+dataarefromthePrivacyRightsClearinghousewebsite(https://www.privacyrights.org).
+Variable Definition
+Cash Cashandmarketablesecuritiesscaledbytotalbookassetsatthebeginning
+oftheyear
+ExternalDebtFinancing Ratiooflong‐termdebtissuanceminuslong‐termdebtreductiontototal
+assetsatthebeginningoftheyear
+ExternalEquityFinancing Ratioofthedifferencebetweenthesaleofcommonandpreferredstocks
+andthepurchaseofcommonandpreferredstockstototalassetsatthe
+beginningoftheyear
+Breach(0/1) 1forbreachedfirmsintheyearofthedatabreach,and0otherwise
+SevereBreach(0/1) 1forabreachwithCARsinthelowesttercile(mostnegativereturns)
+ModerateBreach(0/1) 1forabreachwithCARsinthemiddletercile
+LowBreach(0/1) 1forabreachwithCARsinthehighesttercile(leastnegativereturns)
+DisclosureLaw(0/1) 1forperiodsaftertheenactmentofthestate‐leveldatabreachnotification
+laws,and0otherwise
+FirmAge Naturallogarithmofthenumberofyearsafirmhasbeenlistedinthe
+mergedCRSP/Compustatdatabase
+Market‐to‐book Ratiooftotalbookassetslessthebookvalueofcommonequityplusthe
+totalmarketvalueofequity,alldividedbytotalbookassets
+FirmSize Naturallogarithmoftotalbookassets
+BookLeverage Ratiooftotalbookdebt(short‐termdebtpluslong‐termdebt)tototalbook
+assets
+CashFlow Ratioofearningsafterinterest,dividends,andtaxesbutbeforedepreciation
+tobookassets
+CapitalExpenditure Ratioofcapitalexpendituretototalbookassetsatthebeginningoftheyear
+AcquisitionExpenditure Ratioofacquisitionstototalbookassetsatthebeginningoftheyear
+DividendPayingFirms(0/1) 1intheyearafirmpaysdividends,and0otherwise;settozeroifmissing
+R&DExpenditure RatioofR&Dexpensestototalbookassetsatthebeginningoftheyear
+NetWorkingCapital Ratioofnetworkingcapitaltonetassets
+IndustryCashFlowVolatility Standarddeviationofindustryaveragecashflowsfortheprevious10years;
+atleast3yearsofobservationsrequired
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

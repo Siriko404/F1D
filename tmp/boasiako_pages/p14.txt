@@ -1,0 +1,85 @@
+|
+BOASIAKOANDKEEFE
+EUROPEAN
+541
+FINANCIAL MANAGEMENT
+(2018) and Francis et al. (2014), we sort firms into financially constrained and unconstrained
+groups based on firm size, firm age, and dividend payout ratio.8 For each year, we rank the
+firms over the sample period and categorize firms in the bottom terciles of the size, age, and
+dividendpayoutdistributionsasfinanciallyconstrained.Notethattherankingsareperformed
+onanannualbasisandthisapproachallowsfirmstomigratebetweengroupsindifferentyears.
+We then create dummy variables for the three financial constraint measures. We create the
+dummyvariables SmallFirms(0/1),YoungFirms(0/1),andNon‐dividendPayer(0/1),whichwe
+set to one for firms in the bottom of the size, age, and dividend payout distributions, respec-
+tively,andzerootherwise.Weinteractwiththevariousfinancialconstraintmeasureswiththe
+Disclosure Law(0/1) dummy to examine the role of financial constraints in the effects of dis-
+closurelawsonthecashpolicyoffirms.InTable4,weincludeyearandfirmfixedeffectsinall
+specifications. Table 4 presents the findings for the role of financial constraints. In Columns
+(1)–(3), the variable of interest is the interaction of the financial constraint measure with the
+disclosure law dummy. The results in Columns (1)–(3) indicate that the positive effect of
+disclosure laws on corporate cash holdings is driven by financially constrained firms.
+5 | EFFECTS OF ACTUAL DATA BREACHES
+Wenowturntotheanalysisofactualdatabeaches.Webeginbyfirstexaminingtheassociation
+between data breaches and certain observable firm characteristics.
+5.1 | Association between data breaches and observable firm
+characteristics
+Inthissection,weexaminethedeterminantsofdatabreaches.Sincepastresearchprovidesno
+theoretical guidance regarding the determinants of data breaches, we consider the findings of
+this paper to be suggestive and exploratory, and not definitive determinants of data breaches.
+We report the results of the penalized maximum likelihood logistic regression in Table 5. The
+dependentvariable,Breach(0/1),isadummyvariablethatequalsoneforbreachedfirmsinthe
+year of the data breach, and zero otherwise. The observable firm characteristics include Firm
+Size, Firm Age, Market‐to‐book, Book Leverage, Capital Expenditure, Acquisition Expenditure,
+Dividend Paying Firms(0/1), R&D Expenditure, Return on Assets, and Cash.
+TheresultsshowthatthecoefficientsofFirmSizeandFirmAgearepositiveandstatistically
+significantatlessthanthe1%level,suggestingthatdata breachesare morelikely inlarge and
+visible firms. This finding reflects the view that larger and older firms could possess greater
+amounts of relevant records, data, or proprietary information that could be attractive to data
+intruders. Additionally, the results show that data breaches are more likely at financially
+constrained firms (captured by firm dividend‐paying status), profitable firms (measured by
+their return on assets), R&D‐ intensive firms, and firms with high growth potential. As Doyle
+et al. (2007) suggest, financially constrained firms might not have adequate resources (either
+8Farre‐MensaandLjungqvist(2016)arguethatknownmeasuresoffinancialconstraintsdonotactuallymeasure
+financialconstraints,sinceconstrainedfirmshavenotroubleraisingdebt.However,theirdefinitionofconstrainthas
+beencriticizedasbeingtoolenient,since,accordingtotheirdefinition,everytimeafirmraisesdebtorequity,wecould
+saytheyareunconstrained,eventhoughthesefirmscouldbepassingupmanyverypromisingprojects.
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

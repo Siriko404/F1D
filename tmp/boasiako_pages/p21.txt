@@ -1,0 +1,84 @@
+|
+548
+EUROPEAN
+BOASIAKOANDKEEFE
+FINANCIAL MANAGEMENT
+TABLE 8 Databreachesandcorporateinvestment
+Thistablereportstheestimationresultsfortheimpactofdatabreachesoncorporateinvestment.InColumns(1)
+and(2),thedependentvariableisCapitalExpenditure,theratioofcapitalexpendituretototalbookassetsatthe
+beginningoftheyear.InColumns(3)and(4),thedependentvariableisAcquisitionExpenditure,definedasthe
+ratioofacquisitionstototalbookassetsatthebeginningoftheyear.ThevariableBreach(0/1)issettoonefor
+breachedfirmsintheyearofthedatabreach,andzerootherwise;SevereBreach(0/1)proxiesfortheexpected
+costsofanunusuallybadbreachandisadummysettooneforabreachwithCARsinthelowesttercile(most
+negativereturns);ModerateBreach(0/1)issettooneforabreachwithCARsinthemiddletercile;andLow
+Breach(0/1)issettooneforabreachwithCARsinthehighesttercile(leastnegativereturns).Standarderrors
+clusteredbyfirmareshowninparentheses,with1%,5%,and10%levelsofstatisticalsignificancedenotedby***,
+**,and*,respectively.
+Capitalexpenditure Acquisitions
+Variables (1) (2) (3) (4)
+Breach(0/1) –0.0072** –0.0209***
+(0.0031) (0.0040)
+SevereBreach(0/1) –0.0092** –0.0219***
+(0.0043) (0.0056)
+ModerateBreach(0/1) –0.0074* –0.0211***
+(0.0044) (0.0062)
+LowBreach(0/1) –0.0068 –0.0136*
+(0.0053) (0.0082)
+Controls Yes Yes Yes Yes
+Yearfixedeffects Yes Yes Yes Yes
+Industryfixedeffects Yes Yes Yes Yes
+Observations 42,893 42,893 42,893 42,893
+Adj.R2 0.0237 0.0237 0.0221 0.0221
+severityoncapitalexpenditureandacquisitionexpenditure,respectively.Overall,theresultsin
+Table 8 show that investment in both capital and acquisition expenditures decline following a
+data breach incident, especially when the breach is severe. This result is consistent with the
+view that firms forgo investment in capital expenditure and acquisitions to accumulate cash.
+6 | CONCLUSION
+Before 2002, US firms were not obligated to disclose data breaches. From 2002 to 2016, state‐
+level disclosure laws mandating firms to disclose data breaches were passed in almost all the
+US states. These disclosure laws impose “disclosure costs” and inadvertently compel firms to
+internalize the costs (including negative externalities, such as identity theft) of their data
+insecurity. We argue that, holding constant the underlying likelihood of experiencing a data
+breach, mandatory data breach disclosure laws increase the cash flow risk associated with
+futuredatabreaches,andfirmsbuildupbalancesheetliquidityasaprecautionarymeasure.We
+provide such evidence by studying the effects of data breach disclosure laws and actual data
+breaches on the cash‐holding policies of US public firms.
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on [08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

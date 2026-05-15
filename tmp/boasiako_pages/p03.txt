@@ -1,0 +1,90 @@
+|
+530
+EUROPEAN
+BOASIAKOANDKEEFE
+FINANCIAL MANAGEMENT
+A corporate policy that could be particularly sensitive to the increased risks and costs of data
+breaches following the passage of a mandatory disclosure law is the decision to accumulate cash.
+Prior literature underlines the relation between risk and cash holdings. Froot and Stein (1998)
+model the risk management choices of firms in situations in which some risks are not perfectly
+hedgeable.FrootandStein(1998)findthat,whenitisdifficulttocompletelyhedgeaparticulartype
+of risk, firms resort to increasing their cash holdings. Similarly, if hedging is impossible or when
+firms face high hedging transaction costs for a particular type of risk, an alternative way to
+minimize risk exposure is to accumulate cash (Brav et al., 2005; Han & Qiu, 2007; Riddick &
+Whited, 2009). Bates et al. (2009) highlight the importance of the precautionary motive in de-
+termining corporate cash holdings. Consistent with this argument, Ucar (2019) reports that firms
+located in areas with a more creative culture have higher levels of risk exposure and accumulate
+more cash, consistent with the precautionary motive. Acharya et al. (2012) examine the relation-
+shipbetweencashholdingsandcreditriskandfindthatriskierfirmsaccumulatemorecash.Chen
+et al. (2020) exploit a unique setting in China and show that firms with lower internal control
+quality are more likely to hold more cash. Additionally, Arena and Julio (2015) find that firms
+facing litigation risks significantly increase their holdings of cash. Romanosky et al. (2014) em-
+piricallyinvestigatetheimpactofdatabreachesonlitigationrisk,andtheoutcomesofdatabreach
+litigation. They show that, between 2000 and 2011, the overall settlement rate of known federal
+lawsuits due to data breaches was around 50%, and defendants even settle 30% more often when
+plaintiffsallegefinanciallossfromadatabreachorwhenfacedwithaclassactiondatabreachsuit.
+We hypothesize that data breach risk exposure is a significant determinant of a firm's
+decisiontoaccumulatecash.Followingthemandatorydatabreachdisclosurelaws,weadvance
+thatfirmscanexanteadjustcashpoliciestohelphedgeagainsttheincreasingrisksandfuture
+costsrelated todata breaches. Thus,we expectthat, followingthepassage of mandatorystate‐
+leveldatabreachdisclosurelaws,allelsebeingequal,afirmwithhigherexposuretoriskfrom
+data breach disclosures will increase its cash holdings. Similarly, firms that are victims of
+successfuldatabreachesincreasetheircashholdingsinanticipationofsettlementcostsrelated
+to the disclosed data breach.
+Firms can obtain insurance contracts to protect themselves from the direct costs of data
+breaches.However,inpractice,cyberinsurancedoesnotcoverconsequentialdamages;hence,
+it is difficult (if not impossible) to completely hedge or insure the majority of the costs asso-
+ciated with a disclosed data breach incident (especially indirect or hard‐to‐quantify costs such
+asreputationdamage,lossofvalueofintellectualproperty,orcustomerloss).2Importantly,no
+cyber insurance contract provides complete or full coverage prevention and/or incident re-
+sponse services. For instance, no cyber insurance policy provides coverage for reputational
+costs, which, according to the 2018 and 2017 IBM/Ponemon Institute data breach studies,
+constitutes the largest indirect per capita cost and the largest data breach cost category in the
+United States. In many cases, determining and obtaining the right policies can be challenging
+due to difficulties in understanding and assessing vulnerabilities to breaches. Therefore,
+practitioners,advancethatanefficientwayfirmscanmanagethepotentialrisksandcostsofa
+data breach is to increase cash reserves. For instance, Deloitte's 2017 risk management,
+strategy,andanalysisreportarguethatthecreationofsufficientcashreservesimprovesafirm's
+ability to quickly recover and survive data breaches.
+2Someintangibledamagestakemonthstoemerge(varyingacrossfirms),whichmakesastandardprocessofevaluation
+difficulttocreate.
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

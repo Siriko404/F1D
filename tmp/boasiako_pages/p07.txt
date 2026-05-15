@@ -1,0 +1,86 @@
+|
+534
+EUROPEAN
+BOASIAKOANDKEEFE
+FINANCIAL MANAGEMENT
+Another stream of data breach research examines the negative consequences of data brea-
+ches. For instance, Lending et al. (2018) find that data breach firms have 1‐year buy‐and‐hold
+abnormalreturnsof‐3.5%.Additionally,bankswithbreachesexperienceasignificantdeclinein
+deposits,andnon‐banksexperiencesignificantdeclinesinsalesinthelongrun.Romanoskyetal.
+(2014)empiricallyinvestigatetheimpactofdatabreachesonlitigationriskandtheoutcomesof
+data breach litigation. The authors show that federal lawsuits due to data breaches result in a
+highsettlementrateofabout50%.Theyfurthershowthatthenumberofrecordscompromisedis
+positivelyrelatedtotheprobabilityofbeingsued,andvictimsthatclaimfinancialharmfromthe
+data breach are more likely to sue the firm. Kamiya et al. (2020) report that successful data
+breaches are associated with significant declines in shareholder value, a deterioration in credit
+ratings,increasedcashflowvolatility,adverselyaffectsalesgrowth,anddecreasedinvestmentsin
+the short run and result in an increase in the risk assessment of target firms. Gatzlaff and
+McCullough (2010) find that data breach announcements have a significant negative effect on
+shareholder wealth.Rosati etal. (2017) findthatdata breachannouncements havea significant
+positive effect on the bid–ask spread and trading volumes. Lin et al. (2019) find statistically
+significant evidence of opportunistic insider trading in the months before data breach an-
+nouncements.Garg(2019)findsthattheeffectsofadatabreacharenotisolatedtothebreached
+firm,butspillovertopeerfirms.MikhedandVogan(2018)examinetheinteractionofconsumers
+withthecreditmarketandtheiruseofcreditfollowingdatabreaches.Theauthorsfindthatthe
+victims of data breaches increase the acquisition of fraud protection services, are more likely to
+freezetheircreditfiles,arelikelytooptoutofcreditoffers,butdonotsignificantlyswitchlenders.
+3 | DATA AND METHODOLOGY
+3.1 | Data collection
+Toexaminetheeffectsofthestaggeredstate‐leveldatabreachdisclosurelawsoncashholdings,
+we collect initial firm‐level data from the merged Center for Research in Security Prices
+(CRSP)/Compustat database for the period 1997–2015. This period covers the majority of the
+yearsinwhichthestatespasseddatabreachdisclosurelaws.Oursampleperiodbegins5years
+before California passed the first state‐level data breach disclosure law, in 2002, and ends
+5years after Mississippi passed a similar law, in 2010. Following prior literature (Bates et al.,
+2009;Opleretal.,1999),weexcludeallfinancialfirms—thatis,thosewithStandardIndustrial
+Classification (SIC) codes 6000–6999—because their cash holdings include inventories of
+marketable securities and they are also required to meet statutory capital requirements. We
+exclude utility companies (SIC codes 4900–4999) because their cash holdings are possibly
+subjecttoregulatorysupervisioninsomestates.Wefurtherdropobservationswithnegativeor
+missing total book assets. This yields a final sample of 56,646 firm‐year observations.
+Next, to examine the effect of actual data breaches on corporate cash holdings, we obtain
+dataondatabreachesfromachronologicallistingofdiscloseddatabreachesavailablefromthe
+Privacy Rights Clearinghouse (PRC) for the period 2005–2018.4 PRC is a consumer advocacy
+not‐for‐profit organization that has been publishing all disclosed data breaches in the United
+4Seehttps://www.privacyrights.org/.PRCisthemostcitedsourceofinformationrelatingtodatabreaches(e.g.,Kamiya
+etal.,2020;Romanoskyetal.,2014).
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

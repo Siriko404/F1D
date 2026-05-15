@@ -1,0 +1,37 @@
+DOI:10.1111/eufm.12289
+EUROPEAN
+ORIGINAL ARTICLE FINANCIAL MANAGEMENT
+Data breaches and corporate liquidity
+management
+Kwabena A. Boasiako | Michael O'Connor Keefe
+SchoolofEconomicsandFinance,
+Abstract
+VictoriaUniversityofWellington,
+Wellington,NewZealand This paper investigates the effects of data breach dis-
+closure laws and the subsequent disclosure of data
+Correspondence
+MichaelO'ConnorKeefe,Schoolof breaches on the cash policies of corporations in the
+EconomicsandFinance,Victoria United States. Exploiting a series of natural experi-
+UniversityofWellington,POBox600,
+ments regarding staggered state‐level data breach dis-
+Wellington6140,NewZealand.
+Email:michael.keefe@vuw.ac.nz closure laws, we find that the passage of mandatory
+disclosure laws leads to an increase in cash holdings.
+Our finding suggests that mandatory data breach dis-
+closurelawsincreasetherisksrelatedtodatabreaches.
+Further, we find firms that suffer data breaches adjust
+theirfinancialpoliciesbyholdingmorecashaswellas
+decreasing external finance and investment.
+KEYWORDS
+cashholdings,databreach,disclosurelaws,financingpolicy,
+financialriskandriskmanagement
+JEL CLASSIFICATION
+G32
+WearegratefultoJohnA.Doukas(themanagingeditor)andananonymousrefereefortheirhelpfulcommentsand
+suggestions. We also thank participants at the2020 WorldBank Group AfricaFellowship BBL Series (Washington,
+DC), the 2019 Financial Management Association Annual Meeting (New Orleans), the 2019 French Finance Asso-
+ciation Meeting (Quebec City, Canada), the 2019 Paris Financial Management Conference, the 2018 New Zealand
+Finance Colloquium (Massey University), as well as seminar participants at Massey University for their valuable
+commentsandsuggestions.Allremainingerrorsareourown.
+|
+528 ©2020JohnWiley&SonsLtd. wileyonlinelibrary.com/journal/eufm EurFinancManag.2021;27:528–551.

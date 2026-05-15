@@ -1,0 +1,83 @@
+|
+BOASIAKOANDKEEFE
+EUROPEAN
+543
+FINANCIAL MANAGEMENT
+TABLE 4 (Continued)
+Dependentvariable:Cash
+Variables (1) (2) (3)
+Observations 56,645 56,645 56,645
+Adj.R2 0.1528 0.1526 0.1528
+money or time) to invest in effective data security systems, since that might not be their
+priority. In addition, the positive association between data breaches and growth opportunities
+suggests that growth can stress the effectiveness of a firm's internal control system; that is, a
+rapidly growing firm could outstrip its internal data security system and require more time,
+TABLE 5 Associationbetweendatabreachesandobservablefirmcharacteristics
+Thistablereportstheresultsfortheassociationbetweendatabreachesandfirmcharacteristics,usinga
+penalizedmaximumlikelihoodlogisticregression.ThedependentvariableisBreach(0/1).Column(1)is
+estimatedwithnoindustryfixedeffects,butColumn(2)includesindustryfixedeffects.Allthevariablesare
+definedinTableA1.Thesampleperiodisfrom2005through2018.The1%,5%,10%levelsofstatistical
+significancearedenotedby***,**,and*,respectively.
+Dependentvariable:Breach(0/1)
+Variables (1) (2)
+FirmSize 0.6779*** 0.7089***
+(0.0442) (0.0471)
+FirmAge 0.3667*** 0.4313***
+(0.0821) (0.0858)
+Market‐to‐book 0.0031*** 0.0033***
+(0.0006) (0.0006)
+BookLeverage 0.5755*** 0.5942***
+(0.0978) (0.1736)
+CapitalExpenditure 0.0884*** 0.1023***
+(0.0275) (0.0276)
+AcquisitionExpenditure 0.03188*** 0.0319***
+(0.0104) (0.0109)
+DividendPayingFirms(0/1) –0.3534*** –0.4123**
+(0.1418) (0.2041)
+R&DExpenditure 0.2686*** 0.3431***
+(0.0722) (0.0705)
+ReturnonAssets 0.6619*** 0.7081***
+(0.1380) (0.1604)
+Cash 1.1802 1.1845
+(0.4031) (0.4891)
+Observations 42,893 42,893
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

@@ -1,0 +1,88 @@
+|
+BOASIAKOANDKEEFE
+EUROPEAN
+529
+FINANCIAL MANAGEMENT
+1 | INTRODUCTION
+Data are among a corporation's most valuable assets. Financial policies associated with data
+breachesareimportant,particularlyinthewakeoftheincreaseinthefrequencyandseverityof
+data breaches and the rising wave of cybersecurity regulations.1 With billions of sensitive
+corporate and consumer data compromised and thousands of breaches disclosed each year,
+data breaches are a growing concern for corporate boards in the United States as they face
+mounting regulatorypressuretocope withcybersecurity risks.Forexample, Fuhrmans(2017)
+asserts, “Cyber threats have zoomed to the top of chief executives' worry lists for fear a data
+breachcouldcostthemtheirjobsandtakedowntheirbusinesses.”Moreover,thefalloutfrom
+other data breaches, such as the attacks on Equifax, Home Depot, Yahoo, and Target, provide
+compelling evidence that the risks to data security matter at the highest corporate levels.
+Althoughcybersecurityregulationsanddatabreacheshaveattractedhugemediaattentionand
+are now key boardroom issues of concern to corporate executives, they have received little
+attention in the empirical finance literature.
+Inthispaper,wecontributetothegrowingdebateoncybersecurityrisksandhowfirmscan
+insulatethemselves,atleastpartially,fromtheadverseeffectsofdatabreachrisks.Weexplore
+severalquestionsrelatedtodatabreachesandfinancialoutcomesandpolicies.Forinstance,do
+lawsthatmandatethedisclosureofdatabreachesandcompelcorporationstoaccountfortheir
+datainsecurityaffectcorporateliquiditymanagement?Dofirmschangetheirfinancialpolicies
+to reflect changes in risk exposure due to a successful cyberattack on them? Do firms handle
+the direct and indirect costs of data breaches by changing their financial policies? To address
+these questions, we exploit plausibly exogenous state‐level variation in data breach disclosure
+laws and subsequently disclosed data breaches.
+Before2002,USfirmswerenotobligatedtodisclosedatabreaches.Duringtheperiodfrom
+2002 to 2016, state‐level disclosure laws mandating firms to publicly disclose data breach
+incidents were passed in almost all the US states. In 2002, California became the first state to
+pass a data breach disclosure law. Since the passage of the California law, the other 49 states
+passedsimilarlaws.Whilethedetailsofthedisclosurelawsvaryacrossthestates,theircentral
+theme is consistent: firms should publicly disclose data breaches. Since mandatory state‐level
+disclosure laws prevent firms from sweeping data breaches under the rug, the mandatory
+breachdisclosurerequirementtransformsprivateinformationaboutthepracticesoffirmsinto
+public information, causing firms to face higher risks and costs relating to publicly disclosed
+data breaches. Even though the likelihood of experiencing a data breach could remain un-
+changed,afirmmustpubliclydisclosedatabreaches,whichsignificantlyincreasesitsrisksand
+costs.Thisinstitutionalbackgroundoffersauniqueavenuethroughwhichwecanexaminethe
+impact of mandatory data breach laws and disclosed breaches on corporate financial policies.
+Exposure to and disclosure of a data security breach create direct and indirect costs. The
+disclosureof data breachescan potentially subjectfirms toregulatoryinvestigations andfines,
+litigation, media scrutiny and reputation damage, customer loss, revenue decline, and in-
+creasedcashflowrisksandpossiblythreatenafirm'sbottomline,aswellasshareholdervalue,
+among other things. In short, mandatory data breach disclosure laws increase a firm's ex ante
+risk of incurring future costs related to disclosed breaches.
+1Forinstance,theEuropeanUnion'sGeneralDataProtectionRegulationwentintoeffecton25May2018.
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

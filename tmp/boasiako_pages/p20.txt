@@ -1,0 +1,87 @@
+|
+BOASIAKOANDKEEFE
+EUROPEAN
+547
+FINANCIAL MANAGEMENT
+TABLE 7 Databreachesandexternalfinancing
+Thistablereportstheestimationresultsfordatabreachesandexternalfinancing.Thedependentvariablein
+Columns(1)and(2)isexternalequityfinancing,whichisestimatedasthedifferencebetweenthesaleof
+commonandpreferredstocksandthepurchaseofcommonandpreferredstocks,scaledbytotalassetsatthe
+beginningoftheyear.ThedependentvariableinColumns(3)and(4)isexternaldebtfinancing,whichis
+measuredastheratiooflong‐termdebtissuanceminuslong‐termdebtreductiontototalassetsatthebeginning
+oftheyear.ThevariableBreach(0/1)issettooneforbreachedfirmsintheyearofthedatabreach,andzero
+otherwise;SevereBreach(0/1)proxiesfortheexpectedcostsofanunusuallybadbreachandisadummysetto
+oneforabreachwithCARsinthelowesttercile(mostnegativereturns);ModerateBreach(0/1)issettoonefora
+breachwithCARsinthemiddletercile;andLowBreach(0/1)issettooneforabreachwithCARsinthehighest
+tercile(leastnegativereturns).Standarderrorsclusteredbyfirmareshowninparentheses,with1%,5%,and10%
+levelsofstatisticalsignificancedenotedby***,**,and*,respectively.
+Dependentvariable:Externalfinancing
+Externalequityfinancing Externaldebtfinancing
+Variables (1) (2) (3) (4)
+Breach(0/1) –0.0140*** –0.0171***
+(0.0051) (0.0048)
+SevereBreach(0/1) –0.0228*** –0.0232***
+(0.0082) (0.0076)
+ModerateBreach(0/1) –0.0132 –0.0179**
+(0.0081) (0.0068)
+LowBreach(0/1) –0.0056 –0.0142*
+(0.0077) (0.0098)
+Controls Yes Yes Yes Yes
+Yearfixedeffects Yes Yes Yes Yes
+Industryfixedeffects Yes Yes Yes Yes
+Observations 42,893 42,893 42,893 42,893
+Adj.R2 0.1270 0.3083 0.2550 0.2330
+whereInvestment isinvestmentineitherCapitalExpenditureorAcquisitionExpenditure,with i,t
+Capital Expenditure measured as the ratio of capital expenditure to total book assets at the
+beginningoftheyearandAcquisitionExpendituremeasuredastheratioofacquisitionstototal
+book assets at the beginning of the year. The term X is a vector of controls. All the other
+i,t
+variables maintain their previous definitions, and robust standard errors are estimated by
+clustering at the firm level.
+Columns(1)and(2)ofTable8reporttheresultsforinvestmentinCapitalExpenditure,and
+Columns(3)and(4)presenttheresultsforinvestmentinAcquisitionExpenditure.InColumns
+(1) and (3), we examine, respectively, the effect of data breaches on capital expenditure and
+acquisition expenditure. The Breach(0/1) coefficients for Capital Expenditure and Acquisition
+Expenditure are –0.0072 and –0.0209, respectively. All else being equal, a decrease in Capital
+Expenditureby0.0072correspondstoan11.8%decreasefrommeanCapitalExpenditure(0.061),
+andadecreaseinAcquisitionExpenditureby0.0209correspondstoa52%decreasefrommean
+Acquisition Expenditure (0.0399). In Columns 2 and 4, we examine the impact of data breach
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the applicable
+Creative
+Commons
+License

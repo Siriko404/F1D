@@ -1,0 +1,83 @@
+|
+536
+EUROPEAN
+BOASIAKOANDKEEFE
+FINANCIAL MANAGEMENT
+3.3 | Variables
+We use the most traditional measure of cash in the literature (Bates et al., 2009; Opler et al.,
+1999)asourdependentvariable.WemeasureCashascashandmarketablesecuritiesscaledby
+total book assets.
+As explained earlier, in addition to the dummies capturing disclosure laws, we construct
+variablestocapturetheimpactofactualdatabreachesoncashholdings.ThevariableBreach(0/1)is
+adummythatequalsoneforbreachedfirmsintheyearofthedatabreach;andzerootherwise.We
+treat multiple breaches in a particular year as a single breach. The breaches are relatively evenly
+distributedoverthesampleperiod,reducingconcernsthatthedatabreachesareclusteredintime.
+We follow the literature (Bates et al., 2009; Opler et al., 1999) in our empirical testing and
+control for several variables that affect firm cash policy. Specifically, we control for Firm Size,
+Firm Age, Book Leverage, Market‐to‐book, Cash Flow, Capital Expenditure, Acquisition Ex-
+penditure, Dividend Paying Firms(0/1), R&D Expenditure, Net Working Capital, and Industry
+Cash Flow Volatility. The definitions of all the variables are detailed in the Appendix. We
+winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.
+Table1providessummarystatisticsofthekeyvariablesusedinthisstudy.Wereportthemean,
+standard deviation, 25th percentile, median, and 75th percentile.
+4 | STATE‐LEVEL DISCLOSURE LAWS AND CORPORATE
+CASH HOLDINGS
+In this section, we test how firms' cash holdings change with the passage of state‐level data
+breach disclosure laws.
+4.1 | Baseline regression results
+Table2presentsthebaselineestimationresults.Weincludestate,year,industry,andfirmfixedeffects
+in various specifications. Column (1) includes controls for year, industry, and state fixed effects. In
+Column(2),weincludeyearandfirmfixedeffects.Californiaisoneofthelargestandimportantstate
+economiesintheUnitedStates,wheresomeoftheworld'slargestcorporations(e.g.,Apple,Google,
+andFacebook)areheadquartered.6Therefore,inColumn(3),weexcludeCaliforniaandre‐estimate
+Equation(1).Ouraimistoisolatetheeffectsofstate‐leveldatabreachdisclosurelaws;therefore,in
+Column(4),wepurposelyexcludethefinancialcrisisperiod(2007–2009)fromthesampleperiod.In
+Column(5),thestandarderrorsaretwo‐wayclusteredbystateandyear.Finally,inColumn(6),we
+followFalatoandSim(2014)andre‐estimateourbaselineregressionusingfirstdifferences.Wethus
+control for firm fixed effects, as well as industry and state fixed effects.
+Acrossallthesespecifications,thecoefficientassociatedwithDisclosureLaw(0/1)ispositive
+and statistically significant, which shows that, following the passage of state‐level data breach
+disclosure laws, firms increased their cash holdings. We use the results in Column (1) of
+Table 2 to gauge the economic importance of state‐level disclosure laws on corporate cash
+holdings. In Column (1), the coefficient associated with Disclosure Law(0/1) is 0.0076. All else
+6FirmsheadquarteredinCaliforniaaccountfor18%oftheobservationsinoursample.
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

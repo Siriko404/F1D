@@ -1,0 +1,84 @@
+|
+BOASIAKOANDKEEFE
+EUROPEAN
+539
+FINANCIAL MANAGEMENT
+TABLE 2 (Continued)
+Dependentvariable:Cash
+Baseline Baselineexc. Stateand First‐
+Baseline exc. financial year difference
+Baseline w/firmFE California crisis clusteredSE estimation
+(1) (2) (3) (4) (5) (6)
+Statefixedeffects Yes No Yes Yes Yes Yes
+Observations 56,646 56,646 47,526 48,551 56,646 47,117
+Adj.R2 0.4939 0.0691 0.4658 0.5083 0.4287 0.1291
+4.2 | Falsification test
+Omitted variables coinciding with the timing of the passage of the state‐level disclosure laws
+coulddrivethebaselineresults.Ifthisisthecase,thenthechangesincorporatecashholdings
+we attribute to state‐level disclosure laws reflect mere association rather than causality.
+However, the disclosure laws were enacted at different times, providing multiple exogenous
+shocks, affecting the various states at different times. This enables us to overcome an obvious
+challengefacingsingle‐shockstudies,wherethecoincidenceofapotentialomittedvariableand
+thesingleshockcouldaffecttheeconomicoutcomesofinterest.Whilethestaggerednatureof
+the enactment of the state‐level disclosure laws makes it unlikely for an omitted variable to
+coincide with the disclosure laws, as explained earlier, we still address this concern by
+conducting a falsification test in a manner similar to that of Cornaggia et al. (2015).
+Wefollowatwo‐step process.First,foreach year,werandomlyassignfirmstothevarious
+states. Next, we randomly assign the states into the distribution of years when the various
+disclosure laws were passed. This helps maintain the actual distribution of years in which the
+various states passed the disclosure laws; however, it disrupts the correct assignment of the
+statestotheyearsinwhichthelawswerepassed.Therefore,anunobservableshockthatoccurs
+at approximately the same time as the passage of the state‐level data breach disclosure laws
+would still reside within the baseline testing framework and, hence, drive the cash results. In
+contrast,ifnosuchunobservableshocksexist,thenweexpectthattheincorrectassignmentsof
+thefirmsandstatestothedisclosurelawyearsshouldweakenourresultsforthere‐estimated
+baselinespecification.Thus,thefalselyassumeddisclosurelaweventsshouldhavenoeffecton
+cashholdings.Indeed,wedonotfindstatisticallysignificanteffectsofthestate‐leveldisclosure
+lawsoncorporatecashholdingsfollowingtherandomassignment.AsreportedinTable3,the
+coefficients on the Disclosure Law(0/1) variable in Columns (1)–(4) are all statistically non-
+significantand,hence,notdifferentfromzero.Thenon‐resultsinthistestdiscountanomitted
+variable bias.
+4.3 | Role of financial constraints
+So far, our findings support the hypothesis that firms increase their cash holdings in response
+tothepassageofdatabreachdisclosurelaws.Wenowexaminetheroleoffinancialconstraints
+in the effect of disclosure laws on corporate cash holdings. Specifically, following To et al.
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

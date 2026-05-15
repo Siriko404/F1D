@@ -1,0 +1,85 @@
+|
+544
+EUROPEAN
+BOASIAKOANDKEEFE
+FINANCIAL MANAGEMENT
+TABLE 6 Databreachesandcashholdings
+Thistablereportstheestimationresultsfortheimpactofdatabreachesoncashholdings.InColumns(1)and
+(2),weestimateEquation(2),theeffectsofdatabreachesoncashholdings.InColumns(3)and(4),weestimate
+theeffectsoncashholdingsofdatabreachseverity.ThevariableBreach(0/1)issettooneforbreachedfirmsin
+theyearofthedatabreach,andzerootherwise;SevereBreach(0/1)proxiesfortheexpectedcostsofanunusually
+severebreachandisadummysettooneforabreachwithCARsinthelowesttercile(mostnegativereturns);
+ModerateBreach(0/1)issettooneforabreachwithCARsinthemiddletercile;andLowBreach(0/1)issetto
+oneforabreachwithCARsinthehighesttercile(leastnegativereturns).Standarderrorsclusteredbyfirmare
+showninparentheses,with1%,5%,and10%levelsofstatisticalsignificancedenotedby***,**,and*,
+respectively.
+Dependentvariable:Cash
+Variables (1) (2) (3) (4)
+Breach(0/1) 0.0299***
+t
+(0.0101)
+Breach(0/1) t−1 0.0282***
+(0.0104)
+SevereBreach(0/1)t 0.0348**
+(0.0151)
+ModerateBreach(0/1)t 0.0285*
+(0.0163)
+LowBreach(0/1)t 0.0224
+(0.0170)
+SevereBreach(0/1) t−1 0.0379**
+(0.0187)
+ModerateBreach(0/1) t−1 0.0230
+(0.0165)
+LowBreach(0/1) t−1 0.0198
+(0.0151)
+Controls Yes Yes Yes Yes
+Yearfixedeffects Yes Yes Yes Yes
+Industryfixedeffects Yes Yes Yes Yes
+Observations 42,893 42,893 42,878 42,866
+Adj.R2 0.4981 0.4981 0.4982 0.4982
+Abbreviation:CARS,cumulativeabnormalreturns.
+personnel, and processes to keep its internal data security systems up‐to‐date (Doyle
+et al., 2007).
+5.2 | Data breaches and cash holdings
+In this section, we examine the impact of actual data breaches on corporate cash
+holdings.Table6presentsthebaselineestimationresults.InColumns(1)and(2),weestimate
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

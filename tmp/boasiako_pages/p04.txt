@@ -1,0 +1,92 @@
+|
+BOASIAKOANDKEEFE
+EUROPEAN
+531
+FINANCIAL MANAGEMENT
+Toidentifytheeffectofdatabreachdisclosurelawsonfirmcashholdings,weconstructtests
+that exploit time‐varying exogenous changes in state‐level data breach disclosure laws. The
+staggered timing of the passage of the state‐level disclosure laws plausibly provides a natural
+experimentframeworktoempiricallyexplorehowtheseregulatorychangesaffectcorporatecash
+policies.Similartopreviousstudies(Becketal.,2010;Francisetal.,2014),weuseadifference‐in‐
+differencesapproachtoexaminehowfirmschangetheircashpoliciesinresponsetochangesin
+state‐level data breachdisclosure laws. Our baselineregressionresultsindicate aneconomically
+important positive relation between state‐level data breach disclosure laws and corporate cash
+holdings. First, the results are robust to the exclusion of the financial crisis period, to the
+exclusionoffirmsbasedinCalifornia,whichaccountfor18%ofobservationsinoursample,and
+to the re‐estimation of our baseline specification in first differences.
+Second,whilethestaggeredtimingofthepassageofthedisclosurelawsprovidesexogenous
+changes to data security reporting and transparency, unobservable shocks coinciding with
+state‐leveldatabreachdisclosurelawscouldbetheprimarycauseofchangesincashholdings.
+If this is the case, then the changes in corporate cash holdings we attribute to state‐level
+disclosure laws reflect mere association, rather than causality. Our strategy of using multiple
+shocks helps isolate the impact of disclosure laws on cash holdings from other confounding
+factors, thus mitigating omitted variable concerns. Additionally, the timing and passage of
+state‐leveldisclosurelawsarebeyondthecontrolofanyindividualfirm;thatis,firmshaveno
+influenceorcontrolovertheyearsin whichdisclosurelawsarepassed.Eveniftheenactment
+of various state‐level data breach disclosure laws is anticipated, firms could have started
+changing their financial policies before the laws' passage, which should disfavour us finding
+any impact of the changes in the state‐level disclosure laws on our outcome of interest.
+Nevertheless, we address this possibility by conducting placebo or falsification tests fol-
+lowinganapproachsimilartothatofCornaggiaetal.(2015).Werandomlyallocatethevarious
+states to the distribution of data breach disclosure law years. This preserves the correct dis-
+tributionofthedisclosurelawyearsbutrandomlyassignsthestatestothedisclosurelawyears.
+We expect our re‐estimated results to be weaker if unobservable shocks do not exist in our
+testingframework;thatis,falselyassumeddisclosurelaweventsshouldhavenoeffectoncash
+holdings.Indeed,ourrandomizeddisclosurelawestimationresultsshownoeffectoncorporate
+cash holdings. The non‐result in this test discounts an omitted variable bias.
+After providing robust evidence of an aggregate increase in corporate cash holdings fol-
+lowingthepassageofvariousstate‐leveldatabreachdisclosurelaws,weturntotheanalysisof
+actual data breaches. We first examine the association between data breaches and certain
+observable firm characteristics. Our findings, suggestive and exploratory and not definitive
+determinantsofdatabreaches,showthatdatabreachesaremorelikelyforlargeandoldfirms,
+financially constrained firms, and high‐growth firms.
+Next, we test the impact of exposure to and the disclosure of data breaches on changes in
+corporate cash holdings. We find that firms increase their cash holdings in response to a data
+breachincident.Totestthattheresultsarenotdrivenbydifferencesincharacteristicsbetween
+breached and non‐breached firms, we follow Hainmueller and Xu (2013) and use the entropy
+balancing approach, and we still find a positive relation between data breaches and corporate
+cash holdings. Although we find a positive relation between data breaches and cash holdings,
+onecouldarguethattheincreaseincashbalancesfollowingdisclosurelawsshouldbeusedup
+by breached firms in meeting the cash outlays associated with the breach incident. However,
+whilefirmsbuilduptheircashreservesaftertheenactmentofthelaws,itispossiblebreached
+firmsbuildupcashbecauseofanunusuallybadbreachincident.Thus,afirm'scashneedsare
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on
+Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

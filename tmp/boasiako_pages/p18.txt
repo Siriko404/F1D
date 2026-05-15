@@ -1,0 +1,92 @@
+|
+BOASIAKOANDKEEFE
+EUROPEAN
+545
+FINANCIAL MANAGEMENT
+Equation(2)usingcontemporaneousandlaggedbreaches,respectively.Table6showsthatthe
+coefficientassociatedwithBreach(0/1) Column(1)ispositiveandstatisticallysignificantatless
+t
+than the 1% level, revealing a positive relationship between data breaches and corporate cash
+holdings. This result is economically important; given the Breach(0/1) coefficient of 0.03, all
+t
+else being equal, an increase in cash holdings of 0.03 corresponds to a 13.7% increase from
+mean cash holdings (0.2185). In Column (2), the coefficient on Breach(0/1) is positive and
+t
+statisticallysignificantatlessthanthe1%level.Thisresultsuggestsbreachedfirmscontinueto
+hold more cash in the year following the data breach.
+While we find a positive relation between data breaches and cash holdings, one could still
+argue that the extra cash balance that was built up following the enactment of the disclosure
+lawsshouldbeusedupbybreachedfirmstomeetthecashoutlaysassociated withthebreach
+incident.However,whilefirmsbuilduptheircashreservesaftertheenactmentofthelaws,itis
+possiblethatbreachedfirmsbuildupcashbecauseofanunusuallybadbreachincident.Thus,
+the cash needs are plausibly unanticipated in the case of an unusually bad breach, and firms
+that are subject to such a breach increase their cash holdings.
+We proxy for the severity of data breaches using the stock market's reaction to a breach
+announcement. We use an event study methodology to estimate the CARs around the data
+breach announcement. We calculate the CARs during the 5‐day event window around the
+disclosureofdatabreaches.WethensorttheCARsintotercilesandestimatethreelevelsofdata
+breachseverity.ThevariableSevereBreach(0/1)proxiesfortheexpectedcostsofanunusuallybad
+breach,anditisadummysettooneforabreachwithCARsinthelowesttercile(highestmean
+negativereturns),ModerateBreach(0/1)issettooneforabreachwithCARsinthemiddletercile,
+and Low Breach(0/1) is set to one for a breach with CARs in the highest tercile (least mean
+negative returns).
+Columns(3)and(4)ofTable6showtheresultsofatestthatrelatestheexpostcashbuild‐up
+totheseverityofthebreachincident.ThebreachseveritylevelsarecontemporaneousinColumn
+(3)butlaggedinColumn(4).TheresultsinColumn(3)showthatthecoefficientassociatedwith
+SevereBreach(0/1) ispositiveandstatisticallysignificantatlessthanthe5%level,revealingthat
+t
+firms with severe breach incidents accumulate more cash than firms with moderate‐ and low‐
+severity breach incidents in the breach year. This result is economically important; given a
+coefficientof0.0348forSevereBreach(0/1),allelsebeingequal,anincreaseincashholdingsby
+t
+0.0348correspondstoa15.9%increasefrommeancashholdings(0.2185).InColumn(4),1year
+after the breach, the results again show that firms with severe breaches accumulate more cash.
+Finally, to address the concern that breached firms are inherently different from non‐
+breachedfirms,weimplementtheentropybalancingmethodofHainmuellerandXu(2013).By
+usingthismatchingprocedure,weensurethatthetreatedfirms(breachedfirms)areequivalent
+to the control firms (non‐breached firms), which alleviates any concerns that differences in
+firm characteristics are influencing our results. The results for the entropy‐balanced sample,
+available in the Online Appendix, confirm a positive relation between data breaches and
+corporate cash holdings.
+5.3 | Mechanisms
+Our evidence so far suggests that firms increase their cash balances following exposure to a
+data breach incident. In this section, we explore possible underlying mechanisms through
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

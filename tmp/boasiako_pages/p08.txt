@@ -1,0 +1,87 @@
+|
+BOASIAKOANDKEEFE
+EUROPEAN
+535
+FINANCIAL MANAGEMENT
+Statessince2005.ThePRCdataprovidesrelevantdiscloseddatabreachinformation.Wecollect
+information about the name of the breached firm, the breach disclosure date, a description of
+the breach incident, and, if available, the total number of records breached. We identify 329
+nonfinancial business firms as having disclosed a data breach over the 2005–2018 sample
+period. We then manually merge the disclosed breaches with the CRSP/Compustat data.
+3.2 | Estimation technique
+The staggered timing of the passage of the state‐level disclosure laws enables us to use states
+thathadnotyetpasseddisclosurelawsatagiventime(includingstatesthateventuallyenacted
+disclosurelaws,aswellasstatesthatneverenactedthemwithintheperiodofstudy),tocontrol
+for potential confounding effects. Therefore, we use a difference‐in‐differences approach to
+empiricallyexploretheeffectsofthedisclosurelawsoncashholdings.Ourmodelsetupmirrors
+that of Francis et al. (2014). We estimate
+Cash = α + β Disclosure Law(0∕1) + γX + θ + δ + ρ + ν + ε , (1) i,s,t s,t i,s,t s t j i i,s,t
+wherei,s,andt indexfirm,state,andtime,respectively.Thedependentvariable,Cash,iscashand
+marketablesecuritiesscaledbytotalbookassets;Disclosure Law(0∕1) isadummyvariablethat
+s,t
+switchestoonetheyearafterthefocalstatepassedthedisclosurelaw; X isavectorofcontrols;
+i,s,t
+θ representsasetofstatedummiesthataccountforstate‐levelunobservablefactorsthatcouldbe
+s
+correlated with the data breach disclosure laws, and thus bias our estimates; δ represents year
+t
+dummies to control for secular shocks in cash holdings coinciding with the passage of the dis-
+closurelaws;andρ andν captureindustryandfirmfixedeffects,respectively.5Thetermε isa
+j i i,s,t
+randomerrorterm.Weclusterstandarderrorsbystate,becausethetreatmentisdefinedatthestate
+level. Alternatively, we follow Falato and Sim (2014) and re‐estimate the baseline difference‐in‐
+differences specification using first differences. As explained earlier, state‐level disclosure laws
+chargefirmsoperatingwithinthestate(withdatabreachlaws)withtheresponsibilityofdisclosing
+databreaches.Firmscanoperateinadditionalstatesbesidestheirheadquartersstateandcanthus
+be partly exposed to a data breach disclosure law before their home state passing a similar law.
+However,focusingonthestatesinwhichfirmsareheadquarteredisaconservativeapproach,since
+itessentiallydownwardbiasesβ inEquation(1),whichshouldresultinanunderestimationofour
+treatmenteffect.Inother words,firmsthatarepartlypre‐exposedtoadatabreachdisclosurelaw
+will have a weaker reaction when a similar law is passed in their home state.
+Inaddition,toexaminetheimpactofdatabreachesoncashholdings,wefollowGarg(2019)
+and estimate
+Cash = α + β Breach(0∕1) + γX + ρ + δ + ε , (2)
+i,t t i,t j t i,t
+where Breach(0/1) is a dummy variable set to one if a firmi discloses a data breach in timet;
+andzerootherwise.Allothervariablesmaintaintheirpreviousdefinitions,androbuststandard
+errors are estimated by clustering at the firm level.
+5Theindustrydummiesareconstructedbasedonthe49‐industryclassificationofFamaandFrench(1997).
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the
+applicable
+Creative
+Commons
+License

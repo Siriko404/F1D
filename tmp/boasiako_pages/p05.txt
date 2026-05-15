@@ -1,0 +1,90 @@
+|
+532
+EUROPEAN
+BOASIAKOANDKEEFE
+FINANCIAL MANAGEMENT
+plausibly unanticipated when an unusually bad breach occurs, and they react by increasing
+their cash holdings.We examine this possibilitybyrunning atest that relates theexpost cash
+build‐up to the severity of data breaches. As a proxy for the expected costs of unusually bad
+breach incidents, we use the stock market reaction to the breach announcement. Specifically,
+we use an event study methodology to estimate the cumulative abnormal returns (CARs)
+aroundthedatabreachannouncement.WethenranktheCARsintotercilesandestimatethree
+levels of data breach severity. The results show that firms with severe breach incidents accu-
+mulatemorecash,suggestingthatseverelybreachedfirmsarethosethatfacetheneedtobuild
+up more cash.
+Weexaminethepossibleunderlyingmechanismsthroughwhichfirmsbuildupcashafter
+a data breach incident. Breached firms can potentially build up their cash balances by in-
+creasing their use of external debt and equity financing. However, given that breached firms
+are probably viewed as a higher credit risk by financial markets, we expect that they would
+finditdifficulttoraiseexternalfinancing,and,therefore,externalfinancingactivitiesshould
+decline after the disclosure of a data breach incident. Indeed, we find that both external
+equity and debt financing activities decline after a data breach incident. Given the lack of
+increase in external financing after a data breach incident, a test of investment as another
+possible mechanism naturally follows; that is, we test whether breached firms forgo invest-
+ment to build up cash after a data breach incident. We find an economically important
+reductionininvestmentinbothcapitalexpenditureandacquisitionsforfirmsexposedtodata
+breaches, suggesting that firms reduce their investments to accumulate cash after a data
+breach incident.
+Our paper makes several key contributions to the corporate finance literature. It is closely
+related to a vast literature that studies corporate cash holdings (see important contributions
+from Almeida et al., 2004; Arena & Julio, 2015; Bates et al., 2009; Froot & Stein, 1998; Han &
+Qiu, 2007). Our finding of data breach disclosure laws and actual data breaches affecting cash
+holdings is consistent with the precautionary cash holdings literature. However, the key con-
+tribution of our paper is the identification afforded by the staggered state‐level laws and how
+firms can insulate themselves from the adverse effects of data breaches through liquidity
+management. Equally important, our paper provides evidence indicating that mandating the
+disclosure of data breaches amplifies the adverse consequences associated with future data
+breaches, with important implications for corporate liquidity policies. This result is consistent
+withthatofChenetal.(2020),whoinvestigatehowthequalityofinternalcontrolsshapesthe
+cash‐holding policies of Chinese firms.
+The paper also contributes to the growing literature on data breach disclosure laws and
+actual data breaches. It complements the stream of research that examines the effects of data
+breach disclosure laws (Ashraf & Sunder, 2018; Romanosky et al., 2011). It also contributes to
+the stream of studies that examine the negative consequences of data breaches (Garg, 2019;
+Gatzlaff & McCullough, 2010; Kamiya et al., 2020; Lin et al., 2019; Mikhed & Vogan, 2018;
+Rosati et al., 2017).
+Thispaperalsoaddsnewevidencetothelawandfinanceliterature.Specifically,ourpaper
+complements previous studies (e.g., Falato & Sim, 2014; He, 2018; Klasa et al., 2018; Qiu &
+Wang, 2018) that examine the impact of regulatory changes on corporate financial policies.
+While most of the explanations for corporate cash‐holding policies focus on firm‐specific fac-
+tors, recent studies show that firms change their financial policies in response to regulatory
+changes. For instance, He (2018) exploits reforms of state covenants‐not‐to‐compete laws to
+captureexogenouschangesinbarriersfortalentcompetitionandfindsthatfirmsincreasecash
+1468036x,
+2021,
+3,
+Downloaded
+from
+https://onlinelibrary.wiley.com/doi/10.1111/eufm.12289
+by
+University
+Of
+Ottawa
+Library,
+Wiley
+Online
+Library
+on
+[08/05/2026].
+See
+the
+Terms
+and
+Conditions
+(https://onlinelibrary.wiley.com/terms-and-conditions)
+on Wiley
+Online
+Library
+for
+rules
+of
+use;
+OA
+articles
+are
+governed
+by
+the applicable
+Creative
+Commons
+License
