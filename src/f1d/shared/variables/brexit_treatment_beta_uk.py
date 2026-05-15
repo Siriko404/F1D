@@ -85,6 +85,10 @@ TREATMENT_COL = "HIGH_BETA_UK"
 N_TREATED_CAMPELLO = 449
 N_CONTROL_CAMPELLO = 449  # symmetric top/bottom of nonneg; NOT Campello's 360 negatives
 
+# Brexit sample-window for SIC-filter universe (must match runner's load_h1_panel).
+SIC_WINDOW_START = pd.Timestamp("2010-01-01")
+SIC_WINDOW_END = pd.Timestamp("2017-01-01")  # exclusive upper bound
+
 
 def _to_log_return(price: pd.Series) -> pd.Series:
     """Daily log-return = ln(P_t / P_{t-1}). Drops first row (NaN)."""
@@ -273,6 +277,36 @@ def _aggregate_firm_monthly_vol(root_path: Path, ccm: pd.DataFrame) -> pd.DataFr
     return out.sort_values(["gvkey", "year_month"]).reset_index(drop=True)
 
 
+def _load_sic_keep_gvkeys(root_path: Path) -> set:
+    """Set of gvkeys with at least one Compustat row 2010-2016 having SIC NOT in
+    util(4900-4999) + fin(6000-6999) per Campello §1G.
+
+    The classifier (top-N=449/449) must operate on Campello's analytic universe,
+    NOT the full CRSP→gvkey universe. Without this filter, ~311 of 898 classifier
+    slots are assigned to util+fin firms that are subsequently dropped by the
+    runner — wasting classifier capacity and shrinking the regression n from a
+    target of ~17,000 to ~8,900. Fix per /systematic-debugging diagnosis
+    2026-05-14 evening.
+    """
+    import pyarrow.parquet as pq
+
+    cpath = root_path / "inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
+    table = pq.read_table(
+        cpath,
+        columns=["gvkey", "datadate", "sic"],
+        filters=[("datadate", ">=", SIC_WINDOW_START.to_pydatetime()),
+                 ("datadate", "<",  SIC_WINDOW_END.to_pydatetime())],
+    )
+    df = table.to_pandas()
+    del table
+    df["gvkey"] = df["gvkey"].astype(int).astype(str).str.zfill(6)
+    df["sic_int"] = pd.to_numeric(df["sic"], errors="coerce")
+    df = df[~((df["sic_int"] >= 4900) & (df["sic_int"] <= 4999))]
+    df = df[~((df["sic_int"] >= 6000) & (df["sic_int"] <= 6999))]
+    df = df.dropna(subset=["sic_int"])
+    return set(df["gvkey"].unique())
+
+
 def _vectorized_ols(
     Y: np.ndarray, X: np.ndarray
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -454,10 +488,35 @@ class BrexitBetaUKBuilder(VariableBuilder):
             }
         )
 
-        # Top-N=449/449 assignment per Sina decision 2026-05-14 (Problem 2).
-        # Tercile modes (_assign_terciles_nonneg) preserved for sensitivity.
-        high, bp = _assign_top_n_match(out["beta_uk"])
-        out[TREATMENT_COL] = high
+        # Pre-classifier SIC filter per /systematic-debugging diagnosis 2026-05-14:
+        # Campello §1G applies SIC filter at sample definition (BEFORE classifier).
+        # Without this, ~311 of 898 classifier slots get assigned to firms the
+        # runner then drops (util+fin), shrinking regression n from a target of
+        # ~17,000 to ~8,900. Fix: filter classifier pool to non-util/non-fin.
+        sic_keep_gvkeys = _load_sic_keep_gvkeys(root_path)
+        classifier_pool = out[out["gvkey"].astype(str).str.zfill(6).isin(sic_keep_gvkeys)].copy()
+        logger.info(
+            f"  Pre-classifier SIC filter (Campello §1G): "
+            f"{len(classifier_pool):,} of {len(out):,} firms retained "
+            f"(util+fin or no Compustat row 2010-2016 dropped)"
+        )
+
+        # Campello-absolute classifier (β^UK > 0.68 / < 0.28) on POST-SIC pool
+        # per Sina ratification 2026-05-14 ~7:40pm ("Campello's method is gospel").
+        # Supersedes earlier top-N=449/449 decision: with SIC-pre-filter fix,
+        # absolute cuts produce n=17,176 (99.96% match Campello 17,170), β=+0.132,
+        # SE=0.123, p_one=0.141 NS. Top-N=449/449 mode remains in _assign_top_n_match
+        # as sensitivity option only.
+        high, bp = _assign_terciles_nonneg(
+            classifier_pool["beta_uk"],
+            use_campello_absolute=True,
+        )
+        classifier_pool[TREATMENT_COL] = high
+
+        # Merge HIGH_BETA_UK back to full output. Firms outside the Campello-eligible
+        # universe (util+fin) retain NaN for HIGH_BETA_UK — the runner's
+        # `HIGH_BETA_UK.isin([0.0, 1.0])` restriction already excludes them.
+        out = out.merge(classifier_pool[["gvkey", TREATMENT_COL]], on="gvkey", how="left")
         logger.info(
             f"  β^UK distribution: mean={out['beta_uk'].mean():.4f}, "
             f"min={out['beta_uk'].min():.4f}, max={out['beta_uk'].max():.4f}"
