@@ -53,7 +53,7 @@ No destructive action at any phase. Native memory files (`~/.claude/projects/<id
 **Mitigation glossary (inlined — no shorthand):**
 
 - **M1 — native-as-net:** native auto-memory stays ON through all of Phase 1; disabled only at Phase 2 after the gate passes.
-- **M2 — capture-health gate:** a session-start check asserting (a) worker process alive, (b) `pending_messages` queue not backing up, (c) `observations` row count for the active project strictly increased since the previous check, (d) `chroma-sync-state.json` watermark for the project ≤ actual chroma rows (the #2487 drift detector). Any failure → visible WARN + counts toward rollback trigger.
+- **M2 — capture-health gate:** a session-start check asserting (a) worker process alive, (b) `pending_messages` queue not backing up, (c) `observations` row count for the active project strictly increased since the previous check, (d) `chroma-sync-state.json` watermark for the project ≤ actual chroma rows (the #2487 drift detector). Any failure → the gate emits an **LLM-visible** status (see §6.1) and counts toward the §7 rollback trigger.
 - **M3 — Chroma decision:** keep ChromaDB (healthy on this install: 8,636 embeddings, no drift) rather than forcing FTS5-only; M2(d) watches for drift. Revisit only if M2(d) trips.
 - **M4 — version guard:** claude-mem is pinned; before ANY claude-mem upgrade, verify upstream that #2485 and #2487 are fixed in the target version, then re-run the Phase-0→1 gate before trusting it.
 - **M5 — API lockdown:** worker binds 127.0.0.1 only; a Windows Firewall inbound block rule on the worker port (37777, confirmed from `worker.pid`) prevents network exposure of the unauthenticated API (#1251).
@@ -66,7 +66,7 @@ No destructive action at any phase. Native memory files (`~/.claude/projects/<id
 |---|----------|---------|-----------|
 | C1 | Verify worker bind = 127.0.0.1; add Windows Firewall inbound-block rule for port 37777 | close unauth API | M5 |
 | C2 | Scheduled `claude-mem.db` Online-Backup script (rotating 14, daily + pre-upgrade) | source-of-truth durability | M6 |
-| C3 | Capture-health gate script (run at session start) implementing M2(a)-(d); emits visible WARN on failure | detect silent failure | M2/M3 |
+| C3 | Capture-health gate **SessionStart hook** implementing M2(a)-(d); on failure emits an LLM-visible status (§6.1) | detect silent failure | M2/M3 |
 | C4 | Pin/record `~/.claude-mem/settings.json` `CLAUDE_MEM_*` (capture model + knobs touched) | reproducibility | M4 |
 | C5 | `~/.claude/CLAUDE.md` normative directive: prefer claude-mem (mem-search skill + observation recall) as the memory of record | normative usage | (see §6) |
 | C6 | Pre-upgrade checklist doc (verify #2485/#2487 fixed → re-run P0→P1 gate) | churn safety | M4 |
@@ -92,6 +92,20 @@ The safety guarantee rests on the **structural** mechanism, never on the directi
 
 "Hard-force" therefore = structural disable of the alternative + normative steering toward claude-mem + the M2 health gate. The directive is the weakest of the three and is treated as such.
 
+**C5 conflict-safety (flag for writing-plans):** the C5 `~/.claude/CLAUDE.md` directive wording must be drafted and then verified **non-conflicting** with the existing mandatory frameworks already loaded there (karpathy-guidelines, user-profile-sina, scope-discipline, superpowers) BEFORE installation. The implementation plan owns this draft-then-verify step; the directive is not installed until verified clean.
+
+## 6.1 Health-Gate Failure Channel (advisor blocker fix — load-bearing)
+
+The M2/C3 gate is only a safety net if its failure is *seen by the party that can act on it*. A console-only "WARN" is insufficient: in Phase 2 the rollback (§11) is a **user** action, and the model independently must not keep quoting a degraded memory store.
+
+Therefore C3 runs as a **SessionStart hook** and, on ANY M2 failure, emits its status as an **`additionalContext` / system-reminder injected into the session** (the same channel the existing SessionStart hooks already use). On a failure status the model MUST, in its first response that session:
+
+1. Surface the degraded-memory alert **prominently at the top** of the response (not buried).
+2. Treat claude-mem recall as **untrusted for that session** — it must not rely on injected observations/`mem-search` results for factual claims until the user clears the alert.
+3. State the §11 two-flip rollback option to the user.
+
+The alert persists each session start until M2 passes again or the user explicitly acknowledges/rolls back. Without this channel, Phase 2 has no operational safety net — this section is load-bearing, not advisory.
+
 ## 7. Error Handling / Rollback
 
 - **Rollback triggers (ANY):** C3/M2 gate fails on 2 consecutive sessions · observations stop growing · queue stuck · chroma drift detected (M2d) · post-upgrade regression.
@@ -110,7 +124,7 @@ The safety guarantee rests on the **structural** mechanism, never on the directi
 **P1 → P2 gate (all required):**
 1. ≥ 8 sessions (per definition above) spanning ≥ 7 calendar days.
 2. C3/M2 green on every one of those sessions (zero failures).
-3. **Recall-fidelity check ≥ 1 PASS, 0 FAIL (advisor fix #1 — this is the decisive gate; canary mechanics specified in the implementation plan):** in session S, plant a canary observation containing a specific numeric claim and its source string. At the start of session S+1, query it via the mem-search skill. **PASS** only if the recalled text reproduces the number **verbatim** (exact characters for digits/identifiers) AND attributes it to the correct source. **FAIL** on any numeric mismatch, omission, or mis-attribution. Capture-count growth (M2c) is necessary but **NOT sufficient** — obs #792 proves capture can be 100% "successful" while the stored memory is wrong; recall-fidelity is what authorises Phase 2.
+3. **Recall-fidelity check — ≥ 3 PASS across 3 distinct Phase-1 sessions, 0 FAIL (advisor fixes #1 + tightening — the decisive gate; canary mechanics specified in the implementation plan):** in session S, plant a canary observation containing a specific numeric claim and its source string. At the start of a later session, query it via the mem-search skill. **PASS** only if the recalled text reproduces the number **verbatim** (exact characters for digits/identifiers) AND attributes it to the correct source. **FAIL** on any numeric mismatch, omission, or mis-attribution. A single PASS can be a small-model coincidence (obs #792 proves capture can be 100% "successful" while the stored memory is wrong), so cutover requires **≥ 3 independent PASS in 3 different Phase-1 sessions with zero FAIL**. Capture-count growth (M2c) is necessary but **NOT sufficient**; this recall gate is what authorises Phase 2.
 
 **Ongoing (Phase 2+):** C3/M2 every session start; monthly M6 test-restore; C6 pre-upgrade checklist before any claude-mem version change.
 
