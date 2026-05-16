@@ -2,7 +2,7 @@
 """C3/M2/§6.1: claude-mem capture-health gate (SessionStart hook).
 
 Checks M2(a) worker alive, (b) queue not stuck, (c) observations grew,
-(d) chroma watermark not ahead of source. On ANY failure it prints a
+(d) chroma not under-populated vs source (#2487). On ANY failure prints a
 SessionStart hook JSON with hookSpecificOutput.additionalContext so the
 status is LLM-VISIBLE (spec §6.1). On all-pass it suppresses output.
 
@@ -15,7 +15,6 @@ from pathlib import Path
 
 HOME = Path.home()
 DB = HOME / ".claude-mem" / "claude-mem.db"
-SYNC = HOME / ".claude-mem" / "chroma-sync-state.json"
 STATE = HOME / ".claude-mem" / ".healthgate-state.json"
 PIDF = HOME / ".claude-mem" / "worker.pid"
 
@@ -96,12 +95,29 @@ def evaluate(db: str, project: str, state_path: str, port: int,
                         f"({gprev}->{gtot}) — capture pipeline may be dead")
         st.setdefault("__global__", {})["obs_count"] = gtot
         Path(state_path).write_text(json.dumps(st, indent=2))
-        # (d) chroma drift
+        # (d) chroma drift (#2487): per-project chroma embedding count vs
+        # per-project SQLite obs count. #2487's signature is chroma FAR
+        # BELOW source (issue #2487 live numbers: SQLite 703 vs chroma
+        # 363 ≈ 0.52). chroma-sync-state.json[project].observations is a
+        # GLOBAL-ID WATERMARK (≈ max obs id), NOT a per-project count —
+        # comparing it to a per-project rowcount was the v1 false-positive
+        # bug (fails every session since global ids ≫ any project's
+        # rowcount). Correct test = count project-tagged chroma embeddings.
         try:
-            wm = json.loads(SYNC.read_text()).get(project, {}).get("observations")
-            if wm is not None and wm > cnt + 5:   # watermark claims more than source has
+            chroma_db = Path(db).parent / "chroma" / "chroma.sqlite3"
+            cdb = _ro(chroma_db); ccur = cdb.cursor()
+            chroma_n = ccur.execute(
+                "SELECT count(*) FROM embedding_metadata "
+                "WHERE key='project' AND string_value=?",
+                (project,)).fetchone()[0]
+            cdb.close()
+            DRIFT_R = 0.5   # #2487 floor (703->363 ≈ .52); healthier passes
+            if cnt > 0 and chroma_n < cnt * DRIFT_R:
                 checks["drift"] = "fail"
-                msgs.append(f"chroma watermark {wm} ahead of source obs {cnt} (#2487)")
+                msgs.append(f"#2487: chroma has {chroma_n} '{project}' "
+                            f"embeddings vs {cnt} source obs "
+                            f"(<{DRIFT_R:.0%}) — semantic index "
+                            f"under-populated")
             else:
                 checks["drift"] = "pass"
         except Exception:

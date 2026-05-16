@@ -48,3 +48,34 @@ def test_capture_pipeline_2485_and_failclosed(tmp_path):
     c.commit(); c.close()
     r3 = hg.evaluate(str(db), "F1D", str(st), port=0, worker_check=False)
     assert r3["checks"]["capture_pipeline"] == "pass"
+
+def _mk_chroma(p, f1d_rows):
+    p.parent.mkdir(parents=True, exist_ok=True)
+    c = sqlite3.connect(p)
+    c.execute("CREATE TABLE embedding_metadata(id INTEGER, key TEXT, string_value TEXT)")
+    c.executemany(
+        "INSERT INTO embedding_metadata(id,key,string_value) VALUES(?, 'project','F1D')",
+        [(i,) for i in range(f1d_rows)])
+    c.commit(); c.close()
+
+def test_drift_uses_chroma_count_not_watermark(tmp_path):
+    # Regression for the v1 false-positive: drift must depend on the
+    # per-project CHROMA embedding count vs SQLite obs count, NOT on any
+    # global-id watermark. No chroma-sync-state.json exists here, so a
+    # pass proves the watermark path is gone.
+    db = tmp_path/"m.db"; _mkdb(db)
+    c = sqlite3.connect(db)
+    c.executemany("INSERT INTO observations(project,created_at_epoch) VALUES(?,?)",
+                   [("F1D", 1)] * 500)
+    c.commit(); c.close()
+    st = tmp_path/"s.json"
+    # healthy: 400 chroma vs 500 obs (>=50%) -> pass
+    _mk_chroma(tmp_path/"chroma"/"chroma.sqlite3", 400)
+    rh = hg.evaluate(str(db), "F1D", str(st), port=0, worker_check=False)
+    assert rh["checks"]["drift"] == "pass"
+    # #2487: 200 chroma vs 500 obs (<50%) -> fail with #2487 message
+    (tmp_path/"chroma"/"chroma.sqlite3").unlink()
+    _mk_chroma(tmp_path/"chroma"/"chroma.sqlite3", 200)
+    rd = hg.evaluate(str(db), "F1D", str(st), port=0, worker_check=False)
+    assert rd["checks"]["drift"] == "fail"
+    assert any("#2487" in m for m in rd["messages"])
