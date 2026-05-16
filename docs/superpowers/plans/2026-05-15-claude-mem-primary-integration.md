@@ -100,6 +100,20 @@ def test_retention_prunes(tmp_path):
     for _ in range(20):
         bk.backup(str(src), str(outdir), retain=14, _force_unique=True)
     assert len(list(Path(outdir).glob("claude-mem-*.db"))) == 14
+
+def test_foreign_claude_mem_pre_backup_is_never_touched(tmp_path):
+    # Regression: claude-mem's own `claude-mem-pre-<ver>-<ISO>.db` dumps
+    # must NEVER be pruned or selected (execution-found data-safety bug).
+    src = tmp_path / "claude-mem.db"
+    sqlite3.connect(src).close()
+    outdir = tmp_path / "b"; outdir.mkdir()
+    foreign = outdir / "claude-mem-pre-12.4.3-2026-05-12T21-53-47-190Z.db"
+    foreign.write_bytes(b"")
+    for _ in range(20):
+        bk.backup(str(src), str(outdir), retain=3, _force_unique=True)
+    assert foreign.exists()
+    assert len(list(outdir.glob(bk.OURS_GLOB))) == 3
+    assert foreign not in list(outdir.glob(bk.OURS_GLOB))
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -115,13 +129,23 @@ Expected: FAIL (`backup_claude_mem.py` does not exist / no `backup`).
 
 Online Backup API copies a CONSISTENT snapshot even while the worker
 holds the WAL open (a plain file copy of a WAL db can be torn).
+
+Isolation (execution-found bug fix 2026-05-15): our backups live in a
+DEDICATED OWNED subdir (`backups/cmint`), and rotation matches only the
+strict pattern `claude-mem-[0-9]*.db`. claude-mem itself writes
+pre-upgrade dumps `claude-mem-pre-<ver>-<ISO>.db` into `backups/`; the
+broad glob matched THOSE too and lexicographic sort placed `...-pre-...`
+after `...-2026...`, so prior rotation could delete OUR backups while
+keeping stale 0-row foreign ones. Owned subdir + digit-anchored pattern
+prevent ever touching a non-ours file.
 """
 from __future__ import annotations
 import sqlite3, sys, time, os
 from pathlib import Path
 
 DEFAULT_SRC = Path.home() / ".claude-mem" / "claude-mem.db"
-DEFAULT_OUT = Path.home() / ".claude-mem" / "backups"
+DEFAULT_OUT = Path.home() / ".claude-mem" / "backups" / "cmint"
+OURS_GLOB = "claude-mem-[0-9]*.db"   # excludes claude-mem-pre-*.db
 
 def backup(src: str, outdir: str, retain: int = 14,
            _force_unique: bool = False) -> str:
@@ -135,7 +159,7 @@ def backup(src: str, outdir: str, retain: int = 14,
     with d:
         s.backup(d)
     s.close(); d.close()
-    backups = sorted(out.glob("claude-mem-*.db"))
+    backups = sorted(out.glob(OURS_GLOB))   # ours only; never foreign
     for old in backups[:-retain]:
         old.unlink()
     return str(dest)
@@ -151,7 +175,7 @@ if __name__ == "__main__":
 - [ ] **Step 4: Run tests to verify they pass**
 
 Run: `python -m pytest scripts/claude_mem_integration/tests/test_backup.py -v`
-Expected: 2 passed.
+Expected: 3 passed.
 
 - [ ] **Step 5: Manual smoke + first real backup**
 
@@ -606,7 +630,7 @@ git commit -m "docs(claude-mem): C6 pre-upgrade checklist (M4)"
 Create `scripts/claude_mem_integration/P0_P1_GATE_LOG.md` with the literal results of:
 1. Firewall: `python -c "import socket;s=socket.socket();s.settimeout(2);print(s.connect_ex(('127.0.0.1',37777)))"` → expect `0` (localhost OK); note the firewall rule name from Task 4.
 2. Backup restore: `python scripts/claude_mem_integration/backup_claude_mem.py` then
-   `python -c "import sqlite3,glob;f=sorted(glob.glob(r'C:/Users/sinas/.claude-mem/backups/claude-mem-*.db'))[-1];print(f, sqlite3.connect(f).execute('select count(*) from observations').fetchone())"`
+   `python -c "import sqlite3,glob;f=sorted(glob.glob(r'C:/Users/sinas/.claude-mem/backups/cmint/claude-mem-[0-9]*.db'))[-1];print(f, sqlite3.connect('file:%s?mode=ro'%f,uri=True).execute('select count(*) from observations').fetchone())"`
    → expect a row count > 0 from the restored copy.
 3. Health gate green now: `echo {} | python scripts/claude_mem_integration/health_gate.py` → expect `{"continue": true, "suppressOutput": true}` (all-pass) on the current healthy install.
 

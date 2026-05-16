@@ -3,13 +3,24 @@
 
 Online Backup API copies a CONSISTENT snapshot even while the worker
 holds the WAL open (a plain file copy of a WAL db can be torn).
+
+Isolation (execution-found bug fix 2026-05-15): our backups live in a
+DEDICATED OWNED subdir (`backups/cmint`), and rotation matches only the
+strict pattern `claude-mem-[0-9]*.db`. claude-mem itself writes its own
+pre-upgrade dumps as `claude-mem-pre-<ver>-<ISO>.db` into `backups/`;
+the broad glob `claude-mem-*.db` matched THOSE too and lexicographic
+sort placed `...-pre-...` after our `...-2026...`, so the prior rotation
+could delete OUR backups while keeping stale 0-row foreign ones. Both
+the owned subdir and the digit-anchored pattern prevent ever touching a
+non-ours file.
 """
 from __future__ import annotations
 import sqlite3, sys, time, os
 from pathlib import Path
 
 DEFAULT_SRC = Path.home() / ".claude-mem" / "claude-mem.db"
-DEFAULT_OUT = Path.home() / ".claude-mem" / "backups"
+DEFAULT_OUT = Path.home() / ".claude-mem" / "backups" / "cmint"
+OURS_GLOB = "claude-mem-[0-9]*.db"   # excludes claude-mem-pre-*.db
 
 def backup(src: str, outdir: str, retain: int = 14,
            _force_unique: bool = False) -> str:
@@ -23,7 +34,7 @@ def backup(src: str, outdir: str, retain: int = 14,
     with d:
         s.backup(d)
     s.close(); d.close()
-    backups = sorted(out.glob("claude-mem-*.db"))
+    backups = sorted(out.glob(OURS_GLOB))   # ours only; never foreign
     for old in backups[:-retain]:
         old.unlink()
     return str(dest)
