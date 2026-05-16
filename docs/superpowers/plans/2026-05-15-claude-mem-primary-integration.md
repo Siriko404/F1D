@@ -261,6 +261,22 @@ def test_emits_additionalcontext_json_on_fail(tmp_path, capsys):
     payload = json.loads(out.strip().splitlines()[-1])
     assert payload["continue"] is True
     assert "DEGRADED" in payload["hookSpecificOutput"]["additionalContext"]
+
+def test_capture_pipeline_2485_and_failclosed(tmp_path):
+    db = tmp_path/"m.db"; _mkdb(db)
+    st = tmp_path/"s.json"
+    r1 = hg.evaluate(str(db), "F1D", str(st), port=0, worker_check=False)
+    assert r1["checks"]["capture_pipeline"] == "first-run"
+    # no global growth between runs -> #2485 fail + fail-closed ok=False
+    r2 = hg.evaluate(str(db), "F1D", str(st), port=0, worker_check=False)
+    assert r2["checks"]["capture_pipeline"] == "fail"
+    assert r2["ok"] is False
+    # an observation anywhere -> pipeline pass next check
+    c = sqlite3.connect(db)
+    c.execute("INSERT INTO observations(project,created_at_epoch) VALUES('X',1)")
+    c.commit(); c.close()
+    r3 = hg.evaluate(str(db), "F1D", str(st), port=0, worker_check=False)
+    assert r3["checks"]["capture_pipeline"] == "pass"
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -353,6 +369,21 @@ def evaluate(db: str, project: str, state_path: str, port: int,
             msgs.append(f"observations did not grow for {project} ({prev}->{cnt})")
         st.setdefault(project, {})["obs_count"] = cnt
         st[project]["last_check_epoch"] = int(time.time()*1000)
+        # (e) #2485 capture-pipeline-alive: did ANY observation anywhere
+        # get written since last check? This is the headline open bug
+        # against v13.2.0 (observations table stays at 0). Without this
+        # the gate cannot catch the failure mode it exists for.
+        gtot = cur.execute("SELECT count(*) FROM observations").fetchone()[0]
+        gprev = st.get("__global__", {}).get("obs_count")
+        if gprev is None:
+            checks["capture_pipeline"] = "first-run"
+        elif gtot > gprev:
+            checks["capture_pipeline"] = "pass"
+        else:
+            checks["capture_pipeline"] = "fail"
+            msgs.append(f"#2485: NO new observations anywhere "
+                        f"({gprev}->{gtot}) — capture pipeline may be dead")
+        st.setdefault("__global__", {})["obs_count"] = gtot
         Path(state_path).write_text(json.dumps(st, indent=2))
         # (d) chroma drift
         try:
@@ -367,7 +398,9 @@ def evaluate(db: str, project: str, state_path: str, port: int,
         con.close()
     except sqlite3.OperationalError as e:
         checks["db"] = "fail"; msgs.append(f"db unreadable: {e}")
-    failed = [k for k, v in checks.items() if v == "fail"]
+    # FAIL-CLOSED (Sina directive 2026-05-15): ANY non-green signal warns,
+    # not only a hard "fail" — unknown/skip count as not-healthy.
+    failed = [k for k, v in checks.items() if v not in ("pass", "first-run")]
     return {"ok": not failed, "checks": checks, "messages": msgs,
             "project": project}
 
@@ -414,7 +447,7 @@ if __name__ == "__main__":
 - [ ] **Step 4: Run tests to verify they pass**
 
 Run: `python -m pytest scripts/claude_mem_integration/tests/test_health_gate.py -v`
-Expected: 2 passed.
+Expected: 3 passed.
 
 - [ ] **Step 5: Register the hook in `~/.claude/settings.json`**
 
@@ -555,8 +588,8 @@ git commit -m "docs(claude-mem): P0->P1 gate results"
 
 **Mechanics (concrete — spec deferred these here):**
 - `plant`: writes a uniquely-tagged fact to a real file via the tool path so PostToolUse captures it. The fact = `CANARY <id>: verification constant = <value>; source = spec §8`. Because claude-mem's PostToolUse hook enqueues `tool_input`/`tool_response` of the Write, the canary enters capture deterministically (more reliable than relying on transcript summarization).
-- `verify`: runs `npx claude-mem search "CANARY <id>"` (the claude-mem CLI search over the SAME store the model is fed). PASS iff the returned text contains `<value>` **verbatim** AND the `source = spec §8` token. Appends a ledger row.
-- Gate: **≥ 3 PASS across 3 distinct Phase-1 sessions, 0 FAIL** (spec §8). `plant` in session S, `verify` in a later session (new `startup`/`/clear`/`/compact` segment).
+- `verify`: PASS must be proven on the **same recall path the model actually uses**, not just the CLI. In the verify session the operator (a) confirms the SessionStart `additionalContext` / injected context for that session, and (b) calls the `mcp__plugin_claude-mem_mcp-search__search` MCP tool for the cid, then passes that returned text to `canary.py verify <cid> --recalled "<mcp result text>"`. The script PASSES iff that LLM-path text contains `<value>` **verbatim** AND the `source = spec §8` token. It additionally runs `npx claude-mem search` as a NON-authoritative cross-check and logs both; a CLI-pass / MCP-fail split is itself a FAIL (it is the exact split the gate exists to catch).
+- Gate: **≥ 3 PASS, 0 FAIL — using 3 DISTINCT canaries, each planted in its own session and recalled in a later distinct session** (spec §8). Three separate plant→recall cycles (not 3 re-verifies of one canary): this tests capture *and* recall stability across independent capture events. Sessions are `startup`/`/clear`/`/compact` segments.
 
 - [ ] **Step 1: Write the canary tool**
 
@@ -589,44 +622,63 @@ def plant() -> str:
     rec = {"cid": cid, "value": value, "planted_epoch": int(time.time()*1000)}
     (CANDIR / f"{cid}.json").write_text(json.dumps(rec))
     print(f"PLANTED cid={cid} value={value}")
-    print("Now do other work this session, end it, start a NEW session, "
-          "then run:  python scripts/claude_mem_integration/canary.py verify "
-          + cid)
+    print("Do other work this session, end it, start a NEW session, then in "
+          f"that session call the mem-search MCP tool for 'CANARY {cid}', and "
+          "run:  python scripts/claude_mem_integration/canary.py verify "
+          f"{cid} --recalled \"<text the MCP tool returned>\"")
     return cid
 
-def verify(cid: str) -> bool:
+def _check(text: str, value: str):
+    return (value in text), ("spec §8" in text)
+
+def verify(cid: str, recalled: str) -> bool:
     rec = json.loads((CANDIR / f"{cid}.json").read_text())
     value = rec["value"]
+    # AUTHORITATIVE: the LLM-path text — what the mem-search MCP tool
+    # returned this session (what the model actually sees).
+    mcp_verbatim, mcp_sourced = _check(recalled, value)
+    mcp_ok = mcp_verbatim and mcp_sourced
+    # NON-authoritative cross-check: claude-mem CLI search.
     try:
-        out = subprocess.run(["npx", "claude-mem", "search", f"CANARY {cid}"],
+        cli = subprocess.run(["npx", "claude-mem", "search", f"CANARY {cid}"],
                               capture_output=True, text=True, timeout=120,
                               shell=True).stdout
     except Exception as e:
-        out = f"<<search error: {e}>>"
-    verbatim = value in out
-    sourced = "spec §8" in out or "spec §8" in out
-    ok = verbatim and sourced
+        cli = f"<<cli error: {e}>>"
+    cli_verbatim, cli_sourced = _check(cli, value)
+    cli_ok = cli_verbatim and cli_sourced
+    split = cli_ok and not mcp_ok          # CLI-pass / MCP-fail = the bug
+    ok = mcp_ok and not split
     row = (f"| {time.strftime('%Y-%m-%d %H:%M')} | {cid} | {value} | "
-           f"verbatim={verbatim} sourced={sourced} | "
+           f"MCP(verbatim={mcp_verbatim},src={mcp_sourced}) "
+           f"CLI(verbatim={cli_verbatim},src={cli_sourced}) split={split} | "
            f"{'PASS' if ok else 'FAIL'} |\n")
     if not LEDGER.exists():
-        LEDGER.write_text("# Recall-fidelity ledger (spec §8: need >=3 PASS, "
-                          "0 FAIL across distinct sessions)\n\n"
+        LEDGER.write_text("# Recall-fidelity ledger (spec §8: >=3 PASS, "
+                          "0 FAIL; 3 DISTINCT canaries; MCP path "
+                          "authoritative)\n\n"
                           "| when | cid | value | detail | result |\n"
                           "|---|---|---|---|---|\n", encoding="utf-8")
     with LEDGER.open("a", encoding="utf-8") as f:
         f.write(row)
-    print(("PASS" if ok else "FAIL") + f" cid={cid} verbatim={verbatim} "
-          f"sourced={sourced}")
+    print(("PASS" if ok else "FAIL") + f" cid={cid} mcp_ok={mcp_ok} "
+          f"cli_ok={cli_ok} split={split}")
     return ok
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1] not in ("plant", "verify"):
-        print("usage: canary.py plant | verify <cid>"); sys.exit(1)
+        print('usage: canary.py plant | verify <cid> --recalled "<mcp text>"')
+        sys.exit(1)
     if sys.argv[1] == "plant":
         plant()
     else:
-        sys.exit(0 if verify(sys.argv[2]) else 2)
+        if "--recalled" not in sys.argv:
+            print('verify requires --recalled "<text the mem-search MCP '
+                  'tool returned for this cid THIS session>"')
+            sys.exit(1)
+        _cid = sys.argv[2]
+        _recalled = sys.argv[sys.argv.index("--recalled") + 1]
+        sys.exit(0 if verify(_cid, _recalled) else 2)
 ```
 
 - [ ] **Step 2: Smoke test the plant path**
@@ -644,8 +696,9 @@ git commit -m "feat(claude-mem): Phase-1 recall-fidelity canary tool (spec §8)"
 - [ ] **Step 4: Run the Phase-1 window (operational, not a code step)**
 
 Over ≥ 8 sessions spanning ≥ 7 days, with native auto-memory STILL ON (M1):
-- Each session start: confirm the health gate is green (no DEGRADED context).
-- At least 3 separate sessions: `plant` in one session, do real work, end it; in a **later distinct session** run `verify <cid>`.
+- Each session start: confirm the health gate is green (no DEGRADED additionalContext).
+- **3 DISTINCT canaries** (not 3 re-verifies of one): for each of 3 separate plant sessions → `canary.py plant`, do real work, end the session; in a **later distinct session** call the `mcp__plugin_claude-mem_mcp-search__search` MCP tool for that cid, then `canary.py verify <cid> --recalled "<mcp result>"`. Need **≥3 PASS, 0 FAIL**.
+- One-time project-key sanity (advisor note): confirm `health_gate._project_from_cwd` basename equals the key claude-mem uses in `~/.claude-mem/chroma-sync-state.json` (observed "F1D" matches; verify, don't assume — if it differs, set the project explicitly rather than via cwd basename).
 - Record every result (the script appends to `recall_canary_log.md`).
 
 - [ ] **Step 5: Commit the ledger when the window completes**
@@ -686,7 +739,7 @@ If the claude-mem health gate reports DEGRADED, treat memory as untrusted
 and tell the user (see rollback).
 ```
 
-Verify non-conflict: read `~/.claude/CLAUDE.md` and confirm this text does not contradict the existing mandatory frameworks (karpathy-guidelines, user-profile-sina, scope-discipline, superpowers) or the auto-memory section. Specifically the existing global "## Project memory" / auto-memory instructions must be reconciled — note in the directive that the native auto-memory section is superseded while disabled. Record the verification result inline in `claude_mem_directive.md`.
+Verify non-conflict: read `~/.claude/CLAUDE.md` and confirm this text does not contradict the existing mandatory frameworks (karpathy-guidelines, user-profile-sina, scope-discipline, superpowers). **Exact reconciliation of the native auto-memory / "## Project memory" section (do NOT delete it — the two-flip rollback depends on it still being present and valid):** append a single explicit sentence to the END of that section reading — *"SUPERSEDED while `autoMemoryEnabled` is false (claude-mem is the system of record); this section becomes active again automatically on rollback (both booleans → true)."* Deleting or rewriting the section would break §11 rollback. Record the before/after of `~/.claude/CLAUDE.md` and the conflict-check result inline in `claude_mem_directive.md`.
 
 - [ ] **Step 3: ⚠ RATIFIED CUTOVER — append directive + flip settings**
 
