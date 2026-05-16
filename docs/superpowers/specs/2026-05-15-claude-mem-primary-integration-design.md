@@ -34,7 +34,8 @@ NOW:   native auto-memory ON  +  claude-mem ON   (uncoordinated, both run)
                          │
  PHASE 0  harden (reversible, NO memory-source change)
                          │   security (M5) + durability (M6) + observability (M2/M3)
- PHASE 1  verify ≥1 wk   │   native = SAFETY NET (stays ON)  [M1]
+ PHASE 1  verify→gate    │   native = SAFETY NET (stays ON)  [M1]
+          (runs until P1→P2 gate passes; ≥1 wk minimum, may extend)
                          │   claude-mem runs + per-session health gate (M2)
                          │   gate green N≥8 sessions + recall-fidelity PASS ──┐
  PHASE 2  cutover (gated) │ ◄───────────────────────────────────────────────┘
@@ -109,7 +110,7 @@ The safety guarantee rests on the **structural** mechanism, never on the directi
 **P1 → P2 gate (all required):**
 1. ≥ 8 sessions (per definition above) spanning ≥ 7 calendar days.
 2. C3/M2 green on every one of those sessions (zero failures).
-3. **Recall-fidelity check ≥ 1 PASS, 0 FAIL (advisor fix #1 — this is the decisive gate):** in session S, plant a canary observation containing a specific numeric claim and its source string. At the start of session S+1, query it via the mem-search skill. **PASS** only if the recalled text reproduces the number **verbatim** (exact characters for digits/identifiers) AND attributes it to the correct source. **FAIL** on any numeric mismatch, omission, or mis-attribution. Capture-count growth (M2c) is necessary but **NOT sufficient** — obs #792 proves capture can be 100% "successful" while the stored memory is wrong; recall-fidelity is what authorises Phase 2.
+3. **Recall-fidelity check ≥ 1 PASS, 0 FAIL (advisor fix #1 — this is the decisive gate; canary mechanics specified in the implementation plan):** in session S, plant a canary observation containing a specific numeric claim and its source string. At the start of session S+1, query it via the mem-search skill. **PASS** only if the recalled text reproduces the number **verbatim** (exact characters for digits/identifiers) AND attributes it to the correct source. **FAIL** on any numeric mismatch, omission, or mis-attribution. Capture-count growth (M2c) is necessary but **NOT sufficient** — obs #792 proves capture can be 100% "successful" while the stored memory is wrong; recall-fidelity is what authorises Phase 2.
 
 **Ongoing (Phase 2+):** C3/M2 every session start; monthly M6 test-restore; C6 pre-upgrade checklist before any claude-mem version change.
 
