@@ -73,6 +73,13 @@ import pyarrow.parquet as pq
 
 ROOT = Path(__file__).resolve().parents[2]
 STEP1_BASE = ROOT / "outputs" / "campello_rebuild" / "step1_sample"
+# C.1 #7 panel-integrity gate (step1b). When True, beta^UK is estimated on
+# the panel-integrity-gated universe, matching Campello's filter ORDER
+# (C.1 applies #7 before the missing-beta^UK drop). Revert = set False.
+STEP1B_BASE = ROOT / "outputs" / "campello_rebuild" / "step1b_panel_integrity"
+# #7 experiment reverted 2026-05-17 (tested -> negative; isolating D5).
+# True = estimate beta^UK on the C.1-#7-gated universe; False = baseline.
+USE_STEP1B = False
 CRSP_DIR = ROOT / "inputs" / "CRSP_DSF"
 FTSE_CSV = ROOT / "inputs" / "Brexit_replication" / "Yahoo_FTSE100" / "FTSE100_yfinance_daily.csv"
 BOE_CSV = ROOT / "inputs" / "Brexit_replication" / "BoE" / "USD_GBP_daily_2008-2018.csv"
@@ -97,14 +104,17 @@ def _abort(msg: str) -> None:
 
 
 def latest_step1_sample() -> Path:
-    if not STEP1_BASE.exists():
-        _abort(f"Step-1 output dir missing: {STEP1_BASE} (run step1_sample.py first)")
-    subdirs = sorted([d for d in STEP1_BASE.iterdir() if d.is_dir()])
+    base = STEP1B_BASE if USE_STEP1B else STEP1_BASE
+    label = "Step-1b" if USE_STEP1B else "Step-1"
+    if not base.exists():
+        _abort(f"{label} output dir missing: {base} "
+               f"({'run step1b_panel_integrity.py first' if USE_STEP1B else 'run step1_sample.py first'})")
+    subdirs = sorted([d for d in base.iterdir() if d.is_dir()])
     if not subdirs:
-        _abort(f"no Step-1 timestamp dirs under {STEP1_BASE}")
+        _abort(f"no {label} timestamp dirs under {base}")
     sample = subdirs[-1] / "sample.parquet"
     if not sample.exists():
-        _abort(f"Step-1 sample.parquet missing in {subdirs[-1]}")
+        _abort(f"{label} sample.parquet missing in {subdirs[-1]}")
     return sample
 
 

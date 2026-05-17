@@ -22,8 +22,10 @@ Authoritative spec — §IV.C.3 (main_p20.txt) + Table 8 (main_p31.txt) verbatim
 Operationalization (paper-SILENT -> locked here, advisor-ratified, logged to
 metadata; NEVER changed to chase significance — Step-2-vol() discipline):
   Tobin's Q   = (prccq*cshoq + dlttq + dlcq) / atq          (at t-1)
-  cash flow   = (oibdpq - xintq - txtq) / atq               (at t-1; no
-                oancfq/dvcq on disk -> BKS-without-dividends, documented)
+  cash flow   = oibdpq / atq_{prev qtr}   (Campello Table 1 VERBATIM:
+                "operating income before depreciation / lagged total
+                assets"; fixed 2026-05-16 from prior non-verbatim
+                (oibdpq-xintq-txtq)/atq_t improvisation)
   log assets  = ln(atq)                                     (at t-1)
   salesgrowth = saleq_{t-1} / saleq_{t-1 minus 1 year} - 1   (YoY, kills
                 seasonality; QoQ would double-count the design)
@@ -135,6 +137,11 @@ def _yoy_q(cyq: int) -> int:
     return (y - 1) * 10 + q
 
 
+def _next_q(cyq: int) -> int:
+    y, q = divmod(cyq, 10)
+    return y * 10 + (q + 1) if q < 4 else (y + 1) * 10 + 1
+
+
 def _qbounds(cyq: int) -> tuple[pd.Timestamp, pd.Timestamp]:
     y, q = divmod(cyq, 10)
     m0 = (q - 1) * 3 + 1
@@ -181,10 +188,17 @@ def load_compustat(panel_gv: set[str]) -> pd.DataFrame:
     df["tobinq"] = ((df["prccq"] * df["cshoq"]
                      + df["dlttq"].fillna(0) + df["dlcq"].fillna(0))
                     / df["atq"].replace(0, np.nan))
-    df["cf"] = ((df["oibdpq"] - df["xintq"].fillna(0) - df["txtq"].fillna(0))
-                / df["atq"].replace(0, np.nan))
     df["logassets"] = np.log(df["atq"].where(df["atq"] > 0))
     df = df.drop_duplicates(["gvkey", "cyq"], keep="last")
+    # CASH_FLOW — Campello Table 1 VERBATIM: "operating income before
+    # depreciation divided by LAGGED total assets" => oibdpq_t / atq_{t-1}.
+    # Prior rebuild used (oibdpq - xintq - txtq)/atq_t (contemporaneous AT,
+    # extra interest+tax subtraction) — a non-verbatim improvisation.
+    # Corrected 2026-05-16 (systematic-debugging Phase 4, one variable).
+    _lag = df[["gvkey", "cyq", "atq"]].rename(columns={"atq": "atq_lag1"})
+    _lag["cyq"] = _lag["cyq"].map(_next_q)
+    df = df.merge(_lag, on=["gvkey", "cyq"], how="left")
+    df["cf"] = df["oibdpq"] / df["atq_lag1"].replace(0, np.nan)
     return df.set_index(["gvkey", "cyq"]).sort_index()
 
 
@@ -461,8 +475,10 @@ def main() -> None:
                    "[verbatim: total cash / lagged total assets net of cash]",
         "operationalization_locked": {
             "tobinq": "(prccq*cshoq + dlttq + dlcq)/atq  @ t-1",
-            "cash_flow": "(oibdpq - xintq - txtq)/atq  @ t-1 "
-                         "(no oancfq/dvcq on disk; BKS-without-dividends)",
+            "cash_flow": "oibdpq / atq_{t-1}  (Campello Table 1 verbatim: "
+                         "operating income before depreciation / lagged "
+                         "total assets; fixed 2026-05-16 from non-verbatim "
+                         "(oibdpq-xintq-txtq)/atq_t improvisation)",
             "log_assets": "ln(atq) @ t-1",
             "sales_growth": "saleq_{t-1}/saleq_{t-1 - 1yr} - 1  (YoY)",
             "stock_return": "prod(1+RET)-1 over calendar qtr t-1 (CRSP DSF)",

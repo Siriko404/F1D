@@ -103,14 +103,20 @@ def main() -> None:
         _abort(f"only {len(nonneg)} nonneg beta^UK — tercile cut meaningless.")
     print("  GUARD OK\n")
 
-    # RELATIVE terciles of the nonnegative pool (paper-literal).
-    p33 = float(nonneg.quantile(1 / 3))
-    p67 = float(nonneg.quantile(2 / 3))
+    # Campello §IV.C.1 VERBATIM: treated (control) = upper (bottom) TERCILE
+    # of the nonnegative range of the beta^UK distribution. 33rd/67th
+    # percentile (equal-count terciles) of the nonneg pool; negatives
+    # (beta^UK < 0) excluded from the contrast (overestimation-bias,
+    # verbatim). 0.68/0.28 = Campello's REALIZED breakpoints (validation
+    # anchors, not imposed). D5 absolute-cut reverted 2026-05-17 — the
+    # paper states a METHOD; 0.68/0.28 are its outcome, not parameters.
+    p33 = float(nonneg.quantile(1 / 3))   # 33rd pctile of nonneg pool
+    p67 = float(nonneg.quantile(2 / 3))   # 67th pctile of nonneg pool
 
     high = pd.Series(np.nan, index=df.index, dtype="float64")
     nn = df["beta_uk"] >= 0
-    high[nn & (df["beta_uk"] >= p67)] = 1.0          # treated  = top tercile
-    high[nn & (df["beta_uk"] <= p33)] = 0.0          # control  = bottom tercile
+    high[nn & (df["beta_uk"] >= p67)] = 1.0          # treated = top tercile
+    high[nn & (df["beta_uk"] <= p33)] = 0.0          # control = bottom tercile
     df["HIGH_BETA_UK"] = high
 
     n_treated = int((df["HIGH_BETA_UK"] == 1).sum())
@@ -128,11 +134,14 @@ def main() -> None:
     metadata = {
         "step": "3 — treatment assignment (Campello 2022 JFQA §IV.C.1)",
         "step2_input": str(s2),
-        "rule": ("RELATIVE terciles of the nonnegative beta^UK pool "
-                 "(verbatim: 'tercile of the nonnegative range of the beta^UK "
-                 "distribution'); negatives excluded from contrast "
-                 "(overestimation-bias avoidance, verbatim)"),
-        "breakpoints_relative": {"p33": p33, "p67": p67},
+        "rule": ("Campello §IV.C.1 VERBATIM: treated (control) = upper "
+                 "(bottom) TERCILE of the NONNEGATIVE range of the beta^UK "
+                 "distribution (33rd/67th percentile, equal-count); negatives "
+                 "(beta^UK<0) excluded from the contrast (verbatim). 0.68/0.28 "
+                 "= Campello's REALIZED breakpoints (validation anchors, NOT "
+                 "imposed). D5 absolute-cut reverted 2026-05-17: paper states "
+                 "a method; 0.68/0.28 are its realized outcome."),
+        "breakpoints_relative_nonneg_p33_p67": {"p33": p33, "p67": p67},
         "assignment": {
             "treated_HIGH_1": "beta^UK >= 0 AND beta^UK >= p67",
             "control_HIGH_0": "beta^UK >= 0 AND beta^UK <= p33",
@@ -157,7 +166,8 @@ def main() -> None:
     (out_dir / "metadata.json").write_text(json.dumps(metadata, indent=2))
 
     print("RESULT — treatment assignment")
-    print(f"  relative tercile cuts (nonneg pool): p33={p33:.4f}  p67={p67:.4f}")
+    print(f"  tercile cuts (33/67 pct, nonneg pool): p33={p33:.4f}  "
+          f"p67={p67:.4f}")
     print(f"  TREATED (HIGH=1): {n_treated:,}")
     print(f"  CONTROL (HIGH=0): {n_control:,}")
     print(f"  middle (unused) : {n_middle:,}")
