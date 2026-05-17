@@ -156,15 +156,25 @@ def main() -> None:
     _line(2, "Drop non-US (USD/US HQ/canon/dedup)", n2, n1)
 
     # Calendar lags on the screened+deduped buffered frame.
+    # TARGET-DRIVEN keying (matches the verified brexit_cash_flow idiom):
+    # row T computes its OWN previous-quarter id and joins the source row
+    # whose cal_yr_qtr equals that id  ⟹  lag(T) = value(T−1).
+    # NOTE: the prior source-driven keying (source S → key _prev_q(S))
+    # inverted the direction (built a LEAD: lag(T)=value(T+1)), which both
+    # corrupted INVESTMENT/CASH_FLOW/SALES_GROWTH against the wrong period
+    # AND zeroed every 2016 firm-quarter (saleq_lag4 referenced 2017, outside
+    # the ≤2016-12-31 buffer → NaN → filter-6 dropped all 2016). Root-caused
+    # /systematic-debugging 2026-05-17.
     base = scr[["gvkey", "cal_yr_qtr", "atq", "saleq"]].copy()
-    atq_lag = base.assign(_t=base["cal_yr_qtr"].map(_prev_q).astype("int64"))
-    atq_lag = atq_lag[["gvkey", "_t", "atq"]].rename(
-        columns={"_t": "cal_yr_qtr", "atq": "atq_lag1"})
-    sal_lag = base.assign(_t=base["cal_yr_qtr"].map(_prev_yr_q).astype("int64"))
-    sal_lag = sal_lag[["gvkey", "_t", "saleq"]].rename(
-        columns={"_t": "cal_yr_qtr", "saleq": "saleq_lag4"})
-    scr = scr.merge(atq_lag, on=["gvkey", "cal_yr_qtr"], how="left")
-    scr = scr.merge(sal_lag, on=["gvkey", "cal_yr_qtr"], how="left")
+    scr["_pq"] = scr["cal_yr_qtr"].map(_prev_q).astype("int64")
+    scr["_pyq"] = scr["cal_yr_qtr"].map(_prev_yr_q).astype("int64")
+    atq_src = base[["gvkey", "cal_yr_qtr", "atq"]].rename(
+        columns={"cal_yr_qtr": "_pq", "atq": "atq_lag1"})
+    sal_src = base[["gvkey", "cal_yr_qtr", "saleq"]].rename(
+        columns={"cal_yr_qtr": "_pyq", "saleq": "saleq_lag4"})
+    scr = scr.merge(atq_src, on=["gvkey", "_pq"], how="left")
+    scr = scr.merge(sal_src, on=["gvkey", "_pyq"], how="left")
+    scr = scr.drop(columns=["_pq", "_pyq"])
 
     # Quarterly capex from YTD capxy (de-cumulate within gvkey x fiscal yr).
     scr = scr.sort_values(["gvkey", "fyearq", "fqtr"], kind="stable")
