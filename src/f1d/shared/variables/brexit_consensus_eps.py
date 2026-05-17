@@ -21,6 +21,14 @@ groupby('gvkey').shift(1) on cal_yr_qtr-sorted data, so this builder emits
 the contemporaneous value labeled by its native cal_yr_qtr; the runner
 performs the lag.
 
+⚠ FLAG (resolve at eq-(14) panel assembly, NOT here — needs panel
+context): output is keyed by `fpedats` (forecast-period-end, forward-
+looking). A runner shift(1) then makes the period-t control = the
+forecast for fiscal quarter (t−1), which DROPS the "1-quarter-AHEAD"
+forward-looking property. Verbatim is ambiguous on whether Campello
+wants this treated as an ordinary lagged control (shift) or the
+forward-look kept (no runner shift). Decide when building the panel.
+
 Output:
     outputs/variables/brexit_consensus_eps/<ts>/consensus_eps_per_firm_quarter.parquet
     schema: gvkey (zfill-6 str), cal_yr_qtr (int YYYY*10+Q), consensus_eps_z
