@@ -39,9 +39,10 @@ Operationalization (verbatim + Sina-ratified where the paper is silent):
                      standard Compustat practice, data-availability dev.)
       ASSETS       = atq
       CASH_FLOW    = oibdpq / atq_{t-1}
-      TOBIN_Q      = (cshoq*prccq + atq - ceqq + txditcq)/atq  — STRICT:
-                     all 5 components required (Sina 2026-05-17, no
-                     impute-0).
+      TOBIN_Q      = (cshoq*prccq + atq - ceqq + txditcq)/atq  —
+                     MIDDLE-GROUND: require cshoq/prccq/atq/ceqq; impute
+                     txditcq=0 if missing (Sina 2026-05-17, revised after
+                     measuring the strict cost = 25,857 fq).
       SALES_GROWTH = (saleq - saleq_{t-4})/saleq_{t-4}  (YoY)
     Lags atq_{t-1}, saleq_{t-4} via calendar-prev merge (NOT row-shift),
     drawn from a 2008Q1+ load buffer so 2010Q1 is not a boundary
@@ -191,8 +192,10 @@ def main() -> None:
     has_inv = s["capx_q"].notna() & (s["atq_lag1"] > 0)
     has_ast = s["atq"].notna()
     has_cf = s["oibdpq"].notna() & (s["atq_lag1"] > 0)
+    # TOBIN_Q middle-ground (Sina 2026-05-17, revised): require ceqq;
+    # txditcq imputed 0 if missing -> NOT required for constructability.
     has_tq = (s["cshoq"].notna() & s["prccq"].notna() & s["atq"].notna()
-              & s["ceqq"].notna() & s["txditcq"].notna() & (s["atq"] > 0))
+              & s["ceqq"].notna() & (s["atq"] > 0))
     has_sg = s["saleq"].notna() & s["saleq_lag4"].notna() & (s["saleq_lag4"] != 0)
     keep6 = has_inv & has_ast & has_cf & has_tq & has_sg
     drop_by = {
@@ -258,7 +261,8 @@ def main() -> None:
             "popsrc absent -> canonical screen = consol/indfmt/datafmt only",
             "sich absent -> SIC exclusion uses header sic",
             "capxq absent -> quarterly capex de-cumulated from YTD capxy",
-            "TOBIN_Q strict: all 5 components required, no impute-0 (Sina)",
+            "TOBIN_Q middle-ground: require ceqq, impute txditcq=0 (Sina "
+            "2026-05-17, revised after measuring strict cost)",
         ],
     }
     (out_dir / "metadata.json").write_text(json.dumps(meta, indent=2))
