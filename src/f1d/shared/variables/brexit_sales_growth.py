@@ -1,14 +1,15 @@
-"""Brexit-verbatim sales-growth builder — H1.5.brexit_did design (Module #8, audit MAJOR-3).
+"""Brexit-verbatim sales-growth builder — H1.5.brexit_did design.
 
-Per Campello et al. 2022 JFQA Section II.E firm-control verbatim:
-    SalesGrowth_t = (saleq_t − saleq_{t−4}) / |saleq_{t−4}|     quarterly year-on-year
+Campello et al. (2022 JFQA) Table 1 note (verbatim): "SALES_GROWTH is
+defined as the year-on-year percentage change in quarterly sales."
 
-This deviates from F1D's canonical SalesGrowthBuilder which uses annual saley
-in Q4-only:
-    F1D-canonical: (saley − saley_lag) / |saley_lag|  annual
+    SALES_GROWTH_t = (saleq_t − saleq_{t−4}) / saleq_{t−4}
 
-Campello uses quarterly YoY for higher granularity in DiD. Lag via
-groupby('gvkey').shift(4) on cal_yr_qtr-sorted data. 1% winsorization within cal_yr_qtr.
+Signed denominator (verbatim "percentage change" = (new−old)/old, no
+absolute value). The t−4 lag is the same calendar quarter one year prior,
+resolved via calendar-aware merge (NOT row-order shift(4), which mis-lags
+gappy panels). 1% winsorization within cal_yr_qtr (verbatim: "All
+variables are winsorized at the 1% level.").
 
 Output:
     outputs/variables/brexit_sales_growth/<ts>/brexit_sales_growth.parquet

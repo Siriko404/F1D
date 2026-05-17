@@ -1,11 +1,14 @@
-"""Brexit-verbatim cash-flow builder — H1.5.brexit_did design (Module #10, audit MAJOR-3).
+"""Brexit-verbatim cash-flow builder — H1.5.brexit_did design.
 
-Per Campello et al. 2022 JFQA Section II.E firm-control verbatim:
-    CashFlow_t = oibdpq / atq_{t-1}     (operating income before D&A / lagged total assets)
+Campello et al. (2022 JFQA) Table 1 note (verbatim): "CASH_FLOW is defined
+as operating income before depreciation divided by lagged total assets."
 
-This deviates from F1D's canonical CashFlowBuilder which uses oancfy / avg_assets
-(operating cash flow YTD / average assets). Campello uses pre-D&A operating
-income with lagged-AT denominator. 1% winsorization within cal_yr_qtr.
+    CASH_FLOW_t = oibdpq_t / atq_{t-1}
+
+"lagged total assets" = atq at the prior CALENDAR quarter (t-1), resolved
+via calendar-prev-Q merge (NOT row-order shift, which mis-lags gappy
+panels). 1% winsorization within cal_yr_qtr (verbatim: "All variables are
+winsorized at the 1% level.").
 
 Output:
     outputs/variables/brexit_cash_flow/<ts>/brexit_cash_flow.parquet
@@ -66,7 +69,23 @@ class BrexitCashFlowBuilder(VariableBuilder):
             subset=["gvkey", "cal_yr_qtr"], keep="last"
         ).reset_index(drop=True)
 
-        df["atq_lag1"] = df.groupby("gvkey")["atq"].shift(1)
+        # Verbatim "lagged total assets" = atq at the prior CALENDAR quarter
+        # (t-1). Calendar-prev-Q merge, NOT groupby.shift(1): row-order shift
+        # pulls the previous PRESENT quarter for gappy panels (mislabels
+        # atq_{t-2} as atq_{t-1}). Matches sales_growth/stock_return
+        # calendar-aware lag (bug-fix lineage 2026-05-14; cash_flow was
+        # missed in that pass — corrected 2026-05-17 per verbatim).
+        def _prev_yq(yq: int) -> int:
+            yr, q = yq // 10, yq % 10
+            if q == 1:
+                return (yr - 1) * 10 + 4
+            return yr * 10 + (q - 1)
+        df["cal_yr_qtr"] = df["cal_yr_qtr"].astype("int64")
+        df["prev_qtr_id"] = df["cal_yr_qtr"].map(_prev_yq).astype("int64")
+        lag_src = df[["gvkey", "cal_yr_qtr", "atq"]].rename(
+            columns={"cal_yr_qtr": "prev_qtr_id", "atq": "atq_lag1"}
+        )
+        df = df.merge(lag_src, on=["gvkey", "prev_qtr_id"], how="left")
         df = df[df["atq_lag1"] > 0]
         df[COL_NAME] = df["oibdpq"] / df["atq_lag1"]
         df = df[np.isfinite(df[COL_NAME])].dropna(subset=[COL_NAME])
@@ -79,7 +98,7 @@ class BrexitCashFlowBuilder(VariableBuilder):
         stats = self.get_stats(df[COL_NAME], COL_NAME)
         metadata = {
             "source": "Campello et al. 2022 JFQA Section II.E (Cash Flow)",
-            "formula": "oibdpq / atq_{t-1} (operating income before D&A / lagged total assets)",
+            "formula": "oibdpq_t / atq_{calendar t-1} (op income before D&A / lagged total assets; calendar-prev-Q lag)",
             "winsorization": f"{WINSOR_PCT*100}% within cal_yr_qtr",
             "n_rows": int(len(df)),
             "n_unique_gvkeys": int(df["gvkey"].nunique()),

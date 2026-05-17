@@ -1,16 +1,19 @@
-"""Brexit-verbatim Tobin's Q builder — H1.5.brexit_did design (Module #7, audit MAJOR-3).
+"""Brexit-verbatim Tobin's Q builder — H1.5.brexit_did design.
 
-Per Campello et al. 2022 JFQA Section II.E firm-control verbatim:
-    Tobin's Q = (Book Assets + Market Equity) / Book Assets
-              = (atq + cshoq * prccq) / atq
+Campello et al. (2022 JFQA) Table 1 note (verbatim): "TOBIN_Q is defined
+as the market value of assets divided by the book value of assets, and is
+calculated as the market value of equity plus the book value of assets
+minus book value of equity plus deferred taxes, all divided by book value
+of assets."
 
-This deviates from F1D's canonical TobinsQBuilder which subtracts ceqq:
-    F1D-canonical: (atq + cshoq*prccq − ceqq) / atq
+    TOBIN_Q = (cshoq*prccq + atq − ceqq + txditcq) / atq
 
-The −ceqq subtraction adjusts for book equity to recover replacement-cost
-ratio; Campello uses the simpler (Total Capitalization / Book Assets) form.
-4-NEW-Brexit-builders ship to preserve apples-to-apples Campello replication
-(per audit MAJOR-3 + Sina decision). 1% winsorization within calendar quarter.
+where market value of equity = cshoq*prccq, book value of assets = atq,
+book value of equity = ceqq, deferred taxes = txditcq. This is the full
+verbatim form (implemented at line ~79); the earlier "simpler
+(Total Capitalization / Book Assets)" framing was a stale-docstring
+artifact and never matched the code. 1% winsorization within cal_yr_qtr
+(verbatim: "All variables are winsorized at the 1% level.").
 
 Output:
     outputs/variables/brexit_tobins_q/<ts>/brexit_tobins_q.parquet
@@ -66,12 +69,14 @@ class BrexitTobinsQBuilder(VariableBuilder):
         df["datadate"] = pd.to_datetime(df["datadate"])
         df["cal_yr_qtr"] = df["datadate"].dt.year * 10 + df["datadate"].dt.quarter
         df = df[(df["cal_yr_qtr"] >= WINDOW_START_YQ) & (df["cal_yr_qtr"] <= WINDOW_END_YQ)]
-        df = df.dropna(subset=["atq", "cshoq", "prccq"]).copy()
+        # Verbatim Tobin's Q needs ALL components. Paper is SILENT on
+        # missing-value handling (grep-confirmed 2026-05-17); Sina decision
+        # 2026-05-17: STRICT — if book equity (ceqq) or deferred taxes
+        # (txditcq) is missing, Tobin's Q is undefined → drop the
+        # firm-quarter. NO impute-0 (imputing missing book equity to 0
+        # would overstate Q for those firms).
+        df = df.dropna(subset=["atq", "cshoq", "prccq", "ceqq", "txditcq"]).copy()
         df = df[df["atq"] > 0]  # avoid div-by-0
-        # ceqq / txditcq missing → impute 0 (Campello-faithful: missing book-equity
-        # or deferred-tax adjustment items conventionally treated as zero).
-        df["ceqq"] = df["ceqq"].fillna(0)
-        df["txditcq"] = df["txditcq"].fillna(0)
 
         # Campello et al. 2022 JFQA Table 1 footer (j.3198) verbatim:
         #   "market value of equity + book value of assets − book value of equity
@@ -92,6 +97,7 @@ class BrexitTobinsQBuilder(VariableBuilder):
         metadata = {
             "source": "Campello et al. 2022 JFQA Section II.E (Tobin's Q)",
             "formula": "(cshoq*prccq + atq - ceqq + txditcq) / atq",
+            "missing_components": "STRICT — require ceqq & txditcq present (no impute-0); paper-silent, Sina 2026-05-17",
             "winsorization": f"{WINSOR_PCT*100}% within cal_yr_qtr",
             "n_rows": int(len(df)),
             "n_unique_gvkeys": int(df["gvkey"].nunique()),

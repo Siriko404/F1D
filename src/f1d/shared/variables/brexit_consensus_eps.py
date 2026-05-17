@@ -39,6 +39,19 @@ from .base import VariableBuilder, VariableResult
 
 logger = logging.getLogger(__name__)
 
+WINSOR_PCT = 0.01  # verbatim Table 1 note: "All variables are winsorized at the 1% level."
+
+
+def _winsorize_within(df: pd.DataFrame, col: str, group: str, pct: float = WINSOR_PCT) -> pd.DataFrame:
+    """1% winsorization within each group (cal_yr_qtr) — matches sibling control builders."""
+    def _w(s: pd.Series) -> pd.Series:
+        lo = s.quantile(pct)
+        hi = s.quantile(1 - pct)
+        return s.clip(lower=lo, upper=hi)
+    df = df.copy()
+    df[col] = df.groupby(group, observed=True)[col].transform(_w)
+    return df
+
 
 # Brexit DiD output window.
 WINDOW_START_YQ = 20101
@@ -224,13 +237,19 @@ class BrexitConsensusEPSBuilder(VariableBuilder):
 
         # Restrict to Brexit panel window 2010Q1-2016Q4 for the output.
         out = df[(df["cal_yr_qtr"] >= WINDOW_START_YQ) & (df["cal_yr_qtr"] <= WINDOW_END_YQ)].copy()
-        out = out[["gvkey", "cal_yr_qtr", "consensus_eps_z"]]
+        out = out[["gvkey", "cal_yr_qtr", "consensus_eps_z"]].dropna(subset=["consensus_eps_z"])
+        # Verbatim Table 1 note: "All variables are winsorized at the 1%
+        # level." Applied to the standardized variable within cal_yr_qtr
+        # (same cross-sectional convention as the other firm controls).
+        out = _winsorize_within(out, "consensus_eps_z", "cal_yr_qtr")
         logger.info(f"  Brexit-window rows (gvkey, cal_yr_qtr): {len(out):,}")
         logger.info(f"  unique gvkeys with consensus EPS in Brexit window: {out['gvkey'].nunique():,}")
 
         stats = self.get_stats(out["consensus_eps_z"], "consensus_eps_z")
         metadata = {
-            "source": "IBES Detail (FPI=6 FQ1) + within-firm z-score over 2000-2025",
+            "source": "IBES Detail (FPI=6 FQ1) mean 1Q-ahead EPS forecast",
+            "standardization": "within-firm z-score over 2000-2025 (verbatim 'standardized' is undefined; operationalization — Sina-flagged)",
+            "winsorization": f"{WINSOR_PCT*100}% within cal_yr_qtr (verbatim: all variables winsorized at 1%)",
             "n_rows_brexit_window": int(len(out)),
             "n_unique_gvkeys_brexit": int(out["gvkey"].nunique()),
             "lag_convention": "BUILDER emits contemporaneous value; runner applies 1Q-lag at panel-assembly",
