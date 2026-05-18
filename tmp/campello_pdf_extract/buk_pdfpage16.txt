@@ -1,0 +1,196 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 16 (0-based idx 15)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                        Campello,Cortes,d’Almeida,andKankanhalli 3193 o i.o
+                                                            rg
+                                                            /1
+                                                            0
+        ofWisconsin,forinformationonU.S.-basedemployment.TheYTSdatabaseis .1
+                                                            0
+                                                            1
+        compiled from historical business files from Infogroup and are linked longitu- 7 /S
+                                                            0
+        dinally to track establishment location, employment, and sales information at 0 2
+                                                            2
+        theestablishment-yearlevelforpublicandprivatefirmsintheUnitedStates.We 1 0
+                                                            9
+                                                            0
+        matchoursamplefirms(bothparentsandtheirU.S.subsidiaries)toYTSprimar- 2 2
+                                                            0
+        ilyusingtickers,andaugmentthismatchthroughmanualsearchesbyfirmname. 0 0
+                                                            3
+                                                            0
+        Thefirmsinoursamplecollectivelyoperated757,083uniqueestablishments,and 8
+                                                            P
+        this results in 1,809,301 establishment-year observations over the 2010–2016 u b
+        period. We aggregate YTS employment growth at the firm level, giving a final
+                                                            lish
+                                                            e
+                                                            d
+        U.S.establishment-levelemploymentgrowthsampleof11,345firm-years. o n
+                                                            lin
+           WeuseCRSPstockpricedataandBloombergequityindexandcurrencydata e
+                                                            b
+                                                            y
+        tocomputeourtheoreticalframework-basedmeasureoffirmexposuretotheUnited C
+                                                            a
+                                                            m
+        Kingdom(seeequation(13)).Weusemonthlydatafrom2010:M1to2014:M12so b
+        thatexposuretotheUnitedKingdomismeasuredbeforeanymajorBrexit-related
+                                                            rid
+                                                            g
+                                                            e
+        events. Analyst forecast data areobtained from I/B/E/S. Dataon bondyields are U n
+        R                                                    
+        fro                                                  
+         eu                                                  
+          m                                                  
+          te                                                 
+           T                                                 
+           rs                                                
+            R                                                
+             D                                               
+             A                                               
+              e                                              
+              C                                              
+              a                                              
+               E                                             
+               lS                                            
+                a                                            
+                c                                            
+                 n                                           
+                 a                                           
+                 d                                           
+                 n.                                          
+                  S                                          
+                   M                                         
+                   D                                         
+                    a                                        
+                    C                                        
+                     c                                       
+                     ,                                       
+                     r                                       
+                      w                                      
+                      oe                                     
+                       h                                     
+                       c                                     
+                       e                                     
+                        o                                    
+                        r                                    
+                        n                                    
+                        ea                                   
+                         o                                   
+                         s                                   
+                          m                                  
+                          s                                  
+                           i                                 
+                           y                                 
+                           c                                 
+                            n                                
+                            v                                
+                            d                                
+                             a                               
+                             ic                              
+                             ri                              
+                              a                              
+                              a                              
+                              t                              
+                               b                             
+                               e                             
+                               l                             
+                               d                             
+                                es                           
+                                lo                           
+                                 a                           
+                                  a                          
+                                  r                          
+                                  n                          
+                                  e                          
+                                   s                         
+                                   t                         
+                                    p                        
+                                    a                        
+                                    r                        
+                                    k                        
+                                     e                       
+                                     e                       
+                                     a                       
+                                      n                      
+                                      ds                     
+                                       fr                    
+                                        a                    
+                                        o                    
+                                        r                    
+                                        m                    
+                                         ed                  
+                                          t                  
+                                          r                  
+                                          h                  
+                                           a                 
+                                           e                 
+                                           w                 
+                                            F                
+                                            n                
+                                             e               
+                                             f               
+                                             d               
+                                              r              
+                                              e              
+                                              o              
+                                               r             
+                                               m             
+                                               al            
+                                                W            
+                                                Re           
+                                                 R           
+                                                  s          
+                                                  D          
+                                                  er         
+                                                   S         
+                                                   v         
+                                                    –        
+                                                    e        
+                                                            iv
+                                                            e rsity
+                                                            P
+        BankofSt.Louis’FREDdatabase.                        re
+                                                            ss
+        C. TestStrategyandEmpiricalSpecification             
+        1. Identification                                    
+           WeuseastandardDIDapproachtoassesstheimpactofthe2016Brexitvote
+        onAmericanfirms.Followingourframework,inourbaseanalysis,wecharacterize
+        firms as treated (control) units if they are in the upper (bottom) tercile of the
+        nonnegative range of the βUK distribution. For group contrasting, we do not
+                        i                                    
+        includefirmsthatbenefitfromuncertaintyintheUnitedKingdominthecontrol
+        group(firmswithβUK<0)asthiscouldleadtooverestimationbiasesattachedto
+                   i                                         
+        thetreatmenteffectsweseektoidentify.Nevertheless,inspecificationswherewe
+        useβUK asacontinuoustreatmentvariable,werelaxthisrestrictionandinclude
+           i                                                 
+        allvaluesofβUK.17Underthismarket-basedapproach,atotalof449uniquefirms
+                i           (cid:1) (cid:3)                  
+        areassignedtothetreatedcategory βUK>0:68 .Incontrast,360uniquefirms
+                              i                              
+        areassignedtothecontrolcategory(βUK<0:28).Wealsoconsideranalternative,
+                             i                               
+        text-based measure of exposure to Brexit. Under this approach, 807 firms are
+        assigned to the treated category (2015 10-K mentions of Brexit terms >5).
+        Atotalof433firmsinthecontrolcategoryhavenomentionsofBrexit-related
+        termsintheir10-Ks.                                   
+        2. Timeline                                          
+           Oncefirmsareidentifiedasexposedandnonexposed,weneedtosetthetime
+        frame of our DID analysis. We make this determination by mapping key events
+        of our institutional setting into market-based measures of perceived uncertainty.
+        InFigure3,weplotthreepoint-in-timesnapshotsofthetermstructureofimplied
+          17Inunreportedtests,weonlylabelthosefirmswithstatisticallysignificantpositiveβUKestimates
+                                               i             
+        astreatedfirms,andthosewithβUKstatisticallyindistinguishablefrom0ascontrols.Wefindthatour
+                       i                                     
+        resultsholdacrossarangeofsensibletreatmentassignmentthresholds.
+========================================================================
+

@@ -1,0 +1,83 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 36 (0-based idx 35)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                        Campello,Cortes,d’Almeida,andKankanhalli 3213 o i.o
+                                                            rg
+                                                            /1
+                                                            0
+           Table11showsourbaselineDIDspecificationsaugmentedwithbothcontrols .1
+                                                            0
+                                                            1
+        forexposuretoautomation.Ourcoefficientsofinterestremainstatisticallysignif- 7 /S
+                                                            0
+        icant, suggesting that our results are robust to accounting for the automation 0 2
+                                                            2
+        technologychannel.30                                1 0
+                                                            9
+                                                            0
+                                                            2
+                                                            2
+        D. AccountingforTrump’sElection                     0 0 0
+                                                            3
+                                                            0
+                                                            8
+           One could be concerned about confounding uncertainty effects associated P u
+                                                            b
+        withtheelectionofPresidentDonaldTrumpintheUnitedStates.Weaddressthis
+                                                            lish
+                                                            e
+        issue in two different ways. First, we consider an alternative event window that d o
+                                                            n
+        excludes2016:Q4fromourtreatmentevaluationperiod.Thisnarrowertimewin- lin
+                                                            e
+        dow helps mitigate concerns that forward-looking behavior of firms regarding b y
+                                                            C
+        Trump’selectionintheUnitedStatescouldinfluenceourresults(Trump’svictory a
+                                                            m
+                                                            b
+        wasanunlikelyeventasof2016:Q3).Accordingly,wecomparethethirdquarterof rid
+                                                            g
+        2016 with the same quarter of 2015. As shown in columns 1 and 2 of Table 12, e U
+                                                            n
+        resultsaresimilartoourbaselineestimatesinTable2.Thepatternswereportare iv
+                                                            e
+        consistentwithrelativelyshort-lived,“drop-and-rebound”effectsofuncertainty. rsity
+           Second, we look at the recent literature on the effect of Trump’s election on P re
+        U.S.firms.Wagner,Zeckhauser,andZiegler(2018)detailamethodologyidentifying
+                                                            ss
+        what the authors label as “winners” and “losers” from that election. We use their
+        method,whichisbasedon10-daycumulativecapitalassetpricingmodel(CAPM)-
+        adjusted abnormal stock returns around the Trump election date, to check for the
+        presenceofeitherofthesesetsoffirmsinoursample.Ourtreatmentgroupbasedon
+        βUK(10-Kmentions)contains57(23)“loser”firms.Incolumns3and4ofTable11,
+         i                                                   
+        wereplicateourbaselinetestsoninvestmentomittingfirmslabeledas“losers”by
+        Wagneretal.(2018),thatis,firmsthatmightinvestlessbecauseofTrump’selection.
+        Theestimatesshowthatourinferencesareunaffectedbythesefirms.31
+        E. FalsificationTests                                
+           We also address concerns that our test design is set up in a way that may
+        generateresultsnotnecessarilytiedtotheJune2016referendumresult.Indoingso,
+        wereestimateourtestsconsideringtwo“treatmentperiods”thatoccurredpriorto
+        the2016Brexitvote:i)DavidCameron’selectionasPrimeMinister(2015:Q3)and
+        ii)theU.S.DebtCeilingCrisisof2011(2011:Q2–2011:Q4).Thefirstfalsification
+        test mitigates concerns that firms anticipated the process leading to the Brexit
+        referendumatthetimeofCameron’selection.Thesecondaddressesconcernsthat
+        our investment results could be driven by episodes of uncertainty in the United
+        States(andnottheUnitedKingdom)thataffectglobalfirmsingeneral.Asshownin
+        columns 5–8 of Table 12, the DID coefficients are statistically insignificant in
+        allsuchcases.                                        
+          30In Appendix E in the Supplementary Material, we further verify whether firms’ automation
+        exposure changed coinciding with the Brexit vote, using a time-varying analogue of Automation,
+                                                    i        
+        Automation as the dependent variable in our baseline specification. The results, reported in
+             i,t                                             
+        TableE2intheSupplementaryMaterial,providesuggestiveevidencethatU.K.-exposedfirmsincreased
+        theirexposuretoautomationtechnologiesfollowingtheBrexitvote.
+          31Forcompleteness,werepeatouranalysisalsoexcluding“winner”firmsandfindnochangesinour
+        results.                                             
+========================================================================
+

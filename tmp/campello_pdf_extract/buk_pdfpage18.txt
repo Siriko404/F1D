@@ -1,0 +1,164 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 18 (0-based idx 17)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                             
+                                                             
+                                                             
+                                                             
+                            FIGURE4                          
+                  Analysts’EarningsperShareForecastsAroundBrexit
+        Figure4showshowanalystearningspershareforecastsbehavedaroundBrexit’skeydates.Confidenceintervalsare
+        calculatedas(cid:7)1:5-standard-deviationsfromthemeanforecast.Eachlinerepresentsagroupoffirmssortedbyexposureto
+        theU.K.economyasmeasuredbyβUK:TheshadedareamarksthebeginningofBrexit-relatedeventswiththeannouncement
+        ofthedateoftheU.K.–EUreferendu i mbyPMDavidCameron(2016:Q1).Bothseriesarenormalizedtotakethevalueof0in
+        2016:Q1.                                             
+                2.5                                          
+                2                                            
+                1.5                                          
+                1                                            
+                .5                                           
+                0                                            
+               –0.5                                          
+                –1                                           
+               –1.5                                          
+                –2                                           
+               –2.5                                          
+                                                             
+        outcome,nonetheless,seemstoquelluncertaintyforecasts.Inparticular,the1-year-
+        aheadimpliedvolatilityimmediatelyafterthevotedateisnotsignificantlydifferent
+        fromthatregisteredbackinDec.2014.                    
+           Having examined market uncertainty in the United Kingdom based on
+        impliedoptionsvolatility,wesetouttoverifyinourU.S.firm-leveldataifthisperiod
+        coincidedwithincreasedperceivedincomeuncertaintyforHIGH_UK_EXPOSURE
+        firms.Wedosousingdataonanalysts’forecastsfromtheI/B/E/Sdatabase.Begin-
+        ningin2015:Q1,weobtainthe1-year-aheadearningspershare(EPS)forecastsfor
+        eachfirminoursampleandcomputethemeanandstandarddeviationofforecasts.We
+        quantifyearningsforecastuncertaintyforfirmsinthehighandlowβUK groupsby
+                                              i              
+        constructing(cid:7)1:5-standard-deviationintervalsaroundtheirgroupmeanforecastsin
+        Figure4.Thefigureshowsnodiscernibledifferencein mean forecasted earnings
+        betweenhighandlowβUKfirms,suggestinganalystsdidnotexpectU.K.-exposed
+                     i                                       
+        firmstodoanyworse,onaverage,intermsofearningsperformancefollowingthe
+        Brexitvote.19ThefactthatmeanEPSforecastsstayvirtuallythesameoverthe2-
+        yearwindowforbothhighandlowβUKfirmssuggeststhatthereisnoclearsignof
+                            i                                
+        a“first-moment”(negative)effectofBrexitonU.S.corporateearnings.Thatsame
+        earningsforecastsevidencepointstotheBrexitvotehavinga“second-moment”
+        effectintermsofincreaseduncertaintyregardingU.K.-exposedfirms’expecta-
+        tions in 2016:Q1–Q2. In particular, EPS forecast dispersion of
+        HIGH_UK_EXPOSUREfirmsincreasessignificantlyinearly2016.
+           In our empirical tests, we compare two quarters before versus two quarters
+        afterthetwokeyBrexiteventswehavejustidentified(Feb.22andJune23,2016).
+        We focus on a relatively short window around the Brexit vote as Bloom (2009)
+              )daehA                                         
+              raeY-1(                                        
+              tsaceroF                                       
+              SPE                                            
+                 1Q5102 2Q5102 3Q5102 4Q5102 1Q6102 2Q6102 3Q6102 4Q6102
+                                                            h
+                                                            ttp
+                                                            s://d
+                        Campello,Cortes,d’Almeida,andKankanhalli 3195 o i.o
+                                                            rg
+                                                            /1
+                                                            0
+                                                            .1 0
+                                                            1
+                                                            7 /S
+                                                            0
+                                                            0
+                                                            2
+                                                            2
+                                                            1
+                                                            0
+                                                            9
+                                                            0
+                                                            2 2 0
+                                                            0 0
+                                                            3
+                                                            0
+                                                            8
+                                                            P
+                                                            u
+                     H                                       
+                      Lo                                     
+                      ig                                     
+                      w                                      
+                       h                                     
+                       B                                     
+                       B                                     
+                        e                                    
+                        e                                    
+                        t                                    
+                        t                                    
+                         a                                   
+                         a                                   
+                         U                                   
+                         U                                   
+                          K                                  
+                          K                                  
+                           M                                 
+                           M                                 
+                           e                                 
+                           e                                 
+                            a                                
+                            a                                
+                            n                                
+                            n                                
+                             F                               
+                             F                               
+                             o                               
+                              o                              
+                              r                              
+                              r                              
+                              e                              
+                              e                              
+                               c                             
+                               c                             
+                               a                             
+                               a                             
+                                s                            
+                                s                            
+                                t                            
+                                t                            
+                                                            b lish
+                                                            e
+                                                            d
+                                                            o
+                                                            n lin
+                                                            e
+                                                            b
+                                                            y
+                                                            C
+                                                            a
+                                                            m
+                                                            b rid
+                                                            g
+                                                            e
+                                                            U
+                                                            n
+                                                            iv
+                                                            e rsity
+                                                            P
+                                                            re
+                                                            ss
+          19Informaltests,weconfirmthatthedifferencesinconsensusEPSforecastsbetweenhighandlow
+        βUKfirmsarenotstatisticallysignificantinthepre-Brexitvoteperiod.
+         i                                                   
+========================================================================
+
+--- extract_tables() table 0 ---
+ |  |  | recast |  |  | 
+ | Low Beta U | K Mean Fo | recast |  |  | 
+ | High Beta U | K Mean Fo | recast |  |  | 
+ |  |  |  |  |  | 
+ |  |  |  |  |  | 
+ |  |  |  |  |  | 
+ |  |  |  |  |  | 
+ |  |  |  |  |  | 
+ |  |  |  |  |  | 
+ |  |  |  |  |  | 
+ |  |  |  |  |  | 
+ |  |  |  |  |  | 

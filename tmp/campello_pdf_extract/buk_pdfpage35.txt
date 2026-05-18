@@ -1,0 +1,45 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 35 (0-based idx 34)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                           TABLE10                                          
+                         TheImpactoftheBrexitVoteonInvestmentAccountingforFinancialConstraints
+                                                                                            
+       Table10reportsoutputfromequation(14),accountingformeasuresoffinancialconstraints.ThedependentvariableisINVESTMENT.Eachpairofcolumnsreportsresultsundertwospecifications.Inthefirst
+       specification,thetreatmentgroupiscomposedbythetoptercileofβUK,whereasthecontrolgroupiscomposedbyfirmsinthebottomtercileofβUK.Thesecondspecificationisatextual-search-basedmeasureofU.K.
+       exposurethatsumsupthenumberofBrexit-relatedwordsinfirms’2 i 01510-Kforms.Thetreatmentgroupismadeoffirmswithmorethanfiveen i tries,whereasthecontrolgrouparefirmswithzeroentries.Thefirsttwo
+       columnsconsiderthesubsetoffirmswithexistingbondstraded,andincludetheiryieldstomaturityasanadditionalcontrol.Thenexttwocolumnsconsiderthesubsetoffirmswhichissuenewbonds,andincludetheir
+       yieldstomaturityasanadditionalcontrol.Thenexttwocolumnsconsiderthesubsetoffirmswhichtakeonnewsyndicatedloans,andincludetheirall-drawn-inspreadsasanadditionalcontrol.Thefinaltwocolumns
+       includetheinnovationsinequitydiscountratenews,obtainedastheresidualfromtheCampbell–Shillerdecompositionoffirmequityreturns,asanadditionalcontrol.ThetimedimensionoftheDIDestimatorissetsoas
+       tocomparethetwoquartersfollowingtheannouncementoftheBrexitreferendumvictory(2016:Q3–Q4)versusthetwoquartersprecedingtheannouncementofthevotedate(2015:Q3–Q4).T-statisticsarecomputed
+       usingrobuststandarderrors(inparentheses)double-clusteredatthefirmandcalendarquarterlevels.*,**,and***indicatestatisticalsignificanceatthe10%,5%,and1%levels,respectively.
+                   ExistingBondYields NewBondYields NewSyndicatedLoanSpreads EquityDiscountRateNews
+               TreatmentisTop Treatmentis>5Brexit TreatmentisTop Treatmentis>5Brexit TreatmentisTop Treatmentis>5Brexit TreatmentisTop Treatmentis>5Brexit
+                TercileofβUK Entriesin10-Ks TercileofβUK Entriesin10-Ks TercileofβUK Entriesin10-Ks TercileofβUK Entriesin10-Ks
+                    i                i                 i                i                   
+                  1        2       3        4        5        6       7        8            
+       POST(cid:6)HIGH_βU                                                                   
+             i                                                                              
+             K  (cid:1)0.168***   (cid:1)0.148***  (cid:1)0.169***   (cid:1)0.172***        
+                 (0.022)          (0.018)           (0.041)          (0.022)                
+       POST(cid:6)HIGH_  (cid:1)0.072***  (cid:1)0.159***   (cid:1)0.157***   (cid:1)0.079***
+        10(cid:1)K_ENTRIES (0.009)         (0.070)          (0.032)           (0.005)       
+       Controls                                                                             
+        Firm     Yes      Yes      Yes      Yes     Yes      Yes      Yes      Yes          
+       Fixedeffects                                                                         
+        Firm     Yes      Yes      Yes      Yes     Yes      Yes      Yes      Yes          
+        Industry(cid:6)time Yes Yes Yes     Yes     Yes      Yes      Yes      Yes          
+       No.ofobs. 15,199  19,253   9,546    9,551    8,846    8,966   15,199   19,253        
+       R2        0.78     0.76    0.91     0.92     0.77     0.91    0.78     0.76          
+                                                                                      3212  
+                                                                                      JournalofFinancialandQuantitativeAnalysis
+                                                       sserP ytisrevinU egdirbmaC yb enilno dehsilbuP 8030002209012200S/7101.01/gro.iod//:sptth
+========================================================================
+

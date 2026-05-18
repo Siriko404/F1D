@@ -1,0 +1,87 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 34 (0-based idx 33)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                        Campello,Cortes,d’Almeida,andKankanhalli 3211 o i.o
+                                                            rg
+                                                            /1
+                                                            0
+        abilitytoraisefinancinginthedebtandequitymarketsfollowingtheBrexitvote.In .1
+                                                            0
+                                                            1
+        particular,wereestimatetheanalysisofTable2controllingforyieldsonexisting 7 /S
+                                                            0
+        bonds(obtainedfromTRACE),yieldsonnewbondissues(fromSDC),markupson 0 2
+                                                            2
+        newsyndicatedloans(fromDealScan),andforthediscountratenewscomponent 1 0
+                                                            9
+                                                            0
+        of returns (from the decomposition of returns news into cash flow news and 2 2
+                                                            0
+        discountratenewscomponentsasinVuolteenaho(2002)).   0 0
+                                                            3
+                                                            0
+           Results in Table 10 indicate that our findings continue to obtain when 8
+                                                            P
+        accountingforpossibletighteningoffirms’financingcosts.Forinstance,results u b
+        incolumns1and2produceDIDcoefficientsrangingbetween(cid:1)0.07and(cid:1)0.17,
+                                                            lish
+                                                            e
+                                                            d
+        which closely resemble those in columns 2 and 3 of Table 2. Our evidence o n
+                                                            lin
+        suggests that observed investment cuts are driven primarily by the real-options e
+                                                            b
+        channel,andarenotsubsumedbyfirms’financingcosts.    y
+                                                            C
+                                                            a
+                                                            m
+                                                            b
+                                                            rid
+        C. ExposuretoAutomationTechnology                   g e
+                                                            U
+                                                            n
+           An alternative channel that could explain our investment, employment, and
+                                                            iv
+                                                            e
+        R&D results is firms’ concurrent adoption of automation technologies. Firms
+                                                            rsity
+                                                            P
+        implementingamoreautomatedproductionprocessmayexperiencehigherinno- re
+                                                            ss
+        vationspendingrelatedtobuildingtechnologiesthatreplaceemployeesandreduce
+        the dependence on fixed assets. We test for this channel using two different
+        approaches. First, borrowing from Acemoglu and Restrepo (2020), we adopt a
+        geographicperspectiveontheexposuretoautomation.Thoseauthorsrelyondata
+        compiledbyLeighandKraft(2018),whoscrapethewebtoobtainthelocationand
+        employment of robot integrators (companies that install, program, and maintain
+        robots).Usingthesenoveldata,AcemogluandRestrepo(2020)constructestimates
+        ofrobotintegratoractivityinallcommutingzones(CZs)ofthecontinentalUnited
+        States.28Wedefineourfirst,geography-basedvariablecapturingfirms’exposureto
+        automation technologies, AUTOMATION fi∈CZg , by matching each firm i in our
+        sampletoaCZ(basedonthefirm’sheadquarterslocation).   
+           Second,goingbeyondgeographicalexposure,weconstructamoregranular,
+        firm-levelmeasureofexposuretoautomationborrowingfromthetextualanalysis
+        literatureincorporatefinance(e.g.,LoughranandMcDonald(2011)).29Wedefine
+        AUTOMATION as a continuous variable that measures how frequently the top
+                 i                                           
+        100 automation keywords appear in each firm’s business description (10-K
+        Section1)andmanagementdiscussion(10-KSection7).Tocapturecasesinwhich
+        afirmdiscussesautomationeffortsinonly1year,weaveragethewordcountacross
+        thepre-Brexityearsinoursample(2010–2015).            
+          28ForamapoftheCZ-levelexposuremeasure,seePanelAofFigure4inAcemogluandRestrepo
+        (2020).                                              
+          29Todoso,wedefineadictionaryofkeywordsthatcaptureautomationatthefirmlevel.Wefirst
+        gather the syllabuses of many courses on “Industrial Automation and Integration” taught at top
+        engineering schools. Wethen read each syllabus toidentify the most frequently adopted textbook.
+        This analysis points to Benhabib’s (2003) “Manufacturing: Design, Production, Automation, and
+        Integration”asoneofthemostcommonlyrequiredtextbooks.Weparsethefulltextcontentofthe
+        textbookforthe100mostdistinctivekeywordsrelatedtoautomation(basedontheTextRankalgorithm;
+        seeMihalceaandTarau(2004))andusethemasadictionaryforparsingfirms’10-Ks.InAppendixEin
+        the Supplementary Material, we list the keywords used, detail the construction of the firm-level
+        automationexposurevariable,andplotitsdistribution.   
+========================================================================
+

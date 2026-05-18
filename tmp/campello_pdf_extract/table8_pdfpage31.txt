@@ -1,0 +1,328 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 31 (0-based idx 30)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                                                            o
+        3208 JournalofFinancialandQuantitativeAnalysis      i.o
+                                                            rg
+                                                            /1
+                                                            0
+                                                            .1
+                                                            0
+                            TABLE8                          1
+                                                            7
+                                                            /S
+        TheImpactoftheBrexitVoteonCashHoldings,NoncashWorkingCapital,andProfitability 0 0
+                                                            2
+                                                            2
+                                                            1
+                                                            0
+        Table8reportsoutputfromequation(14).ThedependentvariablesareCASH,NON_CASH_WORKING_CAPITAL,and 9 0
+        PROFITS.CASHisdefinedastotalcashholdingsdividedbylaggedtotalassetsnetofcashholdings.NON_CASH_ 2 2
+        WORKING_CAPITAL(NWC)isdefinedasworkingcapital(netofcash)dividedbylaggedtotalassets.PROFITSisdefined 0 0
+        asthequarterlypercentagechangeinprofits(operatingincomebeforedepreciationdividedbysales).Inthefirstspecification, 0 3
+        β th U e K t . r T e h a e tm s e e n c t o g n r d ou s p p i e s c c if o ic m a p tio os n e is d a by te th x e tu t a o l p -s t e e a rc rc il h e - o b f a β s U i e K d ,w m h e e a r s e u a r s e th o e fU co .K n . tr e o x l p g o ro s u u p re is th c a o t m s p u o m s s ed up by th f e irm nu s m in b th e e ro b f o B tto re m xi t t e -r r e c la ile te o d f 0 8 P
+        w i ordsinfirms’201510-Kforms.Thetreatmentgroupismadeoffirmswithmorethanfiveentries,whereasthecontrolgroup u b
+        a                                                    
+        a                                                    
+         r                                                   
+         n                                                   
+         e                                                   
+         no                                                  
+          fi                                                 
+          u                                                  
+          rm                                                 
+          nc                                                 
+           s                                                 
+           e                                                 
+            w                                                
+            m                                                
+            it                                               
+            e                                                
+             h                                               
+             nt                                              
+             ze                                              
+              o                                              
+              r                                              
+              f                                              
+              o                                              
+               th                                            
+               e                                             
+               e                                             
+                nt                                           
+                r                                            
+                r                                            
+                e                                            
+                ie                                           
+                 fe                                          
+                 s                                           
+                 r                                           
+                 .                                           
+                  e                                          
+                  T                                          
+                  n                                          
+                  h                                          
+                   d                                         
+                   e                                         
+                   um                                        
+                    tim                                      
+                     a                                       
+                     e                                       
+                     nd                                      
+                     dim                                     
+                      Br                                     
+                       e                                     
+                       e                                     
+                       n                                     
+                       x                                     
+                        s                                    
+                        it                                   
+                        i                                    
+                        ’                                    
+                        o                                    
+                        s                                    
+                         n                                   
+                         v                                   
+                         o                                   
+                         ic                                  
+                          f                                  
+                          to                                 
+                          th                                 
+                           r                                 
+                           e                                 
+                           y(                                
+                            D                                
+                            2                                
+                            I                                
+                            0                                
+                             D                               
+                             16                              
+                             e                               
+                              :                              
+                              s                              
+                              Q                              
+                              ti                             
+                               3                             
+                               m                             
+                               –                             
+                               a                             
+                               Q                             
+                                to                           
+                                4                            
+                                r                            
+                                 )                           
+                                 i                           
+                                 v                           
+                                 s                           
+                                 e                           
+                                  s                          
+                                  rs                         
+                                  e                          
+                                   u                         
+                                   t                         
+                                   s                         
+                                   so                        
+                                    th                       
+                                    a                        
+                                    e                        
+                                     s                       
+                                     tw                      
+                                     to                      
+                                      o                      
+                                      c                      
+                                       q                     
+                                       o                     
+                                       u                     
+                                       m                     
+                                        a                    
+                                        p                    
+                                        rt                   
+                                        a                    
+                                         e                   
+                                         r                   
+                                         r                   
+                                         e                   
+                                         sp                  
+                                          th                 
+                                          r                  
+                                           e                 
+                                           ec                
+                                           tw                
+                                            ed               
+                                            o                
+                                            in               
+                                             q               
+                                             g               
+                                             ua              
+                                              th             
+                                              rt             
+                                               e             
+                                               er            
+                                               a             
+                                               s             
+                                                n            
+                                                f            
+                                                n            
+                                                o            
+                                                 o           
+                                                 ll          
+                                                 u           
+                                                 o           
+                                                  n          
+                                                  w          
+                                                  c          
+                                                  in         
+                                                  e          
+                                                   g         
+                                                   m         
+                                                    t        
+                                                    e        
+                                                    h        
+                                                    n        
+                                                    e        
+                                                    t        
+                                                            lish
+                                                            e
+        (2015:Q3–Q4).T-statisticsarecomputedusingrobuststandarderrors(inparentheses)double-clusteredatthefirmand d o
+        calendarquarterlevels.*,**,and***indicatestatisticalsignificanceatthe10%,5%,and1%levels,respectively. n lin
+                         CASH       NWC       PROFITS       e b
+                                                            y
+                     Treatment Treatmentis Treatment Treatmentis Treatment Treatmentis C a
+                      isTop >5Brexit isTop >5Brexit isTop >5Brexit m
+                                                            b
+                      T                                      
+                      o                                      
+                      e                                      
+                      f                                      
+                       r                                     
+                       β                                     
+                       c                                     
+                       U i                                   
+                       il                                    
+                       K                                     
+                        e  En                                
+                           1                                 
+                            t                                
+                            0                                
+                            ri                               
+                            -                                
+                            e                                
+                            K                                
+                             s                               
+                             s                               
+                             in  T                           
+                                 o                           
+                                 e                           
+                                 f                           
+                                  r                          
+                                  β                          
+                                  c                          
+                                  U i                        
+                                  il                         
+                                   K                         
+                                   e  En                     
+                                      1                      
+                                       t                     
+                                       0                     
+                                       ri                    
+                                       -                     
+                                       e                     
+                                        K                    
+                                        s                    
+                                        s                    
+                                        in  T                
+                                            o                
+                                            e                
+                                            f                
+                                             r               
+                                             β               
+                                             c               
+                                             U i             
+                                             il              
+                                              K              
+                                              e  En          
+                                                 1           
+                                                  t          
+                                                  0          
+                                                  ri         
+                                                  -          
+                                                  e          
+                                                   K         
+                                                   s         
+                                                   s         
+                                                   in       rid
+                                                            g e
+                       1    2     3    4     5    6         U
+                                                            n
+        POST(cid:6)HIGH_βU i K                               
+                     (0                                      
+                      0                                      
+                      .                                      
+                      .                                      
+                      0                                      
+                      2                                      
+                       5                                     
+                       3                                     
+                       9                                     
+                       1                                     
+                        )                                    
+                        ***     (cid:1)                      
+                                (0                           
+                                 0                           
+                                 .                           
+                                 .                           
+                                 2                           
+                                 6                           
+                                  8                          
+                                  8                          
+                                  1                          
+                                  7                          
+                                   )                         
+                                   ***     (cid:1)           
+                                            (                
+                                            0                
+                                            0                
+                                             .               
+                                             .               
+                                             1               
+                                             3               
+                                             3               
+                                             9               
+                                              5              
+                                              1)             
+                                                            iv
+                                                            e rsity
+        POST(cid:6)HIGH_10(cid:1)K_ENTRIES 0.357*** (cid:1)0.608*** 0.343 P
+                           (0.062)    (0.079)    (0.550)     
+                                                            re
+                                                            ss
+        Controls                                             
+         Firm         Yes   Yes  Yes   Yes  Yes   Yes        
+        Fixedeffects                                         
+         Firm         Yes   Yes  Yes   Yes  Yes   Yes        
+         Industry(cid:6)time Yes Yes Yes Yes Yes  Yes        
+        No.ofobs.    17,170 24,195 16,630 23,806 16,630 24,051
+        R2            0.21 0.24  0.89 0.87  0.89  0.15       
+        C. OtherFirmPoliciesandOutcomes                      
+           Wealsostudyhowthe2016Brexitvoteaffectedotherfirms’policies,espe-
+        ciallytheirliquiditymanagement.Wedosolookingathowfirmsadjustedtheircash
+        holdings and NWC. The positive and highly significant coefficients in columns
+        1and2ofTable8showthatU.K.-exposedfirmsincreasedtheircashsavingsinthe
+        faceofhigheruncertaintyinducedbytheBrexitvote.Negativeandhighlysignif-
+        icantcoefficientsincolumns3and4showthatfirmsconcomitantlyaccumulated
+        lessinventorybyadjustingtheirNWCdownward.Althoughnotexplicitlymodeled
+        in our framework, this behavior is consistent with the theoretical underpinnings
+        fromtheliquiditymanagementliterature.Inparticular,precautionarybehaviorwill
+        leadfirmstochangethecompositionofassetsontheirbalancesheets,leadingtothe
+        accumulationofthemostliquidassets.                   
+           We further use Table 8 to report results on profit growth. The estimates in
+        columns5and6arenotstatisticallysignificant,suggestingthattheBrexitvotedid
+        not affect the profitability of U.K.-exposed American firms relative to those of
+        nonexposedfirms.Theysupporttheideathattheinvestmentandemploymentdrops
+        previously reported are arguably due to a “second-moment” shock to income
+        uncertainty,ratherthananegative“first-moment”shocktofirms’cashflows.
+========================================================================
+

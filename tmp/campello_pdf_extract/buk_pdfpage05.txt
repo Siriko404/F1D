@@ -1,0 +1,192 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 5 (0-based idx 4)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                                                            o
+        3182 JournalofFinancialandQuantitativeAnalysis      i.o
+                                                            rg
+                                                            /1
+                                                            0
+           Ourresultsarealsorobusttoseveralalternativetestingstrategies,including .1
+                                                            0
+                                                            1
+        alternative firm-level measurements of exposure to U.K. uncertainty, sampling 7 /S
+                                                            0
+        periods, estimation methodologies, and falsification checks. For example, DID 0 2
+                                                            2
+        analysesfeaturingtheexclusionofTrump’selectionorfocusingontheelection 1
+                                                            0
+                                                            9
+                                                            0
+        ofDavidCameronsuggestthattheincreaseinuncertaintybroughtaboutbythe 2 2
+                                                            0
+        Brexit vote is the reason behind the documented behavior of U.K.-exposed 0 0
+                                                            3
+                                                            0
+        AmericanfirmsaroundJune2016.WealsofindnochangeininvestmentbyU.S. 8
+                                                            P
+                                                            u
+        firmsexposedtomajortradingpartners(suchasChina,Mexico,Japan,India,and b
+        Brazil) that did not witness significant increases in uncertainty at the same time
+                                                            lish
+                                                            e
+                                                            d
+        ofthe 2016vote. Ourresults also continue to holdwhenwe usenonparametric o n
+                                                            lin
+        propensityscorematchingestimations.Inadditionalrobustnesschecks,wecon- e
+                                                            b
+                                                            y
+        siderwhethertighteningfinancingconstraintsforU.K.-exposedfirmsinthewake C
+                                                            a
+                                                            m
+        oftheBrexitvoteplayedaroleinexplainingtheeffectsweobserve.Weutilizea b
+        numberofmetricsthatspeaktofirms’abilitytoraisefundingfollowingtheBrexit
+                                                            rid
+                                                            g
+                                                            e
+        voteandreestimateourmodelswiththeirinclusion.Wealsoconsiderwhethera U n
+                                                            iv
+        c                                                    
+        ex                                                   
+         o                                                   
+         p                                                   
+         n                                                   
+          l                                                  
+          c                                                  
+           a                                                 
+           u                                                 
+           i                                                 
+           r                                                 
+            n                                                
+            re                                               
+             t                                               
+             n                                               
+             h                                               
+              t                                              
+              e                                              
+               a                                             
+               s                                             
+               d                                             
+               im                                            
+                op                                           
+                 u                                           
+                 t                                           
+                  l                                          
+                  i                                          
+                  t                                          
+                  o                                          
+                  a                                          
+                   n                                         
+                   ne                                        
+                    o                                        
+                    o                                        
+                     f                                       
+                     us                                      
+                      au                                     
+                       d                                     
+                       t                                     
+                       r                                     
+                        o                                    
+                        o                                    
+                        m                                    
+                         ps                                  
+                         at                                  
+                          i                                  
+                          i                                  
+                           n                                 
+                           on                                
+                            ca                               
+                             t                               
+                             p                               
+                             e                               
+                              i                              
+                              c                              
+                              t                              
+                              h                              
+                              al                             
+                               no                            
+                                in                           
+                                lo                           
+                                 v                           
+                                  g                          
+                                  e                          
+                                  i                          
+                                  s                          
+                                   e                         
+                                   tm                        
+                                   s                         
+                                    e                        
+                                    b                        
+                                     n                       
+                                     y                       
+                                      t                      
+                                      U                      
+                                      an                     
+                                       .K                    
+                                        d                    
+                                         .                   
+                                         h                   
+                                         -e                  
+                                          ir                 
+                                          x                  
+                                          in                 
+                                           p                 
+                                            g                
+                                            o                
+                                            ,                
+                                            se               
+                                             a               
+                                             d               
+                                              nd             
+                                               fi            
+                                                i            
+                                                r            
+                                                n            
+                                                m            
+                                                 c           
+                                                 s           
+                                                 re          
+                                                  m          
+                                                  as         
+                                                   a         
+                                                   e         
+                                                    y        
+                                                    s        
+                                                            e rsity
+                                                            P
+        inR&Dexpenditures.Werelyuponnovelgeographic-andtext-basedproxiesof
+                                                            re
+                                                            ss
+        firms’exposurestoautomatization,andshowthatourfindingscontinuetoobtain
+        controllingfortheirpresence.                         
+           Ourstudy buildsupon agrowing literature ontheeffectsofpolitical uncer-
+        tainty. Macroeconomic studies on uncertainty and real activity include recent
+        contributionsbyBloom(2009)andBloom,Floetotto,Jaimovich,Saporta-Eksten,
+        andTerry(2018).Workontheeffectofuncertainty oncorporateinvestmentand
+        bank lending include Julio and Yook (2012), Gulen and Ion (2016), and Berg,
+        Saunders,Schäfer,andSteffen(2019).Ourarticleadvancestheexistingknowledge
+        onseveralfronts,butparticularlyaswefocusontheinternationaltransmissionof
+        uncertainty,ratherthanonitsdomesticeffects.Theliteratureisparticularlysilenton
+        the international transmission of uncertainty at the firm level, which limits our
+        knowledgeonhowdomesticfirmsrespondtoforeign-bornuncertaintyeventsand
+        whichmechanismsaggravatetheseresponses.4Onthatdimension,ourarticlesheds
+        lightonthemicro-levelmechanismsthatledU.S.firmstocutAmericanjobsand
+        investmentinresponsetoapoliticaleventoverseas.This,whilebeingpromptedto
+        seekinnovation.Throughouranalysis,weuncovertheimportanceofU.S.firms’
+        input exposures, which drive the bulk of corporate investment cuts following
+        Brexit. Our establishment-level employment data are further informative about
+        howjobdestructionandestablishmentturnoveroperatedinsideU.S.bordersin
+          4Studiesoninternationalspillovereffectsofpolicyuncertaintyhavefocusedonaggregate,time-
+        series evidence (e.g., Klössner and Sekkel (2014), Bernal, Gnabo, and Guilmin (2016)). Recently,
+        Hassan, Hollander, van Lent, and Tahoun (2020) study the international effects of Brexit relying
+        exclusively on firms’ “conference calls” to gauge their exposure to Brexit. In contrast, our textual
+        analysisofmandatory10-Kfilingsiscomplementedbyamarket-basedapproachinordertocompre-
+        hensivelygaugeafirm’sexposuretoeventsintheUnitedKingdom.Wechoosenottorelyonconference
+        callsinlightofampleevidenceonsevereproblemswiththeinformationcontentofsuchcalls(see
+        Hollander,Pronk,andRoelofsen(2010),Matsumoto,Pronk,andRoelofsen(2011),andBushee,Jung,
+        andMiller(2011)).                                    
+========================================================================
+

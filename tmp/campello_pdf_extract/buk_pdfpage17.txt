@@ -1,0 +1,128 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 17 (0-based idx 16)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                             
+                                                             
+                                                             
+                                                             
+                            FIGURE3                          
+                    TermStructureofFTSE100ImpliedVolatility  
+        Figure3showsthetermstructureoftheFTSE100Indexatthreedifferentdates.Thetermstructureateachdateisconstructed
+        fromaverageBlack–Scholesimpliedvolatilitiesderivedfromquotedpricesofat-the-moneyoptionsontheFTSE100Index.
+        Thevaluesplottedreflectthemarket’sexpectationofthevolatilityoftheFTSE100Indexovervariousmaturitiesconsidered.
+            23                                               
+                                                             
+            21                                               
+                                                             
+            19                                               
+                                                             
+            17                                               
+                                                             
+            15                                               
+                                                             
+                                                             
+                                                             
+                                                             
+                                                             
+                                                             
+                                                             
+        volatility for the FTSE100 Index. The dynamics described in this figure help us
+        identifydatesinwhichuncertaintysurroundingtheBrexitreferendumseemstobe
+        incorporatedintomarketexpectations.18                
+           Thefirst(dottedblue)curveinFigure3representsthetermstructureasofDec.
+        31, 2014, which is the last date of our βUK estimation period. We use this curve
+                               i                             
+        as a benchmark since expectations at that time were uncontaminated by Brexit.
+        As is typical for equities during normal economic conditions, the term structure is
+        upwardsloping,indicatingthemarketexpectsgreatervolatilityatlongerhorizons.The
+        curvehoverssmoothlyaroundthe15%–16%range,suggestingthatnoabruptchanges
+        areexpectedbyoptionsmarketparticipantsoveramaturityhorizonofupto2years.
+           Responses to official news about the exact referendum date suggest that
+        marketparticipantswerequicktoincorporateuncertaintyembeddedbyBrexitin
+        theirtradingactivity(beforetheactualoutcomeofthevote).Inparticular,options
+        tradingtakingplaceonFeb.22,2016(continuousredcurveinFigure3),thefirst
+        tradingdayfollowingDavidCameron’sannouncementoftheBrexitvotedate,were
+        pricedtoreflectasignificantdropinmarketvolatilityfortheperiodleadingupto
+        theBrexitvotedate(onJune23),onlytoshowaspikeinvolatilityrightafterthe
+        vote.OnJune24,2016(dashedyellowcurve),thefirsttradingdayfollowingthe
+        vote, market uncertainty seemed unusually high. Resolution about the vote
+           )%(                                               
+           ytilitaloV                                        
+           deilpmI                                           
+           MTA                                               
+           001ESTF                                           
+                                                            h
+                                                            ttp
+                                                            s://d
+                                                            o
+        3194 JournalofFinancialandQuantitativeAnalysis      i.o
+                                                            rg
+                                                            /1
+                                                            0
+                                                            .1 0
+                                                            1
+                                                            7
+                                                            /S
+                                                            0
+                                                            0
+                                                            2
+                                                            2 1
+                                                            0
+                                                            9
+                                                            0
+                                                            2
+                                                            2
+                                                            0
+                                                            0
+                                                            0
+                                                            3
+                                                            0
+                                                            8
+                                                            P u b
+                                                            lish
+                                                            e
+                                                            d
+                                                            o
+                                                            n
+                                                            lin
+                                                            e
+                                                            b y
+                                                            C
+                                                            a m
+                                                            b
+                                                            rid
+                                                            g
+                                                            e
+                                                            U
+                                                            n
+                                                            iv
+                                                            e
+            1 Wee 1 k Mon 2 th Mont 3 h s Mont 4 h s Mont 5 h s Mont 6 h s Mont 7 h s Mont 8 h s Mont 9 h s Mon 1 th 0 s Mon 1 t 1 h s Months 1 Y 1 e 3 a r Mon 1 t 4 h s Mon 1 t 5 h s Mon 1 t 6 h s Mon 1 t 7 h s Mon 1 t 8 h s Months 2 Years
+                                                            rsity
+                                                            P re ss
+                              Maturity                       
+                       Dec 31, 2014 (Benchmark, Pre-brexit)  
+                       Feb 22, 2016 (Day After Brexit Vote Date Announcement)
+                       Jun 24, 2016 (Day After Brexit Victory)
+          18The implied volatility term structure serves as a metric of market uncertainty over time as it
+        expressestherangeofmovementsintheFTSE100thatinvestorsexpectovervarioushorizons(see
+        Dumas, Fleming, and Whaley (1998), Mixon (2007)). The values in Figure 3 reflect the market’s
+        expectationofthevolatilityoftheFTSE100overdifferentmaturities.Forexample,ifannualizedimplied
+        v(cid:8)ol(cid:1)atility                             
+            p                                                
+            foffirffiffi2y(cid:3)ear(cid:1)sis15             
+                   p                                         
+                   %ffi,ffiffit(cid:3)he(cid:9)marketexpectsthatpriceswillmoveoverthenext2yearswithinaband
+         (cid:1) 15(cid:6) 2% ,þ 15(cid:6) 2 % with68%probability(1-standard-deviation).
+========================================================================
+
+--- extract_tables() table 0 ---
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 

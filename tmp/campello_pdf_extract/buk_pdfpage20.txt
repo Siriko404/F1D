@@ -1,0 +1,88 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 20 (0-based idx 19)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                        Campello,Cortes,d’Almeida,andKankanhalli 3197 o i.o
+                                                            rg
+                                                            /1
+                                                            0
+           CONTROLS  is a vector of macroeconomic and firm-level control vari- .1
+                  i,t(cid:1)1                               0
+                                                            1
+        ables. Macro controls include the lagged U.S. dollar/British pound FX rate, the 7 /S
+                                                            0
+        lagged VIX implied volatility index, thelaggedmean GDP growth 1-year-ahead 0 2
+                                                            2
+        forecastfromtheFederalReserveBankofPhiladelphia’sLivingstoneSurvey,the 1
+                                                            0
+                                                            9
+                                                            0
+        laggedConsumerSentimentIndexfromtheUniversityofMichigan,andthelagged 2 2
+                                                            0
+        Leading Economic Indicator from the Federal Reserve Bank of Philadelphia. 0 0
+                                                            3
+        Firm-level controls include lagged stock returns, Tobin’s Q, cash flow, logged 0 8
+                                                            P
+                                                            u
+        assets,andsalesgrowth.Asanadditionalcontrolforfirst-momenteffectsofBrexit, b
+        weadd1-quarter-aheadconsensusearningsforecaststoourmodel.FIRM i repre-
+                                                            lish
+                                                            e d
+        sentsfirm-fixed effects,INDUSTRY j isadummyforeachindustrycategoryjof o n lin
+        the Hoberg and Phillips (2016) classification (FIC 100),21 and QUARTER are e
+                                                  t         b
+                                                            y
+        calendar-quarter dummies. Standard errors are double-clustered by firm and cal- C
+                                                            a
+                                                            m
+        endarquarters.                                      b
+                                                            rid
+                                                            g
+                                                            e
+                                                            U
+        D. DescriptiveStatistics                            n
+                                                            iv
+                                                            e
+           Table1presentsoursamplesummarystatistics. Firm-levelaccountingvari-
+                                                            rsity
+                                                            P
+        ablesarenormalizedbylaggedtotalassets.WebeginwithPanelApresentingthe re
+                                                            ss
+        statisticsfortheuniverseofCOMPUSTATfirmsinthepre-Brexit sampleperiod
+        (2010:Q1–2015:Q4). Using our baseline market-based βUK criterion, Panel B
+                                         i                   
+        summarizes the data for treated firms as defined by βUK (those in the top tercile
+                                      i                      
+        of βUK), whereas Panel C reports statistics for control firms as defined by βUK
+           i                                       i         
+        (bottomtercileofβUK).PanelsDandEreportsummarystatisticsfortreatmentand
+                   i                                         
+        controlfirms,respectively,asdefinedbymentionsofBrexit-relatedwordsinfirms’
+        10-Kfilings(ourtext-basedapproach).                  
+           The reported statistics show that our sample firms do not display salient
+        discrepanciesrelativetotheuniverseofCOMPUSTATfirms.Comparisonsacross
+        subsamplessuggestthattreatedandcontrolfirms(asdefinedbyβUK)differacrossa
+                                           i                 
+        fewcharacteristics:firmsinthetreatmentgrouparesmallerasmeasuredbytotal
+        assetsandinvestmorethancontrolfirms.However,firmsinthetreatedgroupas
+        definedby10-KmentionsofBrexit-relatedwordsare,ifanything,largerthanthose
+        in the control group, although their investment appears to be similar. Treatment
+        andcontrolfirmssharesimilaritiesonanumberofdimensionsacrossbothassign-
+        mentschemesweuse.TheydisplayeconomicallysimilarR&Dexpenditures,cash
+        holdings, Tobin’s Q, and employment growth. To ensure that differences in firm
+        characteristicsdonotdriveourresults,weredoallofourtestsonpropensityscore
+        matchedsamplesinwhichfirm-levelcharacteristicsarebalancedbeforeanyesti-
+        mations are conducted. Table C2 in the Supplementary Material displays the
+        summarystatisticsofthematchedsamples.TableC3intheSupplementaryMaterial
+        reports the results of our main estimations on these matched samples. To further
+        verifythattreatedandcontrolfirmsarenotfundamentallydifferent,weexaminethe
+        validity of the parallel trends assumption. Visual evidence for that assumption
+          21Theseindustriesareformedbygroupingfirmswithtextuallysimilarproductdescriptionsintheir
+        10-Ks.HobergandPhillips(2016)showthattheresultingindustryclassificationismoregranularand
+        capturesthelocusofproduct-marketcompetitorsofagivenfirmbetterthanthestandardSICorNAICS
+        industryschemes.                                     
+========================================================================
+

@@ -1,0 +1,49 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 33 (0-based idx 32)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                           TABLE9                                           
+                       TheImpactoftheBrexitVoteonInvestmentAccountingforForeignExchangeExposures
+                                                                                            
+       Table9reportsoutputfromequation(14),accountingformeasuresofexposuretoUSD–GBPFXfluctuations.ThedependentvariableisINVESTMENT.Eachpairofcolumnsreportsresultsundertwospecifications.In
+       thefirstspecification,thetreatmentgroupiscomposedbythetoptercileofβUK,whereasthecontrolgroupiscomposedbyfirmsinthebottomtercileofβUK.Thesecondspecificationisatextual-search-basedmeasure
+       ofU.K.exposurethatsumsupthenumberofBrexit-relatedwordsinfirms’20 i 1510-Kforms.Thetreatmentgroupismadeoffirmswithmorethanfiveentrie i s,whereasthecontrolgrouparefirmswithzeroentries.Thefirst
+                                         £                                                  
+       twocolumnsincludefirms’quarterlyequityreturnsexposuretochangesintheBritishpound(βFX )asanadditionalcontrol.ThenexttwocolumnsincludetheAlfaroetal.(2018)firm-levelUSD–GBPfirst-andsecond-
+                                         i,t                                                
+       momentinstrumentsasadditionalcontrols.Thenexttwocolumnsinclude,asanadditionalcontrol,anannualdummyforwhetherafirmreportsutilizingFXhedginginitsmostrecent10-Kform.Thefinaltwocolumns
+       include,asanadditionalcontrol,theintensityofFXhedgingmeasuredbymentionsofFXhedging-relatedwordslistedinCampelloetal.(2011).ThetimedimensionoftheDIDestimatorissetsoastocomparethetwo
+       quartersfollowingtheannouncementoftheBrexitreferendumvictory(2016:Q3–Q4)versusthetwoquartersprecedingtheannouncementofthevotedate(2015:Q3–Q4).T-statisticsarecomputedusingrobust
+       standarderrors(inparentheses)double-clusteredatthefirmandcalendarquarterlevels.*,**,and***indicatestatisticalsignificanceatthe10%,5%,and1%levels,respectively.
+                          £                                                                 
+                   GBPExposure(βFX ) Alfaroetal.(2018)GBPInstruments FXHedging FXHedgingIntensity
+                         i,t                                                                
+               TreatmentisTop Treatmentis>5Brexit TreatmentisTop Treatmentis>5Brexit TreatmentisTop Treatmentis>5Brexit TreatmentisTop Treatmentis>5Brexit
+                TercileofβUK Entriesin10-Ks TercileofβUK Entriesin10-Ks TercileofβUK Entriesin10-Ks TercileofβUK Entriesin10-Ks
+                    i                i                 i                i                   
+                  1        2       3        4        5        6       7        8            
+       POST(cid:6)HIGH_βU                                                                   
+             i                                                                              
+             K  (cid:1)0.172***   (cid:1)0.145***  (cid:1)0.201***   (cid:1)0.202***        
+                 (0.019)          (0.026)           (0.030)          (0.031)                
+       POST(cid:6)HIGH_  (cid:1)0.080***  (cid:1)0.097***   (cid:1)0.111***   (cid:1)0.110***
+        10(cid:1)K_ENTRIES (0.009)         (0.010)          (0.014)           (0.014)       
+       Controls                                                                             
+        Firm     Yes      Yes      Yes      Yes     Yes      Yes      Yes      Yes          
+       Fixedeffects                                                                         
+        Firm     Yes      Yes      Yes      Yes     Yes      Yes      Yes      Yes          
+        Industry(cid:6)time Yes Yes Yes     Yes     Yes      Yes      Yes      Yes          
+       No.ofobs. 16,581  20,540   16,473   20,582  11,151   12,882   11,151   12,882        
+       R2        0.75     0.73    0.77     0.69     0.76     0.75    0.76     0.75          
+                                                                                      3210  
+                                                                                      JournalofFinancialandQuantitativeAnalysis
+                                                       sserP ytisrevinU egdirbmaC yb enilno dehsilbuP 8030002209012200S/7101.01/gro.iod//:sptth
+========================================================================
+

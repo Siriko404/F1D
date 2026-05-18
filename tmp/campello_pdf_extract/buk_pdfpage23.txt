@@ -1,0 +1,519 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 23 (0-based idx 22)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                                                            o
+        3200 JournalofFinancialandQuantitativeAnalysis      i.o
+                                                            rg
+                                                            /1
+                                                            0
+                                                            .1
+                                                            0
+                            TABLE2                          1
+                                                            7
+                                                            /S
+                 TheImpactoftheBrexitVoteonU.S.Investmentand 0 0
+                                                            2
+                    EmploymentGrowth:BaselineSpecification  2
+                                                            1
+                                                            0
+                                                            9
+                                                            0
+                                                            2
+        Table2reportsoutputfromequation(14).ThedependentvariablesareINVESTMENTandEMPLOYMENT_GROWTH. 2 0
+        INVESTMENTisdefinedascapitalexpendituresdividedbylaggedtotalassets(quarterly).EMPLOYMENT_GROWTHis 0 0
+        s                                                    
+        t e                                                  
+        t                                                    
+        t                                                    
+        e                                                    
+        h                                                    
+        r                                                    
+         e                                                   
+         n                                                   
+         e                                                   
+         r                                                   
+         e                                                   
+         a                                                   
+         t                                                   
+         c                                                   
+         a                                                   
+         e                                                   
+         r                                                   
+         p                                                   
+          i                                                  
+          t                                                  
+          l c                                                
+          r                                                  
+          m                                                  
+          e                                                  
+          s e                                                
+          h                                                  
+          e                                                  
+          r                                                  
+           o                                                 
+           t                                                 
+           -                                                 
+           c h                                               
+           n                                                 
+           b f                                               
+           e e                                               
+           t                                                 
+           β a                                               
+            n                                                
+            g                                                
+            U i                                              
+            r                                                
+            s                                                
+            t e                                              
+            K e                                              
+            r                                                
+            a                                                
+             o                                               
+             g                                               
+             , d                                             
+             g                                               
+             u                                               
+             r                                               
+             w                                               
+             e e                                             
+             p                                               
+             m h                                             
+              s c                                            
+              e e                                            
+              i                                              
+              s                                              
+              s                                              
+              h                                              
+               r                                             
+               i                                             
+               a                                             
+               o a                                           
+               e                                             
+               m                                             
+               s                                             
+               n n                                           
+               a u                                           
+                a                                            
+                g                                            
+                s                                            
+                a                                            
+                r                                            
+                d                                            
+                e                                            
+                e s                                          
+                th                                           
+                 e                                           
+                 a                                           
+                 o                                           
+                 i                                           
+                 e                                           
+                 n                                           
+                 o                                           
+                 f                                           
+                 li                                          
+                  c                                          
+                  f                                          
+                  t n                                        
+                  U                                          
+                  h                                          
+                  o                                          
+                  f                                          
+                  e                                          
+                  i                                          
+                  .                                          
+                  e                                          
+                   r                                         
+                   n K                                       
+                   a                                         
+                   m                                         
+                   t                                         
+                   n r                                       
+                   . r                                       
+                   s                                         
+                    o                                        
+                    u c                                      
+                    e l                                      
+                    m o                                      
+                    w                                        
+                    x g                                      
+                     n                                       
+                     p                                       
+                     i                                       
+                     b                                       
+                     r                                       
+                     t                                       
+                     t                                       
+                     o o                                     
+                     h                                       
+                     i e n                                   
+                      s u                                    
+                      r                                      
+                      m                                      
+                      u                                      
+                      u p                                    
+                      o o                                    
+                      r                                      
+                      o                                      
+                       f                                     
+                       e i                                   
+                       u                                     
+                       s                                     
+                       r                                     
+                       e                                     
+                       e                                     
+                       s                                     
+                       t c                                   
+                        m                                    
+                        h                                    
+                        v                                    
+                        t                                    
+                        o a                                  
+                        h                                    
+                        a p                                  
+                        m t                                  
+                         a                                   
+                         r l i o                             
+                         n                                   
+                         s p                                 
+                         a y                                 
+                         u                                   
+                          b                                  
+                          o                                  
+                          f                                  
+                          e                                  
+                          m                                  
+                          i                                  
+                          s                                  
+                          l                                  
+                          v                                  
+                          e e                                
+                          e                                  
+                          e                                  
+                           s                                 
+                           . s                               
+                           d                                 
+                           I                                 
+                           e                                 
+                           u                                 
+                           n (                               
+                            b                                
+                            a                                
+                            n                                
+                            p                                
+                            t                                
+                            y                                
+                            n                                
+                            t                                
+                            h                                
+                            r                                
+                            t                                
+                             n                               
+                             i                               
+                             e                               
+                             f h                             
+                             e                               
+                             i                               
+                             u                               
+                             r e                             
+                             s                               
+                             s                               
+                             m                               
+                             a e                             
+                              ,                              
+                              n                              
+                              l                              
+                              s                              
+                              w                              
+                              c ).                           
+                              u                              
+                               o                             
+                               i                             
+                               h                             
+                               n                             
+                               I                             
+                               m                             
+                               n n                           
+                               e                             
+                               t                             
+                               d                             
+                               b                             
+                                r                            
+                                h                            
+                                t                            
+                                e                            
+                                h                            
+                                e                            
+                                s                            
+                                e                            
+                                a                            
+                                e                            
+                                r                            
+                                p                            
+                                 b                           
+                                 s                           
+                                 o                           
+                                 e f                         
+                                 o                           
+                                 i                           
+                                 t                           
+                                 f                           
+                                 c r                         
+                                  h                          
+                                  t                          
+                                  s i                        
+                                  B t                        
+                                  e                          
+                                  f                          
+                                  o                          
+                                  t i                        
+                                  r                          
+                                  c                          
+                                   m                         
+                                   s                         
+                                   c                         
+                                   e                         
+                                   a p                       
+                                   o                         
+                                   x                         
+                                   t                         
+                                   t                         
+                                   e                         
+                                    i                        
+                                    i                        
+                                    n                        
+                                    e t                      
+                                    o c                      
+                                    -                        
+                                    t                        
+                                    r                        
+                                    n                        
+                                    r                        
+                                    r                        
+                                    c                        
+                                    i                        
+                                     e                       
+                                     o                       
+                                     f , i                   
+                                     i l                     
+                                     c                       
+                                     l                       
+                                     l                       
+                                     t                       
+                                     a e                     
+                                     h                       
+                                     g                       
+                                     a                       
+                                      t                      
+                                      e                      
+                                      e o                    
+                                      r                      
+                                      ti                     
+                                      o                      
+                                      d f                    
+                                      o tr                   
+                                       u                     
+                                       β                     
+                                       n e                   
+                                       w                     
+                                       p                     
+                                       U i                   
+                                       , a                   
+                                        K o                  
+                                        t t                  
+                                        a                    
+                                        h                    
+                                        .                    
+                                        m                    
+                                        r                    
+                                        r                    
+                                        e                    
+                                        d T                  
+                                         e                   
+                                         e                   
+                                         h s                 
+                                         m n                 
+                                         f                   
+                                         e                   
+                                         i                   
+                                          i                  
+                                          t                  
+                                          r                  
+                                          e                  
+                                          n                  
+                                          m                  
+                                          t                  
+                                          g                  
+                                          h                  
+                                          a                  
+                                          f                  
+                                          r                  
+                                           s                 
+                                           i                 
+                                           s                 
+                                           i                 
+                                           o                 
+                                           r r               
+                                           u                 
+                                           d m               
+                                           w                 
+                                           u r p             
+                                            s                
+                                            i                
+                                            e                
+                                            s                
+                                            t                
+                                            p                
+                                            h                
+                                            ’                
+                                            i o s            
+                                             e 2             
+                                             z               
+                                             f c             
+                                             c 0             
+                                             e               
+                                             U o             
+                                              i 1            
+                                              r              
+                                              f              
+                                              . m            
+                                              o              
+                                              i 5 c          
+                                              K              
+                                               a             
+                                               p             
+                                               e             
+                                               .             
+                                               1 t           
+                                               n             
+                                               o e           
+                                               0 io          
+                                                t            
+                                                s x          
+                                                -            
+                                                r            
+                                                n K          
+                                                e            
+                                                i            
+                                                p            
+                                                e            
+                                                d o          
+                                                 i           
+                                                 s           
+                                                 s fo        
+                                                 s           
+                                                 .           
+                                                 b           
+                                                 a           
+                                                 u           
+                                                 r           
+                                                  T          
+                                                  y          
+                                                  m          
+                                                  r          
+                                                  t          
+                                                  h          
+                                                  e t        
+                                                  e s        
+                                                  h          
+                                                  e          
+                                                   x .       
+                                                   ( e       
+                                                   t         
+                                                   β         
+                                                   t         
+                                                   T u       
+                                                   i         
+                                                   t U i     
+                                                   m         
+                                                    o        
+                                                    h a      
+                                                    K p      
+                                                    e        
+                                                    e        
+                                                    l        
+                                                    )        
+                                                    -        
+                                                            3 0 8
+                                                            P u b lish
+                                                            e
+        dimensionoftheDIDestimatorissetsoastocomparethetwoquartersfollowingtheannouncementoftheBrexitreferendum d
+        victory(2016:Q3–Q4)versusthetwoquartersprecedingtheannouncementofthevotedate(2015:Q3–Q4).T-statisticsare o
+                                                            n
+        computedusingrobuststandarderrors(inparentheses)double-clusteredatthefirmandcalendarquarterlevels.*,**,and*** lin
+        indicatestatisticalsignificanceatthe10%,5%,and1%levels,respectively. e
+                                                            b
+                                                            y
+                      INVESTMENT       EMPLOYMENT_GROWTH    C
+                                                            a
+                                                            m
+                      Treatment Treatmentis Treatment Treatmentis b
+                 Linear isTop >5Brexit Linear isTop >5Brexit rid
+                βU i KModel TercileofβU i K Entriesin10-Ks βU i KModel TercileofβU i K Entriesin10-Ks g e
+                                                            U
+                  1     2     3      4    5      6          n
+                                                            iv
+                                                            e
+        POST    (cid:1)                                      
+                 (0                                          
+                 0                                           
+                 .                                           
+                 .                                           
+                  0                                          
+                  0                                          
+                  2                                          
+                  2                                          
+                   0                                         
+                   2                                         
+                   )                (2                       
+                                    1                        
+                                    .                        
+                                    .                        
+                                     8                       
+                                     0                       
+                                     4                       
+                                     5                       
+                                      3                      
+                                      5                      
+                                      )                      
+                                                            rsity
+        POST(cid:6)βU i K (cid:1)0.047*** (cid:1)4.173**    P re
+                 (0.010)            (2.133)                 ss
+        POST(cid:6)HIGH_βU                                   
+              i                                              
+              K       (cid:1)0.165***    (cid:1)4.912***     
+                      (0.019)            (1.552)             
+        POST(cid:6)HIGH_     (cid:1)0.077***    (cid:1)2.617***
+         10(cid:1)K_ENTRIES  (0.008)            (0.402)      
+        Controls                                             
+         Firm    Yes   Yes    Yes   Yes   Yes    Yes         
+         Macroeconomic Yes No No    Yes   No     No          
+        Fixedeffects                                         
+         Firm    Yes   Yes    Yes   Yes   Yes    Yes         
+         Industry(cid:6)time No Yes Yes No Yes   Yes         
+        No.ofobs. 43,025 17,199 21,253 9,143 3,540 4,173     
+        R2       0.67  0.75  0.73   0.35 0.45   0.45         
+        measure firm-level exposure to the United Kingdom in column 3. The POST (cid:6)
+        HIGH_10-K_ENTRIEScoefficientisonceagainnegative.Theinvestmentreduc-
+        tionsreported inall ofthese estimations are notonlystatisticallysignificant, but
+        alsoeconomicallysignificant.Giventhatthepre-Brexit(2015)averageinvestment
+        was1.1%offirms’assets,theDIDestimateof(cid:1)0.165impliesadropofupto15%
+        ininvestmentrates.Asafirst-orderapproximation,thedollarmagnitudeofaggre-
+        gateinvestmentcutsimpliedbythisestimateisaround$2billion.22Estimatesunder
+        columns1–3showthatfollowingtheBrexitvotevictory,U.K.-exposedAmerican
+        firmssignificantlycuttheirinvestmentvis-à-visnon-U.K.-exposedcounterparts.23
+          22The449firmsinthetoptercileofβUKhadaverageassetsof$2.81billionin2016:Q2.Adeclinein
+                          i                                  
+        theirinvestment-to-assetsratioof0.165percentagepointsimpliesadropininvestmentof$4.64million
+        perfirm,or$2.08billionintotal.                       
+          23InTableC7intheSupplementaryMaterial,weshowthatourbaselinefindingsarerobusttothe
+        inclusionofnumerouscontrolsforsimultaneouschangesinthefirst-momentcomponentoftheBrexit
+        shock.TheseincludeTobin’sQ,CashFlow,SalesGrowth,ConsensusEarningsForecasts,and1-year
+        Stock Returns. In addition, we include the firm-level first-moment instruments for the USD–GBP
+        exchangerate,thepriceofoil,andtheTreasuryratefromalfaro2018.Thesevariablesjointlyserveas
+        proxiesforchangesinfirms’expectedprofitabilitycoincidingwiththeBrexitvote.
+========================================================================
+

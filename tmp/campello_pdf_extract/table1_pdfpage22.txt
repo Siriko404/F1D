@@ -1,0 +1,144 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 22 (0-based idx 21)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                        Campello,Cortes,d’Almeida,andKankanhalli 3199 o i.o
+                                                            rg
+                                                            /1
+                                                            0
+                                                            .1
+                                                            0
+                         TABLE1(continued)                  1
+                                                            7
+                                                            /S
+                          SummaryStatistics                 0 0
+                                                            2
+                                                            2
+                                                            1
+                                  Textual-Search-BasedApproach 0 9
+                                                            0
+                                                            2
+                                 (MorethanFive10-KEntriesonBrexit) 2
+                                                            0
+                                                            0
+        PanelD.TreatedFirms:                                0 3
+                                                            0
+                                                            8
+        INVESTMENT         0.01  0.02  0.01 0.01  35,828    P
+        EMPLOYMENT_GROWTH(Annual) 0.08 0.30 0.03 0.17 8,004 u b
+        R&D                0.03  0.04  0.02 0.04  19,988    lish
+        DIVESTITURES((cid:6)100) 0.05 0.26 0.00 0.00 29,009 e
+                                                            d
+        CASH               0.23  0.25  0.13 0.29  36,985    o
+        N                                                    
+        TO                                                   
+         O                                                   
+         B                                                   
+         N                                                   
+          I                                                  
+          _                                                  
+          N                                                  
+          C                                                  
+           _                                                 
+           A                                                 
+           Q                                                 
+            SH_WORKING_CAPITAL                               
+                           2                                 
+                           0                                 
+                           .                                 
+                           .                                 
+                           1                                 
+                           0                                 
+                            0                                
+                            1                                
+                                 1                           
+                                 0                           
+                                 .                           
+                                 .                           
+                                 5                           
+                                 2                           
+                                  9                          
+                                  0                          
+                                       1                     
+                                       0                     
+                                       .                     
+                                       .                     
+                                       5                     
+                                       0                     
+                                        5                    
+                                        2                    
+                                            1                
+                                            0                
+                                             .               
+                                             .               
+                                             2               
+                                             2               
+                                              9              
+                                              0              
+                                                  3          
+                                                  3          
+                                                   4         
+                                                   6         
+                                                   ,         
+                                                   ,         
+                                                   1         
+                                                   2         
+                                                    0        
+                                                    9        
+                                                    8        
+                                                    2       n lin
+                                                            e
+        CASH_FLOW          0.01  0.07  0.02 0.04  35,432    b
+                                                            y
+        SIZE(LogAssets)    6.08  2.06  6.02 3.12  37,002    C
+        SALES_GROWTH       0.17  0.66  0.06 0.25  33,647    a m
+        CONSENSUS_EARNINGS_FORECAST 0.04 3.46 0.04 2.06 26,008 b
+        STOCK_RETURNS      0.02  0.25  0.01 0.27  29,983     
+                                                            rid
+                                                            g
+                                  Textual-Search-BasedApproach e U
+                                                            n
+                                   (Zero10-KEntriesonBrexit) iv
+                                                            e
+        PanelE.ControlFirms:                                 
+                                                            rsity
+                                                            P
+        INVESTMENT         0.01  0.02  0.01  0.01  9,389    re
+        EMPLOYMENT_GROWTH(Annual) 0.08 0.30 0.03 0.16 2,248 ss
+        R&D                0.03  0.04  0.01  0.03  4,745     
+        DIVESTITURES((cid:6)100) 0.05 0.24 0.00 0.00 7,377   
+        CASH               0.22  0.24  0.12  0.26  9,533     
+        NON_CASH_WORKING_CAPITAL 0.06 0.19 0.04 0.21 9,260   
+        TOBIN_Q            2.06  1.54  1.55  1.17  9,138     
+        CASH_FLOW          0.01  0.07  0.02  0.04  9,240     
+        SIZE(LogAssets)    5.95  2.15  5.86  3.23  9,533     
+        SALES_GROWTH       0.17  0.67  0.05  0.22  8,835     
+        CONSENSUS_EARNINGS_FORECAST 0.01 4.46 0.04 1.79 6,929
+        STOCK_RETURNS      0.03  0.24  0.02  0.24  8,523     
+        regarding the investment process is provided in Figure C1 in the Supplementary
+        Material. Tables C4 and C5 in the Supplementary Material report formal tests
+        supportingthepresenceofparalleltrendsacrossalloutcomevariables.
+        V. Results                                           
+        A. TheImpactoftheBrexitVoteonU.S.Firms’Investment,Labor,R&D,
+           andDivestitures                                   
+           Results from our baseline estimations for investment and employment are
+        showninTable2.Webeginwithafirm-fixedeffectsestimationinwhichβUKenters
+                                                i            
+        thespecificationasalinearcontinuous-treatmentvariableincolumn1,allowingfor
+        theentirerangeofβUK values.ThePOST(cid:6)βUKinteractioncoefficientisnegative
+                   i             i                           
+        and highlysignificant,consistentwithPrediction 1. Inshort,it points tothe inter-
+        pretation that a higher exposure to the United Kingdom is linked to lower
+        investment spending following the 2016 Brexit vote. We move to our baseline
+        specificationincolumn2,whichconsidersthenonnegativerangeofβUK parti-
+                                                i            
+        tioned in terciles. The model includes time-varying industry-fixed effects by
+        wayofinteractingHobergandPhillips(2016)industries(FIC100)andcalendar-
+        quarterdummyvariables.ThePOST(cid:6)HIGH_βUKcoefficientisagainnegative
+                                   i                         
+        and statistically significant. Finally, we consider our text-based approach to
+========================================================================
+

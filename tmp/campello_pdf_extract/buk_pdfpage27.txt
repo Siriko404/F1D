@@ -1,0 +1,50 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 27 (0-based idx 26)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                                                                            
+                                           TABLE5                                           
+           ResultCharacterization:TheImpactoftheBrexitVoteonEmploymentGrowth,EstablishmentTurnover,andLaborSkillsintheUnitedStates
+       Table5reportsoutputfromequation(14)consideringestablishment-levelemploymentgrowthintheUnitedStatesandresultsonthecross-sectionaleffectoflaborskillsonemploymentgrowthbyfirmsinthebaseline
+       sample.ThedependentvariableisEMPLOYMENT_GROWTH.EMPLOYMENT_GROWTHisthepercentagechangeinthenumberofemployees(annual).Laborskillsaremeasuredbythelaborskillsindex(LSI)defined
+       inGhalyetal.(2017).TheLSIisconstructedastheweightedaverageO*NEToccupationalskillsclassification(1–5scale),weightedbythefractionofemployeesinagivenindustryengagedinagivenoccupation,
+       averagedacrossalloccupationsinthatindustry.Low(high)skillsfirmsaredefinedasfirmsinthebottom(top)tercileofthe2015LSI(attheindustrylevel).Inthefirstspecification,thetreatmentgroupiscomposedbythe
+       toptercileofβUK,whereasthecontrolgroupiscomposedbyfirmsinthebottomtercileofβUK.Thesecondspecificationisatextual-search-basedmeasureofU.K.exposurethatsumsupthenumberofBrexit-related
+       wordsinfirms’i                                                                       
+            201510-Kforms.Thetreatmentgroupismadeoffirmswithmorethanfiveent                 
+                                       i                                                    
+                                       ries,whereasthecontrolgrouparefirmswithzeroentries.ThetimedimensionoftheDIDestimatorissetsoastocomparethe
+       twoquartersfollowingtheannouncementofthereferendumandBrexit’svictory(2016:Q3–Q4)versusthetwoquartersprecedingtheannouncement(2015:Q3–Q4).T-statisticsarecomputedusingrobuststandard
+       errors(inparentheses)double-clusteredatthefirmandcalendarquarterlevels.*,**,and***indicatestatisticalsignificanceatthe10%,5%,and1%levels,respectively.
+                  ESTABLISHMENT_LEVEL_                LowSkillsSubsample HighSkillsSubsample
+                  EMPLOYMENT_GROWTH ESTABLISHMENT_TURNOVER EMPLOYMENT_GROWTH EMPLOYMENT_GROWTH
+               TreatmentisTop Treatmentis>5Brexit TreatmentisTop Treatmentis>5Brexit TreatmentisTop Treatmentis>5Brexit TreatmentisTop Treatmentis>5Brexit
+                TercileofβUK Entriesin10-Ks TercileofβUK Entriesin10-Ks TercileofβUK Entriesin10-Ks TercileofβUK Entriesin10-Ks
+                    i                i                 i                i                   
+                  1        2       3        4        5        6       7        8            
+       POST(cid:6)HIGH_βU                                                                   
+             i                                                                              
+             K  (cid:1)5.094***   (cid:1)2.252***  (cid:1)5.861***   (cid:1)2.333           
+                 (1.375)          (0.719)           (0.370)           (1.689)               
+       POST(cid:6)HIGH_  (cid:1)4.603***   (cid:1)1.547**   (cid:1)7.260***   2.316         
+        10(cid:1)K_ENTRIES (1.431)         (0.765)          (0.563)           (2.032)       
+       Controls                                                                             
+        Firm     Yes      Yes      Yes      Yes     Yes      Yes      Yes      Yes          
+       Fixedeffects                                                                         
+        Firm     Yes      Yes      Yes      Yes      No      No       No       No           
+        Industry(cid:6)time Yes Yes Yes     Yes      No      No       No       No           
+        Industry  No      No       No       No      Yes      Yes      Yes      Yes          
+        Time      No      No       No       No      Yes      Yes      Yes      Yes          
+       No.ofobs. 3,540    4,173   3,588    4,184    1,323    1,229    1,568    705          
+       R2        0.33     0.32    0.46     0.43     0.10     0.29     0.14    0.41          
+                                                                                      3204  
+                                                                                      JournalofFinancialandQuantitativeAnalysis
+                                                       sserP ytisrevinU egdirbmaC yb enilno dehsilbuP 8030002209012200S/7101.01/gro.iod//:sptth
+========================================================================
+

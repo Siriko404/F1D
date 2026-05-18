@@ -1,0 +1,329 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 9 (0-based idx 8)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                                                            o
+        3186 JournalofFinancialandQuantitativeAnalysis      i.o
+                                                            rg
+                                                            /1
+                                                            0
+        approximation,thismatchestherealityofseveraltypesofR&Dprojects,including .1
+                                                            0
+        the“racetopatent”acertainideaorbringanewtechnologytothemarket.Second, 1 7
+                                                            /S
+                                                            0
+        thefirmisabletostageitsinvestmentintheprojects.Ifthefirmwishestobuythe 0 2
+                                                            2
+        optiontoinvestinmprojects,itpaysanupfrontcostofmα,whichisconvexinthe 1
+                                                            0
+                                                            9
+        sizeofitsR&Dportfolio(i.e.,α>1).Inaddition,itmustpayadevelopmentcostd
+                                                    t        
+                                                            0 2
+                                                            2 0
+        for each period inwhich theproject remains alive.That is, in order toearn t¼1 0 0
+                                                            3
+                                                            0
+        revenueu                                             
+             i1                                              
+              ,itmustpayd                                    
+                      1                                      
+                      ;similarly,inordertoearnt¼2revenueu    
+                                             i2              
+                                              ,itmustpay    8
+                                                            P
+                                                            u
+        d .However,att¼1,thefirmobservesthefirst-stagerevenue,u ,whichservesas b
+        a                                                    
+         2                                                   
+         signalofthesecond-stagerevenueoftheproject.7Basedonth
+                                           i1                
+                                           issignal,thefirm  
+                                                            lish
+                                                            e
+                                                            d
+        maychooseeithertoabandontheprojectattheendoft¼1,orinvestandtakeitto o n
+                                                            lin
+        completion at t¼2. In theformer case, it does notreceive any revenue from the e
+                                                            b
+                                                            y
+        projectatt¼2;thatis,u i2 ¼0.Ontheotherhand,if,attheendoft¼1,itchoosesto C a
+                                                            m
+        c                                                    
+        re                                                   
+         o                                                   
+         c                                                   
+         n                                                   
+          e                                                  
+          t                                                  
+          i                                                  
+          i                                                  
+           v                                                 
+           n                                                 
+           e                                                 
+            ue                                               
+            u i                                              
+             t                                               
+             2                                               
+              h                                              
+              .                                              
+              e                                              
+               T                                             
+               p                                             
+                h                                            
+                r                                            
+                i                                            
+                o                                            
+                 s                                           
+                 j                                           
+                 ,                                           
+                 e                                           
+                  t                                          
+                  c                                          
+                  o                                          
+                   t                                         
+                   o                                         
+                   ,                                         
+                    ,                                        
+                    th                                       
+                    m                                        
+                     en                                      
+                     atc                                     
+                       it                                    
+                       h                                     
+                        m                                    
+                        es                                   
+                         u                                   
+                         t                                   
+                         s                                   
+                          h                                  
+                          t                                  
+                          e                                  
+                           p                                 
+                           r                                 
+                           a                                 
+                            e                                
+                            y                                
+                            al                               
+                             t                               
+                             i                               
+                             h                               
+                              t                              
+                              e                              
+                              y                              
+                               s                             
+                               o                             
+                                e                            
+                                f                            
+                                c                            
+                                 c                           
+                                 o                           
+                                 e                           
+                                  n                          
+                                  r                          
+                                  d                          
+                                  ta                         
+                                   p                         
+                                   in                        
+                                    er                       
+                                     t                       
+                                     i                       
+                                     y                       
+                                     o                       
+                                      p                      
+                                      d                      
+                                       e                     
+                                       d                     
+                                       s                     
+                                        e                    
+                                        o                    
+                                        v                    
+                                         f                   
+                                         el                  
+                                          R                  
+                                          o                  
+                                           &                 
+                                           pm                
+                                            D                
+                                             e               
+                                             p               
+                                             n               
+                                              r              
+                                              t              
+                                              o              
+                                               c             
+                                               j             
+                                               o             
+                                               e             
+                                                s            
+                                                c            
+                                                t            
+                                                 t           
+                                                 ,           
+                                                 s           
+                                                  d          
+                                                  (          
+                                                  2          
+                                                  e          
+                                                   ,         
+                                                   .g        
+                                                    t        
+                                                    .        
+                                                    o        
+                                                    ,        
+                                                            b rid
+                                                            g e
+        pharmaceuticaltrialsandcorporateventurecapitalfunds),inwhichdecisionsare U n
+                                                            iv
+        m                                                    
+        sta                                                  
+         a                                                   
+          g                                                  
+          d                                                  
+          e                                                  
+          e                                                  
+           s                                                 
+           i                                                 
+            a                                                
+            n                                                
+            t                                                
+             s                                               
+             o                                               
+             t                                               
+              n                                              
+              a                                              
+              c                                              
+              g                                              
+               e                                             
+               e                                             
+               .                                             
+                s                                            
+                N                                            
+                ,a                                           
+                 o                                           
+                 n                                           
+                  ta                                         
+                  d                                          
+                   b                                         
+                   t                                         
+                   l                                         
+                    h                                        
+                    y                                        
+                    e                                        
+                    ,th                                      
+                     fi                                      
+                      e                                      
+                      rm                                     
+                       joi                                   
+                        d                                    
+                        n                                    
+                         o                                   
+                         t                                   
+                         e                                   
+                         a                                   
+                          s                                  
+                          bs                                 
+                           n                                 
+                           e                                 
+                            o                                
+                            n                                
+                            t                                
+                             c                               
+                             n                               
+                             e                               
+                              e                              
+                              o                              
+                              e                              
+                               f                             
+                               d                             
+                               i)                            
+                                to                           
+                                th                           
+                                 p                           
+                                 e                           
+                                  r                          
+                                  o                          
+                                  e                          
+                                   p                         
+                                   co                        
+                                    ti                       
+                                    m                        
+                                    on                       
+                                     m                       
+                                      to                     
+                                      it                     
+                                       d                     
+                                        to                   
+                                        ela                  
+                                         fo                  
+                                          y                  
+                                          ll                 
+                                           a                 
+                                           o                 
+                                           n                 
+                                            w                
+                                            di               
+                                             t               
+                                             i               
+                                             h               
+                                             )               
+                                              r              
+                                              i              
+                                              o              
+                                               rr            
+                                               u             
+                                               e             
+                                                g            
+                                                v            
+                                                h            
+                                                 er          
+                                                  o          
+                                                  s          
+                                                  n          
+                                                  ib         
+                                                   a         
+                                                   le        
+                                                    ll       
+                                                    ,        
+                                                            e rsity
+                                                            P
+        fixedcostsgeneratesapositiveeffectofuncertaintyonR&Dinvestment.8
+                                                            re
+                                                            ss
+           Finally,thefirmcanchooseattimet¼0ort¼1todisinvest(sell)anyofits
+        existingendowmentofprojects,w.Ifthefirmsellsaprojectattimet,itmustpay
+        ascrappingcostδw,butreceivesthecashflowfromdisinvestmentofs .Else,for
+                                               it            
+        eachperiodtthattheprojectremainsalive,thefirmearnsaknownx (e.g.,rent
+                                              it             
+        accruing from a real-estate holding). The process of disinvesting a project is
+        irreversible,andaswithcapitalinvestment,thisirreversibilityinducesanegative
+        effectofuncertaintyondisinvestment.                  
+        B. ModelAnalysisandResults                           
+           Inwhatfollows,wepresentanalysisandresultscorrespondingtothefirm’s
+        standardinvestmentproblemandR&Ddecision.9            
+        1. CapitalandLaborInvestmentDecisions                
+           Insolvingthefirm’scapitalinvestmentproblem,wefirstconsideritsdecision
+        att¼1.Ifthefirmhadinitiatedanyprojectsatt¼0,itobtainsthesecondperiod
+        revenuev perproject.Amongthoseprojectsthatwerenotundertakenatt¼0,the
+             i2                                              
+        firmcanchoosetoinitiateanyofthematt¼1andearnv (cid:1)ðκþλÞnperproject.
+                                       i2                    
+        Else, it can discard any uninvested projects and earn 0. The firm will rationally
+        discard a given project, en, when its expected revenue is less than the associated
+        costsofinvestmentandhiring.Thefirmwillceaseoperationsattheendoft¼2,
+          7As noted in Section III.A.1, the revenues at the first and second stages both have a common
+        component,drivenbyβ,andanidiosyncratic,mean-zero,IIDcomponent.Asaresult,thefirst-stage
+                   i                                         
+        revenueisanoisybutunbiasedsignalofthesecond-stagerevenue.
+          8This modeling is consistent with theories showing a positive effect of uncertainty on growth-
+        options-type investment (see, e.g., Bar-Ilan and Strange (1996), (1998), Grossman and Shapiro
+        (1986),andKulatilakaandPerotti(1998)).               
+          9InAppendixA,wemodelthefirm’sdecisiontodisinvestandderiveresultsonthecross-sectional
+        implicationsoftheroleplayedbythedegreeofinputirreversibility.Proofsofpropositionsandlemmas
+        areinAppendixB.                                      
+========================================================================
+

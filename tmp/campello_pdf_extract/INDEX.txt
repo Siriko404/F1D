@@ -1,0 +1,32 @@
+campello_etal_2022_brexit_jfqa.pdf: 45 pages
+  table1: matched PDF page 21 -> table1_pdfpage21.txt
+  table1: matched PDF page 22 -> table1_pdfpage22.txt
+  table1: matched PDF page 34 -> table1_pdfpage34.txt
+  table1: matched PDF page 36 -> table1_pdfpage36.txt
+campello_etal_2022_brexit_jfqa.pdf: 45 pages
+  table8: matched PDF page 31 -> table8_pdfpage31.txt
+campello_etal_2022_brexit_jfqa.pdf: 45 pages
+  buk: matched PDF page 5 -> buk_pdfpage05.txt
+  buk: matched PDF page 9 -> buk_pdfpage09.txt
+  buk: matched PDF page 11 -> buk_pdfpage11.txt
+  buk: matched PDF page 14 -> buk_pdfpage14.txt
+  buk: matched PDF page 16 -> buk_pdfpage16.txt
+  buk: matched PDF page 17 -> buk_pdfpage17.txt
+  buk: matched PDF page 18 -> buk_pdfpage18.txt
+  buk: matched PDF page 19 -> buk_pdfpage19.txt
+  buk: matched PDF page 20 -> buk_pdfpage20.txt
+  buk: matched PDF page 21 -> buk_pdfpage21.txt
+  buk: matched PDF page 22 -> buk_pdfpage22.txt
+  buk: matched PDF page 23 -> buk_pdfpage23.txt
+  buk: matched PDF page 27 -> buk_pdfpage27.txt
+  buk: matched PDF page 28 -> buk_pdfpage28.txt
+  buk: matched PDF page 29 -> buk_pdfpage29.txt
+  buk: matched PDF page 32 -> buk_pdfpage32.txt
+  buk: matched PDF page 33 -> buk_pdfpage33.txt
+  buk: matched PDF page 34 -> buk_pdfpage34.txt
+  buk: matched PDF page 35 -> buk_pdfpage35.txt
+  buk: matched PDF page 36 -> buk_pdfpage36.txt
+  buk: matched PDF page 37 -> buk_pdfpage37.txt
+  buk: matched PDF page 38 -> buk_pdfpage38.txt
+  buk: matched PDF page 39 -> buk_pdfpage39.txt
+  corrigendum: 1 pp -> corrigendum.txt

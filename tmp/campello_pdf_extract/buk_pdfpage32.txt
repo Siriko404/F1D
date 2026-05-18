@@ -1,0 +1,80 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 32 (0-based idx 31)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                        Campello,Cortes,d’Almeida,andKankanhalli 3209 o i.o
+                                                            rg
+                                                            /1
+                                                            0
+        VI. Robustness                                      .1
+                                                            0
+                                                            1
+                                                            7
+                                                            /S
+        A. ForeignExchangeExposure                          0 0
+                                                            2
+                                                            2
+                                                            1
+                                                            0
+           The Brexit vote was followed by a depreciation of the British pound (9% 9 0
+                                                            2
+                                                            2
+        relativetotheU.S.dollar).Totheextentthatourtreatmentassignmentschemesmay 0
+                                                            0
+                                                            0
+        becorrelatedwithfirms’exposurestoU.S.dollar/Britishpound(henceforth,USD– 3
+                                                            0
+                                                            8
+        GBP) fluctuations, our results could reflect U.K.-exposed firms’ heterogeneous P u
+                                                            b
+        responsestotheBritishpounddepreciation(affectingfirst-momentexpectations) lish
+                                                            e
+        rather thantouncertainty generatedbytheBrexitvote(second-momentexpecta- d
+                                                            o
+        tions). In what follows, we account for this possibility by controlling for firms’ n lin
+                                                            e
+        exposurestoFXratefluctuationsinthevalueoftheBritishpound. b y
+                                                            C
+           First,weestimateadynamicanalogueofequation(13),firmbyfirm,overour a m
+                                                            b
+        testing period.27 Instead of regressing the volatility of firm equity returns on the rid
+                                                            g
+        volatilitiesofU.S.andU.K.equityindexreturnsandthevolatilityofchangesinthe e
+                                                            U
+        USD–GBPFXrate,weregressthelevelsoffirms’equityreturnsonthelevelsof n iv
+                                                            e
+        U.S.andU.K.equityindexreturnsandUSD–GBPFXratechanges.Thisspecifi- rsity
+        cationaimsatcapturingthefirst-momentexposuresoffirmstomovementsinthe P re
+        pound.Weincludeasanadditionalcontroleachfirm’send-of-quartercoefficienton ss
+        FX £ ,namelyβFX £ ,whichcapturesthetime-varyingsensitivity offirmi’sequity
+                 i,t                                         
+        returnstochangesintheBritishpound.Second,weincludeinourestimationsthe
+        Alfaroetal.(2018)firm-levelinstrumentsforfirst-andsecond-momentshocksto
+        theUSD–GBPrate.Ourfinaltwocontrolsarebasedonfirmdisclosuresofhedging
+        activities.FollowingCampello,Lin,Ma,andZou(2011),wesearchformentionsof
+        keywords thataremeanttocaptureFXhedgingactivityin10-Kdisclosures.We
+        includeasadditionalcontrolsadummyvariableforwhetherafirmengagedinFX
+        hedgingactivityintheprioryear,andtheintensityofhedgingintheprioryearas
+        measuredbythenumberofkeywordsmentioned.              
+           Results in Table 9 indicate that our inferences on firm responses to the
+        Brexit vote continue to hold even in the presence of various controls for their
+        possible heterogeneous exposures to the depreciation of the British pound.
+        Results in columns 1 and 2, for instance, show estimated DID coefficients of
+        between(cid:1)0.08and(cid:1)0.17, whicharevirtuallyidenticaltothosein columns2
+        and 3 of Table 2. The results suggest that the observed investment cuts are
+        unlikelytobeconfoundedbyfirmsreactingtochangesinfirst-momentexpec-
+        tationsarisingfromtheBritishpounddepreciationthatfollowedtheBrexitvote.
+        B. FinancingCosts                                    
+           Wenextinvestigatewhetheranyoftheeffectsweobservemaybeascribedto
+        U.K.-exposedfirmsexperiencinghigherfinancingcostsasaresultofheightened
+        uncertainty induced by the Brexit vote. Prior research has shown that periods of
+        higher uncertainty are associated with increased credit spreads, which may lead
+        firmstocurtailinvestment(Gilchrist,Sim,andZakrajšek(2014)).Weaccommo-
+        date for this channel in our analysis by accounting for several proxies of firms’
+          27Specifically,weperformourestimationusingmonthlyreturnsdata,with24-monthrollingwin-
+        dows,overtheperiodfrom2010:M1to2016:M12.             
+========================================================================
+

@@ -1,0 +1,96 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 11 (0-based idx 10)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                                                            o
+        3188 JournalofFinancialandQuantitativeAnalysis      i.o
+                                                            rg
+                                                            /1
+                                                            0
+        2. R&DInvestmentDecisions                           .1
+                                                            0
+                                                            1
+           Considerthefirm’sdecisionatt¼0,whenitmayopttoinvestinaportfolioof 7 /S
+                                                            0
+        R&Dprojects.TheprofitsfromanR&Dportfolioofsizeme canbeexpressedas 0 2
+                                                            2
+                                                            1
+               8                                            0
+                                                            9
+               ><0                    ðNoInvestmentÞ,       0 2
+                                                            2
+                                                            0
+        (7) π ðmeÞ¼ u (cid:1)d þu (cid:1)d , ifE½u ju ¼u(cid:3)>d ðInvest Both StagesÞ, 0 0
+           i2  >: i1 1 i2 2   i2 i1  2                      3 0
+                 u i1 (cid:1)d 1 , ifE½u i2 ju i1 ¼u(cid:3)≤d 2 ðInvest First Stage OnlyÞ: 8 P u
+                                                            b
+           The firm will invest in a portfolio of R&D projects of size m at t¼0 to
+                                                            lish
+                                                            e
+                                                            d
+        maximizethefollowing:                               o n
+                                                            lin
+                                                            e
+        (8)      m m axm(cid:6)E½maxðu i2 (cid:1)d 2 ,0Þ(cid:3)þmu i1 (cid:1)md 1 (cid:1)m α: b y C a
+                                                            m
+                                                            b
+           Thefirst-orderconditionofequation(8)implicitlydefinestheoptimalR&D rid
+                                                            g
+        portfoliosize,m∗,bythefollowing:                    e
+                                                            U
+                                                            n
+                                                            iv
+        (9)        E½maxðu                                   
+                        i2                                   
+                         (cid:1)d                            
+                           2                                 
+                            ,0Þ(cid:3)þu                     
+                                i1                           
+                                 ¼d                          
+                                   1                         
+                                    þαm ∗α(cid:1)1:         e rsity
+                                                            P
+                                                            re
+           Notingthatthefirst-stage revenue,u                
+                               i1                            
+                                ,isanoisybutunbiasedsignalofthe ss
+        second-stagerevenue,u ,andassumingthatthesevariablesarenormallydistrib-
+                     i2                                      
+        uted,wecansimplifyequation(9)as10                    
+        (10)       E½u (cid:1)d ju >d (cid:3)þu ¼d þαm ∗α(cid:1)1,
+                     i1 2 i1 2  i1 1                         
+               pffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffi " !#
+                 ω2ðrÞþσ2   d (cid:1)u                       
+           u þ   (cid:6)i x (cid:7) ϕ pffiffiffiffi2ffiffiffiffiffiffiffiffiffiiffi1ffiffiffiffiffiffiffi þu ¼d þd þαm ∗α(cid:1)1:
+            i1                                               
+              1(cid:1)Φ pdffiffi 2 ffiffi(cid:1)ffiffiuffiffi i ffi 1 ffiffiffiffiffi
+                            ω2                               
+                             i                               
+                             ðrÞþσ2                          
+                                 x                           
+                                      i1 1  2                
+                   ω2ðrÞþσ2                                  
+                    i x                                      
+        InLemma2,weprovetheexistenceoftheoptimalR&Dinvestmentlevelm∗.
+        Lemma2. TheoptimalR&Dinvestmentlevelm∗att¼0isgivenbyequation(10)
+        forα>1.                                              
+           The breakeven condition in equation (10) implies that the firm invests in a
+        portfolioofR&Dprojectsuptothepointatwhichbenefitsareexpectedtoexceed
+        costs. Since att¼1 thefirm can(upon observing a signal oftheprojects’ future
+        revenues)choosetoabandonanyproject,andifso,avoidpayingthesecond-stage
+        developmentcost,thedecisiontoinvestintheR&Dprojectsatt¼0isequivalentto
+        thedecisiontobuyaportfolio ofcalloptionsexpiringatt¼1.Atthebreakeven
+        R&D investment level, m∗, the price of the option equals its value. Increased
+        uncertainty in the distribution of u increases the value of this option, thereby
+                            it                               
+        increasingthebreakevenprojectthresholdm∗,expandingthesetofR&Dprojects
+        thefirmundertakes.ThisargumentisformalizedinProposition2.
+          10Weassume(withoutlossofgenerality)normalityforanalyticaltractability.Thisallowsustowrite
+        u asu plusanIIDzero-meannormalnoisewithvarianceσ2andtoprovideaclosed-formexpression
+         i2 i1                     x                         
+        forthefirm’sbreakevenR&Dprojectinequation(10).       
+========================================================================
+

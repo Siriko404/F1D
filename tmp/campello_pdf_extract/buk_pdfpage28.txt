@@ -1,0 +1,95 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 28 (0-based idx 27)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                        Campello,Cortes,d’Almeida,andKankanhalli 3205 o i.o
+                                                            rg
+                                                            /1
+                                                            0
+        intofivecategorieswherescoresof1(5)correspondtothelowest(highest)skilled .1
+                                                            0
+                                                            1
+        occupations,basedontheextentofeducation,experience,andtrainingrequiredto 7 /S
+        performeachoccupation.Anindustry’sLSIiscomputedastheweightedaverage 0 0
+                                                            2
+                                                            2
+        O*NETclassification across all occupations in that industry, where the weights 1 0
+                                                            9
+                                                            0
+        correspondtothefractionofworkersengagedineachoccupation. 2 2
+                                                            0
+           Columns 5–8 of Table 5 report results on the effect of the Brexit vote on 0 0
+                                                            3
+                                                            0
+        employmentgrowthinsubsamplesoffirmspartitionedintotwogroupsbasedon 8
+                                                            P
+                                                            u
+        the2015(pre-Brexit)LSI.FirmsintheLowSkillssubsampleareinindustrieswhich b
+        fallwithinthelowesttercileofLSI,andfirmsintheHighSkillssubsamplearein
+                                                            lish
+                                                            e
+                                                            d
+        industrieswhichfallwithinthehighesttercileofLSI.Theresultsincolumns5and o n
+                                                            lin
+        6showthatU.K.-exposedAmericanfirmsinLowSkillindustries(includingfood, e
+                                                            b
+                                                            y
+        chemical,andprimarymetalmanufacturing,mining,andclothingretail)cuttheir C
+                                                            a
+                                                            m
+        employment substantially more (relative to control firms). Conversely, the esti- b
+        matesincolumns7and8indicatethatfirmsinHighSkillindustries(computerand
+                                                            rid
+                                                            g
+                                                            e
+        electronic product manufacturing, telecommunications and information services, U n
+                                                            iv
+        a                                                    
+        e                                                    
+         n                                                   
+         ff                                                  
+          d                                                  
+          ec                                                 
+          p                                                  
+           t                                                 
+           r                                                 
+           .                                                 
+            ofessional,technical,andscientificservices)shownostatisticallysignificant e rsity
+                                                            P
+                                                            re
+                                                            ss
+        2. InputVersusOutputChannels                         
+           WenextstudywhethertheeffectofU.K.-baseduncertaintyonU.S.corporate
+        investmentwasdrivenbyfirmsthatwereimportersfromtheUnitedKingdomor
+        exporterstotheUnitedKingdom.Wedothisusingtheindexoffirms’offshoring
+        activitiesdevelopedbyHobergandMoon(2017).Thisindex,derivedfromfirms’
+        10-Kfilings,countsmentionsofwordsrelatedtothepurchaseofinputs(“Input”)
+        andsaleofoutputs(“Output”)fromeachcountryafirmdoesbusinesswithwithina
+        year.Foreachsamplefirm,wecomputethesumoftheInputandOutputindices
+        associatedwiththeUnitedKingdomoverthe2010–2014period(similartoourβUK
+                                                   i         
+        estimationwindow).WeconsidereachoftheInputandOutputindicesseparately,
+        as well as combined (Total). We define as highly U.K.-offshoring-exposed firms
+        thosewithavalueofgreaterthan5onagivenoffshoringindex.25Controlfirmsare
+        thosewithscoresof0onthesameindex.                    
+           ThefirsttwocolumnsofTable6reportourbaselineresultsontheeffectsof
+        theBrexitvoteoninvestmentforeaseofcomparison,whereasthenext3columns
+        reportanalogousresultsfortreatmentschemesbasedonoffshoringactivitiestothe
+        UnitedKingdom.Theestimateincolumn3indicatesthatU.S.firmswithahigh
+        degreeoftotaloffshoringactivitywiththeUnitedKingdomsignificantlycuttheir
+        investmentrelativetoU.S.firmswithnoU.K.offshoring.Themagnitudeofthis
+        effect is remarkably similar to those of our base tests. In columns 4 and 5, we
+        considerInputandOutputindicesseparately.Thismoredetailedanalysisisimpor-
+        tantinrevealingthattheaggregatecutininvestmentthatweidentifiedwasdriven
+        byfirmswithhighInputexposuretotheUnitedKingdom.Acloserexamination
+        of disclosure data reveals that these firms have more operations in the United
+          25Althoughthisthresholdisarbitraryandmeanttofollowourpreviousapproachtotextual-search-
+        basedmeasurementofexposuretotheUnitedKingdom,ourfindingsarerobusttoalternativechoices.
+        Thesamplesizesincolumns3–5areenlargedduetogreatercoverageoftheHobergandMoon(2017)
+        offshoringdata.Weconfirmthatthefindingsholdinthesubsamplecomprisingtheintersectionofour
+        baselinesample(incolumns1and2)withtheHobergandMoon(2017)offshoringdata.
+========================================================================
+

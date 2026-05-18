@@ -1,0 +1,101 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 19 (0-based idx 18)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                             
+                                                             
+                                                             
+                                                             
+        highlights the sharp yet short-lived nature of the economic effects triggered by
+        uncertainty.20Welimitouranalysistotheendof2016duetothestartoftheTrump
+        administration in Jan.2017. We show in later robustness checks that results also
+        holdforawindowthatexcludesTrump’selection.           
+        3. EmpiricalModel                                    
+           We compare differences in outcomes of interest between treated (HIGH_
+        UK_EXPOSURE)andcontrol(LOW_UK_EXPOSURE)firms.Differencesover
+        the2016:Q3–Q4periodaretakenrelativetothesametwoquartersintheprevious
+        year (2015:Q3–Q4) in order to minimize the impact of seasonal effects. This is
+        equivalenttoestimatingthefollowingmodel:             
+                                                             
+        (14) Y ¼αþδ½POST (cid:6)HIGH_UK_EXPOSURE(cid:3)þθCONTROLS i,t X t XX(cid:8) i (cid:9) i,t(cid:1)1
+                þ  FIRM þ   INDUSTRY (cid:6)QUARTER þϵ :     
+                      i            j        t i,t            
+                  i      j t                                 
+           The outcomes of interest, Y , are fixed capital investment, employment
+                           i,t                               
+        growth, R&D expenditures, divestitures, cash holdings, and NWC. HIGH_UK_
+        EXPOSURE is a dummy variable that equals 1 if firm i is U.K.-exposed, and
+               i                                             
+        0otherwise.AfirmisconsideredtobeU.K.-exposedaccordingtotwomeasures:i)
+        if it belongs to the top tercile of βUK (market-based measure); or ii) if it has a
+                            i                                
+        highnumberofBrexit-relatedentriesinits201510-Kform(textual-search-based
+        measure).POST equals1ifthetimeperiodisinthe2016:Q3–Q4window.
+                 t                                           
+                            FIGURE5                          
+                CorporateInvestmentTrendsaroundBrexit-relatedEvents
+        ThisfiguredisplayscoefficientsofinvestmentregressionsforthetimelineofthemaineventsrelatedtoBrexit.Theshadedarea
+        marksthebeginningofBrexit-relatedevents,withtheannouncementofthedateoftheUK-EUreferendum(2016:Q1).
+              0.25                                           
+              0.15                                           
+              0.05                                           
+              –0.05                                          
+              –0.15                                          
+              –0.25                                          
+              –0.35                                          
+              –0.45                                          
+              –0.55                                          
+                 1Q5102 2Q5102 3Q5102 4Q5102 1Q6102 2Q6102 3Q6102 4Q6102 1Q7102 2Q7102 3Q7102
+                                                            h
+                                                            ttp
+                                                            s://d
+                                                            o
+        3196 JournalofFinancialandQuantitativeAnalysis      i.o
+                                                            rg
+                                                            /1
+                                                            0
+                                                            .1
+                                                            0
+                                                            1
+                                                            7 /S
+                                                            0
+                                                            0 2
+                                                            2
+                                                            1
+                                                            0
+                                                            9
+                                                            0
+                                                            2
+                                                            2
+                                                            0
+                                                            0
+                                                            0 3
+                                                            0
+                                                            8
+                                                            P
+                                                            u
+                                                            b
+                                                            lish
+                                                            e d
+                                                            o
+                                                            n lin
+                                                            e
+                                                            b
+                                                            y
+                                                            C
+                                                            a
+                                                            m b rid
+                                                            g e
+                                                            U
+                                                            n iv
+                                                            e
+                                                            rsity
+                                                            P
+                                                            re ss
+          20Figure5showsdifferencesininvestmenttrendsbetweentreatedandcontrolfirmsinthewindow
+        surroundingthevote.Brexit-induceduncertaintyledtoasignificant,yettemporary,dropininvestment
+        foraffectedU.S.firmsforaperiodofthreequarters,followedbyareboundtonearnormalcyinthe
+        followingthreequarters.This“drop-and-rebound”behaviormatchesthepatternofdomesticuncertainty
+        shocksdiscussedinBloom(2009).                        
+========================================================================
+

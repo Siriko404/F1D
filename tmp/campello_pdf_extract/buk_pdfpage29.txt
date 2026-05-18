@@ -1,0 +1,395 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 29 (0-based idx 28)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                                                            o
+        3206 JournalofFinancialandQuantitativeAnalysis      i.o
+                                                            rg
+                                                            /1
+                                                            0
+                                                            .1
+                                                            0
+                            TABLE6                          1
+                                                            7
+                                                            /S
+                ResultCharacterization:TheImpactoftheBrexitVoteon 0 0
+                                                            2
+                      InvestmentofU.K.OffshoringFirms       2
+                                                            1
+                                                            0
+                                                            9
+                                                            0
+        Table6reportsoutputfromequation(14)undertreatmentassignmentschemesbasedonU.S.firms’U.K.-basedoffshoring 2 2
+                                                            0
+        activities.ThedependentvariableisINVESTMENT.Inthefirsttwocolumns,wereportourbaselineestimatesasinTable2.In 0 0
+        thethirdcolumn,thetreatmentgroupconsistsoffirmswithscoresofgreaterthanfiveontheHoberg–MoonU.K.Offshoring 3
+                                                            0
+        Indexsummedupoveryears2010–2014,consideringbothinputandoutputoffshoringactivities,whereasthecontrolgroupis 8
+                                                            P
+        madeoffirmswithscoresof0onthisindex.Inthefourthcolumn,thetreatmentgroupconsistsoffirmswithscoresofgreater u
+        t                                                    
+        a                                                    
+        h                                                    
+         c                                                   
+         a                                                   
+         t                                                   
+         n                                                   
+         ivi                                                 
+          5                                                  
+          tie                                                
+           o                                                 
+           s                                                 
+           n                                                 
+           ,w                                                
+            th                                               
+            h                                                
+             e                                               
+             er                                              
+             H                                               
+              e                                              
+              o                                              
+              a                                              
+              b                                              
+              s                                              
+               e                                             
+               th                                            
+               rg                                            
+                e                                            
+                –                                            
+                c                                            
+                 M                                           
+                 o                                           
+                 o                                           
+                 n                                           
+                  o                                          
+                  tr                                         
+                  n                                          
+                  ol                                         
+                   U                                         
+                   g                                         
+                   .K                                        
+                    ro                                       
+                    .                                        
+                    u                                        
+                     O                                       
+                     p                                       
+                     ff                                      
+                      is                                     
+                      sh                                     
+                      m                                      
+                       o                                     
+                       a                                     
+                       ri                                    
+                        d                                    
+                        ng                                   
+                        eo                                   
+                         In                                  
+                         f                                   
+                         d                                   
+                          fi                                 
+                          e                                  
+                          rm                                 
+                          x                                  
+                           s                                 
+                           su                                
+                            w                                
+                            m                                
+                            ith                              
+                             m                               
+                             s                               
+                             e                               
+                              c                              
+                              d                              
+                              o                              
+                               u                             
+                               re                            
+                               p                             
+                               s                             
+                                o                            
+                                o                            
+                                v                            
+                                f                            
+                                 e                           
+                                 0                           
+                                 r                           
+                                  o                          
+                                  y                          
+                                  n                          
+                                  ea                         
+                                   th                        
+                                   rs                        
+                                   is                        
+                                    2                        
+                                    i                        
+                                    0                        
+                                    n                        
+                                     1                       
+                                     d                       
+                                     0                       
+                                     e                       
+                                      –                      
+                                      x                      
+                                      2                      
+                                      .                      
+                                       0                     
+                                       In                    
+                                       14                    
+                                        th                   
+                                        ,                    
+                                        e                    
+                                         co                  
+                                         fin                 
+                                         n                   
+                                          a                  
+                                          si                 
+                                          l                  
+                                          d                  
+                                           s                 
+                                           e                 
+                                           p                 
+                                           r                 
+                                            e                
+                                            in               
+                                            c                
+                                            g                
+                                             ifi             
+                                             o               
+                                             c               
+                                              n              
+                                              a              
+                                              l              
+                                              t              
+                                              y              
+                                              io             
+                                               i             
+                                               n             
+                                               n             
+                                               ,             
+                                                p            
+                                                t            
+                                                u            
+                                                h            
+                                                t            
+                                                 e           
+                                                 o           
+                                                 tr          
+                                                 ff          
+                                                  e          
+                                                  s          
+                                                  a          
+                                                  h          
+                                                   t         
+                                                   o         
+                                                   m         
+                                                   ri        
+                                                   e         
+                                                    n        
+                                                    n        
+                                                    g        
+                                                    t        
+                                                            b lish
+                                                            e
+        groupconsistsoffirmswithscoresofgreaterthan5ontheHobergandMoon(2017)U.K.OffshoringIndexsummedupover d
+        years2010–2014,consideringonlyoutputoffshoringactivities,whereasthecontrolgroupismadeoffirmswithscoresof0on o
+                                                            n
+        thisindex.ThetimedimensionoftheDIDestimatorissetsoastocomparethetwoquartersfollowingtheannouncement lin
+        ofthereferendumandBrexit’svictory(2016:Q3–Q4)versusthetwoquartersprecedingtheannouncement(2015:Q3–Q4). e
+                                                            b
+        T-statisticsarecomputedusingrobuststandarderrors(inparentheses)double-clusteredatthefirmandcalendarquarter y
+        levels.*,**,and***indicatestatisticalsignificanceatthe10%,5%,and1%levels,respectively. C a
+                                                            m
+                                 INVESTMENT                 b
+                                                            rid
+                      Baseline        U.K.OffshoringIndex   g e
+                                                            U
+                   Treatment is                              
+                         Tr                                  
+                          >                                  
+                          ea                                 
+                           5                                 
+                           tm                                
+                           Br                                
+                            e                                
+                            e                                
+                            n                                
+                            x                                
+                             t                               
+                             it                              
+                               Tre                           
+                                o                            
+                                a                            
+                                 n                           
+                                 tm                          
+                                 th                          
+                                  e                          
+                                  e                          
+                                  n                          
+                                   U                         
+                                   ti                        
+                                   .                         
+                                   s                         
+                                   K                         
+                                    >                        
+                                    .                        
+                                     5 Tre                   
+                                        o                    
+                                        a                    
+                                        n                    
+                                         tm                  
+                                         th                  
+                                          e                  
+                                          e                  
+                                          n                  
+                                          U                  
+                                          ti                 
+                                           .                 
+                                           s                 
+                                           K                 
+                                            >                
+                                            .                
+                                            5  Tre           
+                                               o             
+                                                a            
+                                                n            
+                                                tm           
+                                                 th          
+                                                 e           
+                                                 e           
+                                                  n          
+                                                  U          
+                                                  ti         
+                                                   .         
+                                                   s         
+                                                   K         
+                                                   >         
+                                                   .         
+                                                    5       n iv
+                                                            e
+                   isTo                                      
+                    o                                        
+                    p                                        
+                    fβ                                       
+                     T                                       
+                     U i                                     
+                     e                                       
+                      K                                      
+                      rcile                                  
+                          in                                 
+                          En                                 
+                          1                                  
+                           t                                 
+                           0                                 
+                           ri                                
+                           -                                 
+                            e                                
+                            K                                
+                            s                                
+                            s  (I                            
+                               O                             
+                               np                            
+                                ffs                          
+                                u                            
+                                 h                           
+                                 t                           
+                                 o                           
+                                 a                           
+                                  r                          
+                                  n                          
+                                  in                         
+                                  d                          
+                                  g                          
+                                   O                         
+                                   In                        
+                                   u                         
+                                    d                        
+                                    tp                       
+                                    e                        
+                                     u                       
+                                     x                       
+                                     t)                      
+                                       Off                   
+                                        (                    
+                                        s                    
+                                        In                   
+                                        h                    
+                                         p                   
+                                         o                   
+                                         u                   
+                                         ri                  
+                                          t                  
+                                          n                  
+                                          O                  
+                                          g                  
+                                           n                 
+                                           In                
+                                           ly                
+                                            d                
+                                            )                
+                                            ex O             
+                                               (             
+                                               f             
+                                               O             
+                                               fs            
+                                                u            
+                                                h            
+                                                t            
+                                                o            
+                                                 p           
+                                                 r           
+                                                 u           
+                                                 in          
+                                                  t          
+                                                  g          
+                                                  O          
+                                                  I          
+                                                   n         
+                                                   n         
+                                                   l         
+                                                   d         
+                                                   y         
+                                                    e        
+                                                    )        
+                                                    x        
+                                                            rsity
+                                                            P
+                     1     2      3       4      5           
+                                                            re
+                                                            ss
+        POST(cid:6)HIGH_βU                                   
+              i                                              
+              K    (cid:1)0.165***                           
+                   (0.019)                                   
+        POST(cid:6)HIGH_ (cid:1)0.077***                     
+         10(cid:1)K_ENTRIES (0.008)                          
+        POST(cid:6)HIGH_UK_     (cid:1)0.074*** (cid:1)0.095*** 0.000
+         OFFSHORING_INDEX        (0.019) (0.035) (0.006)     
+        Controls                                             
+         Firm       Yes   Yes    Yes     Yes     Yes         
+        Fixedeffects                                         
+         Firm       Yes   Yes    Yes     Yes     Yes         
+         Industry(cid:6)time Yes Yes Yes Yes     Yes         
+        No.ofobs.  17,199 21,253 39,050 39,050  39,050       
+        R2          0.75  0.73   0.73    0.73    0.73        
+        Kingdom (e.g., manufacturing units), utilizing labor, capital, and raw material
+        inputsfromtheUnitedKingdom.TheeffectontheinvestmentofU.S.firmswith
+        highOutputexposuretotheUnitedKingdomiszero.Theseresultssuggestthat
+        input-basedeconomiclinksplayacrucialroleinthecross-countrytransmission
+        ofuncertaintyanditseffectsoncorporateinvestmentandhiringdecisions.
+        3. TheEffectofInputIrreversibility                   
+           Weturntotheanalysisofadjustmentcostsinmodulatingtheeffectofuncer-
+        tainty on investment and employment as a way to more finely characterize our
+        results(cf.Predictions4and5).Webeginbylookingatfixedcapitaladjustment
+        costs.Wedosointroducingafirm-levelproxyforcapitalinvestmentreversibility;
+        namely, the Kim and Kung (2016) asset redeployability index. Columns 1–3 of
+        Table 7 show results on the amplification effect of capital adjustment costs. In
+        column1,weruntheDIDestimationthatconsidersfirmsinthetoptercileofβUKas
+                                                  i          
+        the treatment group. In this first run, we restrict the sample to firms with high
+        irreversibility,asdefinedbythebottomtercileoftheKimandKungindex.TheDID
+        coefficient is negative and highly significant. The same exercise is repeated in
+        column2,butforthesubsampleoffirmsinthetoptercileofassetredeployability,
+========================================================================
+

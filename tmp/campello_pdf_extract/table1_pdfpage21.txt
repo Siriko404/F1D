@@ -1,0 +1,418 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 21 (0-based idx 20)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                                                            o
+        3198 JournalofFinancialandQuantitativeAnalysis      i.o
+                                                            rg
+                                                            /1
+                                                            0
+                                                            .1
+                                                            0
+                            TABLE1                          1
+                                                            7
+                                                            /S
+                          SummaryStatistics                 0 0
+                                                            2
+                                                            2
+                                                            1
+                                                            0
+        Table1reportssummarystatisticsforthemainvariablesusedinourempiricalanalyses.Thefinalsampleisamatchbetween 9 0
+        C Ea O c M h P p U a S n T e A l T re Q p u o a rt r s te t r h ly e N m or e th an A , m s e ta ri n c d a a F r u d nd d a e m via e t n io ta n l , s m an e d d t ia h n e , e i s n t t i e m r a q t u e a d rt β il U i e K r s a a n m ge ple (IQ fo R rt ) h , e a p n e d ri t o h d e fr n o u m m 2 b 0 e 1 r 0 o :Q f 1 ob to s 2 e 0 rv 1 a 5 t : io Q n 4 s . 2 2 0 0
+        conditionalonfirmsbelongingtoeachsubsample.INVESTMENTisdefinedascapitalexpendituresdividedbylaggedtotal 0 3
+        assets.EMPLOYMENT_GROWTHisdefinedasthepercentagechangeinthenumberofemployees(annual).R&Disdefined 0 8
+        as R&D expenditures divided by lagged total assets, considering only firms with non-missing R&D expenditures. P
+                                                            u
+        DIVESTITURESisdefinedasthevalueofsaleofplant,property,andequipmentdividedbylaggedtotalassets.CASHis b
+        definedascashandshort-terminvestmentsdividedbylaggedtotalassets.NON_CASH_WORKING_CAPITALisdefinedas
+                                                            lish
+        workingcapital(netofcash)dividedbylaggedtotalassets.TOBIN_Qisdefinedasthemarketvalueofassetsdividedbythe e
+                                                            d
+        bookvalueofassets,andiscalculatedasthemarketvalueofequityplusthebookvalueofassetsminusbookvalueofequity o
+        p                                                    
+        d                                                    
+         l                                                   
+         i                                                   
+         u                                                   
+         vi                                                  
+         s                                                   
+         de                                                  
+          d                                                  
+          d                                                  
+          ef                                                 
+           b                                                 
+           er                                                
+            y                                                
+            re                                               
+            la                                               
+             d                                               
+             g                                               
+             t                                               
+             g                                               
+             a                                               
+              e                                              
+              x                                              
+              d                                              
+              es                                             
+               to                                            
+               ,                                             
+                t                                            
+                a                                            
+                a                                            
+                ll                                           
+                l                                            
+                 d                                           
+                 as                                          
+                 iv                                          
+                  s                                          
+                  id                                         
+                  et                                         
+                  e                                          
+                   s                                         
+                   d                                         
+                   .S                                        
+                    b                                        
+                    I                                        
+                    y                                        
+                    ZE                                       
+                     bo                                      
+                     is                                      
+                      ok                                     
+                      de                                     
+                       v                                     
+                       f                                     
+                       a                                     
+                       in                                    
+                        lu                                   
+                        e                                    
+                        e                                    
+                         d                                   
+                         o                                   
+                         a                                   
+                         f                                   
+                          s                                  
+                          a                                  
+                          t                                  
+                          s                                  
+                           h                                 
+                           s                                 
+                           e                                 
+                           e                                 
+                            l                                
+                            t                                
+                            o                                
+                            s                                
+                            g                                
+                            .                                
+                             a                               
+                             C                               
+                             r                               
+                             A                               
+                             ith                             
+                              S                              
+                              m                              
+                              H_                             
+                               o                             
+                               F                             
+                                f                            
+                                L                            
+                                t                            
+                                O                            
+                                ot                           
+                                 W                           
+                                 ala                         
+                                  is                         
+                                  ss                         
+                                   d                         
+                                   e                         
+                                   e                         
+                                    t                        
+                                    f                        
+                                    s                        
+                                    in                       
+                                    .                        
+                                     e                       
+                                     S                       
+                                     d                       
+                                     AL                      
+                                      a                      
+                                      E                      
+                                      s                      
+                                       S                     
+                                       o                     
+                                       _                     
+                                       p                     
+                                        G                    
+                                        e                    
+                                        R                    
+                                        ra                   
+                                         O                   
+                                         tin                 
+                                         W                   
+                                          g                  
+                                          T                  
+                                           i                 
+                                           H                 
+                                           nc                
+                                           is                
+                                            om               
+                                            de               
+                                             e               
+                                             fi              
+                                             b               
+                                              n              
+                                              e              
+                                              e              
+                                              f              
+                                              d              
+                                               or            
+                                               a             
+                                               e             
+                                                s            
+                                                d            
+                                                th           
+                                                 e           
+                                                 e           
+                                                 pr          
+                                                  y          
+                                                  e          
+                                                  e          
+                                                  c          
+                                                  a          
+                                                   ia        
+                                                   r-        
+                                                   t         
+                                                   o         
+                                                    io       
+                                                    n        
+                                                    n        
+                                                    -        
+                                                            n lin
+                                                            e
+        yearpercentagechangeinquarterlysales.CONSENSUS_EARNINGS_FORECASTisdefinedasthestandardizedmean1- b
+                                                            y
+        quarteraheadearningspershareforecast.STOCK_RETURNSaredefinedasthequarterlybuy-and-holdreturn.Allvariables C
+        arewinsorizedatthe1%level.PanelAsummarizesdatafortheuniverseofCOMPUSTATfirms.PanelBshowssummary a m
+        statisticsforthesampleoftreatedfirmsasdefinedbyβUK(toptercileofβUK).PanelCshowssummarystatisticsforthesample b
+        d                                                    
+        of                                                   
+         e                                                   
+         c                                                   
+         fi                                                  
+         o                                                   
+         n                                                   
+          n                                                  
+          e                                                  
+          t                                                  
+          d                                                  
+           ro                                                
+           b                                                 
+           l                                                 
+            y                                                
+            fir                                              
+            m                                                
+            m                                                
+             e                                               
+             s                                               
+             n                                               
+              a                                              
+              ti                                             
+              s                                              
+              o                                              
+               d                                             
+               ns                                            
+               ef                                            
+                o                                            
+                in                                           
+                f                                            
+                e                                            
+                 B                                           
+                 d                                           
+                 re                                          
+                  b                                          
+                  x                                          
+                  y                                          
+                  it                                         
+                   β                                         
+                   -r                                        
+                   U                                         
+                   i e                                       
+                    K                                        
+                    la                                       
+                    (                                        
+                    t                                        
+                    b                                        
+                     e                                       
+                     o                                       
+                     d                                       
+                     tt                                      
+                      w                                      
+                      o                                      
+                      o                                      
+                      m                                      
+                       rd                                    
+                       te                                    
+                        s                                    
+                        rc                                   
+                        in                                   
+                         ile                                 
+                         th                                  
+                          o                                  
+                          e                                  
+                          f                                  
+                          ir                                 
+                          β                                  
+                           2                                 
+                           U                                 
+                           i 0                               
+                           Ki                                
+                            1                                
+                            ).                               
+                            5                                
+                            P                                
+                             1                               
+                             a                               
+                             0                               
+                             n                               
+                              -                              
+                              e                              
+                              K                              
+                              lD                             
+                               fili                          
+                               s                             
+                                n                            
+                                h                            
+                                g                            
+                                o                            
+                                s                            
+                                 w                           
+                                 (m                          
+                                 s i s                       
+                                  o                          
+                                  u                          
+                                  re                         
+                                   m                         
+                                   t                         
+                                    m                        
+                                    ha                       
+                                    a                        
+                                     n                       
+                                     ry                      
+                                     fi                      
+                                      s                      
+                                      v                      
+                                      t                      
+                                      e                      
+                                      at                     
+                                       1                     
+                                       is                    
+                                       0                     
+                                       t                     
+                                        -                    
+                                        ic                   
+                                        K                    
+                                        s                    
+                                         e                   
+                                         f                   
+                                         n                   
+                                         o                   
+                                          t                  
+                                          r                  
+                                          r                  
+                                          t                  
+                                          ie                 
+                                          h                  
+                                           s                 
+                                           e                 
+                                           )                 
+                                           s                 
+                                           .                 
+                                            a                
+                                            P                
+                                            m                
+                                            an               
+                                             p               
+                                             e               
+                                             le              
+                                              lE             
+                                              of             
+                                               s             
+                                               t             
+                                               h             
+                                               re            
+                                                o            
+                                                a            
+                                                w            
+                                                t            
+                                                 s           
+                                                 ed          
+                                                 su          
+                                                  fi         
+                                                  m          
+                                                  rm         
+                                                   m         
+                                                   s         
+                                                   a         
+                                                    a        
+                                                    ry       
+                                                    s       rid
+                                                            g e
+        statisticsforthesampleofcontrolfirmsasdefinedbymentionsofBrexit-relatedwordsintheir201510-Kfilings(zero10-K U
+                                                            n
+        entries).                                           iv
+                                                            e
+                                      Universe               
+                                                            rsity
+           Firm-LevelVariables Mean SD Median IQR  N        P re
+        PanelA.COMPUSTAT                                     
+                                                            ss
+        INVESTMENT         0.01 0.02  0.01   0.01 76,094     
+        EMPLOYMENT_GROWTH(Annual) 0.08 0.28 0.03 0.16 17,620 
+        R&D                0.03 0.04  0.02   0.04 40,864     
+        DIVESTITURES((cid:6)100) 0.06 0.28 0.00 0.00 61,151  
+        CASH               0.22 0.25  0.12   0.27 78,044     
+        NON_CASH_WORKING_CAPITAL 0.04 0.19 0.03 0.20 76,323  
+        TOBIN_Q            2.11 1.59  1.57   1.26 73,353     
+        CASH_FLOW          0.01 0.06  0.03   0.04 75,287     
+        SIZE(LogAssets)    6.19 2.08  6.15   3.08 78,062     
+        SALES_GROWTH       0.16 0.62  0.06   0.23 71,637     
+        CONSENSUS_EARNINGS_FORECAST 0.07 3.51 0.09 2.05 42,031
+        STOCK_RETURNS      0.03 0.24  0.02   0.25 67,226     
+                                   Market-BasedApproach      
+                                    (TopTercileofβUK)        
+                                          i                  
+        PanelB.TreatedFirms:                                 
+        INVESTMENT         0.02 0.02  0.01  0.02  11,083     
+        EMPLOYMENT_GROWTH(Annual) 0.08 0.29 0.03 0.19 2,659  
+        R&D                0.03 0.04  0.02  0.04   5,019     
+        DIVESTITURES((cid:6)100) 0.10 0.38 0.00 0.00 8,604   
+        CASH               0.20 0.24  0.11  0.26  11,176     
+        NON_CASH_WORKING_CAPITAL 0.05 0.18 0.04 0.19 10,846  
+        TOBIN_Q            1.92 1.51  1.41  1.01  11,090     
+        CASH_FLOW          0.01 0.06  0.02  0.04  10,972     
+        SIZE(LogAssets)    6.11 1.87  6.12  2.86  11,176     
+        SALES_GROWTH       0.18 0.71  0.06  0.31  10,624     
+        CONSENSUS_EARNINGS_FORECAST 0.01 3.40 0.01 1.83 8,963
+        STOCK_RETURNS      0.02 0.27  0.00  0.30  11,088     
+                                   Market-BasedApproach      
+                                    (BottomTercileofβUK)     
+                                           i                 
+        PanelC.ControlFirms:                                 
+        INVESTMENT         0.01 0.01  0.01  0.01  12,067     
+        EMPLOYMENT_GROWTH(Annual) 0.06 0.20 0.03 0.11 2,965  
+        R&D                0.02 0.03  0.01  0.02   6,200     
+        DIVESTITURES((cid:6)100) 0.08 0.32 0.00 0.01 9,422   
+        CASH               0.17 0.18  0.11  0.19  12,097     
+        NON_CASH_WORKING_CAPITAL 0.08 0.16 0.07 0.20 11,738  
+        TOBIN_Q            1.98 1.25  1.62  1.07  12,055     
+        CASH_FLOW          0.03 0.04  0.03  0.03  11,871     
+        SIZE(LogAssets)    7.25 1.99  7.25  2.65  12,097     
+        SALES_GROWTH       0.10 0.36  0.06  0.16  11,969     
+        CONSENSUS_EARNINGS_FORECAST 0.07 2.33 0.04 2.40 10,720
+        STOCK_RETURNS      0.04 0.18  0.03  0.20  12,063     
+                                           (continuedonnextpage)
+========================================================================
+

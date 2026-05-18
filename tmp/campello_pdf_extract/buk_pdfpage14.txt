@@ -1,0 +1,259 @@
+# SOURCE: campello_etal_2022_brexit_jfqa.pdf  PDF page 14 (0-based idx 13)
+# Extracted by pdfplumber.extract_text(layout=True). NOT hand-typed.
+========================================================================
+                                                             
+                                                            h
+                                                            ttp
+                                                            s://d
+                        Campello,Cortes,d’Almeida,andKankanhalli 3191 o i.o
+                                                            rg
+                                                            /1
+                                                            0
+           We can employ a regression-like approach to operationalize an empirical .1
+                                                            0
+        counterpart toβ i .Specifically,takingsquarerootsofbothsidesofequation(11), 1 7 /S 0
+        weobtain                                            0 2
+                                                            2
+                                pffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffi 1 0
+                                                            9
+        (12)      volðv it Þ≈β i volðV t Þþσ ε(cid:1) 2(cid:6)β i volðV t Þ(cid:6)σ ε : 0 2 2
+                                                            0
+                                                            0
+                                                            0
+           FollowingBloom(2014),weusestockmarketvolatilityasagaugeofaggre- 3 0
+                                                            8
+        gateuncertaintyandestimateequation(12)foreachfirmias12 P u
+                                                            b
+                                                            lish
+        (13)   volðr it Þ¼α i þβU i KvolðFTSE100 t ÞþθCONTROLS t þϵ it : e d o
+                                                            n
+                                                            lin
+           Equation(13)usesthevolatilityofequityreturns,volðr Þ,asaproxyforfirm e
+                                         it                 b
+                                                            y
+        income volatility, volðv it Þ. It also uses the volatility of the FTSE100 Index as a C a
+                                                            m
+        proxyforuncertaintyintheU.K.(therelevantsourceofaggregateuncertaintyin b
+        oursetting).Weincludecontrolvariables,CONTROLS t ,consistingofvolðSP500Þ
+                                                            rid
+                                                            g e
+        andvol(FX$£)intoequation(13)toabsorbeffectsarisingthroughfirms’exposure U
+                                                            n
+                                                            iv
+        r                                                    
+        t                                                    
+        a                                                    
+         o                                                   
+         e                                                   
+         n                                                   
+         g                                                   
+          d                                                  
+          th                                                 
+          re                                                 
+           e                                                 
+           t                                                 
+           s                                                 
+           h                                                 
+            d                                                
+            s                                                
+            e                                                
+            i                                                
+            o                                                
+            o                                                
+             B                                               
+             m                                               
+             n                                               
+              r                                              
+              e                                              
+              (                                              
+              i                                              
+               s                                             
+               t                                             
+               1                                             
+               i                                             
+               t                                             
+               3                                             
+               s                                             
+               ic                                            
+                h                                            
+                )                                            
+                 U                                           
+                 a                                           
+                 p                                           
+                 s                                           
+                  .                                          
+                  o                                          
+                  S                                          
+                  t                                          
+                  u                                          
+                   h                                         
+                   .                                         
+                   n                                         
+                   e                                         
+                   m                                         
+                    d                                        
+                    e                                        
+                    .                                        
+                    a                                        
+                     m                                       
+                     r                                       
+                     F                                       
+                      k                                      
+                      p                                      
+                      o                                      
+                      e                                      
+                       i                                     
+                       r                                     
+                       t                                     
+                       r                                     
+                       a                                     
+                       i                                     
+                        e                                    
+                        c                                    
+                        n                                    
+                        a                                    
+                        a                                    
+                         d                                   
+                         c                                   
+                         l                                   
+                         h                                   
+                          e                                  
+                          c                                  
+                          x                                  
+                          o                                  
+                           f                                 
+                           c                                 
+                           u                                 
+                           ir                                
+                            h                                
+                            n                                
+                            m                                
+                            a                                
+                            te                               
+                             n                               
+                             ,                               
+                             r                               
+                              g                              
+                              w                              
+                              p                              
+                              e                              
+                               a                             
+                               e                             
+                               r                             
+                               r                             
+                                t                            
+                                a                            
+                                t                            
+                                t                            
+                                a                            
+                                t                            
+                                 e                           
+                                 o                           
+                                 k                           
+                                 f                           
+                                  e                          
+                                  β                          
+                                  lu                         
+                                  i                          
+                                   t                         
+                                   c                         
+                                   h                         
+                                   in                        
+                                    t                        
+                                    e                        
+                                    u                        
+                                     o                       
+                                     a                       
+                                     e                       
+                                     t                       
+                                     u                       
+                                     s                       
+                                      i                      
+                                      t                      
+                                      r                      
+                                      o                      
+                                      im                     
+                                       n                     
+                                       fr                    
+                                       s                     
+                                        a                    
+                                        a                    
+                                        b                    
+                                        m                    
+                                        te                   
+                                         e                   
+                                         e                   
+                                         d                   
+                                         tw                  
+                                          w                  
+                                          v                  
+                                           e                 
+                                           o                 
+                                           a                 
+                                           e                 
+                                            r                
+                                            l                
+                                            k                
+                                            n                
+                                            u                
+                                             .               
+                                             e               
+                                             t               
+                                             1               
+                                             h               
+                                              3              
+                                              o              
+                                              e              
+                                               f             
+                                               U             
+                                               β             
+                                                .            
+                                                U            
+                                                i            
+                                                S            
+                                                 K           
+                                                 .d          
+                                                  f          
+                                                  o          
+                                                   r         
+                                                   l         
+                                                   o         
+                                                   l         
+                                                    m        
+                                                    ar      e rsity
+                                                            P re ss
+        2. Textual-Search-BasedMeasureofUncertainty          
+           As an alternative measure of U.S. firms’ exposure to Brexit-induced
+        uncertainty, we develop a textual-search-based metric that is constructed by
+        parsingfirms’201510-Kfilings.Inparticular,welookforthenumberofentries
+        of keywords related to uncertainty about Brexit (“Brexit,” “Great Britain,” and
+        “Uncertainty”) in firms’ disclosures, classifying firms with a “high” number of
+        entriesasHIGH_UK_EXPOSUREfirms,andthosewithzeroentriesascontrol
+        firms.14Notably,thevastmajorityoffirmsfiletheir10-KswiththeSECbetween
+        MarchandJuneofeachyear.Bycomputingthesewordcountsfromfirms’10-K
+        disclosures (before the actual vote takes place, yet after the referendum is
+        announced), we build a measure of exposure to the United Kingdom based on
+        whatfirmsconsiderrelevanttocommunicatetotheirinvestorsontheeveofthe
+        2016Brexitvote.                                      
+           TextualanalysisrevealsthatmostfirmsciteconcernsaboutBrexitahalfdozen
+        timesormoreintheir10-Ks,ornotatall.Assuch,wearbitrarilysetacutoffforhigh
+          12Bloom(2014)showsthatstockmarketvolatilityexhibitsahighdegreeofcommonalitywithother
+        observedproxiesforuncertaintyincludingthosederivedfrombondmarkets,exchangerates,andGDP
+        forecasts.                                           
+          13Thelastterminequation(12)issubsumedbytheidiosyncraticvolatilityterm,ϵ ,inequation(13).
+                                             it              
+        Wenotethatthevolatilityofequityreturnsmaybeanimperfectproxyforthevolatilityoffirmincomeas
+        returns are driven by news on both cash flows and discount rates (Campbell and Shiller (1988)).
+        FollowingVuolteenaho(2002),wealsodecomposethevolatilityofeachfirm’sreturnsintocashflow
+        anddiscountratecomponentsandreestimateequation(13)withthecashflowcomponent(only)asthe
+        dependentvariable,obtaininganalternativeuncertaintymeasure,βUK .TheestimatesforβUKandβUK
+                                     i,CF      i   i,CF      
+        havearankcorrelationof0.8,andthereisan86%overlapinthesetoffirmsatthetoptercileofbothβUK
+                                                    i        
+        andβUK .AsshowninTableC6,ourinferencesareunchangedwhetherusingβUKorβUK toconduct
+           i,CF                            i  i,CF           
+        ourtests.                                            
+          14Entries like “Referendum,” “Uncertain,” “United Kingdom,” “UK,” “U.K.,” and “G.B.” are
+        subsumedbytheabovewording.                           
+========================================================================
+
