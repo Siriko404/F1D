@@ -169,6 +169,14 @@ def main() -> None:
 
     # consensus EPS — two variants (true-vagueness, test all — Sina).
     cons = _build("BrexitConsensusEPSBuilder")
+    # The consensus builder is the only one non-unique on (gvkey,cal_yr_qtr)
+    # (50 dup rows; multiple fpedats collapsing to one calendar quarter).
+    # All sibling builders dedup keep-last internally; match that here so
+    # the lag/forward merges don't fan out (was inflating the panel +8 rows
+    # in PRE/control and contaminating both consensus variants).
+    cons = cons.sort_values(["gvkey", "cal_yr_qtr"], kind="stable") \
+        .drop_duplicates(["gvkey", "cal_yr_qtr"], keep="last") \
+        .reset_index(drop=True)
     ccol = [c for c in cons.columns if c not in ("gvkey", "cal_yr_qtr")][0]
     cons_fwd = cons.rename(columns={ccol: "cons_fwd"})           # native key
     cons_lag = _calendar_lag1(cons[["gvkey", "cal_yr_qtr", ccol]], ccol) \
@@ -208,12 +216,19 @@ def main() -> None:
     print("\n--- raw cell means (pre-FE, descriptive; labels fixed) ---")
     print(cm.to_string())
 
+    # COMMON sample for the A/B sensitivity: drop on BOTH consensus
+    # variants so the ONLY thing differing between the fits is the timing
+    # (apples-to-apples; previously A had 2,547 vs B 2,490 — sample
+    # contamination, not pure timing sensitivity).
+    common = df.dropna(subset=["CASH", "indqtr_code"] + base_ctrl
+                       + ["cons_fwd", "cons_lag1"]).copy()
+    pcommon = common.set_index(["gvkey", "cal_yr_qtr"]).sort_index()
+    print(f"\ncommon A/B sample (same N, only timing differs): "
+          f"{len(common):,} fq / {common['gvkey'].nunique():,} firms")
     results = []
     for tag, ccons in (("A_forward", "cons_fwd"), ("B_lag1", "cons_lag1")):
         cols = ["POST_x_HIGH"] + base_ctrl + [ccons]
-        sub = df.dropna(subset=["CASH", "indqtr_code"] + cols).copy()
-        pdat = sub.set_index(["gvkey", "cal_yr_qtr"]).sort_index()
-        r = _fit(pdat, cols, tag)
+        r = _fit(pcommon, cols, tag)
         r["consensus_variant"] = ccons
         results.append(r)
 
