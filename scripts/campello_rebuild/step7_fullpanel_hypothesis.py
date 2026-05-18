@@ -188,6 +188,9 @@ def main() -> None:
                          cluster_time=True)
     b = float(res.params["POST_x_HIGH"]); se = float(res.std_errors["POST_x_HIGH"])
     t = float(res.tstats["POST_x_HIGH"]); p = float(res.pvalues["POST_x_HIGH"])
+    coefs = [{"name": c, "coef": float(res.params[c]),
+              "se": float(res.std_errors[c]), "t": float(res.tstats[c]),
+              "pvalue": float(res.pvalues[c])} for c in res.params.index]
     print(f"\n--- eq-(14) δ̂ [FULL PANEL, POST=2016Q3-Q4 dummy] ---")
     print(f"  δ̂(POST·HIGH) = {b:+.5f}  SE {se:.5f}  t {t:+.3f}  p {p:.4f}"
           f"  N {int(res.nobs):,}  firms {sub['gvkey'].nunique():,}  "
@@ -206,11 +209,25 @@ def main() -> None:
         "hypothesis": "eq-14 panel = full sample-period (2010Q1-2016Q4) of "
                       "βᵁᴷ-tercile treated+control firms; POST dummy=1 only "
                       "2016Q3-Q4 (not a 4-qtr restriction)",
-        "delta_hat": b, "se": se, "t": t, "pvalue": p,
-        "nobs": int(res.nobs), "n_firms": int(sub["gvkey"].nunique()),
-        "rsquared_within": float(res.rsquared_within),
+        "model": "eq-14 PanelOLS; FULL sample-period panel + POST(2016Q3-Q4) "
+                 "dummy; FIRM FE + INDUSTRY(FIC100)×QUARTER FE; SE "
+                 "double-clustered firm×calendar-qtr; macro absorbed by "
+                 "IND×QTR FE; consensus = forward (A/B immaterial per Step-6)",
+        "results": [{
+            "tag": "FULL_PANEL",
+            "delta_hat": b, "se": se, "t": t, "pvalue": p,
+            "nobs": int(res.nobs), "n_firms": int(sub["gvkey"].nunique()),
+            "rsquared_within": float(res.rsquared_within),
+            "controls": cols, "coefficients": coefs,
+            "consensus_variant": "cons_fwd",
+        }],
         "step6_4qtr_ref": {"delta": -0.069, "n": 2482},
-        "campello_ref": {"delta": 0.231, "se": 0.059, "n": 17170},
+        "campello_reference": {"cash_delta": 0.231, "se": 0.059, "n": 17170,
+                               "rsquared": 0.21, "stars": "***",
+                               "source": "Campello et al. 2022 JFQA, "
+                               "Table 8 col.1, journal p.3208 (verbatim)",
+                               "note": "reference only; NOT a tuning "
+                               "target; no replication verdict (gated)"},
         "verdict_gated_on_sina": True,
     }, indent=2), encoding="utf-8")
     print(f"\nwritten → {odir}")

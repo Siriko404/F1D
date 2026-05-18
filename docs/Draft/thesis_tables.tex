@@ -620,49 +620,10 @@ Adj.~$R^2$ & -0.000 & -0.032 & -0.001 & -0.032 & -0.001 & -0.033 \\
 \end{minipage}
 \end{table}
 \clearpage
-\begin{table}[htbp]
-\centering
-\caption{Brexit Referendum Difference-in-Differences: Cash Holdings (Campello et al. 2022 JFQA verbatim, Wave 5)}
-\label{tab:h1_5_brexit_did}
-\scriptsize
-\begin{tabular}{lc}
-\toprule
- & (1) \\
- & Cash Holdings: $\beta^{UK}$ treatment \\
-\midrule
-$\beta^{UK}$ tercile $\times$ Post & 0.1321 \\
- & (0.1228) \\
-\midrule
-brexit\_tobins\_q\_lag1 & \textbf{0.1231}$^{**}$ \\
- & (0.0523) \\
-brexit\_sales\_growth\_lag1 & \textbf{-0.1305}$^{**}$ \\
- & (0.0622) \\
-brexit\_stock\_return\_lag1 & 0.0081 \\
- & (0.0527) \\
-brexit\_cash\_flow\_lag1 & -0.6517 \\
- & (1.0233) \\
-ln\_atq\_lag1 & 0.0834 \\
- & (0.1168) \\
-consensus\_eps\_z\_lag1 & -0.0032 \\
- & (0.0110) \\
-\midrule
-Firm FE & Yes \\
-Year-Quarter FE & Yes \\
-\midrule
-N & 17,176 \\
-$R^2$ & 0.016 \\
-Adj.~$R^2$ & 0.016 \\
-\bottomrule
-\end{tabular}
-\begin{minipage}{\linewidth}
-\vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
- Significant coefficients in \textbf{bold}.
- Standard errors (in parentheses) two-way clustered (firm, calendar quarter).
- Brexit window 2010Q1-2016Q4. POST = 2016Q3-Q4. Treated firms: HIGH $\beta^{UK} > 0.68$; control firms: $\beta^{UK} < 0.28$ (Campello \S IV.A.2 absolute thresholds, Wave 5 lock). Campello 2022 JFQA verbatim spec: firm FE + Hoberg-Phillips FIC100 $\times$ calendar-quarter FE, double-clustered SE (firm, calendar quarter). Excludes financial + utility firms (SIC 4900-4999, 6000-6999) per \S 1G pre-classifier filter.
- $R^2$ includes absorbed fixed effects (not within-$R^2$).
-\end{minipage}
-\end{table}
+% Campello Table-8 rebuild — generated from step6 summary.json by
+% scripts/campello_rebuild/gen_thesis_t8_table.py (NOT hand-edited).
+% Regenerate: python scripts/campello_rebuild/gen_thesis_t8_table.py
+\input{_campello_rebuild_t8}
 \clearpage
 \begin{table}[htbp]
 \centering

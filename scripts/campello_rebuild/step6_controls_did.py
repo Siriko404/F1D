@@ -14,9 +14,12 @@ Controls assembled (restored+verbatim-corrected builders, this session):
   • 5 firm controls — stock return, Tobin's Q, cash flow, sales growth
     (builders emit contemporaneous → lagged 1 CALENDAR quarter here,
     target-driven idiom) + logged assets = ln(atq) (lagged 1Q).
-  • 5 macro controls — brexit_macro_controls ALREADY emits 1Q-lagged
-    values (`*_lag1`, builder docstring) → merged on cal_yr_qtr, NOT
-    re-lagged (double-lag guard).
+  • MACRO controls DROPPED COMPLETELY (Sina 2026-05-17). Table 8
+    (jrnl p.3208) verified: FE = Firm + Industry×time only; that FE
+    block spans every time-only series, so any macro control is
+    mechanically absorbed and carries no free coefficient under the
+    paper's own specification. Building/merging it changed nothing in
+    the estimating equation — removed.
   • consensus EPS — paper-SILENT on mechanical t vs t-1 alignment
     (NLM relay + PDF both confirm silence). Sina 2026-05-17 standing
     methodology: "where there is true vagueness, we must test ALL
@@ -60,8 +63,6 @@ FIRM_CTRL_LAG_BUILDERS = {
     "brexit_cash_flow": "BrexitCashFlowBuilder",
     "brexit_sales_growth": "BrexitSalesGrowthBuilder",
 }
-MACRO_COLS = ["usd_gbp_lag1", "vix_lag1", "gdp_fcst_1y_lag1",
-              "umcsent_lag1", "state_lei_lag1"]
 
 
 def _prev_q(yq: int) -> int:
@@ -92,14 +93,13 @@ def _build(builder_cls: str):
         "BrexitTobinsQBuilder": "brexit_tobins_q",
         "BrexitCashFlowBuilder": "brexit_cash_flow",
         "BrexitSalesGrowthBuilder": "brexit_sales_growth",
-        "BrexitMacroControlsBuilder": "brexit_macro_controls",
         "BrexitConsensusEPSBuilder": "brexit_consensus_eps",
     }[builder_cls]
     m = importlib.import_module(f"f1d.shared.variables.{mod_name}")
     cls = getattr(m, builder_cls)
     res = cls().build(range(2009, 2017), root_path=ROOT)
     d = res.data.copy()
-    if "gvkey" in d.columns:  # macro builder is firm-invariant (no gvkey)
+    if "gvkey" in d.columns:  # all builders here are firm-level; defensive
         d["gvkey"] = d["gvkey"].astype(str).str.zfill(6)
     d["cal_yr_qtr"] = d["cal_yr_qtr"].astype("int64")
     return d
@@ -121,11 +121,18 @@ def _fit(pdat: pd.DataFrame, xcols: list[str], tag: str) -> dict:
           f"double-clustered firm×qtr) ---")
     print(f"  δ̂(POST·HIGH) = {b:+.5f}  SE {se:.5f}  t {t:+.3f}  p {p:.4f}"
           f"  N {int(res.nobs):,}  firms {pdat.index.get_level_values(0).nunique():,}")
+    coefs = [{"name": c,
+              "coef": float(res.params[c]),
+              "se": float(res.std_errors[c]),
+              "t": float(res.tstats[c]),
+              "pvalue": float(res.pvalues[c])}
+             for c in res.params.index]
     return {"tag": tag, "delta_hat": b, "se": se, "t": t, "pvalue": p,
             "nobs": int(res.nobs),
             "n_firms": int(pdat.index.get_level_values(0).nunique()),
             "rsquared_within": float(res.rsquared_within),
-            "controls": xcols}
+            "controls": xcols,
+            "coefficients": coefs}
 
 
 def main() -> None:
@@ -160,12 +167,10 @@ def main() -> None:
     firm_cols.append("log_assets")
     print(f"  + firm control (lagged 1Q): log_assets")
 
-    # 5 macro: builder ALREADY 1Q-lagged → merge on cal_yr_qtr (no re-lag).
-    macro = _build("BrexitMacroControlsBuilder")
-    mcols = [c for c in macro.columns if c in MACRO_COLS]
-    df = df.merge(macro[["cal_yr_qtr"] + mcols].drop_duplicates("cal_yr_qtr"),
-                  on="cal_yr_qtr", how="left")
-    print(f"  + macro (already lagged by builder): {mcols}")
+    # MACRO controls dropped completely (Sina 2026-05-17) — Table 8
+    # verified FE = Firm + Industry×time, which spans all time-only
+    # variation, so macro carries no free coefficient under the paper's
+    # own spec. Not built/merged: the estimating equation is unchanged.
 
     # consensus EPS — two variants (true-vagueness, test all — Sina).
     cons = _build("BrexitConsensusEPSBuilder")
@@ -193,20 +198,14 @@ def main() -> None:
                           + "_" + df["cal_yr_qtr"].astype(str))
                          .astype("category").cat.codes)
 
-    # MACRO controls are time-only (vary by quarter). The verbatim eq-(14)
-    # INDUSTRY(FIC100)×QUARTER FE absorbs ALL time-only variation, and on a
-    # 4-quarter window 5 macro series live in a ≤4-dim space (linearly
-    # dependent by construction). They are therefore NOT separately
-    # identified — mechanically subsumed by the paper's own specified FE.
-    # Paper-faithful eq-(14) ⇒ macro absorbed by FE; firm controls +
-    # consensus remain identified. Macro retained in the saved panel for
-    # transparency but excluded from the regressor matrix (not a deviation;
-    # a necessary consequence of the verbatim FE on a 4-qtr window).
+    # CONTROLS_{i,t-1} = firm-level only (5 lagged 1Q) + consensus EPS.
+    # Macro dropped completely per Sina 2026-05-17 / Table 8 verification.
     base_ctrl = firm_cols
     print(f"\ncontrols: {len(base_ctrl)} firm (lagged 1Q) + 1 consensus "
-          f"(per variant). MACRO ({len(mcols)}) ABSORBED by INDUSTRY×"
-          f"QUARTER FE (time-only, over-identified on 4 qtrs) — verbatim "
-          f"FE structure subsumes them; kept in saved panel only.")
+          f"(per variant). MACRO dropped completely (Sina 2026-05-17): "
+          f"Table 8 FE = Firm + Industry×time absorbs all time-only "
+          f"variation — no free macro coefficient under the paper's own "
+          f"spec; estimating equation unchanged.")
 
     # corrected 2×2 descriptive labels (the Step-5 cosmetic defect, fixed):
     lab = df.assign(
@@ -248,7 +247,10 @@ def main() -> None:
         "model": "eq-14 PanelOLS; FIRM FE + INDUSTRY(FIC100)×QUARTER FE; "
                  "SE double-clustered firm×calendar-qtr (verbatim)",
         "controls_firm_lagged_1q": firm_cols,
-        "controls_macro_builder_lagged": mcols,
+        "macro_controls": "DROPPED COMPLETELY (Sina 2026-05-17); Table 8 "
+                          "FE = Firm + Industry×time absorbs all time-only "
+                          "variation — no free macro coefficient under the "
+                          "paper's own spec",
         "consensus_variants_tested": {
             "A_forward": "native key — forecast FOR quarter t (known t-1); "
                          "preserves intrinsic 1-quarter-ahead property",
@@ -259,6 +261,9 @@ def main() -> None:
                                  "paper-silent (NLM+PDF confirmed)",
         "results": results,
         "campello_reference": {"cash_delta": 0.231, "se": 0.059, "n": 17170,
+                               "rsquared": 0.21, "stars": "***",
+                               "source": "Campello et al. 2022 JFQA, "
+                               "Table 8 col.1, journal p.3208 (verbatim)",
                                "note": "reference only; NOT a tuning "
                                "target; no replication verdict (gated)"},
         "step1_dir": s1_dir.name, "step5_dir": s5_dir.name,
