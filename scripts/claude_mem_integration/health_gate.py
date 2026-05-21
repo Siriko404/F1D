@@ -10,7 +10,7 @@ Hook contract: stdin = Claude Code SessionStart payload (json); we only
 need cwd to pick the project. stdout = one JSON line.
 """
 from __future__ import annotations
-import json, sqlite3, socket, sys, time, os
+import json, sqlite3, socket, sys, time, os, urllib.request, urllib.error
 from pathlib import Path
 
 HOME = Path.home()
@@ -28,15 +28,24 @@ def _project_from_cwd(cwd: str) -> str:
     # claude-mem keys projects by basename of the repo root; fall back to cwd name
     return Path(cwd).name if cwd else "unknown"
 
-def _worker_alive(port: int) -> bool:
+def _worker_alive(port: int, attempts: int = 3, backoff_s: float = 0.5) -> bool:
+    # SessionStart hook fires before claude-mem worker finishes binding
+    # (observed ~17s gap between bun spawn and worker.pid `startedAt`).
+    # Probe HTTP /health (what claude-mem actually exposes) with retry
+    # so the startup race does not produce a false DEGRADED alert.
     if port == 0:
         return True  # test bypass
-    try:
-        s = socket.socket(); s.settimeout(2)
-        rc = s.connect_ex(("127.0.0.1", port)); s.close()
-        return rc == 0
-    except OSError:
-        return False
+    url = f"http://127.0.0.1:{port}/health"
+    for i in range(attempts):
+        try:
+            with urllib.request.urlopen(url, timeout=1.5) as r:
+                if r.status == 200:
+                    return True
+        except (urllib.error.URLError, OSError, ConnectionError):
+            pass
+        if i < attempts - 1:
+            time.sleep(backoff_s)
+    return False
 
 def evaluate(db: str, project: str, state_path: str, port: int,
              worker_check: bool = True) -> dict:
