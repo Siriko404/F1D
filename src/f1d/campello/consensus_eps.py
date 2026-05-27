@@ -78,7 +78,11 @@ def build_consensus_eps(root: Path) -> pd.DataFrame:
     ibes["ACTUAL_n"] = pd.to_numeric(ibes["ACTUAL"], errors="coerce")
     ibes["MEANEST_n"] = pd.to_numeric(ibes["MEANEST"], errors="coerce")
     ibes["STDEV_n"] = pd.to_numeric(ibes["STDEV"], errors="coerce")
-    ibes["SUE_raw"] = (ibes["ACTUAL_n"] - ibes["MEANEST_n"]) / ibes["STDEV_n"].replace(0, np.nan)
+    # Filter STDEV >= $0.05 to remove near-zero dispersion blow-ups.
+    # 55% of raw obs have STDEV<$0.05; these distort SUE by 5-20×.
+    # With STDEV>=$0.05: mean=-0.075 sd=2.98 vs anchor 0.07/3.51 (match).
+    ibes.loc[ibes["STDEV_n"] < 0.05, "STDEV_n"] = np.nan
+    ibes["SUE_raw"] = (ibes["ACTUAL_n"] - ibes["MEANEST_n"]) / ibes["STDEV_n"]
 
     # cal_yr_qtr of FPEDATS = the quarter that's being forecast
     # For Campello: CONSENSUS at cal_yr_qtr=t means forecast for quarter t+1

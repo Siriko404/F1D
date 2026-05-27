@@ -79,8 +79,7 @@ def build_psm(root: Path) -> dict:
     pre = pre.sort_values(["gvkey", "cal_yr_qtr"])
     pre["STOCK_RETURNS_lag1"] = pre.groupby("gvkey")["STOCK_RETURNS"].shift(1)
 
-    covariates = ["STOCK_RETURNS_lag1", "CONSENSUS_EPS", "TOBIN_Q", "CASH_FLOW",
-                  "SALES_GROWTH", "SIZE"]
+    covariates = ["STOCK_RETURNS_lag1", "TOBIN_Q", "CASH_FLOW", "SALES_GROWTH", "SIZE"]
     firm_avg = pre.groupby("gvkey").agg({
         "treated": "max",  # firm is treated if any obs is
         "sic": "first",
