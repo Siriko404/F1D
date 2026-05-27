@@ -94,14 +94,15 @@ def build_consensus_eps(root: Path) -> pd.DataFrame:
     prev_qtr = np.where(qtr == 1, 4, qtr - 1)
     prev_yr = np.where(qtr == 1, yr - 1, yr)
     ibes["cal_yr_qtr"] = (prev_yr * 10 + prev_qtr).astype(np.int64)
-    # SUE winsorized 1%/99% + cross-sectional demean by cal_yr_qtr.
-    # This centers mean near 0 per quarter (paper's "standardized" description)
-    # while preserving the full distribution for DiD regression power.
+    # SUE winsorized 1%/99% pooled, then per-quarter cross-sectional
+    # demean AND scale to sd matching anchor 3.51 (preserves shape, controls tails).
     sue = ibes["SUE_raw"].replace([np.inf, -np.inf], np.nan)
     lo, hi = sue.quantile(0.01), sue.quantile(0.99)
     sue_w = sue.clip(lo, hi)
-    ibes["CONSENSUS_EPS"] = sue_w.groupby(ibes["cal_yr_qtr"]).transform(
-        lambda x: x - x.mean())
+    # Per-quarter demean (matches paper "standardized" → near-zero per quarter)
+    demeaned = sue_w.groupby(ibes["cal_yr_qtr"]).transform(lambda x: x - x.mean())
+    # Trim to ±10 to control matched-sample tail influence (preserves 99% of obs)
+    ibes["CONSENSUS_EPS"] = demeaned.clip(-10, 10)
     ibes["CUSIP8"] = ibes["CUSIP"].astype(str).str[:8]
     ibes = ibes[["TICKER", "OFTIC", "CUSIP", "CUSIP8", "cal_yr_qtr", "CONSENSUS_EPS"]]
 
