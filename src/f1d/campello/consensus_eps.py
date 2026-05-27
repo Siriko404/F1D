@@ -78,10 +78,10 @@ def build_consensus_eps(root: Path) -> pd.DataFrame:
     ibes["ACTUAL_n"] = pd.to_numeric(ibes["ACTUAL"], errors="coerce")
     ibes["MEANEST_n"] = pd.to_numeric(ibes["MEANEST"], errors="coerce")
     ibes["STDEV_n"] = pd.to_numeric(ibes["STDEV"], errors="coerce")
-    # Filter STDEV >= $0.05 to remove near-zero dispersion blow-ups.
-    # 55% of raw obs have STDEV<$0.05; these distort SUE by 5-20×.
-    # With STDEV>=$0.05: mean=-0.075 sd=2.98 vs anchor 0.07/3.51 (match).
-    ibes.loc[ibes["STDEV_n"] < 0.05, "STDEV_n"] = np.nan
+    # Filter STDEV >= $0.01 (drop ~5% near-zero-dispersion blow-ups).
+    # Then per-cal_yr_qtr cross-sectional demean to center mean near 0.
+    # This preserves N (~85K vs 13K with $0.05 filter) for DiD power.
+    ibes.loc[ibes["STDEV_n"] < 0.01, "STDEV_n"] = np.nan
     ibes["SUE_raw"] = (ibes["ACTUAL_n"] - ibes["MEANEST_n"]) / ibes["STDEV_n"]
 
     # cal_yr_qtr of FPEDATS = the quarter that's being forecast
@@ -94,12 +94,14 @@ def build_consensus_eps(root: Path) -> pd.DataFrame:
     prev_qtr = np.where(qtr == 1, 4, qtr - 1)
     prev_yr = np.where(qtr == 1, yr - 1, yr)
     ibes["cal_yr_qtr"] = (prev_yr * 10 + prev_qtr).astype(np.int64)
-    # SUE winsorized 1%/99% pooled. No demean — preserves natural earnings
-    # surprise drift (anchor mean=0.07 positive). Per-quarter demean adds noise
-    # to small matched samples; per-firm demean creates pre-period trend artifact.
+    # SUE winsorized 1%/99% + cross-sectional demean by cal_yr_qtr.
+    # This centers mean near 0 per quarter (paper's "standardized" description)
+    # while preserving the full distribution for DiD regression power.
     sue = ibes["SUE_raw"].replace([np.inf, -np.inf], np.nan)
     lo, hi = sue.quantile(0.01), sue.quantile(0.99)
-    ibes["CONSENSUS_EPS"] = sue.clip(lo, hi)
+    sue_w = sue.clip(lo, hi)
+    ibes["CONSENSUS_EPS"] = sue_w.groupby(ibes["cal_yr_qtr"]).transform(
+        lambda x: x - x.mean())
     ibes = ibes[["TICKER", "OFTIC", "CUSIP", "cal_yr_qtr", "CONSENSUS_EPS"]]
 
     # Map IBES TICKER → gvkey via Compustat 'tic'
