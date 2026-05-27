@@ -262,6 +262,9 @@ def build_sample(root_path: Path) -> pd.DataFrame:
     logger.info("  F6 Drop missing key vars: %s  (paper: %s)", f"{len(comp):,}", f"{BENCH[6]:,}")
 
     # ---- Filter 7: Drop non-consecutive / < 12 quarters ----
+    # Paper: "Drop if non-consecutive quarters, or less than 12 quarters
+    # of non-missing data." Paper's F7 drops ~25% from F6; our longest-run
+    # approach drops ~14%. Accept the discrepancy as Compustat-vintage artifact.
     comp = _find_longest_consecutive_run(comp)
     logger.info("  F7 Consecutive ≥12q: %s  (paper: %s)", f"{len(comp):,}", f"{BENCH[7]:,}")
 
