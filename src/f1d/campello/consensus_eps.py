@@ -102,25 +102,32 @@ def build_consensus_eps(root: Path) -> pd.DataFrame:
     sue_w = sue.clip(lo, hi)
     ibes["CONSENSUS_EPS"] = sue_w.groupby(ibes["cal_yr_qtr"]).transform(
         lambda x: x - x.mean())
-    ibes = ibes[["TICKER", "OFTIC", "CUSIP", "cal_yr_qtr", "CONSENSUS_EPS"]]
+    ibes["CUSIP8"] = ibes["CUSIP"].astype(str).str[:8]
+    ibes = ibes[["TICKER", "OFTIC", "CUSIP", "CUSIP8", "cal_yr_qtr", "CONSENSUS_EPS"]]
 
-    # Map IBES TICKER → gvkey via Compustat 'tic'
-    # Load Compustat ticker history (gvkey, tic, datadate)
+    # Map IBES → gvkey via TWO keys: CUSIP-8 (primary, more coverage) + OFTIC fallback.
     compustat_path = root / "inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
-    comp_tic = pd.read_parquet(compustat_path, columns=["gvkey", "tic", "datadate"])
-    comp_tic["gvkey"] = comp_tic["gvkey"].astype(str).str.zfill(6)
-    comp_tic["datadate"] = pd.to_datetime(comp_tic["datadate"])
-    comp_tic = comp_tic[(comp_tic["datadate"] >= "2010-01-01") & (comp_tic["datadate"] <= "2017-03-31")]
-    comp_tic["cal_yr_qtr"] = (comp_tic["datadate"].dt.year * 10
-                              + comp_tic["datadate"].dt.quarter).astype(np.int64)
-    comp_tic = comp_tic[["gvkey", "tic", "cal_yr_qtr"]].drop_duplicates()
+    comp_map = pd.read_parquet(compustat_path, columns=["gvkey", "tic", "cusip", "datadate"])
+    comp_map["gvkey"] = comp_map["gvkey"].astype(str).str.zfill(6)
+    comp_map["datadate"] = pd.to_datetime(comp_map["datadate"])
+    comp_map = comp_map[(comp_map["datadate"] >= "2010-01-01") & (comp_map["datadate"] <= "2017-03-31")]
+    comp_map["cal_yr_qtr"] = (comp_map["datadate"].dt.year * 10
+                               + comp_map["datadate"].dt.quarter).astype(np.int64)
+    comp_map["cusip8"] = comp_map["cusip"].astype(str).str[:8]
 
-    # Match: IBES OFTIC (official ticker) → Compustat tic
-    merged = ibes.merge(comp_tic, left_on=["OFTIC", "cal_yr_qtr"],
-                         right_on=["tic", "cal_yr_qtr"], how="inner")
-    merged = merged[["gvkey", "cal_yr_qtr", "CONSENSUS_EPS"]].drop_duplicates(
-        subset=["gvkey", "cal_yr_qtr"], keep="first"
-    )
+    # Primary match: CUSIP-8 (firm identity, no ticker-change drift)
+    comp_cusip = comp_map[["gvkey", "cusip8", "cal_yr_qtr"]].drop_duplicates()
+    via_cusip = ibes.merge(comp_cusip, left_on=["CUSIP8", "cal_yr_qtr"],
+                            right_on=["cusip8", "cal_yr_qtr"], how="inner")
+
+    # Fallback match: OFTIC vs Compustat tic (for IBES obs missing CUSIP)
+    comp_tic = comp_map[["gvkey", "tic", "cal_yr_qtr"]].drop_duplicates()
+    via_tic = ibes.merge(comp_tic, left_on=["OFTIC", "cal_yr_qtr"],
+                          right_on=["tic", "cal_yr_qtr"], how="inner")
+
+    merged = pd.concat([via_cusip[["gvkey","cal_yr_qtr","CONSENSUS_EPS"]],
+                        via_tic[["gvkey","cal_yr_qtr","CONSENSUS_EPS"]]], ignore_index=True)
+    merged = merged.drop_duplicates(subset=["gvkey","cal_yr_qtr"], keep="first")
     logger.info("Universe-mapped CONSENSUS_EPS obs: %s", f"{len(merged):,}")
 
     # ROOT CAUSE FIX (2026-05-26): filter to sample-firm gvkeys only
