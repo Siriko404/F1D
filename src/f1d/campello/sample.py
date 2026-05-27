@@ -124,6 +124,28 @@ def _find_longest_consecutive_run(df: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
+def _load_hoberg_fic100(root_path: Path) -> pd.DataFrame:
+    """Load Hoberg-Phillips FIC 100 industry codes per (gvkey, year).
+
+    Returns DataFrame with columns [gvkey, cal_yr, fic100].
+    Filters to 2010-2016 window only.
+    """
+    import zipfile
+    from io import BytesIO
+
+    zpath = root_path / "inputs" / "Brexit_replication" / "HobergPhillips_FIC" / "FIC_Data.zip"
+    with zipfile.ZipFile(zpath) as zf:
+        with zf.open("fic_data.txt") as f:
+            buf = BytesIO(f.read())
+    df = pd.read_csv(buf, sep="\t", usecols=["gvkey", "year", "icode100"],
+                     dtype={"gvkey": "Int64", "year": "Int64", "icode100": "Int64"})
+    df = df.dropna()
+    df["gvkey"] = df["gvkey"].astype(int).astype(str).str.zfill(6)
+    df = df[df["year"].between(2010, 2016)]
+    return df[["gvkey", "year", "icode100"]].rename(columns={"year": "cal_yr",
+                                                               "icode100": "fic100"})
+
+
 def build_sample(root_path: Path) -> pd.DataFrame:
     """Apply Table C.1 filters 1–7 and return cleaned sample panel.
 
@@ -144,7 +166,11 @@ def build_sample(root_path: Path) -> pd.DataFrame:
         comp[col] = pd.to_numeric(comp[col], errors="coerce").astype("float64")
 
     BENCH = {1: 262412, 2: 160254, 3: 158312, 4: 112939,
-             5: 93011, 6: 75013, 7: 56081}
+             5: 93011, 6: 75013, 7: 56081, 8: 49107}
+
+    # Compute SALES_GROWTH before F1: shift(4) needs quarters before 2010
+    comp = comp.sort_values(["gvkey", "datadate"])
+    comp["_saleq_lag4"] = comp.groupby("gvkey")["saleq"].shift(4)
 
     # ---- Filter 1: Raw 2010Q1–2016Q4 ----
     comp = comp[
@@ -224,22 +250,26 @@ def build_sample(root_path: Path) -> pd.DataFrame:
         np.nan,
     )
 
-    # SALES_GROWTH = YoY % change in quarterly sales (saleq / saleq_{t-4} - 1)
-    comp = comp.sort_values(["gvkey", "cal_yr_qtr"])
-    comp["_saleq_lag4"] = comp.groupby("gvkey")["saleq"].shift(4)
+    # SALES_GROWTH = YoY % change in quarterly sales (pre-computed before F1)
     comp["SALES_GROWTH"] = np.where(
         comp["_saleq_lag4"].notna() & (comp["_saleq_lag4"].abs() > 0),
         (comp["saleq"] - comp["_saleq_lag4"]) / comp["_saleq_lag4"].abs(),
         np.nan,
     )
 
-    key_vars = ["INVESTMENT", "atq", "CASH_FLOW", "TOBIN_Q"]
+    key_vars = ["INVESTMENT", "atq", "CASH_FLOW", "TOBIN_Q", "SALES_GROWTH"]
     comp = comp.dropna(subset=key_vars).copy()
     logger.info("  F6 Drop missing key vars: %s  (paper: %s)", f"{len(comp):,}", f"{BENCH[6]:,}")
 
     # ---- Filter 7: Drop non-consecutive / < 12 quarters ----
     comp = _find_longest_consecutive_run(comp)
     logger.info("  F7 Consecutive ≥12q: %s  (paper: %s)", f"{len(comp):,}", f"{BENCH[7]:,}")
+
+    # ---- Filter 8: Drop if missing Hoberg-Phillips FIC 100 (Table C.1 verbatim) ----
+    hp = _load_hoberg_fic100(root_path)
+    comp = comp.merge(hp, on=["gvkey", "cal_yr"], how="inner")
+    comp["fic100"] = comp["fic100"].fillna(-1).astype(int)
+    logger.info("  F8 Drop missing HP FIC100: %s  (paper: %s)", f"{len(comp):,}", f"{BENCH[8]:,}")
 
     # ---- clean up temp columns ----
     comp = comp.drop(columns=["_capxy_q", "_oibdpq_q", "_saleq_lag4"], errors="ignore")
