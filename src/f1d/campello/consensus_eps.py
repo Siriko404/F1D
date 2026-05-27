@@ -90,18 +90,12 @@ def build_consensus_eps(root: Path) -> pd.DataFrame:
     prev_qtr = np.where(qtr == 1, 4, qtr - 1)
     prev_yr = np.where(qtr == 1, yr - 1, yr)
     ibes["cal_yr_qtr"] = (prev_yr * 10 + prev_qtr).astype(np.int64)
-    # Two-step "standardized" matching Table 1 PA anchor (mean=0.07, sd=3.51):
-    # (1) Winsorize SUE_raw at 1%/99% pooled — removes blow-ups from
-    #     near-zero STDEV firms.
-    # (2) Per-TICKER time-series demean — removes firm-specific bias
-    #     (some firms consistently beat/miss consensus). Anchor mean=0.07
-    #     ≈ 0 after per-firm demean.
+    # SUE winsorized 1%/99% pooled. No demean — preserves natural earnings
+    # surprise drift (anchor mean=0.07 positive). Per-quarter demean adds noise
+    # to small matched samples; per-firm demean creates pre-period trend artifact.
     sue = ibes["SUE_raw"].replace([np.inf, -np.inf], np.nan)
     lo, hi = sue.quantile(0.01), sue.quantile(0.99)
-    sue_w = sue.clip(lo, hi)
-    ibes["CONSENSUS_EPS"] = sue_w.groupby(ibes["TICKER"]).transform(
-        lambda x: x - x.mean()
-    )
+    ibes["CONSENSUS_EPS"] = sue.clip(lo, hi)
     ibes = ibes[["TICKER", "OFTIC", "CUSIP", "cal_yr_qtr", "CONSENSUS_EPS"]]
 
     # Map IBES TICKER → gvkey via Compustat 'tic'
