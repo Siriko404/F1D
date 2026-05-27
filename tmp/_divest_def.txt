@@ -1,0 +1,242 @@
+﻿==== docs\papers\campello_etal_2022_brexit_jfqa.pdf ====
+--- p1 ---
+JOURNAL OF FINANCIAL AND QUANTITATIVE ANALYSIS
+Vol. 57, No. 8, Dec. 2022, pp. 3178–3222
+© The Author(s), 2022. Published by Cambridge University Press on behalf of the Michael G. Foster
+School of Business, University of Washington. This is an Open Access article, distributed under the terms
+of the Creative Commons Attribution licence (https://creativecommons.org/licenses/by/4.0), which permits
+unrestricted re-use, distribution and reproduction, provided the original article is properly cited.
+doi:10.1017/S0022109022000308
+Exporting Uncertainty: The Impact of Brexit
+on Corporate America
+Murillo Campello
+Cornell University SC Johnson Graduate School of Management and NBER
+campello@cornell.edu (corresponding author)
+Gustavo S. Cortes
+University of Florida Warrington College of Business
+gustav
+
+--- p3 ---
+are phenomena of much interest, yet of poorly understood consequences. This
+article sheds novel light into an array of cross-border connections between polit-
+ical uncertainty and economic activity. It does so gauging the impact of the 2016
+Brexit vote on businesses located outside of the U.K.–EU geographical bound-
+aries, in particular, firms domiciled in the United States. The U.S. economy serves
+as a candidate to study the cross-border effects of Brexit for several reasons. First,
+although EU ties are at the root of Brexit, and effects observed across European
+economies may be endogenous to the referendum itself, this is plausibly not true
+of the United States. Second, there exist long-standing, strong ties between the
+U.S. and U.K. economies, making potential outcomes more easily measu
+
+--- p19 ---
+highlights the sharp yet short-lived nature of the economic effects triggered by
+uncertainty.20 We limit our analysis to the end of 2016 due to the start of the Trump
+administration in Jan. 2017. We show in later robustness checks that results also
+hold for a window that excludes Trump’s election.
+3.
+Empirical Model
+We compare differences in outcomes of interest between treated (HIGH_
+UK_EXPOSURE) and control (LOW_UK_EXPOSURE) firms. Differences over
+the 2016:Q3–Q4 period are taken relative to the same two quarters in the previous
+year (2015:Q3–Q4) in order to minimize the impact of seasonal effects. This is
+equivalent to estimating the following model:
+Y i,t ¼ αþδ POSTt HIGH_UK_EXPOSUREi
+½
+þθCONTROLSi,t1
+þ
+X
+i
+FIRMi þ
+X
+j
+X
+t
+INDUSTRYj QUARTERt
+
+	
+þϵi,t:
+(14)
+The outcomes of interest
+
+--- p21 ---
+TABLE 1
+Summary Statistics
+Table 1 reports summary statistics for the main variables used in our empirical analyses. The final sample is a match between
+COMPUSTAT Quarterly North America Fundamentals and the estimated βUK
+i
+sample for the period from 2010:Q1 to 2015:Q4.
+Each panel reports the mean, standard deviation, median, interquartile range (IQR), and the number of observations
+conditional on firms belonging to each subsample. INVESTMENT is defined as capital expenditures divided by lagged total
+assets. EMPLOYMENT_GROWTH is defined as the percentage change in the number of employees (annual). R&D is defined
+as R&D expenditures divided by lagged total assets, considering only firms with non-missing R&D expenditures.
+DIVESTITURES is defined as the value of sale of plant, property, and e
+
+--- p22 ---
+regarding the investment process is provided in Figure C1 in the Supplementary
+Material. Tables C4 and C5 in the Supplementary Material report formal tests
+supporting the presence of parallel trends across all outcome variables.
+V.
+Results
+A.
+The Impact of the Brexit Vote on U.S. Firms’ Investment, Labor, R&D,
+and Divestitures
+Results from our baseline estimations for investment and employment are
+shown in Table 2. We begin with a firm-fixed effects estimation in which βUK
+i
+enters
+the specification as a linear continuous-treatment variable in column 1, allowing for
+the entire range of βUK
+i
+values. The POSTβUK
+i
+interaction coefficient is negative
+and highly significant, consistent with Prediction 1. In short, it points to the inter-
+pretation that a higher exposure to the United Kingdom
+
+--- p24 ---
+The impact of the Brexit vote on corporate employment is also reported in
+Table 1. Using the specifications previously adopted, columns 4–6 display negative
+and significant DID coefficients for employment growth. The estimated coeffi-
+cients imply a drop of between 2.6 and 4.9 percentage points. Given that pre-Brexit
+(2015) sample average employment growth was 3.4%, our results suggest that the
+Brexit vote contributed to a measurable slowdown in net job creation in some
+segments of the U.S. economy, with the upper bound estimate pointing to a reduction
+in employment for U.K.-exposed firms. This is a notable finding given the steady
+growth in employment observed across the United States since 2010, particularly
+during 2016.
+Next, we study the effects of the Brexit vote on U.K.-exposed firms
+
+--- p25 ---
+that effects on investment measured at the parent firm level are driven in large part
+by investment cuts in their U.S. operations.
+As a further check, we investigate whether these U.K.-exposed American
+firms cut investment in their U.K.-based subsidiaries as well. Using Orbis, we
+identify U.K. subsidiaries of our U.S.-domiciled firms. We similarly calculate the
+total U.K.-based investment of each U.S. parent firm by summing spending figures
+across U.K. subsidiaries. We then repeat our baseline analysis with this measure of
+U.K. investment as the dependent variable. Results in columns 3 and 4 of Table 4
+suggest that U.K.-exposed American firms cut investment in their U.K.-based
+subsidiaries even more than they do across their U.S.-based subsidiaries. This result
+is sensible and consistent w
+
+--- p37 ---
+TABLE 11
+The Impact of the Brexit Vote on Investment, Employment, R&D, and Divestitures: Automation Exposure
+Table 11 reports output from equation (14) with additional controls for exposure to automation technology. The dependent variables are INVESTMENT, EMPLOYMENT_GROWTH, R&D, and DIVESTITURES.
+AUTOMATION i ∈CZ
+f
+g is the Acemoglu and Restrepo (2020) commuting-zone-level exposure to robots for all firms i headquartered in commuting zone CZ. AUTOMATIONi is constructed from a dictionary of
+keywords that capture exposure to automation at the firm level, as described in Section VI.C. This text-based continuous variable is the logarithm of the total number of automation-related keywords that appear in
+firm is business description (10-K Section 1) and management discussion (10-K Section 7). In
+
+==== docs\papers\campello_etal_2022_brexit_supplementary.pdf ====
+--- p7 ---
+Table C.2. Summary Statistics: Matched Sample
+This table reports mean values for the main variables used in our empirical analyses in the matched sample. Each
+treated ﬁrm is matched to 3 control ﬁrms (with replacement) which are its nearest neighbors in terms of treatment
+propensity. The propensity score is a function of lagged STOCK_RETURNS, 1-quarter-ahead CONSENSUS_EARN-
+INGS_FORECAST, TOBIN_Q, CASH_FLOW, SALES_GROWTH, and SIZE. Panel A shows summary statistics for the
+sample of treated and matched control ﬁrms as deﬁned by βU K
+i
+(top tercile of βU K
+i
+). Panel B shows summary statis-
+tics for the sample of treated and matched control ﬁrms as deﬁned by mentions of Brexit-related words in their 2015
+10-K ﬁlings. The table also reports the differences in means and the p-value associated 
+
+--- p9 ---
+Table C.3. The Impact of the Brexit Vote on Investment, Employment, R&D Expenditures and Divestitures: Propensity-Score Matching
+This table reports output from equation (14) in a matched sample. The dependent variables are INVESTMENT, EMPLOYMENT_GROWTH, R&D and DIVESTI-
+TURES. Each treated ﬁrm is matched to 3 control ﬁrms (with replacement) which are its nearest neighbors in terms of treatment propensity. The propensity score
+is a function of lagged STOCK_RETURNS, 1-quarter-ahead CONSENSUS_EARNINGS_FORECASTS, TOBIN_Q, CASH_FLOW, SALES_GROWTH, SIZE. In the ﬁrst
+speciﬁcation, the treatment group is composed by the top tercile of βU K
+i
+, while the control group is composed by matched ﬁrms in the bottom tercile of βU K
+i
+.
+The second speciﬁcation is a textual-search-based measure of UK-exposu
+
+--- p10 ---
+Table C.4. Parallel Trends: Market-Based Approach
+This table reports the average INVESTMENT (Panel A), EMPLOYMENT_GROWTH (Panel B), R&D (Panel C), and DI-
+VESTITURES (Panel D) for ﬁrms in the treated and control groups going back different periods prior to Brexit. The
+treatment group is composed by the top tercile of βU K
+i
+, while the control group is composed by ﬁrms in the bottom
+tercile of βU K
+i
+. The table also reports the differences in means and the p-value associated with a test statistic for the
+differences.
+Periods prior to Brexit
+Treated
+Control
+Difference
+p-value
+Panel A (Quarterly Frequency): INVESTMENT
+One
+1.165
+1.027
+0.138
+0.156
+Two
+1.184
+0.942
+0.242
+0.153
+Three
+1.362
+1.135
+0.227
+0.281
+Four
+1.100
+1.381
+–0.281
+0.600
+Five
+1.433
+1.115
+0.318
+0.369
+Six
+0.996
+1.526
+–0.530
+0.380
+P
+
+--- p11 ---
+Table C.5. Parallel Trends: Textual-Search-Based Approach
+This table reports the average INVESTMENT (Panel A), EMPLOYMENT_GROWTH (Panel B), R&D (Panel C), and DI-
+VESTITURES (Panel D) for ﬁrms in the treated and control groups going back different periods prior to Brexit. The
+treatment indicator is a textual-search-based measure of UK-exposure that sums up the number of Brexit-related
+words in ﬁrms’ 2015 10-K forms. The treatment group is made of ﬁrms with more than ﬁve entries, whereas the con-
+trol group are ﬁrms with zero entries. The table also reports the differences in means and the p-value associated with
+a test statistic for the differences.
+Periods prior to Brexit
+Treated
+Control
+Difference
+p-value
+Panel A (Quarterly Frequency): INVESTMENT
+One
+0.958
+1.064
+–0.106
+0.202
+Two
+0.930
+1.
+
+--- p12 ---
+Table C.6. The Impact of the Brexit Vote on Investment, Employment, R&D and Divestitures: Cash Flow News Decomposition
+This table reports output from equation (14). The dependent variables are INVESTMENT, EMPLOYMENT_GROWTH, R&D and DIVESTITURES. The treatment
+group is composed by the top tercile of βU K
+i,C F , while the control group is composed by ﬁrms in the bottom tercile of βU K
+i,C F . A ﬁrm’s βU K
+i,C F is estimated as follows.
+First, we decompose volatility of monthly stock returns into cash ﬂow and discount rate news components using the Campbell and Shiller (1988) approach as
+applied to individual stocks by Vuolteenaho (2002). Next, we estimate equation (13) with the cash ﬂow component as the dependent variable, to obtain βU K
+i,C F for
+each ﬁrm. The time dimension of the DID est
+

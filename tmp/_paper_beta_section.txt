@@ -1,0 +1,658 @@
+﻿==== PAGE 13 ====
+Finally, the negative relationship between uncertainty and investment is
+affected by fixed costs FiK and FiL, which capture the degree of irreversibility of
+capital and labor, respectively. It implies that higher input adjustment costs in each
+factor modulates the effect of uncertainty in investment in that input. This gives rise
+to our fourth and fifth testable predictions.
+Prediction 4. American firms with a higher exposure to U.K. uncertainty (high
+U.K.-exposure firms) facing higher capital adjustment costs will reduce their capital
+investment more pronouncedly in response to the Brexit vote.
+Prediction 5. American firms with a higher exposure to U.K. uncertainty (high
+U.K.-exposure firms) facing higher labor adjustment costs will reduce their hiring
+more pronouncedly in response to the Brexit vote.
+In the next section, we translate the above predictions into their empirical
+counterparts, describe our data, and lay out associated test strategies.
+IV.
+Data and Methodology
+A.
+Empirical Counterparts
+The implementation of our tests calls for identifying empirical counterparts to
+the constructs of our theoretical framework. We first introduce an empirical coun-
+terpart to the sensitivity parameter βi, which captures individual firms’ responses
+to changes in aggregate uncertainty. We adopt two approaches. The first follows
+the framework very closely, yielding an empirical proxy for βi that is derived from
+the capital markets. The second is based on expectations of corporate decision-
+makers regarding uncertainty, taken from firms’ disclosures to market investors.11
+After defining empirical counterparts for βi, we present measures of capital and
+labor irreversibility, corresponding to κ and λ, respectively.
+1.
+Theoretical Framework-Based Measure of Uncertainty
+In the context of our study, the increase in aggregate uncertainty, V t, comes
+from the rise in uncertainty associated with the Brexit vote. Accordingly, we take
+variances on both sides of equation (1) (alternatively, equation (2)) to capture the
+notion of uncertainty in the MPS framework:
+var vit
+ð
+Þ ¼ β2
+i var V t
+ð
+Þþσ2
+ε:
+(11)
+11We also consider firm sales to the United Kingdom from accounting data sources like
+COMPUSTAT’s Segment Files. However, careful examination of 10-K forms shows that such data
+are often incomplete and inconsistently tabulated. Aggravating this problem, sales that take place in the
+United Kingdom are known to be invoiced in other countries (such as Ireland) for tax purposes. As such,
+our main analyses rely on information from other sources. In Section V.B.2, however, we resort to an
+alternative textual-search-based analysis that goes beyond financial statements contained in 10-K forms
+in identifying exposure to the United Kingdom (cf. Hoberg and Moon (2017)). That approach allows us
+to identify offshoring activities, as reported by firms in the text of their disclosures (information often
+missing from their tabulated financial statements).
+3190
+Journal of Financial and Quantitative Analysis
+https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+
+==== PAGE 14 ====
+We can employ a regression-like approach to operationalize an empirical
+counterpart to βi. Specifically, taking square roots of both sides of equation (11),
+we obtain
+vol vit
+ð
+Þ≈βivol V t
+ð
+Þþσε 
+ﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃ
+2βivol V t
+ð
+Þσε
+p
+:
+(12)
+Following Bloom (2014), we use stock market volatility as a gauge of aggre-
+gate uncertainty and estimate equation (12) for each firm i as12
+vol rit
+ð
+Þ ¼ αi þβUK
+i
+vol FTSE100t
+ð
+ÞþθCONTROLSt þϵit:
+(13)
+Equation (13) uses the volatility of equity returns, vol rit
+ð
+Þ, as a proxy for firm
+income volatility, vol vit
+ð
+Þ. It also uses the volatility of the FTSE100 Index as a
+proxy for uncertainty in the U.K. (the relevant source of aggregate uncertainty in
+our setting). We include control variables, CONTROLSt, consisting of vol SP500
+ð
+Þ
+and vol(FX$£) into equation (13) to absorb effects arising through firms’ exposure
+to the domestic U.S. market and exchange rate fluctuations between the U.S. dollar
+and the British pound. For each firm, we take the estimated value of βUK
+i
+from
+regression (13) as the empirical counterpart to βi in our framework.13
+2.
+Textual-Search-Based Measure of Uncertainty
+As an alternative measure of U.S. firms’ exposure to Brexit-induced
+uncertainty, we develop a textual-search-based metric that is constructed by
+parsing firms’ 2015 10-K filings. In particular, we look for the number of entries
+of keywords related to uncertainty about Brexit (“Brexit,” “Great Britain,” and
+“Uncertainty”) in firms’ disclosures, classifying firms with a “high” number of
+entries as HIGH_UK_EXPOSURE firms, and those with zero entries as control
+firms.14 Notably, the vast majority of firms file their 10-Ks with the SEC between
+March and June of each year. By computing these wordcounts from firms’ 10-K
+disclosures (before the actual vote takes place, yet after the referendum is
+announced), we build a measure of exposure to the United Kingdom based on
+what firms consider relevant to communicate to their investors on the eve of the
+2016 Brexit vote.
+Textual analysis reveals that most firms cite concerns about Brexit a half dozen
+times or more in their 10-Ks, or not at all. As such, we arbitrarily set a cutoff for high
+12Bloom (2014) shows that stock market volatility exhibits a high degree of commonality with other
+observed proxies for uncertainty including those derived from bond markets, exchange rates, and GDP
+forecasts.
+13The last term in equation (12) is subsumed by the idiosyncratic volatility term, ϵit, in equation (13).
+We note that the volatility of equity returns may be an imperfect proxy for the volatility of firm income as
+returns are driven by news on both cash flows and discount rates (Campbell and Shiller (1988)).
+Following Vuolteenaho (2002), we also decompose the volatility of each firm’s returns into cash flow
+and discount rate components and reestimate equation (13) with the cash flow component (only) as the
+dependent variable, obtaining an alternative uncertainty measure, βUK
+i,CF. The estimates for βUK
+i
+and βUK
+i,CF
+have a rank correlation of 0.8, and there is an 86% overlap in the set of firms at the top tercile of both βUK
+i
+and βUK
+i,CF. As shown in Table C6, our inferences are unchanged whether using βUK
+i
+or βUK
+i,CF to conduct
+our tests.
+14Entries like “Referendum,” “Uncertain,” “United Kingdom,” “UK,” “U.K.,” and “G.B.” are
+subsumed by the above wording.
+Campello, Cortes, d’Almeida, and Kankanhalli
+3191
+https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+
+==== PAGE 15 ====
+Brexit cites at more than 5 entries. There are 807 firms citing Brexit more than
+5 times in their 10-Ks. On the other hand, 433 do not cite any Brexit-related terms in
+their public filings. Although the heuristic cutoff we consider is naturally arbitrary,
+our results are robust to many sensible alternative choices.
+3.
+Capital and Labor Irreversibility Measures
+Our predicted uncertainty–investment relationships are modulated by fixed
+costs FiK, which capture the degree of irreversibility of capital. To empirically
+measure capital irreversibility, we use an index of capital redeployability proposed
+by Kim and Kung (2016). That index classifies fixed capital liquidity in terms of
+salability of assets in secondary markets. The premise is that when a firm operates
+assets that are used across several industries, there are more potential buyers should
+the firm decide to revert investment decisions by selling off its assets. The same is
+not true for a firm that operates highly specialized assets. Higher values of the asset
+redeployability index are associated with a lower degree of capital irreversibility,
+corresponding to a lower value of FiK in our framework.
+Our next task is to find an empirical proxy for the irreversibility of labor, FiL.
+We resort to the use of worker unionization as an empirical proxy for frictions in
+labor input. We do so as ample research highlights the difficulties faced by firms
+with unionized employees in adjusting their workforce in response to changes in
+aggregate conditions (see, among others, Bloom (2009)). In using this strategy, we
+measure the percentage of total employees who are unionized at the 4-digit SIC
+level using data from the Bureau of Economic Analysis. We expect firms with a
+greater share of unionized workers to have lower labor flexibility and incur greater
+costs in adjusting the size of their workforce.
+B.
+Data Sources and Sample Construction
+We use COMPUSTAT Quarterly to gather basic information on firm invest-
+ment and financial data. We consider U.S. companies from the first calendar quarter
+of 2010 to the fourth quarter of 2016. We drop utility and financial firms, as well as
+companies whose market value or book assets are lower than $10 million. The
+sample used in our baseline investment tests consists of 41,630 observations (firm-
+quarters).15 For additional analysis on firms’ investment in the United States, we
+obtain subsidiary-level investment data from the Bureau van Dijk’s Orbis data set
+(see Cravino and Levchenko (2016)). We use Orbis’s company search tool to match
+parent firms in our COMPUSTAT sample to ultimate owner firms in Orbis. By
+doing so, we obtain separate information on their U.S.-based and U.K.-based
+subsidiaries. The Orbis sample we use consists of 6,203 observations (firm-years).
+Firm-level employment data are taken from COMPUSTAT’s Annual Fun-
+damentals. We measure employment growth based on the change in the number
+of employees of the firm. Our employment sample consists of 11,345 observa-
+tions (firm-years).16 We rely on the Your-Economy Time-Series (YTS) database,
+maintained by the Business Dynamics Research Consortium at the University
+15For details of the sample selection filters, see Table C1 in the Supplementary Material.
+16The same filters described in Table C1 in the Supplementary Material are also applied to obtain this
+sample.
+3192
+Journal of Financial and Quantitative Analysis
+https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+
+==== PAGE 16 ====
+of Wisconsin, for information on U.S.-based employment. The YTS database is
+compiled from historical business files from Infogroup and are linked longitu-
+dinally to track establishment location, employment, and sales information at
+the establishment-year level for public and private firms in the United States. We
+match our sample firms (both parents and their U.S. subsidiaries) to YTS primar-
+ily using tickers, and augment this match through manual searches by firm name.
+The firms in our sample collectively operated 757,083 unique establishments, and
+this results in 1,809,301 establishment-year observations over the 2010–2016
+period. We aggregate YTS employment growth at the firm level, giving a final
+U.S. establishment-level employment growth sample of 11,345 firm-years.
+We use CRSP stock price data and Bloomberg equity index and currency data
+to compute our theoretical framework-based measure of firm exposure to the United
+Kingdom (see equation (13)). We use monthly data from 2010:M1 to 2014:M12 so
+that exposure to the United Kingdom is measured before any major Brexit-related
+events. Analyst forecast data are obtained from I/B/E/S. Data on bond yields are
+from TRACE and SDC, whereas syndicated loan spreads are drawn from WRDS–
+Reuters DealScan. Macroeconomic variables are taken from the Federal Reserve
+Bank of St. Louis’ FRED database.
+C.
+Test Strategy and Empirical Specification
+1.
+Identification
+We use a standard DID approach to assess the impact of the 2016 Brexit vote
+on American firms. Following our framework, in our base analysis, we characterize
+firms as treated (control) units if they are in the upper (bottom) tercile of the
+nonnegative range of the βUK
+i
+distribution. For group contrasting, we do not
+include firms that benefit from uncertainty in the United Kingdom in the control
+group (firms with βUK
+i
+< 0) as this could lead to overestimation biases attached to
+the treatment effects we seek to identify. Nevertheless, in specifications where we
+use βUK
+i
+as a continuous treatment variable, we relax this restriction and include
+all values of βUK
+i
+.17 Under this market-based approach, a total of 449 unique firms
+are assigned to the treated category βUK
+i
+> 0:68
+
+
+. In contrast, 360 unique firms
+are assigned to the control category (βUK
+i
+< 0:28). We also consider an alternative,
+text-based measure of exposure to Brexit. Under this approach, 807 firms are
+assigned to the treated category (2015 10-K mentions of Brexit terms > 5).
+A total of 433 firms in the control category have no mentions of Brexit-related
+terms in their 10-Ks.
+2.
+Timeline
+Once firms are identified as exposed and nonexposed, we need to set the time
+frame of our DID analysis. We make this determination by mapping key events
+of our institutional setting into market-based measures of perceived uncertainty.
+In Figure 3, we plot three point-in-time snapshots of the term structure of implied
+17In unreported tests, we only label those firms with statistically significant positive βUK
+i
+estimates
+as treated firms, and those with βUK
+i
+statistically indistinguishable from 0 as controls. We find that our
+results hold across a range of sensible treatment assignment thresholds.
+Campello, Cortes, d’Almeida, and Kankanhalli
+3193
+https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+
+==== PAGE 17 ====
+volatility for the FTSE100 Index. The dynamics described in this figure help us
+identify dates in which uncertainty surrounding the Brexit referendum seems to be
+incorporated into market expectations.18
+The first (dotted blue) curve in Figure 3 represents the term structure as of Dec.
+31, 2014, which is the last date of our βUK
+i
+estimation period. We use this curve
+as a benchmark since expectations at that time were uncontaminated by Brexit.
+As is typical for equities during normal economic conditions, the term structure is
+upwardsloping,indicatingthemarket expectsgreater volatilityatlongerhorizons.The
+curve hovers smoothly around the 15%–16% range, suggesting that noabruptchanges
+are expected by options market participants over a maturity horizon of up to 2 years.
+Responses to official news about the exact referendum date suggest that
+market participants were quick to incorporate uncertainty embedded by Brexit in
+their trading activity (before the actual outcome of the vote). In particular, options
+trading taking place on Feb. 22, 2016 (continuous red curve in Figure 3), the first
+trading day following David Cameron’s announcement of the Brexit vote date, were
+priced to reflect a significant drop in market volatility for the period leading up to
+the Brexit vote date (on June 23), only to show a spike in volatility right after the
+vote. On June 24, 2016 (dashed yellow curve), the first trading day following the
+vote, market uncertainty seemed unusually high. Resolution about the vote
+FIGURE 3
+Term Structure of FTSE100 Implied Volatility
+Figure 3 shows the term structure of the FTSE100 Index at three different dates. The term structure at each date is constructed
+from average Black–Scholes implied volatilities derived from quoted prices of at-the-money options on the FTSE100 Index.
+The values plotted reflect the market’s expectation of the volatility of the FTSE100 Index over various maturities considered.
+15
+17
+19
+21
+23
+FTSE100 ATM Implied Volatility (%)
+1 Week
+1 Month
+2 Months
+3 Months
+4 Months
+5 Months
+6 Months
+7 Months
+8 Months
+9 Months
+10 Months
+11 Months
+1 Year
+13 Months
+14 Months
+15 Months
+16 Months
+17 Months
+18 Months
+2 Years
+Maturity
+Dec 31, 2014 (Benchmark, Pre-brexit)
+Feb 22, 2016 (Day After Brexit Vote Date Announcement)
+Jun 24, 2016 (Day After Brexit Victory)
+18The implied volatility term structure serves as a metric of market uncertainty over time as it
+expresses the range of movements in the FTSE100 that investors expect over various horizons (see
+Dumas, Fleming, and Whaley (1998), Mixon (2007)). The values in Figure 3 reflect the market’s
+expectation of the volatility of the FTSE100 over different maturities. For example, if annualized implied
+volatility for 2 years is 15%, the market expects that prices will move over the next 2 years within a band
+ 15
+ﬃﬃ
+2
+p
+%
+
+
+,þ 15
+ﬃﬃ
+2
+p
+
+
+%
+
+	
+with 68% probability (1-standard-deviation).
+3194
+Journal of Financial and Quantitative Analysis
+https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+
+==== PAGE 18 ====
+outcome, nonetheless, seems to quell uncertainty forecasts. In particular, the 1-year-
+ahead implied volatility immediately after the vote date is not significantly different
+from that registered back in Dec. 2014.
+Having examined market uncertainty in the United Kingdom based on
+implied options volatility, we set out to verify in our U.S. firm-level data if this period
+coincidedwith increased perceivedincome uncertainty for HIGH_UK_EXPOSURE
+firms. We do so using data on analysts’ forecasts from the I/B/E/S database. Begin-
+ning in 2015:Q1, we obtain the 1-year-ahead earnings per share (EPS) forecasts for
+eachfirminoursampleandcomputethemeanandstandarddeviationofforecasts.We
+quantify earnings forecast uncertainty for firms in the high and low βUK
+i
+groups by
+constructing 1:5-standard-deviation intervals around their group mean forecasts in
+Figure 4. The figure shows no discernible difference in mean forecasted earnings
+between high and low βUK
+i
+firms, suggesting analysts did not expect U.K.-exposed
+firms to do any worse, on average, in terms of earnings performance following the
+Brexit vote.19 The fact that mean EPS forecasts stay virtually the same over the 2-
+year window for both high and low βUK
+i
+firms suggests that there is no clear sign of
+a “first-moment” (negative) effect of Brexit on U.S. corporate earnings. That same
+earnings forecasts evidence points to the Brexit vote having a “second-moment”
+effect in terms of increased uncertainty regarding U.K.-exposed firms’ expecta-
+tions
+in
+2016:Q1–Q2.
+In
+particular,
+EPS
+forecast
+dispersion
+of
+HIGH_UK_EXPOSURE firms increases significantly in early 2016.
+In our empirical tests, we compare two quarters before versus two quarters
+after the two key Brexit events we have just identified (Feb. 22 and June 23, 2016).
+We focus on a relatively short window around the Brexit vote as Bloom (2009)
+FIGURE 4
+Analysts’ Earnings per Share Forecasts Around Brexit
+Figure 4 shows how analyst earnings per share forecasts behaved around Brexit’s key dates. Confidence intervals are
+calculated as 1:5-standard-deviations from the mean forecast. Each line represents a group of firms sorted by exposure to
+the U.K. economy as measured by βUK
+i
+: The shaded area marks the beginning of Brexit-related events with the announcement
+of the date of the U.K.–EU referendum by PM David Cameron (2016:Q1). Both series are normalized to take the value of 0 in
+2016:Q1.
+–2.5
+–2
+–1.5
+–1
+–0.5
+0
+.5
+1
+1.5
+2
+2.5
+EPS Forecast (1-Year Ahead)
+2015Q1
+2015Q3
+2015Q4
+2016Q1
+2015Q2
+2016Q2
+2016Q4
+2016Q3
+Low Beta UK Mean Forecast
+High Beta UK Mean Forecast
+19In formal tests, we confirm that the differences in consensus EPS forecasts between high and low
+βUK
+i
+firms are not statistically significant in the pre-Brexit vote period.
+Campello, Cortes, d’Almeida, and Kankanhalli
+3195
+https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+
+==== PAGE 39 ====
+F.
+Uncertainty in the Global Economy
+We conduct a battery of supplementary tests to rule out the possibility that
+our results on investment cuts in the United States may be driven by coincident,
+potentially uncertainty-inducing events that take place in economies other than
+the United Kingdom. To do so, we construct metrics analogous to our baseline
+U.K. exposure measure, βUK
+i
+, by reestimating equation (13) for developed and
+emerging markets with relevant trade ties to the United States: European Union,
+China, Mexico, Japan, India, and Brazil. In other words, we repeat our tests
+classifying firms based on a given criterion (βEU
+i , βCHINA
+i
+, βMEXICO
+i
+, βJAPAN
+i
+, βINDIA
+i
+,
+and βBRAZIL
+i
+) according to the sensitivity of their equity returns volatility to the
+respective region’s main equity index return volatility. In this estimation, per-
+formed over the same pre-Brexit sample period of 2010:M1–2014:M12, we
+control for the FTSE100 volatility, the U.S. dollar/British pound exchange rate
+volatility, and the volatility in the exchange rate of the U.S. dollar and the
+currency of each country.
+Results are reported in Table 13. Column 1 repeats our baseline estimate from
+Table 2 to ease comparisons. In column 2, we find that American firms exposed to
+EU uncertainty also experienced significant investment declines. The much smaller
+βEU
+i
+estimate is sensible and consistent with the fact that Brexit-related events
+induced political uncertainty in the European Union as well as the United Kingdom.
+Results in columns 3–6 show that U.S. firms exposed to uncertainty in several
+other economies experienced no significant change in their investments in the
+quarters following the announcement of the Brexit referendum. Our main results
+are unlikely to be driven by American firms’ exposures to events other than the
+2016 Brexit vote in the United Kingdom.
+TABLE 13
+Robustness and Falsification Tests
+Table 13 reports output from equation (14) under alternative treatment assignments. The dependent variable is INVESTMENT.
+In the first column, we report our baseline estimates as in Table 2. In the next columns, treated firms are in the highest tercile of
+positive values of exposure of firm-level volatility to equity index volatility in the European Union, China, Mexico, Japan, India,
+and Brazil, respectively. The time dimension of the DID estimator is set so as to compare the two quarters following the
+announcement of the referendum and Brexit’s victory (2016:Q3–Q4) versus the two quarters preceding the announcement
+(2015:Q3–Q4). T-statistics are computed using robust standard errors (in parentheses) double-clustered at the firm and
+calendar quarter levels. *, **, and *** indicate statistical significance at the 10%, 5%, and 1% levels, respectively.
+Baseline
+Robustness
+Falsification
+Treatment
+is Top
+Tercile
+of βUK
+i
+Treatment
+is Top
+Tercile
+of βEU
+i
+Treatment
+is Top
+Tercile
+of βCHINA
+i
+Treatment
+is Top
+Tercile of
+βMEXICO
+i
+Treatment
+is Top
+Tercile of
+βJAPAN
+i
+Treatment
+is Top
+Tercile of
+βINDIA
+i
+Treatment
+is Top
+Tercile of
+βBRAZIL
+i
+1
+2
+3
+4
+5
+6
+7
+POST  HIGH_
+βCOUNTRY
+i
+0.165***
+0.066***
+0.048
+0.069
+0.084
+0.058
+0.054
+(0.019)
+(0.018)
+(0.033)
+(0.044)
+(0.092)
+(0.036)
+(0.045)
+Controls
+Firm
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Fixed effects
+Firm
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Industry  time
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+No. of obs.
+17,199
+12,301
+8,714
+11,870
+8,909
+14,694
+15,485
+R2
+0.75
+0.76
+0.75
+0.74
+0.71
+0.74
+0.74
+3216
+Journal of Financial and Quantitative Analysis
+https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+
+==== PAGE 40 ====
+VII.
+Concluding Remarks
+Political uncertainty appears to be a growing phenomenon, seemingly fueled
+by populism and a rejection of institutions associated with international finance,
+migration, and trade. This dynamic seems to be economically important, yet our
+understanding of its consequences is limited. In this article, we provide firm-level
+evidence of transmission of uncertainty generated by the 2016 Brexit referendum
+onto American corporations. Our analysis shows how U.S. firms that were exposed
+to the U.K. economy changed a myriad of business policies (including their
+investment, disinvestment, hiring, R&D, and savings) in response to 2016 Brexit
+vote. As the British anti-integration referendum has reportedly inspired similar
+national-centric movements in other countries, it is important that researchers
+and policymakers are able to gauge its larger implications.
+Our results show how foreign-born uncertainty is transmitted across borders,
+shaping domestic capital formation and labor allocation. Yet, the effects we identify
+on U.K.-exposed firms in the United States are likely only a few of the many
+channels through which economic uncertainty is transmitted across borders. One
+must bear in mind that the 2016 Brexit referendum set in motion a complex
+process that is bound to last for several years and affect many other countries
+connected through the global economy. One of the important aspects of our analysis
+is shedding light on the fact that politicians and regulators can affect the economy
+not only through policies they enact, but also by introducing uncertainty in the
+process of making decisions. Such uncertainty has real and financial consequences
+not only for the country that originates it, but for other countries as well.
+Appendix A. Model Analysis and Results
+A.1.
+Disinvestment Decisions
+In solving a firm’s disinvestment problem, we first consider its decision at t = 1. If
+the firm had disinvested any of its endowed projects at t = 0, then it earns 0 for those
+projects. Among projects that were not disinvested at t = 0 (i.e., remain alive a t = 1), the
+firm can choose to sell any of them at t = 1 and receive cash flows of si2 þxi2 δw per
+project. Else, it can choose not to sell and receive xi2 per project. As in the case of the
+investment decision, the firm’s disinvestment policy is guided by the cash flows at t = 2
+generated by project ew. These cash flows can be characterized as:
+πi2 ew
+ð Þ =
+0
+Early Disinvestment
+ð
+Þ,
+si2 þxi2 δew if si2 > δew
+Delayed Disinvestment
+ð
+Þ,
+xi2
+if si2 ≤δew
+NoDisinvestment
+ð
+Þ:
+8
+>
+<
+>
+:
+(A.1)
+Next, we consider the firm’s disinvestment decision at t = 0. The optimal level of
+disinvestment at t = 0 can be expressed in terms of w∗, the breakeven project. The firm
+will optimally disinvest (sell) all projects in the range 0,w∗
+½
+Þ, and not disinvest (choose
+to retain) any projects in the range w∗,W
+½
+, instead of waiting until t = 1 to decide
+whether or not to disinvest. The firm’s cash flows from disinvesting project ew at t = 0
+is si1 þxi1 δew. Its expected cash flows from not disinvesting project ew at t = 0, and
+Campello, Cortes, d’Almeida, and Kankanhalli
+3217
+https://doi.org/10.1017/S0022109022000308 Published online by Cambridge University Press
+
+

@@ -79,7 +79,11 @@ def build_psm(root: Path) -> dict:
     pre = pre.sort_values(["gvkey", "cal_yr_qtr"])
     pre["STOCK_RETURNS_lag1"] = pre.groupby("gvkey")["STOCK_RETURNS"].shift(1)
 
-    covariates = ["STOCK_RETURNS_lag1", "TOBIN_Q", "CASH_FLOW", "SALES_GROWTH", "SIZE"]
+    # PAPER VERBATIM (supplementary Table C.3): "lagged STOCK_RETURNS,
+    # 1-quarter-ahead CONSENSUS_EARNINGS_FORECASTS, TOBIN_Q, CASH_FLOW,
+    # SALES_GROWTH, SIZE"
+    covariates = ["STOCK_RETURNS_lag1", "CONSENSUS_EPS", "TOBIN_Q", "CASH_FLOW",
+                  "SALES_GROWTH", "SIZE"]
     firm_avg = pre.groupby("gvkey").agg({
         "treated": "max",  # firm is treated if any obs is
         "sic": "first",
@@ -100,38 +104,15 @@ def build_psm(root: Path) -> dict:
     logger.info("Logistic regression fit. Treated rate: %.3f",
                  firm_avg["treated"].mean())
 
-    # ---- 3-NN with replacement matching, SIC2-stratified (industry-bucket NN)
-    # Paper IV.C.1: "match each treated firm to 3 control firms based on
-    # propensity score". We add SIC2 stratification — for each treated firm,
-    # only consider control firms in the SAME SIC2 industry. This reduces
-    # cross-industry mismatches that pollute matched sample composition.
-    treated_idx_all = firm_avg.index[firm_avg["treated"] == 1].tolist()
-    control_idx_all = firm_avg.index[firm_avg["treated"] == 0].tolist()
-    if not treated_idx_all or not control_idx_all:
+    # 3-NN with replacement (paper verbatim Table C.2/C.3 — NO SIC2 stratification)
+    treated_idx = firm_avg.index[firm_avg["treated"] == 1].tolist()
+    control_idx = firm_avg.index[firm_avg["treated"] == 0].tolist()
+    if not treated_idx or not control_idx:
         raise RuntimeError("Empty treated or control group")
-
-    matched_treated_idx = []
-    matched_control_idx = []
-    dist_all = []
-    for tidx in treated_idx_all:
-        t_sic2 = firm_avg.loc[tidx, "sic2"]
-        cand_in_sic = [c for c in control_idx_all if firm_avg.loc[c, "sic2"] == t_sic2]
-        if len(cand_in_sic) < 3:
-            # Fallback — not enough controls in same SIC2; use any
-            cand_in_sic = control_idx_all
-        n_neighbors = min(3, len(cand_in_sic))
-        cand_pscores = firm_avg.loc[cand_in_sic, ["pscore"]].values
-        t_pscore = firm_avg.loc[[tidx], ["pscore"]].values
-        local_nbrs = NearestNeighbors(n_neighbors=n_neighbors)
-        local_nbrs.fit(cand_pscores)
-        d, idx_in_cand = local_nbrs.kneighbors(t_pscore)
-        matched_treated_idx.append(tidx)
-        matched_control_idx.append([cand_in_sic[i] for i in idx_in_cand[0]])
-        dist_all.append(d[0])
-
-    matched_control_firm_idx = np.array(matched_control_idx)  # (n_treated, 3)
-    dist = np.array(dist_all)
-    treated_idx = matched_treated_idx
+    nbrs = NearestNeighbors(n_neighbors=3)
+    nbrs.fit(firm_avg.loc[control_idx, ["pscore"]].values)
+    dist, idx_in_ctrl = nbrs.kneighbors(firm_avg.loc[treated_idx, ["pscore"]].values)
+    matched_control_firm_idx = np.array([[control_idx[i] for i in row] for row in idx_in_ctrl])
 
     # Build matched-sample list: each treated firm + 3 matched control firms (with replacement)
     matched_treated_gvkeys = firm_avg.loc[treated_idx, "gvkey"].values
