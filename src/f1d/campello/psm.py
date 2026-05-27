@@ -98,7 +98,8 @@ def build_psm(root: Path) -> dict:
     y = firm_avg["treated"].values.astype(int)
     scaler = StandardScaler()
     X_z = scaler.fit_transform(X)
-    logreg = LogisticRegression(max_iter=1000)
+    np.random.seed(42)
+    logreg = LogisticRegression(max_iter=1000, random_state=42)
     logreg.fit(X_z, y)
     firm_avg["pscore"] = logreg.predict_proba(X_z)[:, 1]
     logger.info("Logistic regression fit. Treated rate: %.3f",
