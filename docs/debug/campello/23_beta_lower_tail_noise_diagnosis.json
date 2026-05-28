@@ -1,0 +1,95 @@
+{
+  "metadata": {
+    "task": "Diagnose what could shift a firm-by-firm vol-on-vol beta distribution's LOWER tail upward (negatives 39% -> <=20%) while leaving the upper tail stable, on identical input data. Campello et al. (2022) Table 8 Col 1; delta stuck at 44% of paper with N/SE/firm count matching.",
+    "key_diagnostic_inputs": {
+      "user_betas": "2,349 survivor firms, 39% negative (918), nonnegative-tercile cutpoints 0.25/0.67.",
+      "paper_implied": "<=20% negative, cutpoints 0.28/0.68 -> distribution shifted RIGHT vs user.",
+      "smoking_gun": "User's beta^UK_i vs beta^UK_i,CF (Vuolteenaho) rank correlation = 0.22; paper reports 0.80. The user's two beta variants barely agree; the paper's agree strongly."
+    },
+    "copyright_note": "External sources quoted in short fragments as facts; Campello et al. (2022) is CC BY 4.0."
+  },
+
+  "reframe_this_is_a_noise_problem_not_a_distributional_shift": {
+    "claim": "The lower-tail discrepancy is not a mysterious leftward shift to be hunted parameter-by-parameter. It is the signature of beta estimates that are systematically NOISIER than the paper's. The single most informative number the user has produced is the CF-beta rank correlation: 0.22 (user) vs 0.80 (paper).",
+    "why_the_CF_correlation_is_decisive": "beta^UK_i (total-return-vol loading) and beta^UK_i,CF (cash-flow-news-vol loading) are two views of the SAME underlying UK exposure. They can correlate at 0.80 ONLY if BOTH are estimated with low sampling noise. A correlation of 0.22 means the user's loadings are dominated by estimation noise. The user attributed this to 'firm-level VAR inherently too noisy' -- but if the paper achieved 0.80, the paper's construction is materially LESS noisy than the user's, and that lower noise applies to the MAIN beta^UK_i too, not just the CF variant.",
+    "how_noise_produces_the_observed_asymmetry": "beta^UK_i is the FTSE-vol coefficient PARTIALLED on SP500 vol and FX vol. For genuinely UK-exposed firms (upper tail), the FTSE comovement is large and robust to noise -> upper tail is stable across constructions. For weakly-exposed firms (true beta ~ 0), the estimate is FTSE-vol's small residual contribution after the highly collinear SP500 vol has absorbed most of the common variation. Estimation noise then scatters these near-zero betas, and the SP500 collinearity biases the CENTER of that scatter downward -> an inflated NEGATIVE lower tail. Reduce the noise (and/or the SP500 attribution push) and the lower tail rises toward zero/positive while the upper tail barely moves. That is precisely the asymmetry the user wants."
+  },
+
+  "the_mechanism_negative_betas_are_a_collinearity_plus_jump_artifact": {
+    "collinearity": "FTSE100 vol and S&P500 vol comove ~tightly (global volatility clusters). In the partial regression, OLS splits the common variation; for US firms -- whose vol is mostly driven by US-market vol -- SP500 vol wins the attribution and FTSE100 gets a small, frequently NEGATIVE residual coefficient. The FRACTION negative is highly sensitive to (i) the relative variance of the FTSE-vol vs SP500-vol series and (ii) their correlation -- both of which depend on construction details even when the underlying price inputs are identical.",
+    "jumps": "Raw within-month realized SD of daily returns includes idiosyncratic daily JUMPS (earnings announcements jump with >90% probability; ~9-23% of all trading days carry jumps). These jumps inflate a firm's realized vol in specific months in a way UNCORRELATED with FTSE vol, dragging beta^UK_i toward and below zero for weakly-exposed firms while barely affecting strongly-exposed firms. Jumps therefore fatten the NEGATIVE tail asymmetrically -- the exact pattern observed."
+  },
+
+  "prioritized_new_leads": {
+    "lead_1_jump_robust_realized_vol_HEADLINE": {
+      "hypothesis": "The user computes RAW within-month SD of daily returns; the paper may use a jump/outlier-robust realized-vol measure (or winsorize/trim daily returns before computing SD). The paper's undocumented list explicitly includes 'winsorization of returns' -- untested by the user.",
+      "why_it_targets_the_lower_tail_specifically": "Removing idiosyncratic daily jumps cleans the firm-vol series for weakly-exposed firms (whose betas are jump-noise-driven), pulling their estimates from negative toward zero/positive. Strongly-exposed (upper-tail) firms are dominated by genuine FTSE comovement and barely move. Net effect: lower tail rises, upper tail stable, nonnegative cutpoints rise from 0.25/0.67 toward 0.28/0.68.",
+      "grounding": [
+        {"source": "Lee (2023), idiosyncratic jumps in stock markets", "fact": "Explicitly confirms robustness by winsorizing daily data and log-transforming; uses jump-robust (bipower) volatility estimators."},
+        {"source": "Andersen, Dobrev, Schaumburg (NBER WP 15533); Barndorff-Nielsen & Shephard (2004); Mancini (2006)", "fact": "Jump-robust realized-vol estimators (bipower variation, MedRV/MinRV, truncated RV) remove jumps and 'zero'-return distortions from realized volatility."}
+      ],
+      "tests": [
+        "Winsorize or trim daily returns (e.g., at 1%/99% per firm, or at a fixed +/- threshold) BEFORE computing each month's realized SD; re-estimate betas.",
+        "Alternatively, drop earnings-announcement days (or a +/-1-day window) from the daily return series before computing vol.",
+        "Compare: negative fraction, nonnegative cutpoints, AND the beta^UK_i vs beta^UK_i,CF rank correlation. Success = negatives fall toward <=20%, cutpoints toward 0.28/0.68, AND CF-correlation rises from 0.22 toward 0.80."
+      ]
+    },
+
+    "lead_2_structured_or_shrunk_loadings": {
+      "hypothesis": "The paper may NOT use raw firm-by-firm OLS. The paper's own instrument source (Alfaro-Bloom-Lin) estimates firm second-moment exposures using INDUSTRY-LEVEL (3-digit SIC) non-directional structure, not unrestricted firm-level OLS. Any shrinkage of noisy firm betas toward an industry/cross-sectional prior pulls extreme negatives inward.",
+      "why_it_fits": "Shrinkage compresses the noisy tails (especially the noise-inflated negative tail) toward the positive cross-sectional center, reduces the negative fraction, AND would mechanically raise the beta^UK_i vs beta^UK_i,CF correlation toward 0.80 (both shrunk toward the same prior). Directly addresses the smoking-gun CF-correlation gap.",
+      "grounding": {"source": "Alfaro, Bloom, Lin, 'The Finance Uncertainty Multiplier' (JPE 2024); policyuncertainty.com", "fact": "Firm-level uncertainty exposures are built via industry-level (3SIC) non-directional exposure to aggregate uncertainty sources, then used as instruments -- a structured, not raw-firm-OLS, construction."},
+      "tests": [
+        "Shrink each firm's beta toward its industry (FIC-100 or SIC) mean (empirical-Bayes / James-Stein style), or estimate industry-level loadings and assign to firms.",
+        "Re-check negatives, cutpoints, and the CF-correlation."
+      ]
+    },
+
+    "lead_3_reduce_the_SP500_attribution_push": {
+      "hypothesis": "If the user's SP500-vol series has higher relative variance or tighter collinearity with firm vol than the paper's, SP500 steals more attribution and pushes beta^UK_i down across the board (left shift). This can arise from construction differences (trading-day/calendar alignment between UK and US markets, day counts per month, return type) even with identical price inputs.",
+      "tests": [
+        "Report the correlation between your monthly FTSE-vol and SP500-vol series and their variance ratio; an unusually high correlation / SP500-dominant variance signals strong downward pressure on beta^UK_i.",
+        "Test orthogonalizing the controls (regress firm vol on FTSE vol and on SP500-vol/FX-vol residualized of FTSE), or estimate beta^UK_i from FTSE vol orthogonalized to SP500 -- and observe whether the negative fraction falls.",
+        "Confirm FTSE vol and SP500 vol are computed over a consistently aligned trading-day calendar (UK vs US holidays differ); misaligned day-sets perturb the collinearity partition."
+      ]
+    },
+
+    "lead_4_balanced_estimation_window": {
+      "hypothesis": "Sampling noise in each firm beta falls with the number of monthly observations. The user requires >=24 of 60 months; short-history firms get noisier, more-negative betas.",
+      "tests": ["Require the FULL balanced 60-month panel (2010:M1-2014:M12) for the beta regression, not just >=24; check whether the lower tail tightens and the CF-correlation rises."]
+    },
+
+    "lead_5_currency_denomination_of_FTSE100": {
+      "hypothesis": "'Input data identical' verified the FTSE100 INDEX LEVEL (GBP). It did NOT verify whether the paper computed FTSE100 returns in USD (FX-converted) -- the economically relevant series for USD-denominated US-firm returns. USD-FTSE vol aligns differently with firm USD vol and with the FX control than GBP-FTSE vol does.",
+      "tests": ["Recompute FTSE100 daily returns in USD (convert by USD/GBP) and re-estimate; note this interacts with the vol(FX) control, so test with and without FX in the RHS."],
+      "priority": "lower"
+    },
+
+    "lead_6_tercile_and_beta_universe": {
+      "hypothesis": "Cutpoints (0.28/0.68) and the implied <=20% negative may be computed on a BROADER return-data universe (all CRSP-Compustat common stock with sufficient returns) rather than on the F1-F8 INVESTMENT-sample survivors. The F1-F8 filters (12 consecutive quarters, key investment vars, FIC) are outcome-data requirements unrelated to whether a firm has an estimable return beta.",
+      "caveat": "Direction is ambiguous (F1-F8 survivors are larger/cleaner, which would predict FEWER negatives, not more) -- so this is a lower-confidence lead than the noise-reduction ones, but both the cutpoint gap and the negative fraction point to a possible population difference.",
+      "tests": ["Estimate betas and compute tercile cutpoints on the broader CRSP-Compustat common-stock universe; apply the resulting labels to the unchanged F1-F8 DiD sample; check cutpoints, negative fraction, and delta."]
+    }
+  },
+
+  "use_the_CF_correlation_as_a_calibration_target": {
+    "principle": "Stop treating beta^UK_i,CF as a one-off robustness check that 'failed.' Treat its rank correlation with beta^UK_i (target ~0.80) as a CALIBRATION METRIC for the volatility construction. Any construction change that moves the user's CF-correlation from 0.22 toward 0.80 is moving toward the paper's (cleaner) methodology; any change that doesn't is a dead end regardless of what it does to delta.",
+    "rationale": "delta is downstream and composition-sensitive; the CF-correlation is a direct, paper-reported measure of how noisy the loadings are. It discriminates between 'reasonable but noisy' and 'matches the paper' far more cleanly than delta does.",
+    "note_on_CF_methodology": "The paper's CF-news methodology (Campbell-Shiller/Vuolteenaho) is in the undocumented list. The paper's 0.80 strongly implies the paper does NOT use a noisy unrestricted firm-level VAR; it likely uses a parsimonious or pooled/state-variable decomposition. Reproducing a low-noise CF beta (corr ~0.80) and a low-noise total beta are the SAME problem -- both require a less noisy volatility/return construction."
+  },
+
+  "prioritized_actions": [
+    "1. Implement jump/outlier-robust realized vol (winsorize/trim daily returns, or drop earnings-day jumps, or use bipower/MedRV) BEFORE computing monthly SD. Re-estimate. (Headline; targets the lower tail asymmetrically; tests the paper's undocumented 'winsorization of returns'.)",
+    "2. Shrink firm betas toward an industry prior (empirical-Bayes / industry-level loadings, per the ABL precedent). Re-estimate.",
+    "3. For every construction change, track THREE outcomes jointly: negative fraction (target <=20%), nonnegative cutpoints (target 0.28/0.68), and the beta^UK_i vs beta^UK_i,CF rank correlation (target ~0.80). Use the CF-correlation as the primary calibration metric.",
+    "4. Diagnose the SP500 attribution push: report FTSE-vol/SP500-vol correlation and variance ratio; test orthogonalized controls and a consistently aligned UK/US trading-day calendar.",
+    "5. Test a balanced 60-month beta panel and the broader (return-data) tercile universe.",
+    "6. If a construction that restores CF-correlation ~0.80 also lifts delta toward 0.231, that is the paper's method; if delta stays at ~0.10 even after CF-correlation is restored, treat the residual as an irreducible reproducibility limit."
+  ],
+
+  "epistemic_caveats": [
+    "The noise reframe is strongly supported by the user's own 0.22-vs-0.80 CF-correlation, but the SPECIFIC noise-reduction convention the paper used is undocumented; the leads above are testable hypotheses, not confirmed facts.",
+    "Jump-robust vol and shrinkage are the highest-probability leads because they (a) act asymmetrically on the negative tail and (b) would simultaneously repair the CF-correlation -- but the paper states neither.",
+    "No public replication package exists (JFQA pre-2024). If, after restoring a paper-consistent CF-correlation, the negative fraction, cutpoints, and delta all still diverge, the residual is most plausibly an irreducible consequence of the paper's undocumented volatility methodology rather than a remaining bug."
+  ]
+}

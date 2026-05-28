@@ -1,0 +1,78 @@
+PROMPT FOR CLAUDE-WEB — ROUND 5: CAMPBELLO BREXIT DiD REPLICATION — POST-EXHAUSTION CONSULT
+
+## CONTEXT: What we are doing
+
+We are replicating Campello, Cortes, d'Almeida, Kankanhalli (2022) "Exporting Uncertainty: The Impact of Brexit on Corporate America," JFQA 57(8), 3178-3222.
+
+Specifically: Table 8, Column 1 — CASH holdings DiD using market-based treatment (top-tercile beta^UK_i). Spec B: Firm FE + Industry×Quarter FE, two-way clustered SE (firm + calendar quarter).
+
+## CURRENT STATE
+
+Our DiD result vs paper:
+
+| Metric | Ours | Paper |
+|--------|------|-------|
+| δ (interaction) | 0.102* | 0.231*** |
+| SE | 0.060 | 0.059 |
+| p | 0.089 | <0.01 |
+| N | 17,195 | 17,170 |
+| DiD firms | 811 | 809 |
+| Within R² | 0.03 | (0.21 FE-inclusive) |
+
+SE, N, and firm count all match the paper within 0.1%. The coefficient is at 44% of the paper's magnitude.
+
+## WHAT WE HAVE DONE (all 19 hypotheses from prior Claude-web rounds)
+
+### Applied fixes (3):
+1. **Population fix** (RA Round 1): Beta^UK_i now estimated on Compustat F1-F8 survivors only (not full CRSP). Required: US firms, USD reporting, positive assets/sales, non-financial non-utility, assets≥$10M, mktcap≥$10M, consecutive quarters ≥12, Hoberg-Phillips FIC-100 classification available. N closed from +1,490 to +25. Delta improved: 0.067→0.107.
+
+2. **Rank tercile** (RA Rounds 1-3): Equal-count thirds of nonnegative beta^UK_i distribution, not fixed 0.28/0.68 thresholds. Fixed mechanical anomaly where control count "grew" after CC merge. Nonnegative tercile: ~477 per group.
+
+3. **CONSENSUS_EPS 1% winsor** (RA Round 2): Was 1.5%, now 1% per paper. Cross-sectional per-quarter winsor + demean. Negligible effect on delta.
+
+### Tested and ruled out (16):
+4. **DV formula**: Table 8 uses cheq/(atq_lag - cheq) — "net of cash holdings." Table 1 uses cheq/atq_lag. Confirmed correct. Table 1 DV gives δ≈0.
+5. **Winsorization order**: Winsor cheq/atq_lag THEN derive final ratio = correct. Reversing (derive then winsor) kills result (δ=−0.036).
+6. **R² gap**: FE-inclusive (paper's 0.21) vs within-R² (our 0.03). Reporting convention, not model problem. Confirmed via Stata/reghdfe documentation.
+7. **Full-distribution tercile**: Bottom third is entirely negative (T1=−0.078). Gives 0 control. Does not reproduce paper's 360 control.
+8. **Log-vol specification**: Cutpoints 0.12/0.25 — further from paper's 0.28/0.68. Level-vol confirmed correct.
+9. **Data sources**: Bloomberg FTSE100/S&P500/FX vs Yahoo/CRSP/BoE. Identical by direct comparison of underlying series. Not the issue.
+10. **RET vs RETX**: 99% identical daily returns, negligible.
+11. **SHRCD/EXCHCD filter**: Adding CRSP share code 10/11 + exchange 1/2/3 filter. Overshoots on HIGH count (424→too few), marginal on LOW.
+12. **Rolling vol**: Subscript t in eq (13) implies within-month SD. Rolling/overlapping windows not supported by paper.
+13. **RHS vol construction**: Already consistent with LHS (all within-month SD of daily returns).
+14. **Min-days/min-months sweep**: 25 combinations tested (MinDays∈{10,13,15,17,20} × MinMon∈{12,18,24,30,36}). T2 ranges 0.62→0.69, best at MinDays=10/MinMon=12 (T2=0.6894). T1 never reaches paper's 0.28 — maxes at 0.265.
+15. **I/B/E/S asymmetric attrition** (tested today): HIGH firms are LESS analyst-covered (19.1% missing I/B/E/S) than LOW firms (8.6% missing). Median NUMEST: HIGH=7, LOW=9. ALL stricter I/B/E/S criteria (CUSIP-only, NUMEST≥3, NUMEST≥5) drop MORE HIGH firms than LOW, making H/L ratio worse. Paper's H/L=1.25 asymmetry cannot come from I/B/E/S.
+16. **CF beta (beta^UK_i,CF)** (attempted twice): Vuolteenaho (2002) firm-level VAR(1) on quarterly [r, ROE, BM], 2002-2018, ≥30 quarters. v1 (≥12 quarters): rank corr 0.14 with baseline beta. v2 (≥30 quarters, 3,484 firms): rank corr 0.22, top-tercile overlap 22.9%. Paper: rank corr 0.80, overlap 86%. CF news SD=30.5 vs baseline SD=1.3 — inherently noisy at firm level. Cannot validate construction without paper's exact method.
+
+### Key finding: negative beta proportion
+Our betas on Compustat survivors: 2,349 firms, 1,431 nonnegative (60.9%), 918 negative (39.1%). Full-distribution T1=−0.078 (entirely negative bottom third). The paper's cutpoints (0.28/0.68) and reported counts (449 treated, 360 control) imply they have ≤~20% negative betas. Distribution shape fundamentally different on identical inputs.
+
+### SE invariance argument (RA Round 4)
+Same N, same SE (0.060 vs 0.059), same Var(X) (treatment proportion ~0.50 in both) → same σ_resid → DV scale/units/winsor are correct. But Cov(Y,X) is 2.3x smaller → TREATMENT COMPOSITION differs. Different firms land in treated/control groups.
+
+## WHAT THE PAPER DOES NOT DOCUMENT
+
+Confirmed via verbatim extraction from main text + Internet Appendix A-E + corrigendum (22 JSON files available):
+
+- vol() functional form (within-month SD? EWMA? GARCH?)
+- CRSP share codes or exchange restrictions for beta estimation
+- Minimum monthly observations per firm for eq (13) regression
+- Minimum trading days per month for vol computation
+- Winsorization of returns or betas
+- CCM link specification (LINKTYPE, LINKPRIM, date ranges)
+- Total firm count in beta estimation universe (only 449/360 reported)
+- Full beta^UK_i distribution (only cutpoints 0.28/0.68 reported)
+- CF news estimation methodology (only "Following Vuolteenaho 2002" stated)
+- Whether terciles are rank-based (equal thirds) or fixed-threshold
+- Whether beta population is full CRSP or pre-filtered Compustat sample
+
+No public replication package exists (JFQA pre-2024 submission, voluntary code-sharing).
+
+## THE QUESTION
+
+We have exhausted 19 hypotheses across 4 prior Claude-web consultation rounds. Three fixes applied. SE, N, Var(X) all match. The delta gap persists at 44% of paper magnitude. Beta distribution shape differs (39% vs ≤20% negative betas). Cutpoints differ (0.25/0.67 vs 0.28/0.68) on identical input data.
+
+What should we investigate next? Are there methodological approaches, specification choices, or data construction details we have not yet considered? In particular: what could systematically shift a firm-level beta distribution's lower tail upward (reducing negative betas from 39% to ≤20%) while leaving the upper tail relatively unchanged?
+
+Do NOT read the paper or any existing code. This is a methodology/literature investigation. What does the broader literature on firm-level uncertainty betas, realized volatility estimation, or CRSP return processing tell us about potential sources of systematic beta distribution differences?
