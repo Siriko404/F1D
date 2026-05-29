@@ -71,17 +71,12 @@ ZSCORE_END = pd.Timestamp("2025-12-31")
 
 
 def _load_ccm_full(root_path: Path) -> pd.DataFrame:
-    """Load CCM with broadened filter (LINKPRIM in {P, C}) + date-ranges.
-
-    Sina decision 2026-05-14 'all 4 fixes': broaden link-primary filter from
-    'P' only to {P, C} (canonical + conditional). Add LINKDT/LINKENDDT for
-    time-varying CUSIP→gvkey resolution.
-    """
+    """Load CCM with LINKPRIM=P only + date-ranges for time-varying CUSIP→gvkey."""
     ccm_path = root_path / "inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet"
     ccm = pd.read_parquet(ccm_path,
                           columns=["cusip", "tic", "gvkey", "LINKPRIM", "LINKTYPE",
                                    "LINKDT", "LINKENDDT"])
-    ccm = ccm[ccm["LINKPRIM"].isin(["P", "C"]) & ccm["LINKTYPE"].isin(["LU", "LC"])].copy()
+    ccm = ccm[ccm["LINKPRIM"].eq("P") & ccm["LINKTYPE"].isin(["LU", "LC"])].copy()
     ccm["cusip8"] = ccm["cusip"].astype(str).str[:8]
     ccm["gvkey"] = ccm["gvkey"].astype(int).astype(str).str.zfill(6)
     ccm["tic"] = ccm["tic"].astype(str).str.upper().str.strip()
