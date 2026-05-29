@@ -116,10 +116,15 @@ def _statsum_meanest_z() -> pd.DataFrame:
                        + s["fpe"].dt.quarter).astype("int64")
     s["_mw"] = s.groupby("cal_yr_qtr", observed=True)["MEANEST"].transform(
         lambda x: x.clip(x.quantile(0.01), x.quantile(0.99)))
-    # "standardized" = z-score (Sina's stated definition); pooled over
-    # the 1Q-ahead winsorized statsum sample (textbook standardize).
-    mu, sd = s["_mw"].mean(), s["_mw"].std(ddof=1)
-    s["cons_fwd"] = (s["_mw"] - mu) / sd
+    # "standardized" = z-score (Sina's stated definition); within
+    # cal_yr_qtr — z-score each quarter against ITS OWN winsorized
+    # mean/SD. Per-quarter scope matches the winsorization scope and
+    # avoids cross-quarter outlier contamination (pooled SD was 29.6
+    # even after winsor — raw data has max ~1.5B). 2026-05-28 fix
+    # per supervisor audit: pooled approach produced degenerate IQR
+    # (0.02 vs paper 2.05); within-quarter yields well-behaved IQR.
+    s["cons_fwd"] = s.groupby("cal_yr_qtr")["_mw"].transform(
+        lambda x: (x - x.mean()) / x.std(ddof=1))
     return (s[["gvkey", "cal_yr_qtr", "cons_fwd"]]
             .sort_values(["gvkey", "cal_yr_qtr"], kind="stable")
             .drop_duplicates(["gvkey", "cal_yr_qtr"], keep="last"))
