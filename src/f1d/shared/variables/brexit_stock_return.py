@@ -64,12 +64,12 @@ def _qend(yq: int) -> pd.Timestamp:
 
 
 def _load_ccm_permno_map(root_path: Path) -> pd.DataFrame:
-    """CCM PERMNO → gvkey, time-varying. LINKPRIM∈{P,C}, LINKTYPE∈{LU,LC}."""
+    """CCM PERMNO → gvkey, time-varying. LINKPRIM=P, LINKTYPE∈{LU,LC}."""
     ccm_path = root_path / "inputs" / "CRSPCompustat_CCM" / "CRSPCompustat_CCM.parquet"
     ccm = pd.read_parquet(
         ccm_path, columns=["gvkey", "LPERMNO", "LINKPRIM", "LINKTYPE", "LINKDT", "LINKENDDT"]
     )
-    ccm = ccm[ccm["LINKPRIM"].isin(["P", "C"]) & ccm["LINKTYPE"].isin(["LU", "LC"])].copy()
+    ccm = ccm[ccm["LINKPRIM"].eq("P") & ccm["LINKTYPE"].isin(["LU", "LC"])].copy()
     ccm["LPERMNO"] = pd.to_numeric(ccm["LPERMNO"], errors="coerce")
     ccm = ccm.dropna(subset=["LPERMNO"])
     ccm["LPERMNO"] = ccm["LPERMNO"].astype("int64")
