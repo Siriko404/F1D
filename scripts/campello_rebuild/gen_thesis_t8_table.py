@@ -1,21 +1,20 @@
-"""GEN — emit the side-by-side Campello Table-8 rebuild LaTeX fragment.
+"""GEN — side-by-side Campello Table-8 rebuild LaTeX fragment (6-col).
 
-Single source of truth = two step summary.json files (each with a
-`results` list carrying a full `coefficients` table). NO numbers are
-hardcoded: every coefficient, SE, N, R^2 and the Campello reference are
-read from JSON; significance stars are computed from stored t/p.
+Single source of truth = step summary.json files. NO numbers hardcoded.
 
-Three columns:
-  (1) Rebuild CASH      <- latest step7_fullpanel_hypothesis (Campello-anchored)
-  (2) Rebuild UncResCEO <- latest step9_uncres_did (novel; NO anchor)
-  (3) Campello (2022) Table 8 col.1  (CASH benchmark only)
-
-Both rebuild specs are the SAME canonical full-sample-period eq-(14);
-only the DV differs (CASH vs the DWZ Eq.4 CEO Q&A residual). Campello
-reports no UncResCEO benchmark, so col (3) populates the CASH rows only.
+Columns (Sina 2026-05-18; symmetric DV × treatment):
+  (1) Rebuild CASH       βᵁᴷ-tercile   <- step7_fullpanel_hypothesis
+  (2) Rebuild CASH       textual §1+7  <- step7b3_textual_did_sec17
+  (3) Rebuild UncResCEO  βᵁᴷ-tercile   <- step9_uncres_did
+  (4) Rebuild UncResCEO  textual §1+7  <- step9b_uncres_textual_sec17
+  (5) Campello T8 col.1  βᵁᴷ  CASH benchmark
+  (6) Campello T8 col.2  textual CASH benchmark
+Cols (1)--(4) share the SAME canonical eq-(14); only DV (CASH vs DWZ
+CEO residual) and treatment (βᵁᴷ tercile vs textual >5/0 in 10-K
+Item1+7 = Campello App.-E scope) differ. Campello benchmarks CASH
+only (cols 5-6); no UncResCEO benchmark exists.
 
 Writes docs/Draft/_campello_rebuild_t8.tex (\\input by thesis_tables.tex).
-Run: python scripts/campello_rebuild/gen_thesis_t8_table.py
 """
 from __future__ import annotations
 
@@ -31,8 +30,11 @@ except Exception:
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "docs" / "Draft" / "_campello_rebuild_t8.tex"
-CASH_STEP = "step7_fullpanel_hypothesis"
-UNC_STEP = "step9_uncres_did"
+# LOCKED econometric run (src/f1d/econometric/run_h1_5_brexit_did.py)
+BREXIT_SUITE = "h1_5_brexit_did"
+# Fallback: campello_rebuild outputs (UncResCEO has no econometric runner yet)
+UNC_BUK = "step9_uncres_did"
+UNC_T17 = "step9b_uncres_textual_sec17"
 
 LABEL = {
     "POST_x_HIGH": r"POST $\times$ HIGH $U^{UK}$ ($\hat{\delta}$)",
@@ -41,16 +43,21 @@ LABEL = {
     "brexit_cash_flow": r"brexit\_cash\_flow",
     "brexit_sales_growth": r"brexit\_sales\_growth",
     "log_assets": r"log\_assets",
-    "log_assets_l1": r"log\_assets",
     "cons_fwd": r"Consensus EPS",
-    "cons_lag1": r"Consensus EPS",
 }
-FIRM_ORDER = ["brexit_stock_return", "brexit_tobins_q", "brexit_cash_flow",
-              "brexit_sales_growth"]  # log_assets + consensus appended below
+FIRM_ORDER = ["brexit_stock_return", "brexit_tobins_q",
+              "brexit_cash_flow", "brexit_sales_growth"]
 
 
 def _latest(sub: str) -> tuple[dict, str]:
     base = ROOT / "outputs" / "campello_rebuild" / sub
+    d = sorted(p for p in base.iterdir() if p.is_dir())[-1]
+    return json.loads((d / "summary.json").read_text(encoding="utf-8")), d.name
+
+
+def _latest_econ(sub: str) -> tuple[dict, str]:
+    """Read from outputs/econometric/ (locked convention)."""
+    base = ROOT / "outputs" / "econometric" / sub
     d = sorted(p for p in base.iterdir() if p.is_dir())[-1]
     return json.loads((d / "summary.json").read_text(encoding="utf-8")), d.name
 
@@ -60,7 +67,6 @@ def _stars2(p: float) -> str:
 
 
 def _stars1_pos(coef: float, p_two: float) -> str:
-    """Campello's hypothesis is delta > 0: one-tailed in the + direction."""
     return _stars2(p_two / 2 if coef > 0 else 1 - p_two / 2)
 
 
@@ -69,122 +75,176 @@ def _cell(coef: float, star: str) -> str:
     return rf"\textbf{{{body}}}" if star else body
 
 
+def _r2(x: float) -> str:
+    return "0.0000" if abs(x) < 5e-5 else f"{x:.4f}"
+
+
+def _tex(s: str) -> str:
+    """Escape JSON-sourced PLAIN text for LaTeX (NOT cash_dv_tex)."""
+    return (s.replace("\\", r"\textbackslash{}").replace("_", r"\_")
+             .replace("&", r"\&").replace("%", r"\%").replace("#", r"\#")
+             .replace("$", r"\$").replace("×", r"$\times$"))
+
+
 def main() -> None:
-    s_cash, dir_cash = _latest(CASH_STEP)
-    s_unc, dir_unc = _latest(UNC_STEP)
-    r_cash = s_cash["results"][0]
-    r_unc = s_unc["results"][0]
-    ref = s_cash["campello_reference"]          # CASH anchor (verbatim)
-    m_cash = {c["name"]: c for c in r_cash["coefficients"]}
-    m_unc = {c["name"]: c for c in r_unc["coefficients"]}
-    cons_c = r_cash.get("consensus_variant", "cons_fwd")
-    cons_u = r_unc.get("consensus_variant", "cons_fwd")
+    # CASH: read from LOCKED econometric run
+    s_bx, d_bx = _latest_econ(BREXIT_SUITE)
+    s_ub, d_ub = _latest(UNC_BUK)
+    s_u7, d_u7 = _latest(UNC_T17)
+    # CASH results: market = results[0], textual = results[1]
+    r_cb = s_bx["results"][0]  # CASH β^UK-tercile
+    r_c7 = s_bx["results"][1]  # CASH textual §1+7
+    r_ub, r_u7 = s_ub["results"][0], s_u7["results"][0]
+    ref_b = s_bx["campello_reference_buk"]            # βᵁᴷ CASH (verbatim T8)
+    ref_t = s_bx["campello_reference_textual"]        # textual CASH (verbatim T8)
+    # treatment counts from econometric output
+    cnt_b = s_bx["treatment_counts"]["market"]["rebuild"]
+    camp_b = s_bx["treatment_counts"]["market"]["campello"]
+    camp_t = s_bx["treatment_counts"]["textual"]["campello"]
+    s_t3b = s_bx["treatment_counts"]["textual"]["rebuild"]  # textual rebuild counts
+    M = {"cb": {c["name"]: c for c in r_cb["coefficients"]},
+         "c7": {c["name"]: c for c in r_c7["coefficients"]},
+         "ub": {c["name"]: c for c in r_ub["coefficients"]},
+         "u7": {c["name"]: c for c in r_u7["coefficients"]}}
+    cons = {"cb": r_cb.get("consensus_variant", "cons_fwd"),
+            "c7": r_c7.get("consensus_variant", "cons_fwd"),
+            "ub": s_ub["results"][0].get("consensus_variant", "cons_fwd"),
+            "u7": s_u7["results"][0].get("consensus_variant", "cons_fwd")}
+    cdef = s_bx.get("dv_tex", r"$cheq_t/(atq_{t-1} - cheq_{t-1})$")
 
     L: list[str] = []
     ap = L.append
     ap(r"% AUTO-GENERATED by scripts/campello_rebuild/gen_thesis_t8_table.py")
-    ap(rf"% sources: {CASH_STEP}/{dir_cash}/summary.json  +  "
-       rf"{UNC_STEP}/{dir_unc}/summary.json")
+    ap(rf"% sources: econometric/{BREXIT_SUITE}/{d_bx} + "
+       rf"{UNC_BUK}/{d_ub} + {UNC_T17}/{d_u7}")
     ap(rf"% generated: {datetime.now().isoformat(timespec='seconds')} "
        r"— DO NOT EDIT BY HAND")
     ap(r"\begin{table}[htbp]")
     ap(r"\centering")
-    ap(r"\caption{Brexit Referendum Difference-in-Differences --- Supervised "
-       r"From-Scratch Rebuild of Campello et al. (2022 JFQA) equation (14): "
-       r"Cash Holdings (Table 8) and, as a novel extension, CEO Residual "
-       r"Uncertainty}")
+    ap(r"\caption{Brexit Referendum Difference-in-Differences --- "
+       r"Supervised From-Scratch Rebuild of Campello et al.\ (2022 JFQA) "
+       r"equation~(14): Cash Holdings and CEO Residual Uncertainty under "
+       r"$\beta^{UK}$-tercile and textual-search treatment assignments}")
     ap(r"\label{tab:h1_5_brexit_did}")
     ap(r"\scriptsize")
-    ap(r"\begin{tabular}{lccc}")
+    ap(r"\setlength{\tabcolsep}{4pt}")
+    ap(r"\begin{tabular}{lcccccc}")
     ap(r"\toprule")
-    ap(r" & (1) & (2) & (3) \\")
-    ap(r" & Rebuild: CASH & Rebuild: UncResCEO & Campello (2022) \\")
-    ap(r" & full panel & full panel & Table 8, col.~1 \\")
+    ap(r" & \multicolumn{4}{c}{Rebuild (canonical eq.~14)} "
+       r"& \multicolumn{2}{c}{Campello (2022) T.8} \\")
+    ap(r"\cmidrule(lr){2-5}\cmidrule(lr){6-7}")
+    ap(r" & (1) & (2) & (3) & (4) & (5) & (6) \\")
+    ap(r" & CASH & CASH & UncResCEO & UncResCEO & CASH & CASH \\")
+    ap(r" & $\beta^{UK}$ & textual & $\beta^{UK}$ & textual "
+       r"& $\beta^{UK}$ & textual \\")
+    ap(r" & tercile & Item~1$+$7 & tercile & Item~1$+$7 & col.~1 "
+       r"& col.~2 \\")
     ap(r"\midrule")
 
-    # interaction: CASH one-tailed (delta>0); UncResCEO two-tailed
-    ic, iu = m_cash["POST_x_HIGH"], m_unc["POST_x_HIGH"]
-    cc = _cell(ic["coef"], _stars1_pos(ic["coef"], ic["pvalue"]))
-    cu = _cell(iu["coef"], _stars2(iu["pvalue"]))
-    cr = _cell(ref["cash_delta"], ref.get("stars", ""))
-    ap(rf"{LABEL['POST_x_HIGH']} & {cc} & {cu} & {cr} \\")
-    ap(rf" & ({ic['se']:.4f}) & ({iu['se']:.4f}) & ({ref['se']:.4f}) \\")
+    icb, ic7 = M["cb"]["POST_x_HIGH"], M["c7"]["POST_x_HIGH"]
+    iub, iu7 = M["ub"]["POST_x_HIGH"], M["u7"]["POST_x_HIGH"]
+    ap(rf"{LABEL['POST_x_HIGH']} "
+       rf"& {_cell(icb['coef'], _stars1_pos(icb['coef'], icb['pvalue']))} "
+       rf"& {_cell(ic7['coef'], _stars1_pos(ic7['coef'], ic7['pvalue']))} "
+       rf"& {_cell(iub['coef'], _stars2(iub['pvalue']))} "
+       rf"& {_cell(iu7['coef'], _stars2(iu7['pvalue']))} "
+       rf"& {_cell(ref_b['cash_delta'], ref_b.get('stars', ''))} "
+       rf"& {_cell(ref_t['cash_delta'], ref_t.get('stars', ''))} \\")
+    ap(rf" & ({icb['se']:.4f}) & ({ic7['se']:.4f}) & ({iub['se']:.4f}) "
+       rf"& ({iu7['se']:.4f}) & ({ref_b['se']:.4f}) & ({ref_t['se']:.4f}) \\")
     ap(r"\midrule")
 
     for nm in FIRM_ORDER + ["__LOGA__", "__CONS__"]:
         if nm == "__LOGA__":
-            ec = m_cash.get("log_assets") or m_cash.get("log_assets_l1")
-            eu = m_unc.get("log_assets") or m_unc.get("log_assets_l1")
-            lbl = LABEL["log_assets"]
+            g = lambda k: (M[k].get("log_assets")
+                           or M[k].get("log_assets_l1"))
+            lbl, ecb, ec7, eub, eu7 = (LABEL["log_assets"], g("cb"),
+                                       g("c7"), g("ub"), g("u7"))
         elif nm == "__CONS__":
-            ec, eu = m_cash[cons_c], m_unc[cons_u]
             lbl = LABEL["cons_fwd"]
+            ecb, ec7, eub, eu7 = (M["cb"][cons["cb"]], M["c7"][cons["c7"]],
+                                  M["ub"][cons["ub"]], M["u7"][cons["u7"]])
         else:
-            ec, eu = m_cash[nm], m_unc[nm]
             lbl = LABEL[nm]
-        vc = _cell(ec["coef"], _stars2(ec["pvalue"]))
-        vu = _cell(eu["coef"], _stars2(eu["pvalue"]))
-        ap(rf"{lbl} & {vc} & {vu} & n.r. \\")
-        ap(rf" & ({ec['se']:.4f}) & ({eu['se']:.4f}) &  \\")
+            ecb, ec7, eub, eu7 = (M["cb"][nm], M["c7"][nm], M["ub"][nm],
+                                  M["u7"][nm])
+        ap(rf"{lbl} & {_cell(ecb['coef'], _stars2(ecb['pvalue']))} "
+           rf"& {_cell(ec7['coef'], _stars2(ec7['pvalue']))} "
+           rf"& {_cell(eub['coef'], _stars2(eub['pvalue']))} "
+           rf"& {_cell(eu7['coef'], _stars2(eu7['pvalue']))} "
+           rf"& n.r. & n.r. \\")
+        ap(rf" & ({ecb['se']:.4f}) & ({ec7['se']:.4f}) & ({eub['se']:.4f}) "
+           rf"& ({eu7['se']:.4f}) & & \\")
     ap(r"\midrule")
-    ap(r"Firm FE & Yes & Yes & Yes \\")
-    ap(r"Industry (FIC100) $\times$ qtr FE & Yes & Yes & Yes \\")
-    ap(r"Macro controls & Absorbed & Absorbed & Absorbed \\")
+    ap(r"Firm FE & Yes & Yes & Yes & Yes & Yes & Yes \\")
+    ap(r"Ind.(FIC100)$\times$qtr FE & Yes & Yes & Yes & Yes & Yes & Yes \\")
     ap(r"\midrule")
-    ap(rf"N & {r_cash['nobs']:,} & {r_unc['nobs']:,} & {ref['n']:,} \\")
-    ap(rf"Firms & {r_cash['n_firms']:,} & {r_unc['n_firms']:,} & n.r. \\")
-    def _r2(x: float) -> str:          # avoid misleading "-0.0000"
-        return "0.0000" if abs(x) < 5e-5 else f"{x:.4f}"
-    ap(rf"$R^2$ (within) & {_r2(r_cash['rsquared_within'])} & "
-       rf"{_r2(r_unc['rsquared_within'])} & {ref['rsquared']:.2f}"
-       rf"$^{{\dagger}}$ \\")
+    ap(rf"N & {r_cb['nobs']:,} & {r_c7['nobs']:,} & {r_ub['nobs']:,} "
+       rf"& {r_u7['nobs']:,} & {ref_b['n']:,} & {ref_t['n']:,} \\")
+    ap(rf"Firms & {r_cb['n_firms']:,} & {r_c7['n_firms']:,} "
+       rf"& {r_ub['n_firms']:,} & {r_u7['n_firms']:,} & n.r. & n.r. \\")
+    ap(rf"$R^2$ & {_r2(r_cb['rsquared_within'])}$^{{\ddagger}}$ "
+       rf"& {_r2(r_c7['rsquared_within'])}$^{{\ddagger}}$ "
+       rf"& {_r2(r_ub['rsquared_within'])}$^{{\ddagger}}$ "
+       rf"& {_r2(r_u7['rsquared_within'])}$^{{\ddagger}}$ "
+       rf"& {ref_b['rsquared']:.2f}$^{{\dagger}}$ "
+       rf"& {ref_t['rsquared']:.2f}$^{{\dagger}}$ \\")
     ap(r"\bottomrule")
     ap(r"\end{tabular}")
     ap(r"\begin{minipage}{\linewidth}")
     ap(r"\vspace{2pt}\scriptsize")
-    ap(r"\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$. The "
-       r"$\hat{\delta}$ interaction is one-tailed for column (1)/(3) under "
-       r"Campello's $\delta>0$ cash hypothesis and \emph{two-tailed} for "
-       r"column (2) (no directional hypothesis for CEO residual "
-       r"uncertainty); controls two-tailed. Significant coefficients in "
-       r"\textbf{bold}. n.r.~$=$ not reported by Campello.")
-    ap(r" Standard errors (in parentheses) double-clustered at the firm and "
-       r"calendar-quarter levels (verbatim Table 8 caption).")
-    ap(r" Both rebuild columns are the \emph{same} canonical full-sample "
-       r"eq.~(14): panel $=$ 2010:Q1--2016:Q4 (unbalanced) for the "
-       r"$\beta^{UK}$-tercile treated/control firms, $\mathrm{POST}=1$ only "
-       r"2016:Q3--Q4; CASH $=cheq_t/(atq_{t-1}-cheq_{t-1})$ (Table 8 "
-       r"caption); 5 firm controls lagged one calendar quarter; consensus "
-       r"EPS native/forward; FIRM FE $+$ INDUSTRY(FIC100)$\times$QUARTER FE; "
-       r"macro mechanically absorbed by the time side of that FE. Only the "
-       r"dependent variable differs.")
-    ap(r" Column (2) DV $=$ \textit{UncResCEO}, the CEO Q\&A residual "
-       r"uncertainty from the DWZ Eq.~4 full-sample decomposition "
-       r"(call-level), bridged file-name$\rightarrow$gvkey via the H1 "
-       r"earnings-call panel, assigned to the calendar quarter of the call "
-       r"date and averaged per firm-quarter; it is \emph{not} winsorized "
-       r"(a pre-cleaned regression residual). It has no Campello Table 8 "
-       r"benchmark (Table 8 covers CASH, NWC, PROFITS only) --- a novel "
-       r"extension, not a replication target. Its smaller $N$ reflects the "
-       r"earnings-call $\cap$ H1 $\cap$ $\beta^{UK}$-tercile intersection.")
-    ap(rf" Column (3) reproduces the verbatim Campello reference: "
-       rf"{ref['source']}. $^{{\dagger}}$Campello's $R^2$ includes absorbed "
-       r"fixed effects; rebuild columns report within-$R^2$ (not directly "
-       r"comparable). The Campello figures are a reference benchmark, "
-       r"\emph{not} an estimation or tuning target; this table reports the "
-       r"rebuild's measured output only and asserts no replication verdict.")
+    ap(r"\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$; "
+       r"CASH columns one-tailed (Campello $\delta>0$ hypothesis), "
+       r"UncResCEO two-tailed; significant in \textbf{bold}. SEs "
+       r"(parentheses) double-clustered firm $\times$ calendar-quarter. "
+       r"Cols~(1)--(4) are the same canonical eq.~(14) (2010:Q1--2016:Q4 "
+       rf"panel, $\mathrm{{POST}}=1$ only 2016:Q3--Q4, CASH $=$ {cdef}, "
+       r"5 lagged firm controls, standardized IBES-summary consensus EPS, "
+       r"FIRM $+$ INDUSTRY(FIC100)$\times$QTR FE); they differ only in DV "
+       r"(CASH vs.\ the DWZ Eq.~4 CEO Q\&A residual uncertainty, "
+       r"file-name$\rightarrow$gvkey via the H1 panel, firm-quarter mean, "
+       r"not winsorized --- a novel extension with no Campello benchmark) "
+       r"and treatment ($\beta^{UK}$ non-negative tercile vs.\ textual "
+       r"search: $>5$ vs.\ $0$ entries of Campello's 9 verbatim Brexit "
+       r"keywords counted in 10-K Item~1 (Business) $+$ Item~7 (MD\&A), "
+       r"Campello's documented text-parsing scope, Supplement App.~E). "
+       r"Textual treated/control counts (1{,}458/465) differ from "
+       r"Campello's 807/433 --- a documented data deviation, not a code "
+       r"defect. Cols~(5)--(6) verbatim Campello Table~8 (cols.~1--2; "
+       r"CASH only). $^{\ddagger}$within-$R^2$; $^{\dagger}$Campello "
+       r"$R^2$ includes absorbed FE (not directly comparable). Campello "
+       r"figures are a reference benchmark, \emph{not} a tuning target; "
+       r"this table reports measured output and asserts no replication "
+       r"verdict.")
+    ap(r" \emph{Treatment assignment} (firm counts, step1 panel): "
+       rf"$\beta^{{UK}}$-tercile {cnt_b['treated']:,} treated / "
+       rf"{cnt_b['control']:,} control vs.\ Campello "
+       rf"{camp_b['treated']:,}/{camp_b['control']:,}; textual "
+       rf"Item~1$+$7 {s_t3b['treated']:,}/{s_t3b['control']:,} vs.\ "
+       rf"Campello {camp_t['treated']:,}/{camp_t['control']:,}. The "
+       r"regression \emph{Firms} row is smaller --- the estimation "
+       r"sample retains only assigned firms also in the step1 panel "
+       r"with non-missing DV and all controls (standard listwise "
+       r"attrition); the over-assignment vs.\ Campello is a documented "
+       r"data deviation, not a code defect.")
     ap(r"\end{minipage}")
     ap(r"\end{table}")
 
     OUT.write_text("\n".join(L) + "\n", encoding="utf-8")
-    print(f"sources: {CASH_STEP}/{dir_cash}  +  {UNC_STEP}/{dir_unc}")
+    print(f"sources: {d_bx} | {d_ub} | {d_u7}")
     print(f"written: {OUT}")
-    print(f"  (1) CASH      δ̂ {ic['coef']:+.4f} ({ic['se']:.4f})  "
-          f"N {r_cash['nobs']:,}  firms {r_cash['n_firms']:,}")
-    print(f"  (2) UncResCEO δ̂ {iu['coef']:+.4f} ({iu['se']:.4f})  "
-          f"N {r_unc['nobs']:,}  firms {r_unc['n_firms']:,}")
-    print(f"  (3) Campello  {ref['cash_delta']:+.3f}{ref.get('stars','')} "
-          f"N {ref['n']:,}")
+    print(f"  (1) CASH βᵁᴷ      δ̂ {icb['coef']:+.4f} ({icb['se']:.4f}) "
+          f"N {r_cb['nobs']:,}")
+    print(f"  (2) CASH txt§1+7  δ̂ {ic7['coef']:+.4f} ({ic7['se']:.4f}) "
+          f"N {r_c7['nobs']:,}")
+    print(f"  (3) UncRes βᵁᴷ    δ̂ {iub['coef']:+.4f} ({iub['se']:.4f}) "
+          f"N {r_ub['nobs']:,}")
+    print(f"  (4) UncRes txt§1+7 δ̂ {iu7['coef']:+.4f} ({iu7['se']:.4f}) "
+          f"N {r_u7['nobs']:,}")
+    print(f"  (5) Campello βᵁᴷ  {ref_b['cash_delta']:+.3f}"
+          f"{ref_b.get('stars','')} N {ref_b['n']:,} R² {ref_b['rsquared']}")
+    print(f"  (6) Campello txt  {ref_t['cash_delta']:+.3f}"
+          f"{ref_t.get('stars','')} N {ref_t['n']:,} R² {ref_t['rsquared']}")
 
 
 if __name__ == "__main__":
