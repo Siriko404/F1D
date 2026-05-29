@@ -1,19 +1,16 @@
 """Brexit-verbatim Tobin's Q builder — H1.5.brexit_did design.
 
-Campello et al. (2022 JFQA) Table 1 note (verbatim): "TOBIN_Q is defined
-as the market value of assets divided by the book value of assets, and is
-calculated as the market value of equity plus the book value of assets
-minus book value of equity plus deferred taxes, all divided by book value
-of assets."
+Campello et al. (2022 JFQA) Table 1 note (verbatim, PDF-verified
+2026-05-28): "TOBIN_Q is defined as the market value of assets divided by
+the book value of assets, and is calculated as the market value of equity
+plus the book value of assets minus book value of equity, divided by total
+assets." Three terms; no deferred taxes.
 
-    TOBIN_Q = (cshoq*prccq + atq − ceqq + txditcq) / atq
+    TOBIN_Q = (cshoq*prccq + atq − ceqq) / atq
 
 where market value of equity = cshoq*prccq, book value of assets = atq,
-book value of equity = ceqq, deferred taxes = txditcq. This is the full
-verbatim form (implemented at line ~79); the earlier "simpler
-(Total Capitalization / Book Assets)" framing was a stale-docstring
-artifact and never matched the code. 1% winsorization within cal_yr_qtr
-(verbatim: "All variables are winsorized at the 1% level.").
+book value of equity = ceqq. 1% winsorization within cal_yr_qtr (verbatim:
+"All variables are winsorized at the 1% level.").
 
 Output:
     outputs/variables/brexit_tobins_q/<ts>/brexit_tobins_q.parquet
@@ -52,7 +49,7 @@ def _winsorize_within(df: pd.DataFrame, col: str, group: str, pct: float = WINSO
 
 
 class BrexitTobinsQBuilder(VariableBuilder):
-    """Campello-verbatim Tobin's Q: (atq + cshoq*prccq) / atq."""
+    """Campello-verbatim Tobin's Q: (cshoq*prccq + atq − ceqq) / atq."""
 
     def __init__(self, config: Dict[str, Any] | None = None):
         super().__init__(config or {})
@@ -62,30 +59,21 @@ class BrexitTobinsQBuilder(VariableBuilder):
         del years
         comp_path = root_path / "inputs" / "comp_na_daily_all" / "comp_na_daily_all.parquet"
         logger.info(f"BrexitTobinsQBuilder: reading {comp_path} ...")
-        df = pd.read_parquet(comp_path, columns=["gvkey", "datadate", "atq", "cshoq", "prccq", "ceqq", "txditcq"])
+        df = pd.read_parquet(comp_path, columns=["gvkey", "datadate", "atq", "cshoq", "prccq", "ceqq"])
         # Compustat stores numerics as decimal.Decimal in object cols — coerce.
-        for c in ["atq", "cshoq", "prccq", "ceqq", "txditcq"]:
+        for c in ["atq", "cshoq", "prccq", "ceqq"]:
             df[c] = pd.to_numeric(df[c], errors="coerce")
         df["datadate"] = pd.to_datetime(df["datadate"])
         df["cal_yr_qtr"] = df["datadate"].dt.year * 10 + df["datadate"].dt.quarter
         df = df[(df["cal_yr_qtr"] >= WINDOW_START_YQ) & (df["cal_yr_qtr"] <= WINDOW_END_YQ)]
-        # Verbatim Tobin's Q needs all components. Paper SILENT on
-        # missing-value handling (grep-confirmed 2026-05-17). Sina
-        # decision 2026-05-17, REVISED after measuring the strict cost
-        # (strict dropped 25,857 firm-qtrs at Step-1 filter 6):
-        # MIDDLE-GROUND — require market-equity inputs AND book equity
-        # (ceqq) present; impute missing deferred taxes txditcq=0 (a firm
-        # with no deferred-tax balance genuinely has 0 — standard
-        # Tobin's-Q-literature convention). ceqq stays REQUIRED (ceqq=0
-        # would overstate Q; that protection is retained).
+        # Campello et al. 2022 JFQA Table 1 note (verbatim, PDF-verified
+        # 2026-05-28): "market value of equity plus the book value of
+        # assets minus book value of equity, divided by total assets."
+        # Three terms. No deferred taxes.
         df = df.dropna(subset=["atq", "cshoq", "prccq", "ceqq"]).copy()
         df = df[df["atq"] > 0]  # avoid div-by-0
-        df["txditcq"] = df["txditcq"].fillna(0.0)
 
-        # Campello et al. 2022 JFQA Table 1 footer (j.3198) verbatim:
-        #   "market value of equity + book value of assets − book value of equity
-        #    + deferred taxes, all divided by book value of assets"
-        df[COL_NAME] = (df["cshoq"] * df["prccq"] + df["atq"] - df["ceqq"] + df["txditcq"]) / df["atq"]
+        df[COL_NAME] = (df["cshoq"] * df["prccq"] + df["atq"] - df["ceqq"]) / df["atq"]
         df["gvkey"] = df["gvkey"].astype(int).astype(str).str.zfill(6)
 
         df = df[["gvkey", "cal_yr_qtr", COL_NAME]].dropna(subset=[COL_NAME])
@@ -100,8 +88,8 @@ class BrexitTobinsQBuilder(VariableBuilder):
         stats = self.get_stats(df[COL_NAME], COL_NAME)
         metadata = {
             "source": "Campello et al. 2022 JFQA Section II.E (Tobin's Q)",
-            "formula": "(cshoq*prccq + atq - ceqq + txditcq) / atq",
-            "missing_components": "MIDDLE-GROUND — require ceqq present; impute txditcq=0 (paper-silent; Sina 2026-05-17, revised after strict-cost measurement)",
+            "formula": "(cshoq*prccq + atq - ceqq) / atq",
+            "notes": "Three terms per paper Table 1 note (PDF-verified 2026-05-28). ceqq required; no deferred taxes.",
             "winsorization": f"{WINSOR_PCT*100}% within cal_yr_qtr",
             "n_rows": int(len(df)),
             "n_unique_gvkeys": int(df["gvkey"].nunique()),
