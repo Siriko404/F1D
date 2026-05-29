@@ -76,13 +76,19 @@ def main() -> None:
     print(f"  full estimated β^UK firms: {len(beta):,}")
     print(f"  step-1-matched firms:      {len(s1_gv):,}")
 
-    # --- nonnegative range, equal-count terciles (verbatim) -------------
-    nonneg = beta[beta["beta_uk"] >= 0].copy()
+    # --- C.1 filter 9 = β^UK merged AFTER F1-F8 survivor set is fixed.
+    # Terciles on STEP1-FILTERED nonnegative pool (not full universe).
+    # Equal terciles at assignment; asymmetry emerges via controls attrition.
+    # Fix 2026-05-28 per supervisor audit (full-universe terciles = process
+    # bug; same cutpoint drift found in M1 diagnostic).
+    beta["in_step1"] = beta["gvkey"].isin(s1_gv)
+    step1_beta = beta[beta["in_step1"]].copy()
+    nonneg = step1_beta[step1_beta["beta_uk"] >= 0].copy()
     q33 = float(nonneg["beta_uk"].quantile(1 / 3))
     q67 = float(nonneg["beta_uk"].quantile(2 / 3))
-    print(f"\nnonnegative β^UK firms: {len(nonneg):,} "
-          f"({len(nonneg)/len(beta):.1%} of estimated)")
-    print(f"OUR realized tercile cuts (nonneg p33 / p67): "
+    print(f"\nnonnegative β^UK, step1-filtered: {len(nonneg):,}"
+          f"  ({len(nonneg)/len(step1_beta):.1%} of step1)")
+    print(f"OUR tercile cuts (step1-filtered nonneg p33/p67): "
           f"{q33:.4f} / {q67:.4f}")
     print(f"Campello realized cuts (reference only, NOT applied): "
           f"0.28 / 0.68")
@@ -98,7 +104,6 @@ def main() -> None:
 
     beta["nonneg"] = beta["beta_uk"] >= 0
     beta["group"] = beta["beta_uk"].map(_grp)
-    beta["in_step1"] = beta["gvkey"].isin(s1_gv)
 
     full_ct = beta["group"].value_counts().to_dict()
     panel = beta[beta["in_step1"]]
