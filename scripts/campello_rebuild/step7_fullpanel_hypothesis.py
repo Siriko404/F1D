@@ -20,10 +20,15 @@ Campello +0.231***, the full-panel reading is supported; if N stays low
 or δ̂ unchanged, the 4-qtr reading holds. Factual test only — NOT a
 replication verdict (gated on Sina; off-ramp forbidden).
 
-Everything else identical to verified Step 6 (CASH DV = Table-8-caption
-cheq_t/(atq_{t-1}−cheq_{t-1}); 5 firm controls lagged 1Q; macro absorbed
-by IND×QTR FE; consensus immaterial → forward variant; FIRM FE + IND×QTR
-FE; SE double-clustered firm×qtr). ONLY the window + POST differ.
+CASH DV (supervisor Cat2 fix 2026-05-29): Campello Table 8 verbatim —
+"total cash holdings divided by lagged total assets net of cash holdings."
+CASH = cheq_t / (atq_{t-1} − cheq_{t-1}). Fix 2026-05-29: step7 was using
+T1 CASH (cheq/atq_l1); the locked econometric convention always used T8.
+V1a/V1b (2026-05-28) verified T8 formula on actual data — commit-grade.
+Everything else: 6 controls ALL lagged 1Q per eq(14) CONTROLS_{t-1}
+(consensus FIXED 2026-05-29 — was contemporaneous); macro absorbed by
+IND×QTR FE; FIRM FE + IND×QTR FE; SE double-clustered firm×qtr. ONLY
+window + POST differ from the 4-qtr step6.
 
 Output: outputs/campello_rebuild/step7_fullpanel_hypothesis/<ts>/
 """
@@ -110,8 +115,13 @@ def _cash_dv() -> pd.DataFrame:
         columns={"cal_yr_qtr": "_pq", "atq": "atq_l1", "cheq": "cheq_l1"})
     df["_pq"] = df["cal_yr_qtr"].map(_prev_q).astype("int64")
     df = df.merge(src, on=["gvkey", "_pq"], how="left").drop(columns="_pq")
+    # Campello Table 8 verbatim: "total cash holdings divided by lagged
+    # total assets net of cash holdings." CASH = cheq_t / (atq_{t-1} −
+    # cheq_{t-1}). Fix 2026-05-29 per supervisor Cat2 audit: step7 was
+    # running T1 CASH (cheq/atq_l1); the paper's eq(14) DV is T8 net-of-
+    # cash. V1a/V1b verified this formula on actual data.
     df["denom"] = df["atq_l1"] - df["cheq_l1"]
-    df = df[df["cheq"].notna() & (df["denom"] > 0)].copy()
+    df = df[df["cheq"].notna() & df["cheq_l1"].notna() & (df["denom"] > 0)].copy()
     df["CASH"] = df["cheq"] / df["denom"]
     return df[["gvkey", "cal_yr_qtr", "CASH"]]
 
@@ -166,8 +176,11 @@ def main() -> None:
     cons = (cons.sort_values(["gvkey", "cal_yr_qtr"], kind="stable")
                 .drop_duplicates(["gvkey", "cal_yr_qtr"], keep="last"))
     ccol = [c for c in cons.columns if c not in ("gvkey", "cal_yr_qtr")][0]
-    df = df.merge(cons.rename(columns={ccol: "cons_fwd"}),
-                  on=["gvkey", "cal_yr_qtr"], how="left")  # immaterial variant
+    # eq(14) verbatim: "θ·CONTROLS_{i,t-1}" — ALL controls lagged 1Q.
+    # Fix 2026-05-29 per supervisor Cat2 audit: was contemporaneous
+    # ("immaterial variant"); now lagged like the other 5 controls.
+    con = _calendar_lag1(cons, ccol).rename(columns={ccol: "cons_fwd"})
+    df = df.merge(con, on=["gvkey", "cal_yr_qtr"], how="left")
 
     df["CASH"] = df.groupby("cal_yr_qtr", observed=True)["CASH"].transform(
         lambda s: s.clip(s.quantile(WINSOR), s.quantile(1 - WINSOR)))
@@ -212,14 +225,24 @@ def main() -> None:
         "model": "eq-14 PanelOLS; FULL sample-period panel + POST(2016Q3-Q4) "
                  "dummy; FIRM FE + INDUSTRY(FIC100)×QUARTER FE; SE "
                  "double-clustered firm×calendar-qtr; macro absorbed by "
-                 "IND×QTR FE; consensus = forward (A/B immaterial per Step-6)",
+                 "IND×QTR FE; ALL 6 controls lagged 1Q per eq(14) "
+                 "CONTROLS_{t-1} (consensus was contemporaneous — FIXED "
+                 "2026-05-29)",
+        "cash_dv_definition": "CASH = cheq_t / (atq_{t-1} − cheq_{t-1}) "
+            "(Campello Table 8 verbatim: 'total cash holdings divided by "
+            "lagged total assets net of cash holdings'). Fix 2026-05-29: "
+            "was T1 CASH (cheq/atq_l1); now T8 net-of-cash per supervisor "
+            "Cat2 audit. V1a/V1b (2026-05-28) verified this formula.",
+        "cash_dv_tex": r"$cheq_t/(atq_{t-1}−cheq_{t-1})$ (Campello Table~8 "
+            r"verbatim: 'total cash holdings divided by lagged total assets "
+            r"net of cash holdings')",
         "results": [{
             "tag": "FULL_PANEL",
             "delta_hat": b, "se": se, "t": t, "pvalue": p,
             "nobs": int(res.nobs), "n_firms": int(sub["gvkey"].nunique()),
             "rsquared_within": float(res.rsquared_within),
             "controls": cols, "coefficients": coefs,
-            "consensus_variant": "cons_fwd",
+            "consensus_variant": "cons_fwd_L (lagged 1Q per eq(14) CONTROLS_{t-1})",
         }],
         "step6_4qtr_ref": {"delta": -0.069, "n": 2482},
         "campello_reference": {"cash_delta": 0.231, "se": 0.059, "n": 17170,
