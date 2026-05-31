@@ -135,9 +135,16 @@ def _build_and_fit(treatment_df, label: str) -> dict:
         columns={"log_assets":"log_assets_l1"}), on=["gvkey","cal_yr_qtr"], how="left")
     firm_cols.append("log_assets_l1")
 
-    df = df.merge(_statsum_meanest_z(), on=["gvkey","cal_yr_qtr"], how="left")
-    df["CASH"] = df.groupby("cal_yr_qtr", observed=True)["CASH"].transform(
-        lambda s: s.clip(s.quantile(WINSOR), s.quantile(1-WINSOR)))
+    cons = _statsum_meanest_z()
+    df = df.merge(_calendar_lag1(cons, "cons_fwd"),
+                  on=["gvkey","cal_yr_qtr"], how="left")
+    # Winsorize 1% POOLED across all firm-quarters (Sina-ratified 2026-05-31).
+    # Was within-cal-quarter, which clipped the post-Brexit (2016Q3-Q4) treated
+    # cash spikes inside that quarter and FLIPPED the market arm sign negative
+    # (diagnostic tmp/_diag_winsor_did.py: within −0.013 → pooled +0.018). Paper
+    # is SILENT on the winsor dimension; pooled is the standard finance default.
+    df["CASH"] = df["CASH"].clip(df["CASH"].quantile(WINSOR),
+                                 df["CASH"].quantile(1 - WINSOR))
     df["POST_x_HIGH"] = (df["POST"]*df["HIGH_UK_EXPOSURE"]).astype(float)
     df["indqtr_code"] = ((df["fic100_industry_id"].astype("int64").astype(str)
                           +"_"+df["cal_yr_qtr"].astype(str)).astype("category").cat.codes)
