@@ -1,0 +1,12 @@
+import pandas as pd
+p = pd.read_parquet("outputs/campello_v2/20260526_202914/sample_panel.parquet")
+print(f"Total obs: {len(p):,}")
+print(f"cheq non-missing: {p['cheq'].notna().sum():,}")
+print(f"atq non-missing: {p['atq'].notna().sum():,}")
+print(f"Both non-missing: {(p['cheq'].notna() & p['atq'].notna()).sum():,}")
+print(f"atq>0: {(p['atq'] > 0).sum():,}")
+print(f"sic range: {p['sic'].min():.0f}–{p['sic'].max():.0f}")
+print(f"sic non-missing: {p['sic'].notna().sum():,}")
+print(f"mktcap non-missing: {p['mktcap'].notna().sum():,}")
+print(f"cal_yr_qtr range: {p['cal_yr_qtr'].min()}–{p['cal_yr_qtr'].max()}")
+print(f"Unique firms: {p['gvkey'].nunique():,}")

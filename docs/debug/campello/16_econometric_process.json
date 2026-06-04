@@ -1,0 +1,143 @@
+{
+  "source_document": {
+    "citation": "Campello, M.; Cortes, G. S.; d'Almeida, F.; Kankanhalli, G. (2022). 'Exporting Uncertainty: The Impact of Brexit on Corporate America.' Journal of Financial and Quantitative Analysis, Vol. 57, No. 8 (December 2022), pp. 3178-3222.",
+    "doi": "10.1017/S0022109022000308",
+    "verification_method": "Verbatim text extracted via pdftotext; Table 2 (page 3200) and Table 8 (page 3208) visually rendered at 200 DPI and inspected to confirm row labels and cell entries."
+  },
+
+  "user_prompt_corrections_upfront": [
+    {
+      "user_claim": "Table 8 column 1 has a row 'Macroeconomic: No.'",
+      "actual_situation": "Table 8 has NO 'Macroeconomic' row at all. Its 'Controls' section lists only 'Firm' (= Yes for all 6 columns). The Macroeconomic row appears in Table 2, where it is 'Yes' for the linear-continuous specifications (cols 1, 4) and 'No' for the tercile and 10-K specifications (cols 2, 3, 5, 6). For Table 8, the macro-controls status is not separately reported in the table; it must be inferred from equation (14) and the surrounding text.",
+      "implication": "Q3 of the prompt rests on a premise that is not in the table. The answer below addresses what the paper actually says, not the false premise."
+    }
+  ],
+
+  "Q1_estimation_equation": {
+    "location": {
+      "section": "IV.C.3 Empirical Model",
+      "journal_pages": "3196-3197",
+      "equation_number": "(14)"
+    },
+    "verbatim_paragraph_setting_up_equation_page_3196": "We compare differences in outcomes of interest between treated (HIGH_UK_EXPOSURE) and control (LOW_UK_EXPOSURE) firms. Differences over the 2016:Q3-Q4 period are taken relative to the same two quarters in the previous year (2015:Q3-Q4) in order to minimize the impact of seasonal effects. This is equivalent to estimating the following model:",
+    "equation_14_verbatim_as_printed": "Y_{i,t} = \u03b1 + \u03b4 [POST_t \u00d7 HIGH_UK_EXPOSURE_i] + \u03b8 CONTROLS_{i,t-1} + \u03a3_i FIRM_i + \u03a3_j \u03a3_t [INDUSTRY_j \u00d7 QUARTER_t] + \u03b5_{i,t}.    (14)",
+    "verbatim_explanation_of_terms_page_3196_to_3197": "The outcomes of interest, Y_{i,t}, are fixed capital investment, employment growth, R&D expenditures, divestitures, cash holdings, and NWC. HIGH_UK_EXPOSURE_i is a dummy variable that equals 1 if firm i is U.K.-exposed, and 0 otherwise. A firm is considered to be U.K.-exposed according to two measures: i) if it belongs to the top tercile of \u03b2_i^UK (market-based measure); or ii) if it has a high number of Brexit-related entries in its 2015 10-K form (textual-search-based measure). POST_t equals 1 if the time period is in the 2016:Q3-Q4 window.",
+    "verbatim_controls_paragraph_page_3197": "CONTROLS_{i,t-1} is a vector of macroeconomic and firm-level control variables. Macro controls include the lagged U.S. dollar/British pound FX rate, the lagged VIX implied volatility index, the lagged mean GDP growth 1-year-ahead forecast from the Federal Reserve Bank of Philadelphia's Livingstone Survey, the lagged Consumer Sentiment Index from the University of Michigan, and the lagged Leading Economic Indicator from the Federal Reserve Bank of Philadelphia. Firm-level controls include lagged stock returns, Tobin's Q, cash flow, logged assets, and sales growth. As an additional control for first-moment effects of Brexit, we add 1-quarter-ahead consensus earnings forecasts to our model. FIRM_i represents firm-fixed effects, INDUSTRY_j is a dummy for each industry category j of the Hoberg and Phillips (2016) classification (FIC 100), and QUARTER_t are calendar-quarter dummies. Standard errors are double-clustered by firm and calendar quarters.",
+    "interpretation_notes": {
+      "lag_structure": "The CONTROLS vector is indexed t-1, i.e. one-period lagged. Every variable the paper lists is explicitly described as 'lagged': lagged FX, lagged VIX, lagged GDP forecast, lagged Consumer Sentiment, lagged Leading Economic Indicator, lagged stock returns, and (by inheritance of the t-1 subscript) Tobin's Q, cash flow, logged assets, sales growth.",
+      "explicit_exception_to_lagging": "The 1-quarter-AHEAD consensus earnings forecast is added as an additional control and is forward-looking, not lagged. Verbatim: 'As an additional control for first-moment effects of Brexit, we add 1-quarter-ahead consensus earnings forecasts to our model.'",
+      "dependent_variable_timing": "Y_{i,t} is contemporaneous (subscript t, not t-1). The paper does not lag the dependent variable.",
+      "normalization_note_from_Table_1_notes_page_3198": "Firm-level accounting variables are normalized by lagged total assets."
+    }
+  },
+
+  "Q2_fixed_effects": {
+    "are_both_FE_present_together_in_Table_8_col_1": "YES. Table 8 (page 3208) lists under 'Fixed effects': Firm = Yes, Industry \u00d7 time = Yes, for every column 1-6 including column 1 (CASH, market-based tercile).",
+    "implementation_interaction_vs_additive": {
+      "answer": "Interacted (Industry_j \u00d7 Quarter_t), not additive.",
+      "verbatim_evidence_1_from_equation_14": "\u03a3_j \u03a3_t [INDUSTRY_j \u00d7 QUARTER_t]    -- the multiplication sign inside brackets indicates an interaction, and the double summation over (j,t) gives one dummy per industry-quarter cell.",
+      "verbatim_evidence_2_page_3199_results_section": "We move to our baseline specification in column 2, which considers the nonnegative range of \u03b2_i^UK partitioned in terciles. The model includes time-varying industry-fixed effects by way of interacting Hoberg and Phillips (2016) industries (FIC 100) and calendar-quarter dummy variables."
+    },
+    "industry_classification": {
+      "answer": "Hoberg and Phillips (2016), FIC 100.",
+      "verbatim_quote_page_3197": "INDUSTRY_j is a dummy for each industry category j of the Hoberg and Phillips (2016) classification (FIC 100)",
+      "verbatim_quote_page_3199": "interacting Hoberg and Phillips (2016) industries (FIC 100) and calendar-quarter dummy variables",
+      "verbatim_footnote_21_page_3197": "These industries are formed by grouping firms with textually similar product descriptions in their 10-Ks. Hoberg and Phillips (2016) show that the resulting industry classification is more granular and captures the locus of product-market competitors of a given firm better than the standard SIC or NAICS industry schemes."
+    }
+  },
+
+  "Q3_macroeconomic_controls_in_Table_8": {
+    "premise_in_prompt": "INCORRECT. Table 8 does not have a 'Macroeconomic: No' row. The Macroeconomic row exists in Table 2 (page 3200), not Table 8.",
+    "what_Table_2_actually_shows_visually_verified": {
+      "controls_rows": "Firm; Macroeconomic",
+      "fixed_effects_rows": "Firm; Industry \u00d7 time",
+      "Macroeconomic_pattern": "Yes in cols 1 and 4 (linear continuous \u03b2_i^UK), No in cols 2, 3, 5, 6 (tercile and 10-K specifications).",
+      "Industry_x_time_pattern": "No in cols 1 and 4 (linear continuous), Yes in cols 2, 3, 5, 6.",
+      "implication": "When Industry \u00d7 time is included, the Macroeconomic row is set to 'No.' When Industry \u00d7 time is excluded (linear specification only), the Macroeconomic row is set to 'Yes.' The two are mutually exclusive in Table 2."
+    },
+    "Table_8_visual_inspection_finding": "Table 8 (page 3208) does NOT print a 'Macroeconomic' row at all. The 'Controls' section contains only 'Firm.' Since 'Industry \u00d7 time' is set to 'Yes' in all 6 Table 8 columns, the implied (but not stated) reason macro controls are omitted is collinearity with time fixed effects nested inside Industry \u00d7 Quarter interactions.",
+    "explicit_explanation_in_paper_text": "The paper does NOT explicitly explain anywhere why macro controls drop when Industry \u00d7 time FE is included. This is an econometric implication (macro variables vary only by t and are therefore absorbed by any set of fixed effects that includes Quarter-level variation), but it is left implicit. No verbatim sentence states 'we omit macro controls because they are absorbed by time FE.'",
+    "are_macro_controls_ever_included_with_Industry_x_time_FE": {
+      "answer_based_on_published_tables": "Across all tables that report both rows (Table 2 explicitly, and by reference for tables that use equation (14)), the answer is no \u2014 Macro = Yes only when Industry \u00d7 time = No, and vice versa. They never co-occur in the published columns.",
+      "caveat": "The paper does not make a general statement that they are 'always mutually exclusive.' This is observed from table rows only."
+    }
+  },
+
+  "Q4_clustering": {
+    "dimensions": "Two-way: (i) firm, (ii) calendar quarter.",
+    "stated_in_both_main_text_and_table_notes": true,
+    "verbatim_main_text_page_3197": "Standard errors are double-clustered by firm and calendar quarters.",
+    "verbatim_Table_8_notes_page_3208": "T-statistics are computed using robust standard errors (in parentheses) double-clustered at the firm and calendar quarter levels.",
+    "verbatim_Table_2_notes_page_3199_for_comparison": "T-statistics are computed using robust standard errors (in parentheses) double-clustered at the firm and calendar quarter levels.",
+    "note": "The wording 'firm and calendar quarter' is used consistently throughout: Tables 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 all use identical clustering language."
+  },
+
+  "Q5_DiD_time_window": {
+    "comparison_window_stated_where": "In both the main text and every table's notes.",
+    "verbatim_main_text_page_3196": "Differences over the 2016:Q3-Q4 period are taken relative to the same two quarters in the previous year (2015:Q3-Q4) in order to minimize the impact of seasonal effects.",
+    "verbatim_main_text_page_3196_on_POST_definition": "POST_t equals 1 if the time period is in the 2016:Q3-Q4 window.",
+    "verbatim_Table_8_notes_page_3208": "The time dimension of the DID estimator is set so as to compare the two quarters following the announcement of the referendum and Brexit's victory (2016:Q3-Q4) versus the two quarters preceding the announcement (2015:Q3-Q4).",
+    "are_additional_quarters_included": {
+      "direct_answer": "The paper does not explicitly state whether the regression sample is restricted to the 4 quarters (2015:Q3, 2015:Q4, 2016:Q3, 2016:Q4) or spans the broader panel (2010:Q1-2016:Q4) with POST=1 only on the last two quarters.",
+      "indirect_evidence_for_broader_panel": "Table 8 column 1 reports N=17,170 firm-quarter observations. With the tercile-based treatment scheme yielding 449+360=809 unique firms, a 4-quarter restriction would cap at ~3,236 observations. The 17,170 figure is consistent with a panel spanning ~21 quarters of usable data per firm, i.e. close to the full 2010:Q1-2016:Q4 estimation window with attrition. The DID identification then comes from POST being 1 only on 2016:Q3-Q4, while the firm and Industry\u00d7Quarter FE absorb level differences across firms and across industry-quarter cells.",
+      "verbatim_quote_supporting_broad_sample_window_page_3192": "We use COMPUSTAT Quarterly to gather basic information on firm investment and financial data. We consider U.S. companies from the first calendar quarter of 2010 to the fourth quarter of 2016.",
+      "verbatim_quote_supporting_end_of_window_page_3196": "We limit our analysis to the end of 2016 due to the start of the Trump administration in Jan. 2017. We show in later robustness checks that results also hold for a window that excludes Trump's election."
+    },
+    "why_these_quarters": {
+      "verbatim_quote_page_3196_seasonal_reason": "Differences over the 2016:Q3-Q4 period are taken relative to the same two quarters in the previous year (2015:Q3-Q4) in order to minimize the impact of seasonal effects.",
+      "verbatim_quote_page_3195_3196_on_window_length": "In our empirical tests, we compare two quarters before versus two quarters after the two key Brexit events we have just identified (Feb. 22 and June 23, 2016). We focus on a relatively short window around the Brexit vote as Bloom (2009) highlights the sharp yet short-lived nature of the economic effects triggered by uncertainty.",
+      "verbatim_quote_page_3196_on_2016_endpoint": "We limit our analysis to the end of 2016 due to the start of the Trump administration in Jan. 2017."
+    }
+  },
+
+  "Q6_estimator": {
+    "is_estimator_explicitly_named": "No. The paper never writes 'OLS' or 'within estimator' or 'PanelOLS' or any specific estimator name in the main text describing the DID model.",
+    "what_paper_does_state": [
+      "Equation (14) is presented as a linear regression with two-way (Firm; Industry\u00d7Quarter) fixed effects.",
+      "Standard errors are 'robust' and 'double-clustered by firm and calendar quarters.'",
+      "T-statistics are reported in parentheses.",
+      "R^2 is reported in every table."
+    ],
+    "implied_estimator": "Linear regression with the listed dummies (or, equivalently, within-transformation absorbing FIRM and INDUSTRY\u00d7QUARTER). The R^2 values reported (e.g. 0.21 for Table 8 col 1) are consistent with OLS-style R^2 on the demeaned or LSDV specification, but the paper does not state which.",
+    "what_paper_does_not_discuss": [
+      "No mention of within-transformation versus LSDV.",
+      "No mention of degrees-of-freedom adjustments for the FE.",
+      "No mention of weighted vs. unweighted estimation.",
+      "No mention of software (e.g. Stata reghdfe, PanelOLS, etc.)."
+    ]
+  },
+
+  "Q7_sample_for_Table_8": {
+    "Table_8_column_1_observation_count": "17,170 firm-quarter observations (visually confirmed from Table 8 page 3208).",
+    "relationship_to_Supplementary_Table_C_1_count_of_41_630": "Table C.1 reports 41,630 firm-quarters as the final baseline sample BEFORE treatment selection. Table 8 col 1 (17,170) is smaller because it restricts to the top + bottom terciles of the nonnegative \u03b2_i^UK distribution (449 + 360 = 809 unique firms) and to firm-quarters where CASH and all controls are observed.",
+    "is_this_explicit_in_Table_8_notes": "No. Table 8 notes do not cite 41,630 or N=17,170 explicitly. The notes only describe (i) the dependent variables, (ii) the treatment scheme, and (iii) the DiD time dimension.",
+    "verbatim_Table_8_notes_full_page_3208": "Table 8 reports output from equation (14). The dependent variables are CASH, NON_CASH_WORKING_CAPITAL, and PROFITS. CASH is defined as total cash holdings divided by lagged total assets net of cash holdings. NON_CASH_WORKING_CAPITAL (NWC) is defined as working capital (net of cash) divided by lagged total assets. PROFITS is defined as the quarterly percentage change in profits (operating income before depreciation divided by sales). In the first specification, the treatment group is composed by the top tercile of \u03b2_i^UK, whereas the control group is composed by firms in the bottom tercile of \u03b2_i^UK. The second specification is a textual-search-based measure of U.K. exposure that sums up the number of Brexit-related words in firms' 2015 10-K forms. The treatment group is made of firms with more than five entries, whereas the control group are firms with zero entries. The time dimension of the DID estimator is set so as to compare the two quarters following the announcement of the referendum and Brexit's victory (2016:Q3-Q4) versus the two quarters preceding the announcement (2015:Q3-Q4). T-statistics are computed using robust standard errors (in parentheses) double-clustered at the firm and calendar quarter levels. *, **, and *** indicate statistical significance at the 10%, 5%, and 1% levels, respectively.",
+    "does_the_DiD_sample_include_all_quarters_or_just_4_quarters": "Not explicitly stated in Table 8 notes or main text. See Q5 above for the indirect evidence pointing to the broader 2010:Q1-2016:Q4 panel as the regression sample, with POST identifying the 2016:Q3-Q4 quarters."
+  },
+
+  "Q8_treatment_variant_in_Table_8_col_1": {
+    "is_column_1_market_based": "Yes \u2014 market-based \u03b2_i^UK, not the textual measure.",
+    "exact_column_header_visually_confirmed": "Under the section header 'CASH', column 1 is labeled 'Treatment is Top Tercile of \u03b2_i^UK' (column 2 is 'Treatment is > 5 Brexit Entries in 10-Ks').",
+    "row_label_for_coefficient": "POST \u00d7 HIGH_\u03b2_i^UK (for col 1); POST \u00d7 HIGH_10-K_ENTRIES (for col 2).",
+    "reported_estimate_col_1": "POST \u00d7 HIGH_\u03b2_i^UK = 0.231*** (standard error 0.059).",
+    "verbatim_Table_8_notes_excerpt_on_col_1_treatment": "In the first specification, the treatment group is composed by the top tercile of \u03b2_i^UK, whereas the control group is composed by firms in the bottom tercile of \u03b2_i^UK.",
+    "alignment_with_Section_IV_C_1_definitions_page_3193": "Top tercile of \u03b2_i^UK means \u03b2_i^UK > 0.68 (449 unique firms). Bottom tercile of the nonnegative range means \u03b2_i^UK < 0.28 (360 unique firms). Firms with \u03b2_i^UK < 0 are excluded from this column."
+  },
+
+  "summary_table_for_Table_8_col_1_specification": {
+    "dependent_variable": "CASH = total cash holdings / lagged total assets net of cash holdings",
+    "treatment_indicator": "HIGH_\u03b2_i^UK = 1 if firm in top tercile of nonnegative \u03b2_i^UK distribution (\u03b2_i^UK > 0.68); 0 if in bottom tercile (\u03b2_i^UK < 0.28); firms with \u03b2_i^UK < 0 or in middle tercile dropped",
+    "post_indicator": "POST_t = 1 if quarter is 2016:Q3 or 2016:Q4",
+    "interaction_of_interest": "POST_t \u00d7 HIGH_\u03b2_i^UK, coefficient \u03b4 = 0.231 (SE 0.059)",
+    "firm_controls_one_period_lagged": ["lagged stock returns", "Tobin's Q (lagged)", "cash flow (lagged)", "logged assets (lagged)", "sales growth (lagged)"],
+    "additional_forward_looking_control": "1-quarter-ahead consensus earnings forecast",
+    "macroeconomic_controls": "Not included in Table 8 (Industry\u00d7Quarter FE absorbs time-varying macro variation; the paper does not explicitly state this rationale)",
+    "fixed_effects": ["Firm fixed effects (FIRM_i)", "Industry \u00d7 Quarter interacted dummies (Hoberg-Phillips FIC 100 \u00d7 calendar quarter)"],
+    "standard_errors": "Robust, two-way clustered by firm and by calendar quarter",
+    "estimator": "Linear regression with the above fixed effects; specific estimator name not stated by authors",
+    "sample_window_for_regression": "Spans 2010:Q1-2016:Q4 panel (paper does not state explicit restriction to 4 quarters; obs count of 17,170 is inconsistent with a 4-quarter window)",
+    "sample_size": "17,170 firm-quarter observations",
+    "R_squared": 0.21,
+    "treatment_definition_source": "Section IV.C.1 (page 3193); Table 8 notes (page 3208)"
+  }
+}

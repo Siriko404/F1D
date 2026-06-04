@@ -1,0 +1,59 @@
+{
+  "paper": {
+    "authors": "Campello, Murillo; Cortes, Gustavo S.; d'Almeida, Fabrício; Kankanhalli, Gaurav",
+    "title": "Exporting Uncertainty: The Impact of Brexit on Corporate America",
+    "year": "2022",
+    "journal": "Journal of Financial and Quantitative Analysis",
+    "table": "Table 8",
+    "column": "1",
+    "equation": "(14)",
+    "page_spec_defined": "pp. 3196 (equation 14 defined), 3208 (Table 8)"
+  },
+  "choice_rationale": "Table 8 is the only table in the paper or supplementary appendix reporting a DiD specification with CASH as the dependent variable. Column 1 is chosen as the primary/baseline because it uses the market-based β^UK_i exposure measure (top vs. bottom tercile), which the paper designates as its baseline treatment-assignment scheme throughout (Section IV.C.1, p. 3193); column 2 uses the alternative textual-search-based measure and is presented as a secondary specification.",
+  "specification_description": "Difference-in-differences estimate of the effect of the 2016 Brexit referendum vote on cash holdings of U.K.-exposed U.S. firms (top tercile of β^UK_i) versus non-exposed firms (bottom tercile of β^UK_i), comparing 2016:Q3–Q4 to 2015:Q3–Q4.",
+  "variables": {
+    "dependent_variable": [
+      "CASH"
+    ],
+    "treatment_variable": [
+      "POST × HIGH_β^UK_i"
+    ],
+    "control_variables": [
+      "STOCK_RETURNS",
+      "TOBIN_Q",
+      "CASH_FLOW",
+      "SIZE",
+      "SALES_GROWTH",
+      "CONSENSUS_EARNINGS_FORECAST"
+    ],
+    "fixed_effects": [
+      "Firm",
+      "Industry × Time"
+    ],
+    "clustering": [
+      "firm",
+      "calendar quarter"
+    ],
+    "panel_id_variables": [
+      "i",
+      "t"
+    ],
+    "sample_filters": [
+      "Raw COMPUSTAT between 2010:Q1 and 2016:Q4",
+      "Drop non-US firm–quarters (retain data reported in USD, with US headquarters, duplicates excluded)",
+      "Drop firm–quarters with negative fundamentals (ASSETS and SALES)",
+      "Drop financials and utilities",
+      "Drop if ASSETS or MARKET_CAPITALIZATION less than $10 million",
+      "Drop if missing key variables (INVESTMENT, ASSETS, CASH_FLOW, TOBIN_Q, SALES_GROWTH)",
+      "Drop if non-consecutive quarters, or less than 12 quarters of non-missing data",
+      "Drop if missing Hoberg and Phillips (2016) industry classification",
+      "Drop if missing β^UK_i",
+      "Drop if missing CRSP and I/B/E/S controls",
+      "Treatment group: top tercile of β^UK_i",
+      "Control group: bottom tercile of β^UK_i",
+      "Non-negative range of β^UK_i",
+      "2016:Q3–Q4 vs. 2015:Q3–Q4",
+      "All variables winsorized at the 1% level"
+    ]
+  }
+}

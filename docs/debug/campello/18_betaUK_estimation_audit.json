@@ -1,0 +1,165 @@
+{
+  "extraction_metadata": {
+    "paper": "Campello, M.; Cortes, G. S.; d'Almeida, F.; Kankanhalli, G. \"Exporting Uncertainty: The Impact of Brexit on Corporate America.\" Journal of Financial and Quantitative Analysis, Vol. 57, No. 8 (Dec. 2022), pp. 3178-3222.",
+    "doi_main": "10.1017/S0022109022000308",
+    "doi_corrigendum": "10.1017/S0022109022001259",
+    "license": "Open Access, Creative Commons Attribution (CC BY 4.0); unrestricted reproduction permitted with citation.",
+    "sources_read": ["Main article (pp. 3178-3222)", "Internet Appendix / Supplementary Material (Appendices A-E)", "Corrigendum (p. 3313)"],
+    "extraction_rule": "Verbatim only. Every 'not found' below means the item is absent from the provided text of the main article AND the Internet Appendix AND the corrigendum. No speculation; no gap-filling. Math notation rendered in plain text (beta^UK_i, sigma_epsilon, etc.).",
+    "scope_note": "Focused on what could change which firms enter the beta^UK_i estimation or how beta is computed. Absences are reported as findings because the request asked for them explicitly."
+  },
+
+  "item_1_CRSP_data_filters": {
+    "question": "Filters applied to CRSP data: share codes (common stock only), exchange restrictions, minimum price filters.",
+    "share_code_filter": "Not found in the paper or appendix. No mention of CRSP share codes (e.g., SHRCD 10/11, 'common stock only').",
+    "exchange_restriction": "Not found in the paper or appendix. No mention of exchange codes or NYSE/AMEX/NASDAQ listing restrictions (e.g., EXCHCD).",
+    "minimum_price_filter": "Not found in the paper or appendix. No minimum stock-price / penny-stock filter is stated.",
+    "only_related_restrictions_found_verbatim": [
+      {"location": "Main article, Section IV.B, p. 3192", "text": "We drop utility and financial firms, as well as companies whose market value or book assets are lower than $10 million."},
+      {"location": "Supplementary Material, Table C.1 (filter row 5)", "text": "Drop if ASSETS or MARKET_CAPITALIZATION less than $10 million"},
+      {"location": "Supplementary Material, Table C.1 (filter row 2)", "text": "Drop non-US firm\u2013quarters (retain data reported in USD, with US headquarters, duplicates excluded)"},
+      {"location": "Supplementary Material, Table C.1 (filter row 10)", "text": "Drop if missing CRSP and I/B/E/S controls"}
+    ],
+    "note": "The only size-related restriction is the $10M market-value/book-assets cutoff (above). It is described as part of the COMPUSTAT baseline-sample construction, not as a CRSP-side filter applied during beta estimation. No CRSP share-code, exchange, price, or volume filter is documented anywhere."
+  },
+
+  "item_2_equation_12": {
+    "question": "Exact text of equation (12); what it says about the vol() operator.",
+    "location": "Main article, Section IV.A.1, p. 3191 (equation 11 on p. 3190)",
+    "equation_11_verbatim": "var(v_it) = beta_i^2 * var(V_t) + sigma_epsilon^2",
+    "equation_11_label": "(11)",
+    "sentence_introducing_eq_12_verbatim": "We can employ a regression-like approach to operationalize an empirical counterpart to beta_i. Specifically, taking square roots of both sides of equation (11), we obtain",
+    "equation_12_verbatim": "vol(v_it) \u2248 beta_i * vol(V_t) + sigma_epsilon \u2212 sqrt( 2 * beta_i * vol(V_t) * sigma_epsilon )",
+    "equation_12_label": "(12)",
+    "what_eq_12_says_about_vol_operator": "Equation (12) is obtained by taking square roots of both sides of the variance identity in equation (11). The vol() operator is therefore volatility = the square root of variance (standard deviation). The paper does NOT, in equation (12) or its surrounding text, specify the data frequency, window length, or computational method used to form each volatility observation (e.g., realized volatility from daily returns within a month vs. any other construction). That construction detail is not found in the paper or appendix.",
+    "immediately_following_text_verbatim": "Following Bloom (2014), we use stock market volatility as a gauge of aggregate uncertainty and estimate equation (12) for each firm i as [equation (13)]."
+  },
+
+  "item_3_betaUK_distribution_summary_stats": {
+    "question": "Tables or figures reporting summary statistics for the beta^UK_i distribution (mean, median, SD, percentiles, histogram).",
+    "finding": "Not found in the paper or appendix. There is no table of moments and no histogram for the beta^UK_i distribution. Table 1 reports summary statistics for outcome and control variables but does NOT include beta^UK_i. The only histogram in the Internet Appendix (Figure E.1) is for the AUTOMATION_i variable, not beta.",
+    "only_distributional_numbers_reported_verbatim": [
+      {"location": "Main article, Section IV.C.1, p. 3193", "text": "a total of 449 unique firms are assigned to the treated category (beta^UK_i > 0.68). In contrast, 360 unique firms are assigned to the control category (beta^UK_i < 0.28)."},
+      {"location": "Main article, footnote 13, p. 3191", "text": "The estimates for beta^UK_i and beta^UK_i,CF have a rank correlation of 0.8, and there is an 86% overlap in the set of firms at the top tercile of both beta^UK_i and beta^UK_i,CF."}
+    ],
+    "note": "The values 0.68 and 0.28 are the only reported points of the beta^UK_i distribution. They are described as the upper- and bottom-tercile cutpoints of the NONNEGATIVE range of the distribution (see item_5 and item_9). No mean, median, SD, or full percentile set is reported."
+  },
+
+  "item_4_appendix_additional_betaUK_detail": {
+    "question": "Does the supplementary appendix contain additional detail about variable construction, specifically for beta^UK_i or the volatility measures?",
+    "finding": "Not found in the paper or appendix. The Internet Appendix contains: Appendix A (Model Analysis and Results), Appendix B (Proofs), Appendix C (Additional Results and Robustness Tests; Figure C.1 and Tables C.1-C.7), Appendix D (Timeline of Brexit Key Events), and Appendix E (Measures of Exposure to Automation). NONE of these provides additional construction detail for beta^UK_i, vol(r_it), vol(FTSE100), vol(SP500), or vol(FX$\u00a3). The only variable-construction appendix is Appendix E, which pertains exclusively to the AUTOMATION measure (reproduced verbatim in 'internet_appendix_variable_construction_section_verbatim' below)."
+  },
+
+  "item_5_betaestimation_step_restrictions": {
+    "question": "Sample restriction during the beta estimation step itself (before merging with Compustat): min market cap, min stock price, min trading volume, exchange listing.",
+    "min_market_cap_during_beta_step": "Not found in the paper or appendix as a beta-estimation-step restriction. (A $10M market-value/book-assets cutoff exists, but is described as a COMPUSTAT baseline-sample filter; see item_1.)",
+    "min_stock_price": "Not found in the paper or appendix.",
+    "min_trading_volume": "Not found in the paper or appendix.",
+    "exchange_listing_requirement": "Not found in the paper or appendix.",
+    "minimum_monthly_observations_per_firm": "Not found in the paper or appendix. The paper does not state any minimum number of monthly observations required for a firm to receive a beta^UK_i estimate. The only window statement is the estimation period (below).",
+    "estimation_window_verbatim": {"location": "Main article, Section IV.B, p. 3192", "text": "We use monthly data from 2010:M1 to 2014:M12 so that exposure to the United Kingdom is measured before any major Brexit-related events."},
+    "filter_sequence_observation_from_Table_C1": {
+      "note_this_is_extraction_not_speculation": "Table C.1 lists the baseline-sample filters in a fixed sequence. The 'Drop if missing beta^UK_i' step appears as step 9 of 10, AFTER the size filter, the variable-availability filter, and the panel-length filter, and BEFORE only the 'Drop if missing CRSP and I/B/E/S controls' step. The literal ordering is reproduced below verbatim. The paper does not state whether beta was estimated only for firms surviving the prior filters or estimated on a broader universe and then merged; only the table ordering is given.",
+      "ordered_filters_verbatim": [
+        {"step": 1, "filter": "Raw COMPUSTAT between 2010:Q1 and 2016:Q4", "firm_quarters": 262412},
+        {"step": 2, "filter": "Drop non-US firm\u2013quarters (retain data reported in USD, with US headquarters, duplicates excluded)", "firm_quarters": 160254},
+        {"step": 3, "filter": "Drop firm\u2013quarters with negative fundamentals (ASSETS and SALES)", "firm_quarters": 158312},
+        {"step": 4, "filter": "Drop financials and utilities", "firm_quarters": 112939},
+        {"step": 5, "filter": "Drop if ASSETS or MARKET_CAPITALIZATION less than $10 million", "firm_quarters": 93011},
+        {"step": 6, "filter": "Drop if missing key variables (INVESTMENT, ASSETS, CASH_FLOW, TOBIN_Q, SALES_GROWTH)", "firm_quarters": 75013},
+        {"step": 7, "filter": "Drop if non-consecutive quarters, or less than 12 quarters of non-missing data", "firm_quarters": 56081},
+        {"step": 8, "filter": "Drop if missing Hoberg and Phillips (2016) industry classification", "firm_quarters": 49107},
+        {"step": 9, "filter": "Drop if missing beta^UK_i", "firm_quarters": 43025},
+        {"step": 10, "filter": "Drop if missing CRSP and I/B/E/S controls", "firm_quarters": 41630}
+      ]
+    }
+  },
+
+  "item_6_CRSP_compustat_merge": {
+    "question": "How the paper describes the CRSP/Compustat merge: link types, link primacy, date ranges.",
+    "finding": "Not found in the paper or appendix. There is no description of link types (e.g., LC/LU), link primacy (e.g., P/C), GVKEY-PERMNO linking tables, or LINKDT/LINKENDDT date ranges. No CRSP/Compustat Merged (CCM) methodology is specified.",
+    "closest_related_statements_verbatim": [
+      {"location": "Main article, Table 1 notes, p. 3198", "text": "The final sample is a match between COMPUSTAT Quarterly North America Fundamentals and the estimated beta^UK_i sample for the period from 2010:Q1 to 2015:Q4."},
+      {"location": "Supplementary Material, Table C.1 (filter row 10)", "text": "Drop if missing CRSP and I/B/E/S controls"},
+      {"location": "Main article, Section IV.B, p. 3192", "text": "We use CRSP stock price data and Bloomberg equity index and currency data to compute our theoretical framework-based measure of firm exposure to the United Kingdom (see equation (13))."}
+    ],
+    "note": "The only explicit entity-matching method described anywhere in the paper is the YTS match for employment data ('We match our sample firms ... to YTS primarily using tickers, and augment this match through manual searches by firm name', p. 3192) \u2014 which is unrelated to the CRSP/Compustat merge."
+  },
+
+  "item_7_section_IVA1_verbatim": {
+    "question": "Exact wording of every sentence in Section IV.A.1 (Theoretical Framework-Based Measure of Uncertainty).",
+    "location": "Main article, pp. 3190-3191",
+    "section_header_verbatim": "1. Theoretical Framework-Based Measure of Uncertainty",
+    "full_text_verbatim": "In the context of our study, the increase in aggregate uncertainty, V_t, comes from the rise in uncertainty associated with the Brexit vote. Accordingly, we take variances on both sides of equation (1) (alternatively, equation (2)) to capture the notion of uncertainty in the MPS framework: [equation (11): var(v_it) = beta_i^2 * var(V_t) + sigma_epsilon^2]. We can employ a regression-like approach to operationalize an empirical counterpart to beta_i. Specifically, taking square roots of both sides of equation (11), we obtain [equation (12): vol(v_it) \u2248 beta_i * vol(V_t) + sigma_epsilon \u2212 sqrt(2 * beta_i * vol(V_t) * sigma_epsilon)]. Following Bloom (2014), we use stock market volatility as a gauge of aggregate uncertainty and estimate equation (12) for each firm i as [equation (13): vol(r_it) = alpha_i + beta^UK_i * vol(FTSE100_t) + theta * CONTROLS_t + epsilon_it]. Equation (13) uses the volatility of equity returns, vol(r_it), as a proxy for firm income volatility, vol(v_it). It also uses the volatility of the FTSE100 Index as a proxy for uncertainty in the U.K. (the relevant source of aggregate uncertainty in our setting). We include control variables, CONTROLS_t, consisting of vol(SP500) and vol(FX$\u00a3) into equation (13) to absorb effects arising through firms' exposure to the domestic U.S. market and exchange rate fluctuations between the U.S. dollar and the British pound. For each firm, we take the estimated value of beta^UK_i from regression (13) as the empirical counterpart to beta_i in our framework.",
+    "equations_in_section_verbatim": {
+      "(11)": "var(v_it) = beta_i^2 * var(V_t) + sigma_epsilon^2",
+      "(12)": "vol(v_it) \u2248 beta_i * vol(V_t) + sigma_epsilon \u2212 sqrt( 2 * beta_i * vol(V_t) * sigma_epsilon )",
+      "(13)": "vol(r_it) = alpha_i + beta^UK_i * vol(FTSE100_t) + theta * CONTROLS_t + epsilon_it"
+    },
+    "footnotes_attached_to_IVA1": [
+      {"number": 12, "anchor": "...estimate equation (12) for each firm i as", "text_verbatim": "Bloom (2014) shows that stock market volatility exhibits a high degree of commonality with other observed proxies for uncertainty including those derived from bond markets, exchange rates, and GDP forecasts."},
+      {"number": 13, "anchor": "...as the empirical counterpart to beta_i in our framework.", "text_verbatim": "The last term in equation (12) is subsumed by the idiosyncratic volatility term, epsilon_it, in equation (13). We note that the volatility of equity returns may be an imperfect proxy for the volatility of firm income as returns are driven by news on both cash flows and discount rates (Campbell and Shiller (1988)). Following Vuolteenaho (2002), we also decompose the volatility of each firm's returns into cash flow and discount rate components and reestimate equation (13) with the cash flow component (only) as the dependent variable, obtaining an alternative uncertainty measure, beta^UK_i,CF. The estimates for beta^UK_i and beta^UK_i,CF have a rank correlation of 0.8, and there is an 86% overlap in the set of firms at the top tercile of both beta^UK_i and beta^UK_i,CF. As shown in Table C6, our inferences are unchanged whether using beta^UK_i or beta^UK_i,CF to conduct our tests."}
+    ],
+    "note": "Section IV.A.1 does not specify: (a) the frequency of returns used to compute monthly volatility, (b) the method of computing each vol() observation, (c) any minimum-observation requirement, or (d) any CRSP universe filter. The data sources for the right-hand-side volatility inputs are given in Section IV.B as 'CRSP stock price data and Bloomberg equity index and currency data' (see item_additional_B context)."
+  },
+
+  "item_8_internet_appendix_variable_definitions": {
+    "question": "Does the Internet Appendix contain a Variable Definitions appendix or Data Appendix defining the input variables for equation (13)?",
+    "finding": "Not found in the paper or appendix. There is no 'Variable Definitions' appendix or 'Data Appendix' that defines vol(r_it), vol(FTSE100), vol(SP500), or vol(FX$\u00a3), nor one that defines beta^UK_i construction. The only variable-construction appendix present is Appendix E, which defines the AUTOMATION measure only (reproduced verbatim below)."
+  },
+
+  "item_9_total_betaestimation_sample_size": {
+    "question": "Does the paper state the total number of firms for which beta^UK_i was estimated, before tercile assignment?",
+    "finding": "Not found in the paper or appendix. The paper does not report a standalone count of firms (or a count of the full CRSP estimation universe) for which beta^UK_i was estimated prior to tercile assignment.",
+    "only_related_counts_reported_verbatim": [
+      {"location": "Supplementary Material, Table C.1 (filter row 9)", "text": "Drop if missing beta^UK_i", "value": "43,025 firm-quarters remaining at this step (a firm-quarter count within the already-filtered COMPUSTAT baseline sample, NOT a count of firms in the beta estimation universe)."},
+      {"location": "Main article, Section IV.C.1, p. 3193", "text": "a total of 449 unique firms are assigned to the treated category (beta^UK_i > 0.68). In contrast, 360 unique firms are assigned to the control category (beta^UK_i < 0.28)."}
+    ],
+    "tercile_definition_verbatim": {"location": "Main article, Section IV.C.1, p. 3193", "text": "Following our framework, in our base analysis, we characterize firms as treated (control) units if they are in the upper (bottom) tercile of the nonnegative range of the beta^UK_i distribution. For group contrasting, we do not include firms that benefit from uncertainty in the United Kingdom in the control group (firms with beta^UK_i < 0) as this could lead to overestimation biases attached to the treatment effects we seek to identify. Nevertheless, in specifications where we use beta^UK_i as a continuous treatment variable, we relax this restriction and include all values of beta^UK_i."},
+    "note": "The terciles are defined over the NONNEGATIVE range of beta^UK_i, and firms with beta^UK_i < 0 are excluded from the control group. The cutpoints (0.68 upper, 0.28 lower) are reported, but the number of firms in the nonnegative range (the denominator of the tercile split) is not stated."
+  },
+
+  "internet_appendix_variable_construction_section_verbatim": {
+    "note": "This is the ONLY variable-construction section in the Internet Appendix. It pertains to the AUTOMATION_i variable, NOT to beta^UK_i or the volatility measures. Reproduced in full per request ('the complete verbatim text of the Internet Appendix section on variable construction, if one exists').",
+    "location": "Supplementary Material, Appendix E.1 'Details on Automation Exposure Measures', p. 15 of appendix",
+    "text_verbatim": "For more details on the geographic measure of exposure to automation for all commuting zones in the continental US, we refer the reader to Acemoglu and Restrepo (2020) and Leigh and Kraft (2018). In this appendix, we describe in more detail the procedure to construct our text-based measure of automation exposure at the firm level. We draw inspiration from an extensive literature in corporate finance that uses textual analysis (e.g., Loughran and McDonald (2011)) and define a dictionary of keywords that capture automation at the firm level. We first gather the syllabuses of many courses on \"Industrial Automation and Integration\" taught at top Engineering schools in North America (MIT, CalTech, University of Toronto, among others). Reading each syllabus, we identify the most frequently adopted textbook. This analysis points to Benhabib's (2003) \"Manufacturing: Design, Production, Automation, and Integration\" as one of the most commonly required textbooks in these universities. With the textbook in hand, we parse its full textual content and use a standard keyword ranking algorithm (\"TextRank\", see Mihalcea and Tarau (2004)) to order the most distinctive keywords reflecting automation. Following the usual procedures in textual analysis (e.g., exclusion of \"stop words\"), we select the top 100 keywords that are closely related to automation and use them as a dictionary for parsing firms' 10-Ks. The list of keywords is provided in Table E.1. Finally, we define AUTOMATION_i, which is a continuous variable (in logs) that measures how frequently the top 100 automation keywords appear in the firm's business description (Section 1 of the 10-K form) and management discussion (Section 7 of the 10-K form). To capture cases in which a firm discusses automation efforts in only one year, we average the word count across all years in our sample. AUTOMATION_i = log(1 + AUTOMATION_KEYWORDS_i), where AUTOMATION_KEYWORDS_i is the number of mentions of the top 100 automation-related keywords in firm i's 10-K forms. Figure E.1 shows a histogram with the distribution of the AUTOMATION_i variable."
+  },
+
+  "all_footnotes_in_sections_IVA_and_IVB_verbatim": {
+    "note": "Every footnote appearing within Section IV.A (including subsections IV.A.1, IV.A.2, IV.A.3) and Section IV.B of the main article. Footnotes 11-16.",
+    "footnotes": [
+      {"number": 11, "section": "IV.A (Empirical Counterparts, preamble)", "page": 3190, "anchor": "...taken from firms' disclosures to market investors.", "text_verbatim": "We also consider firm sales to the United Kingdom from accounting data sources like COMPUSTAT's Segment Files. However, careful examination of 10-K forms shows that such data are often incomplete and inconsistently tabulated. Aggravating this problem, sales that take place in the United Kingdom are known to be invoiced in other countries (such as Ireland) for tax purposes. As such, our main analyses rely on information from other sources. In Section V.B.2, however, we resort to an alternative textual-search-based analysis that goes beyond financial statements contained in 10-K forms in identifying exposure to the United Kingdom (cf. Hoberg and Moon (2017)). That approach allows us to identify offshoring activities, as reported by firms in the text of their disclosures (information often missing from their tabulated financial statements)."},
+      {"number": 12, "section": "IV.A.1", "page": 3191, "anchor": "...estimate equation (12) for each firm i as", "text_verbatim": "Bloom (2014) shows that stock market volatility exhibits a high degree of commonality with other observed proxies for uncertainty including those derived from bond markets, exchange rates, and GDP forecasts."},
+      {"number": 13, "section": "IV.A.1", "page": 3191, "anchor": "...as the empirical counterpart to beta_i in our framework.", "text_verbatim": "The last term in equation (12) is subsumed by the idiosyncratic volatility term, epsilon_it, in equation (13). We note that the volatility of equity returns may be an imperfect proxy for the volatility of firm income as returns are driven by news on both cash flows and discount rates (Campbell and Shiller (1988)). Following Vuolteenaho (2002), we also decompose the volatility of each firm's returns into cash flow and discount rate components and reestimate equation (13) with the cash flow component (only) as the dependent variable, obtaining an alternative uncertainty measure, beta^UK_i,CF. The estimates for beta^UK_i and beta^UK_i,CF have a rank correlation of 0.8, and there is an 86% overlap in the set of firms at the top tercile of both beta^UK_i and beta^UK_i,CF. As shown in Table C6, our inferences are unchanged whether using beta^UK_i or beta^UK_i,CF to conduct our tests."},
+      {"number": 14, "section": "IV.A.2 (Textual-Search-Based Measure of Uncertainty)", "page": 3191, "anchor": "...classifying firms with a 'high' number of entries as HIGH_UK_EXPOSURE firms, and those with zero entries as control firms.", "text_verbatim": "Entries like \"Referendum,\" \"Uncertain,\" \"United Kingdom,\" \"UK,\" \"U.K.,\" and \"G.B.\" are subsumed by the above wording."},
+      {"number": 15, "section": "IV.B (Data Sources and Sample Construction)", "page": 3192, "anchor": "...consists of 41,630 observations (firm-quarters).", "text_verbatim": "For details of the sample selection filters, see Table C1 in the Supplementary Material."},
+      {"number": 16, "section": "IV.B (Data Sources and Sample Construction)", "page": 3192, "anchor": "...consists of 11,345 observations (firm-years).", "text_verbatim": "The same filters described in Table C1 in the Supplementary Material are also applied to obtain this sample."}
+    ],
+    "note_on_IVA3": "Section IV.A.3 (Capital and Labor Irreversibility Measures, p. 3192) contains no footnotes."
+  },
+
+  "data_source_statement_for_eq13_inputs_verbatim": {
+    "note": "Pulled forward because it bears directly on beta differences: the paper's right-hand-side volatility inputs come from Bloomberg, not the sources used in many replications.",
+    "location": "Main article, Section IV.B, p. 3192",
+    "text_verbatim": "We use CRSP stock price data and Bloomberg equity index and currency data to compute our theoretical framework-based measure of firm exposure to the United Kingdom (see equation (13)). We use monthly data from 2010:M1 to 2014:M12 so that exposure to the United Kingdom is measured before any major Brexit-related events."
+  },
+
+  "corrigendum_relevance": {
+    "location": "Corrigendum, p. 3313, 19 April 2022",
+    "text_verbatim": "In the original publication of this article, appendices A and B were missing. The original article, and the supplementary material, have since been updated.",
+    "relevance_to_beta_estimation": "Appendices A and B are theoretical (model analysis and proofs). They contain no beta^UK_i or volatility construction detail. The corrigendum does not add any data-construction or estimation-sample information."
+  },
+
+  "consolidated_absences_relevant_to_estimation_sample": [
+    "CRSP share-code restriction (e.g., common stock only) \u2014 not found.",
+    "CRSP exchange restriction (e.g., NYSE/AMEX/NASDAQ only) \u2014 not found.",
+    "Minimum stock-price / penny-stock filter \u2014 not found.",
+    "Minimum trading-volume filter \u2014 not found.",
+    "Minimum number of monthly observations per firm for the beta regression \u2014 not found.",
+    "Method for computing each monthly volatility observation (return frequency, within-month aggregation rule, minimum trading days) \u2014 not found.",
+    "Winsorization/treatment of returns or beta \u2014 not found (Table 1 states accounting variables are winsorized at 1%, but says nothing about returns or beta).",
+    "CRSP/Compustat (CCM) link types, link primacy, or link date ranges \u2014 not found.",
+    "Total count of firms in the beta^UK_i estimation universe before tercile assignment \u2014 not found.",
+    "Full beta^UK_i distribution (moments, percentiles, histogram) \u2014 not found; only the tercile cutpoints 0.68 and 0.28 and the counts 449/360 are reported."
+  ]
+}

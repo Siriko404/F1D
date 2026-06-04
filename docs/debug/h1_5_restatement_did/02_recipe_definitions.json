@@ -1,0 +1,336 @@
+{
+  "_paper": {
+    "citation": "Chen, H., Chen, Z., Dhaliwal, D. S., & Huang, Y. (2017/2020). Accounting Restatements and Corporate Cash Policy. Journal of Accounting, Auditing & Finance, 35(2), 290-317.",
+    "main_did_table": "Table 3, Panel A (Baseline Model) and Panel B (Expanded Model)",
+    "summary_stats_table": "Table 1, Panel B"
+  },
+
+  "variables": {
+    "CASH": {
+      "role": "dependent variable",
+      "verbatim_definition": "the level of cash holdings, defined as cash and short-term investments (Compustat data item #CHE) scaled by total assets (#AT)",
+      "compustat_items": ["CHE", "AT"],
+      "formula": "CHE / AT",
+      "units": "ratio (cash and short-term investments / total assets)",
+      "transformations": "scaled by total assets",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 0.165, "median": 0.094},
+        "irregularity_sample": {"n": 2825, "mean": 0.166, "median": 0.088}
+      }
+    },
+    "POST": {
+      "role": "key variable / treatment indicator",
+      "verbatim_definition": "a dummy variable that equals 1 after the restatement, and 0 before the restatement",
+      "compustat_items": "N/A (constructed from restatement announcement date)",
+      "formula": "1 if t in [+1, +3]; 0 if t in [-3, -1]; year 0 (announcement year) excluded from main test",
+      "units": "binary {0, 1}",
+      "transformations": "none",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 0.498, "median": 0.000},
+        "irregularity_sample": {"n": 2825, "mean": 0.494, "median": 0.000}
+      },
+      "interpretation_note": "Treatment effect is the DIFFERENCE in POST coefficient between restatement-sample regression and control-sample regression (split-sample DiD), not an interaction term."
+    },
+    "Q": {
+      "role": "control (baseline Panel A and Panel B)",
+      "verbatim_definition": "Tobin's Q (Q) is defined as the book value of total assets (#AT) plus the difference between the market value of equity (#PRCC_F × #CSHO) and the book value of equity (#CEQ), all scaled by book value of total assets",
+      "compustat_items": ["AT", "PRCC_F", "CSHO", "CEQ"],
+      "formula": "[AT + (PRCC_F * CSHO) - CEQ] / AT",
+      "units": "ratio",
+      "transformations": "none explicit; no winsorization mentioned",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 1.883, "median": 1.495},
+        "irregularity_sample": {"n": 2825, "mean": 1.969, "median": 1.512}
+      }
+    },
+    "SIZE": {
+      "role": "control (baseline Panel A and Panel B)",
+      "verbatim_definition": "Firm size (SIZE) is the natural logarithm of total assets",
+      "compustat_items": ["AT"],
+      "formula": "ln(AT)",
+      "units": "log dollars",
+      "transformations": "natural log",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 5.951, "median": 5.851},
+        "irregularity_sample": {"n": 2825, "mean": 6.390, "median": 6.399}
+      }
+    },
+    "CF": {
+      "role": "control (baseline Panel A and Panel B)",
+      "verbatim_definition": "Operating cash flow (CF) is net operating cash flow (#OANCF) scaled by total assets",
+      "compustat_items": ["OANCF", "AT"],
+      "formula": "OANCF / AT",
+      "units": "ratio",
+      "transformations": "scaled by total assets",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 0.069, "median": 0.084},
+        "irregularity_sample": {"n": 2825, "mean": 0.068, "median": 0.076}
+      }
+    },
+    "NWC": {
+      "role": "control (baseline Panel A and Panel B)",
+      "verbatim_definition": "Net working capital (NWC) is noncash working capital (#ACT − #CHE) − (#LCT − #DLC) scaled by total assets",
+      "compustat_items": ["ACT", "CHE", "LCT", "DLC", "AT"],
+      "formula": "[(ACT - CHE) - (LCT - DLC)] / AT",
+      "units": "ratio",
+      "transformations": "scaled by total assets",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 0.113, "median": 0.089},
+        "irregularity_sample": {"n": 2825, "mean": 0.112, "median": 0.103}
+      }
+    },
+    "LEV": {
+      "role": "control (baseline Panel A and Panel B)",
+      "verbatim_definition": "Leverage (LEV) is the sum of long-term debt (#DLTT) and short-term debt (#DLC) scaled by total assets",
+      "compustat_items": ["DLTT", "DLC", "AT"],
+      "formula": "(DLTT + DLC) / AT",
+      "units": "ratio",
+      "transformations": "scaled by total assets",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 0.219, "median": 0.171},
+        "irregularity_sample": {"n": 2825, "mean": 0.220, "median": 0.192}
+      }
+    },
+    "SIGMA": {
+      "role": "control (baseline Panel A and Panel B)",
+      "verbatim_definition": "Industry volatility of operating cash flow (SIGMA) is the industry-median value of the standard deviation of operating cash flow over the previous 10 years",
+      "compustat_items": "Derived from OANCF/AT (CF); industry definition NOT SPECIFIED at baseline (note: cross-sectional tests use Fama-French 48)",
+      "formula": "industry-median[std_dev(CF, prior 10 years)]",
+      "units": "ratio (std dev of cash flow ratio)",
+      "transformations": "10-year rolling SD, then industry-median",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 0.067, "median": 0.068},
+        "irregularity_sample": {"n": 2825, "mean": 0.071, "median": 0.071}
+      }
+    },
+    "NSEG": {
+      "role": "control (baseline Panel A and Panel B)",
+      "verbatim_definition": "Number of business segments (NSEG) is the count of business segments with nonzero identifiable assets, set to 1 if the value is missing",
+      "compustat_items": "Compustat Business Segment file (specific item NOT SPECIFIED)",
+      "formula": "count of segments with nonzero identifiable assets; = 1 if missing",
+      "units": "count",
+      "transformations": "missing-value imputation: set to 1 if missing",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 4.898, "median": 3.000},
+        "irregularity_sample": {"n": 2825, "mean": 5.110, "median": 3.000}
+      }
+    },
+    "AGE": {
+      "role": "control (baseline Panel A and Panel B)",
+      "verbatim_definition": "Firm age (AGE) is the natural logarithm of the number of years since the firm first appeared in Compustat",
+      "compustat_items": "First appearance year in Compustat",
+      "formula": "ln(current year - first Compustat year)",
+      "units": "log years",
+      "transformations": "natural log",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 2.638, "median": 2.565},
+        "irregularity_sample": {"n": 2825, "mean": 2.658, "median": 2.565}
+      }
+    },
+
+    "CAPX": {
+      "role": "control (expanded Panel B only)",
+      "verbatim_definition": "CAPX is capital expenditure (#CAPX) scaled by total assets",
+      "compustat_items": ["CAPX", "AT"],
+      "formula": "CAPX / AT",
+      "units": "ratio",
+      "transformations": "scaled by total assets",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 0.060, "median": 0.042},
+        "irregularity_sample": {"n": 2825, "mean": 0.050, "median": 0.036}
+      }
+    },
+    "ACQUISITION": {
+      "role": "control (expanded Panel B only)",
+      "verbatim_definition": "ACQUISITION is acquisition (#AQC) scaled by total assets",
+      "compustat_items": ["AQC", "AT"],
+      "formula": "AQC / AT",
+      "units": "ratio",
+      "transformations": "scaled by total assets",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 0.021, "median": 0.000},
+        "irregularity_sample": {"n": 2825, "mean": 0.025, "median": 0.000}
+      }
+    },
+    "R&D": {
+      "role": "control (expanded Panel B only)",
+      "verbatim_definition": "R&D is research and development (#XRD) scaled by total sales (#SALE)",
+      "compustat_items": ["XRD", "SALE"],
+      "formula": "XRD / SALE",
+      "units": "ratio",
+      "transformations": "scaled by total sales",
+      "missing_value_handling": "NOT EXPLICITLY SPECIFIED in this paper, though median of 0.000 in error sample suggests missing R&D may be treated as 0 (common practice). Verify before replication.",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 0.087, "median": 0.000},
+        "irregularity_sample": {"n": 2825, "mean": 0.081, "median": 0.007}
+      }
+    },
+    "DIV": {
+      "role": "control (expanded Panel B only)",
+      "verbatim_definition": "DIV is dividends (#DVC) scaled by total assets",
+      "compustat_items": ["DVC", "AT"],
+      "formula": "DVC / AT",
+      "units": "ratio",
+      "transformations": "scaled by total assets",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 0.006, "median": 0.000},
+        "irregularity_sample": {"n": 2825, "mean": 0.006, "median": 0.000}
+      }
+    },
+    "DEBT_XFIN": {
+      "role": "control (expanded Panel B only)",
+      "verbatim_definition": "DEBT_XFIN is net long-term debt issuance (#DLTIS − #DLTR) plus change in current debt (#DLCCH) scaled by total assets (#AT)",
+      "compustat_items": ["DLTIS", "DLTR", "DLCCH", "AT"],
+      "formula": "(DLTIS - DLTR + DLCCH) / AT",
+      "units": "ratio",
+      "transformations": "scaled by total assets",
+      "summary_stats": {
+        "error_sample": {"n": 7107, "mean": 0.003, "median": 0.000},
+        "irregularity_sample": {"n": 2823, "mean": 0.001, "median": -0.001}
+      }
+    },
+    "EQUITY_XFIN": {
+      "role": "control (expanded Panel B only)",
+      "verbatim_definition": "EQUITY_XFIN is sale of common and preferred stock (#SSTK) scaled by total assets",
+      "compustat_items": ["SSTK", "AT"],
+      "formula": "SSTK / AT",
+      "units": "ratio",
+      "transformations": "scaled by total assets",
+      "summary_stats": {
+        "error_sample": {"n": 6998, "mean": 0.031, "median": 0.006},
+        "irregularity_sample": {"n": 2776, "mean": 0.031, "median": 0.007}
+      }
+    },
+    "MATURITY": {
+      "role": "control (expanded Panel B only)",
+      "verbatim_definition": "MATURITY is the ratio of long-term debt due within 3 years (sum of #DD1, #DD2, and #DD3) to total long-term debt (#DLTT + #DD1)",
+      "compustat_items": ["DD1", "DD2", "DD3", "DLTT"],
+      "formula": "(DD1 + DD2 + DD3) / (DLTT + DD1)",
+      "units": "ratio",
+      "transformations": "none beyond ratio construction",
+      "summary_stats": {
+        "error_sample": {"n": 7119, "mean": 0.349, "median": 0.207},
+        "irregularity_sample": {"n": 2822, "mean": 0.343, "median": 0.193}
+      }
+    },
+    "NO_LOAN": {
+      "role": "control (expanded Panel B only)",
+      "verbatim_definition": "NO_LOAN is an indicator variable that equals 1 if no bank loan was obtained in the fiscal year, and 0 otherwise",
+      "data_source": "DealScan (NOT EXPLICITLY NAMED in paper but standard source for bank loan covenants)",
+      "formula": "1 if no bank loan obtained; 0 otherwise",
+      "units": "binary {0, 1}",
+      "transformations": "none",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 0.690, "median": 1.000},
+        "irregularity_sample": {"n": 2825, "mean": 0.647, "median": 1.000}
+      }
+    },
+    "N_FINCOV": {
+      "role": "control (expanded Panel B only)",
+      "verbatim_definition": "N_FINCOV is the weighted average number of financial covenants...for all bank loans obtained in the fiscal year, where the weight is the deal amount of each loan, both set to 0 when no bank loan was obtained",
+      "data_source": "Bank loan database (NOT EXPLICITLY NAMED; presumably DealScan)",
+      "formula": "deal-amount-weighted average of count(financial covenants); = 0 if no loan",
+      "units": "count (weighted)",
+      "transformations": "deal-amount weighting; zero-imputation when no loan",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 0.471, "median": 0.000},
+        "irregularity_sample": {"n": 2825, "mean": 0.526, "median": 0.000}
+      }
+    },
+    "N_GENCOV": {
+      "role": "control (expanded Panel B only)",
+      "verbatim_definition": "N_GENCOV is the weighted average number of general covenants for all bank loans obtained in the fiscal year, where the weight is the deal amount of each loan, both set to 0 when no bank loan was obtained",
+      "data_source": "Bank loan database (NOT EXPLICITLY NAMED; presumably DealScan)",
+      "formula": "deal-amount-weighted average of count(general covenants); = 0 if no loan",
+      "units": "count (weighted)",
+      "transformations": "deal-amount weighting; zero-imputation when no loan",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 1.044, "median": 0.000},
+        "irregularity_sample": {"n": 2825, "mean": 1.228, "median": 0.000}
+      }
+    },
+    "BigN": {
+      "role": "control (expanded Panel B only)",
+      "verbatim_definition": "BigN is an indicator variable that equals 1 if the annual report is audited by one of the Big 5 (or 4) auditors and 0 otherwise",
+      "data_source": "NOT EXPLICITLY NAMED (likely Compustat AU code or Audit Analytics)",
+      "formula": "1 if Big 5/4 auditor; 0 otherwise",
+      "units": "binary {0, 1}",
+      "transformations": "none",
+      "summary_stats": {
+        "error_sample": {"n": 7120, "mean": 0.855, "median": 1.000},
+        "irregularity_sample": {"n": 2825, "mean": 0.880, "median": 1.000}
+      }
+    }
+  },
+
+  "sample_construction": {
+    "restatement_source": "Hennes, Leone, and Miller (2008), which compiles restatements disclosed in GAO (Government Accountability Office) reports GAO-03-138 (2003) and GAO-06-678 (2006)",
+    "sample_period": "January 1997 through June 2006 (restatement announcement dates)",
+    "irregularity_vs_error_classification": "Following Hennes, Leone, and Miller (2008)",
+    "initial_sample": 2705,
+    "filters_applied": [
+      {"filter": "Duplicate announcements", "dropped": 203},
+      {"filter": "Firms not listed in Compustat", "dropped": 296},
+      {"filter": "Subsequent restatements (keep only first per firm)", "dropped": 396},
+      {"filter": "Financial firms (SIC 6000-6999)", "dropped": 270},
+      {"filter": "Utility firms (SIC 4900-4999)", "dropped": 60},
+      {"filter": "Missing financial data, cash > total assets, total assets or market value of equity < $10 million, growth in assets or sales > 100%, or missing PSM variables", "dropped": 496},
+      {"filter": "No matched control firm", "dropped": 7},
+      {"filter": "Missing post-restatement data", "dropped": 28}
+    ],
+    "final_sample": {
+      "total_restatements": 949,
+      "error_restatements": 679,
+      "irregularity_restatements": 270
+    },
+    "event_window": "[-3, -1] pre-restatement vs. [+1, +3] post-restatement; year 0 (announcement year) excluded from main test"
+  },
+
+  "psm_matching": {
+    "model": "Probit",
+    "specification": "Pr(RESTATE=1) = B1*X1 + B2*X2 + B3*X3 + industry FE + year FE + e",
+    "covariates_X1_cash_holdings_determinants": ["SIZE", "Q", "CF", "LEV", "NWC", "SIGMA", "NSEG", "AGE", "CAPX", "R&D", "ACQUISITION", "DIV"],
+    "covariates_X2_restatement_determinants": [
+      "SGRW (sales growth rate)",
+      "FINANCE (net amount of external financing)",
+      "DNWC (change in net working capital)",
+      "LOSS (indicator of loss)",
+      "Z-SCORE (Altman 1968)",
+      "BigN (Big-N auditor indicator)"
+    ],
+    "covariates_X3_cash_trend_controls": ["CASH (level)", "DCASH (change in cash holdings)"],
+    "industry_fixed_effects": "Fama and French (1997) 48-industry classification",
+    "year_fixed_effects": "Yes",
+    "covariate_measurement_window": "Mean over years t-3 to t-1 (relative to restatement year 0)",
+    "matching_ratio": "1:1 (one control firm per restatement firm)",
+    "matching_method": "Same Fama-French 48 industry, closest propensity score in year 0; without replacement; if multiple restatement firms match the same control, the pair with smallest propensity-score difference is kept and the matching is repeated",
+    "caliper": "NOT SPECIFIED IN PAPER",
+    "diagnostics_after_matching": "Probit pseudo-R² = 0.007 (vs 0.101 pre-matching); model p-value ≈ 1.000 (vs <.001); only BigN remains marginally significant at 10% across 20 covariates"
+  },
+
+  "econometric_specification": {
+    "baseline_equation": "CASH_{i,t} = α_i + β*POST_{i,t} + CONTROLS + ε_{i,t}",
+    "estimation": "Estimated SEPARATELY on restatement subsample and control subsample (split-sample DiD). Treatment effect = β_restatement - β_control, with joint inference run with both regressions estimated simultaneously.",
+    "fixed_effects": "Firm fixed effects (α_i). No year fixed effects in baseline (POST already captures time variation in event time).",
+    "standard_errors": "Two-way clustered at (i) matched pair (of the restatement and control firms) and (ii) year levels, following Gow, Ormazabal, and Taylor (2010)",
+    "test_of_treatment_effect": "Joint estimation of restatement and control regressions to test the difference in POST coefficients; p-values reported in 'Test of difference in the coefficient of POST' row"
+  },
+
+  "data_treatment": {
+    "winsorization": "NOT SPECIFIED IN PAPER. The paper applies DROPS rather than winsorization: observations with cash > total assets, or asset/sales growth > 100%, or AT/MVE < $10M are removed entirely.",
+    "missing_value_imputation": {
+      "NSEG": "Set to 1 if the value is missing (explicitly stated)",
+      "N_FINCOV": "Set to 0 when no bank loan was obtained (explicitly stated)",
+      "N_GENCOV": "Set to 0 when no bank loan was obtained (explicitly stated)",
+      "NO_LOAN": "Indicator captures the missing-loan case (no imputation per se)",
+      "R&D": "NOT EXPLICITLY STATED in this paper. The median of 0.000 in the error sample is consistent with the common convention of setting missing R&D to 0, but the paper does not say so."
+    },
+    "scaling": "Most ratio variables scaled by total assets (#AT); R&D scaled by sales (#SALE); MATURITY scaled by total long-term debt"
+  },
+
+  "summary_stats_table_caveat": {
+    "reported_moments": ["Mean", "Median"],
+    "NOT_reported": ["Standard deviation", "p25", "p75", "min", "max"],
+    "note": "Table 1 Panel B reports ONLY mean and median. SD, p25, and p75 are NOT in the paper. If you need these for replication, you must compute them yourself on the constructed sample."
+  }
+}

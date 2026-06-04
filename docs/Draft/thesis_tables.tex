@@ -10,7 +10,7 @@
 \begin{document}
 \begin{table}[htbp]
 \centering
-\caption{H1 CEO 3-IV Decomp: ClarityCEO + UncResCEO (DWZ Full) + UncPreCEO}
+\caption{CEO Uncertainty and Cash Holdings}
 \label{tab:h1_ceo2_decomp}
 \scriptsize
 \begin{tabular}{lcccccccccccc}
@@ -19,11 +19,11 @@
  & \multicolumn{6}{c}{CashRatio} & \multicolumn{6}{c}{CashRatio\_lead} \\
 \cmidrule(lr){2-7} \cmidrule(lr){8-13}
 \midrule
-CEO Clarity (DWZ) & \textbf{-0.0046}$^{*}$ & \textbf{-0.0071}$^{*}$ & \textbf{-0.0058}$^{**}$ & -0.0054 & \textbf{-0.0056}$^{**}$ & -0.0052 & -0.0016 & \textbf{-0.0169}$^{**}$ & -0.0022 & \textbf{-0.0169}$^{**}$ & -0.0025 & \textbf{-0.0168}$^{**}$ \\
+ClarityCEO & \textbf{-0.0046}$^{*}$ & \textbf{-0.0071}$^{*}$ & \textbf{-0.0058}$^{**}$ & -0.0054 & \textbf{-0.0056}$^{**}$ & -0.0052 & -0.0016 & \textbf{-0.0169}$^{**}$ & -0.0022 & \textbf{-0.0169}$^{**}$ & -0.0025 & \textbf{-0.0168}$^{**}$ \\
  & (0.0033) & (0.0051) & (0.0033) & (0.0048) & (0.0033) & (0.0047) & (0.0040) & (0.0082) & (0.0040) & (0.0080) & (0.0040) & (0.0080) \\
-CEO Residual Unc. (DWZ) & \textbf{0.0021}$^{**}$ & \textbf{0.0019}$^{**}$ & \textbf{0.0020}$^{**}$ & \textbf{0.0016}$^{*}$ & \textbf{0.0021}$^{**}$ & \textbf{0.0016}$^{*}$ & 0.0011 & 0.0015 & 0.0010 & 0.0013 & 0.0008 & 0.0012 \\
+UncResCEO & \textbf{0.0021}$^{**}$ & \textbf{0.0019}$^{**}$ & \textbf{0.0020}$^{**}$ & \textbf{0.0016}$^{*}$ & \textbf{0.0021}$^{**}$ & \textbf{0.0016}$^{*}$ & 0.0011 & 0.0015 & 0.0010 & 0.0013 & 0.0008 & 0.0012 \\
  & (0.0010) & (0.0010) & (0.0010) & (0.0010) & (0.0010) & (0.0010) & (0.0013) & (0.0012) & (0.0013) & (0.0012) & (0.0013) & (0.0012) \\
-CEO Pres Uncertainty & 0.0002 & 0.0009 & 0.0003 & 0.0006 & 0.0004 & 0.0007 & -0.0011 & 0.0002 & -0.0015 & -0.0001 & -0.0017 & -0.0003 \\
+UncPreCEO & 0.0002 & 0.0009 & 0.0003 & 0.0006 & 0.0004 & 0.0007 & -0.0011 & 0.0002 & -0.0015 & -0.0001 & -0.0017 & -0.0003 \\
  & (0.0011) & (0.0011) & (0.0011) & (0.0011) & (0.0011) & (0.0011) & (0.0017) & (0.0016) & (0.0017) & (0.0015) & (0.0017) & (0.0016) \\
 \midrule
 Leverage & \textbf{-0.0177}$^{***}$ & \textbf{-0.0355}$^{***}$ & \textbf{-0.0130}$^{***}$ & \textbf{-0.0218}$^{***}$ & \textbf{-0.0132}$^{***}$ & \textbf{-0.0216}$^{***}$ & \textbf{-0.0274}$^{***}$ & \textbf{-0.0184}$^{*}$ & \textbf{-0.0266}$^{***}$ & -0.0123 & \textbf{-0.0264}$^{***}$ & -0.0118 \\
@@ -74,7 +74,7 @@ Adj.~$R^2$ & 0.825 & 0.412 & 0.829 & 0.430 & 0.830 & 0.430 & 0.713 & 0.139 & 0.7
 \clearpage
 \begin{table}[htbp]
 \centering
-\caption{H1.2 CEO 3-IV Decomp HFC: ClarityCEO + UncResCEO (DWZ Full) + UncPreCEO $\times$ Unrated Constraint}
+\caption{Cash Holdings: Financial-Constraint Moderation}
 \label{tab:h1_2_ceo2_decomp}
 \scriptsize
 \begin{tabular}{lcccccccc}
@@ -83,17 +83,17 @@ Adj.~$R^2$ & 0.825 & 0.412 & 0.829 & 0.430 & 0.830 & 0.430 & 0.713 & 0.139 & 0.7
  & \multicolumn{4}{c}{CashRatio} & \multicolumn{4}{c}{CashRatio\_lead} \\
 \cmidrule(lr){2-5} \cmidrule(lr){6-9}
 \midrule
-CEO Clarity (DWZ, c) & \textbf{-0.0062}$^{**}$ & -0.0043 & \textbf{-0.0059}$^{**}$ & -0.0042 & -0.0009 & \textbf{-0.0168}$^{**}$ & -0.0011 & \textbf{-0.0167}$^{**}$ \\
+ClarityCEO\_c & \textbf{-0.0062}$^{**}$ & -0.0043 & \textbf{-0.0059}$^{**}$ & -0.0042 & -0.0009 & \textbf{-0.0168}$^{**}$ & -0.0011 & \textbf{-0.0167}$^{**}$ \\
  & (0.0034) & (0.0052) & (0.0034) & (0.0052) & (0.0042) & (0.0085) & (0.0042) & (0.0085) \\
-CEO Residual Unc. (DWZ, c) & \textbf{0.0020}$^{**}$ & \textbf{0.0018}$^{**}$ & \textbf{0.0022}$^{**}$ & \textbf{0.0019}$^{**}$ & 0.0008 & 0.0014 & 0.0007 & 0.0013 \\
+UncResCEO\_c & \textbf{0.0020}$^{**}$ & \textbf{0.0018}$^{**}$ & \textbf{0.0022}$^{**}$ & \textbf{0.0019}$^{**}$ & 0.0008 & 0.0014 & 0.0007 & 0.0013 \\
  & (0.0011) & (0.0010) & (0.0011) & (0.0010) & (0.0014) & (0.0013) & (0.0014) & (0.0013) \\
-CEO Pres Unc. (c) & 0.0002 & 0.0005 & 0.0003 & 0.0007 & -0.0015 & -0.0006 & -0.0017 & -0.0008 \\
+UncPreCEO\_c & 0.0002 & 0.0005 & 0.0003 & 0.0007 & -0.0015 & -0.0006 & -0.0017 & -0.0008 \\
  & (0.0012) & (0.0012) & (0.0012) & (0.0012) & (0.0018) & (0.0016) & (0.0018) & (0.0017) \\
 Unrated & \textbf{0.0038}$^{***}$ & -0.0027 & -0.0010 & -0.0026 & \textbf{0.0064}$^{***}$ & \textbf{-0.0089}$^{*}$ & 0.0000 & \textbf{-0.0091}$^{**}$ \\
  & (0.0012) & (0.0035) & (0.0016) & (0.0035) & (0.0020) & (0.0046) & (0.0026) & (0.0046) \\
-UncRes $\times$ Unrated & 0.0011 & -0.0001 & 0.0012 & -0.0000 & \textbf{0.0041}$^{*}$ & 0.0031 & \textbf{0.0040}$^{*}$ & 0.0031 \\
+UncResCEO\_c\_x\_Unrated & 0.0011 & -0.0001 & 0.0012 & -0.0000 & \textbf{0.0041}$^{*}$ & 0.0031 & \textbf{0.0040}$^{*}$ & 0.0031 \\
  & (0.0021) & (0.0020) & (0.0021) & (0.0020) & (0.0027) & (0.0025) & (0.0026) & (0.0024) \\
-UncPre $\times$ Unrated & 0.0024 & 0.0013 & \textbf{0.0029}$^{*}$ & 0.0014 & -0.0011 & -0.0036 & -0.0010 & -0.0038 \\
+UncPreCEO\_c\_x\_Unrated & 0.0024 & 0.0013 & \textbf{0.0029}$^{*}$ & 0.0014 & -0.0011 & -0.0036 & -0.0010 & -0.0038 \\
  & (0.0022) & (0.0025) & (0.0023) & (0.0025) & (0.0033) & (0.0033) & (0.0033) & (0.0033) \\
 \midrule
 Leverage & \textbf{-0.0117}$^{***}$ & \textbf{-0.0216}$^{**}$ & \textbf{-0.0141}$^{***}$ & \textbf{-0.0214}$^{**}$ & \textbf{-0.0230}$^{**}$ & -0.0073 & \textbf{-0.0256}$^{**}$ & -0.0068 \\
@@ -143,61 +143,61 @@ Adj.~$R^2$ & 0.827 & 0.412 & 0.828 & 0.411 & 0.712 & 0.134 & 0.714 & 0.133 \\
 \clearpage
 \begin{table}[htbp]
 \centering
-\caption{H1.3 CEO 3-IV Decomp CFvol: ClarityCEO + UncResCEO (DWZ Full) + UncPreCEO $\times$ HighCFvol (Han-Qiu 16q CV)}
+\caption{Cash Holdings: Cash-Flow-Volatility Moderation}
 \label{tab:h1_3_cfvol}
 \scriptsize
-\begin{tabular}{lcccccccccccccc}
+\begin{tabular}{lcccccccc}
 \toprule
- & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) & (10) & (11) & (12) & (13) & (14) \\
- & \multicolumn{4}{c}{CashRatio} & \multicolumn{4}{c}{CashRatio\_lead} & \multicolumn{3}{c}{CashRatio (Robust FE)} & \multicolumn{3}{c}{CashRatio\_lead (Robust FE)} \\
-\cmidrule(lr){2-5} \cmidrule(lr){6-9} \cmidrule(lr){10-12} \cmidrule(lr){13-15}
+ & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\
+ & \multicolumn{4}{c}{CashRatio} & \multicolumn{4}{c}{CashRatio\_lead} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
 \midrule
-CEO Clarity (DWZ, c) & \textbf{-0.0088}$^{***}$ & -0.0059 & \textbf{-0.0071}$^{**}$ & -0.0058 & -0.0039 & \textbf{-0.0137}$^{**}$ & -0.0026 & \textbf{-0.0137}$^{**}$ & -0.0047 & \textbf{-0.0062}$^{*}$ & -0.0163 & \textbf{-0.0117}$^{*}$ & \textbf{-0.0134}$^{**}$ & -0.0085 \\
- & (0.0034) & (0.0047) & (0.0033) & (0.0047) & (0.0040) & (0.0081) & (0.0041) & (0.0081) & (0.0050) & (0.0047) & (0.0133) & (0.0085) & (0.0081) & (0.0096) \\
-CEO Residual Unc. (DWZ, c) & \textbf{0.0021}$^{**}$ & \textbf{0.0017}$^{*}$ & \textbf{0.0022}$^{**}$ & \textbf{0.0017}$^{**}$ & 0.0007 & 0.0009 & 0.0005 & 0.0007 & \textbf{0.0019}$^{**}$ & \textbf{0.0020}$^{**}$ & 0.0012 & 0.0010 & 0.0009 & 0.0005 \\
- & (0.0011) & (0.0010) & (0.0011) & (0.0010) & (0.0014) & (0.0013) & (0.0014) & (0.0013) & (0.0010) & (0.0010) & (0.0009) & (0.0013) & (0.0013) & (0.0010) \\
-CEO Pres Unc. (c) & 0.0004 & 0.0006 & 0.0001 & 0.0007 & -0.0009 & 0.0000 & -0.0014 & -0.0002 & 0.0002 & 0.0006 & 0.0000 & -0.0007 & -0.0005 & 0.0005 \\
- & (0.0011) & (0.0011) & (0.0012) & (0.0012) & (0.0017) & (0.0016) & (0.0018) & (0.0016) & (0.0012) & (0.0012) & (0.0010) & (0.0016) & (0.0016) & (0.0009) \\
-HighCFvol & -0.0005 & -0.0022 & \textbf{-0.0028}$^{**}$ & -0.0023 & \textbf{0.0092}$^{***}$ & 0.0028 & \textbf{0.0075}$^{***}$ & 0.0029 & 0.0015 & -0.0022 & 0.0004 & \textbf{0.0076}$^{***}$ & 0.0030 & \textbf{0.0049}$^{***}$ \\
- & (0.0012) & (0.0016) & (0.0013) & (0.0016) & (0.0016) & (0.0022) & (0.0017) & (0.0022) & (0.0015) & (0.0016) & (0.0021) & (0.0022) & (0.0022) & (0.0018) \\
-UncRes $\times$ HighCFvol & 0.0004 & 0.0004 & -0.0000 & 0.0002 & \textbf{0.0039}$^{*}$ & 0.0025 & \textbf{0.0040}$^{*}$ & 0.0027 & 0.0008 & 0.0007 & -0.0006 & 0.0023 & 0.0022 & 0.0006 \\
- & (0.0020) & (0.0019) & (0.0020) & (0.0019) & (0.0027) & (0.0024) & (0.0027) & (0.0024) & (0.0019) & (0.0019) & (0.0018) & (0.0024) & (0.0024) & (0.0019) \\
-UncPre $\times$ HighCFvol & \textbf{0.0048}$^{**}$ & 0.0002 & \textbf{0.0049}$^{**}$ & 0.0002 & \textbf{0.0060}$^{**}$ & 0.0035 & \textbf{0.0061}$^{**}$ & 0.0036 & -0.0000 & 0.0006 & -0.0016 & 0.0036 & 0.0042 & 0.0009 \\
- & (0.0022) & (0.0024) & (0.0022) & (0.0024) & (0.0033) & (0.0035) & (0.0033) & (0.0035) & (0.0025) & (0.0024) & (0.0020) & (0.0035) & (0.0035) & (0.0020) \\
+ClarityCEO\_c & \textbf{-0.0088}$^{***}$ & -0.0059 & \textbf{-0.0071}$^{**}$ & -0.0058 & -0.0039 & \textbf{-0.0137}$^{**}$ & -0.0026 & \textbf{-0.0137}$^{**}$ \\
+ & (0.0034) & (0.0047) & (0.0033) & (0.0047) & (0.0040) & (0.0081) & (0.0041) & (0.0081) \\
+UncResCEO\_c & \textbf{0.0021}$^{**}$ & \textbf{0.0017}$^{*}$ & \textbf{0.0022}$^{**}$ & \textbf{0.0017}$^{**}$ & 0.0007 & 0.0009 & 0.0005 & 0.0007 \\
+ & (0.0011) & (0.0010) & (0.0011) & (0.0010) & (0.0014) & (0.0013) & (0.0014) & (0.0013) \\
+UncPreCEO\_c & 0.0004 & 0.0006 & 0.0001 & 0.0007 & -0.0009 & 0.0000 & -0.0014 & -0.0002 \\
+ & (0.0011) & (0.0011) & (0.0012) & (0.0012) & (0.0017) & (0.0016) & (0.0018) & (0.0016) \\
+HighCFvol & -0.0005 & -0.0022 & \textbf{-0.0028}$^{**}$ & -0.0023 & \textbf{0.0092}$^{***}$ & 0.0028 & \textbf{0.0075}$^{***}$ & 0.0029 \\
+ & (0.0012) & (0.0016) & (0.0013) & (0.0016) & (0.0016) & (0.0022) & (0.0017) & (0.0022) \\
+UncResCEO\_c\_x\_HighCFvol & 0.0004 & 0.0004 & -0.0000 & 0.0002 & \textbf{0.0039}$^{*}$ & 0.0025 & \textbf{0.0040}$^{*}$ & 0.0027 \\
+ & (0.0020) & (0.0019) & (0.0020) & (0.0019) & (0.0027) & (0.0024) & (0.0027) & (0.0024) \\
+UncPreCEO\_c\_x\_HighCFvol & \textbf{0.0048}$^{**}$ & 0.0002 & \textbf{0.0049}$^{**}$ & 0.0002 & \textbf{0.0060}$^{**}$ & 0.0035 & \textbf{0.0061}$^{**}$ & 0.0036 \\
+ & (0.0022) & (0.0024) & (0.0022) & (0.0024) & (0.0033) & (0.0035) & (0.0033) & (0.0035) \\
 \midrule
-Leverage & \textbf{-0.0127}$^{***}$ & \textbf{-0.0191}$^{**}$ & \textbf{-0.0130}$^{***}$ & \textbf{-0.0189}$^{**}$ & \textbf{-0.0270}$^{***}$ & -0.0089 & \textbf{-0.0267}$^{***}$ & -0.0083 & \textbf{-0.0214}$^{***}$ & \textbf{-0.0168}$^{**}$ & \textbf{-0.0504}$^{*}$ & -0.0115 & -0.0054 & -0.0021 \\
- & (0.0034) & (0.0082) & (0.0036) & (0.0082) & (0.0096) & (0.0106) & (0.0096) & (0.0106) & (0.0082) & (0.0081) & (0.0275) & (0.0107) & (0.0104) & (0.0079) \\
-lnAssets & 0.0004 & \textbf{-0.0174}$^{***}$ & \textbf{-0.0015}$^{***}$ & \textbf{-0.0169}$^{***}$ & \textbf{0.0015}$^{***}$ & \textbf{-0.0179}$^{***}$ & -0.0006 & \textbf{-0.0180}$^{***}$ & \textbf{0.0057}$^{***}$ & \textbf{-0.0175}$^{***}$ & \textbf{0.0222}$^{***}$ & \textbf{0.0115}$^{***}$ & \textbf{-0.0190}$^{***}$ & \textbf{0.0212}$^{***}$ \\
- & (0.0003) & (0.0026) & (0.0006) & (0.0026) & (0.0005) & (0.0037) & (0.0008) & (0.0037) & (0.0006) & (0.0028) & (0.0012) & (0.0007) & (0.0039) & (0.0007) \\
-TobinsQ & \textbf{0.0044}$^{***}$ & \textbf{0.0037}$^{***}$ & \textbf{0.0035}$^{***}$ & \textbf{0.0034}$^{***}$ & \textbf{0.0055}$^{***}$ & 0.0005 & \textbf{0.0049}$^{***}$ & 0.0007 & \textbf{0.0059}$^{***}$ & \textbf{0.0029}$^{***}$ & \textbf{0.0058}$^{***}$ & \textbf{0.0033}$^{**}$ & 0.0003 & 0.0022 \\
- & (0.0008) & (0.0011) & (0.0008) & (0.0011) & (0.0012) & (0.0016) & (0.0012) & (0.0016) & (0.0012) & (0.0011) & (0.0022) & (0.0015) & (0.0016) & (0.0013) \\
-ROA & \textbf{-0.0641}$^{***}$ & -0.0148 & \textbf{-0.0563}$^{***}$ & -0.0121 & \textbf{-0.0985}$^{***}$ & \textbf{-0.0733}$^{***}$ & \textbf{-0.0964}$^{***}$ & \textbf{-0.0726}$^{***}$ & -0.0180 & -0.0138 & \textbf{0.0296}$^{**}$ & \textbf{-0.0734}$^{***}$ & \textbf{-0.0694}$^{***}$ & \textbf{-0.0702}$^{***}$ \\
- & (0.0117) & (0.0123) & (0.0116) & (0.0123) & (0.0149) & (0.0184) & (0.0149) & (0.0186) & (0.0126) & (0.0125) & (0.0132) & (0.0184) & (0.0188) & (0.0176) \\
-Capex & \textbf{-0.1692}$^{***}$ & \textbf{-0.3164}$^{***}$ & \textbf{-0.1779}$^{***}$ & \textbf{-0.3085}$^{***}$ & \textbf{-0.1159}$^{***}$ & \textbf{-0.2361}$^{***}$ & \textbf{-0.1275}$^{***}$ & \textbf{-0.2400}$^{***}$ & \textbf{-0.3013}$^{***}$ & \textbf{-0.3137}$^{***}$ & \textbf{-0.1518}$^{***}$ & \textbf{-0.2072}$^{***}$ & \textbf{-0.2451}$^{***}$ & -0.0358 \\
- & (0.0158) & (0.0251) & (0.0160) & (0.0249) & (0.0175) & (0.0313) & (0.0177) & (0.0314) & (0.0250) & (0.0248) & (0.0301) & (0.0319) & (0.0329) & (0.0356) \\
-DivDummy & \textbf{-0.0057}$^{***}$ & \textbf{-0.0051}$^{**}$ & \textbf{-0.0054}$^{***}$ & \textbf{-0.0046}$^{**}$ & -0.0013 & -0.0063 & -0.0017 & -0.0065 & -0.0015 & -0.0027 & -0.0048 & -0.0019 & -0.0043 & -0.0043 \\
- & (0.0013) & (0.0023) & (0.0013) & (0.0023) & (0.0019) & (0.0041) & (0.0020) & (0.0041) & (0.0023) & (0.0023) & (0.0034) & (0.0040) & (0.0040) & (0.0053) \\
-sCFO & \textbf{0.0087}$^{**}$ & 0.0004 & \textbf{0.0078}$^{**}$ & 0.0003 & 0.0084 & \textbf{0.0043}$^{*}$ & 0.0083 & \textbf{0.0043}$^{*}$ & 0.0010 & -0.0006 & 0.0006 & \textbf{0.0047}$^{*}$ & 0.0030 & 0.0090 \\
- & (0.0043) & (0.0017) & (0.0037) & (0.0017) & (0.0055) & (0.0026) & (0.0053) & (0.0026) & (0.0020) & (0.0015) & (0.0058) & (0.0028) & (0.0024) & (0.0058) \\
-SalesGrowth & \textbf{-0.0203}$^{***}$ & \textbf{-0.0291}$^{***}$ & \textbf{-0.0192}$^{***}$ & \textbf{-0.0283}$^{***}$ & 0.0003 & \textbf{-0.0070}$^{*}$ & 0.0006 & \textbf{-0.0066}$^{*}$ & \textbf{-0.0320}$^{***}$ & \textbf{-0.0292}$^{***}$ & \textbf{-0.0162}$^{***}$ & \textbf{-0.0094}$^{**}$ & \textbf{-0.0072}$^{*}$ & -0.0026 \\
- & (0.0050) & (0.0057) & (0.0049) & (0.0057) & (0.0042) & (0.0037) & (0.0043) & (0.0037) & (0.0061) & (0.0058) & (0.0057) & (0.0041) & (0.0039) & (0.0034) \\
-RDSales & \textbf{0.0063}$^{***}$ & \textbf{-0.0031}$^{**}$ & \textbf{0.0063}$^{***}$ & \textbf{-0.0029}$^{**}$ & \textbf{0.0109}$^{***}$ & -0.0006 & \textbf{0.0110}$^{***}$ & -0.0006 & \textbf{-0.0036}$^{*}$ & \textbf{-0.0032}$^{**}$ & 0.0004 & -0.0012 & -0.0007 & \textbf{-0.0069}$^{**}$ \\
- & (0.0022) & (0.0015) & (0.0022) & (0.0015) & (0.0029) & (0.0025) & (0.0029) & (0.0026) & (0.0020) & (0.0014) & (0.0013) & (0.0037) & (0.0027) & (0.0028) \\
-CashFlowAt & \textbf{0.1476}$^{***}$ & \textbf{0.1713}$^{***}$ & \textbf{0.1382}$^{***}$ & \textbf{0.1698}$^{***}$ & \textbf{0.1015}$^{***}$ & \textbf{0.1107}$^{***}$ & \textbf{0.0926}$^{***}$ & \textbf{0.1082}$^{***}$ & \textbf{0.1836}$^{***}$ & \textbf{0.1746}$^{***}$ & \textbf{0.1109}$^{***}$ & \textbf{0.1184}$^{***}$ & \textbf{0.1112}$^{***}$ & 0.0228 \\
- & (0.0170) & (0.0179) & (0.0171) & (0.0179) & (0.0181) & (0.0225) & (0.0183) & (0.0227) & (0.0184) & (0.0181) & (0.0165) & (0.0224) & (0.0225) & (0.0224) \\
-DailyVola & \textbf{0.0001}$^{***}$ & \textbf{-0.0001}$^{***}$ & \textbf{0.0001}$^{***}$ & -0.0001 & \textbf{0.0004}$^{***}$ & \textbf{0.0002}$^{***}$ & \textbf{0.0002}$^{***}$ & 0.0001 & \textbf{-0.0001}$^{*}$ & \textbf{-0.0001}$^{***}$ & \textbf{-0.0001}$^{***}$ & \textbf{0.0002}$^{***}$ & 0.0000 & \textbf{0.0001}$^{***}$ \\
- & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0001) & (0.0001) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0001) & (0.0000) \\
-Lagged\_DV & \textbf{0.8664}$^{***}$ & \textbf{0.6307}$^{***}$ & \textbf{0.8619}$^{***}$ & \textbf{0.6322}$^{***}$ & \textbf{0.7796}$^{***}$ & \textbf{0.3488}$^{***}$ & \textbf{0.7752}$^{***}$ & \textbf{0.3498}$^{***}$ & \textbf{0.6420}$^{***}$ & \textbf{0.6274}$^{***}$ & \textbf{-0.0611}$^{***}$ & \textbf{0.3643}$^{***}$ & \textbf{0.3417}$^{***}$ & \textbf{-0.0378}$^{***}$ \\
- & (0.0077) & (0.0133) & (0.0078) & (0.0133) & (0.0119) & (0.0182) & (0.0121) & (0.0182) & (0.0133) & (0.0136) & (0.0171) & (0.0176) & (0.0183) & (0.0098) \\
+Leverage & \textbf{-0.0127}$^{***}$ & \textbf{-0.0191}$^{**}$ & \textbf{-0.0130}$^{***}$ & \textbf{-0.0189}$^{**}$ & \textbf{-0.0270}$^{***}$ & -0.0089 & \textbf{-0.0267}$^{***}$ & -0.0083 \\
+ & (0.0034) & (0.0082) & (0.0036) & (0.0082) & (0.0096) & (0.0106) & (0.0096) & (0.0106) \\
+lnAssets & 0.0004 & \textbf{-0.0174}$^{***}$ & \textbf{-0.0015}$^{***}$ & \textbf{-0.0169}$^{***}$ & \textbf{0.0015}$^{***}$ & \textbf{-0.0179}$^{***}$ & -0.0006 & \textbf{-0.0180}$^{***}$ \\
+ & (0.0003) & (0.0026) & (0.0006) & (0.0026) & (0.0005) & (0.0037) & (0.0008) & (0.0037) \\
+TobinsQ & \textbf{0.0044}$^{***}$ & \textbf{0.0037}$^{***}$ & \textbf{0.0035}$^{***}$ & \textbf{0.0034}$^{***}$ & \textbf{0.0055}$^{***}$ & 0.0005 & \textbf{0.0049}$^{***}$ & 0.0007 \\
+ & (0.0008) & (0.0011) & (0.0008) & (0.0011) & (0.0012) & (0.0016) & (0.0012) & (0.0016) \\
+ROA & \textbf{-0.0641}$^{***}$ & -0.0148 & \textbf{-0.0563}$^{***}$ & -0.0121 & \textbf{-0.0985}$^{***}$ & \textbf{-0.0733}$^{***}$ & \textbf{-0.0964}$^{***}$ & \textbf{-0.0726}$^{***}$ \\
+ & (0.0117) & (0.0123) & (0.0116) & (0.0123) & (0.0149) & (0.0184) & (0.0149) & (0.0186) \\
+Capex & \textbf{-0.1692}$^{***}$ & \textbf{-0.3164}$^{***}$ & \textbf{-0.1779}$^{***}$ & \textbf{-0.3085}$^{***}$ & \textbf{-0.1159}$^{***}$ & \textbf{-0.2361}$^{***}$ & \textbf{-0.1275}$^{***}$ & \textbf{-0.2400}$^{***}$ \\
+ & (0.0158) & (0.0251) & (0.0160) & (0.0249) & (0.0175) & (0.0313) & (0.0177) & (0.0314) \\
+DivDummy & \textbf{-0.0057}$^{***}$ & \textbf{-0.0051}$^{**}$ & \textbf{-0.0054}$^{***}$ & \textbf{-0.0046}$^{**}$ & -0.0013 & -0.0063 & -0.0017 & -0.0065 \\
+ & (0.0013) & (0.0023) & (0.0013) & (0.0023) & (0.0019) & (0.0041) & (0.0020) & (0.0041) \\
+sCFO & \textbf{0.0087}$^{**}$ & 0.0004 & \textbf{0.0078}$^{**}$ & 0.0003 & 0.0084 & \textbf{0.0043}$^{*}$ & 0.0083 & \textbf{0.0043}$^{*}$ \\
+ & (0.0043) & (0.0017) & (0.0037) & (0.0017) & (0.0055) & (0.0026) & (0.0053) & (0.0026) \\
+SalesGrowth & \textbf{-0.0203}$^{***}$ & \textbf{-0.0291}$^{***}$ & \textbf{-0.0192}$^{***}$ & \textbf{-0.0283}$^{***}$ & 0.0003 & \textbf{-0.0070}$^{*}$ & 0.0006 & \textbf{-0.0066}$^{*}$ \\
+ & (0.0050) & (0.0057) & (0.0049) & (0.0057) & (0.0042) & (0.0037) & (0.0043) & (0.0037) \\
+RDSales & \textbf{0.0063}$^{***}$ & \textbf{-0.0031}$^{**}$ & \textbf{0.0063}$^{***}$ & \textbf{-0.0029}$^{**}$ & \textbf{0.0109}$^{***}$ & -0.0006 & \textbf{0.0110}$^{***}$ & -0.0006 \\
+ & (0.0022) & (0.0015) & (0.0022) & (0.0015) & (0.0029) & (0.0025) & (0.0029) & (0.0026) \\
+CashFlowAt & \textbf{0.1476}$^{***}$ & \textbf{0.1713}$^{***}$ & \textbf{0.1382}$^{***}$ & \textbf{0.1698}$^{***}$ & \textbf{0.1015}$^{***}$ & \textbf{0.1107}$^{***}$ & \textbf{0.0926}$^{***}$ & \textbf{0.1082}$^{***}$ \\
+ & (0.0170) & (0.0179) & (0.0171) & (0.0179) & (0.0181) & (0.0225) & (0.0183) & (0.0227) \\
+DailyVola & \textbf{0.0001}$^{***}$ & \textbf{-0.0001}$^{***}$ & \textbf{0.0001}$^{***}$ & -0.0001 & \textbf{0.0004}$^{***}$ & \textbf{0.0002}$^{***}$ & \textbf{0.0002}$^{***}$ & 0.0001 \\
+ & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0000) & (0.0001) & (0.0001) \\
+Lagged\_DV & \textbf{0.8664}$^{***}$ & \textbf{0.6307}$^{***}$ & \textbf{0.8619}$^{***}$ & \textbf{0.6322}$^{***}$ & \textbf{0.7796}$^{***}$ & \textbf{0.3488}$^{***}$ & \textbf{0.7752}$^{***}$ & \textbf{0.3498}$^{***}$ \\
+ & (0.0077) & (0.0133) & (0.0078) & (0.0133) & (0.0119) & (0.0182) & (0.0121) & (0.0182) \\
 \midrule
-Industry FE & Yes &  & Yes &  & Yes &  & Yes &  & Yes & Yes &  & Yes & Yes &  \\
-Firm FE &  & Yes &  & Yes &  & Yes &  & Yes &  &  & Yes &  &  & Yes \\
-Year FE & Yes & Yes &  &  & Yes & Yes &  &  & Yes &  & Yes & Yes &  & Yes \\
-Year-Quarter FE &  &  & Yes & Yes &  &  & Yes & Yes &  & Yes &  &  & Yes &  \\
+Industry FE & Yes &  & Yes &  & Yes &  & Yes &  \\
+Firm FE &  & Yes &  & Yes &  & Yes &  & Yes \\
+Year FE & Yes & Yes &  &  & Yes & Yes &  &  \\
+Year-Quarter FE &  &  & Yes & Yes &  &  & Yes & Yes \\
 \midrule
-N & 40,795 & 40,795 & 40,795 & 40,795 & 39,207 & 39,207 & 39,207 & 39,207 & 40,795 & 40,795 & 40,795 & 39,207 & 39,207 & 39,207 \\
-$R^2$ & 0.825 & 0.447 & 0.826 & 0.447 & 0.708 & 0.171 & 0.709 & 0.171 & 0.429 & 0.440 & 0.024 & 0.147 & 0.163 & 0.005 \\
-Adj.~$R^2$ & 0.824 & 0.429 & 0.826 & 0.428 & 0.707 & 0.143 & 0.708 & 0.142 & 0.407 & 0.411 & -0.397 & 0.115 & 0.120 & -0.442 \\
+N & 40,795 & 40,795 & 40,795 & 40,795 & 39,207 & 39,207 & 39,207 & 39,207 \\
+$R^2$ & 0.825 & 0.447 & 0.826 & 0.447 & 0.708 & 0.171 & 0.709 & 0.171 \\
+Adj.~$R^2$ & 0.824 & 0.429 & 0.826 & 0.428 & 0.707 & 0.143 & 0.708 & 0.142 \\
 \bottomrule
 \end{tabular}
 \begin{minipage}{\linewidth}
@@ -212,7 +212,7 @@ Adj.~$R^2$ & 0.824 & 0.429 & 0.826 & 0.428 & 0.707 & 0.143 & 0.708 & 0.142 & 0.4
 \clearpage
 \begin{table}[htbp]
 \centering
-\caption{H11: Political Risk and Language Uncertainty}
+\caption{Political Risk and Call Uncertainty}
 \label{tab:h11_prisk_uncertainty}
 \scriptsize
 \begin{tabular}{lcccc}
@@ -222,7 +222,7 @@ Adj.~$R^2$ & 0.824 & 0.429 & 0.826 & 0.428 & 0.707 & 0.143 & 0.708 & 0.142 & 0.4
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
  & UncResCEO & UncPreCEO & UncResCEO & UncPreCEO \\
 \midrule
-Political Risk$_{t}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0003}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0002}$^{***}$ \\
+PRisk & \textbf{0.0001}$^{***}$ & \textbf{0.0003}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0002}$^{***}$ \\
  & (0.0000) & (0.0000) & (0.0000) & (0.0000) \\
 \midrule
 UncQue & -0.0022 & \textbf{0.0204}$^{***}$ & -0.0014 & \textbf{0.0081}$^{***}$ \\
@@ -267,7 +267,7 @@ Adj.~$R^2$ & 0.002 & 0.043 & -0.030 & -0.004 \\
 \clearpage
 \begin{table}[htbp]
 \centering
-\caption{H11-Lag2: Political Risk (2-Qtr Lag) and Language Uncertainty}
+\caption{Political Risk and Call Uncertainty (Two-Quarter Lag)}
 \label{tab:h11_lag2}
 \scriptsize
 \begin{tabular}{lcccc}
@@ -277,7 +277,7 @@ Adj.~$R^2$ & 0.002 & 0.043 & -0.030 & -0.004 \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
  & UncResCEO & UncPreCEO & UncResCEO & UncPreCEO \\
 \midrule
-PRisk$_{t-2}$ & 0.0000 & \textbf{0.0001}$^{***}$ & 0.0000 & \textbf{0.0000}$^{***}$ \\
+PRisk\_lag2 & 0.0000 & \textbf{0.0001}$^{***}$ & 0.0000 & \textbf{0.0000}$^{***}$ \\
  & (0.0000) & (0.0000) & (0.0000) & (0.0000) \\
 \midrule
 UncQue & 0.0001 & \textbf{0.0242}$^{***}$ & 0.0010 & \textbf{0.0099}$^{***}$ \\
@@ -322,7 +322,7 @@ Adj.~$R^2$ & -0.001 & 0.034 & -0.033 & -0.013 \\
 \clearpage
 \begin{table}[htbp]
 \centering
-\caption{H23: Product-Market Competition and Uncertainty Language}
+\caption{Product-Market Competition and Call Uncertainty}
 \label{tab:h23_competition_uncertainty}
 \scriptsize
 \begin{tabular}{lcccc}
@@ -332,7 +332,7 @@ Adj.~$R^2$ & -0.001 & 0.034 & -0.033 & -0.013 \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
  & UncResCEO & UncPreCEO & UncResCEO & UncPreCEO \\
 \midrule
-$z(\log(\mathrm{TSIMM}))$ & 0.0008 & \textbf{0.0304}$^{***}$ & 0.0023 & \textbf{0.0302}$^{***}$ \\
+z\_log\_TotalSimilarity & 0.0008 & \textbf{0.0304}$^{***}$ & 0.0023 & \textbf{0.0302}$^{***}$ \\
  & (0.0014) & (0.0074) & (0.0075) & (0.0093) \\
 \midrule
 UncQue & 0.0011 & \textbf{0.0398}$^{***}$ & 0.0039 & 0.0084 \\
@@ -377,7 +377,7 @@ Adj.~$R^2$ & -0.002 & 0.048 & -0.098 & -0.068 \\
 \clearpage
 \begin{table}[htbp]
 \centering
-\caption{H24: US Economic Policy Uncertainty and Call Language Uncertainty}
+\caption{US Policy Uncertainty and Call Uncertainty}
 \label{tab:h24_us_epu}
 \scriptsize
 \begin{tabular}{lcccc}
@@ -387,7 +387,7 @@ Adj.~$R^2$ & -0.002 & 0.048 & -0.098 & -0.068 \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
  & UncResCEO & UncPreCEO & UncResCEO & UncPreCEO \\
 \midrule
-$\log(\text{US EPU})_{t}$ & \textbf{0.0124}$^{**}$ & \textbf{0.0211}$^{***}$ & \textbf{0.0123}$^{*}$ & \textbf{0.0239}$^{***}$ \\
+US\_EPU\_log & \textbf{0.0124}$^{**}$ & \textbf{0.0211}$^{***}$ & \textbf{0.0123}$^{*}$ & \textbf{0.0239}$^{***}$ \\
  & (0.0075) & (0.0074) & (0.0075) & (0.0076) \\
 \midrule
 UncQue & 0.0011 & \textbf{0.0164}$^{***}$ & 0.0024 & \textbf{0.0095}$^{***}$ \\
@@ -434,7 +434,7 @@ Adj.~$R^2$ & -0.000 & 0.291 & -0.035 & 0.057 \\
 \clearpage
 \begin{table}[htbp]
 \centering
-\caption{H24b: Global Economic Policy Uncertainty and Call Language Uncertainty}
+\caption{Global Policy Uncertainty and Call Uncertainty}
 \label{tab:h24b_global_epu}
 \scriptsize
 \begin{tabular}{lcccc}
@@ -444,7 +444,7 @@ Adj.~$R^2$ & -0.000 & 0.291 & -0.035 & 0.057 \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
  & UncResCEO & UncPreCEO & UncResCEO & UncPreCEO \\
 \midrule
-$\log(\text{GEPU})_{t}$ & \textbf{0.0181}$^{**}$ & \textbf{0.0271}$^{***}$ & \textbf{0.0187}$^{**}$ & \textbf{0.0309}$^{***}$ \\
+GEPU\_log & \textbf{0.0181}$^{**}$ & \textbf{0.0271}$^{***}$ & \textbf{0.0187}$^{**}$ & \textbf{0.0309}$^{***}$ \\
  & (0.0100) & (0.0107) & (0.0101) & (0.0108) \\
 \midrule
 UncQue & 0.0011 & \textbf{0.0164}$^{***}$ & 0.0024 & \textbf{0.0095}$^{***}$ \\
@@ -491,20 +491,20 @@ Adj.~$R^2$ & -0.000 & 0.291 & -0.035 & 0.057 \\
 \clearpage
 \begin{table}[htbp]
 \centering
-\caption{H14c CEO 3-IV Decomp: ClarityCEO + UncResCEO (DWZ Eq.5 Full) + UncPreCEO (raw) and 25-Day Post-Call Bid-Ask Spread Level ($[0,+25]$, the call day plus 25 trading days)}
+\caption{CEO Uncertainty and the Bid-Ask Spread}
 \label{tab:h14c_ceo2_decomp}
 \scriptsize
 \begin{tabular}{lcccccccccccc}
 \toprule
  & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) & (10) & (11) & (12) \\
- & \multicolumn{6}{c}{Spread$_{25D,t}$} & \multicolumn{6}{c}{Spread$_{25D,t+1}$} \\
+ & \multicolumn{6}{c}{BGTLevel\_Spread} & \multicolumn{6}{c}{BGTLevel\_Spread\_lead1} \\
 \cmidrule(lr){2-7} \cmidrule(lr){8-13}
 \midrule
-CEO Clarity (DWZ) & -0.0477 & 1.0617 & 0.2122 & 1.1056 & 0.1644 & 1.0547 & -0.1886 & 0.5998 & -0.0922 & 0.6828 & -0.0431 & 0.5722 \\
+ClarityCEO & -0.0477 & 1.0617 & 0.2122 & 1.1056 & 0.1644 & 1.0547 & -0.1886 & 0.5998 & -0.0922 & 0.6828 & -0.0431 & 0.5722 \\
  & (0.2145) & (0.4277) & (0.2227) & (0.4260) & (0.2103) & (0.4174) & (0.2370) & (0.4004) & (0.2399) & (0.4055) & (0.2206) & (0.3729) \\
-CEO Residual Uncertainty (DWZ) & -0.0594 & -0.0687 & -0.0882 & -0.1021 & -0.0757 & -0.0893 & 0.0825 & 0.0696 & 0.0742 & 0.0545 & 0.0984 & 0.0751 \\
+UncResCEO & -0.0594 & -0.0687 & -0.0882 & -0.1021 & -0.0757 & -0.0893 & 0.0825 & 0.0696 & 0.0742 & 0.0545 & 0.0984 & 0.0751 \\
  & (0.1068) & (0.1057) & (0.1023) & (0.1007) & (0.0994) & (0.0981) & (0.1416) & (0.1437) & (0.1407) & (0.1426) & (0.1339) & (0.1357) \\
-CEO Pres Uncertainty & \textbf{0.1664}$^{**}$ & \textbf{0.3496}$^{***}$ & 0.0814 & \textbf{0.2945}$^{***}$ & 0.0108 & \textbf{0.1644}$^{*}$ & -0.0817 & -0.0288 & -0.1072 & -0.0360 & 0.0170 & 0.1124 \\
+UncPreCEO & \textbf{0.1664}$^{**}$ & \textbf{0.3496}$^{***}$ & 0.0814 & \textbf{0.2945}$^{***}$ & 0.0108 & \textbf{0.1644}$^{*}$ & -0.0817 & -0.0288 & -0.1072 & -0.0360 & 0.0170 & 0.1124 \\
  & (0.0946) & (0.1253) & (0.0956) & (0.1229) & (0.0919) & (0.1184) & (0.0926) & (0.1229) & (0.0926) & (0.1233) & (0.0872) & (0.1186) \\
 \midrule
 lnAssets & \textbf{-0.8039}$^{***}$ & \textbf{-1.9098}$^{***}$ & \textbf{-0.6339}$^{***}$ & \textbf{-1.6825}$^{***}$ & \textbf{-0.6352}$^{***}$ & \textbf{-1.8277}$^{***}$ & \textbf{-0.8218}$^{***}$ & \textbf{-1.5191}$^{***}$ & \textbf{-0.7857}$^{***}$ & \textbf{-1.7292}$^{***}$ & \textbf{-0.6568}$^{***}$ & \textbf{-1.4181}$^{***}$ \\
@@ -556,7 +556,7 @@ Adj.~$R^2$ & 0.703 & 0.501 & 0.721 & 0.535 & 0.730 & 0.532 & 0.700 & 0.482 & 0.7
 \clearpage
 \begin{table}[htbp]
 \centering
-\caption{H18 CEO 3-IV Decomp: ClarityCEO + UncResCEO (DWZ Eq.5 Full) + UncPreCEO (raw) and SEC Conference-Call Comment Letter Receipt (LPM, $[\textit{call}_t, \textit{call}_{t+1}]$ window)}
+\caption{CEO Uncertainty and SEC Comment-Letter Receipt}
 \label{tab:h18_ceo2_decomp}
 \scriptsize
 \begin{tabular}{lcccccc}
@@ -565,11 +565,11 @@ Adj.~$R^2$ & 0.703 & 0.501 & 0.721 & 0.535 & 0.730 & 0.532 & 0.700 & 0.482 & 0.7
  & \multicolumn{6}{c}{CCCL} \\
 \cmidrule(lr){2-7}
 \midrule
-CEO Clarity (DWZ) & 0.0059 & 0.0039 & 0.0062 & 0.0040 & 0.0058 & 0.0040 \\
+ClarityCEO & 0.0059 & 0.0039 & 0.0062 & 0.0040 & 0.0058 & 0.0040 \\
  & (0.0015) & (0.0030) & (0.0015) & (0.0030) & (0.0015) & (0.0030) \\
-CEO Residual Uncertainty (DWZ) & -0.0003 & -0.0003 & -0.0003 & -0.0003 & -0.0004 & -0.0004 \\
+UncResCEO & -0.0003 & -0.0003 & -0.0003 & -0.0003 & -0.0004 & -0.0004 \\
  & (0.0009) & (0.0009) & (0.0009) & (0.0009) & (0.0009) & (0.0009) \\
-CEO Pres Uncertainty & 0.0008 & \textbf{0.0014}$^{*}$ & \textbf{0.0016}$^{**}$ & \textbf{0.0014}$^{*}$ & 0.0007 & \textbf{0.0013}$^{*}$ \\
+UncPreCEO & 0.0008 & \textbf{0.0014}$^{*}$ & \textbf{0.0016}$^{**}$ & \textbf{0.0014}$^{*}$ & 0.0007 & \textbf{0.0013}$^{*}$ \\
  & (0.0008) & (0.0009) & (0.0007) & (0.0009) & (0.0008) & (0.0009) \\
 \midrule
 lnAssets & \textbf{-0.0006}$^{**}$ & \textbf{0.0018}$^{*}$ & 0.0001 & 0.0017 & \textbf{-0.0006}$^{**}$ & \textbf{0.0019}$^{*}$ \\
@@ -625,59 +625,35 @@ Adj.~$R^2$ & -0.000 & -0.032 & -0.001 & -0.032 & -0.001 & -0.033 \\
 % Regenerate: python scripts/campello_rebuild/gen_thesis_t8_table.py
 \input{_campello_rebuild_t8}
 \clearpage
-\begin{table}[htbp]
-\centering
-\caption{Boasiako Disclosure Law Difference-in-Differences: Cash Holdings + CEO Speech Uncertainty (Boasiako-O'Connor Keefe 2020 EFM verbatim)}
-\label{tab:h1_5_disclosure_law_did}
-\scriptsize
-\begin{tabular}{lcccccccc}
-\toprule
- & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\
- & \multicolumn{4}{c}{Cash Holdings (Disclosure Law)} & \multicolumn{4}{c}{UncResCEO (Disclosure Law)} \\
-\cmidrule(lr){2-5} \cmidrule(lr){6-9}
-\midrule
-Disclosure Law $\times$ Post & \textbf{0.0262}$^{**}$ & \textbf{0.0580}$^{***}$ & 0.0110 & \textbf{0.0317}$^{**}$ & 0.0082 & 0.0061 & 0.0015 & 0.0105 \\
- & (0.0117) & (0.0137) & (0.0150) & (0.0158) & (0.0104) & (0.0122) & (0.0135) & (0.0098) \\
-\midrule
-firm\_size & \textbf{-0.0159}$^{***}$ & \textbf{0.1039}$^{***}$ & \textbf{-0.0190}$^{***}$ & \textbf{-0.0178}$^{***}$ & -0.0015 & \textbf{-0.0093}$^{*}$ & -0.0015 & -0.0017 \\
- & (0.0039) & (0.0120) & (0.0034) & (0.0044) & (0.0010) & (0.0054) & (0.0013) & (0.0015) \\
-firm\_age & \textbf{-0.1942}$^{***}$ & \textbf{-0.2606}$^{***}$ & \textbf{-0.1752}$^{***}$ & \textbf{-0.1987}$^{***}$ & \textbf{0.0081}$^{*}$ & \textbf{0.0364}$^{**}$ & 0.0076 & \textbf{0.0108}$^{*}$ \\
- & (0.0247) & (0.0383) & (0.0234) & (0.0281) & (0.0049) & (0.0174) & (0.0058) & (0.0060) \\
-book\_leverage & \textbf{0.0236}$^{**}$ & \textbf{0.0429}$^{***}$ & \textbf{0.0233}$^{*}$ & \textbf{0.0311}$^{**}$ & \textbf{-0.0135}$^{*}$ & -0.0310 & \textbf{-0.0165}$^{**}$ & -0.0030 \\
- & (0.0094) & (0.0095) & (0.0122) & (0.0122) & (0.0070) & (0.0302) & (0.0084) & (0.0125) \\
-market\_to\_book & \textbf{0.0042}$^{***}$ & \textbf{0.0038}$^{***}$ & \textbf{0.0042}$^{***}$ & \textbf{0.0043}$^{***}$ & 0.0010 & 0.0027 & 0.0015 & 0.0017 \\
- & (0.0006) & (0.0007) & (0.0007) & (0.0006) & (0.0011) & (0.0026) & (0.0016) & (0.0019) \\
-cash\_flow & \textbf{0.0277}$^{***}$ & \textbf{0.0510}$^{***}$ & \textbf{0.0265}$^{***}$ & \textbf{0.0315}$^{***}$ & 0.0130 & 0.0173 & -0.0044 & 0.0255 \\
- & (0.0050) & (0.0057) & (0.0062) & (0.0052) & (0.0188) & (0.0286) & (0.0217) & (0.0331) \\
-capital\_expenditure & \textbf{1.3091}$^{***}$ & \textbf{1.5161}$^{***}$ & \textbf{1.1948}$^{***}$ & \textbf{1.4397}$^{***}$ & -0.0003 & -0.0733 & 0.0071 & 0.0019 \\
- & (0.1727) & (0.2107) & (0.1405) & (0.1966) & (0.0254) & (0.0694) & (0.0296) & (0.0326) \\
-acquisition\_expenditure & \textbf{0.0808}$^{*}$ & -0.0336 & 0.0809 & \textbf{0.0908}$^{*}$ & -0.0168 & -0.0177 & \textbf{-0.0240}$^{*}$ & -0.0269 \\
- & (0.0426) & (0.0514) & (0.0492) & (0.0510) & (0.0142) & (0.0161) & (0.0146) & (0.0185) \\
-rd\_expenditure & \textbf{1.0963}$^{***}$ & \textbf{1.3810}$^{***}$ & \textbf{1.0795}$^{***}$ & \textbf{1.2031}$^{***}$ & -0.0382 & -0.0212 & -0.0676 & 0.0038 \\
- & (0.0482) & (0.0536) & (0.0634) & (0.0530) & (0.0314) & (0.1219) & (0.0533) & (0.0311) \\
-nwc & \textbf{0.0289}$^{***}$ & \textbf{0.0224}$^{***}$ & \textbf{0.0291}$^{***}$ & \textbf{0.0307}$^{***}$ & -0.0018 & -0.0055 & -0.0070 & -0.0021 \\
- & (0.0028) & (0.0027) & (0.0038) & (0.0032) & (0.0029) & (0.0065) & (0.0051) & (0.0028) \\
-dividend\_paying & 0.0054 & 0.0086 & 0.0079 & 0.0105 & -0.0044 & -0.0101 & \textbf{-0.0073}$^{**}$ & -0.0035 \\
- & (0.0069) & (0.0084) & (0.0074) & (0.0071) & (0.0035) & (0.0096) & (0.0034) & (0.0056) \\
-industry\_cf\_vol & 0.0001 & 0.0007 & -0.0000 & -0.0004 & -0.0006 & -0.0007 & -0.0007 & -0.0008 \\
- & (0.0009) & (0.0011) & (0.0010) & (0.0009) & (0.0005) & (0.0006) & (0.0006) & (0.0006) \\
-\midrule
-Industry FE & Yes &  & Yes & Yes & Yes &  & Yes & Yes \\
-Firm FE &  & Yes &  &  &  & Yes &  &  \\
-Year FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
-\midrule
-N & 49,402 & 49,402 & 41,160 & 37,970 & 9,709 & 9,709 & 8,174 & 7,399 \\
-$R^2$ & 0.253 & 0.247 & 0.243 & 0.261 & 0.003 & 0.002 & 0.004 & 0.005 \\
-Adj.~$R^2$ & 0.253 & 0.247 & 0.243 & 0.261 & 0.003 & 0.002 & 0.004 & 0.005 \\
-\bottomrule
-\end{tabular}
-\begin{minipage}{\linewidth}
-\vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
- Significant coefficients in \textbf{bold}.
- Standard errors (in parentheses) clustered at state level.
- State data-breach disclosure-law staggered DiD, 1997-2015 (annual). Cols 3-4 + 7-8 exclude California and crisis-period observations respectively. Boasiako-O'Connor Keefe 2020 EFM verbatim controls.
- $R^2$ includes absorbed fixed effects (not within-$R^2$).
-\end{minipage}
-\end{table}
+% Campello variable forensic audit — summary-stats compare (3 panels),
+% generated from tmp/campello_summary_stats_compare_2026_05_17.md by
+% scripts/campello_rebuild/gen_summary_stats_tex.py (NOT hand-edited).
+% Regenerate: python scripts/campello_rebuild/gen_summary_stats_tex.py
+\input{_campello_summary_stats}
+\clearpage
+% Disclosure-Law DiD — compact 3-col (Boasiako published benchmark |
+% our cash clone | our UncResCEO DV), canonical industry+state+year spec.
+% Generated from the latest run's suite_spec JSON by
+% scripts/gen_disclosure_law_compact_table.py (NOT hand-edited).
+% Regenerate: python scripts/gen_disclosure_law_compact_table.py
+\input{_disclosure_law_compact}
+
+\newpage
+\input{_boasiako_summary_stats}
+\clearpage
+% Empire-Building reverse-causality probe — pre-acquisition cash war-chest +
+% CEO uncertainty run-up test (two-way FE OLS; within-firm pre-window mean
+% shift, NOT a pre/post DiD). Generated from SDC + H1 panel by
+% scripts/gen_empire_did_table.py (NOT hand-edited).
+% Regenerate: python scripts/gen_empire_did_table.py
+\clearpage
+\input{_empire_building_spec}
+\clearpage
+\input{_empire_building_did}
+\clearpage
+% Cash-Scrutiny external validity (Link 1). Regenerate: python scripts/gen_cash_scrutiny_validity_table.py
+\input{_cash_scrutiny_validity}
+\clearpage
+% Cash-Scrutiny channel test (Link 2). Regenerate: python scripts/gen_cash_scrutiny_channel_table.py
+\input{_cash_scrutiny_channel}
 \end{document}

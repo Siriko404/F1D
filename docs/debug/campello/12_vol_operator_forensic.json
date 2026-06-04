@@ -1,0 +1,157 @@
+{
+  "paper": "Campello, Cortes, d'Almeida, Kankanhalli (2022) JFQA - Exporting Uncertainty: The Impact of Brexit on Corporate America",
+  "scope_of_search": "Full body text, footnotes, equations, figures and figure notes, table notes, references list as visible in the provided PDF (pages 3178-3222). Supplementary appendices C, D, E referenced in text but their content is not included in the provided PDF.",
+  "Q1_every_use_of_vol_operator": {
+    "instances_in_equation_form": [
+      {
+        "location": "Equation (12), p. 3191 (Section IV.A.1)",
+        "verbatim_equation": "vol(v_it) approx beta_i * vol(V_t) + sigma_epsilon - sqrt(2 * beta_i * vol(V_t) * sigma_epsilon)",
+        "argument_passed_to_vol": "v_it (firm income), V_t (aggregate demand), sigma_epsilon (idiosyncratic shock std)",
+        "is_vol_defined_here": "No - vol() appears with no functional-form specification. It is the square root of the variance terms in equation (11), but equation (11) defines var() symbolically, not operationally."
+      },
+      {
+        "location": "Equation (13), p. 3191 (Section IV.A.1)",
+        "verbatim_equation": "vol(r_it) = alpha_i + beta^UK_i * vol(FTSE100_t) + theta * CONTROLS_t + epsilon_it",
+        "argument_passed_to_vol": "r_it (firm equity returns), FTSE100_t (FTSE100 index)",
+        "is_vol_defined_here": "No - vol() appears with no functional-form specification."
+      },
+      {
+        "location": "Sentence immediately following Eq. (13), p. 3191",
+        "verbatim_text": "We include control variables, CONTROLS_t, consisting of vol(SP500) and vol(FX$pound) into equation (13) to absorb effects arising through firms' exposure to the domestic U.S. market and exchange rate fluctuations between the U.S. dollar and the British pound.",
+        "argument_passed_to_vol": "SP500 (S&P 500 index), FX$pound (USD/GBP exchange rate)",
+        "is_vol_defined_here": "No - just the variable names with vol() wrapper."
+      }
+    ],
+    "verbal_phrases_referring_to_vol_or_volatility": [
+      {
+        "location": "p. 3191, sentence immediately before Eq. (13)",
+        "verbatim_text": "Following Bloom (2014), we use stock market volatility as a gauge of aggregate uncertainty and estimate equation (12) for each firm i as [equation 13]"
+      },
+      {
+        "location": "p. 3191, paragraph after Eq. (13)",
+        "verbatim_text": "Equation (13) uses the volatility of equity returns, vol(r_it), as a proxy for firm income volatility, vol(v_it). It also uses the volatility of the FTSE100 Index as a proxy for uncertainty in the U.K. (the relevant source of aggregate uncertainty in our setting)."
+      },
+      {
+        "location": "p. 3209, Section VI.A (Foreign Exchange Exposure)",
+        "verbatim_text": "First, we estimate a dynamic analogue of equation (13), firm by firm, over our testing period. Instead of regressing the volatility of firm equity returns on the volatilities of U.S. and U.K. equity index returns and the volatility of changes in the USD-GBP FX rate, we regress the levels of firms' equity returns on the levels of U.S. and U.K. equity index returns and USD-GBP FX rate changes."
+      },
+      {
+        "location": "p. 3209, footnote 27",
+        "verbatim_text": "Specifically, we perform our estimation using monthly returns data, with 24-month rolling windows, over the period from 2010:M1 to 2016:M12.",
+        "note": "This footnote describes the dynamic analogue of Eq. (13) used as a robustness check, NOT the baseline Eq. (13) estimation. It is the closest the paper comes to describing time-window mechanics, but it refers to a different specification."
+      },
+      {
+        "location": "p. 3216, Section VI.F (Uncertainty in the Global Economy)",
+        "verbatim_text": "we repeat our tests classifying firms based on a given criterion (beta^EU_i, beta^CHINA_i, beta^MEXICO_i, beta^JAPAN_i, beta^INDIA_i, and beta^BRAZIL_i) according to the sensitivity of their equity returns volatility to the respective region's main equity index return volatility. In this estimation, performed over the same pre-Brexit sample period of 2010:M1-2014:M12, we control for the FTSE100 volatility, the U.S. dollar/British pound exchange rate volatility, and the volatility in the exchange rate of the U.S. dollar and the currency of each country."
+      }
+    ],
+    "implied_volatility_passages_NOT_part_of_Eq_13": [
+      {
+        "location": "Figure 3 note, p. 3194",
+        "verbatim_text": "Figure 3 shows the term structure of the FTSE100 Index at three different dates. The term structure at each date is constructed from average Black-Scholes implied volatilities derived from quoted prices of at-the-money options on the FTSE100 Index. The values plotted reflect the market's expectation of the volatility of the FTSE100 Index over various maturities considered.",
+        "note": "Used to motivate the DiD timeline only. Not part of vol() in Eq. (13)."
+      },
+      {
+        "location": "p. 3194, main text discussing Figure 3",
+        "verbatim_text": "As is typical for equities during normal economic conditions, the term structure is upward sloping, indicating the market expects greater volatility at longer horizons."
+      },
+      {
+        "location": "Footnote 18, p. 3194",
+        "verbatim_text": "The implied volatility term structure serves as a metric of market uncertainty over time as it expresses the range of movements in the FTSE100 that investors expect over various horizons (see Dumas, Fleming, and Whaley (1998), Mixon (2007)). The values in Figure 3 reflect the market's expectation of the volatility of the FTSE100 over different maturities. For example, if annualized implied volatility for 2 years is 15%, the market expects that prices will move over the next 2 years within a band [-15*sqrt(2)%, +15*sqrt(2)%] with 68% probability (1-standard-deviation).",
+        "note": "This is the ONLY place in the paper where any volatility object is described in concrete operational terms ('annualized implied volatility,' '1-standard-deviation'). However, it refers to options-implied vol used in Figure 3 to set the event window, NOT to vol() in Eq. (13)."
+      }
+    ]
+  },
+  "Q2_bloom_2014_references": {
+    "reference_list_entry": {
+      "verbatim_text": "Bloom, N. \"Fluctuations in Uncertainty.\" Journal of Economic Perspectives, 28 (2014), 153-175.",
+      "location": "Reference list, p. 3222"
+    },
+    "all_in_text_citations_of_Bloom_2014": [
+      {
+        "location": "p. 3191, main text introducing Eq. (13)",
+        "verbatim_text": "Following Bloom (2014), we use stock market volatility as a gauge of aggregate uncertainty and estimate equation (12) for each firm i as [equation 13]",
+        "what_it_specifies": "Only that 'stock market volatility' is used 'as a gauge of aggregate uncertainty.' No operational detail (no recipe for computing the volatility from returns)."
+      },
+      {
+        "location": "Footnote 12, p. 3191",
+        "verbatim_text": "Bloom (2014) shows that stock market volatility exhibits a high degree of commonality with other observed proxies for uncertainty including those derived from bond markets, exchange rates, and GDP forecasts.",
+        "what_it_specifies": "Justifies the conceptual choice of using stock market volatility (as opposed to bond/FX/forecast-based uncertainty proxies). Does NOT specify how to compute vol()."
+      }
+    ],
+    "answer": "The paper says 'Following Bloom (2014)' once and footnotes a justification, but it never states 'Bloom (2014) measures volatility as X' or 'Following Bloom (2014)'s methodology of Y.' No operational formula, frequency, window, or aggregation is attributed to Bloom (2014) in this paper."
+  },
+  "Q3_equation_12_does_it_define_vol": {
+    "preceding_text_p_3190_3191": {
+      "verbatim_text": "In the context of our study, the increase in aggregate uncertainty, V_t, comes from the rise in uncertainty associated with the Brexit vote. Accordingly, we take variances on both sides of equation (1) (alternatively, equation (2)) to capture the notion of uncertainty in the MPS framework: [equation 11]"
+    },
+    "equation_11_verbatim": "var(v_it) = beta_i^2 * var(V_t) + sigma_epsilon^2",
+    "transition_text_p_3191": {
+      "verbatim_text": "We can employ a regression-like approach to operationalize an empirical counterpart to beta_i. Specifically, taking square roots of both sides of equation (11), we obtain"
+    },
+    "equation_12_verbatim": "vol(v_it) approx beta_i * vol(V_t) + sigma_epsilon - sqrt(2 * beta_i * vol(V_t) * sigma_epsilon)",
+    "interpretation": "Equation (12) defines vol() implicitly as the square root of var(). var() is treated as a population variance in the theoretical model (the variance of an MPS distribution). The paper does NOT translate the theoretical var()/vol() into a specific empirical estimator (e.g., monthly realized variance from intra-month daily returns vs. GARCH vs. EWMA vs. squared returns). The link between population vol() and empirical vol() is left unstated."
+  },
+  "Q4_any_units_or_scaling": {
+    "result": "The paper never states units or a scaling convention for vol() as used in equation (13).",
+    "the_only_volatility_units_anywhere_in_paper": {
+      "verbatim_text": "For example, if annualized implied volatility for 2 years is 15%, the market expects that prices will move over the next 2 years within a band [-15*sqrt(2)%, +15*sqrt(2)%] with 68% probability (1-standard-deviation).",
+      "location": "Footnote 18, p. 3194",
+      "note": "This refers to the FTSE100 options-implied volatility used in Figure 3 (set the event window), NOT vol() in equation (13). It is the only place the paper attaches a unit (annualized %, 1-SD interpretation) to any volatility object. Equation (13)'s vol() is never given units."
+    }
+  },
+  "Q5_footnotes_pp_3190_3192_verbatim": {
+    "footnote_11_p_3190": "We also consider firm sales to the United Kingdom from accounting data sources like COMPUSTAT's Segment Files. However, careful examination of 10-K forms shows that such data are often incomplete and inconsistently tabulated. Aggravating this problem, sales that take place in the United Kingdom are known to be invoiced in other countries (such as Ireland) for tax purposes. As such, our main analyses rely on information from other sources. In Section V.B.2, however, we resort to an alternative textual-search-based analysis that goes beyond financial statements contained in 10-K forms in identifying exposure to the United Kingdom (cf. Hoberg and Moon (2017)). That approach allows us to identify offshoring activities, as reported by firms in the text of their disclosures (information often missing from their tabulated financial statements).",
+    "footnote_12_p_3191": "Bloom (2014) shows that stock market volatility exhibits a high degree of commonality with other observed proxies for uncertainty including those derived from bond markets, exchange rates, and GDP forecasts.",
+    "footnote_13_p_3191": "The last term in equation (12) is subsumed by the idiosyncratic volatility term, epsilon_it, in equation (13). We note that the volatility of equity returns may be an imperfect proxy for the volatility of firm income as returns are driven by news on both cash flows and discount rates (Campbell and Shiller (1988)). Following Vuolteenaho (2002), we also decompose the volatility of each firm's returns into cash flow and discount rate components and reestimate equation (13) with the cash flow component (only) as the dependent variable, obtaining an alternative uncertainty measure, beta^UK_{i,CF}. The estimates for beta^UK_i and beta^UK_{i,CF} have a rank correlation of 0.8, and there is an 86% overlap in the set of firms at the top tercile of both beta^UK_i and beta^UK_{i,CF}. As shown in Table C6, our inferences are unchanged whether using beta^UK_i or beta^UK_{i,CF} to conduct our tests.",
+    "footnote_14_p_3191": "Entries like 'Referendum,' 'Uncertain,' 'United Kingdom,' 'UK,' 'U.K.,' and 'G.B.' are subsumed by the above wording.",
+    "summary": "None of footnotes 11-14 (the footnotes spanning the Eq. (13) discussion) define vol(). Footnote 13 mentions 'idiosyncratic volatility term' and an alternative dependent variable using cash-flow-news decomposition but never specifies how vol() is computed from underlying return data."
+  },
+  "Q6_word_realized": {
+    "verbatim_appearances_in_paper": [
+      {
+        "location": "p. 3191, sentence after Eq. (13)",
+        "verbatim_text": "Equation (13) uses the volatility of equity returns, vol(r_it), as a proxy for firm income volatility, vol(v_it).",
+        "note": "The word 'realized' does NOT appear here."
+      }
+    ],
+    "result": "The word 'realized' does not appear in any passage discussing vol() or volatility in the body of the paper as visible in the provided PDF. The paper never uses the term 'realized volatility,' 'realized variance,' or any equivalent. (Note: this search covers the visible main text and footnotes only; supplementary appendix C/D/E content is not in the provided PDF.)"
+  },
+  "Q7_phrase_standard_deviation": {
+    "verbatim_appearances": [
+      {
+        "location": "Footnote 18, p. 3194",
+        "verbatim_text": "if annualized implied volatility for 2 years is 15%, the market expects that prices will move over the next 2 years within a band [-15*sqrt(2)%, +15*sqrt(2)%] with 68% probability (1-standard-deviation).",
+        "context": "FTSE100 options-implied volatility used for Figure 3 timeline only - NOT Eq. (13)."
+      },
+      {
+        "location": "p. 3183, Section II",
+        "verbatim_text": "The average quarterly U.K. EPU index before 2016 was 133... The index jumped by 410 points in 2016 (nearly 4 times the baseline average, or a 3.4-standard-deviation from the series).",
+        "context": "Describes the Baker-Bloom-Davis UK EPU index spike - background motivation, not Eq. (13)."
+      },
+      {
+        "location": "Figure 4 note, p. 3195",
+        "verbatim_text": "Confidence intervals are calculated as 1.5-standard-deviations from the mean forecast.",
+        "context": "Analyst EPS forecast dispersion - not Eq. (13)."
+      },
+      {
+        "location": "Table 1 description, p. 3198",
+        "verbatim_text": "Each panel reports the mean, standard deviation, median, interquartile range (IQR), and the number of observations conditional on firms belonging to each subsample.",
+        "context": "Generic summary-statistics description - not Eq. (13)."
+      }
+    ],
+    "result": "'Standard deviation' appears in the paper, but never in connection with the definition of vol() in equation (13). The phrase is used to describe (a) options-implied volatility intervals in a figure footnote, (b) the size of an EPU index shock, (c) confidence intervals around analyst forecasts, and (d) generic Table 1 column labels. None of these define how vol() is computed in equation (13)."
+  },
+  "final_answer": {
+    "does_the_paper_ever_define_vol_for_equation_13": "NO.",
+    "supporting_evidence": "The vol() operator appears (i) symbolically in equations (12) and (13), (ii) verbally as 'volatility of equity returns,' 'volatility of the FTSE100 Index,' 'volatility of changes in the USD-GBP FX rate,' and (iii) by citation to Bloom (2014) for the conceptual choice. The paper never writes down a recipe (e.g., 'vol(X_t) is the standard deviation of daily X log-changes within month t,' or any other concrete formula), never names a frequency for the underlying returns, never names a window, never specifies units, never uses the word 'realized,' and never connects 'standard deviation' to vol() in equation (13). Footnote 27 (p. 3209) describes 'monthly returns data, with 24-month rolling windows' but only for the DYNAMIC ROBUSTNESS analogue of Eq. (13) in Section VI.A, not for the baseline Eq. (13) estimation - and even there, what 'vol' inside vol(.) is computed from remains unstated.",
+    "operational_specification_missing": [
+      "Frequency of the input return series used to compute monthly vol() (daily? weekly?)",
+      "Estimator used (sample standard deviation? GARCH? EWMA? absolute returns?)",
+      "Aggregation window (within-month? rolling? full-period?)",
+      "Whether returns are simple, log, or excess",
+      "Whether the result is annualized",
+      "Units (decimal, percentage, basis points)"
+    ]
+  }
+}

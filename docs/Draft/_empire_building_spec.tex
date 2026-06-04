@@ -1,0 +1,72 @@
+% Hand-written specification page for the Empire-Building Run-Up Test.
+% Static explanatory content (NOT generated). Placed before _empire_building_did.tex.
+\begin{center}
+{\large\bfseries Empire-Building Run-Up Test --- Regression Specification}
+\end{center}
+
+\vspace{4pt}
+\noindent All four regressions share one estimating equation; they differ only in the
+outcome $Y$ and in which firms are eligible to be treated. Estimator: two-way
+fixed-effects OLS (\texttt{PanelOLS}), firm-clustered standard errors.
+
+\begin{equation*}
+Y_{i,t} \;=\; \beta\,\mathrm{PreAnnounceQtr}_{i,t}
+\;+\; \boldsymbol{\gamma}'\mathbf{X}_{i,t}
+\;+\; \alpha_i \;+\; \tau_t \;+\; \varepsilon_{i,t}
+\end{equation*}
+
+\noindent where $i$ indexes the firm (its earnings call) and $t$ the calendar
+year-quarter. $\beta$ is the coefficient of interest: one-tailed test ($H_1:\beta>0$)
+for $\mathrm{PreAnnounceQtr}$, two-tailed for the controls.
+
+\begin{center}
+\small
+\begin{tabular}{cll}
+\toprule
+Reg. & Outcome $Y$ & Treated set (firms eligible for $\mathrm{PreAnnounceQtr}=1$) \\
+\midrule
+(1) & CashRatio  & Cash acquirers ($\geq 50\%$ cash) \\
+(2) & UncResCEO  & Cash acquirers ($\geq 50\%$ cash) \\
+(3) & CashRatio  & Stock acquirers ($\geq 50\%$ stock) --- placebo \\
+(4) & UncResCEO  & Stock acquirers ($\geq 50\%$ stock) --- placebo \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+Symbol & Definition & Role \\
+\midrule
+\multicolumn{3}{l}{\textit{Outcomes}} \\
+CashRatio & $\mathrm{cheq}/\mathrm{atq}$ (Compustat) & cash-holdings level (first stage) \\
+UncResCEO & residual $\widehat\varepsilon_{ic}$ from $\mathrm{UncAnsCEO}_{ic}=\alpha+\mathrm{CEO\text{-}FE}_i+\mathbf{X}_{ic}\boldsymbol\gamma+\varepsilon_{ic}$ (DWZ Eqn.\ 4) & call-level CEO Q\&A uncertainty, net of the CEO's permanent style \\
+\midrule
+\multicolumn{3}{l}{\textit{Treatment}} \\
+$\mathrm{PreAnnounceQtr}_{i,t}$ & $=1$ in the single quarter immediately before firm $i$'s first qualifying deal ($e=-1$); & pre-event (anticipation) indicator \\
+ & post-announcement quarters ($e\geq 0$) are dropped; never-acquirers are always $0$ & \\
+\midrule
+\multicolumn{3}{l}{\textit{Controls $\mathbf{X}$ (H1 cash set, lagged DV removed; Compustat quarterly)}} \\
+Leverage & $(\mathrm{dlcq}+\mathrm{dlttq})/\mathrm{atq}$ & interest-bearing debt / assets \\
+lnAssets & $\ln(\mathrm{atq})$ & firm size \\
+TobinsQ  & $(\mathrm{atq}+\mathrm{cshoq}\cdot\mathrm{prccq}-\mathrm{ceqq})/\mathrm{atq}$ & market-to-book / growth opportunities \\
+ROA      & $\mathrm{iby}/\overline{\mathrm{assets}}$ & profitability \\
+Capex    & $\mathrm{capxy}/\mathrm{atq}$ & investment intensity \\
+DivDummy & $\mathbb{1}[\mathrm{dvy}>0]$ & dividend payer \\
+sCFO     & 5-yr rolling SD of $\mathrm{oancfy}/\mathrm{atq}_{t-1}$ & cash-flow volatility \\
+\midrule
+\multicolumn{3}{l}{\textit{Fixed effects / errors}} \\
+$\alpha_i$ & firm fixed effect (\texttt{EntityEffects}) & removes each firm's permanent level (within-firm identification) \\
+$\tau_t$   & calendar year-quarter fixed effect (\texttt{TimeEffects}) & removes economy-wide shocks each quarter \\
+$\varepsilon_{i,t}$ & idiosyncratic error, clustered by firm & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{2pt}
+\noindent\small\textit{Reading the columns.} (1)--(2) are the cash-acquirer arm: does cash, and
+then CEO uncertainty, rise in the quarter before a cash-financed deal? (3)--(4) are the
+stock-acquirer placebo: stock buyers face the same pending-deal disclosure gag but hold
+no cash war-chest, so (4) flat while (2) positive $\Rightarrow$ the uncertainty rise is
+cash-specific, not mere deal secrecy.

@@ -1,0 +1,27 @@
+{
+  "paper_key": "Boasiako_Keefe_2021",
+  "table_label_verbatim": "TABLE 1 Summary statistics",
+  "page_number": 537,
+  "firm_age": {
+    "label_in_table_verbatim": "Firm Age",
+    "panel_verbatim": "Panel A: Disclosure law sample (1997\u20132015)",
+    "sample_description_verbatim": "This table reports the summary statistics of the key variables. Panel A reports the summary statistics for the state-level disclosure law sample over the period 1997\u20132015. Panel B covers the data breach subsample, where the sample period is from 2011 to 2016. See Table A1 for the variable definitions.",
+    "all_cells_verbatim": {
+      "n": "56,646",
+      "mean": "7.3003",
+      "standard_deviation": "0.8889",
+      "p25": "2.0179",
+      "median": "5.0435",
+      "p75": "11.0918",
+      "minimum": "",
+      "maximum": ""
+    },
+    "unit_analysis": {
+      "variable_definition_from_appendix_verbatim": "Natural logarithm of the number of years a firm has been listed in the merged CRSP/Compustat database",
+      "is_this_ln_years_or_raw_years": "The reported numbers are raw years, not ln(years), despite the Appendix A Table A1 definition explicitly stating 'Natural logarithm'. This is an internal inconsistency in the paper. Evidence: under an ln(years) interpretation the mean of 7.3003 implies exp(7.3003) ~ 1,480 years of listing, which exceeds the entire history of CRSP (founded 1925, covers ~100 years max) and Compustat (data from ~1950, ~75 years max) by more than an order of magnitude. The p75 of 11.0918 under an ln interpretation implies exp(11.0918) ~ 65,500 years, which is physically impossible. Under a raw-years interpretation, mean 7.30 years, median 5.04 years, p25 2.02 years, p75 11.09 years are entirely sensible for a CRSP/Compustat panel covering 1997-2015 with many late-1990s IPO entrants. Conclusion: the variable Firm Age as actually constructed in the paper's regressions is in raw years; Table A1 mislabels it as a log.",
+      "what_would_mean_7_3_imply_if_ln_years": "exp(7.3003) = 1,480.30 years. Implausible. The oldest CRSP-listed firms have ~95-100 years of listing history at most. A mean ln(age) of 7.3 would require a typical firm to have been listed for nearly 1,500 years, predating the founding of every modern corporation and indeed every modern nation-state in CRSP's universe.",
+      "what_would_mean_7_3_imply_if_raw_years": "7.30 years of listing on the merged CRSP/Compustat database. Plausible and consistent with the sample composition. The 1997-2015 window opens 5 years before the first state disclosure law (CA, 2002) and captures the dot-com IPO wave (1998-2000) plus subsequent IPO cohorts, which pulls the median listing age down. A median of 5.04 years and p25 of 2.02 years are consistent with a sample heavily populated by young listed firms.",
+      "how_does_this_compare_to_typical_values_in_bates_2009_or_opler_1999": "Bates, Kahle, and Stulz (2009) and Opler, Pinkowitz, Stulz, and Williamson (1999) -- both cited by Boasiako and Keefe as the methodological template for cash-holdings sample construction -- typically define firm age as raw years since first appearance in CRSP/Compustat, not as a logarithm. Their reported sample mean firm ages tend to be materially higher than 7.3 years (commonly in the mid-teens) because their sample windows start earlier (Opler: 1971-1994; Bates: 1980-2006) and therefore include longer listing histories per firm. The Boasiako-Keefe mean of 7.3 years is younger than these benchmarks, which is the expected direction given the later 1997-2015 window and the heavy IPO inflow in the early sample years. In short: the magnitudes here are coherent ONLY under a raw-years reading, and they sit on the young side of comparable cash-holdings papers, again consistent with raw years rather than logs."
+    }
+  }
+}

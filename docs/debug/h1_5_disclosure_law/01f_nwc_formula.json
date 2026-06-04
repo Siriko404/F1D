@@ -1,0 +1,40 @@
+{
+  "paper_key": "Boasiako_Keefe_2021",
+  "nwc": {
+    "paper_verbatim_definition": "Ratio of net working capital to net assets",
+    "is_there_additional_nwc_text_anywhere_in_paper": false,
+    "additional_occurrences_verbatim": [
+      "Specifically, we control for Firm Size, Firm Age, Book Leverage, Market-to-book, Cash Flow, Capital Expenditure, Acquisition Expenditure, Dividend Paying Firms(0/1), R&D Expenditure, Net Working Capital, and Industry Cash Flow Volatility. (Section 3.3 Variables, p.536 -- the only body-text mention; lists NWC as a control with no formula)",
+      "Net Working Capital (regression-row label, appears in Tables 2, 3, 4, 7 and 8 as a control coefficient; no accompanying formula, scaling description, or footnote)",
+      "Net Working Capital | Ratio of net working capital to net assets (Appendix A, Table A1, p.551 -- the canonical and only definition)"
+    ],
+    "paper_cites_specific_source_for_nwc": "Bates et al. (2009); Opler et al. (1999)",
+    "what_that_cited_source_uses_for_nwc_verbatim": "Bates, Kahle and Stulz (2009), \"Why Do U.S. Firms Hold So Much More Cash than They Used To?\", Journal of Finance 64(5): 1985-2021, verbatim: \"Net working capital to assets. Net working capital (NWC) consists of assets that substitute for cash. We thus expect a negative relation between NWC and cash holdings. We subtract cash (#1) from NWC (#179), so our NWC measure is net of cash.\" In legacy Compustat item codes: #1 = CH (cash only) or by convention CHE (cash and short-term investments), #179 = WCAP (working capital = ACT - LCT), #6 = AT (total assets). Bates 2009's denominator is plain AT, not (AT - CHE). For Opler, Pinkowitz, Stulz, and Williamson (1999), \"The Determinants and Implications of Corporate Cash Holdings\", Journal of Financial Economics 52: 3-46, the recurring verbatim denominator phrasing is \"cash to total non-cash assets\" / \"ratios of cash to total non-cash assets\", confirming that Opler's denominator is net (non-cash) assets = AT - CHE. So the two cited sources differ on the denominator: Bates uses AT, Opler uses AT - CHE.",
+    "paper_defines_net_assets_somewhere": false,
+    "net_assets_definition_verbatim": "",
+    "formula_that_would_give_mean_negative_point_zero_five": "(ACT - LCT - CHE) / (AT - CHE), i.e., Opler 1999 net-of-cash NWC scaled by net (non-cash) assets. Reasoning, anchored to the paper's published Table 1 Panel A signature (mean=-0.0584, SD=1.0372, p25=-0.0589, p50=0.0636, p75=0.2157): (a) The median of 0.0636 (slightly positive) and p75 of 0.2157 are consistent with non-cash-heavy firms whose ACT-LCT (working capital) is moderately positive relative to AT-CHE; this is the bulk of the distribution. (b) The p25 of -0.0589 (slightly negative) is consistent with firms where short-term liabilities exceed non-cash current assets, again typical. (c) The crucial diagnostic is the wide gap between mean (-0.0584) and p25 (-0.0589) combined with SD=1.0372 (~5x the IQR of 0.2746). This is the unmistakable signature of a denominator AT-CHE that approaches zero for cash-rich firms: when CHE is close to AT (tech firms in the 1997-2015 sample), AT-CHE shrinks and the ratio explodes negatively (because ACT-LCT-CHE is also very negative for these firms, since most of ACT is CHE itself). Even after 1%/99% winsorization, the 1st-percentile cap is itself a large-magnitude negative number that pulls the mean below the p25. (d) Panel B confirms this mechanism: SD jumps from 1.0372 to 9.7913 once the sample shifts to 2005-2018 -- a period with materially more cash-rich firms, exactly where the AT-CHE denominator's blow-up tendency intensifies. A formula with AT in the denominator (Bates 2009 style) would NOT show this dramatic Panel-A-to-Panel-B SD jump because AT does not shrink for cash-rich firms. The paper's own Panel-A-vs-Panel-B SD ratio of 9.44 is therefore strong empirical evidence that the denominator is AT-CHE, not AT. (e) The user's failed attempt -- (ACT-LCT-DLC)/(AT-CHE) -- swaps CHE for DLC in the numerator. DLC is typically much smaller than CHE for most firms (median DLC/AT ~3%, median CHE/AT ~10%), so subtracting DLC instead of CHE leaves the numerator positive on average -- this drives the user's mean to +0.652 instead of the paper's -0.058. The denominator was correct; the numerator was wrong.",
+    "conclusive_operational_formula": "(ACT - LCT - CHE) / (AT - CHE). Equivalently (WCAP - CHE) / (AT - CHE) where WCAP is the Compustat-supplied working capital field. Confidence: HIGH. Basis: (1) The numerator term 'net working capital' in Boasiako-Keefe inherits directly from the verbatim Bates 2009 definition the paper cites as its template (\"We subtract cash (#1) from NWC (#179), so our NWC measure is net of cash\"). (2) The denominator term 'net assets' in Boasiako-Keefe inherits from the Opler 1999 convention that the paper also cites; Opler 1999's standard usage is non-cash assets = AT - CHE. (3) The published Table 1 distribution shape (mean negative, SD large relative to IQR, Panel-B SD ~10x Panel-A SD when sample shifts cash-richer) is mechanically diagnostic of a denominator that shrinks for cash-rich firms -- only AT-CHE has this property; plain AT does not. (4) The paper's Table A1 phrasing 'net working capital to net assets' linguistically matches Opler's denominator language, not Bates's. The hybrid -- Bates numerator + Opler denominator -- is a common convention in the post-2009 cash-holdings literature.",
+    "formulas_to_test": [
+      {
+        "numerator": "ACT - LCT - CHE",
+        "denominator": "AT - CHE",
+        "rationale": "PRIMARY CANDIDATE. Opler 1999 net-of-cash NWC scaled by net (non-cash) assets. Matches the paper's verbatim 'net working capital to net assets', the cited Bates 2009 numerator convention, and the published Panel-A SD=1.04 / Panel-B SD=9.79 explosion pattern that requires a denominator shrinking with cash holdings."
+      },
+      {
+        "numerator": "WCAP - CHE",
+        "denominator": "AT - CHE",
+        "rationale": "ALGEBRAICALLY EQUIVALENT TO PRIMARY when WCAP is non-missing. Worth running separately because Compustat WCAP has a different missingness pattern than (ACT - LCT) constructed directly; firms can have WCAP populated but ACT or LCT missing, or vice versa. The paper's 56,646 N versus our 81,482 gap (Task 04) may partly reflect which of these two computations the authors used."
+      },
+      {
+        "numerator": "ACT - LCT - CHE",
+        "denominator": "AT",
+        "rationale": "FALLBACK. Pure Bates 2009 convention (denominator = AT, not AT - CHE). Test this only if the primary fails. The paper's Panel-B SD jump argues against this construction, but it should be ruled out empirically rather than dismissed."
+      },
+      {
+        "numerator": "ACT - LCT",
+        "denominator": "AT - CHE",
+        "rationale": "FALLBACK. Plain working capital (no cash subtraction in numerator) scaled by net assets. Tests the alternative reading where 'net' in 'net working capital' is purely verbal and refers only to 'net assets' in the denominator. Less likely given Bates/Opler citation but a clean disambiguator: this construction produces a strictly more positive mean than the primary, so if the user's replication still misses the paper's negative mean after switching to the primary formula, this alternative can be eliminated."
+      }
+    ]
+  }
+}

@@ -31,6 +31,53 @@ ECONOMETRIC = REPO_ROOT / "outputs" / "econometric"
 RENDER_ORDER = REPO_ROOT / "config" / "suite_render_order.yaml"
 PER_SUITE_DIR = Path(__file__).resolve().parent / "per_suite"
 
+# Hand-curated benchmark/replication tables that appear in thesis_tables.tex but
+# are NOT produced by the suite-spec render path. Each is a standalone fragment
+# emitted by its own gen_*.py (see per-fragment comments below). They were
+# previously appended to thesis_tables.tex by hand — which a regen silently
+# dropped. Listing them here makes the generated thesis_tables.tex complete and
+# reproducible. The block starts with its own \clearpage (separates it from the
+# last rendered suite). Keep in sync with the gen_*.py fragment outputs.
+THESIS_FRAGMENT_BLOCK = [
+    r"\clearpage",
+    r"% Campello Table-8 rebuild — generated from step6 summary.json by",
+    r"% scripts/campello_rebuild/gen_thesis_t8_table.py (NOT hand-edited).",
+    r"% Regenerate: python scripts/campello_rebuild/gen_thesis_t8_table.py",
+    r"\input{_campello_rebuild_t8}",
+    r"\clearpage",
+    r"% Campello variable forensic audit — summary-stats compare (3 panels),",
+    r"% generated from tmp/campello_summary_stats_compare_2026_05_17.md by",
+    r"% scripts/campello_rebuild/gen_summary_stats_tex.py (NOT hand-edited).",
+    r"% Regenerate: python scripts/campello_rebuild/gen_summary_stats_tex.py",
+    r"\input{_campello_summary_stats}",
+    r"\clearpage",
+    r"% Disclosure-Law DiD — compact 3-col (Boasiako published benchmark |",
+    r"% our cash clone | our UncResCEO DV), canonical industry+state+year spec.",
+    r"% Generated from the latest run's suite_spec JSON by",
+    r"% scripts/gen_disclosure_law_compact_table.py (NOT hand-edited).",
+    r"% Regenerate: python scripts/gen_disclosure_law_compact_table.py",
+    r"\input{_disclosure_law_compact}",
+    r"",
+    r"\newpage",
+    r"\input{_boasiako_summary_stats}",
+    r"\clearpage",
+    r"% Empire-Building reverse-causality probe — pre-acquisition cash war-chest +",
+    r"% CEO uncertainty run-up test (two-way FE OLS; within-firm pre-window mean",
+    r"% shift, NOT a pre/post DiD). Generated from SDC + H1 panel by",
+    r"% scripts/gen_empire_did_table.py (NOT hand-edited).",
+    r"% Regenerate: python scripts/gen_empire_did_table.py",
+    r"\clearpage",
+    r"\input{_empire_building_spec}",
+    r"\clearpage",
+    r"\input{_empire_building_did}",
+    r"\clearpage",
+    r"% Cash-Scrutiny external validity (Link 1). Regenerate: python scripts/gen_cash_scrutiny_validity_table.py",
+    r"\input{_cash_scrutiny_validity}",
+    r"\clearpage",
+    r"% Cash-Scrutiny channel test (Link 2). Regenerate: python scripts/gen_cash_scrutiny_channel_table.py",
+    r"\input{_cash_scrutiny_channel}",
+]
+
 
 def suite_to_slug(suite_id: str) -> str:
     """Filename-safe slug for suite IDs (H11-Lag1 → h11_lag1, H1.1 → h1_1)."""
@@ -172,11 +219,64 @@ def main() -> int:
         r"\pagenumbering{arabic}",
         r"\begin{document}",
     ]
-    thesis_rendered = [tex_by_suite[sid] for sid in thesis_suite_ids if sid in tex_by_suite]
+    # Thesis pass re-renders with names_only=True so every variable shows its
+    # literal pipeline identifier (naming-consistency audit). Re-reads the same
+    # on-disk specs — no estimation re-run. Fishing-deck render (tex_by_suite)
+    # is left with display labels.
+    # H1.5.brexit_did / H1.5.disclosure_law_did are in thesis_suites for main.tex's
+    # per_suite \input, but in thesis_tables.tex they appear as the purpose-built
+    # comparison fragments (_campello_rebuild_t8 / _disclosure_law_compact) below —
+    # skip the generic render here to avoid duplicating them.
+    thesis_tables_skip = {"H1.5.brexit_did", "H1.5.disclosure_law_did"}
+    # Minimal thesis-table captions: each says ONLY the test (LaTeX prepends "Table N").
+    # Overrides the verbose suite_spec caption at render time -> reproducible, no re-run.
+    thesis_short_caption = {
+        "H1.ceo2.decomp":    "CEO Uncertainty and Cash Holdings",
+        "H1.2.ceo2.decomp":  "Cash Holdings: Financial-Constraint Moderation",
+        "H1.3.cfvol":        "Cash Holdings: Cash-Flow-Volatility Moderation",
+        "H11":               "Political Risk and Call Uncertainty",
+        "H11-Lag2":          "Political Risk and Call Uncertainty (Two-Quarter Lag)",
+        "H23":               "Product-Market Competition and Call Uncertainty",
+        "H24":               "US Policy Uncertainty and Call Uncertainty",
+        "H24b":              "Global Policy Uncertainty and Call Uncertainty",
+        "H14c.ceo2.decomp":  "CEO Uncertainty and the Bid-Ask Spread",
+        "H18.ceo2.decomp":   "CEO Uncertainty and SEC Comment-Letter Receipt",
+    }
+    # Thesis exhibit shows only the first N columns of a suite (drops robustness
+    # variants); the full column set stays in the fishing deck + suite_spec JSON.
+    thesis_keep_cols = {"H1.3.cfvol": 8}  # keep CashRatio + CashRatio_lead; drop Robust-FE cols 9-14
+
+    def _thesis_spec(sid):
+        spec = load_suite_spec(resolved[sid])
+        if sid in thesis_short_caption:
+            spec.caption = thesis_short_caption[sid]
+        keep = thesis_keep_cols.get(sid)
+        if keep and len(spec.columns) > keep:
+            spec.columns = spec.columns[:keep]
+            trimmed = []
+            for row in spec.header_rows:          # keep leading group cells up to `keep` span
+                cells, acc = [], 0
+                for cell in row:
+                    if acc >= keep:
+                        break
+                    cells.append(cell)
+                    acc += cell.span
+                trimmed.append(cells)
+            spec.header_rows = trimmed
+        return spec
+
+    thesis_rendered = [
+        render_suite(_thesis_spec(sid), names_only=True)
+        for sid in thesis_suite_ids
+        if sid in tex_by_suite and sid not in thesis_tables_skip
+    ]
     for i, tex in enumerate(thesis_rendered):
         thesis_master.append(tex)
         if i < len(thesis_rendered) - 1:
             thesis_master.append(r"\clearpage")
+    # Benchmark fragments (block starts with its own \clearpage) so the
+    # generated thesis_tables.tex is complete + reproducible (no hand-append).
+    thesis_master.extend(THESIS_FRAGMENT_BLOCK)
     thesis_master.append(r"\end{document}")
     thesis_tex_path = out_dir / "thesis_tables.tex"
     thesis_tex_path.write_text("\n".join(thesis_master), encoding="utf-8")

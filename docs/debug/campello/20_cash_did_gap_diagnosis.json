@@ -1,0 +1,107 @@
+{
+  "metadata": {
+    "task": "Diagnose three remaining gaps after applying the population fix to a Campello et al. (2022) Table 8 CASH DiD replication (top-tercile beta^UK_i specification, Spec B: Firm FE + Industry x Quarter FE, two-way clustered SE).",
+    "target_paper_cell": "Table 8, Column 1 (CASH, market-based treatment = top tercile beta^UK_i). Paper: delta = 0.231***, SE = 0.059, N = 17,170, R2 = 0.21.",
+    "user_current": "delta = 0.108*, SE = 0.057, N = 17,997, R2 = 0.03, DiD firms = 844 (475 treated, 514 control).",
+    "three_gaps": [
+      "(a) delta still ~46% of paper's magnitude (0.108 vs 0.231).",
+      "(b) R2 0.03 vs 0.21.",
+      "(c) control count elevated (514 vs 360); treated close (475 vs 449)."
+    ],
+    "request": "Not hypothesis-verification; open diagnosis of what could explain each gap.",
+    "copyright_note": "Stata/reghdfe documentation and forum sources quoted only in short fragments as facts. Campello et al. (2022) is CC BY 4.0."
+  },
+
+  "what_is_already_correct_do_not_change": {
+    "SE_match": "SE 0.057 vs 0.059 is essentially exact. With two-way (firm + calendar-quarter) clustering, this means the panel structure, clustering dimensions, and error structure are being replicated correctly. Do not touch the SE/clustering setup.",
+    "panel_length": "User N/firms ratio = 17,997/844 = 21.3 quarters per firm. Paper = 17,170/809 = 21.2 quarters per firm. IDENTICAL ratio. This confirms the paper uses the FULL 2010:Q1-2016:Q4 panel with POST=1 only for 2016:Q3-Q4 (NOT a 4-quarter window). The user's 'full panel' choice is correct and matches the paper. Do not switch to a 4-quarter window -- that would give N ~3,200 and would be wrong.",
+    "fe_structure": "Firm FE + (FIC-100 industry x calendar-quarter) FE matches equation (14). POST window (2016:Q3-Q4) matches. Control set (SIZE, CASH_FLOW, TOBIN_Q, SALES_GROWTH, STOCK_RETURNS, CONSENSUS_EPS) matches the paper's listed controls.",
+    "cash_dv_algebra": "User's CASH_DV = c/(1-c) with c = cheq/atq_lag equals cheq/(atq_lag - cheq), which is the Table 8 definition ('total cash holdings divided by lagged total assets net of cash holdings'). The transformation is algebraically correct. (Note: this differs from the Table 1 summary-stat definition cheq/atq_lag -- the paper uses two different cash definitions; the user correctly uses the Table 8 one for the regression.)"
+  },
+
+  "gap_b_rsquared_0p03_vs_0p21": {
+    "verdict": "Almost certainly a within-vs-overall R2 REPORTING-CONVENTION difference, NOT a model-fit problem. This is the easiest gap to close and does NOT affect delta.",
+    "reasoning": {
+      "paper_reports_FE_inclusive_R2": "Across the paper's tables: investment R2 = 0.75, NWC R2 = 0.89, CASH R2 = 0.21. A within R2 (covariates only, FE partialled out) for an investment DiD would be tiny (~0.01-0.10), never 0.75. The only way investment R2 = 0.75 is if the reported R2 INCLUDES the variation absorbed by the firm and industry-x-quarter fixed effects. Therefore the paper reports the FE-INCLUSIVE (overall) R2 throughout, and CASH's 0.21 is also FE-inclusive.",
+      "user_likely_reports_within_R2": "0.03 is a textbook WITHIN R2 for a DiD with a handful of controls. If the user is reading reghdfe's 'Within R-sq.' line (or xtreg, fe's within R2), it will be ~0.03 regardless of how well the model fits overall.",
+      "why_cash_FE_R2_is_only_0p21": "The net-of-cash transformation cheq/(atq_lag - cheq) amplifies high-cash firms and adds within-firm time variation, so firm FE explain less of it (~0.21) than they explain of investment (~0.75) or NWC (~0.89). 0.21 FE-inclusive for transformed cash is internally consistent."
+    },
+    "sources": [
+      {"source": "StataCorp FAQ, 'R-squared: areg versus xtreg, fe'", "fact": "areg counts the group dummies as explained variance (R2 includes FE); xtreg, fe reports the within R2 from the mean-deviated model (FE subtracted out). SSE is identical; only SST/R2 differ."},
+      {"source": "Statalist discussion on areg vs xtreg fe R2", "fragment": "the one for areg may be deceivingly high", "fact": "Recommends reporting both; the within R2 reflects only the covariates."},
+      {"source": "reghdfe FAQ / help (Sergio Correia)", "fact": "reghdfe reports a top-line 'R-squared' alongside a separate 'Within R-sq.' The top-line R-squared includes the absorbed fixed effects; 'Within R-sq.' does not."}
+    ],
+    "experiment": "In reghdfe, compare the paper's 0.21 to the TOP-LINE 'R-squared' (FE-inclusive), not 'Within R-sq.' If the top-line R-squared lands near ~0.2, this gap is fully explained and requires no data changes.",
+    "alternative_branch": "If the user's FE-INCLUSIVE (top-line) R2 is ALSO ~0.03, then firm FE are explaining almost none of the transformed-cash DV -- which would indicate the DV is corrupted (see gap_a tertiary: winsorize-then-transform inflating DV variance and destroying within-firm persistence). In that case, fix the DV (winsorize the FINAL ratio, not the intermediate) and re-check.",
+    "effect_on_delta": "None. R2 definition does not change the point estimate. This gap is independent of gap_a."
+  },
+
+  "gap_c_control_count_514_vs_360": {
+    "verdict": "Most likely a tercile-BASE issue interacting with the negative-beta exclusion. The paper's own reported counts are internally inconsistent with the literal stated method, which is the crux.",
+    "the_internal_tension_in_the_paper": {
+      "stated_method_verbatim": "we characterize firms as treated (control) units if they are in the upper (bottom) tercile of the nonnegative range of the beta^UK_i distribution. For group contrasting, we do not include firms that benefit from uncertainty in the United Kingdom in the control group (firms with beta^UK_i < 0).",
+      "implication_of_stated_method": "Terciles of the NONNEGATIVE range would split that range into ~equal thirds -> treated count ~= control count.",
+      "but_reported_counts_are_unequal": "Paper reports 449 treated (beta > 0.68) but only 360 control (beta < 0.28). 449 != 360 is INCONSISTENT with equal-count terciles of the nonnegative range.",
+      "two_reconciliations": [
+        "(i) Terciles are computed over the FULL beta distribution (including negatives); control = bottom third AND beta >= 0. Dropping the negative-beta firms from the bottom third shrinks control below treated. This cleanly produces 449 > 360 (it implies ~89 negative-beta firms sit in the bottom third and are excluded from control).",
+        "(ii) Terciles over the nonnegative range give equal groups, but the two groups attrit differently once CASH + controls + panel requirements are imposed (treated firms, being higher-exposure/larger/more-covered, retain data better than control firms)."
+      ]
+    },
+    "what_the_user_is_likely_doing": "The user (terciling the NONNEGATIVE-only pool) gets treated ~= control (475 vs 514, roughly equal thirds). This is the signature of reconciliation-path-stated-method, and is arguably MORE faithful to the literal wording than the paper's own reported counts. The paper's smaller control group points to either path (i) or path (ii) being what the authors actually did.",
+    "experiments": [
+      "Tercile over the FULL beta^UK_i distribution (including negative betas), assign treated = top third and control = bottom third, THEN drop beta < 0 from the control group only. Check whether control falls toward ~360 while treated stays ~449. If yes, the paper used full-distribution terciles + post-hoc negative exclusion (path i).",
+      "If counts do not move, replicate path (ii): tercile the nonnegative range, then impose the EXACT CASH-regression data requirements (non-missing cheq, atq_lag, all six controls, consecutive-quarter rule) and check whether control attrits more than treated.",
+      "Verify negative-beta firms are excluded from control under whichever scheme; confirm the user is not leaking beta<0 firms into the [0,0.28) bin."
+    ],
+    "honest_caveat": "Because the paper's stated method and its reported counts disagree, there is no fully unambiguous target here. The user should treat 449/360 as the goal and test which tercile base reproduces it, rather than assume their own ~equal split is wrong."
+  },
+
+  "gap_a_delta_0p108_vs_0p231": {
+    "verdict": "Multi-source. The most actionable driver is linked to gap_c (control-group contamination); a residual is likely driven by undocumented beta-construction differences (attenuation) that the population fix cannot close.",
+    "primary_control_group_contamination": {
+      "mechanism": "The user's control group has ~150 too many firms (514 vs 360), all low-but-nonnegative beta. If these extra firms are mildly UK-exposed (firms the paper places in the middle tercile or excludes), including them in the control group shrinks the treated-minus-control contrast and attenuates delta. A contaminated comparison group biases DiD estimates toward zero.",
+      "link_to_gap_c": "Fixing gap_c (tightening control toward 360) is the single most promising lever for raising delta. Tighter, cleaner control = larger estimated treatment differential.",
+      "expected_direction": "Removing the extra control firms should move delta UP from 0.108 toward 0.231.",
+      "coherence_check": "User N (17,997) exceeds paper (17,170) by +827; user firms (844) exceed paper (809) by +35; +35 firms x ~21 quarters ~= +735 ~ +827. So the residual N gap IS the control-count gap. Fixing control fixes N too."
+    },
+    "secondary_treatment_measurement_error": {
+      "mechanism": "If the user's top-tercile membership is a NOISIER proxy for true UK exposure than the paper's, classical measurement error in a binary treatment indicator attenuates delta toward zero -- even with the correct number of treated firms.",
+      "sources_of_beta_noise_from_prior_round": [
+        "Index/FX data: paper uses Bloomberg for FTSE100, S&P500, USD/GBP; user uses Yahoo Finance (FTSE100) and Bank of England (USD/GBP). Different series shift the regressors' volatility and thus each firm's loading, reshuffling tercile membership.",
+        "Monthly volatility construction: the paper never specifies how vol() is formed at monthly frequency (realized SD of daily returns? something else?). The user's >=15-days-per-month realized-vol choice is an assumption; a different construction changes betas.",
+        "Minimum observations: user requires >=24 monthly obs; the paper states no minimum, only the 2010:M1-2014:M12 window. A different inclusion rule changes which firms have a beta and the tercile cutpoints."
+      ],
+      "why_it_matters_here": "This is the residual that the population fix cannot close. If, after fixing gap_c, delta is (say) ~0.15-0.19 rather than 0.231, the remaining shortfall most plausibly reflects beta-proxy differences shuffling firms across the treated/middle/control boundaries. This is a paper-reproducibility limitation, not necessarily a coding error.",
+      "diagnostic": "Compare your empirical tercile cutpoints to the paper's reported 0.68 / 0.28. Large divergence isolates a beta-construction/data difference rather than a sample-definition difference."
+    },
+    "tertiary_dv_winsorization_order": {
+      "mechanism": "The user winsorizes c = cheq/atq_lag at 1% and THEN transforms to c/(1-c). The paper's description implies forming cheq/(atq_lag - cheq) and winsorizing THAT at 1%. On the amplified net-of-cash scale, c/(1-c) explodes as c -> 1, so the winsorization POINT materially changes the DV's right tail, its variance, and hence both the slope (delta) and the FE-inclusive R2.",
+      "fix": "Winsorize the FINAL ratio cheq/(atq_lag - cheq) at 1%, not the intermediate cheq/atq_lag. Re-estimate.",
+      "expected_effect": "Modest; could move delta and could also resolve the alternative-branch concern under gap_b."
+    },
+    "minor_consensus_eps": {
+      "issue_1_standardization": "Table 1 defines CONSENSUS_EARNINGS_FORECAST as the 'standardized mean 1-quarter ahead EPS forecast.' 'Standardized' typically means a z-score (demean AND divide by SD), not demeaning alone. The user only per-quarter demeans. If the paper z-scored, the control's scale differs.",
+      "issue_2_winsorization_level": "The user winsorizes CONSENSUS_EPS at 1.5% while the paper states 'All variables are winsorized at the 1% level' (Table 1 note). Use 1% for consistency.",
+      "issue_3_timing": "The user treats CONSENSUS_EPS as forward-looking (1-quarter-ahead, not lagged), consistent with the paper adding '1-quarter-ahead consensus earnings forecasts.' This is fine.",
+      "expected_effect": "Small. Controls mainly affect fit, not delta, but standardization/winsorization mismatches add minor noise."
+    }
+  },
+
+  "cross_links_and_priority": {
+    "separability": "Gap (b) is independent (reporting convention; no effect on delta). Gaps (a) and (c) are linked through control-group contamination.",
+    "single_highest_value_action": "Resolve gap (c): determine the tercile BASE (full distribution vs nonnegative-only) that reproduces 449/360, with negative-beta firms excluded from control. This simultaneously (i) brings the control count to ~360, (ii) brings N to ~17,170, and (iii) raises delta toward 0.231 by de-contaminating the comparison group.",
+    "prioritized_actions": [
+      "1. (gap b) Report reghdfe's top-line 'R-squared' (FE-inclusive), not 'Within R-sq.' Likely closes the R2 gap with zero data changes.",
+      "2. (gap c -> a) Re-run tercile assignment using the FULL beta distribution; treated = top third, control = bottom third; drop beta<0 from control only. Check if control -> ~360 and delta rises.",
+      "3. (gap a tertiary) Winsorize the FINAL cash ratio cheq/(atq_lag-cheq) at 1% instead of the intermediate. Re-estimate.",
+      "4. (gap a minor) Set CONSENSUS_EPS winsorization to 1% and test z-score standardization vs demean-only.",
+      "5. (gap a secondary, diagnostic) Compare your empirical tercile cutpoints to 0.68/0.28. If they diverge after steps 2-4, attribute residual delta shortfall to beta-construction/data differences (Bloomberg vs Yahoo/BoE; monthly-vol method) rather than to your DiD code."
+    ]
+  },
+
+  "epistemic_caveats": [
+    "The paper's stated treatment method ('tercile of the nonnegative range') is inconsistent with its reported counts (449 treated > 360 control); the true assignment rule is therefore ambiguous and must be inferred by experiment.",
+    "The paper does not specify the monthly-volatility construction, a minimum-observation rule for beta, the CRSP share-code/exchange screens, or the exact winsorization point for the transformed cash DV. Several of these are degrees of freedom that bound how closely delta can be reproduced.",
+    "No public replication package exists for this paper (JFQA code-sharing is voluntary for pre-2024 submissions), so none of the above can be checked against the authors' code. The delta shortfall may partly reflect the paper's limited reproducibility rather than an error in the user's implementation."
+  ]
+}

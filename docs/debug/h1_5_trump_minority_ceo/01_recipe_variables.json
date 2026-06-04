@@ -1,0 +1,34 @@
+{
+  "dependent_variables": [
+    {"name": "MgtSentimt", "label_in_table": "MgtSentimt"},
+    {"name": "BiasScale", "label_in_table": "BiasScale"}
+  ],
+  "treatment_variables": [
+    {"name": "MinorityCEO", "label_in_table": "MinorityCEO"},
+    {"name": "Post", "label_in_table": "Post"}
+  ],
+  "interaction_term": [
+    {"name": "MinorityCEO x Post", "label_in_table": "MinorityCEO × Post"}
+  ],
+  "control_variables": [
+    {"name": "LogHorizon", "label_in_table": "LogHorizon"},
+    {"name": "CEOAge", "label_in_table": "CEOAge"},
+    {"name": "ExecuDir", "label_in_table": "ExecuDir"},
+    {"name": "LogSalary", "label_in_table": "LogSalary"},
+    {"name": "CEOGender", "label_in_table": "CEOGender"},
+    {"name": "MB", "label_in_table": "MB"},
+    {"name": "Size", "label_in_table": "Size"},
+    {"name": "AnalystFollowing", "label_in_table": "AnalystFollowing"},
+    {"name": "InstitHolding", "label_in_table": "InstitHolding"},
+    {"name": "Std_Ret", "label_in_table": "Std_Ret"},
+    {"name": "Dloss", "label_in_table": "Dloss"},
+    {"name": "Leverage", "label_in_table": "Leverage"},
+    {"name": "Std_Earning", "label_in_table": "Std_Earning"}
+  ],
+  "fixed_effects": [
+    {"name": "Industry FE", "label_in_table": "Industry FE"},
+    {"name": "Industry x Quarter FE", "label_in_table": "Industry×Quarter FE"},
+    {"name": "Firm FE", "label_in_table": "Firm FE"},
+    {"name": "Quarter FE", "label_in_table": "Quarter FE"}
+  ]
+}

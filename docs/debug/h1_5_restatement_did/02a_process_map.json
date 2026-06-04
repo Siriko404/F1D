@@ -1,0 +1,562 @@
+{
+  "_meta": {
+    "paper": "Chen, H., Chen, Z., Dhaliwal, D. S., & Huang, Y. (2017/2020). Accounting Restatements and Corporate Cash Policy. Journal of Accounting, Auditing & Finance, 35(2), 290-317.",
+    "target_output": "Table 3, Panel A (Baseline Model) — 6 columns, 2 'test of difference' rows",
+    "design_summary": "Split-sample propensity-score-matched difference-in-differences. Treatment effect = β_POST_restatement − β_POST_control, estimated via joint regression for SE inference.",
+    "workflow_date": "2026-05-27",
+    "expected_final_N_per_column": {
+      "all_restatements_restatement_firms": 4941,
+      "all_restatements_control_firms": 5004,
+      "error_restatement_firms": 3550,
+      "error_control_firms": 3570,
+      "irregularity_restatement_firms": 1391,
+      "irregularity_control_firms": 1434
+    }
+  },
+
+  "workflow": [
+    {
+      "phase": 1,
+      "phase_name": "RESTATEMENT DATA — Events list, classification, and gvkey mapping",
+      "steps": [
+        {
+          "step": "1.1",
+          "operation": "Obtain restatement events list",
+          "source": "Hennes, Leone, and Miller (2008) supplementary appendix / dataset",
+          "secondary_source": "Underlying GAO reports: GAO-03-138 (2003) and GAO-06-678 (2006) — these list restatements announced January 1997 through June 2006",
+          "expected_count": 2705,
+          "notes": "Chen et al. do NOT use Audit Analytics. The Hennes-Leone-Miller (HLM) dataset is the canonical source for this paper. HLM should be obtained from the authors or from the JAR (2008) supplementary materials.",
+          "ambiguity_flags": [
+            "Paper does not explicitly state which version of HLM dataset (the 2008 JAR paper's appendix vs any subsequent updates). The 2,705 starting count matches HLM (2008) Table 1.",
+            "GAO-06-678 may overlap with GAO-03-138 for restatements in 2002-2003 — the user must verify that HLM has already deduplicated across the two reports, or do it themselves."
+          ]
+        },
+        {
+          "step": "1.2",
+          "operation": "Classify each restatement as ERROR vs IRREGULARITY",
+          "source": "Hennes, Leone, and Miller (2008) classification flag",
+          "criterion_per_HLM": "Irregularity = (i) the restatement is described using variants of the words 'fraud' or 'irregularity', OR (ii) the firm is the subject of an SEC or DOJ investigation, OR (iii) the restatement is associated with an independent investigation of accounting matters. Errors = all other restatements.",
+          "expected_split_after_all_filters": "270 irregularities, 679 errors",
+          "ambiguity_flags": [
+            "Paper says 'Following Hennes, Leone, and Miller (2008)' without re-coding. The replicator MUST use HLM's binary flag directly, not re-derive it."
+          ]
+        },
+        {
+          "step": "1.3",
+          "operation": "Map restatement firms to Compustat GVKEY",
+          "source": "HLM dataset typically includes CIK and ticker; map to GVKEY via Compustat's CIK file (comp.company) or via CRSP-Compustat Merged linktable",
+          "notes": "The 296-observation drop for 'Firms not listed in COMPUSTAT' in the paper's filter waterfall happens here.",
+          "ambiguity_flags": [
+            "Paper does not specify the matching procedure (CIK direct match vs CCM linktable vs manual ticker match).",
+            "Paper does not specify how it handles firms with multiple GVKEYs across time (e.g., post-spinoff GVKEY assignments)."
+          ]
+        }
+      ]
+    },
+
+    {
+      "phase": 2,
+      "phase_name": "SAMPLE FILTERS — Apply waterfall to reach 949",
+      "ordering_critical": "Yes — the paper presents filters in a specific waterfall order in Table 1 Panel A; reproducing those counts requires applying filters in that order.",
+      "steps": [
+        {
+          "step": "2.1",
+          "filter": "Start",
+          "operation": "All GAO/HLM restatement events 1997-2006",
+          "running_N": 2705
+        },
+        {
+          "step": "2.2",
+          "filter": "Drop duplicate announcements",
+          "operation": "Remove rows where the same (firm, announcement_date) appears more than once",
+          "dropped": 203,
+          "running_N": 2502,
+          "ambiguity_flags": [
+            "Paper does not define 'duplicate' — likely identical (firm, announcement_date) but could also mean (firm, restated_period). HLM may have pre-deduplicated; replicator should verify.",
+            "GAO-03-138 and GAO-06-678 overlap in 2002-2003; some 'duplicates' may be cross-report duplicates."
+          ]
+        },
+        {
+          "step": "2.3",
+          "filter": "Drop firms not listed in Compustat",
+          "operation": "Inner-join restatement firms to Compustat company table on GVKEY (or via CIK link)",
+          "dropped": 296,
+          "running_N": 2206
+        },
+        {
+          "step": "2.4",
+          "filter": "Drop subsequent restatements (keep only first per firm)",
+          "operation": "For each GVKEY with multiple restatement announcements in 1997-2006, keep only the EARLIEST announcement_date and drop the rest",
+          "dropped": 396,
+          "running_N": 1810,
+          "rationale": "Ensures the pre-restatement period [-3,-1] is not contaminated by an earlier restatement.",
+          "ambiguity_flags": [
+            "Paper does not specify whether 'earliest' is by announcement_date or by restated_period_start. Convention: announcement_date."
+          ]
+        },
+        {
+          "step": "2.5",
+          "filter": "Drop financial firms",
+          "operation": "Drop GVKEYs with primary SIC ∈ [6000, 6999]",
+          "dropped": 270,
+          "running_N": 1540,
+          "ambiguity_flags": [
+            "Paper does not specify Compustat SIC (comp.company.sic) vs CRSP SIC (crsp.stocknames.siccd) vs historical SIC. Convention: Compustat current SIC."
+          ]
+        },
+        {
+          "step": "2.6",
+          "filter": "Drop utility firms",
+          "operation": "Drop GVKEYs with primary SIC ∈ [4900, 4999]",
+          "dropped": 60,
+          "running_N": 1480
+        },
+        {
+          "step": "2.7",
+          "filter": "Drop observations failing data-quality / PSM-variable screens",
+          "operation": "Drop firm-years with: (a) missing financial data needed for control variables; (b) cash > total assets (CHE/AT > 1); (c) AT and MVE below $10M; (d) growth in assets or sales > 100%",
+          "dropped": 496,
+          "running_N": 984,
+          "ambiguity_flags": [
+            "HIGH-SEVERITY INCONSISTENCY: Paper's Table 1 Panel A row labels this as 'Firms with missing variables used to estimate the propensity scores (496).' Body text on the same page describes it as the data-quality screens above. These are NOT obviously the same filter. The 496 count reconciles to one specific operationalization but the paper doesn't pin down which.",
+            "'Total assets AND market value of equity below US $10 million' — literally an AND condition (both must be < $10M to drop). Standard convention is OR. The literal reading is more permissive.",
+            "'Growth in assets or sales exceeding 100%' — does this mean (ΔAT/AT_lag > 1) OR (ΔSALE/SALE_lag > 1)? Yes, by convention.",
+            "Over which event year(s) are these screens applied? Year 0 only? All event years t ∈ [-3,+3]? The paper does not say. If a firm passes the screen in year -3 but fails in year +2, is it dropped entirely or just for that year? The 496 drop count is at the FIRM level (restatements), suggesting firm-level application — but the operationalization is unclear."
+          ]
+        },
+        {
+          "step": "2.8",
+          "filter": "Drop restatements with no matched control firm",
+          "operation": "After PSM (Phase 3), drop restatement firms for which no non-restatement firm in the same FF48 industry with a propensity score exists in year 0",
+          "dropped": 7,
+          "running_N": 977,
+          "ambiguity_flags": [
+            "Paper does not say what happens when all candidates in an industry are already used (without replacement). Iterative re-matching is mentioned in the appendix but the 7 drops may be cases where iteration exhausted the candidate pool."
+          ]
+        },
+        {
+          "step": "2.9",
+          "filter": "Drop restatements with missing post-restatement data",
+          "operation": "Drop firms with no observations in event years [+1, +3]",
+          "dropped": 28,
+          "running_N": 949,
+          "ambiguity_flags": [
+            "Paper does not specify the minimum required post-restatement observations (≥1 of 3? all 3?). Convention: at least one observation in [+1,+3]."
+          ]
+        }
+      ],
+      "final_after_phase_2": {
+        "total_restatements": 949,
+        "error_restatements": 679,
+        "irregularity_restatements": 270
+      }
+    },
+
+    {
+      "phase": 3,
+      "phase_name": "PSM MATCHING — Probit model, 20 covariates, 1:1 within FF48",
+      "design": "Estimate probit on full universe of firm-years (restatement and non-restatement firms pooled). For each restatement firm, select the non-restatement firm with closest propensity score within the same FF48 industry in year 0.",
+      "steps": [
+        {
+          "step": "3.1",
+          "operation": "Construct candidate pool",
+          "source": "Compustat Funda 1994-2006 (need t-3 lag for first restatement in 1997)",
+          "criteria": "All non-restatement firms (firms that never announced a restatement in the 1997-2006 sample period). All firm-years where the firm appears with required covariates.",
+          "expected_size": "~20,217 non-restatement firms (from Table A1 'before matching' n)",
+          "ambiguity_flags": [
+            "Paper says 'we include all annual observations of the non-restatement firms during our sample period.' Sample period for non-restatement firms is presumably 1997-2006 (matching window), but the covariates require t-3 lag, so data must extend back to 1994.",
+            "Are financial firms (SIC 6000-6999) and utility firms (SIC 4900-4999) also excluded from the control pool? Convention: YES. Paper does not explicitly state this for the control pool, only for restatements. Standard practice excludes them from both."
+          ]
+        },
+        {
+          "step": "3.2",
+          "operation": "Construct PSM covariates",
+          "X1_cash_holdings_determinants": ["SIZE", "Q", "CF", "LEV", "NWC", "SIGMA", "NSEG", "AGE", "CAPX", "R&D", "ACQUISITION", "DIV"],
+          "X2_restatement_determinants": ["SGRW (sales growth)", "FINANCE (net external financing)", "DNWC (change in NWC)", "LOSS (loss indicator)", "Z-SCORE (Altman 1968)", "BigN"],
+          "X3_cash_trend_controls": ["CASH (level)", "DCASH (change in cash)"],
+          "total_covariates": 20,
+          "measurement_window": "Mean over years t-3 to t-1 relative to restatement announcement year (year 0). For non-restatement firms, year 0 cycles through 1997-2006 to generate candidate observations.",
+          "ambiguity_flags": [
+            "Paper defines SGRW, FINANCE, DNWC, LOSS, Z-SCORE only by name; full formulas not given in main text. SGRW likely = (SALE - lag(SALE))/lag(SALE); FINANCE likely = DLTIS - DLTR + SSTK - PRSTKC (sometimes scaled by AT); DNWC likely = ΔNWC; LOSS = 1 if NI < 0; Z-SCORE = Altman's classic formula. Each requires inference.",
+            "CAPX, R&D, ACQUISITION, DIV appear in BOTH the PSM probit AND the baseline Panel B regression (not Panel A). Definitions must be consistent.",
+            "PSM uses 3-year averages of covariates, while baseline regression uses contemporaneous values. Replicator must not confuse the two."
+          ]
+        },
+        {
+          "step": "3.3",
+          "operation": "Estimate probit model",
+          "specification": "Pr(RESTATE_i,t = 1) = β1·X1 + β2·X2 + β3·X3 + FF48 industry FE + year FE + ε",
+          "outcome": "RESTATE_i,t = 1 for restatement firms (one obs per firm at year 0); = 0 for non-restatement firms (all annual observations)",
+          "expected_diagnostics_before_matching": {
+            "n": 21201,
+            "pseudo_R2": 0.101,
+            "model_p_value": "< .001"
+          },
+          "ambiguity_flags": [
+            "Paper does not say whether sample is balanced for the probit (e.g., random sample of non-restatement firm-years vs all). The n=21,201 before matching includes 984 restatement obs + 20,217 non-restatement obs, suggesting ALL non-restatement firm-years enter.",
+            "Year FE construction: are the years calendar year of the year-0 observation, or fiscal year? Convention: fiscal year."
+          ]
+        },
+        {
+          "step": "3.4",
+          "operation": "Compute propensity scores",
+          "operation_detail": "Predicted probability from probit, for each firm-year (restatement and non-restatement)",
+          "ambiguity_flags": [
+            "Score computed including or excluding the industry and year FE in the linear predictor? Convention: include all terms in linear predictor before applying logistic CDF."
+          ]
+        },
+        {
+          "step": "3.5",
+          "operation": "1:1 nearest-neighbor matching within FF48, no caliper, no replacement",
+          "procedure": [
+            "For each restatement firm i (in year 0): find all non-restatement firms in the same FF48 industry as i, in the same year as i's year 0, with valid propensity scores.",
+            "Select the non-restatement firm with the closest absolute difference in propensity score.",
+            "If multiple restatement firms claim the same control firm: assign the control to the restatement firm with the smallest propensity-score gap; the other restatement firms re-match against the remaining pool.",
+            "Iterate until all restatement firms have a unique control or the candidate pool is exhausted for that industry-year (those drop in Step 2.8)."
+          ],
+          "caliper": "NONE specified",
+          "industry_classification": "Fama-French 48 (Fama and French 1997)",
+          "matching_year": "Restatement's year 0 (announcement year). Both restatement and matched control are pinned to the same calendar year for the match.",
+          "expected_diagnostics_after_matching": {
+            "n": 1898,
+            "pseudo_R2": 0.007,
+            "model_p_value": "≈ 1.000"
+          },
+          "ambiguity_flags": [
+            "MEDIUM AMBIGUITY: Iterative re-matching can produce non-unique solutions depending on the order in which conflicts are resolved. Paper says 'select the pair with the smallest difference' and 'repeat the above matching procedure after eliminating the selected control firm' — this is a greedy algorithm sensitive to processing order. Two replicators may not get bit-identical matches.",
+            "Paper does not specify whether replacement is allowed when the candidate pool within an industry-year is exhausted. Implicit: NO, since it says 'without replacement' explicitly.",
+            "Paper does not specify what happens if the matched control's covariates are extreme outliers — there's no caliper, so the match could be poor."
+          ]
+        }
+      ]
+    },
+
+    {
+      "phase": 4,
+      "phase_name": "EVENT-WINDOW PANEL CONSTRUCTION",
+      "steps": [
+        {
+          "step": "4.1",
+          "operation": "Assign event years to restatement firms",
+          "rule": "For restatement firm i with announcement year T_i (year 0), include firm-years for t ∈ {T_i-3, T_i-2, T_i-1, T_i+1, T_i+2, T_i+3}",
+          "year_0_handling": "EXCLUDED from main regression sample",
+          "ambiguity_flags": [
+            "Paper uses 'fiscal year of the restatement announcement' as year 0. If restatement is announced in calendar 2003 but fiscal year ends in March, year 0 = fiscal 2003 (ending March 2004). Convention: use FYEAR of the fiscal year containing the announcement_date.",
+            "What if the announcement_date falls before the fiscal year-end? E.g., announcement in March 2003 for a firm with December year-end — year 0 = fiscal 2003 (Dec 2003)? Or year 0 = fiscal 2002 (Dec 2002, the most recently completed at announcement)? Paper is silent. Convention: year 0 = the fiscal year in which the announcement occurs."
+          ]
+        },
+        {
+          "step": "4.2",
+          "operation": "Assign event years to matched control firms",
+          "rule": "Control firm inherits its matched restatement firm's announcement year T_i. So control firm-years are pulled for t ∈ {T_i-3, ..., T_i-1, T_i+1, ..., T_i+3} relative to the MATCHED restatement firm's T_i, not relative to any event in the control firm's own history.",
+          "rationale": "Synchronous event time alignment between treated and control. This is what makes the DiD work."
+        },
+        {
+          "step": "4.3",
+          "operation": "Construct POST indicator",
+          "rule": "POST = 1 if t ∈ {+1, +2, +3}; POST = 0 if t ∈ {-3, -2, -1}",
+          "applies_identically_to_treated_and_controls": "Yes — control firms inherit the same POST construction relative to their matched treated firm's T_i",
+          "year_0_observations": "DROPPED — not POST=0, not POST=1, but excluded entirely"
+        },
+        {
+          "step": "4.4",
+          "operation": "Stack into firm-year panel",
+          "structure": "Long panel: one row per (firm, event_year). Each firm contributes up to 6 firm-years.",
+          "expected_max_rows": "949 restatement × 6 = 5,694 max for treated; 949 control × 6 = 5,694 max for controls",
+          "expected_actual_rows": "Restatement: 4,941 (Table 3 Panel A col 1); Control: 5,004 (Table 3 Panel A col 2). Attrition ~13% from missing firm-years.",
+          "ambiguity_flags": [
+            "Paper does not state minimum required event-years per firm. A firm with only 1 event-year contributes nothing to firm-fixed-effects identification but is mathematically valid. Convention: include any firm-year with valid covariates."
+          ]
+        }
+      ]
+    },
+
+    {
+      "phase": 5,
+      "phase_name": "VARIABLE CONSTRUCTION (baseline Panel A controls only)",
+      "ordering_notes": "All variables computed at the firm-year level on the event-window panel from Phase 4.",
+      "variables": [
+        {
+          "name": "CASH (dependent)",
+          "formula": "CHE / AT",
+          "compustat_items": "CHE, AT",
+          "notes": "Cash and short-term investments / total assets",
+          "ambiguity": null
+        },
+        {
+          "name": "POST (treatment indicator)",
+          "formula": "1 if event-year t ∈ {+1,+2,+3}; 0 if t ∈ {-3,-2,-1}",
+          "notes": "Already constructed in Phase 4.3"
+        },
+        {
+          "name": "Q (Tobin's Q)",
+          "formula": "(AT + PRCC_F * CSHO - CEQ) / AT",
+          "compustat_items": "AT, PRCC_F, CSHO, CEQ",
+          "notes": "Simple market-to-book. No deferred-tax or preferred-stock adjustments."
+        },
+        {
+          "name": "SIZE",
+          "formula": "ln(AT)",
+          "ambiguity": "Whether AT is in $millions (Compustat default) or some other unit — affects level but not coefficients meaningfully. Convention: $millions."
+        },
+        {
+          "name": "CF (operating cash flow)",
+          "formula": "OANCF / AT",
+          "ambiguity": "OANCF is post-SFAS 95 (1988+). For pre-1988 firm-years, no equivalent — but Chen et al.'s window starts at 1994 (= 1997-3) so this is not an issue."
+        },
+        {
+          "name": "NWC (net working capital)",
+          "formula": "((ACT - CHE) - (LCT - DLC)) / AT",
+          "compustat_items": "ACT, CHE, LCT, DLC, AT",
+          "notes": "Verbatim from paper including DLC item"
+        },
+        {
+          "name": "LEV (book leverage)",
+          "formula": "(DLTT + DLC) / AT"
+        },
+        {
+          "name": "SIGMA (industry cash flow volatility)",
+          "formula_per_convention_A": "For each firm-year, compute SD of CF over previous 10 firm-years. Then for each (industry, year), take median across firms in industry.",
+          "formula_per_convention_B": "For each (industry, year), take industry-median CF. Compute SD of that median series over previous 10 years.",
+          "ambiguity": "MEDIUM. Paper's phrasing 'industry-median value of the standard deviation of operating cash flow over the previous 10 years' is ambiguous. Convention A (more common in literature, Opler et al. 1999) is the default. Convention B is what IND_STDCF in Table 4 unambiguously is.",
+          "industry_classification": "Not stated for baseline SIGMA. Footnote 3 says FF48 for the cross-sectional PS_DEMAND construction. Convention: FF48 for SIGMA too.",
+          "rolling_window": "Previous 10 fiscal years; requires firms to have ≥10 years of CF history for SIGMA to be computable for them. If using industry median, the industry just needs ≥10 firm-years total."
+        },
+        {
+          "name": "NSEG (number of business segments)",
+          "formula": "Count of business segments with non-zero identifiable assets per firm-year, from Compustat Historical Segments",
+          "missing_imputation": "Set to 1 if missing",
+          "ambiguity": "Compustat segment file (Business Segments vs Operating Segments) not specified. Convention: include both stype IN ('BUSSEG','OPSEG') to span SFAS 131 transition (1998). Filter srcdate = datadate to avoid restatement-vintage duplicates."
+        },
+        {
+          "name": "AGE",
+          "formula": "ln(current_year - first_year_in_Compustat + 1)",
+          "ambiguity": "Compustat annual (funda) vs quarterly (fundq) first-appearance not specified. Convention: funda. '+1' to handle year-zero case is convention; paper doesn't say."
+        }
+      ],
+      "winsorization": "NOT MENTIONED in paper. Convention: NO winsorization. Outliers handled by Phase 2.7 drops only.",
+      "missing_value_handling": {
+        "NSEG": "Set to 1 (explicit)",
+        "all_others": "Drop firm-years with any missing baseline control"
+      }
+    },
+
+    {
+      "phase": 6,
+      "phase_name": "REGRESSION ESTIMATION",
+      "specification": "CASH_{i,t} = α_i + β·POST_{i,t} + γ·CONTROLS + ε_{i,t}",
+      "controls": ["Q", "SIZE", "CF", "NWC", "LEV", "SIGMA", "NSEG", "AGE"],
+      "fixed_effects": "Firm fixed effects (α_i). No year fixed effects (POST captures the event-time variation, and year FE would absorb cross-firm calendar-time variation differently for treated vs control).",
+      "estimation": {
+        "approach": "Split-sample DiD. Estimate the equation SEPARATELY on (a) the restatement-firm panel and (b) the matched-control panel.",
+        "treatment_effect": "β_POST_restatement − β_POST_control",
+        "joint_inference": "For SE on the difference, stack the two regressions and estimate jointly (SUR-style), allowing different coefficients across the two samples but a joint variance-covariance matrix for the POST coefficients.",
+        "ambiguity_flags": [
+          "Paper says regressions are 'estimated simultaneously' in Table 3 note but does not give the exact estimator. Convention: stacked OLS with sample-interaction terms — equivalent to running the two regressions separately but computing a joint VCV.",
+          "Standard alternative would be a single regression: CASH = α_i + β1·TREAT + β2·POST + β3·TREAT*POST + γ·CONTROLS + ε, with β3 as the treatment effect. Mathematically NOT equivalent because Chen et al. allow CONTROL coefficients to differ across samples; the interaction-term version constrains them to be equal. A replicator who uses the interaction approach will get DIFFERENT estimates."
+        ]
+      },
+      "standard_errors": {
+        "method": "Two-way clustering at MATCHED PAIR level and YEAR level",
+        "reference": "Gow, Ormazabal, and Taylor (2010)",
+        "clusters": {
+          "pair_clusters": 949,
+          "year_clusters": "Approximately 13-16 (calendar years 1994-2009 spanned by event-time window)"
+        },
+        "ambiguity_flags": [
+          "Year cluster count is borderline for the asymptotic validity of cluster-robust SE (rule of thumb: need ≥30 clusters). The paper acknowledges this implicitly by also having pair-level clustering (949 clusters).",
+          "Year clustering: is the cluster the CALENDAR year or the EVENT year? Convention: calendar year. If event year, the test becomes trivially insignificant (POST is collinear with event year)."
+        ]
+      },
+      "outputs_per_column": "POST coefficient with t-statistic; control coefficients with t-statistics; firm FE indicator; adjusted R²; N",
+      "expected_POST_coefficients_Panel_A": {
+        "col_1_all_restatement": 0.029,
+        "col_2_all_control": 0.011,
+        "col_1_minus_col_2_difference": 0.018,
+        "col_1_minus_col_2_p_value": 0.003,
+        "col_3_error_restatement": 0.020,
+        "col_4_error_control": 0.011,
+        "col_3_minus_col_4_difference": 0.009,
+        "col_3_minus_col_4_p_value": 0.199,
+        "col_5_irregularity_restatement": 0.046,
+        "col_6_irregularity_control": 0.012,
+        "col_5_minus_col_6_difference": 0.034,
+        "col_5_minus_col_6_p_value": 0.002
+      }
+    },
+
+    {
+      "phase": 7,
+      "phase_name": "OUTPUT FORMATTING — Table 3 Panel A layout",
+      "structure": {
+        "header_row_1": "All restatements | Restatements related to errors | Restatements related to irregularities",
+        "header_row_2": "Restatement firms | Control firms | Restatement firms | Control firms | Restatement firms | Control firms",
+        "column_indices": "[1] | [2] | [3] | [4] | [5] | [6]",
+        "main_coefficient_row": "POST — coefficient and t-statistic for each column",
+        "test_of_difference_rows": [
+          {
+            "row": "Test of difference in the coefficient of POST",
+            "values": ["[1] − [2] = 0.018***", "[3] − [4] = 0.009", "[5] − [6] = 0.034***"]
+          },
+          {
+            "row": "[p value]",
+            "values": ["[.003]", "[.199]", "[.002]"]
+          }
+        ],
+        "control_variable_rows": "Q, SIZE, CF, NWC, LEV, SIGMA, NSEG, AGE — coefficient and t-statistic for each of 6 columns",
+        "firm_fe_row": "Yes for all 6 columns",
+        "adjusted_R2_row": "Per column",
+        "n_row": "Per column"
+      }
+    }
+  ],
+
+  "flags": [
+    {
+      "id": "WF01",
+      "severity": "HIGH",
+      "phase": 2,
+      "issue": "496-observation filter has TWO conflicting descriptions in the paper: Table 1 Panel A says 'missing variables used to estimate the propensity scores'; body text says 'missing financial data, cash > AT, AT/MVE < $10M, growth > 100%'. A replicator must apply both and check arithmetic — they may not yield exactly 496."
+    },
+    {
+      "id": "WF02",
+      "severity": "HIGH",
+      "phase": 6,
+      "issue": "The split-sample approach with sample-specific control coefficients is NOT equivalent to the standard TREAT*POST interaction-term DiD. A replicator using the interaction-term form will get different numbers. Paper's exact 'estimated simultaneously' phrasing leaves implementation under-specified."
+    },
+    {
+      "id": "WF03",
+      "severity": "HIGH",
+      "phase": 3,
+      "issue": "SGRW, FINANCE, DNWC, LOSS, Z-SCORE formulas are NOT given in the paper. Replicator must infer from convention. Different inference choices yield different probit estimates and therefore different matched pairs."
+    },
+    {
+      "id": "WF04",
+      "severity": "HIGH",
+      "phase": 3,
+      "issue": "Greedy iterative matching algorithm is order-dependent. Two replicators applying the paper's described procedure can get non-identical matched pairs depending on the iteration order when multiple restatement firms compete for the same control. Paper does not specify iteration order (e.g., by smallest score gap, by firm size, by alphabetical GVKEY)."
+    },
+    {
+      "id": "WF05",
+      "severity": "MEDIUM",
+      "phase": 5,
+      "issue": "SIGMA computation is ambiguous between two operationalizations (industry-median of firm-level SDs vs SD of industry-median series). The paper's wording supports both; choice materially affects coefficient estimates."
+    },
+    {
+      "id": "WF06",
+      "severity": "MEDIUM",
+      "phase": 4,
+      "issue": "Year 0 definition (which fiscal year is 'the year of the restatement announcement') is not pinned down for firms where the announcement date precedes the fiscal year-end. Convention: the fiscal year IN WHICH the announcement_date falls."
+    },
+    {
+      "id": "WF07",
+      "severity": "MEDIUM",
+      "phase": 2,
+      "issue": "Filter 2.7's 'AT AND MVE below $10M' literal reading is restrictive (both required); standard convention is OR (drop if either). Paper's literal phrasing produces a different sample than convention."
+    },
+    {
+      "id": "WF08",
+      "severity": "MEDIUM",
+      "phase": 5,
+      "issue": "Industry classification for SIGMA is not stated at baseline. Footnote 3 (in PS_DEMAND context) uses FF48. Convention: FF48 for SIGMA too, but inference."
+    },
+    {
+      "id": "WF09",
+      "severity": "MEDIUM",
+      "phase": 3,
+      "issue": "Paper does not state whether financial firms (SIC 6000-6999) and utilities (SIC 4900-4999) are also excluded from the CONTROL POOL for PSM. Convention: yes (apply same exclusions to both treated and control universes). If only treated firms are screened, the matching pool includes financials and utilities — likely biasing matches."
+    },
+    {
+      "id": "WF10",
+      "severity": "LOW",
+      "phase": 1,
+      "issue": "Mapping from HLM dataset to GVKEY is not specified (CIK-direct vs CCM linktable). For firms with multiple GVKEYs (spinoffs), the choice can affect inclusion."
+    },
+    {
+      "id": "WF11",
+      "severity": "LOW",
+      "phase": 5,
+      "issue": "Compustat segment file (Business Segments vs Operating Segments) not specified for NSEG. SFAS 131 transition (1998) requires using both BUSSEG and OPSEG to span the sample period; using only one biases NSEG."
+    },
+    {
+      "id": "WF12",
+      "severity": "LOW",
+      "phase": 5,
+      "issue": "AGE: Compustat annual (funda) vs quarterly (fundq) first-appearance not specified. fundq gives earlier first-years."
+    },
+    {
+      "id": "WF13",
+      "severity": "LOW",
+      "phase": 5,
+      "issue": "Winsorization not addressed. Convention: NO winsorization. The paper relies on drops in Phase 2.7 instead."
+    },
+    {
+      "id": "WF14",
+      "severity": "LOW",
+      "phase": 6,
+      "issue": "Year clustering uses ~13-16 calendar years; below conventional minimum of 30 clusters for asymptotic CRSE validity. Paper does not discuss small-cluster corrections."
+    },
+    {
+      "id": "WF15",
+      "severity": "LOW",
+      "phase": 2,
+      "issue": "Step 2.4 'subsequent restatements' — drops 396 obs. Is the 'first' restatement determined by announcement_date or by restated_period? Convention: announcement_date."
+    },
+    {
+      "id": "WF16",
+      "severity": "INFO",
+      "phase": 1,
+      "issue": "GAO-03-138 covers restatements 1997-2002, GAO-06-678 covers 2002-mid-2006. Overlap in 2002 may produce duplicates. HLM likely pre-deduplicated but replicator should verify."
+    },
+    {
+      "id": "WF17",
+      "severity": "INFO",
+      "phase": 3,
+      "issue": "Probit pseudo-R² of 0.007 after matching and model p-value of ~1.0 means the matched samples are statistically indistinguishable on observables — strong PSM diagnostics. Replicator should target similar diagnostics on Table A1 to validate."
+    },
+    {
+      "id": "WF18",
+      "severity": "INFO",
+      "phase": 4,
+      "issue": "Average panel length: 4,941 obs / 949 firms = 5.21 event-years per restatement firm. Implies ~13% attrition from theoretical max of 6 event-years. Similar for controls: 5,004 / 949 = 5.27. A replicator with substantially different mean panel length (e.g., 4.0 or 6.0) has a sample construction error."
+    }
+  ],
+
+  "minimum_required_inputs_for_replication": [
+    "Hennes-Leone-Miller (2008) restatement dataset with error/irregularity flags",
+    "GAO-03-138 and GAO-06-678 reports (for cross-validation)",
+    "Compustat Funda (1994-2009) — all firms with required items",
+    "Compustat Historical Segments (1994-2009) — for NSEG",
+    "Compustat Company (sic, first-year-in-Compustat) — for industry and AGE",
+    "Fama-French 48-industry classification (from Ken French website or paper appendix)",
+    "DealScan or equivalent bank loan database — needed only for Panel B (NO_LOAN, N_FINCOV, N_GENCOV), not Panel A",
+    "Compustat AU or Audit Analytics — for BigN (needed for PSM in Panel A, and as a control in Panel B)"
+  ],
+
+  "validation_checkpoints": [
+    {
+      "phase": 2,
+      "check": "Sample waterfall: 2705 → 949 with the exact intermediate counts in Table 1 Panel A"
+    },
+    {
+      "phase": 2,
+      "check": "Final split: 679 error + 270 irregularity = 949"
+    },
+    {
+      "phase": 3,
+      "check": "PSM diagnostics: pseudo-R² ~0.10 before matching, ~0.007 after. None or only BigN significant after matching (per Table A1)."
+    },
+    {
+      "phase": 4,
+      "check": "Panel sizes: ~4,941 restatement obs, ~5,004 control obs (combined all-restatements). Error sample: 3,550 / 3,570. Irregularity: 1,391 / 1,434."
+    },
+    {
+      "phase": 5,
+      "check": "Mean CASH ~0.166-0.168 across samples; mean POST ~0.495 (suggests near-balanced event window panel)"
+    },
+    {
+      "phase": 6,
+      "check": "POST coefficient for irregularity-restatement column: 0.046 (t=4.84). POST coefficient for irregularity-control column: 0.012 (t=1.90). Difference: 0.034, p=.002."
+    }
+  ]
+}

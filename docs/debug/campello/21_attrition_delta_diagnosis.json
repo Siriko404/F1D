@@ -1,0 +1,112 @@
+{
+  "metadata": {
+    "task": "Diagnose two remaining gaps in a Campello et al. (2022) Table 8 CASH DiD replication after the population fix: (1) delta at ~46% of paper's magnitude, (2) elevated control count, manifesting as an asymmetric post-tercile attrition pattern.",
+    "target": "Table 8 Col 1 (CASH, top-tercile beta^UK_i). Paper: delta=0.231***, SE=0.059, N=17,170, treated=449, control=360.",
+    "user_current": "delta=0.107* (SE 0.058, p=0.065), N=17,997, treated=475, control=514. Beta sample=2,349 firms (Compustat survivors F1-F8+FIC), nonnegative=1,431. Tercile thresholds ours 0.25/0.67 vs paper 0.28/0.68.",
+    "the_fingerprint": "At beta stage, nonnegative tercile ~= equal groups (~477 each). After DiD complete-case merge (CASH + controls + STOCK_RETURNS + CONSENSUS_EPS): user control GROWS 477->514, treated stable 477->475; paper control SHRINKS 477->360, treated 477->449. Paper's control attrits ~4x faster than treated; user's barely attrits.",
+    "copyright_note": "External academic sources quoted only in short fragments as facts. Campello et al. (2022) is CC BY 4.0."
+  },
+
+  "gap_2_asymmetric_attrition": {
+    "summary": "Two distinct issues are tangled together: (A) a MECHANICAL anomaly -- a complete-case merge cannot grow a group, so the literal 477->514 growth signals a label/assignment problem; and (B) the SUBSTANTIVE driver of the paper's control shrinkage -- a data-availability requirement that disproportionately removes low-beta firms, with I/B/E/S coverage the prime suspect.",
+
+    "part_A_mechanical_control_cannot_grow": {
+      "observation": "Imposing complete-case data requirements can only DROP firm-quarters/firms, never add them. A clean rank-tercile label, carried into the DiD panel by inner join, can only shrink each group. So control 477->514 is internally impossible under the stated pipeline and is itself diagnostic.",
+      "candidate_causes": [
+        "Assignment by FIXED THRESHOLD VALUE rather than by RANK. The user reports thresholds 0.25/0.67. If treated/control are defined as {beta>0.67} and {0<=beta<0.25} applied as fixed cutoffs to a RIGHT-SKEWED nonnegative beta distribution (mass concentrated at low positive values), the low/control bin is mechanically larger than the high/treated bin. That alone produces control > treated and is NOT an equal tercile. The paper's language ('upper/bottom tercile') implies RANK terciles (equal thirds by count), with 0.28/0.68 being the resulting cutpoints, not inputs.",
+        "Tercile labels RE-DERIVED on the DiD-panel population instead of assigned once on the beta sample and carried via inner join. Re-deriving on a different (post-merge) firm set changes counts.",
+        "Duplicate rows from share classes / multiple PERMNO per GVKEY (or PERMNO-PERMCO) inflating the unique-firm control count after the CRSP<->Compustat join."
+      ],
+      "actions": [
+        "Assign treatment/control by RANK (e.g., split nonnegative betas into 3 equal-count groups) ONCE on the beta-estimation sample; store the label per firm (gvkey/permno).",
+        "Build the DiD panel by INNER JOIN on that labeled firm set; verify each group's firm count is non-increasing relative to the beta stage. If control still 'grows', the bug is in the join/dedup, not the economics.",
+        "Treat 0.28/0.68 as OUTPUTS to compare against, not as fixed cutoffs to apply.",
+        "De-duplicate to one security per firm (primary share class / LINKPRIM) before counting."
+      ]
+    },
+
+    "part_B_differential_data_availability_attrition": {
+      "observation": "In the paper, control firms drop out ~4x faster than treated firms upon imposing the regression data requirements (control 477->360 = -25%; treated 477->449 = -6%). This requires a variable that low-beta firms disproportionately LACK.",
+      "why_low_beta_firms_are_vulnerable": "A low beta^UK_i means a firm's return volatility barely covaries with FTSE100 volatility -- characteristic of smaller, more domestically-oriented, less-followed firms. These are exactly the firms most likely to fail size- or coverage-based data requirements.",
+      "prime_suspect_IBES_consensus_eps": {
+        "mechanism": "The CASH regression includes CONSENSUS_EARNINGS_FORECAST (1-quarter-ahead I/B/E/S consensus). Analyst coverage is heavily concentrated in large firms; many small firms have NO I/B/E/S coverage at all. Requiring non-missing CONSENSUS_EPS as complete-case therefore drops small/low-beta (control) firms far more than large/high-beta (treated) firms -- producing precisely the paper's asymmetric attrition.",
+        "grounding": [
+          {"source": "WRDS I/B/E/S FAQ", "fact": "Firms absent from I/B/E/S are treated as zero-coverage; the population of analysts simply did not report covering them. Coverage is a crude binary for many small US firms."},
+          {"source": "Trade/industry reporting (Reuters Research coverage counts)", "fact": "Hundreds of the ~4,000 covered firms had zero analysts; abandoned firms are predominantly small (market cap < $1B)."}
+        ],
+        "why_user_control_does_not_attrit": "If the user is NOT strictly enforcing CONSENSUS_EPS completeness, low-coverage control firms survive that the paper drops. The most likely leak: the per-quarter DEMEANING step. If a firm-quarter with MISSING I/B/E/S consensus receives the quarter mean (which becomes ~0 after demeaning) instead of being dropped, the 'complete-case' requirement is silently violated for CONSENSUS_EPS and ~150 small control firms are retained.",
+        "actions": [
+          "Audit the CONSENSUS_EPS pipeline: confirm firm-quarters with missing I/B/E/S consensus are DROPPED (true complete-case) BEFORE any demeaning/standardization -- not imputed to the quarter mean.",
+          "Count how many of the ~514 control firms have NO I/B/E/S coverage in the DiD window. If ~150 control firms are uncovered, that is the entire control-count gap.",
+          "Recompute treated/control counts after enforcing strict CONSENSUS_EPS completeness; check whether control falls toward ~360 and treated stays ~449."
+        ]
+      },
+      "secondary_suspects": [
+        "Consecutive-quarter / complete-panel requirements applied more leniently for the user than the paper (small control firms more often have gaps).",
+        "STOCK_RETURNS or CASH_FLOW completeness, though these are less size-concentrated than I/B/E/S coverage."
+      ]
+    }
+  },
+
+  "gap_1_residual_delta": {
+    "summary": "Most plausibly TREATMENT MISCLASSIFICATION from beta construction, compounded by control-group contamination. Grounded in the paper's own evidence on how much beta construction reshuffles firms.",
+
+    "primary_beta_misclassification": {
+      "key_distinction": "Similar MARGINAL beta distributions (user thresholds 0.25/0.67 vs paper 0.28/0.68 are close) do NOT imply the SAME firms occupy each tercile. What matters for the treatment dummy is the RANK ordering / which firms land in the top tercile -- and that can differ substantially even when the marginal distribution matches.",
+      "internal_benchmark_from_the_paper": {
+        "source": "Campello et al. (2022), footnote 13",
+        "fact": "The authors' two OWN beta measures, beta^UK_i and beta^UK_i,CF, have a rank correlation of 0.8 and only an 86% overlap in the set of top-tercile firms -- and these differ ONLY by decomposing returns into cash-flow vs discount-rate news, using the SAME (Bloomberg) data and SAME volatility construction.",
+        "implication": "If two beta measures that share data and method already reshuffle ~14% of the treated group, then the user's beta -- which differs by DATA SOURCE (Yahoo FTSE100 + Bank of England FX vs Bloomberg) AND possibly by volatility construction -- plausibly has a rank correlation with the paper's BELOW 0.8, i.e., MORE than 14% of treated firms differ. The user's 'treated' set is a noisier proxy for the paper's true high-UK-exposure set."
+      },
+      "why_this_attenuates_delta": "Classical measurement error / misclassification in a binary treatment indicator biases DiD estimates toward zero. The CASH coefficient is unusually sensitive to treated-group composition: the user's own tests show the estimate collapses from 0.107 (Table 8 DV) to 0.006 (Table 1 DV), i.e., it is driven by the right tail / which cash-rich firms are treated. Under that sensitivity, even moderate treated-group misclassification can roughly halve delta.",
+      "reproducibility_ceiling": "Without Bloomberg index/FX data AND the paper's exact (undocumented) monthly-volatility construction, the user likely cannot fully close 0.107 -> 0.231. This is a limitation of the paper's reproducibility, not necessarily a coding error."
+    },
+
+    "compounding_control_contamination": {
+      "mechanism": "If the ~150 extra control firms (gap 2 part B) are small firms with different cash dynamics than the paper's (larger, covered) control firms, the user's control-group mean change differs from the paper's, further shrinking the treated-minus-control contrast.",
+      "unifying_point": "Fixing the I/B/E/S completeness issue (gap 2 part B) tightens control composition and could therefore lift delta as a side effect -- so the two gaps are partly linked through the same fix."
+    },
+
+    "concrete_leads_to_narrow_the_beta": {
+      "return_definition": {
+        "fact": "Alfaro-Bloom-Lin (the paper Campello cites for its instruments) construct firm volatility from CUM-DIVIDEND daily CRSP returns (RET), not price-only returns.",
+        "source": "Alfaro, Bloom, Lin, 'The Finance Uncertainty Multiplier' (JPE 2024): annual realized volatility is the 12-month standard deviation of cum-dividend daily CRSP returns, annualized by sqrt(252).",
+        "action": "Confirm the user uses CRSP RET (cum-dividend total return), not RETX (price-only). A mismatch shifts the firm vol series and reshuffles betas."
+      },
+      "volatility_frequency": {
+        "note": "ABL use ANNUAL (12-month) realized vol; Campello's equation (13) is a MONTHLY time-series regression, so it needs a MONTHLY vol series. Within-month realized SD of daily returns is the natural monthly analogue and is a defensible choice. But the paper never specifies it, and alternatives (rolling windows, EWMA, etc.) would change betas. The user's >=15-days/month and >=24-months rules are undocumented choices.",
+        "action": "Sensitivity-test the vol construction: vary the within-month minimum-days rule and the >=24-month inclusion rule; check whether tercile membership (not just the cutpoints) is stable."
+      },
+      "aggregate_data_source": {
+        "note": "FTSE100 and S&P500 vol are common to all firms in a month; USD/GBP vol likewise. Yahoo Finance / Bank of England daily series differ from Bloomberg in closing conventions and adjustments, shifting the aggregate vol PATHS. Because beta is the covariance of each firm's vol path with the aggregate path, different aggregate paths reshuffle the cross-section of betas firm-by-firm even when the marginal beta distribution looks similar.",
+        "action": "If Bloomberg is unavailable, this channel cannot be eliminated; treat residual delta divergence as data-source-driven."
+      },
+      "diagnostic": {
+        "action": "Construct beta^UK_i,CF (the cash-flow-news beta from the Campbell-Shiller / Vuolteenaho return decomposition, per footnote 13) on your own data. If your beta^UK_i and beta^UK_i,CF show ~0.8 rank correlation and ~86% top-tercile overlap with similar inferences, that confirms YOUR construction is internally reasonable and the gap to the paper is data-source/method-driven rather than a bug. Table C6 in the supplement reports the paper's beta^UK_i,CF results as a target."
+      }
+    }
+  },
+
+  "what_remains_correct_do_not_change": [
+    "SE 0.058 vs 0.059: clustering (firm + calendar quarter) and panel structure are correct.",
+    "Full panel 2010:Q1-2016:Q4 with POST=2016:Q3-Q4: the N/firms ratio (~21 quarters/firm) matches the paper; do not switch to a 4-quarter window.",
+    "Firm FE + (FIC-100 x calendar-quarter) FE: matches equation (14).",
+    "Table 8 cash DV transformation cheq/(atq_lag-cheq): confirmed correct (Table 1's cheq/atq_lag gives a dead result, as expected).",
+    "R-squared: resolved as a within-vs-FE-inclusive reporting convention."
+  ],
+
+  "prioritized_actions": [
+    "1. (gap 2A) Audit tercile-label propagation and CRSP<->Compustat dedup: assign control/treated by RANK once on the beta sample, inner-join into the panel, and verify each group can only shrink. Resolve why control 'grows'.",
+    "2. (gap 2B -> also gap 1) Enforce STRICT complete-case on CONSENSUS_EPS: drop firm-quarters with missing I/B/E/S consensus BEFORE demeaning; do not impute to the quarter mean. Count uncovered control firms; expect control to fall toward ~360.",
+    "3. (gap 1) Confirm cum-dividend returns (CRSP RET, not RETX) in the beta regression.",
+    "4. (gap 1, diagnostic) Build beta^UK_i,CF and check rank correlation / top-tercile overlap with your beta^UK_i (benchmark ~0.8 / ~86% from the paper) to separate 'reasonable construction' from 'bug'.",
+    "5. (gap 1) Sensitivity-test the monthly-volatility construction (min-days, min-months) for tercile-membership stability.",
+    "6. Accept a residual delta gap as a reproducibility ceiling if it persists after 1-5, given the undocumented vol method and the Bloomberg-vs-Yahoo/BoE data difference."
+  ],
+
+  "epistemic_caveats": [
+    "The 'control grows after a complete-case merge' is logically inconsistent with a clean rank-tercile + inner-join pipeline; the user must reconcile this before economic explanations apply (hence gap 2A is first).",
+    "I/B/E/S coverage as the differential-attrition driver is the most likely single explanation but is not confirmable against the paper, which does not state which variable binds for the control group.",
+    "The paper does not document the monthly-volatility construction, the minimum-observation rules, the CRSP share-code/exchange screens, the exact winsorization point, or the precise treatment-assignment counting (rank vs threshold). Several of these are degrees of freedom. With no public replication package (JFQA code-sharing is voluntary for this pre-2024 submission), the residual delta gap may reflect the paper's limited reproducibility rather than an implementation error."
+  ]
+}

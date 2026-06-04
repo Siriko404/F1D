@@ -1,0 +1,30 @@
+{
+  "diagnostic_questions": {
+    "1_compustat_data_item": {
+      "resolution": "not_specified_in_paper",
+      "verbatim_quote": "\"CASH_FLOW is defined as operating income before depreciation divided by lagged total assets.\" This is the only construction-related statement for CASH_FLOW anywhere in the paper. No Compustat mnemonic (OIBDPQ, OIBDPY, IBQ, NIQ, OIADPQ, etc.) is named in the main text, Table 1 notes, Section IV.B data description (p. 3192: \"We use COMPUSTAT Quarterly to gather basic information on firm investment and financial data\"), or anywhere in Supplementary Appendices A–E. Supplementary Table C1's filter list refers to 'CASH_FLOW' generically without identifying a field code.",
+      "source_location": "Table 1 notes, p. 3198; Section IV.B, p. 3192; Supplementary Table C1"
+    },
+    "2_winsorization_procedure": {
+      "resolution": "not_specified_in_paper",
+      "verbatim_quote": "\"All variables are winsorized at the 1% level.\" The paper does not state whether winsorization is applied to the numerator (operating income before depreciation) and denominator (lagged total assets) separately before constructing the ratio, or to the constructed CASH_FLOW ratio after computation. It also does not specify whether the 1% level is two-sided (1st and 99th percentiles) or one-sided, nor whether winsorization is performed pooled over the full sample or within calendar quarter, fiscal year, or industry. No additional clarifying language appears in the main text, table notes, or supplementary appendices.",
+      "source_location": "Table 1 notes, p. 3198"
+    },
+    "3_additional_filters_for_cash_flow": {
+      "resolution": "not_specified_in_paper",
+      "verbatim_quote": "Supplementary Table C1 lists the following CASH_FLOW-relevant filters: \"Drop firm–quarters with negative fundamentals (ASSETS and SALES) — 158,312\" (note: this drops only on negative ASSETS and SALES, not on negative operating income) and \"Drop if missing key variables (INVESTMENT, ASSETS, CASH_FLOW, TOBIN_Q, SALES_GROWTH) — 75,013\" (which drops on missing CASH_FLOW but not on its value). No filter trims CASH_FLOW values, drops firm-quarters with negative operating income, or otherwise restricts the distribution of CASH_FLOW beyond the global 1% winsorization. The paper does not discuss any additional trimming.",
+      "source_location": "Supplementary Table C1; Section IV.B, pp. 3192–3193"
+    },
+    "4_table_1_panel_a_sample": {
+      "resolution": "partially_specified_in_paper",
+      "verbatim_quote": "Two statements appear, and they are in tension: (a) Table 1 header note: \"Table 1 reports summary statistics for the main variables used in our empirical analyses. The final sample is a match between COMPUSTAT Quarterly North America Fundamentals and the estimated βUK_i sample for the period from 2010:Q1 to 2015:Q4.\" (b) Panel-A-specific note: \"Panel A summarizes data for the universe of COMPUSTAT firms.\" The paper does not explicitly reconcile these two statements — i.e., it does not state whether 'universe of COMPUSTAT firms' means raw COMPUSTAT Quarterly after basic filters (e.g., the 93,011 step in Table C1, or the 75,013 step) or the final regression sample (41,630 firm-quarters). The reported Panel A N for CASH_FLOW is 75,287, which is closest to the Table C1 attrition step at 75,013 (\"Drop if missing key variables\"), but the paper does not label Panel A with this filter step. The paper offers no discussion of the CASH_FLOW distribution shape (e.g., the left-skew implied by Mean=0.01 vs. Median=0.03).",
+      "source_location": "Table 1 notes and Panel A header, p. 3198; Supplementary Table C1"
+    },
+    "5_alternative_compustat_fields": {
+      "resolution": "not_specified_in_paper",
+      "verbatim_quote": "\"CASH_FLOW is defined as operating income before depreciation divided by lagged total assets.\" The paper offers no further specification of which Compustat Quarterly field maps to 'operating income before depreciation' — it does not distinguish between OIBDPQ (quarterly), a YTD field (OIBDPY) differenced into a quarterly flow, IBQ + DPQ (reconstructed), or any calculated alternative. The paper does not mention OIADPQ, IBQ, NIQ, or any candidate field name. No clue appears in the main text, table notes, or supplementary appendices A–E that would disambiguate among these alternatives.",
+      "source_location": "Table 1 notes, p. 3198 (sole construction statement)"
+    }
+  },
+  "summary_note": "All five sub-questions resolve to 'not_specified_in_paper' (with sub-question 4 only partially specified due to the internal tension between Table 1's overall sample description and Panel A's 'universe of COMPUSTAT firms' label). The paper provides no Compustat mnemonic, no winsorization granularity, no CASH_FLOW-specific trimming rule, no explicit sample-stage label for Panel A, and no alternative-field discussion. The 60%-higher mean with matching N/SD/median is consistent with construction choices the paper does not pin down (most plausibly: (a) YTD-vs-quarterly OIBDP handling, since Compustat's OIBDPY is fiscal-YTD and naive use without differencing inflates Q2–Q4 values; (b) winsorization scope — winsorizing components vs. ratio, or pooled vs. within-period, materially affects the left tail; (c) whether Panel A reflects the broader pre-final-filter sample or the regression sample). The paper does not authoritatively resolve any of these."
+}

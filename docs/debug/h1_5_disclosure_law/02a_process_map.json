@@ -1,0 +1,254 @@
+{
+  "paper_key": "Boasiako_Keefe_2021",
+  "target_specification": "Table 2, Column (1) -- baseline DiD: Cash ~ Disclosure Law + 11 controls + industry FE + state FE + year FE, state-clustered SE, 1997-2015 annual",
+  "workflow_phases": [
+    {
+      "phase_number": 1,
+      "phase_name": "Data acquisition",
+      "description_verbatim": "we collect initial firm-level data from the merged Center for Research in Security Prices (CRSP)/Compustat database for the period 1997-2015",
+      "operations": [
+        {
+          "operation_name": "Pull merged CRSP/Compustat",
+          "description_verbatim": "we collect initial firm-level data from the merged Center for Research in Security Prices (CRSP)/Compustat database for the period 1997-2015"
+        },
+        {
+          "operation_name": "Acquire state-level disclosure law passage years",
+          "description_verbatim": "See the various state disclosure laws from the National Conference of State Legislatures, at http://www.ncsl.org/research/telecommunications-and-information-technology/security-breach-notification-laws.aspx (footnote 3, p.533)"
+        }
+      ],
+      "inputs": ["CRSP database", "Compustat annual fundamentals", "National Conference of State Legislatures state-level disclosure law passage table"],
+      "outputs": ["Raw firm-year panel 1997-2015", "State x passage-year mapping"]
+    },
+    {
+      "phase_number": 2,
+      "phase_name": "Sample construction",
+      "description_verbatim": "Following prior literature (Bates et al., 2009; Opler et al., 1999), we exclude all financial firms ... We exclude utility companies ... We further drop observations with negative or missing total book assets. This yields a final sample of 56,646 firm-year observations.",
+      "operations": [
+        {
+          "operation_name": "Restrict to sample window",
+          "description_verbatim": "the period 1997-2015 ... Our sample period begins 5 years before California passed the first state-level data breach disclosure law, in 2002, and ends 5 years after Mississippi passed a similar law, in 2010"
+        },
+        {
+          "operation_name": "Exclude financial firms",
+          "description_verbatim": "we exclude all financial firms -- that is, those with Standard Industrial Classification (SIC) codes 6000-6999 -- because their cash holdings include inventories of marketable securities and they are also required to meet statutory capital requirements"
+        },
+        {
+          "operation_name": "Exclude utility firms",
+          "description_verbatim": "We exclude utility companies (SIC codes 4900-4999) because their cash holdings are possibly subject to regulatory supervision in some states"
+        },
+        {
+          "operation_name": "Drop invalid total assets",
+          "description_verbatim": "We further drop observations with negative or missing total book assets"
+        }
+      ],
+      "inputs": ["Raw firm-year panel 1997-2015"],
+      "outputs": ["Filtered firm-year panel of 56,646 observations"]
+    },
+    {
+      "phase_number": 3,
+      "phase_name": "Variable construction",
+      "description_verbatim": "We follow the literature (Bates et al., 2009; Opler et al., 1999) in our empirical testing and control for several variables that affect firm cash policy. Specifically, we control for Firm Size, Firm Age, Book Leverage, Market-to-book, Cash Flow, Capital Expenditure, Acquisition Expenditure, Dividend Paying Firms(0/1), R&D Expenditure, Net Working Capital, and Industry Cash Flow Volatility. The definitions of all the variables are detailed in the Appendix.",
+      "operations": [
+        {
+          "operation_name": "Construct dependent variable Cash",
+          "description_verbatim": "We measure Cash as cash and marketable securities scaled by total book assets"
+        },
+        {
+          "operation_name": "Construct Firm Size",
+          "description_verbatim": "Natural logarithm of total book assets (Table A1)"
+        },
+        {
+          "operation_name": "Construct Firm Age",
+          "description_verbatim": "Natural logarithm of the number of years a firm has been listed in the merged CRSP/Compustat database (Table A1)"
+        },
+        {
+          "operation_name": "Construct Book Leverage",
+          "description_verbatim": "Ratio of total book debt (short-term debt plus long-term debt) to total book assets (Table A1)"
+        },
+        {
+          "operation_name": "Construct Market-to-book",
+          "description_verbatim": "Ratio of total book assets less the book value of common equity plus the total market value of equity, all divided by total book assets (Table A1)"
+        },
+        {
+          "operation_name": "Construct Cash Flow",
+          "description_verbatim": "Ratio of earnings after interest, dividends, and taxes but before depreciation to book assets (Table A1)"
+        },
+        {
+          "operation_name": "Construct Capital Expenditure",
+          "description_verbatim": "Ratio of capital expenditure to total book assets at the beginning of the year (Table A1)"
+        },
+        {
+          "operation_name": "Construct Acquisition Expenditure",
+          "description_verbatim": "Ratio of acquisitions to total book assets at the beginning of the year (Table A1)"
+        },
+        {
+          "operation_name": "Construct Dividend Paying Firms(0/1)",
+          "description_verbatim": "1 in the year a firm pays dividends, and 0 otherwise; set to zero if missing (Table A1)"
+        },
+        {
+          "operation_name": "Construct R&D Expenditure",
+          "description_verbatim": "Ratio of R&D expenses to total book assets at the beginning of the year (Table A1)"
+        },
+        {
+          "operation_name": "Construct Net Working Capital",
+          "description_verbatim": "Ratio of net working capital to net assets (Table A1)"
+        },
+        {
+          "operation_name": "Assign Fama-French 49-industry classification",
+          "description_verbatim": "The industry dummies are constructed based on the 49-industry classification of Fama and French (1997) (footnote 5, p.535)"
+        },
+        {
+          "operation_name": "Construct Industry Cash Flow Volatility",
+          "description_verbatim": "Standard deviation of industry average cash flows for the previous 10 years; at least 3 years of observations required (Table A1)"
+        }
+      ],
+      "inputs": ["Filtered firm-year panel of 56,646 observations", "FF49 industry classification table"],
+      "outputs": ["Firm-year panel with Cash and 11 controls"]
+    },
+    {
+      "phase_number": 4,
+      "phase_name": "Treatment assignment",
+      "description_verbatim": "Disclosure Law(0/1)_{s,t} is a dummy variable that switches to one the year after the focal state passed the disclosure law",
+      "operations": [
+        {
+          "operation_name": "Identify firm headquarters state",
+          "description_verbatim": "focusing on the states in which firms are headquartered is a conservative approach"
+        },
+        {
+          "operation_name": "Map HQ state to disclosure-law passage year",
+          "description_verbatim": "all 50 US states, the District of Columbia, and the US territories of the Virgin Islands, Puerto Rico, and Guam had enacted mandatory disclosure laws (Section 2.1, p.533)"
+        },
+        {
+          "operation_name": "Set treatment dummy",
+          "description_verbatim": "a dummy variable that switches to one the year after the focal state passed the disclosure law (Section 3.2, p.535); equivalently '1 for periods after the enactment of the state-level data breach notification laws, and 0 otherwise' (Table A1)"
+        }
+      ],
+      "inputs": ["Firm-year panel with Cash and 11 controls", "State x passage-year mapping"],
+      "outputs": ["Firm-year panel with Disclosure Law(0/1) treatment dummy"]
+    },
+    {
+      "phase_number": 5,
+      "phase_name": "Outlier treatment",
+      "description_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers",
+      "operations": [
+        {
+          "operation_name": "Winsorize all continuous variables",
+          "description_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers (Section 3.3, p.536)"
+        }
+      ],
+      "inputs": ["Firm-year panel with Disclosure Law(0/1) treatment dummy"],
+      "outputs": ["Winsorized firm-year regression panel"]
+    },
+    {
+      "phase_number": 6,
+      "phase_name": "Fixed-effects construction",
+      "description_verbatim": "theta_s represents a set of state dummies that account for state-level unobservable factors that could be correlated with the data breach disclosure laws, and thus bias our estimates; delta_t represents year dummies to control for secular shocks in cash holdings coinciding with the passage of the disclosure laws; and rho_j and nu_i capture industry and firm fixed effects, respectively",
+      "operations": [
+        {
+          "operation_name": "Build state dummies",
+          "description_verbatim": "theta_s represents a set of state dummies that account for state-level unobservable factors that could be correlated with the data breach disclosure laws, and thus bias our estimates"
+        },
+        {
+          "operation_name": "Build year dummies",
+          "description_verbatim": "delta_t represents year dummies to control for secular shocks in cash holdings coinciding with the passage of the disclosure laws"
+        },
+        {
+          "operation_name": "Build industry dummies (FF49)",
+          "description_verbatim": "rho_j and nu_i capture industry and firm fixed effects, respectively ... The industry dummies are constructed based on the 49-industry classification of Fama and French (1997) (Section 3.2 and footnote 5)"
+        }
+      ],
+      "inputs": ["Winsorized firm-year regression panel"],
+      "outputs": ["Regression panel with FE columns added"]
+    },
+    {
+      "phase_number": 7,
+      "phase_name": "Summary-statistics reporting (pre-estimation)",
+      "description_verbatim": "Table 1 provides summary statistics of the key variables used in this study. We report the mean, standard deviation, 25th percentile, median, and 75th percentile.",
+      "operations": [
+        {
+          "operation_name": "Compute summary stats",
+          "description_verbatim": "We report the mean, standard deviation, 25th percentile, median, and 75th percentile (Section 3.3, p.536)"
+        },
+        {
+          "operation_name": "Tabulate Panel A (disclosure-law sample)",
+          "description_verbatim": "Panel A reports the summary statistics for the state-level disclosure law sample over the period 1997-2015 (Table 1 caption)"
+        }
+      ],
+      "inputs": ["Regression panel with FE columns added"],
+      "outputs": ["Table 1 Panel A"]
+    },
+    {
+      "phase_number": 8,
+      "phase_name": "Baseline DiD estimation (Table 2, Col 1)",
+      "description_verbatim": "Table 2 presents the baseline estimation results. We include state, year, industry, and firm fixed effects in various specifications. Column (1) includes controls for year, industry, and state fixed effects.",
+      "operations": [
+        {
+          "operation_name": "Specify linear DiD per Equation (1)",
+          "description_verbatim": "Cash_{i,s,t} = alpha + beta * Disclosure Law(0/1)_{s,t} + gamma * X_{i,s,t} + theta_s + delta_t + rho_j + nu_i + epsilon_{i,s,t} (Equation 1, p.535); The dependent variable is Cash and the functional form is linear (Table 2 notes)"
+        },
+        {
+          "operation_name": "Include FE set for Column (1)",
+          "description_verbatim": "Column (1) includes controls for year, industry, and state fixed effects (Section 4.1, p.536). Note: Column (1) does NOT include firm fixed effects -- only year, industry, and state. Firm FE enters in Column (2).",
+          "ambiguity_note": "The Equation (1) display lists nu_i (firm FE) as a term, but Section 4.1 explicitly states Column (1) excludes firm FE. The display equation is the generic specification; per-column FE choices are listed in the Table 2 row labels."
+        },
+        {
+          "operation_name": "Cluster standard errors by state",
+          "description_verbatim": "We cluster standard errors by state, because the treatment is defined at the state level (Section 3.2, p.535); In Columns (1)-(4), standard errors are clustered by state (Table 2 notes); Heteroskedasticity-consistent standard errors are reported in parentheses (Table 2 notes)"
+        }
+      ],
+      "inputs": ["Regression panel with FE columns added"],
+      "outputs": ["Estimated coefficient vector including beta on Disclosure Law(0/1)", "State-clustered standard errors", "Adjusted R^2", "N = 56,646"]
+    },
+    {
+      "phase_number": 9,
+      "phase_name": "Economic-magnitude interpretation",
+      "description_verbatim": "We use the results in Column (1) of Table 2 to gauge the economic importance of state-level disclosure laws on corporate cash holdings. In Column (1), the coefficient associated with Disclosure Law(0/1) is 0.0076. All else being equal, an increase in cash holdings by 0.0076 corresponds to a 3.8% increase from mean cash holdings (0.2008) and 7.3% of median cash holdings (0.1044) for our sample firms.",
+      "operations": [
+        {
+          "operation_name": "Compute economic magnitude vs mean",
+          "description_verbatim": "an increase in cash holdings by 0.0076 corresponds to a 3.8% increase from mean cash holdings (0.2008) (Section 4.1, p.537)"
+        },
+        {
+          "operation_name": "Compute economic magnitude vs median",
+          "description_verbatim": "7.3% of median cash holdings (0.1044) for our sample firms (Section 4.1, p.537)"
+        }
+      ],
+      "inputs": ["Estimated coefficient vector"],
+      "outputs": ["Headline magnitude statements in Section 4.1 prose"]
+    },
+    {
+      "phase_number": 10,
+      "phase_name": "Reporting",
+      "description_verbatim": "Table 2 presents the baseline estimation results ... 1%, 5%, and 10% levels, respectively (Table 2 notes)",
+      "operations": [
+        {
+          "operation_name": "Tabulate coefficients and SE",
+          "description_verbatim": "Heteroskedasticity-consistent standard errors are reported in parentheses (Table 2 notes)"
+        },
+        {
+          "operation_name": "Mark significance stars",
+          "description_verbatim": "***, **, and * denote significance at the 1%, 5%, and 10% levels, respectively (Table 2 notes)"
+        },
+        {
+          "operation_name": "List FE rows and Adj R^2",
+          "description_verbatim": "Year fixed effects Yes ... Industry fixed effects Yes ... State fixed effects Yes ... Observations 56,646 ... Adj. R^2 0.4939 (Table 2, Column (1))"
+        }
+      ],
+      "inputs": ["Estimated coefficient vector", "State-clustered SE", "Adj R^2", "N"],
+      "outputs": ["Table 2, Column (1) printed cells on p.538"]
+    }
+  ],
+  "key_ambiguities": [
+    "Software / package choice is not stated. The paper does not mention Stata, R, SAS, or any specific routine (reghdfe, areg, plm, fixest, etc.). For a multi-way FE model with state-clustered SE this is non-trivial because finite-sample corrections, default DOF adjustments, and singleton handling differ across packages.",
+    "Exact Compustat field mappings for each control variable are not stated. Table A1 uses natural-language phrasing (e.g., 'earnings after interest, dividends, and taxes but before depreciation') without restating Compustat item codes; the reader must back these out, with multiple plausible mappings for several variables (Cash Flow, Net Working Capital, Industry Cash Flow Volatility).",
+    "Order of operations between Phase 2 (sample construction) and Phase 5 (winsorization) is not stated. Winsorizing before sample filters versus after will yield slightly different 1st/99th percentile cutoffs.",
+    "Winsorization partition is not stated. The phrase 'at the 1st and 99th percentiles' is silent on whether winsorization is pooled across the full 1997-2015 panel, by year, by industry, by Fama-French 49 industry-year, or some other slice.",
+    "Missing-value handling is specified only for Dividend Paying Firms(0/1) ('set to zero if missing'). For all other controls (including R&D Expenditure and Acquisition Expenditure, which have very high Compustat missingness rates), the paper is silent on whether missing values are dropped or imputed to zero. The published N=56,646 and the >50% mass at exactly zero in Table 1 Panel A's Acquisition Expenditure quartiles strongly suggest zero-imputation, following the inherited Bates 2009 / Opler 1999 convention, but this is not stated.",
+    "AT timing on denominators is inconsistent in Table A1. Cash, Capital Expenditure, Acquisition Expenditure, and R&D Expenditure use 'at the beginning of the year' explicitly; Book Leverage, Market-to-book, Cash Flow, and Net Working Capital use 'book assets' or 'total book assets' without a timing qualifier. Whether contemporaneous or lagged AT is used in the latter group is ambiguous.",
+    "Industry Cash Flow Volatility construction rolling window is partially specified ('previous 10 years; at least 3 years of observations required') but the year-zero treatment is unclear (does year t use years t-10 to t-1, or t-9 to t, or t-9 to t including t?). This affects which firm-years are dropped at the start of the 1997-2015 window.",
+    "Headquarters-state assignment source is not stated. Compustat's STATE field is current-year HQ; some studies use historical HQ (e.g., from 10-K filings) because firms relocate. The paper does not say which.",
+    "PRC data integration sequence: 'We then manually merge the disclosed breaches with the CRSP/Compustat data' is silent on the matching procedure (firm name fuzzy-match, CIK, ticker, hand-checked?), but this only matters for Table 6+, not Table 2 Column 1.",
+    "Firm FE in Column (1): the Equation (1) display includes nu_i (firm FE), but Section 4.1 says Column (1) includes only year, industry, and state FE. The display equation appears to be a generic template applied selectively across Table 2 columns; readers must consult each column's FE-row labels to know which FE actually entered.",
+    "Heteroskedasticity-consistent vs state-clustered SE wording: Table 2 notes say BOTH 'standard errors are clustered by state' AND 'Heteroskedasticity-consistent standard errors are reported in parentheses'. The reconciliation is presumably cluster-robust (CR1) SE, but the exact estimator (Liang-Zeger, Stata cluster(state), reghdfe default, etc.) is not named."
+  ]
+}

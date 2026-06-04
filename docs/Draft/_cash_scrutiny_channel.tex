@@ -1,0 +1,30 @@
+\begin{table}[htbp]
+\centering
+\caption{Analyst Cash-Scrutiny Channel (Link 2)}
+\label{tab:cash_scrutiny_channel}
+\small
+\begin{tabular}{lcc}
+\toprule
+ & UncResCEO & UncAnsCEO \\
+ & (DWZ residual) & (raw Q\&A) \\
+\midrule
+\multicolumn{3}{l}{\textit{Panel A. OLS --- DV in continuous level}} \\
+CashScrutiny & -0.0000 & 0.0001 \\
+ & (0.0013) & (0.0013) \\
+$N$ (calls) & 41,512 & 41,512 \\
+Within $R^2$ & 0.000 & 0.000 \\
+\midrule
+\multicolumn{3}{l}{\textit{Panel B. Logit --- DV $= \mathbf{1}$[measure $\geq$ median]}} \\
+CashScrutiny (log-odds) & -0.0003 & 0.0080 \\
+ & (0.0074) & (0.0085) \\
+$N$ (calls) & 41,512 & 41,512 \\
+Pseudo $R^2$ & 0.002 & 0.019 \\
+\midrule
+Firm FE (A) / Industry FE (B) & Yes & Yes \\
+Cal. Year-Quarter FE & Yes & Yes \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}\vspace{2pt}\scriptsize
+\textit{Notes:} DV is CEO Q\&A uncertainty as the DWZ residual (\texttt{UncResCEO}, firm/linguistic component removed) or the raw measure (\texttt{UncAnsCEO}, pooled-1\% winsorized). \texttt{CashScrutiny} $=$ the share (\%) of a call's Q\&A turns devoted to cash topics (validated in the Link~1 table). Panel~A is OLS on the continuous DV; Panel~B is a logit on $\mathbf{1}$[DV $\geq$ sample median]. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed); significant coefficients in \textbf{bold}; SE (parentheses) clustered at firm level. Coarser scrutiny measures (any-turn, raw count, log count) give the same null.
+\end{minipage}
+\end{table}

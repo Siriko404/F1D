@@ -1,0 +1,266 @@
+{
+  "paper_key": "Boasiako_Keefe_2021",
+  "review_date_utc": "2026-05-27",
+  "definitions": [
+    {
+      "name": "Acquisition Expenditure",
+      "definition_verbatim": "Ratio of acquisitions to total book assets at the beginning of the year",
+      "definition_verbatim_validation": "match",
+      "definition_verbatim_correction_note": "",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": ["acquisitions", "total book assets"],
+      "scaling_or_denominator_verbatim": "to total book assets at the beginning of the year",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "at the beginning of the year",
+      "summary_statistics": [
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel A: Disclosure law sample (1997\u20132015)", "sample_type": "main_constructed", "n_obs": 56646, "mean": 0.0451, "std_dev": 0.1672, "min": null, "p25": 0, "median": 0, "p75": 0.0144, "max": null, "other_stats_verbatim": {}},
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel B: Data breach subsample (2005\u20132018)", "sample_type": "main_constructed", "n_obs": 42893, "mean": 0.0399, "std_dev": 0.7749, "min": null, "p25": 0, "median": 0, "p75": 0.0127, "max": null, "other_stats_verbatim": {}}
+      ]
+    },
+    {
+      "name": "Book Leverage",
+      "definition_verbatim": "Ratio of total book debt (short-term debt plus long-term debt) to total book assets",
+      "definition_verbatim_validation": "match",
+      "definition_verbatim_correction_note": "",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": ["total book debt", "short-term debt", "long-term debt", "total book assets"],
+      "scaling_or_denominator_verbatim": "to total book assets",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "",
+      "summary_statistics": [
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel A: Disclosure law sample (1997\u20132015)", "sample_type": "main_constructed", "n_obs": 56646, "mean": 0.2362, "std_dev": 0.3177, "min": null, "p25": 0.0229, "median": 0.1863, "p75": 0.3528, "max": null, "other_stats_verbatim": {}},
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel B: Data breach subsample (2005\u20132018)", "sample_type": "main_constructed", "n_obs": 42893, "mean": 0.2356, "std_dev": 0.3177, "min": null, "p25": 0.0180, "median": 0.1895, "p75": 0.3468, "max": null, "other_stats_verbatim": {}}
+      ]
+    },
+    {
+      "name": "Capital Expenditure",
+      "definition_verbatim": "Ratio of capital expenditure to total book assets at the beginning of the year",
+      "definition_verbatim_validation": "match",
+      "definition_verbatim_correction_note": "",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": ["capital expenditure", "total book assets"],
+      "scaling_or_denominator_verbatim": "to total book assets at the beginning of the year",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "at the beginning of the year",
+      "summary_statistics": [
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel A: Disclosure law sample (1997\u20132015)", "sample_type": "main_constructed", "n_obs": 56646, "mean": 0.0657, "std_dev": 0.1248, "min": null, "p25": 0.0174, "median": 0.0364, "p75": 0.0729, "max": null, "other_stats_verbatim": {}},
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel B: Data breach subsample (2005\u20132018)", "sample_type": "main_constructed", "n_obs": 42893, "mean": 0.0610, "std_dev": 0.3175, "min": null, "p25": 0.0145, "median": 0.0322, "p75": 0.0658, "max": null, "other_stats_verbatim": {}}
+      ]
+    },
+    {
+      "name": "Cash",
+      "definition_verbatim": "Cash and marketable securities scaled by total book assets at the beginning of the year",
+      "definition_verbatim_validation": "match",
+      "definition_verbatim_correction_note": "",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": ["Cash and marketable securities", "total book assets"],
+      "scaling_or_denominator_verbatim": "scaled by total book assets at the beginning of the year",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "at the beginning of the year",
+      "summary_statistics": [
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel A: Disclosure law sample (1997\u20132015)", "sample_type": "main_constructed", "n_obs": 56646, "mean": 0.2008, "std_dev": 0.2231, "min": null, "p25": 0.0285, "median": 0.1044, "p75": 0.2913, "max": null, "other_stats_verbatim": {}},
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel B: Data breach subsample (2005\u20132018)", "sample_type": "main_constructed", "n_obs": 42893, "mean": 0.2185, "std_dev": 0.2398, "min": null, "p25": 0.0426, "median": 0.1251, "p75": 0.3062, "max": null, "other_stats_verbatim": {}}
+      ]
+    },
+    {
+      "name": "Cash Flow",
+      "definition_verbatim": "Ratio of earnings after interest, dividends, and taxes but before depreciation to book assets",
+      "definition_verbatim_validation": "match",
+      "definition_verbatim_correction_note": "",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": ["earnings after interest, dividends, and taxes but before depreciation", "book assets"],
+      "scaling_or_denominator_verbatim": "to book assets",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "",
+      "summary_statistics": [
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel A: Disclosure law sample (1997\u20132015)", "sample_type": "main_constructed", "n_obs": 56646, "mean": -0.3758, "std_dev": 4.8386, "min": null, "p25": -0.0150, "median": 0.0684, "p75": 0.1210, "max": null, "other_stats_verbatim": {}},
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel B: Data breach subsample (2005\u20132018)", "sample_type": "main_constructed", "n_obs": 42893, "mean": -0.5429, "std_dev": 5.9620, "min": null, "p25": -0.0121, "median": 0.0716, "p75": 0.1194, "max": null, "other_stats_verbatim": {}}
+      ]
+    },
+    {
+      "name": "Disclosure Law(0/1)",
+      "definition_verbatim": "1 for periods after the enactment of the state-level data breach notification laws, and 0 otherwise",
+      "definition_verbatim_validation": "match",
+      "definition_verbatim_correction_note": "",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": [],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "",
+      "timing_verbatim": "for periods after the enactment of the state-level data breach notification laws",
+      "summary_statistics": []
+    },
+    {
+      "name": "Dividend Paying Firms(0/1)",
+      "definition_verbatim": "1 in the year a firm pays dividends, and 0 otherwise; set to zero if missing",
+      "definition_verbatim_validation": "match",
+      "definition_verbatim_correction_note": "",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": ["dividends"],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "set to zero if missing",
+      "winsorization_or_trimming_verbatim": "",
+      "timing_verbatim": "in the year a firm pays dividends",
+      "summary_statistics": [
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel A: Disclosure law sample (1997\u20132015)", "sample_type": "main_constructed", "n_obs": 56646, "mean": 0.2767, "std_dev": 0.4473, "min": null, "p25": 0, "median": 0, "p75": 1, "max": null, "other_stats_verbatim": {}},
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel B: Data breach subsample (2005\u20132018)", "sample_type": "main_constructed", "n_obs": 42893, "mean": 0.3472, "std_dev": 0.4761, "min": null, "p25": 0, "median": 0, "p75": 1, "max": null, "other_stats_verbatim": {}}
+      ]
+    },
+    {
+      "name": "Firm Age",
+      "definition_verbatim": "Natural logarithm of the number of years a firm has been listed in the merged CRSP/Compustat database",
+      "definition_verbatim_validation": "match",
+      "definition_verbatim_correction_note": "",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": ["CRSP/Compustat database"],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "",
+      "summary_statistics": [
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel A: Disclosure law sample (1997\u20132015)", "sample_type": "main_constructed", "n_obs": 56646, "mean": 7.3003, "std_dev": 0.8889, "min": null, "p25": 2.0179, "median": 5.0435, "p75": 11.0918, "max": null, "other_stats_verbatim": {}},
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel B: Data breach subsample (2005\u20132018)", "sample_type": "main_constructed", "n_obs": 42893, "mean": 7.3113, "std_dev": 0.7520, "min": null, "p25": 1.8000, "median": 5.6335, "p75": 10.1718, "max": null, "other_stats_verbatim": {}}
+      ]
+    },
+    {
+      "name": "Firm Size",
+      "definition_verbatim": "Natural logarithm of total book assets",
+      "definition_verbatim_validation": "match",
+      "definition_verbatim_correction_note": "",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": ["total book assets"],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "",
+      "summary_statistics": [
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel A: Disclosure law sample (1997\u20132015)", "sample_type": "main_constructed", "n_obs": 56646, "mean": 5.6136, "std_dev": 2.0593, "min": null, "p25": 4.0819, "median": 5.5717, "p75": 7.0455, "max": null, "other_stats_verbatim": {}},
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel B: Data breach subsample (2005\u20132018)", "sample_type": "main_constructed", "n_obs": 42893, "mean": 6.5181, "std_dev": 2.1207, "min": null, "p25": 4.7692, "median": 6.3149, "p75": 7.8124, "max": null, "other_stats_verbatim": {}}
+      ]
+    },
+    {
+      "name": "Industry Cash Flow Volatility",
+      "definition_verbatim": "Standard deviation of industry average cash flows for the previous 10 years; at least 3 years of observations required",
+      "definition_verbatim_validation": "match",
+      "definition_verbatim_correction_note": "",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": ["industry average cash flows"],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "at least 3 years of observations required",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "for the previous 10 years",
+      "summary_statistics": [
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel A: Disclosure law sample (1997\u20132015)", "sample_type": "main_constructed", "n_obs": 56646, "mean": 0.3440, "std_dev": 0.5270, "min": null, "p25": 0.0825, "median": 0.1403, "p75": 0.2499, "max": null, "other_stats_verbatim": {}},
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel B: Data breach subsample (2005\u20132018)", "sample_type": "main_constructed", "n_obs": 42893, "mean": 0.4858, "std_dev": 0.8114, "min": null, "p25": 0.0818, "median": 0.1507, "p75": 0.2696, "max": null, "other_stats_verbatim": {}}
+      ]
+    },
+    {
+      "name": "Industry fixed effects",
+      "definition_verbatim": "\u03c1j and \u03bdi capture industry and firm fixed effects, respectively",
+      "definition_verbatim_validation": "corrected",
+      "definition_verbatim_correction_note": "Paper Section 3.2 (sentence following Equation 1) reads verbatim: \"\u03c1j and \u03bdi capture industry and firm fixed effects, respectively.\" Footnote 5 reads verbatim: \"The industry dummies are constructed based on the 49\u2010industry classification of Fama and French (1997).\" The input concatenates these two distinct locations as if a single verbatim quote, and transliterates the Greek letters \u03c1 and \u03bd (with subscripts j, i) as \"rho_j\" and \"nu_i\" -- the underscore characters are not present in the paper.",
+      "source_location_verbatim": "Section 3.2 Estimation technique, equation (1) description and footnote 5",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": ["49-industry classification of Fama and French (1997)"],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "",
+      "timing_verbatim": "",
+      "summary_statistics": []
+    },
+    {
+      "name": "Market-to-book",
+      "definition_verbatim": "Ratio of total book assets less the book value of common equity plus the total market value of equity, all divided by total book assets",
+      "definition_verbatim_validation": "match",
+      "definition_verbatim_correction_note": "",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": ["total book assets", "book value of common equity", "total market value of equity"],
+      "scaling_or_denominator_verbatim": "all divided by total book assets",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "",
+      "summary_statistics": [
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel A: Disclosure law sample (1997\u20132015)", "sample_type": "main_constructed", "n_obs": 56646, "mean": 2.1592, "std_dev": 2.9919, "min": null, "p25": 1.1104, "median": 1.5113, "p75": 2.3119, "max": null, "other_stats_verbatim": {}},
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel B: Data breach subsample (2005\u20132018)", "sample_type": "main_constructed", "n_obs": 42893, "mean": 2.0807, "std_dev": 3.2412, "min": null, "p25": 0.5860, "median": 1.0410, "p75": 1.9100, "max": null, "other_stats_verbatim": {}}
+      ]
+    },
+    {
+      "name": "Net Working Capital",
+      "definition_verbatim": "Ratio of net working capital to net assets",
+      "definition_verbatim_validation": "match",
+      "definition_verbatim_correction_note": "",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": ["net working capital", "net assets"],
+      "scaling_or_denominator_verbatim": "to net assets",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "",
+      "summary_statistics": [
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel A: Disclosure law sample (1997\u20132015)", "sample_type": "main_constructed", "n_obs": 56646, "mean": -0.0584, "std_dev": 1.0372, "min": null, "p25": -0.0589, "median": 0.0636, "p75": 0.2157, "max": null, "other_stats_verbatim": {}},
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel B: Data breach subsample (2005\u20132018)", "sample_type": "main_constructed", "n_obs": 42893, "mean": -0.1650, "std_dev": 9.7913, "min": null, "p25": -0.0793, "median": 0.0224, "p75": 0.1637, "max": null, "other_stats_verbatim": {}}
+      ]
+    },
+    {
+      "name": "R&D Expenditure",
+      "definition_verbatim": "Ratio of R&D expenses to total book assets at the beginning of the year",
+      "definition_verbatim_validation": "match",
+      "definition_verbatim_correction_note": "",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": ["R&D expenses", "total book assets"],
+      "scaling_or_denominator_verbatim": "to total book assets at the beginning of the year",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "at the beginning of the year",
+      "summary_statistics": [
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel A: Disclosure law sample (1997\u20132015)", "sample_type": "main_constructed", "n_obs": 56646, "mean": 0.0709, "std_dev": 0.1895, "min": null, "p25": 0, "median": 0.0021, "p75": 0.0738, "max": null, "other_stats_verbatim": {}},
+        {"table_label_verbatim": "Table 1", "table_caption_verbatim": "Summary statistics", "page_number": 537, "sample_description_verbatim": "Panel B: Data breach subsample (2005\u20132018)", "sample_type": "main_constructed", "n_obs": 42893, "mean": 0.0725, "std_dev": 0.2369, "min": null, "p25": 0, "median": 0.0036, "p75": 0.0674, "max": null, "other_stats_verbatim": {}}
+      ]
+    },
+    {
+      "name": "State fixed effects",
+      "definition_verbatim": "\u03b8s represents a set of state dummies that account for state-level unobservable factors that could be correlated with the data breach disclosure laws, and thus bias our estimates",
+      "definition_verbatim_validation": "corrected",
+      "definition_verbatim_correction_note": "Paper Section 3.2 (sentence following Equation 1) reads verbatim: \"\u03b8s represents a set of state dummies that account for state\u2010level unobservable factors that could be correlated with the data breach disclosure laws, and thus bias our estimates\". The input transliterates the Greek letter \u03b8 (theta) with subscript s as \"theta_s\" -- the underscore character is not present in the paper.",
+      "source_location_verbatim": "Section 3.2 Estimation technique, equation (1) description",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": [],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "",
+      "timing_verbatim": "",
+      "summary_statistics": []
+    },
+    {
+      "name": "Year fixed effects",
+      "definition_verbatim": "\u03b4t represents year dummies to control for secular shocks in cash holdings coinciding with the passage of the disclosure laws",
+      "definition_verbatim_validation": "corrected",
+      "definition_verbatim_correction_note": "Paper Section 3.2 (sentence following Equation 1) reads verbatim: \"\u03b4t represents year dummies to control for secular shocks in cash holdings coinciding with the passage of the disclosure laws\". The input transliterates the Greek letter \u03b4 (delta) with subscript t as \"delta_t\" -- the underscore character is not present in the paper.",
+      "source_location_verbatim": "Section 3.2 Estimation technique, equation (1) description",
+      "source_location_validation": "match",
+      "underlying_data_fields_verbatim": [],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "",
+      "timing_verbatim": "",
+      "summary_statistics": []
+    }
+  ]
+}

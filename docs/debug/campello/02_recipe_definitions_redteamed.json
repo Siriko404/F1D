@@ -1,0 +1,320 @@
+{
+  "input_validation": {
+    "status_per_field": {
+      "paper.authors": "match",
+      "paper.title": "match",
+      "paper.year": "match",
+      "paper.journal": "match",
+      "paper.table": "match",
+      "paper.column": "match",
+      "paper.equation": "match",
+      "paper.page_spec_defined": "match",
+      "choice_rationale": "match",
+      "specification_description": "match",
+      "variables.dependent_variable": "match",
+      "variables.treatment_variable": "match",
+      "variables.control_variables": "match",
+      "variables.fixed_effects": "match",
+      "variables.clustering": "match",
+      "variables.panel_id_variables": "corrected",
+      "variables.sample_filters": "match"
+    },
+    "corrections": [
+      {
+        "field": "variables.panel_id_variables",
+        "input_value": "['i', 't']",
+        "correction": "The paper does not explicitly designate any field as 'panel_id_variables'. It uses subscripts i (firm) and t (quarter) in equation (14): 'Y_{i,t} = α + δ[POST_t × HIGH_UK_EXPOSURE_i] + θCONTROLS_{i,t-1} + Σ_i FIRM_i + Σ_j Σ_t [INDUSTRY_j × QUARTER_t] + ε_{i,t}'. The panel identifiers are inferred from the subscripts; the paper never names them as such.",
+        "source_location": "p. 3196, eq. (14)"
+      },
+      {
+        "field": "variables.control_variables",
+        "input_value": "['STOCK_RETURNS', 'TOBIN_Q', 'CASH_FLOW', 'SIZE', 'SALES_GROWTH', 'CONSENSUS_EARNINGS_FORECAST']",
+        "correction": "List is correct for column 1 of Table 8 because that specification includes Industry × Time fixed effects (which subsume the macroeconomic controls listed in eq. 14). The full eq. (14) CONTROLS vector additionally includes lagged macro controls (USD/GBP FX rate, VIX, GDP-growth forecast, Consumer Sentiment Index, Leading Economic Indicator), but the Table 8 notes and the 'Macroeconomic: No' row indicate these are dropped when Industry × Time FEs are present. No correction to the listed names; clarification only.",
+        "source_location": "p. 3197 (CONTROLS_{i,t-1} description); p. 3208 (Table 8 'Controls' rows)"
+      }
+    ],
+    "missing_from_input": [
+      {
+        "item": "β^UK_i (underlying continuous variable behind HIGH_β^UK_i)",
+        "note": "The treatment indicator HIGH_β^UK_i is constructed from terciles of β^UK_i. The continuous β^UK_i is estimated from equation (13) and is not itself a regressor in column 1 but is the variable used to assign treatment. Should be documented when extracting verbatim definitions."
+      },
+      {
+        "item": "POST_t (component of interaction)",
+        "note": "POST_t is a component of the interaction POST × HIGH_β^UK_i and is defined separately in the paper (p. 3196). Not listed as a standalone variable in INPUT_JSON."
+      },
+      {
+        "item": "HIGH_UK_EXPOSURE_i / HIGH_β^UK_i (component of interaction)",
+        "note": "The dummy component of the interaction is defined separately in the paper (p. 3196). The empirical implementation in Table 8 column 1 is HIGH_β^UK_i. Not listed as a standalone variable in INPUT_JSON."
+      }
+    ],
+    "extra_in_input": []
+  },
+  "variables": {
+    "CASH": {
+      "verbatim_definition": "\"CASH is defined as cash and short-term investments divided by lagged total assets.\"",
+      "source_location": "Table 1 notes, p. 3198",
+      "data_fields": "\"cash and short-term investments\" (the paper does not provide an explicit Compustat mnemonic)",
+      "scaling": "\"divided by lagged total assets\"",
+      "timing": "not_specified (quarterly frequency inferred from sample being COMPUSTAT Quarterly; the variable enters Y_{i,t} in eq. 14)",
+      "winsorization": "\"All variables are winsorized at the 1% level.\"",
+      "missing_value_handling": "not_specified"
+    },
+    "POST × HIGH_β^UK_i": {
+      "verbatim_definition": "\"HIGH_UK_EXPOSURE_i is a dummy variable that equals 1 if firm i is U.K.-exposed, and 0 otherwise. A firm is considered to be U.K.-exposed according to two measures: i) if it belongs to the top tercile of β^UK_i (market-based measure); or ii) if it has a high number of Brexit-related entries in its 2015 10-K form (textual-search-based measure). POST_t equals 1 if the time period is in the 2016:Q3–Q4 window.\"",
+      "source_location": "Section IV.C.3, p. 3196",
+      "data_fields": "Constructed from β^UK_i (estimated from CRSP monthly returns and Bloomberg FTSE100 index data) and from calendar quarter indicator",
+      "scaling": "not_specified (dummy × dummy interaction)",
+      "timing": "POST_t indexed by calendar quarter; HIGH_β^UK_i is time-invariant (assigned based on pre-Brexit β^UK_i estimation)",
+      "winsorization": "not_specified",
+      "missing_value_handling": "not_specified"
+    },
+    "POST_t": {
+      "verbatim_definition": "\"POST_t equals 1 if the time period is in the 2016:Q3–Q4 window.\"",
+      "source_location": "Section IV.C.3, p. 3196",
+      "data_fields": "Calendar quarter indicator",
+      "scaling": "not_specified",
+      "timing": "\"2016:Q3–Q4 window\"; differences \"taken relative to the same two quarters in the previous year (2015:Q3–Q4)\"",
+      "winsorization": "not_specified",
+      "missing_value_handling": "not_specified"
+    },
+    "HIGH_β^UK_i": {
+      "verbatim_definition": "\"HIGH_UK_EXPOSURE_i is a dummy variable that equals 1 if firm i is U.K.-exposed, and 0 otherwise. A firm is considered to be U.K.-exposed according to two measures: i) if it belongs to the top tercile of β^UK_i (market-based measure)\". Treatment thresholds: \"Under this market-based approach, a total of 449 unique firms are assigned to the treated category (β^UK_i > 0.68). In contrast, 360 unique firms are assigned to the control category (β^UK_i < −0.28).\"",
+      "source_location": "Section IV.C.3, p. 3196 (definition); Section IV.C.1, p. 3193 (thresholds)",
+      "data_fields": "Constructed from β^UK_i terciles",
+      "scaling": "not_specified (dummy variable)",
+      "timing": "Time-invariant; β^UK_i estimated over 2010:M1–2014:M12",
+      "winsorization": "not_specified",
+      "missing_value_handling": "\"Drop if missing β^UK_i\" (Supplementary Table C1)"
+    },
+    "β^UK_i": {
+      "verbatim_definition": "\"Following Bloom (2014), we use stock market volatility as a gauge of aggregate uncertainty and estimate equation (12) for each firm i as vol(r_it) = α_i + β^UK_i vol(FTSE100_t) + θCONTROLS_t + ε_it (13). Equation (13) uses the volatility of equity returns, vol(r_it), as a proxy for firm income volatility, vol(v_it). It also uses the volatility of the FTSE100 Index as a proxy for uncertainty in the U.K. (the relevant source of aggregate uncertainty in our setting). We include control variables, CONTROLS_t, consisting of vol(SP500) and vol(FX$£) into equation (13) to absorb effects arising through firms' exposure to the domestic U.S. market and exchange rate fluctuations between the U.S. dollar and the British pound. For each firm, we take the estimated value of β^UK_i from regression (13) as the empirical counterpart to β_i in our framework.\"",
+      "source_location": "Section IV.A.1, p. 3191",
+      "data_fields": "\"CRSP stock price data and Bloomberg equity index and currency data\" (p. 3193); FTSE100 volatility, SP500 volatility, USD/GBP FX volatility",
+      "scaling": "Coefficient from regression of vol(r_it) on vol(FTSE100_t) controlling for vol(SP500) and vol(FX$£)",
+      "timing": "\"We use monthly data from 2010:M1 to 2014:M12 so that exposure to the United Kingdom is measured before any major Brexit-related events.\"",
+      "winsorization": "not_specified",
+      "missing_value_handling": "\"Drop if missing β^UK_i\" (Supplementary Table C1)"
+    },
+    "STOCK_RETURNS": {
+      "verbatim_definition": "\"STOCK_RETURNS are defined as the quarterly buy-and-hold return.\"",
+      "source_location": "Table 1 notes, p. 3198",
+      "data_fields": "CRSP stock price data (p. 3193: \"We use CRSP stock price data...\")",
+      "scaling": "not_specified beyond \"quarterly buy-and-hold return\"",
+      "timing": "\"quarterly\"; enters specification as lagged (\"lagged stock returns\", p. 3197)",
+      "winsorization": "\"All variables are winsorized at the 1% level.\"",
+      "missing_value_handling": "not_specified (CRSP availability required per Table C1: \"Drop if missing CRSP and I/B/E/S controls\")"
+    },
+    "TOBIN_Q": {
+      "verbatim_definition": "\"TOBIN_Q is defined as the market value of assets divided by the book value of assets, and is calculated as the market value of equity plus the book value of assets minus book value of equity plus deferred taxes, all divided by book value of assets.\"",
+      "source_location": "Table 1 notes, p. 3198",
+      "data_fields": "\"market value of equity plus the book value of assets minus book value of equity plus deferred taxes\" / \"book value of assets\"",
+      "scaling": "\"all divided by book value of assets\"",
+      "timing": "not_specified explicitly; enters specification as lagged (\"Tobin's Q\" listed among lagged firm-level controls, p. 3197)",
+      "winsorization": "\"All variables are winsorized at the 1% level.\"",
+      "missing_value_handling": "Required for sample inclusion per Table C1: \"Drop if missing key variables (INVESTMENT, ASSETS, CASH_FLOW, TOBIN_Q, SALES_GROWTH)\""
+    },
+    "CASH_FLOW": {
+      "verbatim_definition": "\"CASH_FLOW is defined as operating income before depreciation divided by lagged total assets.\"",
+      "source_location": "Table 1 notes, p. 3198",
+      "data_fields": "\"operating income before depreciation\"",
+      "scaling": "\"divided by lagged total assets\"",
+      "timing": "not_specified explicitly; enters specification as lagged (\"cash flow\" listed among lagged firm-level controls, p. 3197)",
+      "winsorization": "\"All variables are winsorized at the 1% level.\"",
+      "missing_value_handling": "Required for sample inclusion per Table C1: \"Drop if missing key variables (INVESTMENT, ASSETS, CASH_FLOW, TOBIN_Q, SALES_GROWTH)\""
+    },
+    "SIZE": {
+      "verbatim_definition": "\"SIZE is defined as the logarithm of total assets.\"",
+      "source_location": "Table 1 notes, p. 3198",
+      "data_fields": "\"total assets\"",
+      "scaling": "\"logarithm of total assets\"",
+      "timing": "not_specified explicitly; enters specification as lagged (\"logged assets\" listed among lagged firm-level controls, p. 3197)",
+      "winsorization": "\"All variables are winsorized at the 1% level.\"",
+      "missing_value_handling": "not_specified directly for SIZE; ASSETS required for sample inclusion (Table C1)"
+    },
+    "SALES_GROWTH": {
+      "verbatim_definition": "\"SALES_GROWTH is defined as the year-on-year percentage change in quarterly sales.\"",
+      "source_location": "Table 1 notes, p. 3198",
+      "data_fields": "\"quarterly sales\"",
+      "scaling": "\"year-on-year percentage change\"",
+      "timing": "\"quarterly\"; enters specification as lagged (\"sales growth\" listed among lagged firm-level controls, p. 3197)",
+      "winsorization": "\"All variables are winsorized at the 1% level.\"",
+      "missing_value_handling": "Required for sample inclusion per Table C1: \"Drop if missing key variables (INVESTMENT, ASSETS, CASH_FLOW, TOBIN_Q, SALES_GROWTH)\""
+    },
+    "CONSENSUS_EARNINGS_FORECAST": {
+      "verbatim_definition": "\"CONSENSUS_EARNINGS_FORECAST is defined as the standardized mean 1-quarter ahead earnings per share forecast.\"",
+      "source_location": "Table 1 notes, p. 3198",
+      "data_fields": "I/B/E/S earnings forecasts (p. 3193: \"Analyst forecast data are obtained from I/B/E/S.\")",
+      "scaling": "\"standardized mean\"",
+      "timing": "\"1-quarter ahead\"; described in main text as \"1-quarter-ahead consensus earnings forecasts\" added \"As an additional control for first-moment effects of Brexit\" (p. 3197)",
+      "winsorization": "\"All variables are winsorized at the 1% level.\"",
+      "missing_value_handling": "Required for sample inclusion per Table C1: \"Drop if missing CRSP and I/B/E/S controls\""
+    }
+  },
+  "summary_statistics": {
+    "table_label": "Table 1 — Summary Statistics",
+    "sample_description": "\"Table 1 reports summary statistics for the main variables used in our empirical analyses. The final sample is a match between COMPUSTAT Quarterly North America Fundamentals and the estimated β^UK_i sample for the period from 2010:Q1 to 2015:Q4. Each panel reports the mean, standard deviation, median, interquartile range (IQR), and the number of observations conditional on firms belonging to each subsample.\" Panels: A = COMPUSTAT universe; B = Treated Firms (top tercile of β^UK_i, market-based); C = Control Firms (bottom tercile of β^UK_i, market-based); D = Treated Firms (>5 10-K Brexit entries); E = Control Firms (zero 10-K Brexit entries). Source: pp. 3198–3199.",
+    "variables": {
+      "CASH": {
+        "panel_A_universe": {"N": 78044, "mean": 0.22, "SD": 0.25, "min": null, "p25": null, "p50": 0.12, "p75": null, "max": null, "IQR": 0.27},
+        "panel_B_treated_market": {"N": 11176, "mean": 0.20, "SD": 0.24, "min": null, "p25": null, "p50": 0.11, "p75": null, "max": null, "IQR": 0.26},
+        "panel_C_control_market": {"N": 12097, "mean": 0.17, "SD": 0.18, "min": null, "p25": null, "p50": 0.11, "p75": null, "max": null, "IQR": 0.19},
+        "notes": "The paper reports only mean, SD, median, IQR, and N. It does not report min, p25, p75, or max. Panels D and E (textual-search treatment/control) are also reported but not relevant to the column 1 baseline."
+      },
+      "TOBIN_Q": {
+        "panel_A_universe": {"N": 73353, "mean": 2.11, "SD": 1.59, "min": null, "p25": null, "p50": 1.57, "p75": null, "max": null, "IQR": 1.26},
+        "panel_B_treated_market": {"N": 11090, "mean": 1.92, "SD": 1.51, "min": null, "p25": null, "p50": 1.41, "p75": null, "max": null, "IQR": 1.01},
+        "panel_C_control_market": {"N": 12055, "mean": 1.98, "SD": 1.25, "min": null, "p25": null, "p50": 1.62, "p75": null, "max": null, "IQR": 1.07},
+        "notes": "Only mean/SD/median/IQR/N reported."
+      },
+      "CASH_FLOW": {
+        "panel_A_universe": {"N": 75287, "mean": 0.01, "SD": 0.06, "min": null, "p25": null, "p50": 0.03, "p75": null, "max": null, "IQR": 0.04},
+        "panel_B_treated_market": {"N": 10972, "mean": 0.01, "SD": 0.06, "min": null, "p25": null, "p50": 0.02, "p75": null, "max": null, "IQR": 0.04},
+        "panel_C_control_market": {"N": 11871, "mean": 0.03, "SD": 0.04, "min": null, "p25": null, "p50": 0.03, "p75": null, "max": null, "IQR": 0.03},
+        "notes": "Only mean/SD/median/IQR/N reported."
+      },
+      "SIZE": {
+        "panel_A_universe": {"N": 78062, "mean": 6.19, "SD": 2.08, "min": null, "p25": null, "p50": 6.15, "p75": null, "max": null, "IQR": 3.08},
+        "panel_B_treated_market": {"N": 11176, "mean": 6.11, "SD": 1.87, "min": null, "p25": null, "p50": 6.12, "p75": null, "max": null, "IQR": 2.86},
+        "panel_C_control_market": {"N": 12097, "mean": 7.25, "SD": 1.99, "min": null, "p25": null, "p50": 7.25, "p75": null, "max": null, "IQR": 2.65},
+        "notes": "Labeled as 'SIZE (Log Assets)' in Table 1. Only mean/SD/median/IQR/N reported."
+      },
+      "SALES_GROWTH": {
+        "panel_A_universe": {"N": 71637, "mean": 0.16, "SD": 0.62, "min": null, "p25": null, "p50": 0.06, "p75": null, "max": null, "IQR": 0.23},
+        "panel_B_treated_market": {"N": 10624, "mean": 0.18, "SD": 0.71, "min": null, "p25": null, "p50": 0.06, "p75": null, "max": null, "IQR": 0.31},
+        "panel_C_control_market": {"N": 11969, "mean": 0.10, "SD": 0.36, "min": null, "p25": null, "p50": 0.06, "p75": null, "max": null, "IQR": 0.16},
+        "notes": "Only mean/SD/median/IQR/N reported."
+      },
+      "CONSENSUS_EARNINGS_FORECAST": {
+        "panel_A_universe": {"N": 42031, "mean": 0.07, "SD": 3.51, "min": null, "p25": null, "p50": 0.09, "p75": null, "max": null, "IQR": 2.05},
+        "panel_B_treated_market": {"N": 8963, "mean": 0.01, "SD": 3.40, "min": null, "p25": null, "p50": 0.01, "p75": null, "max": null, "IQR": 1.83},
+        "panel_C_control_market": {"N": 10720, "mean": 0.07, "SD": 2.33, "min": null, "p25": null, "p50": 0.04, "p75": null, "max": null, "IQR": 2.40},
+        "notes": "Sign of mean varies across panels; signs reproduced as printed. Only mean/SD/median/IQR/N reported."
+      },
+      "STOCK_RETURNS": {
+        "panel_A_universe": {"N": 67226, "mean": 0.03, "SD": 0.24, "min": null, "p25": null, "p50": 0.02, "p75": null, "max": null, "IQR": 0.25},
+        "panel_B_treated_market": {"N": 11088, "mean": 0.02, "SD": 0.27, "min": null, "p25": null, "p50": 0.00, "p75": null, "max": null, "IQR": 0.30},
+        "panel_C_control_market": {"N": 12063, "mean": 0.04, "SD": 0.18, "min": null, "p25": null, "p50": 0.03, "p75": null, "max": null, "IQR": 0.20},
+        "notes": "Only mean/SD/median/IQR/N reported."
+      },
+      "β^UK_i": {
+        "panel_A_universe": {"N": null, "mean": null, "SD": null, "min": null, "p25": null, "p50": null, "p75": null, "max": null},
+        "notes": "FLAGGED: β^UK_i does NOT appear in Table 1 summary statistics. The paper only reports threshold values used to define treatment/control assignment: 'Under this market-based approach, a total of 449 unique firms are assigned to the treated category (β^UK_i > 0.68). In contrast, 360 unique firms are assigned to the control category (β^UK_i < −0.28).' (p. 3193). No mean, SD, or other distributional statistics for β^UK_i are reported anywhere in the main paper or the supplementary appendix."
+      },
+      "POST_t": {
+        "notes": "FLAGGED: POST_t is an indicator and does not appear in Table 1. No distributional statistics reported."
+      },
+      "HIGH_β^UK_i": {
+        "notes": "FLAGGED: HIGH_β^UK_i is an indicator and does not appear in Table 1. No distributional statistics reported. Counts of unique firms: 449 treated, 360 control (p. 3193)."
+      },
+      "POST × HIGH_β^UK_i": {
+        "notes": "FLAGGED: Interaction term, not reported in any summary statistics table."
+      }
+    }
+  },
+  "specification_details": {
+    "fixed_effects": {
+      "verbatim_quote": "\"FIRM_i represents firm-fixed effects, INDUSTRY_j is a dummy for each industry category j of the Hoberg and Phillips (2016) classification (FIC 100), and QUARTER_t are calendar-quarter dummies.\" Table 8 'Fixed effects' rows for column 1: 'Firm Yes' and 'Industry × time Yes'.",
+      "source_location": "Equation (14) discussion, p. 3197; Table 8, p. 3208"
+    },
+    "clustering": {
+      "verbatim_quote": "\"Standard errors are double-clustered by firm and calendar quarters.\" Table 8 notes: \"T-statistics are computed using robust standard errors (in parentheses) double-clustered at the firm and calendar quarter levels.\"",
+      "source_location": "Equation (14) discussion, p. 3197; Table 8 notes, p. 3208"
+    },
+    "panel_id_variables": {
+      "verbatim_quote": "\"Y_{i,t} = α + δ[POST_t × HIGH_UK_EXPOSURE_i] + θCONTROLS_{i,t-1} + Σ_i FIRM_i + Σ_j Σ_t [INDUSTRY_j × QUARTER_t] + ε_{i,t}.\" The paper does not explicitly name a 'panel ID' field; i indexes firms and t indexes calendar quarters per equation (14) and surrounding text.",
+      "source_location": "Equation (14), p. 3196"
+    },
+    "sample_filters": [
+      {
+        "filter": "Raw COMPUSTAT between 2010:Q1 and 2016:Q4",
+        "verbatim_quote": "\"Raw COMPUSTAT between 2010:Q1 and 2016:Q4 — 262,412\". Also main text: \"We use COMPUSTAT Quarterly to gather basic information on firm investment and financial data. We consider U.S. companies from the first calendar quarter of 2010 to the fourth calendar quarter of 2016.\"",
+        "source_location": "Supplementary Table C1; main text p. 3192",
+        "source_document": "supplementary (table) + main (text)"
+      },
+      {
+        "filter": "Drop non-US firm–quarters (retain data reported in USD, with US headquarters, duplicates excluded)",
+        "verbatim_quote": "\"Drop non-US firm–quarters (retain data reported in USD, with US headquarters, duplicates excluded) — 160,254\"",
+        "source_location": "Supplementary Table C1",
+        "source_document": "supplementary"
+      },
+      {
+        "filter": "Drop firm–quarters with negative fundamentals (ASSETS and SALES)",
+        "verbatim_quote": "\"Drop firm–quarters with negative fundamentals (ASSETS and SALES) — 158,312\"",
+        "source_location": "Supplementary Table C1",
+        "source_document": "supplementary"
+      },
+      {
+        "filter": "Drop financials and utilities",
+        "verbatim_quote": "\"Drop financials and utilities — 112,939\". Also main text: \"We drop utility and financial firms\".",
+        "source_location": "Supplementary Table C1; main text p. 3192",
+        "source_document": "supplementary (table) + main (text)"
+      },
+      {
+        "filter": "Drop if ASSETS or MARKET_CAPITALIZATION less than $10 million",
+        "verbatim_quote": "\"Drop if ASSETS or MARKET_CAPITALIZATION less than $10 million — 93,011\". Also main text: \"as well as companies whose market value or book assets are lower than $10 million\".",
+        "source_location": "Supplementary Table C1; main text p. 3192",
+        "source_document": "supplementary (table) + main (text)"
+      },
+      {
+        "filter": "Drop if missing key variables (INVESTMENT, ASSETS, CASH_FLOW, TOBIN_Q, SALES_GROWTH)",
+        "verbatim_quote": "\"Drop if missing key variables (INVESTMENT, ASSETS, CASH_FLOW, TOBIN_Q, SALES_GROWTH) — 75,013\"",
+        "source_location": "Supplementary Table C1",
+        "source_document": "supplementary"
+      },
+      {
+        "filter": "Drop if non-consecutive quarters, or less than 12 quarters of non-missing data",
+        "verbatim_quote": "\"Drop if non-consecutive quarters, or less than 12 quarters of non-missing data — 56,081\"",
+        "source_location": "Supplementary Table C1",
+        "source_document": "supplementary"
+      },
+      {
+        "filter": "Drop if missing Hoberg and Phillips (2016) industry classification",
+        "verbatim_quote": "\"Drop if missing Hoberg and Phillips (2016) industry classification — 49,107\"",
+        "source_location": "Supplementary Table C1",
+        "source_document": "supplementary"
+      },
+      {
+        "filter": "Drop if missing β^UK_i",
+        "verbatim_quote": "\"Drop if missing β^UK_i — 43,025\"",
+        "source_location": "Supplementary Table C1",
+        "source_document": "supplementary"
+      },
+      {
+        "filter": "Drop if missing CRSP and I/B/E/S controls",
+        "verbatim_quote": "\"Drop if missing CRSP and I/B/E/S controls — 41,630\"",
+        "source_location": "Supplementary Table C1",
+        "source_document": "supplementary"
+      },
+      {
+        "filter": "Treatment group: top tercile of β^UK_i",
+        "verbatim_quote": "\"Following our framework, in our base analysis, we characterize firms as treated (control) units if they are in the upper (bottom) tercile of the nonnegative range of the β^UK_i distribution.\" Table 8 column 1 header: \"Treatment is Top Tercile of β^UK_i\".",
+        "source_location": "Section IV.C.1, p. 3193; Table 8, p. 3208",
+        "source_document": "main"
+      },
+      {
+        "filter": "Control group: bottom tercile of β^UK_i",
+        "verbatim_quote": "\"Following our framework, in our base analysis, we characterize firms as treated (control) units if they are in the upper (bottom) tercile of the nonnegative range of the β^UK_i distribution.\"",
+        "source_location": "Section IV.C.1, p. 3193",
+        "source_document": "main"
+      },
+      {
+        "filter": "Non-negative range of β^UK_i",
+        "verbatim_quote": "\"For group contrasting, we do not include firms that benefit from uncertainty in the United Kingdom in the control group (firms with β^UK_i < 0) as this could lead to overestimation biases attached to the treatment effects we seek to identify.\"",
+        "source_location": "Section IV.C.1, p. 3193",
+        "source_document": "main"
+      },
+      {
+        "filter": "2016:Q3–Q4 vs. 2015:Q3–Q4",
+        "verbatim_quote": "\"Differences over the 2016:Q3–Q4 period are taken relative to the same two quarters in the previous year (2015:Q3–Q4) in order to minimize the impact of seasonal effects.\" Table 8 notes: \"The time dimension of the DID estimator is set so as to compare the two quarters following the announcement of the referendum and Brexit's victory (2016:Q3–Q4) versus the two quarters preceding the announcement (2015:Q3–Q4).\"",
+        "source_location": "Section IV.C.3, p. 3196; Table 8 notes, p. 3208",
+        "source_document": "main"
+      },
+      {
+        "filter": "All variables winsorized at the 1% level",
+        "verbatim_quote": "\"All variables are winsorized at the 1% level.\"",
+        "source_location": "Table 1 notes, p. 3198",
+        "source_document": "main"
+      }
+    ]
+  }
+}

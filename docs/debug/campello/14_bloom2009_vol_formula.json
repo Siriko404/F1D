@@ -1,0 +1,142 @@
+{
+  "audit_metadata": {
+    "purpose": "Trace the operational definition of vol(.) that Campello et al. inherit via 'Following Bloom (2014)' citation, by going back to the primary methodology paper Bloom (2009).",
+    "primary_source": "Bloom, Nicholas (2009). 'The Impact of Uncertainty Shocks.' Econometrica 77(3): 623-685.",
+    "secondary_source": "Bloom, Nicholas (2014). 'Fluctuations in Uncertainty.' Journal of Economic Perspectives 28(2): 153-176.",
+    "campello_citation_in_question": "Following Bloom (2014), we use stock market volatility as a gauge of aggregate uncertainty.",
+    "campello_equation_13": "vol(r_it) = alpha_i + beta_UK_i * vol(FTSE100_t) + theta * CONTROLS_t + epsilon_it",
+    "campello_operational_choices": {
+      "data_sources": "CRSP daily returns (US firms); Bloomberg for FTSE100, S&P500, FX",
+      "frequency": "monthly observations of volatility, 2010:M1-2014:M12",
+      "implicit_vol_construction": "monthly standard deviation of daily returns (realized vol)"
+    },
+    "headline_finding": "Bloom (2009) provides exactly ONE operational definition of aggregate stock-market volatility (Figure 1 caption, p. 624): a spliced series of (a) CBOE VXO from 1986 onward [implied vol, option-based] and (b) monthly SD of daily S&P500 returns pre-1986, rescaled to match VXO's mean/variance over the overlap. The pre-1986 portion is the direct precedent for what Campello does with FTSE100/SP500. For firm-level volatility, Bloom (2009) Table I uses CROSS-SECTIONAL SD across firms within a month -- NOT within-firm time-series vol -- so the citation chain breaks if Campello uses within-firm time-series vol."
+  },
+
+  "Q_aggregate_volatility_formula": {
+    "question": "What is the operational formula Bloom (2009) uses for aggregate stock-market volatility?",
+    "answer": "A spliced series: VXO (CBOE implied vol) from 1986 onward, and pre-1986 the monthly standard deviation of daily S&P500 returns rescaled to match VXO's mean and variance over the 1986+ overlap.",
+    "verbatim_quote_from_bloom_2009": {
+      "location": "Figure 1 caption, p. 624",
+      "exact_text": "Chicago Board of Options Exchange VXO index of percentage implied volatility, on a hypothetical at the money S&P100 option 30 days to expiration, from 1986 onward. Pre-1986 the VXO index is unavailable, so actual monthly returns volatilities are calculated as the monthly standard deviation of the daily S&P500 index normalized to the same mean and variance as the VXO index when they overlap from 1986 onward. Actual and VXO are correlated at 0.874 over this period."
+    },
+    "formula_extracted": {
+      "mathematical_form": "vol(r_t) = sqrt( (1/(N_t - 1)) * sum_{d in month t} (r_d - r_bar_t)^2 )",
+      "where": {
+        "r_d": "daily index return on trading day d",
+        "r_bar_t": "mean daily return within month t",
+        "N_t": "number of trading days in month t",
+        "output_unit": "monthly standard deviation (NOT annualized)"
+      },
+      "rescaling": "Pre-1986 series is then linearly rescaled to match the mean and variance of the VXO over the 1986+ overlap period.",
+      "annualization": "NONE in the original. The series is reported in monthly SD units, then rescaled to VXO units. No sqrt(252), no sqrt(12)."
+    },
+    "data_source": "S&P500 daily index (pre-1986 portion); CBOE VXO index (post-1986 portion)",
+    "what_campello_likely_uses": "The pre-1986 portion of this construction -- monthly SD of daily index returns -- because (a) the UK has no canonical option-implied vol index in Campello's Bloomberg pull, (b) Campello uses index price data from Bloomberg, not options data, (c) the monthly frequency in Campello's panel matches monthly SD of daily returns naturally."
+  },
+
+  "Q_firm_level_volatility_formula": {
+    "question": "What is the operational formula Bloom (2009) uses for firm-level stock-return volatility?",
+    "answer": "Bloom (2009) does NOT use within-firm time-series volatility. Table I uses the CROSS-SECTIONAL standard deviation of firm-level monthly stock returns across firms within each month. This is a different object than within-firm time-series vol.",
+    "verbatim_quote_from_bloom_2009": {
+      "location": "Table I, footnote d, p. 629",
+      "exact_text": "The standard deviation of firm stock returns measures the within month cross-sectional standard deviation of firm-level stock returns for firm with 500+ months of data in the Center for Research in Securities Prices (CRSP) stock-returns file."
+    },
+    "what_this_actually_measures": {
+      "object": "cross-sectional dispersion across firms i in month t",
+      "formula": "sigma_t = sqrt( (1/(N-1)) * sum_i (r_it - r_bar_t)^2 )",
+      "where_i_indexes_firms": "and r_it is firm i's monthly return in month t",
+      "NOT": "time-series vol of an individual firm's daily returns"
+    },
+    "critical_caveat_for_campello_audit": "If Campello's vol(r_it) on the LHS of eq. (13) is the within-firm time-series volatility of firm i's returns (computed from daily returns within month t), then Bloom (2009) does NOT directly support this construction. The actual primary references for within-firm time-series vol would be: (1) Leahy & Whited (1996) 'The Effect of Uncertainty on Investment: Some Stylized Facts,' Journal of Money, Credit and Banking 28(1): 64-83; (2) Bloom, Bond & Van Reenen (2007) 'Uncertainty and Investment Dynamics,' Review of Economic Studies 74(2): 391-415. Bloom (2009) cites both for this construction without reproducing their formulas in his own text.",
+    "footnote_2_of_bloom_2009_p_623": {
+      "exact_text": "In financial markets implied share-returns volatility is the canonical measure for uncertainty. Bloom, Bond, and Van Reenen (2007) showed that firm-level share-returns volatility is significantly correlated with a range of alternative uncertainty proxies, including real sales growth volatility and the cross-sectional distribution of financial analysts' forecasts.",
+      "implication": "Bloom delegates the firm-level vol construction to BBV (2007), not defining it himself."
+    }
+  },
+
+  "Q_cross_reference_with_campello": {
+    "question": "Does Bloom (2009)'s construction map onto Campello's vol(FTSE100_t) and vol(r_it)?",
+    "aggregate_level_FTSE100_or_SP500": {
+      "match": "PARTIAL match for the pre-1986 portion of Bloom's series.",
+      "specifically": "Campello's vol(FTSE100_t) = monthly SD of daily FTSE100 returns is operationally identical to Bloom's pre-1986 segment for the S&P500.",
+      "mismatch": "Bloom's post-1986 series (the VXO implied vol) is NOT what Campello uses. Campello uses realized vol throughout; Bloom uses implied vol post-1986.",
+      "verdict": "Defensible. Campello is using the realized-vol construction Bloom uses pre-1986, just extended to a UK index. The choice is justifiable but Campello should ideally cite Bloom (2009) Figure 1 footnote, not Bloom (2014)."
+    },
+    "firm_level_vol_r_it": {
+      "match": "NO direct match.",
+      "specifically": "Bloom (2009) Table I uses cross-sectional dispersion across firms within a month, not within-firm time-series vol. Campello's vol(r_it) -- if it is within-firm time-series vol from daily returns -- is a different object.",
+      "verdict": "The 'Following Bloom (2014)' citation does NOT support a within-firm time-series vol construction at the firm level. The correct primary citations would be Leahy & Whited (1996) and/or Bloom, Bond & Van Reenen (2007). Neither appears in Campello's citation chain via Bloom (2014)."
+    }
+  },
+
+  "Q_what_should_campello_have_cited": {
+    "question": "For full methodological rigor, what should Campello have cited?",
+    "for_aggregate_vol_FTSE100": "Bloom (2009) Econometrica, Figure 1 footnote -- specifically the pre-1986 construction. Or, more directly, any standard realized-volatility reference (e.g., Schwert 1989; Andersen, Bollerslev, Diebold, & Labys 2003 'Modeling and Forecasting Realized Volatility,' Econometrica 71(2): 579-625).",
+    "for_firm_level_within_firm_vol": [
+      "Leahy, John, and Toni Whited (1996). 'The Effect of Uncertainty on Investment: Some Stylized Facts.' Journal of Money, Credit and Banking 28(1): 64-83.",
+      "Bloom, Nicholas, Stephen Bond, and John Van Reenen (2007). 'Uncertainty and Investment Dynamics.' Review of Economic Studies 74(2): 391-415."
+    ],
+    "for_decomposition_methodology": "Campbell, Lettau, Malkiel & Xu (2001). 'Have Individual Stocks Become More Volatile?' Journal of Finance 56(1): 1-43. Note: CLMX use volatility decomposition (market vs industry vs firm components), which differs from a simple monthly SD of daily firm returns."
+  },
+
+  "links_to_papers_with_formulas": {
+    "bloom_2009_econometrica_primary_source": {
+      "title": "The Impact of Uncertainty Shocks",
+      "author": "Nicholas Bloom",
+      "journal": "Econometrica 77(3): 623-685",
+      "year": 2009,
+      "doi": "10.3982/ECTA6248",
+      "links": [
+        "https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA6248",
+        "https://pages.stern.nyu.edu/~dbackus/GE_asset_pricing/Bloom%20uncer%20shocks%20Ec%2009.pdf",
+        "https://www.nber.org/papers/w13385",
+        "https://www.econometricsociety.org/publications/econometrica/2009/05/01/impact-uncertainty-shocks"
+      ],
+      "where_formula_appears": "Figure 1 caption on p. 624; Table I footnotes c, d, e, f on p. 629"
+    },
+    "baker_bloom_2013_NBER_19475": {
+      "title": "Does Uncertainty Reduce Growth? Using Disasters as Natural Experiments",
+      "authors": "Scott R. Baker and Nicholas Bloom",
+      "type": "NBER Working Paper 19475",
+      "year": 2013,
+      "links": [
+        "https://www.nber.org/papers/w19475",
+        "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2332546"
+      ],
+      "status": "Superseded by Baker, Bloom & Terry (2024)."
+    },
+    "baker_bloom_terry_2024_ReStud_published": {
+      "title": "Using Disasters to Estimate the Impact of Uncertainty",
+      "authors": "Scott R. Baker, Nicholas Bloom, and Stephen J. Terry",
+      "journal": "Review of Economic Studies 91(2): 720-747",
+      "year": 2024,
+      "NBER_working_paper": "NBER WP 27167",
+      "links": [
+        "https://www.nber.org/papers/w27167",
+        "https://www.nber.org/system/files/working_papers/w27167/w27167.pdf"
+      ]
+    },
+    "bloom_bond_van_reenen_2007_ReStud": {
+      "title": "Uncertainty and Investment Dynamics",
+      "authors": "Nicholas Bloom, Stephen Bond, John Van Reenen",
+      "journal": "Review of Economic Studies 74(2): 391-415",
+      "year": 2007,
+      "relevance": "Primary methodology reference for FIRM-LEVEL within-firm stock-return volatility construction."
+    },
+    "leahy_whited_1996": {
+      "title": "The Effect of Uncertainty on Investment: Some Stylized Facts",
+      "authors": "John Leahy and Toni Whited",
+      "journal": "Journal of Money, Credit and Banking 28(1): 64-83",
+      "year": 1996,
+      "relevance": "Earlier primary methodology reference for firm-level stock-price vol as uncertainty proxy."
+    }
+  },
+
+  "bottom_line_verdict": {
+    "for_aggregate_vol": "Campello's vol(FTSE100_t) construction (monthly SD of daily index returns) is operationally identical to the pre-1986 portion of Bloom (2009) Figure 1's spliced aggregate series. The 'Following Bloom (2014)' citation is loose -- the right citation is Bloom (2009) Figure 1 caption -- but the actual construction is defensible.",
+    "for_firm_level_vol": "If Campello's vol(r_it) is within-firm time-series vol of daily returns, the citation chain via Bloom (2014) -> Bloom (2009) does NOT support this. Bloom (2009)'s firm-level measure is cross-sectional dispersion across firms, a different object. The correct primary citations would be Leahy & Whited (1996) or Bloom, Bond & Van Reenen (2007), neither of which Campello cites via this chain.",
+    "annualization": "Bloom (2009) does NOT annualize. The monthly SD is rescaled to match VXO units. If Campello annualizes (multiplies by sqrt(12) or sqrt(252)), that's a Campello choice with no Bloom precedent.",
+    "summary_for_red_team": "The Campello citation 'Following Bloom (2014)' is conceptually correct but methodologically thin. Bloom (2014) is a JEP survey with no formula. Bloom (2009) has exactly one formula (Figure 1 caption) for aggregate vol but uses cross-sectional dispersion -- not within-firm time-series vol -- at the firm level. Anyone reproducing Campello's vol(r_it) construction from the Bloom citation chain would have to fill in the firm-level definition from BBV (2007) or Leahy-Whited (1996), which Campello does not cite."
+  }
+}

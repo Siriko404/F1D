@@ -1,0 +1,176 @@
+{
+  "_meta": {
+    "paper": "Chen, H., Chen, Z., Dhaliwal, D. S., & Huang, Y. (2017/2020). Accounting Restatements and Corporate Cash Policy. Journal of Accounting, Auditing & Finance, 35(2), 290-317.",
+    "review_type": "Adversarial peer review / red-team audit of variable-definition extraction",
+    "extraction_audited": "02_recipe_definitions.json",
+    "review_date": "2026-05-27"
+  },
+
+  "audit_summary": {
+    "verbatim_accuracy_overall": "high — most variable definitions are exact transcriptions",
+    "summary_stats_transcription": "100% match against Table 1 Panel B (all 21 variables checked)",
+    "sample_arithmetic_check": "2705 − (203+296+396+270+60+496+7+28) = 949 ✓",
+    "n_consistency_check": "Table 1 Panel B Ns (7120 error + 2825 irregularity = 9945) match Table 3 Panel A regression Ns (4941 restatement + 5004 control = 9945) ✓ — confirming Table 1 Panel B 'samples' are TREATED+CONTROL combined, not treated only",
+    "critical_misframings_found": 3,
+    "internal_paper_inconsistencies_found": 2
+  },
+
+  "verified_corrections": {
+    "NWC": {
+      "status": "JSON IS CORRECT, but reviewer note in extraction prompt was wrong",
+      "comment": "The paper's body text explicitly writes '(#ACT − #CHE) − (#LCT − #DLC) scaled by total assets'. #DLC is verbatim in the paper, not inferred. The user's prompt question 'was DLC inferred?' answers itself: NO, DLC is explicit."
+    },
+    "SIZE": {
+      "status": "compustat_items inferred, not verbatim",
+      "comment": "Paper says 'natural logarithm of total assets' without giving the item code #AT in the SIZE definition itself. #AT is recoverable only by cross-reference to other variables (CASH, Q, CF, etc., where #AT is given). Flag as inferred."
+    },
+    "AGE": {
+      "status": "definition verbatim, but Compustat file unspecified",
+      "comment": "Paper says 'first appeared in Compustat' with no qualifier. Annual vs. quarterly Compustat, fiscal vs. calendar year, and any CRSP-based alternative are NOT mentioned. A replicator using funda first-year vs. fundq first-year may get different ages."
+    },
+    "SIGMA": {
+      "status": "definition verbatim but materially ambiguous in TWO dimensions",
+      "ambiguity_1_industry_classification": "Paper does not state which industry scheme at the point of SIGMA definition. Footnote 3 (in the PS_DEMAND/cross-sectional context, NOT the baseline) says FF48. Whether the baseline SIGMA also uses FF48 is plausibly inferred but never stated.",
+      "ambiguity_2_computation_order": "The phrase 'industry-median value of the standard deviation of operating cash flow over the previous 10 years' permits two readings: (a) for each firm, compute 10-year SD of CF; then take industry-median across firms — OR (b) for each industry-year, compute industry-median CF; then take 10-year SD of that median series. These give materially different numbers. Compare to IND_STDCF in Table 4 which is unambiguously reading (b) ('standard deviation of industry...median operating cash flows'). If SIGMA were also reading (b), the paper would likely have used the same phrasing. Default to reading (a), but flag.",
+      "ambiguity_3_rolling_window_anchor": "'Previous 10 years' — calendar-year rolling or event-year-relative? Not stated."
+    },
+    "NSEG": {
+      "status": "definition verbatim, source file unspecified",
+      "comment": "Paper does not specify Compustat Business Segments (SEGCUST/WRDS) vs. Compustat Historical Segments vs. Compustat Operating Segments. 'Identifiable assets' suggests the Business Segments file but is not pinned down."
+    },
+    "Q": {
+      "status": "FULLY VERBATIM",
+      "comment": "Paper definition matches JSON formula [AT + (PRCC_F × CSHO) − CEQ] / AT exactly. No winsorization, no deferred-tax adjustment, no preferred-stock adjustment — all of which are common variants in other papers. The simple Kaplan-Zingales-style market-to-book is what's specified."
+    },
+    "CASH": {
+      "status": "verbatim correct",
+      "comment": "CHE is Compustat's combined 'cash and short-term investments' item — no separate short-term investments adjustment is needed or specified."
+    },
+    "R&D_missing_handling": {
+      "status": "NOT EXPLICITLY STATED — JSON's flag is correct",
+      "comment": "Searched the body, the Table 3 Panel B note, the appendix, and the footnotes. The paper never addresses missing R&D. The error-sample median of 0.000 is strongly suggestive of the conventional 'set missing to zero' treatment, but the paper is silent. This is a non-trivial replication choice."
+    },
+    "LEV": {
+      "status": "verbatim correct",
+      "comment": "Book leverage ratio (total interest-bearing debt / total assets). Standard book-debt-to-assets construction. Not net of cash, not market leverage."
+    },
+    "POST_event_window": {
+      "status": "implicit, not explicit",
+      "comment": "The paper says regressions 'compare the cash holdings in the 3 fiscal years after... with cash holdings in the 3 fiscal years before' and 'excludes year 0'. Whether years ≤ −4 and ≥ +4 are dropped is never stated explicitly — but the regression Ns (4941 restatement / 5004 control) are consistent with a strict [−3,−1] ∪ [+1,+3] panel of ≤6 firm-years per firm (max = 949×6 = 5694; observed 4941 reflects data attrition). So implicit but unambiguous from arithmetic."
+    },
+    "winsorization": {
+      "status": "ABSENT, not explicitly disclaimed",
+      "comment": "The paper neither winsorizes nor states 'we do not winsorize.' It uses DROPPING filters instead (cash > AT, growth > 100%, AT/MVE < $10M). A replicator should treat 'no winsorization' as the default but recognize this is an inference."
+    },
+    "psm_matching": {
+      "status": "verbatim correct as stated",
+      "caliper_confirmation": "The appendix and Table A1 give zero mention of a caliper. Matching is purely 'closest propensity score within FF48 industry, in year 0, without replacement, with iterative re-matching when ties create conflicts.'",
+      "missed_nuance": "The propensity score itself is fitted on 3-year AVERAGED covariates (t−3 to t−1), then applied at year 0. This is captured in the JSON's covariate_measurement_window field but not emphasized."
+    },
+    "standard_errors": {
+      "status": "verbatim correct",
+      "cluster_counts_paper_gives": "NONE — the paper says 'matched pair and year levels' but never reports number of clusters or degrees-of-freedom corrections. With 949 pairs and ~13–16 calendar years (1994–2009 spans), pair-clustering is well-powered but year-clustering may be marginal."
+    },
+    "summary_stats_table_caveat": {
+      "status": "verbatim correct",
+      "confirmation": "Table 1 Panel B reports only n, Mean, Median. No SD, no quartiles, no min/max. Confirmed by direct inspection of the table."
+    },
+    "restatement_source": {
+      "status": "verbatim correct — exclusively GAO via Hennes et al. (2008)",
+      "comment": "No mention of Audit Analytics anywhere in the paper. Sample is bounded by the Hennes-coded GAO universe."
+    }
+  },
+
+  "flags": [
+    {
+      "id": "F01",
+      "severity": "HIGH",
+      "type": "internal_paper_inconsistency",
+      "issue": "The 496-observation filter is described DIFFERENTLY in two places. Table 1 Panel A line item: 'Firms with missing variables used to estimate the propensity scores (496)'. Body text on the same page: 'we eliminate observations with missing financial data, cash holdings exceeding the value of total assets, total assets and market value of equity below US $10 million, or growth in assets or sales exceeding 100%. This removes another 496 restatements'. These are NOT the same filter — one is data-availability for PSM, the other is a quality screen with explicit thresholds. The JSON silently merged them. A replicator who only reads Panel A would build a different sample than one who only reads the body.",
+      "replicator_action": "Apply BOTH filters and check whether the combined attrition equals 496. If not, the paper has an unresolved inconsistency."
+    },
+    {
+      "id": "F02",
+      "severity": "MEDIUM",
+      "type": "internal_paper_inconsistency",
+      "issue": "Body text says 'total assets AND market value of equity below US $10 million' — literally requiring both conditions to trigger the drop. The JSON renders this as 'OR' (drop if either is < $10M). Both interpretations are defensible. The 'AND' reading is more permissive (keeps firms where AT > $10M but MVE < $10M, e.g., highly leveraged small firms). The 'OR' reading is standard practice in the literature.",
+      "replicator_action": "Try both and report sensitivity. The literal reading of the paper is 'AND'."
+    },
+    {
+      "id": "F03",
+      "severity": "MEDIUM",
+      "type": "ambiguous_construction",
+      "issue": "SIGMA computation order is ambiguous (see verified_corrections.SIGMA). The contrast with IND_STDCF in Table 4 (which is unambiguously 'SD of industry-median series') suggests SIGMA is the OTHER reading (industry-median of firm-level SDs), but this is inference, not statement."
+    },
+    {
+      "id": "F04",
+      "severity": "MEDIUM",
+      "type": "data_source_unspecified",
+      "issue": "Bank loan data (NO_LOAN, N_FINCOV, N_GENCOV) — paper never names the database. DealScan/LPC is the de facto standard and overwhelmingly likely, but the paper is silent. If the data come from a private source or a different vendor, replication will fail invisibly.",
+      "replicator_action": "Assume DealScan; verify by checking that NO_LOAN mean (0.69 error / 0.65 irreg) matches what DealScan coverage gives for this sample period."
+    },
+    {
+      "id": "F05",
+      "severity": "LOW",
+      "type": "data_source_unspecified",
+      "issue": "BigN auditor source — could be Compustat AU field (au=1-8 for legacy big-N codes) or Audit Analytics. With 85–88% Big-N coverage in 1997–2006 sample, both sources should yield very similar results, but they will not be identical for firms with mid-year auditor changes."
+    },
+    {
+      "id": "F06",
+      "severity": "LOW",
+      "type": "data_source_unspecified",
+      "issue": "AGE — Compustat annual vs. quarterly first-appearance year not specified. fundq generally has earlier first-observations than funda for the same firm. A standard but unstated convention is to use funda."
+    },
+    {
+      "id": "F07",
+      "severity": "LOW",
+      "type": "data_source_unspecified",
+      "issue": "NSEG — Compustat Business Segments file vs. Operating Segments not specified. 'Identifiable assets' phrasing points to Business Segments but is not definitive."
+    },
+    {
+      "id": "F08",
+      "severity": "LOW",
+      "type": "labeling_clarification",
+      "issue": "JSON labels in summary_stats use 'error_sample' and 'irregularity_sample'. In Table 1 Panel B, these are the COMBINED treated + matched-control samples (confirmed by N reconciliation: 7120+2825 = 9945 = 4941 restatement + 5004 control from Table 3 Panel A). Not just treated firms. A reader of the JSON in isolation might assume these are treated-only summaries."
+    },
+    {
+      "id": "F09",
+      "severity": "LOW",
+      "type": "absent_disclosure",
+      "issue": "No winsorization is mentioned, but neither is its absence affirmatively stated. Default to 'no winsorization' but flag as an inference rather than a paper claim."
+    },
+    {
+      "id": "F10",
+      "severity": "INFO",
+      "type": "scope_omission",
+      "issue": "JSON variable extraction is scoped to the baseline regression (Equation 1, Table 3). Variables used only in Tables 4–8 — CAPXACQ, REPURCHASE, DIVPAY, EXCASH, EXCASH×POST interaction, the market-value-of-cash regression variables (DCASH, DE, DNA, DRD, DI, DD, NF, lagCASH, L, R−RB), and the cross-sectional partitioning variables (PS_DEMAND, IND_STDCF, IND_STDQ, NEG_IND_CORR, DECREASE_OPTION, DECREASE_XINV, INV_IRREVERS, XINV, OPTION_PER) — are NOT extracted. If the replication target includes Tables 4–8, the JSON is incomplete.",
+      "note": "Summary stats for these variables ARE in Table 1 Panel B (so the table is complete) but their construction definitions are spread across the cross-sectional sections and table notes."
+    },
+    {
+      "id": "F11",
+      "severity": "INFO",
+      "type": "method_clarification",
+      "issue": "JSON correctly captures that the DiD treatment effect is the difference in two POST coefficients estimated on split samples, not an interaction term — but does not surface that this is unusual relative to the typical interaction-term DiD. Standard practice in much of the recent literature would be CASH = α + β1·TREAT + β2·POST + β3·TREAT×POST + controls, with β3 the treatment effect. The split-sample approach is mathematically equivalent under firm FE only if covariates are allowed to differ across the two samples, which they are here. The standard-error calculation requires joint estimation (which the paper does — 'estimated simultaneously')."
+    },
+    {
+      "id": "F12",
+      "severity": "INFO",
+      "type": "method_note",
+      "issue": "MATURITY denominator is (#DLTT + #DD1), not #DLTT alone. The JSON variable definition has this right, but the data_treatment.scaling summary says 'MATURITY scaled by total long-term debt' — which is imprecise (should be 'long-term debt plus current portion of long-term debt')."
+    }
+  ],
+
+  "items_to_add_to_recipe_before_replication": [
+    "Confirm SIGMA computation: write out the formula explicitly as one of the two readings and note the choice.",
+    "Confirm SIGMA industry classification at baseline (default to FF48 per footnote 3, but flag).",
+    "Resolve the 496-filter inconsistency by applying both descriptions and comparing attrition counts.",
+    "Decide and document R&D missing-value treatment (default: set XRD missing → 0).",
+    "Specify Compustat segment file for NSEG.",
+    "Specify Compustat first-appearance source (funda) for AGE.",
+    "Specify bank-loan database (DealScan) for NO_LOAN / N_FINCOV / N_GENCOV.",
+    "Specify BigN source (Compustat AU vs. Audit Analytics).",
+    "Decide AT-and-MVE-below-$10M filter as AND or OR.",
+    "Default to no winsorization; document this as an inference.",
+    "Confirm event-window strict construction: only firm-years in t ∈ {−3,−2,−1,+1,+2,+3} relative to restatement year 0 enter the regression sample."
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "paper_key": "Boasiako_Keefe_2021",
+  "our_n_after_verbatim_filters": 81482,
+  "paper_stated_n": 56646,
+  "gap": 24836,
+  "gap_as_pct_of_ours": "30.48%",
+  "findings": [
+    {
+      "location_verbatim": "Section 3.3 Variables, page 536",
+      "source_text_verbatim": "We follow the literature (Bates et al., 2009; Opler et al., 1999) in our empirical testing and control for several variables that affect firm cash policy. Specifically, we control for Firm Size, Firm Age, Book Leverage, Market-to-book, Cash Flow, Capital Expenditure, Acquisition Expenditure, Dividend Paying Firms(0/1), R&D Expenditure, Net Working Capital, and Industry Cash Flow Volatility.",
+      "filter_type": "implicit_requirement",
+      "we_applied_this": false,
+      "estimated_impact_on_n": "Largest source of the gap. The regression sample (Equation 1) requires every right-hand-side variable to be non-missing. Our filter table imposes non-missingness only for AT and AT_lag1; it does not require the other ten controls to be computable. The Table A1 definitions of these controls map to specific Compustat fields: Book Leverage requires DLC and DLTT both non-missing; Market-to-book requires CEQ, CSHO, and PRCC_F; Cash Flow requires IB (or NI) and DP; Net Working Capital requires WCAP (or ACT and LCT); Capital Expenditure requires CAPX; Acquisition Expenditure requires AQC. In Compustat, missingness is concentrated in DLC, CEQ (negative-equity / missing-equity firms), AQC, and WCAP components, and these are the standard drivers of an Opler/Bates-style cash-holdings sample shrinking by 20-30%. Plausibly accounts for roughly 18,000-22,000 of the 24,836-obs gap."
+    },
+    {
+      "location_verbatim": "Appendix A, Table A1 Variable definitions (entry for Industry Cash Flow Volatility), page 551",
+      "source_text_verbatim": "Standard deviation of industry average cash flows for the previous 10 years; at least 3 years of observations required",
+      "filter_type": "variable_definition_prerequisite",
+      "we_applied_this": false,
+      "estimated_impact_on_n": "Explicit numeric prerequisite that we did not apply. For every firm-year, the industry (Fama-French 49, per footnote 5) must have at least 3 years of cash-flow observations within the preceding 10 years; otherwise Industry Cash Flow Volatility is undefined and the observation is dropped from the regression sample. Because our sample window begins in 1997 and the rolling window looks back 10 years, the binding cases are firms in young / thinly-populated FF49 industries in the early years (roughly 1997-2000). Plausibly drops on the order of 1,000-3,000 observations, concentrated in the first three to four sample years."
+    },
+    {
+      "location_verbatim": "Appendix A, Table A1 Variable definitions (entry for Firm Age), page 551",
+      "source_text_verbatim": "Natural logarithm of the number of years a firm has been listed in the merged CRSP/Compustat database",
+      "filter_type": "variable_definition_prerequisite",
+      "we_applied_this": false,
+      "estimated_impact_on_n": "Implicit drop from the log transformation. A firm in its first year on the merged CRSP/Compustat link table has years_listed = 0, for which ln(0) is undefined; in standard implementations (ln(years) or ln(1+years)) the first observation per firm is therefore either dropped or carries a degenerate value. Combined with the BoY-lag requirement we already imposed (Step 6), the joint effect drops most first-appearance firm-years. Marginal incremental impact on top of Step 6 is small but non-zero, plausibly a few hundred to ~1,500 observations depending on whether the authors used ln(years) or ln(1+years)."
+    },
+    {
+      "location_verbatim": "Section 3.2 Estimation technique, page 535 (paragraph following Equation 1)",
+      "source_text_verbatim": "As explained earlier, state-level disclosure laws charge firms operating within the state (with data breach laws) with the responsibility of disclosing data breaches. Firms can operate in additional states besides their headquarters state and can thus be partly exposed to a data breach disclosure law before their home state passing a similar law. However, focusing on the states in which firms are headquartered is a conservative approach",
+      "filter_type": "implicit_requirement",
+      "we_applied_this": false,
+      "estimated_impact_on_n": "The treatment Disclosure Law(0/1) is assigned by headquarters state. Implicitly this requires the firm's HQ state (Compustat STATE) to be one of the 50 US states plus DC, since those are the only jurisdictions for which disclosure-law passage years exist. Our Step 8 only requires the STATE field to be non-missing; it does not restrict to US states + DC. Compustat STATE for loc=USA firms occasionally carries territories (PR, VI, GU) or non-standard / foreign-subsidiary codes that have no disclosure-law mapping. Modest impact, plausibly a few hundred to ~1,000 observations."
+    },
+    {
+      "location_verbatim": "Section 3.1 Data collection, page 534",
+      "source_text_verbatim": "Following prior literature (Bates et al., 2009; Opler et al., 1999), we exclude all financial firms\u2014that is, those with Standard Industrial Classification (SIC) codes 6000\u20136999\u2014because their cash holdings include inventories of marketable securities and they are also required to meet statutory capital requirements. We exclude utility companies (SIC codes 4900\u20134999) because their cash holdings are possibly subject to regulatory supervision in some states.",
+      "filter_type": "data_source_constraint",
+      "we_applied_this": true,
+      "estimated_impact_on_n": "We applied SIC 6000-6999 and 4900-4999 exclusions in Step 4. However, the paper anchors its sample-construction methodology on Bates et al. (2009) and Opler et al. (1999); both of those references (which the paper repeatedly cites as the template) additionally restrict to indfmt='INDL' and datafmt='STD' and consol='C' and popsrc='D', and Bates et al. (2009) also require positive sales (SALE > 0) and exclude observations with missing SIC. The paper does not state these filters explicitly, but they are implied by the 'following prior literature' anchor and would each shave additional observations off our 81,482 count. Cumulative incremental impact: plausibly 1,000-3,000 observations beyond what we have already applied."
+    },
+    {
+      "location_verbatim": "Appendix A, Table A1 Variable definitions (entry for Dividend Paying Firms(0/1)), page 551",
+      "source_text_verbatim": "1 in the year a firm pays dividends, and 0 otherwise; set to zero if missing",
+      "filter_type": "variable_definition_prerequisite",
+      "we_applied_this": false,
+      "estimated_impact_on_n": "Note this is the opposite direction: the paper's 'set to zero if missing' clause for Dividend Paying Firms(0/1) means missingness of dividends does NOT drop observations. The paper specifies this convention only for this single dummy; by silence, the other ten controls do not benefit from a 'set to zero if missing' rule (this is the implicit_requirement above). Listed here only to rule out as a source of the gap."
+    },
+    {
+      "location_verbatim": "Section 3.3 Variables, page 536",
+      "source_text_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "filter_type": "explicit_filter",
+      "we_applied_this": true,
+      "estimated_impact_on_n": "Winsorization caps extreme values; it does not drop observations. Our Step 7 correctly records zero incremental drop. Listed here only to rule out as a source of the gap and to flag that we winsorized Cash alone, whereas the paper winsorizes all variables (not material to N, but material to coefficient estimates downstream)."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "paper_key": "Boasiako_Keefe_2021",
+  "table_2_col_1_verification": {
+    "cash_flow_cell_verbatim": "-0.0049***",
+    "cash_flow_se_cell_verbatim": "(0.0018)",
+    "capex_cell_verbatim": "-0.0709**",
+    "capex_se_cell_verbatim": "(0.0280)",
+    "any_minus_sign_ambiguity": "None. Direct read of Table 2 row labels 'Cash Flow' and 'Capital Expenditure' in Column (1) on p.538 produces both negative coefficients unambiguously. The minus signs are typographic en-dashes in the PDF (U+2013) but render and parse correctly. Cross-validation: Cash Flow Column (5) reads -0.0049*** (0.0012) (state-and-year-clustered SE re-run on the same sample) which matches Column (1) point estimate exactly, confirming the minus sign is real, not an OCR artifact. Capital Expenditure Column (5) reads -0.0709*** (0.0206), again matching Column (1)'s coefficient exactly. The user's rounded values (-0.005, SE 0.002 for CF; -0.071, SE 0.028 for CapEx) are correct readings of the paper to the rounding precision they used."
+  },
+  "expected_signs_from_literature": {
+    "cf_on_cash": "POSITIVE in Bates et al. (2009) and Opler et al. (1999). Cash flow has a mechanically positive contemporaneous relationship to cash holdings: more cash generated in period t directly increases the end-of-period cash balance (precautionary accumulation and balance-sheet identity). Bates 2009 (NBER WP 12534) reports a coefficient of approximately +0.020 to +0.030 on cash flow in their cash-holdings regressions. The Boasiako-Keefe paper's NEGATIVE coefficient (-0.0049) is therefore UNUSUAL relative to the broader literature and is one of the paper's idiosyncratic findings -- likely driven by extreme-CF observations in the left tail that dominate the conditional slope.",
+    "capex_on_cash": "NEGATIVE in Bates et al. (2009) and Opler et al. (1999). The standard intuition is that capital expenditures consume cash (cash outflow for investment), so firms with higher capex hold less cash contemporaneously. Bates 2009 reports a strongly negative CapEx coefficient. The Boasiako-Keefe paper's NEGATIVE coefficient (-0.0709) is STANDARD and matches the literature. The user's POSITIVE coefficient (+0.688) is UNUSUAL and contrary to both Boasiako-Keefe and the broader literature; this is the more concerning of the two sign flips because it contradicts not just one paper but the consensus."
+  },
+  "root_cause_diagnosis": {
+    "cf_sign_flip": "MOST LIKELY CAUSE: wrong denominator timing on Cash Flow. The paper's Table A1 specifies Cash Flow as 'Ratio of earnings after interest, dividends, and taxes but before depreciation to book assets' -- NO timing qualifier on 'book assets'. The prior ambiguity-resolution analysis concluded that silent-timing variables default to CONTEMPORANEOUS AT (AT_t, fiscal-year-end), following the Bates 2009 default. If the user has CF denominator = AT_{t-1} (beginning-of-year) instead, this perfectly explains the SD compression from 4.84 to 0.748 (a factor of 6.5x): for distressed firms with severe asset write-downs (AT_t << AT_{t-1}), using contemporaneous AT_t produces extreme CF/AT_t ratios (e.g., -50 or worse), while using AT_{t-1} smooths the ratio dramatically (e.g., -0.5 for the same firm). The paper's reported SD = 4.8386 is only achievable with a denominator that allows extreme values, which contemporaneous AT_t provides. The user's SD = 0.748 indicates BoY AT_{t-1} -- exactly the wrong choice for this variable. SIGN CONSEQUENCE: with contemporaneous AT_t, the extreme-distressed firms (very negative CF, often high precautionary Cash holdings) dominate the conditional slope and drive the coefficient negative (paper's -0.0049). With BoY AT_{t-1}, those firms' CF/AT is compressed back toward zero, and the typical 'more CF -> more Cash' positive relationship from non-distressed firms dominates (user's +0.173). The 6.5x SD ratio is the smoking gun.",
+    "capex_sign_flip": "LESS CLEAR. The CapEx SD compression is only modest (0.086 vs 0.125, ratio 0.69), nowhere near the CF case. This suggests the CapEx denominator is plausibly correct (Table A1 explicitly says 'at the beginning of the year', so AT_{t-1} is paper-mandated, and the user likely got this right). Three remaining hypotheses, ranked by likelihood: (1) PARTIAL-REGRESSION COLLINEARITY THROUGH CF: if Cash Flow is mis-specified per the diagnosis above, the partial-regression slope on CapEx is mechanically affected. Cash Flow and Capital Expenditure are correlated at the firm level (high-CF firms invest more), so a sign flip on CF can drag CapEx in the same direction via partial-correlation rearrangement. This is the most plausible single explanation for both flips with one root cause. (2) INDUSTRY CLASSIFICATION FOR ICFV: the paper's Industry Cash Flow Volatility control variable's industry classification is genuinely silent (footnote 5's FF49 applies only to the FE term rho_j, not ICFV). If the user used FF49 for ICFV while the paper used Bates 2009's two-digit SIC, the ICFV partial-correlation structure differs and can rebalance the CapEx slope. (3) NWC FORMULA: if the user is still using a non-standard NWC formula (e.g., the user's earlier (ACT-LCT-DLC)/(AT-CHE) instead of the correct (ACT-LCT-CHE)/(AT-CHE)), CapEx can pick up partial variance that NWC should be absorbing. The +0.688 magnitude (10x the paper's 0.071) is too large to be explained by sample composition alone -- it requires a partial-regression structural shift, consistent with (1) being the dominant cause."
+  },
+  "remediation_steps": [
+    {
+      "action": "1. SWITCH CF DENOMINATOR TO CONTEMPORANEOUS AT_t. Rebuild Cash Flow as (OIBDP - XINT - TXT - DVC) / AT_t (current-fiscal-year-end), NOT divided by AT_{t-1}. Re-run pooled 1%/99% winsorization on the new variable. Confirm the resulting Table 1 Panel A SD on Cash Flow approaches 4.84 (paper's value); if it lands near 2-6, the denominator fix is working.",
+      "expected_impact_on_cf_sign": "PRIMARY FIX. SD should expand from 0.748 to roughly 4-6, restoring the heavy negative tail. Mean should pull from -0.145 toward -0.376 (paper's value). The CF coefficient should flip from +0.173 to a small negative value near -0.005, matching the paper.",
+      "expected_impact_on_capex_sign": "SECONDARY FIX via partial-regression rebalancing. With CF coefficient correctly negative, the partial slope on CapEx should rotate back toward negative as well, since CF and CapEx co-vary positively at the firm level. Expected CapEx coefficient: somewhere in [-0.1, +0.1], close to the paper's -0.0709."
+    },
+    {
+      "action": "2. VERIFY CapEx DENOMINATOR IS AT_{t-1} (BoY). Per Table A1: 'Ratio of capital expenditure to total book assets at the beginning of the year'. If currently using AT_t, switch to AT_{t-1}. Re-check that CapEx mean approaches 0.0657 (paper) instead of 0.057 (current).",
+      "expected_impact_on_cf_sign": "Minimal -- this is a CapEx-specific fix.",
+      "expected_impact_on_capex_sign": "Should slightly shift CapEx coefficient. If the user already had AT_{t-1} (consistent with their mean being only modestly off), this step is a no-op verification."
+    },
+    {
+      "action": "3. TEST BOTH INDUSTRY CLASSIFICATIONS FOR ICFV. Run two parallel pipelines: (a) ICFV computed using FF49 (matches FE), (b) ICFV computed using two-digit SIC (matches Bates 2009 verbatim). Compare ICFV Table 1 stats against paper (mean=0.3440, SD=0.5270) to identify which the paper used.",
+      "expected_impact_on_cf_sign": "Marginal -- ICFV is a separate control.",
+      "expected_impact_on_capex_sign": "Marginal but non-trivial. If ICFV is currently mis-specified, fixing it will rebalance the partial-correlation structure across all controls, including CapEx."
+    },
+    {
+      "action": "4. VERIFY NWC FORMULA IS (ACT - LCT - CHE) / (AT - CHE). Per the prior NWC reconciliation task, this is the inherited Bates 2009 / Opler 1999 convention. If the user's NWC still has the wrong numerator (e.g., subtracting DLC instead of CHE), CapEx will absorb misallocated NWC variance and produce inflated coefficients.",
+      "expected_impact_on_cf_sign": "Marginal.",
+      "expected_impact_on_capex_sign": "Could be material. NWC and CapEx have a documented partial-correlation relationship -- both are scaled by lagged-or-contemporaneous AT and can absorb similar variance components. A mis-specified NWC will leak variance to CapEx."
+    },
+    {
+      "action": "5. REPLICATE PAPER'S BETA(DISCLOSURE LAW) MAGNITUDE AS A SAMPLE-COMPOSITION CHECK. Paper reports beta = +0.0076; user reports beta = +0.0164, which is 2.2x larger. If the CF denominator fix (step 1) also brings beta(DisclosureLaw) down toward 0.0076, that triangulates the sample-composition story. Both the CF sign flip and the beta magnitude are likely driven by the same underlying issue: too few extreme-distress firms in the user's sample (because their CF is compressed via BoY AT, those firms behave like 'normal' firms in the data and don't generate the dispersion needed to bring beta down).",
+      "expected_impact_on_cf_sign": "Diagnostic for the primary fix.",
+      "expected_impact_on_capex_sign": "Diagnostic for the partial-regression rebalancing."
+    },
+    {
+      "action": "6. IF STEPS 1-5 DO NOT FULLY CLOSE THE GAPS: examine the user's pre-winsorize pre-filter sample for an implicit minimum-AT or minimum-sales filter not in the paper. The user's CF SD of 0.748 even with AT_{t-1} denominator suggests possible additional drops of small firms. Specifically check WRDS extract defaults (indfmt='INDL', datafmt='STD', consol='C', popsrc='D') and any additional minimum-size filter the user inadvertently inherited from a template script.",
+      "expected_impact_on_cf_sign": "Residual fix if step 1 alone doesn't restore SD = 4.84.",
+      "expected_impact_on_capex_sign": "Residual fix for any remaining CapEx anomaly."
+    }
+  ],
+  "can_this_be_fixed_without_external_data": true
+}

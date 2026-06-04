@@ -1,0 +1,52 @@
+# Phase 1 eval: code-only scope, zero LLM cost
+# Excludes everything graphify would LLM-extract + repo noise
+
+# heavy + noisy local dirs
+tmp/
+archive/
+outputs/
+data/
+.codegraph/
+.graphify/
+graphify-out/
+node_modules/
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# docs + papers — LLM-extracted, defer to Phase 2
+docs/
+**/*.pdf
+**/*.tex
+**/*.md
+**/*.rst
+**/*.html
+
+# images + media — LLM-extracted, defer to Phase 2
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.webp
+**/*.gif
+**/*.svg
+**/*.mp4
+**/*.mov
+**/*.mp3
+**/*.wav
+
+# office — defer to Phase 2
+**/*.docx
+**/*.xlsx
+
+# data files — irrelevant for code graph
+**/*.csv
+**/*.tsv
+**/*.parquet
+**/*.json
+**/*.yaml
+**/*.yml
+**/*.feather
+**/*.dta

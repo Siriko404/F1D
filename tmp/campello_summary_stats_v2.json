@@ -1,0 +1,60 @@
+{
+  "source": "Compustat broad universe (filters 1-5, Campello Table 1 level)",
+  "window": "2010Q1-2015Q4",
+  "winsor": "1% within cal_yr_qtr (Campello convention)",
+  "universe": "USD/USA/INDL/STD, no negative fundamentals, no fin/util, size>=$10M; variable-by-variable available data",
+  "cash_definition": "CASH_T1 = cheq_t / atq_{t-1} (Campello Table 1 verbatim)",
+  "tobinq_definition": "TOBIN_Q = (cshoq*prccq + atq - ceqq)/atq (NO txditcq, per audit commit 4253d97)",
+  "consensus_definition": "statsum MEANEST z-score, within-quarter pooled",
+  "variables": {
+    "CASH_T1": {
+      "mean": 0.2373,
+      "SD": 0.2991,
+      "med": 0.1268,
+      "IQR": 0.2787,
+      "N": 75934
+    },
+    "SIZE": {
+      "mean": 6.2349,
+      "SD": 2.0379,
+      "med": 6.1969,
+      "IQR": 3.0146,
+      "N": 78430
+    },
+    "TOBIN_Q": {
+      "mean": 2.1786,
+      "SD": 1.6769,
+      "med": 1.6082,
+      "IQR": 1.2845,
+      "N": 72602
+    },
+    "CASH_FLOW": {
+      "mean": 0.0096,
+      "SD": 0.0721,
+      "med": 0.0264,
+      "IQR": 0.0392,
+      "N": 75592
+    },
+    "SALES_GROWTH": {
+      "mean": 0.1788,
+      "SD": 0.6848,
+      "med": 0.0636,
+      "IQR": 0.2432,
+      "N": 74607
+    },
+    "STOCK_RETURNS": {
+      "mean": 0.0289,
+      "SD": 0.2317,
+      "med": 0.02,
+      "IQR": 0.2501,
+      "N": 64423
+    },
+    "CONSENSUS_EPS": {
+      "mean": -0.0475,
+      "SD": 1.0803,
+      "med": 0.045,
+      "IQR": 0.4308,
+      "N": 47626
+    }
+  }
+}

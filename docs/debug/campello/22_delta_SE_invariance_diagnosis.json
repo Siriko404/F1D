@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "task": "Diagnose why delta is ~44% of the paper's magnitude (0.102 vs 0.231) when N (17,195 vs 17,170), firm count (811 vs 809), SE (0.060 vs 0.059), FE, clustering, and controls all match. User has verified that input data (FTSE100, USD/GBP, S&P500) is identical across Bloomberg/Yahoo/Stooq/BoE/CRSP, ruling out DATA SOURCE.",
+    "target": "Table 8 Col 1 (CASH, top-tercile beta^UK_i): delta=0.231***, SE=0.059, N=17,170.",
+    "copyright_note": "External sources quoted in short fragments as facts; Campello et al. (2022) is CC BY 4.0."
+  },
+
+  "the_decisive_argument_SE_invariance": {
+    "claim": "When N, the treatment-dummy variance, and the clustered SE all match but the point estimate is ~2.3x smaller, the cause is almost certainly TREATMENT COMPOSITION (which firms are treated/control), not the dependent variable, the specification, the controls, or the clustering. Here is why.",
+    "decomposition": {
+      "coefficient": "delta_hat = Cov(Y_res, X_res) / Var(X_res), where X = POST x HIGH dummy and _res denotes residuals after partialling out controls + FE.",
+      "standard_error": "SE(delta_hat) is proportional to sigma_resid / sqrt(N x Var(X_res)).",
+      "step_1": "SE matches (0.060 vs 0.059) AND N matches AND the treated proportion is nearly identical (Var of a 0/1 dummy = p(1-p); user p~0.50, paper p~0.555 -> 0.250 vs 0.247, essentially equal). Therefore Var(X_res) matches, and so sigma_resid (the residual SD of the cash DV) matches.",
+      "step_2": "Since within-R2 is ~0.03, Var(Y_res) ~= sigma_resid^2, so the cash DV's residual variance is the same in both. The DEPENDENT VARIABLE is on the same scale and has the same dispersion -> a different DV scale, a units error, or a winsorization that truncates the tail would all change sigma_resid and hence SE. They don't. DV issues are therefore excluded.",
+      "step_3": "With Var(X_res) and sigma_resid both matching but delta 2.3x smaller, Cov(Y_res, X_res) must be 2.3x smaller. The treated firms' (residualized) cash response covaries 2.3x less with the treatment indicator -- while the cash variable's overall dispersion is unchanged."
+    },
+    "what_this_rules_in_and_out": {
+      "ruled_out_or_unlikely": [
+        "DV scale / formula / winsorization (would change sigma_resid -> SE). Consistent with the user's extensive DV testing.",
+        "Specification / FE / clustering (would change SE or N).",
+        "Panel window / timing (would change N; N matches -> full panel for both, confirmed).",
+        "Controls absorbing the effect (a single control's scale is irrelevant; and within-R2 ~0.03 means controls explain little within-firm variation)."
+      ],
+      "ruled_in": [
+        "Treatment misclassification: a noisier treated/control label covaries less with the true cash response -> attenuation toward zero, with sigma_resid and Var(X_res) preserved. This EXACTLY reproduces the observed signature.",
+        "Different treated/control FIRM SETS: even with the same counts, if the firms differ, and the cash effect is concentrated in specific firms, the covariance falls. (The user's own evidence -- delta collapses from 0.107 with the Table 8 DV to ~0 with the Table 1 DV -- shows the result is driven by a specific subset, so getting different firms attenuates sharply.)"
+      ]
+    }
+  },
+
+  "data_source_ruled_out_is_NOT_construction_ruled_out": {
+    "the_logical_gap": "The user verified that the INPUT SERIES (FTSE100, USD/GBP, S&P500 daily values) are identical across providers. That rules out the DATA SOURCE. It does NOT rule out the VOLATILITY CONSTRUCTION METHOD applied to those inputs.",
+    "the_proof_that_construction_differs": "With IDENTICAL input data, the user's nonnegative-tercile cutpoints are 0.25 / 0.67 while the paper's are 0.28 / 0.68. If the construction method were identical, identical inputs would yield identical betas and identical cutpoints. They do not. Therefore the monthly-volatility construction (or the regression setup) differs from the paper's -- and that difference reshuffles which firms land in each tercile.",
+    "corroborating_distribution_evidence": "The user reports that a FULL-distribution bottom tercile is entirely negative (so the paper's positive control cutpoint of 0.28 cannot arise from full-distribution terciles), i.e., the user's beta distribution carries more negative mass / a different shape than the paper's. Same inputs, different distribution shape => different construction.",
+    "internal_benchmark_for_how_much_this_matters": {
+      "source": "Campello et al. (2022), footnote 13",
+      "fact": "The authors' two OWN beta measures, beta^UK_i and beta^UK_i,CF, have rank correlation 0.8 and only 86% top-tercile overlap -- differing ONLY by a return decomposition, using the SAME data and SAME volatility method.",
+      "implication": "If a return-decomposition variant reshuffles ~14% of the treated group, a DIFFERENT VOLATILITY CONSTRUCTION (even on identical inputs) can reshuffle a comparable or larger share -- enough to attenuate a composition-sensitive coefficient by ~2x."
+    }
+  },
+
+  "construction_choices_to_interrogate": {
+    "note": "The paper specifies none of these. Each can reshuffle tercile membership while leaving the marginal beta distribution looking similar.",
+    "candidates": [
+      "LOG volatility vs LEVEL volatility. Equation (12)-(13) is written in levels (vol on vol), and the user uses levels -- but many volatility studies regress log(vol) on log(vol). If the paper used logs, betas and rank ordering differ materially. Test a log-vol specification.",
+      "Within-month realized SD of daily returns (user's choice) vs ROLLING / OVERLAPPING windows (e.g., trailing 3-month or 60-day vol sampled monthly) vs EWMA. Overlapping windows autocorrelate the vol series and change betas.",
+      "Minimum-days-per-month (user: >=15) and minimum-months-per-firm (user: >=24). These determine which monthly observations and which firms enter each firm regression; the paper states neither. Sweep them.",
+      "Daily return type: simple vs log returns; cum-dividend (CRSP RET) vs price-only (RETX). ABL use cum-dividend daily CRSP returns. Confirm RET, not RETX.",
+      "Number of monthly observations per firm (up to 60 over 2010:M1-2014:M12) and whether any months are dropped for thin trading.",
+      "Whether the RHS aggregate vols (FTSE100, S&P500, FX) are constructed by the SAME within-month method as the firm vol (they must be consistent)."
+    ],
+    "recommended_test": "Run a SENSITIVITY SWEEP over these construction choices and record how delta moves. If delta ranges roughly 0.10-0.23 across reasonable constructions, the gap is construction-driven and a configuration matching the paper's (unknown) method is in principle recoverable. If delta is stable near 0.10 across all of them, look elsewhere."
+  },
+
+  "reframe_equal_attrition_may_be_a_red_flag": {
+    "observation": "The user engineered the post-merge groups to attrit EQUALLY (high 477->~405, low 477->~406). But the paper's identification section reports UNEQUAL groups (449 treated vs 360 control).",
+    "caveat_important": "The 449/360 figures come from Section IV.C.1 (the overall market-based treatment assignment) and may reflect the BASELINE (investment) sample. Table 8 (CASH) does NOT separately report its treated/control firm counts, so the split comparison is suggestive, not definitive.",
+    "if_449_360_does_apply": "Then EQUAL attrition is the wrong target: the paper's control group loses far more firms than its treated group. Reproducing that lopsidedness would require a requirement that disproportionately drops low-beta (control) firms -- most plausibly I/B/E/S CONSENSUS_EPS coverage (analyst coverage is size-concentrated; small/domestic low-beta firms are often uncovered). The user achieving balanced attrition suggests their coverage/linking requirement is more permissive than the paper's, retaining control firms the paper drops. If those retained control firms raised cash post-Brexit, they inflate the control counterfactual and attenuate delta -- the same composition channel as above.",
+    "audit": "Check whether the I/B/E/S-to-Compustat link (CUSIP/ticker, ICLINK-style) is MORE complete than the paper's, and whether requiring a stricter coverage criterion (e.g., minimum analyst count, or a cleaner link) drops control firms and unbalances the split toward 449/360."
+  },
+
+  "decisive_diagnostic_build_betaUK_CF": {
+    "rationale": "The cleanest way to separate 'my construction is reasonable but underspecified' from 'my construction is wrong' is to use the paper's own internal benchmark.",
+    "procedure": "Build beta^UK_i,CF via the Campbell-Shiller (1988) / Vuolteenaho (2002) decomposition of returns into cash-flow vs discount-rate news, then re-estimate equation (13) with the cash-flow-news component as the dependent variable (per footnote 13).",
+    "pass_criteria": "(i) your beta^UK_i and beta^UK_i,CF show ~0.8 rank correlation and ~86% top-tercile overlap; (ii) the beta^UK_i,CF CASH regression reproduces the paper's Table C6 results. If both hold, your volatility construction is internally validated and the residual delta gap is an irreducible underspecification. If they fail, the construction is the bug.",
+    "target_table": "Table C6 in the Supplementary Material reports the paper's beta^UK_i,CF results for INVESTMENT, EMPLOYMENT_GROWTH, R&D, and DIVESTITURES."
+  },
+
+  "prioritized_actions": [
+    "1. Accept the SE-invariance result: stop testing the DV/spec/clustering (excluded) and focus entirely on the treated/control FIRM SET (beta construction + group assignment).",
+    "2. Recognize that 'data source ruled out' does not rule out construction; the 0.25/0.67 vs 0.28/0.68 cutpoint gap proves the volatility construction differs on identical inputs.",
+    "3. Run a construction SENSITIVITY SWEEP: log vs level vol; within-month vs rolling/overlapping; min-days (>=15?) and min-months (>=24?); RET vs RETX; consistent RHS vol. Record delta for each.",
+    "4. Build beta^UK_i,CF and check rank corr (~0.8) / top-tercile overlap (~86%) / Table C6 reproduction to validate or reject your construction.",
+    "5. Audit the I/B/E/S<->Compustat link and coverage requirement; test whether a stricter criterion unbalances the split toward 449/360 and lifts delta.",
+    "6. If delta remains near ~0.10 across all reasonable constructions and a validated beta^UK_i,CF, treat the residual as a reproducibility ceiling (undocumented vol method + no public replication package)."
+  ],
+
+  "epistemic_caveats": [
+    "The SE-invariance argument robustly localizes the problem to treatment composition; it does not, by itself, identify which construction choice is responsible -- that requires the sensitivity sweep.",
+    "The 449/360 split is from the identification section and may not be the Table 8 CASH sample's split, which the paper does not separately report; the attrition reframe is suggestive, not proven.",
+    "The paper documents neither the monthly-volatility construction nor the precise treatment-assignment counting, and no public replication package exists (JFQA code-sharing is voluntary for this pre-2024 submission). A residual delta gap after exhausting the above may be irreducible rather than an implementation error."
+  ]
+}

@@ -623,8 +623,8 @@ def _write_suite_spec_json(
 
     header_rows = [
         [
-            {"label": r"Spread$_{25D,t}$", "span": 6},
-            {"label": r"Spread$_{25D,t+1}$", "span": 6},
+            {"label": r"BGTLevel\_Spread", "span": 6},
+            {"label": r"BGTLevel\_Spread\_lead1", "span": 6},
         ]
     ]
     ivs_payload = [

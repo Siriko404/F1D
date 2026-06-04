@@ -1,0 +1,202 @@
+{
+  "audit_metadata": {
+    "source_document": "Bloom, Nicholas (2014). 'Fluctuations in Uncertainty.' Journal of Economic Perspectives, 28(2): 153-176.",
+    "audit_purpose": "Determine whether Bloom (2014) provides ANY operational definition of stock-market volatility that Campello et al. could be 'following' when they cite Bloom (2014) for their vol(.) operator in equation (13).",
+    "campello_citation_in_question": "Following Bloom (2014), we use stock market volatility as a gauge of aggregate uncertainty.",
+    "campello_equation_13": "vol(r_it) = alpha_i + beta_UK_i * vol(FTSE100_t) + theta * CONTROLS_t + epsilon_it",
+    "headline_finding": "Bloom (2014) is a survey/review essay. It DOES NOT provide any operational formula, frequency convention, annualization rule, or estimation procedure for either firm-level or aggregate stock-return volatility. Bloom shows volatility series (VIX in Figure 1, cross-firm spreads in Figure 6) and cites underlying papers, but the JEP text itself contains no equation, no sigma formula, no window-length specification, no annualization factor, no rolling-window protocol. The Campello et al. 'Following Bloom (2014)' citation is therefore best read as following Bloom's BROAD CONCEPTUAL CLAIM — that stock-market volatility is a useful proxy for aggregate uncertainty — rather than following any specific operational construction from Bloom's own text."
+  },
+
+  "Q1_firm_level_stock_return_volatility": {
+    "question": "Does Bloom (2014) define how to measure firm-level stock return volatility? (std dev of daily returns, squared returns, absolute returns, GARCH, realized vol, monthly vs daily frequency, annualization, etc.)",
+    "answer": "NO. Bloom (2014) does not provide ANY operational definition of firm-level stock return volatility. The paper references firm-level volatility measures multiple times but always by citation to other papers, never with a formula, frequency specification, or estimation method.",
+    "verbatim_references_in_bloom_text": [
+      {
+        "page": 6,
+        "section": "Fact 2: Micro Uncertainty Rises in Recessions",
+        "quote": "Uncertainty as proxied by dispersion at the firm and plant level also surges in recessions. For example, Campbell, Lettau, Malkiel, and Xu (2001) report that cross-firm stock-return variation is almost 50 percent higher in recession than booms.",
+        "what_is_actually_defined": "Nothing. The construction is delegated to Campbell, Lettau, Malkiel, and Xu (2001). Note that 'cross-firm stock-return variation' is CROSS-SECTIONAL DISPERSION across firms at a point in time, not the time-series volatility of an individual firm's returns. These are different objects."
+      },
+      {
+        "page": 8,
+        "section": "Figure 6 legend (countercyclical uncertainty across countries)",
+        "quote": "Each decile shows five different measures of uncertainty: stock market volatility, firm stock-returns dispersion, bond-yield volatility, exchange rate volatility, and macro forecaster disagreement—with each measure normalized to a mean 0 and standard deviation 1.",
+        "what_is_actually_defined": "Nothing operational. 'Firm stock-returns dispersion' is named as a series in the figure but no formula is given. The figure source is 'Baker and Bloom (2013)' (a separate working paper)."
+      },
+      {
+        "page": 17,
+        "section": "Timing Approaches to Estimating the Effect of Uncertainty Shocks",
+        "quote": "For example, Leahy and Whited (1996) examined a panel of several hundred US publicly listed manufacturing firms and found a strong relationship between uncertainty, proxied by the stock-price volatility for that firm, and investment, which they argue is consistent with theories of firms looking at investment as an irreversible choice.",
+        "what_is_actually_defined": "Nothing. 'Stock-price volatility for that firm' is mentioned but the construction is delegated to Leahy and Whited (1996)."
+      },
+      {
+        "page": 17,
+        "section": "Timing Approaches to Estimating the Effect of Uncertainty Shocks",
+        "quote": "In Bloom, Bond, and Van Reenen (2007), we confirmed this result in data for 672 UK manufacturing firms from 1972-1991, using lagged firm accounting and financial data outcomes as instruments.",
+        "what_is_actually_defined": "Nothing. The volatility construction is delegated to Bloom, Bond, and Van Reenen (2007). No formula appears in the JEP text."
+      },
+      {
+        "page": 16,
+        "section": "Risk Aversion and Risk Premia",
+        "quote": "Panousi and Pananikolaou (2012) have shown in a panel of US firms that when uncertainty is higher, investment drops, particularly in firms where the chief executive officers hold extensive equity in the firm and so are highly exposed to firm-level risk.",
+        "what_is_actually_defined": "Nothing. 'Firm-level risk' construction is delegated to Panousi and Papanikolaou (2012)."
+      }
+    ],
+    "items_explicitly_checked_and_NOT_found": {
+      "standard_deviation_of_daily_returns_formula": "NOT in Bloom (2014).",
+      "squared_returns_construction": "NOT in Bloom (2014).",
+      "absolute_returns_construction": "NOT in Bloom (2014).",
+      "GARCH_specification": "NOT in Bloom (2014). The word 'GARCH' does not appear anywhere in the main text — the only adjacent reference is the citation 'Engle, Robert, and J. Gonzalo Rangel. 2008. The Spline-GARCH Model...' in the bibliography (p. 173), referenced inline only as 'more advanced estimations techniques (Engel and Rangel 2008)' on p. 16, with no formula reproduced.",
+      "realized_volatility_definition": "NOT in Bloom (2014). The term 'realized volatility' does not appear.",
+      "monthly_vs_daily_frequency_convention": "NOT specified by Bloom. Different cited papers use different frequencies.",
+      "annualization_convention": "NOT in Bloom (2014). No sqrt(252), sqrt(12), or any annualization factor appears.",
+      "rolling_window_length": "NOT specified by Bloom.",
+      "log_returns_vs_simple_returns": "NOT specified by Bloom."
+    }
+  },
+
+  "Q2_aggregate_market_level_volatility": {
+    "question": "Does Bloom (2014) define how to measure aggregate/market-level volatility? (VIX, realized S&P 500 volatility, GARCH, etc.)",
+    "answer": "PARTIAL. Bloom (2014) describes the VIX index in narrative terms (what it is, who calculates it, where it trades) but does NOT provide a formula. He also mentions 'stock index daily returns volatility' as a series in Figure 6 but again with no formula. He does NOT endorse a single operational measure — he displays multiple proxies side by side.",
+    "verbatim_references_in_bloom_text": [
+      {
+        "page": 3,
+        "section": "Fact 1: Macro Uncertainty Rises in Recessions",
+        "quote": "As one example, Figure 1 shows the VIX index of 30-day implied volatility on the Standard & Poor's 500 stock market index. The VIX index is traded on the Chicago Board Options Exchange. It is constructed based on the values of a range of call and put options on the Standard & Poor's 500 index and represents the market's expectation of volatility over the next 30 days. The VIX index is clearly countercyclical, rising by 58 percent on average in recessions (the shaded areas in the figure) as dated by the National Bureau of Economic Research.",
+        "what_is_actually_defined": "The VIX is described as an IMPLIED-volatility index (option-based, forward-looking) constructed by CBOE — but Bloom gives no formula and explicitly relies on the CBOE construction. This is NOT realized volatility from daily returns, so it does not match what Campello does with FTSE100."
+      },
+      {
+        "page": 3,
+        "section": "Fact 1, leading sentence",
+        "quote": "The volatility of stock markets, bond markets, exchange rates, and GDP growth all rise steeply in recessions.",
+        "what_is_actually_defined": "Nothing. This is a general claim; no formula is given for 'the volatility of stock markets'."
+      },
+      {
+        "page": 4,
+        "section": "Fact 1, alternative proxies",
+        "quote": "An alternative proxy of uncertainty is disagreement amongst professional forecasters... Yet another proxy for uncertainty is the frequency of newspaper articles about economic uncertainty...",
+        "what_is_actually_defined": "Bloom deliberately enumerates MULTIPLE proxies (VIX, forecaster disagreement, news counts, Beige Book counts, Scotti surprise index, Jurado-Ludvigson-Ng forecast errors, Nakamura-Sergeyev-Steinsson consumption volatility) without privileging one. This is a survey-style enumeration, not an endorsement of a specific formula."
+      },
+      {
+        "page": 8,
+        "section": "Figure 6 (countercyclical uncertainty across countries)",
+        "quote": "Each decile shows five different measures of uncertainty: stock market volatility, firm stock-returns dispersion, bond-yield volatility, exchange rate volatility, and macro forecaster disagreement—with each measure normalized to a mean 0 and standard deviation 1.",
+        "what_is_actually_defined": "The Figure 6 legend on p. 8 also labels the series 'Stock index daily returns volatility' and 'Exchange rate daily volatility' — suggesting REALIZED volatility from daily data is used in Baker and Bloom (2013), the cited source. But no formula is given in the JEP text. Bloom mentions 'daily volatility' as a descriptor but not how it is computed."
+      },
+      {
+        "page": 4,
+        "section": "Discussion of VIX caveats",
+        "quote": "Another explanation is that increased risk aversion during recessions will tend to increase the prices of options (because options provide insurance against large price movements), biasing up this measure of uncertainty. However, these fluctuations in the VIX are too large to be explained by plausible movements in risk aversion (Bekaert, Hoerova, and Lo Duca 2013). Moreover, it is not just stock markets that become more volatile in recessions. Other financial prices like exchange rates and bond yields also experience surging volatility in recessions.",
+        "what_is_actually_defined": "Nothing operational. This is conceptual discussion of why VIX moves with the cycle."
+      }
+    ],
+    "summary_of_what_bloom_does_show": {
+      "Figure_1": "VIX (CBOE implied volatility on S&P 500, 30-day horizon). Implied-volatility, option-based, forward-looking. NOT a realized-volatility-from-daily-returns construction.",
+      "Figure_6": "Five panels including 'Stock index daily returns volatility' and 'Exchange rate daily volatility' — labels imply realized volatility from daily data, sourced from Baker and Bloom (2013), but no formula reproduced.",
+      "Body_text": "Repeated narrative references to 'stock market volatility' / 'stock-market volatility' as a single phrase, with no operational definition."
+    }
+  },
+
+  "Q3_which_approach_is_campello_following": {
+    "question": "When Campello et al. write 'Following Bloom (2014), we use stock market volatility,' which section or approach in Bloom's survey are they most likely 'following'? Is there a specific formula, data source, or convention that Bloom endorses?",
+    "answer": "Campello et al. are following the CONCEPTUAL ARGUMENT in Bloom (2014, 'Fact 1: Macro Uncertainty Rises in Recessions,' pp. 3-6) — namely, that stock-market volatility is a valid empirical proxy for aggregate (macroeconomic) uncertainty. They are NOT following a specific operational construction, because Bloom does not provide one. Bloom (2014) does not endorse a single formula, frequency, window, or annualization convention.",
+    "supporting_evidence": [
+      {
+        "point": "The relevant section is 'Fact 1: Macro Uncertainty Rises in Recessions' (pp. 3-6), which is where Bloom argues stock-market volatility is countercyclical and proxies for aggregate uncertainty.",
+        "verbatim": "Fact 1: Macro Uncertainty Rises in Recessions. The volatility of stock markets, bond markets, exchange rates, and GDP growth all rise steeply in recessions. In fact, almost every macroeconomic indicator of uncertainty I know of—from disagreement amongst professional forecasters to the frequency of the word 'uncertain' in the New York Times (Alexopolous and Cohen 2009)—appears to be countercyclical."
+      },
+      {
+        "point": "Bloom's lead illustration in this section is the VIX (implied volatility), which is operationally DIFFERENT from what Campello uses (Campello uses realized volatility constructed from FTSE100/S&P500 daily returns via Bloomberg). So 'Following Bloom (2014)' in Campello cannot literally mean 'following the VIX construction.'",
+        "verbatim": "As one example, Figure 1 shows the VIX index of 30-day implied volatility on the Standard & Poor's 500 stock market index."
+      },
+      {
+        "point": "The closest match to Campello's approach in Bloom is Figure 6's 'Stock index daily returns volatility' panel — but that figure is sourced from a separate paper (Baker and Bloom 2013) and its construction is not described in the JEP article.",
+        "verbatim": "Source: Baker and Bloom (2013). [Figure 6 caption.] Each decile shows five different measures of uncertainty: stock market volatility, firm stock-returns dispersion, bond-yield volatility, exchange rate volatility, and macro forecaster disagreement—with each measure normalized to a mean 0 and standard deviation 1."
+      },
+      {
+        "point": "Bloom (2014) explicitly acknowledges measurement is plural and imperfect:",
+        "verbatim_p2": "Given this broad definition of uncertainty, it should be unsurprising that there is no perfect measure but instead a broad range of proxies. The volatility of the stock market or GDP is often used as a measure of uncertainty because when a data series becomes more volatile it is harder to forecast.",
+        "verbatim_p20_concluding_thoughts": "our measures of uncertainty are far from perfect and in fact are best described as proxies rather than real measures. Developing a wider set of uncertainty measures is important."
+      }
+    ],
+    "interpretation": "Bloom's role in Campello et al. is as the canonical CITATION for the claim 'stock-market volatility = aggregate uncertainty proxy.' Campello et al. supply their own operational definition; Bloom only supplies the conceptual warrant. Anyone treating 'Following Bloom (2014)' as an instruction-following statement at the formula level is overreading the citation — Bloom (2014) contains no formula to follow."
+  },
+
+  "Q4_cross_reference_with_campello_operationalization": {
+    "question": "Does ANY operational detail in Bloom (2014) match what Campello et al. actually do? (Campello uses: CRSP daily returns, Bloomberg FTSE100/SP500/FX data, monthly frequency 2010:M1-2014:M12.)",
+    "answer": "No specific operational match. Bloom (2014) does not name CRSP, does not name Bloomberg, does not specify a sampling frequency for any volatility series, does not specify 2010-2014 or any other window, and does not provide a formula that maps to what Campello et al. do. The only loose conceptual overlap is that Figure 6 in Bloom uses a series labelled 'Stock index daily returns volatility,' which is consistent in spirit with constructing volatility from daily returns — but Bloom defers all construction details to Baker and Bloom (2013).",
+    "campello_choices_vs_bloom_text": [
+      {
+        "campello_choice": "Data source: CRSP for US firm returns",
+        "bloom_2014_position": "NOT mentioned. The word 'CRSP' does not appear anywhere in Bloom (2014). Bloom cites Campbell-Lettau-Malkiel-Xu (2001), Leahy-Whited (1996), Bloom-Bond-Van Reenen (2007), and Panousi-Papanikolaou (2012) for firm-level work but does not specify data sources in the JEP text."
+      },
+      {
+        "campello_choice": "Data source: Bloomberg for FTSE100, S&P500, FX",
+        "bloom_2014_position": "NOT mentioned. 'Bloomberg' appears once on p. 4 only in connection with Scotti (2013)'s surprise index ('pre-release date expectations (from Bloomberg's median forecast)') — not in connection with volatility construction."
+      },
+      {
+        "campello_choice": "Sampling frequency: monthly observations of volatility (vol computed within each month)",
+        "bloom_2014_position": "NOT specified. Bloom shows quarterly data in some figures (Figure 5: sales-growth dispersion), annual data in others (Figure 6: country-year deciles), and what appears to be daily/monthly data in Figure 1 (VIX). No frequency is endorsed for a specific volatility construction."
+      },
+      {
+        "campello_choice": "Window: 2010:M1-2014:M12 post-crisis sample",
+        "bloom_2014_position": "NOT specified. Bloom (2014) was published in 2014 and its figures generally go through 2013. No specific post-crisis sub-window is endorsed."
+      },
+      {
+        "campello_choice": "Volatility construction: realized vol from daily returns (implied by Campello's use of stock-return data)",
+        "bloom_2014_position": "Loosely consistent with the label 'Stock index daily returns volatility' in Figure 6 (sourced to Baker and Bloom 2013), but Bloom (2014) itself contains no construction. The VIX in Figure 1 is the OPPOSITE construction (implied, not realized) — so half of Bloom's stock-market volatility evidence is non-matching."
+      },
+      {
+        "campello_choice": "Annualization convention",
+        "bloom_2014_position": "NOT discussed."
+      },
+      {
+        "campello_choice": "Log returns vs simple returns",
+        "bloom_2014_position": "NOT discussed."
+      },
+      {
+        "campello_choice": "Treatment of missing days, holidays, half-days",
+        "bloom_2014_position": "NOT discussed."
+      }
+    ],
+    "online_appendix_caveat": {
+      "footnote_1_from_bloom_p2": "All the data used in this paper is available in an online Appendix available with this paper at http://e-jep.org, and also at my website in this zip file: http://www.stanford.edu/~nbloom/JEPdata.zip.",
+      "implication": "The data zip likely contains the constructed series shown in Bloom's figures, which would reveal frequency and construction by inspection. However, the JEP article TEXT does not document the construction. Anyone trying to reproduce Bloom's operational choices would need to download the zip and reverse-engineer them — and even then, those would be Bloom's choices for his own figures, not a normative recommendation Campello is 'following.'"
+    }
+  },
+
+  "overall_diagnosis": {
+    "is_bloom_2014_a_methodological_source_for_vol_operator": "NO. Bloom (2014) is a survey/perspective essay in JEP. Its purpose is to (1) document stylized facts about uncertainty fluctuations, (2) review theoretical mechanisms, (3) summarize empirical findings, and (4) discuss implications for the Great Recession. It is NOT a methodology paper and does not propose or endorse a specific vol(.) construction.",
+    "why_campello_cites_bloom_2014": "Three plausible reasons, all conceptual rather than operational: (1) Bloom (2014) is the canonical recent JEP reference establishing 'stock-market volatility ~ aggregate uncertainty' as a mainstream proxy; (2) citing Bloom (2014) signals the paper is in the uncertainty-shocks literature; (3) Bloom (2014) provides the cross-country evidence (Figure 6, Fact 4) supporting the use of stock-market volatility internationally — which is directly relevant to Campello's UK/FTSE100 setting.",
+    "what_campello_should_have_cited_for_an_actual_vol_formula": "If Campello et al. wanted to cite an operational formula for vol(.), the appropriate citations would be primary methodology papers, NOT Bloom (2014). Candidates Bloom himself cites: Bloom (2009) 'The Impact of Uncertainty Shocks' Econometrica (uses monthly stock-market vol as the macro uncertainty shock); Bloom, Bond, and Van Reenen (2007) ReStud (firm-level stock-price vol); Campbell-Lettau-Malkiel-Xu (2001) for cross-firm dispersion; Bekaert-Hoerova-Lo Duca (2013) for VIX decomposition; Jurado-Ludvigson-Ng (2013) for forecast-error-based uncertainty.",
+    "verdict_on_campello_citation": "Loosely defensible as a conceptual citation but technically WEAK as an operational citation. The phrase 'Following Bloom (2014), we use stock market volatility' should be read as 'Following Bloom (2014)'s argument that stock-market volatility proxies for aggregate uncertainty, we use stock market volatility' — NOT as 'Following Bloom (2014)'s construction of stock-market volatility, we use [his exact construction].' Bloom provides the warrant; Campello must supply (and document) the construction independently."
+  },
+
+  "appendix_terms_NOT_found_in_bloom_2014": {
+    "note": "I searched the full text of all 24 pages (including bibliography) for the following terms relevant to operationalizing a vol(.) function:",
+    "absent_terms": [
+      "realized volatility",
+      "annualized",
+      "sqrt(252)",
+      "252 trading days",
+      "rolling window",
+      "monthly standard deviation",
+      "CRSP",
+      "log return",
+      "return innovation",
+      "EWMA",
+      "exponentially weighted",
+      "Parkinson estimator",
+      "high-low range",
+      "intraday",
+      "RiskMetrics"
+    ],
+    "present_but_only_narrative": [
+      "stock market volatility (narrative use, no formula)",
+      "VIX (described, not formulated)",
+      "GARCH (one bibliography citation, no formula)",
+      "daily volatility (in figure label only)",
+      "implied volatility (in VIX discussion only)"
+    ]
+  }
+}

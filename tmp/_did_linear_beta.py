@@ -31,6 +31,19 @@ ctrl_cols = ["STOCK_RETURNS","TOBIN_Q","CASH_FLOW","SIZE","SALES_GROWTH","CONSEN
 for c in ctrl_cols:
     panel[f"{c}_lag1"] = panel.groupby("gvkey")[c].shift(1)
 
+# Copy latest consensus_eps + stock_returns to beta dir
+def latest(fname):
+    runs = sorted([d for d in OUT.iterdir() if d.is_dir() and (d/fname).exists()], reverse=True)
+    return runs[0]
+import shutil
+for fn in ["consensus_eps.parquet", "stock_returns.parquet"]:
+    src = latest(fn) / fn; dst = beta_dir / fn
+    if src != dst:
+        with open(str(src),"rb") as f: data = f.read()
+        with open(str(dst),"wb") as g: g.write(data)
+print(f"Using beta_dir: {beta_dir}")
+print(f"N_ceps: {len(pd.read_parquet(beta_dir/'consensus_eps.parquet')):,}")
+
 # Add CASH_T8
 comp = pd.read_parquet(ROOT/"inputs"/"comp_na_daily_all"/"comp_na_daily_all.parquet",
                        columns=["gvkey","datadate","atq","cheq"])

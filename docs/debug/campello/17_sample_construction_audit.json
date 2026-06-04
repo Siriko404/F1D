@@ -1,0 +1,110 @@
+{
+  "extraction_metadata": {
+    "paper": "Campello, M.; Cortes, G. S.; d'Almeida, F.; Kankanhalli, G. \"Exporting Uncertainty: The Impact of Brexit on Corporate America.\" Journal of Financial and Quantitative Analysis, Vol. 57, No. 8 (Dec. 2022), pp. 3178-3222.",
+    "doi_main": "10.1017/S0022109022000308",
+    "doi_corrigendum": "10.1017/S0022109022001259",
+    "license": "Open Access, Creative Commons Attribution (CC BY 4.0). Per the title page: permits unrestricted re-use, distribution and reproduction, provided the original article is properly cited.",
+    "sources_read": [
+      "Main article (JFQA, pp. 3178-3222)",
+      "Internet Appendix / Supplementary Material",
+      "Corrigendum (JFQA Vol. 57, No. 8, p. 3313)"
+    ],
+    "extraction_basis": "Verbatim transcription. No paraphrasing of filter descriptions or table notes. Mathematical notation rendered in plain text where the source uses subscripts/superscripts (e.g., beta^UK_i).",
+    "purpose": "Sample-construction detail extraction for replication."
+  },
+
+  "item_1_table_C1_sample_selection": {
+    "source_location": "Supplementary Material (Internet Appendix), Table C.1, p. 7 of the appendix PDF",
+    "table_title_verbatim": "Table C.1. Sample Selection",
+    "table_header_note_verbatim": "This table reports the filters applied to the original dataset obtained from COMPUSTAT, and the number of observations obtained at each step in order to generate the baseline sample described in Section IV.B.",
+    "column_headers_verbatim": ["Filter", "Firm\u2013Quarters"],
+    "filter_steps_verbatim": [
+      {"filter": "Raw COMPUSTAT between 2010:Q1 and 2016:Q4", "firm_quarters": 262412},
+      {"filter": "Drop non-US firm\u2013quarters (retain data reported in USD, with US headquarters, duplicates excluded)", "firm_quarters": 160254},
+      {"filter": "Drop firm\u2013quarters with negative fundamentals (ASSETS and SALES)", "firm_quarters": 158312},
+      {"filter": "Drop financials and utilities", "firm_quarters": 112939},
+      {"filter": "Drop if ASSETS or MARKET_CAPITALIZATION less than $10 million", "firm_quarters": 93011},
+      {"filter": "Drop if missing key variables (INVESTMENT, ASSETS, CASH_FLOW, TOBIN_Q, SALES_GROWTH)", "firm_quarters": 75013},
+      {"filter": "Drop if non-consecutive quarters, or less than 12 quarters of non-missing data", "firm_quarters": 56081},
+      {"filter": "Drop if missing Hoberg and Phillips (2016) industry classification", "firm_quarters": 49107},
+      {"filter": "Drop if missing \u03b2^UK_i", "firm_quarters": 43025},
+      {"filter": "Drop if missing CRSP and I/B/E/S controls", "firm_quarters": 41630}
+    ]
+  },
+
+  "item_2_section_IVB_data_sources_and_sample_construction": {
+    "source_location": "Main article, Section IV.B \"Data Sources and Sample Construction,\" pp. 3192-3193",
+    "paragraphs_verbatim": [
+      "We use COMPUSTAT Quarterly to gather basic information on firm investment and financial data. We consider U.S. companies from the first calendar quarter of 2010 to the fourth quarter of 2016. We drop utility and financial firms, as well as companies whose market value or book assets are lower than $10 million. The sample used in our baseline investment tests consists of 41,630 observations (firm-quarters).[footnote 15] For additional analysis on firms' investment in the United States, we obtain subsidiary-level investment data from the Bureau van Dijk's Orbis data set (see Cravino and Levchenko (2016)). We use Orbis's company search tool to match parent firms in our COMPUSTAT sample to ultimate owner firms in Orbis. By doing so, we obtain separate information on their U.S.-based and U.K.-based subsidiaries. The Orbis sample we use consists of 6,203 observations (firm-years).",
+      "Firm-level employment data are taken from COMPUSTAT's Annual Fundamentals. We measure employment growth based on the change in the number of employees of the firm. Our employment sample consists of 11,345 observations (firm-years).[footnote 16] We rely on the Your-Economy Time-Series (YTS) database, maintained by the Business Dynamics Research Consortium at the University of Wisconsin, for information on U.S.-based employment. The YTS database is compiled from historical business files from Infogroup and are linked longitudinally to track establishment location, employment, and sales information at the establishment-year level for public and private firms in the United States. We match our sample firms (both parents and their U.S. subsidiaries) to YTS primarily using tickers, and augment this match through manual searches by firm name. The firms in our sample collectively operated 757,083 unique establishments, and this results in 1,809,301 establishment-year observations over the 2010\u20132016 period. We aggregate YTS employment growth at the firm level, giving a final U.S. establishment-level employment growth sample of 11,345 firm-years.",
+      "We use CRSP stock price data and Bloomberg equity index and currency data to compute our theoretical framework-based measure of firm exposure to the United Kingdom (see equation (13)). We use monthly data from 2010:M1 to 2014:M12 so that exposure to the United Kingdom is measured before any major Brexit-related events. Analyst forecast data are obtained from I/B/E/S. Data on bond yields are from TRACE and SDC, whereas syndicated loan spreads are drawn from WRDS\u2013Reuters DealScan. Macroeconomic variables are taken from the Federal Reserve Bank of St. Louis' FRED database."
+    ],
+    "footnotes_verbatim": [
+      {"number": 15, "text": "For details of the sample selection filters, see Table C1 in the Supplementary Material."},
+      {"number": 16, "text": "The same filters described in Table C1 in the Supplementary Material are also applied to obtain this sample."}
+    ]
+  },
+
+  "item_3_section_IVC1_identification": {
+    "source_location": "Main article, Section IV.C.1 \"Identification,\" p. 3193",
+    "text_verbatim": "We use a standard DID approach to assess the impact of the 2016 Brexit vote on American firms. Following our framework, in our base analysis, we characterize firms as treated (control) units if they are in the upper (bottom) tercile of the nonnegative range of the \u03b2^UK_i distribution. For group contrasting, we do not include firms that benefit from uncertainty in the United Kingdom in the control group (firms with \u03b2^UK_i < 0) as this could lead to overestimation biases attached to the treatment effects we seek to identify. Nevertheless, in specifications where we use \u03b2^UK_i as a continuous treatment variable, we relax this restriction and include all values of \u03b2^UK_i.[footnote 17] Under this market-based approach, a total of 449 unique firms are assigned to the treated category (\u03b2^UK_i > 0.68). In contrast, 360 unique firms are assigned to the control category (\u03b2^UK_i < 0.28). We also consider an alternative, text-based measure of exposure to Brexit. Under this approach, 807 firms are assigned to the treated category (2015 10-K mentions of Brexit terms > 5). A total of 433 firms in the control category have no mentions of Brexit-related terms in their 10-Ks.",
+    "footnote_verbatim": [
+      {"number": 17, "text": "In unreported tests, we only label those firms with statistically significant positive \u03b2^UK_i estimates as treated firms, and those with \u03b2^UK_i statistically indistinguishable from 0 as controls. We find that our results hold across a range of sensible treatment assignment thresholds."}
+    ]
+  },
+
+  "item_4_table_8_notes": {
+    "source_location": "Main article, Table 8 notes, p. 3208",
+    "table_title_verbatim": "The Impact of the Brexit Vote on Cash Holdings, Noncash Working Capital, and Profitability",
+    "table_notes_verbatim": "Table 8 reports output from equation (14). The dependent variables are CASH, NON_CASH_WORKING_CAPITAL, and PROFITS. CASH is defined as total cash holdings divided by lagged total assets net of cash holdings. NON_CASH_WORKING_CAPITAL (NWC) is defined as working capital (net of cash) divided by lagged total assets. PROFITS is defined as the quarterly percentage change in profits (operating income before depreciation divided by sales). In the first specification, the treatment group is composed by the top tercile of \u03b2^UK_i, whereas the control group is composed by firms in the bottom tercile of \u03b2^UK_i. The second specification is a textual-search-based measure of U.K. exposure that sums up the number of Brexit-related words in firms' 2015 10-K forms. The treatment group is made of firms with more than five entries, whereas the control group are firms with zero entries. The time dimension of the DID estimator is set so as to compare the two quarters following the announcement of the referendum and Brexit's victory (2016:Q3\u2013Q4) versus the two quarters preceding the announcement (2015:Q3\u2013Q4). T-statistics are computed using robust standard errors (in parentheses) double-clustered at the firm and calendar quarter levels. *, **, and *** indicate statistical significance at the 10%, 5%, and 1% levels, respectively.",
+    "observations_in_arguments": [
+      "The Table 8 notes contain no sample-restriction or filter criteria specific to the cash analysis beyond the treatment/control definitions and time window stated above. Sample sizes are reported in the table body (not in the notes): CASH columns N = 17,170 and 24,195; NWC columns N = 16,630 and 23,806; PROFITS columns N = 16,630 and 24,051.",
+      "Factual note (not an interpretation): the CASH definition in the Table 8 notes ('total cash holdings divided by lagged total assets net of cash holdings') differs in denominator wording from the CASH definition in the Table 1 summary-statistics notes (p. 3198: 'cash and short-term investments divided by lagged total assets'). Both are reproduced verbatim from their respective sources."
+    ]
+  },
+
+  "item_5_time_series_requirements": {
+    "search_terms": ["non-consecutive quarters", "minimum quarters", "balanced panel", "consecutive", "12 quarters", "minimum"],
+    "explicit_mentions_found_verbatim": [
+      {
+        "location": "Supplementary Material, Table C.1 (filter row 7)",
+        "text": "Drop if non-consecutive quarters, or less than 12 quarters of non-missing data"
+      }
+    ],
+    "factual_findings": [
+      "The only explicit time-series / panel-length inclusion requirement located anywhere in the main article or Internet Appendix is the Table C.1 filter quoted above (requires consecutive quarters and at least 12 quarters of non-missing data; reduces the sample to 56,081 firm-quarters at that step).",
+      "The main-text Section IV.B does not restate this requirement; it references Table C1 via footnotes 15 and 16. The narrative of Section IV.B does not itself use the phrases 'non-consecutive quarters', 'minimum quarters', or 'balanced panel'.",
+      "The phrase 'balanced panel' does not appear in the provided text of either document.",
+      "Sample Selection Table C.1 begins from raw COMPUSTAT 2010:Q1\u20132016:Q4 (262,412 firm-quarters); however the final baseline regression sample is 41,630 firm-quarters, and Table 1 summary statistics are reported over 2010:Q1\u20132015:Q4 (the pre-Brexit period). These ranges are quoted verbatim from their sources and are reported here without interpretation."
+    ]
+  },
+
+  "item_6_CCM_linking_procedure": {
+    "search_terms": ["CCM", "CRSP/Compustat Merged", "link type", "LC", "LU", "link primary", "LINKDT", "LINKENDDT", "GVKEY", "PERMNO", "linking table"],
+    "factual_finding": "No CCM (CRSP/Compustat Merged) linking procedure is described in the main article or the Internet Appendix. The text does not mention link types (e.g., LC/LU), link primacies (e.g., P/C), GVKEY-PERMNO linking tables, or LINKDT/LINKENDDT date ranges. No formal CRSP-Compustat merge methodology is specified.",
+    "closest_related_verbatim_statements": [
+      {
+        "location": "Supplementary Material, Table C.1 (filter row 10)",
+        "text": "Drop if missing CRSP and I/B/E/S controls"
+      },
+      {
+        "location": "Main article, Section IV.B, p. 3192",
+        "text": "We use CRSP stock price data and Bloomberg equity index and currency data to compute our theoretical framework-based measure of firm exposure to the United Kingdom (see equation (13))."
+      },
+      {
+        "location": "Main article, Table 1 notes, p. 3198",
+        "text": "The final sample is a match between COMPUSTAT Quarterly North America Fundamentals and the estimated \u03b2^UK_i sample for the period from 2010:Q1 to 2015:Q4."
+      },
+      {
+        "location": "Main article, Section IV.B, p. 3192 (YTS matching, the only explicit linking method described in the paper)",
+        "text": "We match our sample firms (both parents and their U.S. subsidiaries) to YTS primarily using tickers, and augment this match through manual searches by firm name."
+      }
+    ]
+  },
+
+  "corrigendum_note": {
+    "source_location": "Corrigendum, JFQA Vol. 57, No. 8, p. 3313, dated 19 April 2022",
+    "text_verbatim": "In the original publication of this article, appendices A and B were missing. The original article, and the supplementary material, have since been updated.",
+    "relevance_to_extraction": "Appendices A (Model Analysis and Results) and B (Proofs) were absent from the first publication and were subsequently restored. These appendices are theoretical (disinvestment model, irreversibility propositions, proofs) and do not alter the empirical sample-construction details extracted above. Flagged for completeness because anyone replicating against an early downloaded copy of the article may have a version missing these appendices."
+  }
+}

@@ -1,0 +1,59 @@
+PROMPT FOR CLAUDE-WEB — ATTACH BOTH PDFs: (1) Campello et al. main paper, (2) supplementary/internet appendix
+
+I need to replicate one specific regression specification from this paper. Two tasks.
+
+TASK 1 — IDENTIFY THE TARGET SPECIFICATION
+
+This paper studies how Brexit affects corporate cash holdings using a difference-in-differences design. Find the paper's MAIN DiD regression specification for this relationship. Report:
+- Exact table number
+- Exact column number
+- The equation number in the paper (if any)
+- One sentence describing what this specification estimates
+- The page number(s) where the specification is defined
+
+If the paper has multiple cash-holdings DiD specifications across different tables, choose the primary/baseline one (not a robustness variant). State which you chose and why.
+
+TASK 2 — LIST ALL VARIABLES (NAMES ONLY)
+
+For the specification identified in Task 1, list every variable by its EXACT name as printed in the paper. Group by role using ONLY these categories:
+
+- dependent_variable
+- treatment_variable (the DiD interaction term or key independent variable of interest)
+- control_variables
+- fixed_effects
+- clustering
+- panel_id_variables
+- sample_filters (any restriction mentioned in table notes, specification description, or sample construction section)
+
+CRITICAL RULES:
+- NAMES ONLY. No definitions. No formulas. No Compustat codes. No commentary. No units. No scaling.
+- Use the EXACT variable name as printed in the paper table/equation (do not paraphrase, expand, or standardize)
+- If the paper uses Greek letters or mathematical notation, reproduce it exactly
+- If a variable is a ratio of two items (e.g., "Cash/Assets"), list it as the paper lists it — as a single variable name, not its components
+- Check the supplementary appendix PDF too — fixed effects, clustering, or sample restrictions may be stated there rather than in the main table
+
+RETURN ONLY VALID JSON — no text outside the JSON block:
+
+{
+  "paper": {
+    "authors": "",
+    "title": "",
+    "year": "",
+    "journal": "",
+    "table": "",
+    "column": "",
+    "equation": "",
+    "page_spec_defined": ""
+  },
+  "choice_rationale": "",
+  "specification_description": "",
+  "variables": {
+    "dependent_variable": [],
+    "treatment_variable": [],
+    "control_variables": [],
+    "fixed_effects": [],
+    "clustering": [],
+    "panel_id_variables": [],
+    "sample_filters": []
+  }
+}

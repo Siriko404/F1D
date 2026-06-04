@@ -1,0 +1,55 @@
+{
+  "source": "PyMuPDF extraction from campello_etal_2022_brexit_jfqa.pdf pp.21-22",
+  "panel": "A \u2014 COMPUSTAT Universe",
+  "variables": {
+    "CASH": {
+      "mean": 0.22,
+      "SD": 0.25,
+      "med": 0.12,
+      "IQR": 0.27,
+      "N": 78044
+    },
+    "TOBIN_Q": {
+      "mean": 2.11,
+      "SD": 1.59,
+      "med": 1.57,
+      "IQR": 1.26,
+      "N": 73353
+    },
+    "CASH_FLOW": {
+      "mean": 0.01,
+      "SD": 0.06,
+      "med": 0.03,
+      "IQR": 0.04,
+      "N": 75287
+    },
+    "SIZE (Log Assets)": {
+      "mean": 6.19,
+      "SD": 2.08,
+      "med": 6.15,
+      "IQR": 3.08,
+      "N": 78062
+    },
+    "SALES_GROWTH": {
+      "mean": 0.16,
+      "SD": 0.62,
+      "med": 0.06,
+      "IQR": 0.23,
+      "N": 71637
+    },
+    "CONSENSUS_EARNINGS_FORECAST": {
+      "mean": 0.07,
+      "SD": 3.51,
+      "med": 0.09,
+      "IQR": 2.05,
+      "N": 42031
+    },
+    "STOCK_RETURNS": {
+      "mean": 0.03,
+      "SD": 0.24,
+      "med": 0.02,
+      "IQR": 0.25,
+      "N": 67226
+    }
+  }
+}

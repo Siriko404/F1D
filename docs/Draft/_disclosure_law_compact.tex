@@ -1,0 +1,50 @@
+\begin{table}[H]
+\centering
+\caption{Boasiako-Keefe Disclosure-Law Replication}
+\label{tab:h1_5_disclosure_law_did}
+\small
+\begin{tabular}{lccc}
+\toprule
+ & Boasiako-Keefe (2020) & \multicolumn{2}{c}{This paper (F1D rebuild)} \\
+ & Table~2 Col~(1) & CASH & UncResCEO \\
+ & (1) & (2) & (3) \\
+\midrule
+Disclosure\_Law & \textbf{0.0076}$^{**}$ & \textbf{0.0159}$^{**}$ & 0.0082 \\
+ & (0.0031) & (0.0084) & (0.0104) \\
+\midrule
+firm\_size & \textbf{-0.0110}$^{***}$ & \textbf{-0.0130}$^{***}$ & -0.0015 \\
+ & (0.0022) & (0.0023) & (0.0010) \\
+firm\_age & \textbf{-0.0213}$^{***}$ & \textbf{-0.0652}$^{***}$ & \textbf{0.0081}$^{*}$ \\
+ & (0.0044) & (0.0093) & (0.0049) \\
+book\_leverage & \textbf{-0.1400}$^{***}$ & \textbf{-0.2033}$^{***}$ & \textbf{-0.0135}$^{*}$ \\
+ & (0.0206) & (0.0116) & (0.0070) \\
+market\_to\_book & \textbf{0.0080}$^{***}$ & \textbf{0.0158}$^{***}$ & 0.0010 \\
+ & (0.0015) & (0.0013) & (0.0011) \\
+cash\_flow & \textbf{-0.0049}$^{***}$ & \textbf{0.1473}$^{***}$ & 0.0130 \\
+ & (0.0018) & (0.0203) & (0.0188) \\
+capital\_expenditure & \textbf{-0.0709}$^{**}$ & \textbf{0.6336}$^{***}$ & -0.0003 \\
+ & (0.0280) & (0.1030) & (0.0254) \\
+acquisition\_expenditure & -0.0052 & -0.0507 & -0.0168 \\
+ & (0.0048) & (0.0344) & (0.0142) \\
+rd\_expenditure & \textbf{0.1909}$^{***}$ & \textbf{1.1121}$^{***}$ & -0.0382 \\
+ & (0.0281) & (0.0437) & (0.0314) \\
+nwc & -0.0001 & \textbf{-0.0390}$^{***}$ & -0.0018 \\
+ & (0.0004) & (0.0110) & (0.0029) \\
+dividend\_paying & \textbf{-0.0072}$^{**}$ & -0.0087 & -0.0044 \\
+ & (0.0028) & (0.0064) & (0.0035) \\
+industry\_cf\_vol & \textbf{0.0273}$^{***}$ & \textbf{0.2635}$^{***}$ & -0.0006 \\
+ & (0.0068) & (0.0765) & (0.0005) \\
+\midrule
+Industry FE & Yes & Yes & Yes \\
+State FE & Yes & Yes & Yes \\
+Year FE & Yes & Yes & Yes \\
+\midrule
+N & 56,646 & 48,336 & 9,709 \\
+$R^2$ & 0.494 & 0.294 & 0.003 \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{2pt}\footnotesize
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (headline one-tailed $\beta>0$; controls two-tailed). Significant coefficients in \textbf{bold}. Standard errors (in parentheses) clustered at the state level.
+\end{minipage}
+\end{table}

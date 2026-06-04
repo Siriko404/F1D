@@ -1,0 +1,80 @@
+{
+  "approach_1_replication_package": {
+    "verdict": "No formal replication package or code/data archive exists for this paper, based on exhaustive search. Best path forward is direct author contact.",
+    "evidence": [
+      {
+        "source": "JFQA Code Sharing Policy (jfqa.org/submissions/jfqa-code-sharing-policy/)",
+        "finding": "The JFQA code-sharing requirement applies only to submissions made after January 1, 2024. The Campello et al. paper was originally posted on SSRN in 2017 (abstract id 3078220) and accepted/published at JFQA in 2022 — submitted well before the cutoff. The journal therefore did NOT require code or data to be deposited."
+      },
+      {
+        "source": "Cambridge Core, https://www.cambridge.org/core/journals/journal-of-financial-and-quantitative-analysis/article/B48511C3F07B35E864D62A87190B0946",
+        "finding": "The 'Supplementary materials' link on the article's Cambridge Core page contains the Internet Appendix PDF only (the same file with Appendices A–E that the user already has). No data, code, or programmatic supplement is posted."
+      },
+      {
+        "source": "Harvard Dataverse search (the JFQA-affiliated repository for post-2024 code sharing)",
+        "finding": "Searches for 'Campello Brexit', 'Exporting Uncertainty', and individual author names return no replication package for this paper. The JFQA Dataverse only covers post-2024 submissions."
+      },
+      {
+        "source": "Author CV pages and personal sites",
+        "finding": "Author homepages located (Kankanhalli at business.pitt.edu/professors/gaurav-kankanhalli/ and gauravkankanhalli.com; Campello at Cornell SC Johnson; Cortes at Warrington UFL; d'Almeida at Purdue Krannert). None lists a replication archive or GitHub link for this paper."
+      },
+      {
+        "source": "NBER WP 26714 (the working paper version)",
+        "finding": "No supplementary code archive is linked from the NBER page either."
+      }
+    ],
+    "recommended_action": {
+      "step": "Email the corresponding author directly. The paper lists the following contact addresses (p. 3178 and the Corrigendum):",
+      "emails": [
+        "campello@cornell.edu (Murillo Campello — corresponding author)",
+        "gustavo.cortes@warrington.ufl.edu (Gustavo S. Cortes)",
+        "fdalmeid@purdue.edu (Fabrício d'Almeida)",
+        "gkankanhalli@katz.pitt.edu (Gaurav Kankanhalli)"
+      ],
+      "draft_email_subject": "Replication of CONSENSUS_EARNINGS_FORECAST in Campello-Cortes-d'Almeida-Kankanhalli (JFQA 2022)",
+      "what_to_ask": "Specifically request: (i) the exact I/B/E/S file used (Summary vs. Detail; Adjusted vs. Unadjusted); (ii) the formula for 'standardized'; (iii) the timing rule mapping forecasts to firm-quarters (which STATPERS/FPEDATS combination); (iv) the merge keys used between I/B/E/S and Compustat; (v) the winsorization scope. Mention that you have replicated other variables successfully (CASH, CASH_FLOW close) and that the issue is specific to CONSENSUS_EARNINGS_FORECAST. d'Almeida is the most-junior co-author and most likely to respond quickly with construction details."
+    }
+  },
+  "approach_2_methodological_precedent": {
+    "verdict": "No canonical paper in the literature establishes 'the standardized mean 1-quarter ahead earnings per share forecast' as a standard construction. The phrase is the authors' own naming and is not a textbook variable. The closest precedents differ from the paper's variable in significant ways. Honest assessment: contacting the authors is more productive than chasing a methodological precedent.",
+    "ranked_candidates": [
+      {
+        "rank": 1,
+        "citation": "Acharya, Viral V.; Almeida, Heitor; Campello, Murillo. 'Aggregate Risk and the Choice between Cash and Lines of Credit.' Journal of Finance, 68(5) (2013), 2059–2116. DOI: 10.1111/jofi.12056. NBER WP 16122.",
+        "why_relevant": "This is Campello's prior cash-holdings paper, cited in the Brexit paper at p. 3181 for the precautionary-savings interpretation. Variable conventions for control variables in Campello's later corporate-cash work tend to inherit from this paper. If any prior Campello paper uses 'CONSENSUS_EARNINGS_FORECAST' or an analyst forecast control with similar Table 1 stats, this is the most likely source.",
+        "what_to_check": "Whether the Acharya-Almeida-Campello (2013) Internet Appendix or main text defines an analyst-forecast control variable with a similar 'standardized' formulation. If yes, that paper's data section likely specifies the I/B/E/S construction.",
+        "access": "https://onlinelibrary.wiley.com/doi/abs/10.1111/jofi.12056 (paywalled); NBER WP free at https://www.nber.org/papers/w16122"
+      },
+      {
+        "rank": 2,
+        "citation": "Diether, Karl B.; Malloy, Christopher J.; Scherbina, Anna. 'Differences of Opinion and the Cross Section of Stock Returns.' Journal of Finance, 57(5) (2002), 2113–2141. DOI: 10.1111/0022-1082.00490.",
+        "why_relevant": "This is the canonical 'standardized analyst forecast' paper in the asset-pricing/analyst-forecast literature. They define analyst forecast dispersion as STDEV(forecasts) / |MEAN(forecast)| — i.e., they 'standardize' the dispersion by the absolute mean forecast. The verb 'standardize' for analyst-forecast variables in the modern literature largely traces back to this paper. However, Diether-Malloy-Scherbina standardize DISPERSION not the LEVEL of the consensus — so the construction is conceptually adjacent but not identical to Campello et al.'s variable.",
+        "what_to_check": "Whether 'standardized mean ... forecast' in Campello et al.'s usage means 'mean forecast standardized by |MEAN| or by STDEV' analogously to DMS dispersion. Worth testing: CEF = MEANEST / STDEV (already tested by user — too large) or MEANEST / |MEANEST| (gives just sign, not useful).",
+        "access": "https://onlinelibrary.wiley.com/doi/abs/10.1111/0022-1082.00490 (paywalled)"
+      },
+      {
+        "rank": 3,
+        "citation": "Foster, George; Olsen, Chris; Shevlin, Terry. 'Earnings Releases, Anomalies, and the Behavior of Security Returns.' Accounting Review, 59(4) (1984), 574–603.",
+        "why_relevant": "Foundational paper for Standardized Unexpected Earnings (SUE) = (Actual − Forecast) / σ, where σ is the standard deviation of recent forecast errors. SUE is the most famous 'standardized' earnings-forecast-related construction. The user has already tested SUE with σ=STDEV(analyst forecasts) and found the SD matches but the mean/median do not. SUE measures forecast SURPRISES (realized minus forecast), whereas Campello et al.'s variable name 'CONSENSUS_EARNINGS_FORECAST' describes a forecast LEVEL — so SUE is conceptually misaligned despite the numerical SD match.",
+        "what_to_check": "Whether the authors may have nonetheless used a SUE-style construction with within-quarter or within-industry demeaning. The Foster-Olsen-Shevlin σ uses time-series of past forecast errors (not cross-sectional analyst STDEV) — this is a slightly different denominator from the user's tested SUE and worth a separate test.",
+        "access": "JSTOR https://www.jstor.org/stable/247321 (paywalled)"
+      },
+      {
+        "rank": 4,
+        "citation": "Bernard, Victor L.; Thomas, Jacob K. 'Post-Earnings-Announcement Drift: Delayed Price Response or Risk Premium?' Journal of Accounting Research, 27 (1989), 1–36. AND Bernard, Victor L.; Thomas, Jacob K. 'Evidence That Stock Prices Do Not Fully Reflect the Implications of Current Earnings for Future Earnings.' Journal of Accounting and Economics, 13(4) (1990), 305–340.",
+        "why_relevant": "These two papers popularized SUE in the PEAD literature and standardized its construction conventions (especially the within-firm time-series σ). If the authors interpret 'standardized' in the Bernard-Thomas tradition, the denominator would be the time-series SD of recent forecast errors for the same firm rather than the cross-sectional analyst STDEV the user tested.",
+        "what_to_check": "Test SUE with σ = time-series SD of the firm's prior 8 quarterly forecast errors (Bernard-Thomas convention) rather than the cross-sectional STDEV field from I/B/E/S. This would change the denominator substantially and could shift the mean/median.",
+        "access": "JSTOR and Elsevier (paywalled)"
+      },
+      {
+        "rank": 5,
+        "citation": "Campello, Murillo; Lin, Chen; Ma, Yue; Zou, Hong. 'The Real and Financial Implications of Corporate Hedging.' Journal of Finance, 66(5) (2011), 1615–1647.",
+        "why_relevant": "Another Campello co-authored paper that uses firm-level analyst-forecast controls; cited in the Brexit paper at p. 3209 for the FX hedging textual-search method. Less directly relevant than Acharya-Almeida-Campello (2013) for cash holdings, but worth checking for shared variable conventions across the Campello ouevre.",
+        "what_to_check": "Whether the Internet Appendix or data section defines an analogous 'consensus earnings forecast' control. If yes, the variable construction likely follows the same recipe in the Brexit paper.",
+        "access": "https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1540-6261.2011.01683.x (paywalled)"
+      }
+    ],
+    "candor": "I am not confident that any single methodology paper above would definitively resolve the construction. The variable name 'standardized mean 1-quarter ahead earnings per share forecast' does not appear as a standard term in the literature. Each candidate above defines an adjacent variable (dispersion-standardized, surprise-standardized, time-series-standardized) but none uses the exact phrasing Campello et al. use. The Acharya-Almeida-Campello (2013) Internet Appendix (Rank 1) is the highest-probability source because Campello reuses control-variable conventions across his cash-holdings papers."
+  },
+  "honest_bottom_line": "After several rounds of inference and the user's empirical testing of all standard constructions, the variable remains underdetermined by published sources. The fastest path to resolution is: (1) email d'Almeida (fdalmeid@purdue.edu) — junior co-authors typically respond faster than corresponding authors and often manage data construction — with a concise, specific question about the I/B/E/S formula; (2) in parallel, check the Acharya-Almeida-Campello (2013) Internet Appendix for the same variable. Continuing to brute-force constructions without one of these is unlikely to land. The user has done the diligent work; this is now a 'find the recipe' problem, not a 'guess the recipe' problem."
+}

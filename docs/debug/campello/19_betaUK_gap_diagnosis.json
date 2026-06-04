@@ -1,0 +1,158 @@
+{
+  "metadata": {
+    "task": "Investigate why a replication of Campello et al. (2022) JFQA yields ~2.6x-3.9x too many treated/control firms in the beta^UK_i tercile assignment, using external methodology sources. Items 1-4 are source extraction; item 5 is an analytical assessment.",
+    "replication_facts_as_reported_by_user": {
+      "equation_13": "vol(r_it) = alpha_i + beta^UK_i * vol(FTSE100_t) + theta * CONTROLS_t + epsilon_it ; CONTROLS = vol(SP500_t) + vol(FX_GBP_t); firm-by-firm time-series OLS; monthly 2010:M1-2014:M12.",
+      "user_data_sources": "Monthly SD of daily CRSP returns per firm (>=15 days/month); FTSE100 from Yahoo Finance; S&P500 from CRSP; USD/GBP from Bank of England; CCM link LINKTYPE in {LU,LC}, LINKPRIM in {P,C}.",
+      "user_pool": "Estimated beta on ALL CRSP firms, then merged to Compustat -> 5,714 beta estimates, 3,726 nonnegative.",
+      "user_tercile_assignment": "Applied paper's cutpoints (beta>0.68 treated; 0<=beta<0.28 control) -> 1,162 treated, 1,396 control.",
+      "paper_reported": "449 treated, 360 control.",
+      "observed_inflation": "~2.6x treated, ~3.9x control."
+    },
+    "copyright_note": "Bloom (2009), Bloom-Bond-Van Reenen (2007), Alfaro-Bloom-Lin, and CRSP documentation are standard-copyright sources. Methodology criteria are reported as facts with only short verbatim fragments; not reproduced at length. Campello et al. (2022) is CC BY 4.0."
+  },
+
+  "item_1_methodology_literature_on_firm_level_betas": {
+    "question": "What does the methodology literature say about estimating such firm-level betas? Searched broadly.",
+    "finding_summary": "The single most relevant cousin is Alfaro, Bloom & Lin (ABL), 'The Finance Uncertainty Multiplier' (JPE 2024 / NBER WP 24571, 2018) -- which Campello et al. explicitly cite and use for first-moment instruments. ABL construct firm-level SECOND-MOMENT exposures (uncertainty betas) of firms to 9 aggregate uncertainty sources, one of which is the British Pound exchange rate -- i.e., essentially the same object as Campello's beta^UK_i. The other two papers the user asked about earlier (BBVR 2007, Bloom 2009) use related but methodologically DIFFERENT uncertainty proxies and are only loosely comparable.",
+    "sources": [
+      {
+        "source": "Alfaro, I., N. Bloom, X. Lin, 'The Finance Uncertainty Multiplier' (NBER WP 24571; published JPE 2024). Dataset description at policyuncertainty.com/firm_uncertainty.html (the authors' public firm-level instruments page).",
+        "relevance": "Highest. Constructs firm-level uncertainty betas to aggregate second-moment shocks INCLUDING the British Pound. Campello et al. (2022) use the ABL first-moment instruments (USD-GBP, oil, Treasury) as controls (paper Table C.7 / Section VI.A).",
+        "verbatim_fragments": [
+          "second moment exposures to 7 bilateral exchange rates with the US Dollar ... (... British Pound ...)",
+          "The firm sample is for publicly listed US firms with data available in Compustat and CRSP."
+        ],
+        "what_it_implies": "The accepted construction of a firm-level uncertainty beta (including to GBP) is estimated on the set of firms present in BOTH Compustat AND CRSP -- not on the full CRSP cross-section. The estimation universe is the Compustat-matched sample.",
+        "silent_on": "The ABL public page does not state CRSP share-code or exchange-code filters in the fragment retrieved; full screen details would be in the ABL data appendix (not extracted here)."
+      },
+      {
+        "source": "Bloom, N. (2009), 'The Impact of Uncertainty Shocks,' Econometrica 77(3); NBER WP 13385.",
+        "relevance": "Medium. Frequently cited ancestor, but the firm-level proxy is cross-sectional dispersion, NOT a firm-by-firm time-series loading.",
+        "verbatim_fragments": [
+          "within month cross-sectional standard deviation of firm-level stock returns",
+          "CRSP monthly stock-returns file using firms with 500+ months of accounts"
+        ],
+        "what_it_says": "Bloom's 'firm stock returns' uncertainty measure is the within-month cross-sectional SD of firm-level returns from the CRSP monthly file, restricted to firms with 500+ months of data; the profit-growth measure uses firms with 150+ quarters. These are stringent firm-history filters.",
+        "difference_from_campello": "Bloom (2009) measures uncertainty as the cross-sectional spread across firms at a point in time. Campello's beta^UK_i is a per-firm time-series regression coefficient. They are not the same estimator, so Bloom's exact filters do not transfer directly.",
+        "silent_on": "Specific CRSP share-code (SHRCD) and exchange-code (EXCHCD) screens are described in Bloom's Appendix A (not extracted here); the snippet retrieved does not list them."
+      },
+      {
+        "source": "Bloom, N., S. Bond, J. Van Reenen (2007), 'Uncertainty and Investment Dynamics,' Review of Economic Studies 74(2); NBER WP 12383.",
+        "relevance": "Low-medium for CRSP mechanics (it is not a CRSP/US study), but it is the canonical firm-level uncertainty-investment paper and the conceptual template.",
+        "verbatim_fragments": [
+          "a sample of 672 publicly traded UK manufacturing companies over the period 1972 to 1991"
+        ],
+        "what_it_says": "Uncertainty is proxied by share-price volatility (annualized standard deviation of daily stock returns over the year), constructed for the firms in a 672-firm UK MANUFACTURING panel selected on accounting-data availability.",
+        "silent_on": "CRSP filters entirely -- the sample is UK firms (not CRSP). 'What CRSP filters do they apply' = not applicable; they do not use CRSP. There is therefore no CRSP share-code/exchange screen to report.",
+        "note": "Because BBVR estimate the volatility proxy for the firms already in their (accounting-defined) investment panel, the volatility measure is computed on a PRE-DEFINED firm sample, not a broad market universe."
+      }
+    ],
+    "convergent_reading": "Across the directly-comparable cousins (especially ABL, the paper's own instrument source), firm-level uncertainty betas are estimated on the Compustat-matched / accounting-defined firm sample, not on the unfiltered exchange universe."
+  },
+
+  "item_2_CRSP_universe_conventions": {
+    "question": "Standard CRSP universe conventions for firm-level stock measures: share codes, exchanges, filters typically applied.",
+    "convention": "The canonical corporate-finance / asset-pricing screen is: common stock only = CRSP share codes (SHRCD) 10 and 11; primary listing on a major exchange = CRSP exchange codes (EXCHCD) 1, 2, and 3 (NYSE, NYSE American/AMEX, Nasdaq). ADRs, REITs, closed-end funds, units, and ETFs (other share codes) are excluded.",
+    "sources": [
+      {
+        "source": "CRSP via WRDS / UNC Wilmington Library Guide on CRSP.",
+        "verbatim_fragment": "U.S. Common Stocks: They are identified by the share code 10 or 11.",
+        "also": "Same source notes ADRs are identified by share code 31."
+      },
+      {
+        "source": "CRSP Exchange Code documentation (EXCHCD definitions).",
+        "verbatim_fragment": "Normal exchange codes are 1, 2, and 3 for the NYSE, AMEX and Nasdaq.",
+        "expansion": "Code 1 = NYSE; 2 = NYSE American (AMEX); 3 = Nasdaq. Codes <=0 denote halted/suspended/not-trading; +30 variants denote when-issued trading."
+      }
+    ],
+    "implication_for_user": "If beta was estimated on ALL CRSP firms, the pool includes share codes other than 10/11 (ADRs=30/31, REITs, closed-end funds=14/15/44/74, units, ETFs) and securities off the three major exchanges. Standard practice -- and what is required to approach Campello's analysis universe -- restricts to SHRCD in {10,11} and EXCHCD in {1,2,3}.",
+    "campello_silence": "Campello et al. (2022) do NOT state any SHRCD or EXCHCD screen (confirmed in prior verbatim extraction). However, their Compustat-side filters (drop financials and utilities; drop assets/market-cap < $10M; require 12 consecutive quarters; require Hoberg-Phillips classification; require CRSP+I/B/E/S controls) already remove most non-10/11, non-1/2/3 securities indirectly."
+  },
+
+  "item_3_what_table_C1_ordering_implies": {
+    "question": "Does the Table C.1 filter ORDERING imply beta was estimated on the pre-filtered Compustat sample or on full CRSP?",
+    "table_C1_sequence_verbatim_counts": [
+      "Raw COMPUSTAT 2010:Q1-2016:Q4 = 262,412",
+      "Drop non-US = 160,254",
+      "Drop negative fundamentals (ASSETS, SALES) = 158,312",
+      "Drop financials and utilities = 112,939",
+      "Drop if ASSETS or MARKET_CAPITALIZATION < $10M = 93,011",
+      "Drop if missing key variables (INVESTMENT, ASSETS, CASH_FLOW, TOBIN_Q, SALES_GROWTH) = 75,013",
+      "Drop if non-consecutive quarters, or < 12 quarters of non-missing data = 56,081",
+      "Drop if missing Hoberg and Phillips (2016) industry classification = 49,107",
+      "Drop if missing beta^UK_i = 43,025",
+      "Drop if missing CRSP and I/B/E/S controls = 41,630"
+    ],
+    "key_econometric_fact": "Equation (13) is a FIRM-BY-FIRM time-series OLS using only firm i's own returns and the aggregate volatility regressors. Therefore an individual firm's beta^UK_i does NOT depend on which other firms are in the sample. Pre-filtering vs full-universe estimation changes WHICH firms have a beta (and thus the tercile cutpoints), but NOT the value of any individual beta.",
+    "what_the_ordering_does_and_does_not_prove": {
+      "does_not_strictly_prove": "Table C.1 is a sample-ATTRITION table. Set intersection is commutative, so the FINAL firm-quarter count (43,025 after the beta step; 41,630 final) is the same whether beta was computed on full CRSP first and then matched, or computed only on survivors. The literal row order is not proof of computational order.",
+      "does_strongly_imply": "The population whose betas are relevant for the analysis -- and therefore for the tercile split that defines treated/control -- is the set of firms surviving the Compustat baseline filters (the ~49,107-firm-quarter sample at step 8, then those with a non-missing beta = 43,025 firm-quarters). The tercile cutpoints (0.68, 0.28) are most consistently read as percentiles of the nonnegative beta distribution WITHIN that analysis sample, not within the full CRSP cross-section."
+    },
+    "implied_firm_count": "43,025 firm-quarters after the beta step, over a 2010-2016 panel with a >=12-consecutive-quarter requirement, implies on the order of ~2,000-2,400 unique firms with a usable beta in the analysis sample. The user's 5,714 betas is roughly 2.4x-2.8x that -- a direct signal that the user's beta POPULATION is the full CRSP universe, not the filtered sample.",
+    "campello_explicit_silence": "The paper does NOT explicitly state whether terciles are computed over the full estimation universe or within the filtered analysis sample. This reading is inferred from (a) the Table C.1 sequence and (b) the purpose of the split (to partition analysis-sample firms)."
+  },
+
+  "item_4_related_replications_and_studies": {
+    "question": "Any published replications, working papers, or discussions related to this paper or similar Brexit-uncertainty studies.",
+    "formal_replication_or_comment": "Not found. No peer-reviewed replication, comment, or corrigendum addressing the beta^UK_i methodology was located. The only formal correction to this paper is the 2022 corrigendum stating that Appendices A and B were missing from the original publication and have been restored (theoretical content; does not bear on data construction).",
+    "public_replication_package": "Not found. JFQA's code-sharing policy is voluntary for papers initially submitted before Jan 1, 2024 (this paper: NBER WP 26714, 2020; SSRN 2021). Co-author Gustavo Cortes posts replication files for other papers (e.g., ICPSR for his 1918-19 influenza paper) but lists NO replication package for the Brexit paper on his site. No Dataverse/Mendeley/ICPSR package found.",
+    "related_brexit_firm_level_studies": [
+      {
+        "source": "Hassan, T. A., S. Hollander, L. van Lent, A. Tahoun, 'The Global Impact of Brexit Uncertainty' (NBER WP 26609, 2020).",
+        "relevance": "Most-cited related firm-level Brexit study. Measures firm exposure to Brexit via earnings-CONFERENCE-CALL text, not stock-return volatility betas. Campello et al. explicitly contrast their approach with it (paper footnote 4). Does not help reconstruct beta^UK_i.",
+        "silent_on": "Equation (13)-style volatility betas; CRSP screens for such betas."
+      },
+      {
+        "source": "Berg, T., A. Saunders, L. Schaefer, S. Steffen, 'Brexit and the Contraction of Syndicated Lending,' Journal of Financial Economics 141 (2020).",
+        "relevance": "Related Brexit study on bank lending; different unit of analysis (syndicated loans). Not a source for firm-level beta construction.",
+        "silent_on": "beta^UK_i methodology."
+      }
+    ],
+    "unverified_forum_material": "An online forum thread referencing data errors in 'a JFQA 2021 paper' was encountered. It appears to concern a different (three-author) paper, contains unverified allegations, and is not a reliable source. Deliberately not relied upon."
+  },
+
+  "item_5_assessment_most_likely_explanations": {
+    "headline": "The gap is overwhelmingly a POPULATION problem, not a beta-VALUE problem. The user is assigning terciles over the full CRSP universe (~3,726 nonnegative betas) while the paper assigns them over a much smaller Compustat-FILTERED analysis sample (nonnegative pool on the order of ~1,300-1,400 firms). Because firm-by-firm betas are invariant to the pool, fixing the population -- not the regression -- is the primary lever.",
+    "explanation_1_population_mismatch_PRIMARY": {
+      "mechanism": "Beta was estimated on ALL CRSP firms and the CCM link was applied, but the substantive Compustat baseline filters were NOT applied to the beta pool before tercile assignment. A CCM link (LINKTYPE/LINKPRIM) only resolves GVKEY<->PERMNO; it does not drop financials/utilities, sub-$10M firms, short-history firms, or non-common-stock securities.",
+      "missing_population_cuts": [
+        "Drop financials and utilities (large share of CRSP: banks, insurers, REITs, utilities).",
+        "Drop firms with assets or market cap < $10M.",
+        "Require >=12 consecutive quarters of non-missing data and key investment variables (INVESTMENT, ASSETS, CASH_FLOW, TOBIN_Q, SALES_GROWTH).",
+        "Require Hoberg-Phillips (2016) FIC-100 industry classification.",
+        "Require non-missing CRSP and I/B/E/S controls.",
+        "Restrict CRSP to common stock (SHRCD 10/11) on major exchanges (EXCHCD 1/2/3) -- standard convention; removes ADRs, REITs, closed-end funds, units, ETFs."
+      ],
+      "quantitative_consistency": "5,714 betas vs ~2,150 implied analysis-sample firms ~= 2.7x. 3,726 nonnegative / (449 treated as top tercile => ~1,347 nonnegative pool) ~= 2.8x. Both ratios match the observed 2.6x-3.9x inflation.",
+      "diagnostic_signature": "Control inflation (~3.9x) EXCEEDS treated inflation (~2.6x). Adding the unfiltered universe injects many LOW-beta firms (domestically-oriented or non-operating securities -- financials, utilities, REITs, small caps, ADRs -- whose returns barely covary with FTSE100 volatility). These pile into the 0-to-0.28 region, inflating the control/low tail more than the high tail. This asymmetry is exactly what failing to apply the universe filters would produce, and is strong corroboration of Explanation 1."
+    },
+    "explanation_2_construction_and_data_differences_SECONDARY": {
+      "mechanism": "Even on the correct population, individual beta VALUES (and hence the empirical tercile cutpoints) can shift due to undocumented construction choices. The paper does not specify these, so they are degrees of freedom.",
+      "candidate_drivers": [
+        "Monthly volatility construction: the paper never states how vol() is formed at monthly frequency. The user assumes within-month realized SD of daily returns (>=15 days). If the paper used a different window/method, betas differ.",
+        "Data sources: paper uses Bloomberg for FTSE100, S&P500, and USD/GBP; user uses Yahoo Finance (FTSE100), CRSP (S&P500), Bank of England (USD/GBP). Different index/FX series shift the regressors' volatility and thus loadings.",
+        "Minimum observations: user requires >=24 monthly obs; paper states no minimum (only the 2010:M1-2014:M12 window).",
+        "Winsorization/outliers: paper winsorizes accounting variables at 1% but says nothing about returns or beta."
+      ],
+      "how_to_tell_if_this_matters": "After fixing the population, compare your empirical tercile cutpoints to the paper's 0.68 / 0.28. If counts hit ~449/360 AND cutpoints land near 0.68/0.28, Explanation 1 was sufficient. If counts match but cutpoints are off, residual differences are construction/data driven (Explanation 2)."
+    },
+    "explanation_3_tercile_vs_fixed_cutpoints_PROCEDURAL": {
+      "mechanism": "The user applied the paper's cutpoints (0.68, 0.28) as FIXED absolute thresholds. In the paper these are not fixed parameters -- they are the empirical 33rd/67th percentiles of the nonnegative beta distribution in the paper's sample. The reproducible procedure is to take terciles of one's own nonnegative beta pool, not to import the paper's cutpoints.",
+      "caveat": "On its own this is second-order: terciling the user's 3,726 nonnegative betas still gives ~1,242 per tail (~2.8x the paper). So the procedural fix only helps AFTER the population is corrected. It cannot close the gap by itself."
+    },
+    "ranked_conclusion": [
+      "1. PRIMARY: Beta pool = full CRSP rather than the Compustat-filtered analysis sample. Apply all baseline filters (financials/utilities, $10M, 12-consecutive-quarter, investment vars, Hoberg-Phillips, CRSP+I/B/E/S controls) plus standard SHRCD 10/11 + EXCHCD 1/2/3 to the beta pool. This is the dominant driver and is consistent with the magnitude and the control-vs-treated asymmetry.",
+      "2. SECONDARY: Volatility construction and Bloomberg-vs-other data sources shift individual betas and cutpoints; use the cutpoint-match check to gauge residual impact.",
+      "3. PROCEDURAL: Compute terciles within the corrected nonnegative pool rather than importing 0.68/0.28 as fixed thresholds."
+    ],
+    "prioritized_fixes": [
+      "Reconstruct the analysis-sample firm list FIRST (replicate Table C.1 steps 2-8 and step 10), then estimate / retain beta^UK_i only for those firms.",
+      "Apply SHRCD in {10,11} and EXCHCD in {1,2,3} to the CRSP side before estimating betas.",
+      "Re-tercile the resulting nonnegative betas; treated = top third, control = bottom third.",
+      "Diagnostic: check whether your empirical cutpoints land near 0.68 / 0.28 and whether counts approach 449 / 360. Residual divergence isolates construction/data effects (Bloomberg vs Yahoo/BoE; monthly-vol method).",
+      "If still off, test sensitivity to the monthly-volatility definition and to dropping the >=24-month minimum, since the paper specifies neither."
+    ],
+    "epistemic_caveat": "These are the most likely explanations given the paper's documented filters and standard conventions; because Campello et al. (2022) do not specify the CRSP screens, the monthly-volatility construction, the minimum-observation rule, or the tercile population explicitly, none of this can be confirmed against the paper itself, and there is no public replication package to check against."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "ambiguities": {
+    "1_numerator_field": {
+      "resolution": "not_specified_in_paper",
+      "verbatim_quote": "\"CASH is defined as cash and short-term investments divided by lagged total assets.\" The paper provides no Compustat mnemonic (e.g., CHEQ, CHQ, CHE, CH) anywhere in the main text, table notes, appendices A–E of the supplementary material, or Table C1's filter descriptions. Section IV.B identifies only the source — \"We use COMPUSTAT Quarterly to gather basic information on firm investment and financial data\" (p. 3192) — without naming the exact field. Supplementary Table C1 generically uses 'ASSETS' rather than 'ATQ' and never lists CASH among the variables driving sample attrition, so no implicit mnemonic appears there either.",
+      "source_location": "Table 1 notes, p. 3198 (variable definition); Section IV.B, p. 3192 (data source only); Supplementary Table C1 (no mnemonic listed)"
+    },
+    "2_lagged_assets_timing": {
+      "resolution": "not_specified_in_paper",
+      "verbatim_quote": "\"CASH is defined as cash and short-term investments divided by lagged total assets.\" The paper uses the word 'lagged' without quantifying the lag. Equation (14) explicitly subscripts firm-level controls as CONTROLS_{i,t-1}: \"Y_{i,t} = α + δ[POST_t × HIGH_UK_EXPOSURE_i] + θCONTROLS_{i,t-1} + Σ_i FIRM_i + Σ_j Σ_t [INDUSTRY_j × QUARTER_t] + ε_{i,t}\" (p. 3196), but this t-1 timing is stated only for the right-hand-side control vector, not for the denominator of dependent-variable ratios. Other Table 1 ratios (INVESTMENT, CASH_FLOW, DIVESTITURES) all use the identical phrasing 'divided by lagged total assets' without further qualification. The paper never specifies whether 'lagged' for the CASH denominator means t-1 (one quarter prior), the same quarter one year prior, or fiscal-year-end assets.",
+      "source_location": "Table 1 notes, p. 3198 (definition); equation (14), p. 3196 (t-1 subscript applies to CONTROLS only, not to dependent variable denominators)"
+    },
+    "3_winsorization_scope": {
+      "resolution": "not_specified_in_paper",
+      "verbatim_quote": "\"All variables are winsorized at the 1% level.\" This is the entirety of the paper's statement on winsorization. The paper does not specify: (a) whether winsorization is two-sided (1st/99th) or one-sided; (b) whether it is performed pooled over the full sample or within calendar quarter / fiscal year / industry; (c) whether winsorization is applied before or after the ratio is computed (i.e., whether components are winsorized separately or the constructed ratio is winsorized). No further detail appears in the main text, table notes, or supplementary appendices A–E.",
+      "source_location": "Table 1 notes, p. 3198"
+    },
+    "4_missing_value_handling": {
+      "resolution": "not_specified_in_paper",
+      "verbatim_quote": "Supplementary Table C1 ('Sample Selection') lists the attrition filters, including: \"Drop if missing key variables (INVESTMENT, ASSETS, CASH_FLOW, TOBIN_Q, SALES_GROWTH) — 75,013\". CASH is NOT among the listed key variables that trigger observation drops. ASSETS (the denominator) is required, but the paper provides no statement about how firm-quarters with missing cash/short-term-investment values are treated — whether they are dropped from the CASH regression sample, set to zero, or imputed. No clarifying language appears in the main text (Section IV.B, pp. 3192–3193), in Table 1 notes (p. 3198), in the discussion of Table 8 cash results (Section V.C, p. 3208), or in any supplementary appendix (A through E).",
+      "source_location": "Supplementary Table C1 (attrition filters); Section IV.B main text, pp. 3192–3193; Table 1 notes, p. 3198"
+    }
+  }
+}

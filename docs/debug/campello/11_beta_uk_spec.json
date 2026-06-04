@@ -1,0 +1,145 @@
+{
+  "paper": {
+    "title": "Exporting Uncertainty: The Impact of Brexit on Corporate America",
+    "authors": ["Campello, M.", "Cortes, G. S.", "d'Almeida, F.", "Kankanhalli, G."],
+    "journal": "Journal of Financial and Quantitative Analysis",
+    "volume": "57(8)",
+    "year": 2022,
+    "pages": "3178-3222",
+    "doi": "10.1017/S0022109022000308"
+  },
+  "equation_13_verbatim": "vol(r_it) = alpha_i + beta^UK_i * vol(FTSE100_t) + theta * CONTROLS_t + epsilon_it",
+  "section_reference": "Section IV.A.1 (Theoretical Framework-Based Measure of Uncertainty)",
+  "questions": {
+    "Q1_vol_definition": {
+      "question": "How is vol() computed? Realized vol (std of daily returns within month), absolute monthly return, squared monthly return, implied vol, or something else?",
+      "verbatim_quotes_from_paper": [
+        "Following Bloom (2014), we use stock market volatility as a gauge of aggregate uncertainty and estimate equation (12) for each firm i as [equation 13]",
+        "Equation (13) uses the volatility of equity returns, vol(r_it), as a proxy for firm income volatility, vol(v_it). It also uses the volatility of the FTSE100 Index as a proxy for uncertainty in the U.K. (the relevant source of aggregate uncertainty in our setting). We include control variables, CONTROLS_t, consisting of vol(SP500) and vol(FX$pound) into equation (13) to absorb effects arising through firms' exposure to the domestic U.S. market and exchange rate fluctuations between the U.S. dollar and the British pound.",
+        "Footnote 12: Bloom (2014) shows that stock market volatility exhibits a high degree of commonality with other observed proxies for uncertainty including those derived from bond markets, exchange rates, and GDP forecasts."
+      ],
+      "answer": "not_specified_in_paper",
+      "notes": "The paper never explicitly defines the functional form of vol(). It refers to Bloom (2014) for the conceptual choice of using stock market volatility as the uncertainty proxy, but neither equation (12), equation (13), the text, footnotes 12-13, nor Section IV give an explicit formula (e.g., monthly realized standard deviation of daily returns, GARCH, implied volatility). The supplementary appendices visible in this PDF do not appear to define it either. Bloom (2014)'s convention (which this paper invokes) is typically monthly realized volatility from daily return data, but this is an inference, not a quote from this paper."
+    },
+    "Q2_firm_return_data": {
+      "question": "What exact data is used for firm-level returns r_it? CRSP monthly? CRSP daily aggregated?",
+      "verbatim_quotes_from_paper": [
+        "We use CRSP stock price data and Bloomberg equity index and currency data to compute our theoretical framework-based measure of firm exposure to the United Kingdom (see equation (13)). We use monthly data from 2010:M1 to 2014:M12 so that exposure to the United Kingdom is measured before any major Brexit-related events.",
+        "Footnote 13: Following Vuolteenaho (2002), we also decompose the volatility of each firm's returns into cash flow and discount rate components and reestimate equation (13) with the cash flow component (only) as the dependent variable, obtaining an alternative uncertainty measure, beta^UK_{i,CF}."
+      ],
+      "answer": "CRSP stock price data; monthly data from 2010:M1 to 2014:M12",
+      "notes": "The paper says 'monthly data' but does not specify whether vol(r_it) at the monthly frequency is (a) computed from within-month daily CRSP returns (realized vol) or (b) some other monthly aggregate. Given the regression is at monthly frequency over 60 months (2010:M1-2014:M12), and the dependent variable is 'volatility of equity returns,' the most natural reading is that vol(r_it) is a monthly observation derived from intra-month daily CRSP returns, but the paper does not state this explicitly."
+    },
+    "Q3_minimum_data_requirement": {
+      "question": "Minimum number of monthly observations required per firm? Does every firm get its own regression? Minimum R-squared?",
+      "verbatim_quotes_from_paper": [
+        "Following Bloom (2014), we use stock market volatility as a gauge of aggregate uncertainty and estimate equation (12) for each firm i as [equation 13]"
+      ],
+      "answer": "not_specified_in_paper",
+      "notes": "The paper indicates the regression is run 'for each firm i' (firm-by-firm time-series regression), but no minimum observation count, no minimum R-squared threshold, and no firm-level data filter for the beta^UK_i estimation are documented in the main text or visible footnotes. Sample selection filters are described in Table C1 of the Supplementary Material (not visible in the provided PDF body), but those filters relate to the COMPUSTAT panel for the DiD, not to the beta estimation step specifically."
+    },
+    "Q4_ftse100_volatility": {
+      "question": "Construction of vol(FTSE100_t): realized vol from daily FTSE100 returns, implied vol (VFTSE), or other?",
+      "verbatim_quotes_from_paper": [
+        "It also uses the volatility of the FTSE100 Index as a proxy for uncertainty in the U.K. (the relevant source of aggregate uncertainty in our setting).",
+        "We use CRSP stock price data and Bloomberg equity index and currency data to compute our theoretical framework-based measure of firm exposure to the United Kingdom (see equation (13))."
+      ],
+      "answer": "not_specified_in_paper",
+      "notes": "The paper states the FTSE100 Index data comes from Bloomberg but does not specify the construction of vol(FTSE100_t). It does NOT say whether this is realized volatility computed from daily FTSE100 returns within each month, the FTSE100 implied volatility index (VFTSE), or another construction. Note that in a separate, later analysis (Section IV.C.2 / Figure 3), the paper does discuss FTSE100 implied volatility term structure - but that is a different exercise, used only to motivate the timeline of the DiD, not to construct vol(FTSE100_t) inside equation (13)."
+    },
+    "Q5_sp500_volatility": {
+      "question": "Construction of vol(SP500). Same methodology as FTSE100? Specific Bloomberg field?",
+      "verbatim_quotes_from_paper": [
+        "We include control variables, CONTROLS_t, consisting of vol(SP500) and vol(FX$pound) into equation (13) to absorb effects arising through firms' exposure to the domestic U.S. market and exchange rate fluctuations between the U.S. dollar and the British pound."
+      ],
+      "answer": "not_specified_in_paper",
+      "notes": "Only the variable name 'vol(SP500)' is given. No explicit construction method or Bloomberg field name is reported in the visible body of the paper."
+    },
+    "Q6_fx_volatility": {
+      "question": "vol(FX$pound) construction - realized vol of daily USD/GBP changes? Bloomberg field?",
+      "verbatim_quotes_from_paper": [
+        "We include control variables, CONTROLS_t, consisting of vol(SP500) and vol(FX$pound) into equation (13) to absorb effects arising through firms' exposure to the domestic U.S. market and exchange rate fluctuations between the U.S. dollar and the British pound.",
+        "We use CRSP stock price data and Bloomberg equity index and currency data to compute our theoretical framework-based measure of firm exposure to the United Kingdom (see equation (13))."
+      ],
+      "answer": "not_specified_in_paper",
+      "notes": "Currency data is sourced from Bloomberg, but no explicit construction of vol(FX$pound) is provided (e.g., realized vol of daily log changes in the USD/GBP exchange rate). No Bloomberg ticker or field is named."
+    },
+    "Q7_estimation_details": {
+      "question": "Is equation (13) estimated by OLS? Sample restrictions during/after estimation? Firm-level filters?",
+      "verbatim_quotes_from_paper": [
+        "Following Bloom (2014), we use stock market volatility as a gauge of aggregate uncertainty and estimate equation (12) for each firm i as [equation 13]",
+        "For each firm, we take the estimated value of beta^UK_i from regression (13) as the empirical counterpart to beta_i in our framework.",
+        "Following our framework, in our base analysis, we characterize firms as treated (control) units if they are in the upper (bottom) tercile of the nonnegative range of the beta^UK_i distribution. For group contrasting, we do not include firms that benefit from uncertainty in the United Kingdom in the control group (firms with beta^UK_i < 0) as this could lead to overestimation biases attached to the treatment effects we seek to identify. Nevertheless, in specifications where we use beta^UK_i as a continuous treatment variable, we relax this restriction and include all values of beta^UK_i.",
+        "Footnote 17: In unreported tests, we only label those firms with statistically significant positive beta^UK_i estimates as treated firms, and those with beta^UK_i statistically indistinguishable from 0 as controls. We find that our results hold across a range of sensible treatment assignment thresholds."
+      ],
+      "answer": "Estimated as a firm-by-firm time-series regression (one per firm); estimator type (OLS vs. other) not_specified_in_paper; sample restriction to the nonnegative range of beta^UK_i is applied AFTER estimation, only for treatment/control group assignment in the DiD (not as a filter on the regression itself).",
+      "notes": "The estimator is not explicitly named, but a single linear time-series regression per firm with continuous monthly data is the standard reading. The nonnegative-range restriction is post-estimation and only used to partition treated vs control terciles."
+    },
+    "Q8_beta_uk_summary_stats_thresholds": {
+      "question": "Top tercile > 0.68 (449 firms), bottom tercile < 0.28 (360 firms). Does the paper report mean, SD, or full distribution of beta^UK_i?",
+      "verbatim_quotes_from_paper": [
+        "Under this market-based approach, a total of 449 unique firms are assigned to the treated category (beta^UK_i > 0.68). In contrast, 360 unique firms are assigned to the control category (beta^UK_i < 0.28).",
+        "Footnote 13: The estimates for beta^UK_i and beta^UK_{i,CF} have a rank correlation of 0.8, and there is an 86% overlap in the set of firms at the top tercile of both beta^UK_i and beta^UK_{i,CF}."
+      ],
+      "answer": "Only the two tercile cutoffs (0.68 and 0.28) and the resulting group sizes (449 treated, 360 control) are reported. Mean, SD, median, IQR, and full distribution of beta^UK_i are not_specified_in_paper.",
+      "notes": "Table 1 reports summary stats for firm-level outcome variables (INVESTMENT, EMPLOYMENT_GROWTH, etc.) split by the treated/control partition based on beta^UK_i, but does NOT report the distributional moments of beta^UK_i itself. The bottom-tercile threshold is 0.28 (positive), because the partition is taken over the nonnegative range of beta^UK_i (firms with beta^UK_i < 0 are excluded from the control group). A histogram or full distribution of beta^UK_i is not shown in the main text or visible appendix excerpts."
+    },
+    "Q9_data_sources": {
+      "question": "List every data source named for equation (13).",
+      "verbatim_quotes_from_paper": [
+        "We use CRSP stock price data and Bloomberg equity index and currency data to compute our theoretical framework-based measure of firm exposure to the United Kingdom (see equation (13)). We use monthly data from 2010:M1 to 2014:M12 so that exposure to the United Kingdom is measured before any major Brexit-related events."
+      ],
+      "answer": [
+        "CRSP - for firm-level stock prices/returns (r_it)",
+        "Bloomberg - for equity index data (FTSE100, SP500) and currency data (USD/GBP exchange rate)"
+      ],
+      "notes": "No specific CRSP file (e.g., monthly vs daily security file), no Bloomberg tickers or fields, and no other databases are named for the equation (13) estimation."
+    }
+  },
+  "summary_of_gaps": {
+    "specifications_NOT_in_paper": [
+      "Functional form of vol() operator (Q1) - the paper never writes it down",
+      "Frequency of underlying return data used to compute monthly vol() (Q2) - 'monthly data' is stated for the regression, but whether vol(r_it) is built from intra-month daily CRSP returns is not stated",
+      "Minimum observation count per firm for the time-series regression (Q3)",
+      "Whether vol(FTSE100) is realized vol from FTSE100 daily returns or an implied vol index like VFTSE (Q4)",
+      "Bloomberg ticker / field names for FTSE100, SP500, or FX (Q4, Q5, Q6)",
+      "Estimator name (OLS / GLS / Newey-West etc.) (Q7)",
+      "Mean, SD, median, quantiles, or histogram of beta^UK_i distribution (Q8)"
+    ],
+    "specifications_IN_paper": [
+      "Regression form: equation (13)",
+      "Per-firm time-series regression",
+      "Monthly frequency, 2010:M1-2014:M12 (60 monthly obs theoretical max per firm)",
+      "Dependent variable: vol(r_it) - volatility of firm equity returns",
+      "Regressor of interest: vol(FTSE100_t)",
+      "Controls: vol(SP500_t), vol(FX$pound_t)",
+      "Treated = top tercile of nonnegative beta^UK_i (449 firms, beta^UK_i > 0.68)",
+      "Control = bottom tercile of nonnegative beta^UK_i (360 firms, beta^UK_i < 0.28)",
+      "Firms with beta^UK_i < 0 excluded from control group in baseline DiD",
+      "Continuous-treatment specifications use the full range of beta^UK_i",
+      "Alternative measure beta^UK_{i,CF} uses Vuolteenaho (2002) cash-flow news decomposition; rank corr with baseline is 0.8; 86% top-tercile overlap",
+      "Data sources: CRSP (firm returns), Bloomberg (FTSE100, SP500, USD/GBP)"
+    ]
+  },
+  "replication_implications": {
+    "decisions_you_must_make_yourself": [
+      "Operationalize vol() - common default consistent with Bloom (2014): monthly realized volatility = standard deviation of daily log returns within each calendar month, possibly annualized by sqrt(21)",
+      "Decide minimum daily obs/month for a valid monthly vol (e.g., >=15 trading days) and minimum monthly obs/firm for the regression (e.g., >=24 of 60 months)",
+      "FTSE100: most defensible default given 'Bloomberg' is daily FTSE100 price index (UKX Index on Bloomberg) -> compute monthly realized vol parallel to firms. The VFTSE alternative would not match symmetry with vol(r_it) for individual firms",
+      "SP500: daily SPX Index from Bloomberg/CRSP -> monthly realized vol",
+      "USD/GBP: daily spot USD/GBP from Bloomberg (GBPUSD Curncy or equivalent) -> monthly realized vol of daily log changes",
+      "Estimator: OLS time-series regression per firm is the natural default; consider Newey-West HAC standard errors for documentation, though the betas themselves are point estimates",
+      "Filter firms with insufficient data before running the per-firm regression; report how many firms survive"
+    ],
+    "validation_targets_from_paper": {
+      "treated_firm_count": 449,
+      "treated_threshold_beta_uk": 0.68,
+      "control_firm_count": 360,
+      "control_threshold_beta_uk": 0.28,
+      "estimation_window": "2010:M1 to 2014:M12",
+      "frequency": "monthly",
+      "rank_correlation_with_CF_decomposition_variant": 0.80,
+      "top_tercile_overlap_with_CF_variant": 0.86
+    }
+  }
+}

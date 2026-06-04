@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Code-knowledge-graph index caches (large binaries; rebuilt by tool CLI on demand)
+.gitnexus/
+graphify-out/
+
 # C extensions
 *.so
 
@@ -225,3 +229,33 @@ nul
 # ==============================================================================
 
 _archive/
+
+# ==============================================================================
+# PUBLIC-REPO HYGIENE (2026-06-04): third-party copyright + heavy data caches +
+# accidental session artifacts. Kept on disk; never pushed to the public repo.
+# ==============================================================================
+
+# Third-party copyrighted papers + full-text extracts
+docs/papers/*.pdf
+docs/papers/*.png
+docs/papers/campello_markitdown_out.md
+docs/papers/campello_pymupdf4llm_out.md
+tmp/*.pdf
+tmp/campello_pdf_extract/
+tmp/boasiako_pages_fresh/
+tmp/campello_v2/
+tmp/kankanhalli_site.html
+tmp/_supp_full.txt
+tmp/_page21.txt
+tmp/_t1_page21.txt
+tmp/_t1_page22.txt
+
+# Heavy data caches / lit-query result dumps
+tmp/*.parquet
+tmp/*.csv
+tmp/openalex_trump_cash_*/
+
+# Accidental artifacts (empty file, raw session transcripts)
+/1.20
+/2026-04-30-182832-this-session-is-being-continued-from-a-previous-c.txt
+/2026-05-01-042143-local-command-caveatcaveat-the-messages-below.txt

@@ -1,0 +1,35 @@
+{
+  "_paper": {
+    "citation": "Chen, H., Chen, Z., Dhaliwal, D. S., & Huang, Y. (2017/2020). Accounting Restatements and Corporate Cash Policy. Journal of Accounting, Auditing & Finance, 35(2), 290-317.",
+    "main_did_table": "Table 3, Panel A (Baseline Model)"
+  },
+  "dependent_variables": [
+    {"name": "CASH", "label_in_table": "CASH (cash and cash equivalent / total assets)"}
+  ],
+  "treatment_variables": [
+    {"name": "POST", "label_in_table": "POST"}
+  ],
+  "interaction_term": [
+    {"name": "Coefficient difference: POST(restatement) - POST(control)", "label_in_table": "Test of difference in the coefficient of POST: [1]-[2], [3]-[4], [5]-[6]"}
+  ],
+  "control_variables": [
+    {"name": "Q", "label_in_table": "Q"},
+    {"name": "SIZE", "label_in_table": "SIZE"},
+    {"name": "CF", "label_in_table": "CF"},
+    {"name": "NWC", "label_in_table": "NWC"},
+    {"name": "LEV", "label_in_table": "LEV"},
+    {"name": "SIGMA", "label_in_table": "SIGMA"},
+    {"name": "NSEG", "label_in_table": "NSEG"},
+    {"name": "AGE", "label_in_table": "AGE"}
+  ],
+  "fixed_effects": [
+    {"name": "Firm fixed effects", "label_in_table": "Firm fixed effects"}
+  ],
+  "_notes": {
+    "citation_mismatch": "The prompt cites 'Chen, Hribar, & Melessa (2017), Financial Restatements and Cash Holdings.' The uploaded PDF is actually Chen, Chen, Dhaliwal, & Huang (2017/2020) in JAAF. Extraction is from the uploaded paper.",
+    "did_structure": "No explicit Treat x Post interaction term appears in the regression. The paper uses a SPLIT-SAMPLE DiD design: equation (1) is estimated separately on the restatement subsample (columns 1, 3, 5) and the matched control subsample (columns 2, 4, 6). The treatment effect is the post-estimation DIFFERENCE between the POST coefficients across the two regressions, reported in the 'Test of difference in the coefficient of POST' row. This is mathematically equivalent to a fully-saturated Treat x Post interaction with separate slopes for every covariate.",
+    "panel_choice": "Panel A (Baseline) is reported above as the 'main' table. Panel B (Expanded Model) adds CAPX, ACQUISITION, R&D, DIV, DEBT_XFIN, EQUITY_XFIN, MATURITY, NO_LOAN, N_FINCOV, N_GENCOV, and BigN as additional controls but is framed as a robustness check, not the baseline.",
+    "standard_errors": "Standard errors clustered at both the matched-pair and year levels (Gow, Ormazabal, & Taylor 2010).",
+    "sample_splits": "The table reports three sample partitions: (i) all restatements [cols 1-2], (ii) error restatements [cols 3-4], (iii) irregularity restatements [cols 5-6]. The headline DiD effect (significant at 1%) is in the irregularity sample."
+  }
+}

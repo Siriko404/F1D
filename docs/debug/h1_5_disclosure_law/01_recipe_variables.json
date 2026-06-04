@@ -1,0 +1,22 @@
+{
+  "paper_key": "Boasiako_Keefe_2021",
+  "regression_descriptor": "Difference-in-differences specification (Equation 1, baseline Column 1 of Table 2) testing whether firms change their cash holdings in response to changes in state-level data breach disclosure laws.",
+  "variables": [
+    {"name": "Acquisition Expenditure", "role": "control"},
+    {"name": "Book Leverage", "role": "control"},
+    {"name": "Capital Expenditure", "role": "control"},
+    {"name": "Cash", "role": "dependent"},
+    {"name": "Cash Flow", "role": "control"},
+    {"name": "Disclosure Law(0/1)", "role": "treatment"},
+    {"name": "Dividend Paying Firms(0/1)", "role": "control"},
+    {"name": "Firm Age", "role": "control"},
+    {"name": "Firm Size", "role": "control"},
+    {"name": "Industry Cash Flow Volatility", "role": "control"},
+    {"name": "Industry fixed effects", "role": "fixed_effect"},
+    {"name": "Market-to-book", "role": "control"},
+    {"name": "Net Working Capital", "role": "control"},
+    {"name": "R&D Expenditure", "role": "control"},
+    {"name": "State fixed effects", "role": "fixed_effect"},
+    {"name": "Year fixed effects", "role": "fixed_effect"}
+  ]
+}

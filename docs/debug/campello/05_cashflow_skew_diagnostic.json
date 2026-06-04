@@ -1,0 +1,35 @@
+{
+  "diagnostic_questions": {
+    "1_negative_operating_income_treatment": {
+      "resolution": "not_specified_in_paper",
+      "verbatim_quote": "The only 'negative-value' filter in the paper is Supplementary Table C1: \"Drop firm–quarters with negative fundamentals (ASSETS and SALES) — 158,312\". This filter applies to ASSETS and SALES only — operating income is NOT among the variables for which negative values trigger a drop. No statement in the main text, Table 1 notes (p. 3198), Section IV.B sample-construction discussion (pp. 3192–3193), or Supplementary Appendices A–E indicates that firm-quarters with negative operating income are trimmed, dropped, set to missing, or otherwise treated differently in CASH_FLOW construction, summary statistics, or regressions.",
+      "source_location": "Supplementary Table C1; Section IV.B, pp. 3192–3193; Table 1 notes, p. 3198"
+    },
+    "2_income_statement_adjustments": {
+      "resolution": "not_specified_in_paper",
+      "verbatim_quote": "\"CASH_FLOW is defined as operating income before depreciation divided by lagged total assets.\" This is the entirety of the construction statement. The paper does NOT discuss adjustments for special items (SPIQ), extraordinary items (XIQ), discontinued operations (DOQ), non-recurring items, or any other income-statement line-item modification. No alternative formula (e.g., 'IBQ + DPQ + XIDOQ') appears anywhere in the main text, Table 1 notes, or supplementary appendices.",
+      "source_location": "Table 1 notes, p. 3198"
+    },
+    "3_ytd_vs_quarterly_field_handling": {
+      "resolution": "not_specified_in_paper",
+      "verbatim_quote": "The paper's only data-source statement is: \"We use COMPUSTAT Quarterly to gather basic information on firm investment and financial data\" (Section IV.B, p. 3192). It does not specify whether 'operating income before depreciation' is taken from a quarterly field (OIBDPQ) or computed by differencing a fiscal-YTD field (e.g., OIBDPY) to derive a quarterly flow. The paper offers no discussion of YTD-to-quarterly conversion, fiscal-year-end alignment, or first-fiscal-quarter handling. No reference appears in main text, table notes, or supplementary appendices to clarify which Compustat field, vintage, or convention is used.",
+      "source_location": "Section IV.B, p. 3192; Table 1 notes, p. 3198"
+    },
+    "4_winsorization_symmetry": {
+      "resolution": "not_specified_in_paper",
+      "verbatim_quote": "\"All variables are winsorized at the 1% level.\" This is the paper's complete statement on winsorization. It does NOT specify: (a) whether 'the 1% level' means symmetric two-sided winsorization (1st and 99th percentiles) or one-sided (only 99th, or only 1st), (b) whether the winsorization is applied pooled over the full panel or within calendar quarter / fiscal year / industry, or (c) whether components are winsorized prior to ratio construction or the ratio is winsorized after construction. No clarifying language appears in the main text, table notes, or any supplementary appendix.",
+      "source_location": "Table 1 notes, p. 3198"
+    },
+    "5_corrigendum_corrections": {
+      "resolution": "no_correction_to_cash_flow",
+      "verbatim_quote": "The corrigendum (JFQA Vol. 57, No. 8, Dec. 2022, p. 3313) states in its entirety: \"In the original publication of this article, appendices A and B were missing. The original article, and the supplementary material, have since been updated.\" The corrigendum corrects ONLY the omission of theory Appendices A (Model Analysis and Results) and B (Proofs) from the supplementary material. It does NOT document any correction to the CASH_FLOW variable definition, its summary statistics, its construction, sample filters, winsorization procedure, or any other empirical variable.",
+      "source_location": "Corrigendum, p. 3313 (campello_corrigendum.pdf)"
+    },
+    "6_other_variables_with_mean_below_median": {
+      "resolution": "yes_one_other_variable",
+      "verbatim_quote": "Inspecting Table 1 Panel A (universe of COMPUSTAT firms, p. 3198), the variables with reported Mean below Median are: (a) CASH_FLOW — \"CASH_FLOW 0.01 0.06 0.03 0.04 75,287\" (Mean=0.01, Median=0.03); and (b) CONSENSUS_EARNINGS_FORECAST — \"CONSENSUS_EARNINGS_FORECAST 0.07 3.51 0.09 2.05 42,031\" (Mean=0.07, Median=0.09). All other Panel A variables (INVESTMENT, EMPLOYMENT_GROWTH, R&D, DIVESTITURES, CASH, NON_CASH_WORKING_CAPITAL, TOBIN_Q, SIZE, SALES_GROWTH, STOCK_RETURNS) have Mean ≥ Median. The same pattern repeats more starkly in Panel C (control firms, bottom tercile of β^UK_i): \"CONSENSUS_EARNINGS_FORECAST −0.07 2.33 0.04 2.40 10,720\" — Mean=−0.07 vs. Median=0.04. The paper does NOT discuss this left skew or describe any systematic treatment of negative values for either variable.",
+      "source_location": "Table 1, Panels A and C, pp. 3198–3199"
+    }
+  },
+  "summary_note": "All six sub-questions resolve to either 'not_specified_in_paper' or to observations the paper does not explain. Key findings: (i) the paper applies negative-value filtering only to ASSETS and SALES, never to operating income — so a left-skewed CASH_FLOW distribution with many negative observations IS consistent with the paper's sample construction; (ii) the corrigendum corrects only the missing theory appendices and does NOT touch CASH_FLOW; (iii) CONSENSUS_EARNINGS_FORECAST is the only other variable showing Mean < Median in Panel A, and it also lacks any documented special treatment. The 60%-higher mean with matching median, SD, and N is consistent with a thinner left tail in the user's construction than in the paper's. Plausible un-pinned-down causes (the paper specifies none of these): one-sided vs. two-sided 1% winsorization, ratio-vs-component winsorization, OIBDPQ vs. differenced OIBDPY for quarterly cash flow, and whether Panel A reflects the 75,013-row 'missing key variables' attrition step (which would include more loss-making small firms) or a later, more filtered step."
+}

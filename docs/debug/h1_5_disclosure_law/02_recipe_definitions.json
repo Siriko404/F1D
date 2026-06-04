@@ -1,0 +1,165 @@
+{
+  "paper_key": "Boasiako_Keefe_2021",
+  "definitions": [
+    {
+      "name": "Acquisition Expenditure",
+      "definition_verbatim": "Ratio of acquisitions to total book assets at the beginning of the year",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "underlying_data_fields_verbatim": ["acquisitions", "total book assets"],
+      "scaling_or_denominator_verbatim": "to total book assets at the beginning of the year",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "at the beginning of the year"
+    },
+    {
+      "name": "Book Leverage",
+      "definition_verbatim": "Ratio of total book debt (short-term debt plus long-term debt) to total book assets",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "underlying_data_fields_verbatim": ["total book debt", "short-term debt", "long-term debt", "total book assets"],
+      "scaling_or_denominator_verbatim": "to total book assets",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": ""
+    },
+    {
+      "name": "Capital Expenditure",
+      "definition_verbatim": "Ratio of capital expenditure to total book assets at the beginning of the year",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "underlying_data_fields_verbatim": ["capital expenditure", "total book assets"],
+      "scaling_or_denominator_verbatim": "to total book assets at the beginning of the year",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "at the beginning of the year"
+    },
+    {
+      "name": "Cash",
+      "definition_verbatim": "Cash and marketable securities scaled by total book assets at the beginning of the year",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "underlying_data_fields_verbatim": ["Cash and marketable securities", "total book assets"],
+      "scaling_or_denominator_verbatim": "scaled by total book assets at the beginning of the year",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "at the beginning of the year"
+    },
+    {
+      "name": "Cash Flow",
+      "definition_verbatim": "Ratio of earnings after interest, dividends, and taxes but before depreciation to book assets",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "underlying_data_fields_verbatim": ["earnings after interest, dividends, and taxes but before depreciation", "book assets"],
+      "scaling_or_denominator_verbatim": "to book assets",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": ""
+    },
+    {
+      "name": "Disclosure Law(0/1)",
+      "definition_verbatim": "1 for periods after the enactment of the state-level data breach notification laws, and 0 otherwise",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "underlying_data_fields_verbatim": [],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "",
+      "timing_verbatim": "for periods after the enactment of the state-level data breach notification laws"
+    },
+    {
+      "name": "Dividend Paying Firms(0/1)",
+      "definition_verbatim": "1 in the year a firm pays dividends, and 0 otherwise; set to zero if missing",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "underlying_data_fields_verbatim": ["dividends"],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "set to zero if missing",
+      "winsorization_or_trimming_verbatim": "",
+      "timing_verbatim": "in the year a firm pays dividends"
+    },
+    {
+      "name": "Firm Age",
+      "definition_verbatim": "Natural logarithm of the number of years a firm has been listed in the merged CRSP/Compustat database",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "underlying_data_fields_verbatim": ["CRSP/Compustat database"],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": ""
+    },
+    {
+      "name": "Firm Size",
+      "definition_verbatim": "Natural logarithm of total book assets",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "underlying_data_fields_verbatim": ["total book assets"],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": ""
+    },
+    {
+      "name": "Industry Cash Flow Volatility",
+      "definition_verbatim": "Standard deviation of industry average cash flows for the previous 10 years; at least 3 years of observations required",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "underlying_data_fields_verbatim": ["industry average cash flows"],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "at least 3 years of observations required",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "for the previous 10 years"
+    },
+    {
+      "name": "Industry fixed effects",
+      "definition_verbatim": "rho_j and nu_i capture industry and firm fixed effects, respectively. The industry dummies are constructed based on the 49-industry classification of Fama and French (1997).",
+      "source_location_verbatim": "Section 3.2 Estimation technique, equation (1) description and footnote 5",
+      "underlying_data_fields_verbatim": ["49-industry classification of Fama and French (1997)"],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "",
+      "timing_verbatim": ""
+    },
+    {
+      "name": "Market-to-book",
+      "definition_verbatim": "Ratio of total book assets less the book value of common equity plus the total market value of equity, all divided by total book assets",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "underlying_data_fields_verbatim": ["total book assets", "book value of common equity", "total market value of equity"],
+      "scaling_or_denominator_verbatim": "all divided by total book assets",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": ""
+    },
+    {
+      "name": "Net Working Capital",
+      "definition_verbatim": "Ratio of net working capital to net assets",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "underlying_data_fields_verbatim": ["net working capital", "net assets"],
+      "scaling_or_denominator_verbatim": "to net assets",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": ""
+    },
+    {
+      "name": "R&D Expenditure",
+      "definition_verbatim": "Ratio of R&D expenses to total book assets at the beginning of the year",
+      "source_location_verbatim": "Appendix A, Table A1 Variable definitions",
+      "underlying_data_fields_verbatim": ["R&D expenses", "total book assets"],
+      "scaling_or_denominator_verbatim": "to total book assets at the beginning of the year",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "We winsorize all variables at the 1st and 99th percentiles to minimize the influence of outliers.",
+      "timing_verbatim": "at the beginning of the year"
+    },
+    {
+      "name": "State fixed effects",
+      "definition_verbatim": "theta_s represents a set of state dummies that account for state-level unobservable factors that could be correlated with the data breach disclosure laws, and thus bias our estimates",
+      "source_location_verbatim": "Section 3.2 Estimation technique, equation (1) description",
+      "underlying_data_fields_verbatim": [],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "",
+      "timing_verbatim": ""
+    },
+    {
+      "name": "Year fixed effects",
+      "definition_verbatim": "delta_t represents year dummies to control for secular shocks in cash holdings coinciding with the passage of the disclosure laws",
+      "source_location_verbatim": "Section 3.2 Estimation technique, equation (1) description",
+      "underlying_data_fields_verbatim": [],
+      "scaling_or_denominator_verbatim": "",
+      "missing_value_handling_verbatim": "",
+      "winsorization_or_trimming_verbatim": "",
+      "timing_verbatim": ""
+    }
+  ]
+}

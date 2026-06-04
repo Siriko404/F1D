@@ -1,0 +1,73 @@
+{
+  "source_document": {
+    "citation": "Campello, M.; Cortes, G. S.; d'Almeida, F.; Kankanhalli, G. (2022). 'Exporting Uncertainty: The Impact of Brexit on Corporate America.' Journal of Financial and Quantitative Analysis, Vol. 57, No. 8 (December 2022), pp. 3178-3222.",
+    "doi": "10.1017/S0022109022000308",
+    "verification_method": "Verbatim text extracted via pdftotext AND visually confirmed by rendering page 3193 as a 200-DPI PNG image. Both methods agree."
+  },
+
+  "Q1_threshold_and_firm_counts": {
+    "location": {
+      "journal_page": 3193,
+      "section": "IV.C.1 Identification",
+      "paragraph": "Second paragraph of Section IV.C.1 (the first paragraph of subsection '1. Identification')."
+    },
+    "verbatim_quote": "We use a standard DID approach to assess the impact of the 2016 Brexit vote on American firms. Following our framework, in our base analysis, we characterize firms as treated (control) units if they are in the upper (bottom) tercile of the nonnegative range of the \u03b2_i^UK distribution. For group contrasting, we do not include firms that benefit from uncertainty in the United Kingdom in the control group (firms with \u03b2_i^UK < 0) as this could lead to overestimation biases attached to the treatment effects we seek to identify. Nevertheless, in specifications where we use \u03b2_i^UK as a continuous treatment variable, we relax this restriction and include all values of \u03b2_i^UK.[17] Under this market-based approach, a total of 449 unique firms are assigned to the treated category (\u03b2_i^UK > 0.68). In contrast, 360 unique firms are assigned to the control category (\u03b2_i^UK < 0.28). We also consider an alternative, text-based measure of exposure to Brexit. Under this approach, 807 firms are assigned to the treated category (2015 10-K mentions of Brexit terms > 5). A total of 433 firms in the control category have no mentions of Brexit-related terms in their 10-Ks.",
+    "footnote_17_verbatim": "In unreported tests, we only label those firms with statistically significant positive \u03b2_i^UK estimates as treated firms, and those with \u03b2_i^UK statistically indistinguishable from 0 as controls. We find that our results hold across a range of sensible treatment assignment thresholds."
+  },
+
+  "Q2_sample_for_firm_counts": {
+    "direct_answer": "The paper does NOT contain an explicit sentence stating which of the three candidate samples (a/b/c) the 449 and 360 firm counts are drawn from. There is no verbatim statement like 'these counts refer to sample X.'",
+    "indirect_evidence": [
+      {
+        "evidence_type": "Section ordering",
+        "note": "Section IV.B 'Data Sources and Sample Construction' (which defines the COMPUSTAT-merged sample of 41,630 firm-quarters) immediately PRECEDES Section IV.C.1 'Identification' (where 449/360 are introduced). The 'market-based approach' phrase ties back to equation (13) estimated for firms in this sample.",
+        "verbatim_quote_from_section_IV_B_page_3192": "We use COMPUSTAT Quarterly to gather basic information on firm investment and financial data. We consider U.S. companies from the first calendar quarter of 2010 to the fourth quarter of 2016. We drop utility and financial firms, as well as companies whose market value or book assets are lower than $10 million. The sample used in our baseline investment tests consists of 41,630 observations (firm-quarters).",
+        "verbatim_quote_on_beta_estimation_page_3193": "We use CRSP stock price data and Bloomberg equity index and currency data to compute our theoretical framework-based measure of firm exposure to the United Kingdom (see equation (13)). We use monthly data from 2010:M1 to 2014:M12 so that exposure to the United Kingdom is measured before any major Brexit-related events."
+      },
+      {
+        "evidence_type": "Footnote 22, page 3200",
+        "verbatim_quote": "The 449 firms in the top tercile of \u03b2_i^UK had average assets of $2.81 billion in 2016:Q2. A decline in their investment-to-assets ratio of 0.165 percentage points implies a drop in investment of $4.64 million per firm, or $2.08 billion in total.",
+        "note": "This footnote computes an average from accounting variables (assets), which are only present in the COMPUSTAT-merged regression sample. This is suggestive (not stated) that the 449 figure is the count of unique firms appearing in the Table 2 baseline regression sample, which after all filters has 17,199 firm-quarter observations."
+      },
+      {
+        "evidence_type": "Supplementary Table C.1 (Sample Selection)",
+        "verbatim_table_text": "Filter / Firm-Quarters\nRaw COMPUSTAT between 2010:Q1 and 2016:Q4 / 262,412\nDrop non-US firm-quarters (retain data reported in USD, with US headquarters, duplicates excluded) / 160,254\nDrop firm-quarters with negative fundamentals (ASSETS and SALES) / 158,312\nDrop financials and utilities / 112,939\nDrop if ASSETS or MARKET_CAPITALIZATION less than $10 million / 93,011\nDrop if missing key variables (INVESTMENT, ASSETS, CASH_FLOW, TOBIN_Q, SALES_GROWTH) / 75,013\nDrop if non-consecutive quarters, or less than 12 quarters of non-missing data / 56,081\nDrop if missing Hoberg and Phillips (2016) industry classification / 49,107\nDrop if missing \u03b2_i^UK / 43,025\nDrop if missing CRSP and I/B/E/S controls / 41,630",
+        "note": "Table shows the filter 'Drop if missing \u03b2_i^UK' takes the sample from 49,107 to 43,025 firm-quarters. The 449/360 firm counts are NOT reconciled to this filter step in the paper."
+      }
+    ]
+  },
+
+  "Q3_tercile_computation_range": {
+    "direct_answer": "(b) Only the nonnegative range (\u03b2 >= 0). The full \u03b2 distribution (including negative values) is used ONLY in the continuous-treatment specification.",
+    "verbatim_quote_page_3193": "Following our framework, in our base analysis, we characterize firms as treated (control) units if they are in the upper (bottom) tercile of the nonnegative range of the \u03b2_i^UK distribution. For group contrasting, we do not include firms that benefit from uncertainty in the United Kingdom in the control group (firms with \u03b2_i^UK < 0) as this could lead to overestimation biases attached to the treatment effects we seek to identify. Nevertheless, in specifications where we use \u03b2_i^UK as a continuous treatment variable, we relax this restriction and include all values of \u03b2_i^UK.",
+    "corroborating_quote_page_3199": "We begin with a firm-fixed effects estimation in which \u03b2_i^UK enters the specification as a linear continuous-treatment variable in column 1, allowing for the entire range of \u03b2_i^UK values. ... We move to our baseline specification in column 2, which considers the nonnegative range of \u03b2_i^UK partitioned in terciles."
+  },
+
+  "Q4_bottom_threshold_sign": {
+    "direct_answer": "The bottom tercile threshold is 0.28 (POSITIVE). It is NOT -0.28. The user's recollection in the prompt is mistaken.",
+    "verbatim_quote_page_3193": "In contrast, 360 unique firms are assigned to the control category (\u03b2_i^UK < 0.28).",
+    "verification_method": "Confirmed by both pdftotext extraction (which renders '0.28' with no preceding minus sign) AND by rendering page 3193 at 200 DPI as a PNG image and visually inspecting the rendered glyphs. The character preceding '0.28' is the less-than sign '<'; there is no '-' sign.",
+    "internal_consistency_check": "This is internally consistent with the paper's framework: the controls are the bottom tercile of the NONNEGATIVE range, i.e. firms with 0 <= \u03b2_i^UK < 0.28. Treated are top tercile: \u03b2_i^UK > 0.68. Middle tercile (0.28 <= \u03b2_i^UK <= 0.68) is neither treated nor control. Firms with \u03b2_i^UK < 0 are excluded entirely from the tercile-based DID.",
+    "implied_partition_of_nonnegative_range": {
+      "bottom_tercile_control": "0 <= \u03b2_i^UK < 0.28",
+      "middle_tercile_excluded": "0.28 <= \u03b2_i^UK <= 0.68",
+      "top_tercile_treated": "\u03b2_i^UK > 0.68",
+      "negative_excluded": "\u03b2_i^UK < 0 (omitted entirely from the tercile-DID; included only in the linear continuous specification)"
+    }
+  },
+
+  "Q5_unique_firms_vs_firm_quarters": {
+    "direct_answer": "Unique firms, NOT firm-quarter observations. The paper uses the literal phrase 'unique firms.'",
+    "verbatim_quote_page_3193": "Under this market-based approach, a total of 449 unique firms are assigned to the treated category (\u03b2_i^UK > 0.68). In contrast, 360 unique firms are assigned to the control category (\u03b2_i^UK < 0.28).",
+    "supporting_footnote_22_page_3200": "The 449 firms in the top tercile of \u03b2_i^UK had average assets of $2.81 billion in 2016:Q2.",
+    "note_on_text_based_counterparts": "For the text-based measure, the paper uses '807 firms' and '433 firms' without the 'unique' modifier, but in context these are also firm counts (not firm-quarters), as confirmed by Section IV.A.2 which says 'There are 807 firms citing Brexit more than 5 times in their 10-Ks. On the other hand, 433 do not cite any Brexit-related terms in their public filings.' (page 3191-3192)."
+  },
+
+  "summary_of_corrections_to_user_prompt": {
+    "claim_in_prompt": "control category (\u03b2_i^UK < -0.28)",
+    "actual_paper_text": "control category (\u03b2_i^UK < 0.28)",
+    "discrepancy": "The minus sign in the user's prompt is not in the paper. The threshold is positive 0.28. This is internally required by the paper's own rule that controls are drawn from the NONNEGATIVE range of \u03b2_i^UK.",
+    "claim_in_prompt_implied": "Whether 449/360 are firm-quarters or unique firms is ambiguous.",
+    "actual_paper_text_resolution": "The paper explicitly says 'unique firms.' No ambiguity."
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "paper_key": "Boasiako_Keefe_2021",
+  "gap": -9683,
+  "filters_we_apply_that_paper_does_not": [
+    {
+      "our_filter": "Step 7 -- treat missing R&D Expenditure as a drop (require XRD non-missing for inclusion)",
+      "paper_is_silent_on_this": true,
+      "paper_text_relevant": "Appendix A, Table A1 (p.551), R&D Expenditure entry: \"Ratio of R&D expenses to total book assets at the beginning of the year\". The paper specifies a 'set to zero if missing' convention for Dividend Paying Firms(0/1) ONLY: \"1 in the year a firm pays dividends, and 0 otherwise; set to zero if missing\". By silence on R&D Expenditure, strict verbatim reading would say drop. HOWEVER, the paper anchors its sample-construction methodology on Bates et al. (2009) and Opler et al. (1999) (Section 3.3, p.536: \"We follow the literature (Bates et al., 2009; Opler et al., 1999) in our empirical testing and control for several variables that affect firm cash policy\"). In Bates 2009 verbatim (JF 2009, p.1996), R&D missingness is set to zero by convention -- this is the standard cash-holdings literature convention -- and Boasiako-Keefe almost certainly inherits it implicitly. R&D (XRD) is missing for roughly 40-50% of Compustat firm-years (non-R&D-reporting industries). Forcing XRD non-missing is therefore the single most aggressive filter in our chain.",
+      "estimated_n_if_removed": "Plausibly 10,000-15,000 obs recovered. This filter alone is the most likely full explanation of the 9,683-obs gap. Caution: it may overshoot. Apply it first and re-measure before adding other adjustments."
+    },
+    {
+      "our_filter": "Step 7 -- treat missing Acquisition Expenditure as a drop (require AQC non-missing for inclusion)",
+      "paper_is_silent_on_this": true,
+      "paper_text_relevant": "Appendix A, Table A1 (p.551), Acquisition Expenditure entry: \"Ratio of acquisitions to total book assets at the beginning of the year\". No 'set to zero if missing' clause. However, the same Bates 2009 / Opler 1999 inheritance argument applies: standard cash-holdings convention is to set AQC missing to zero (firm did not record an acquisition that year). The Table 1 Panel A reported quartiles for Acquisition Expenditure are p25=0, median=0, p75=0.0144 -- i.e., at least 50% of the sample has AQC=0 in the published distribution. This is impossible if firms with missing AQC were dropped (AQC=0 reported and AQC=missing dropped would not yield a 50%+ mass at exactly zero); it strongly implies the paper imputed missing AQC as zero, inflating the zero-mass.",
+      "estimated_n_if_removed": "Plausibly 2,000-5,000 obs recovered. The empirical Table 1 distribution shape (>50% mass at exactly zero) is independent evidence that this imputation was applied."
+    },
+    {
+      "our_filter": "Step 3 -- require CRSP link for ALL firms as a pre-filter",
+      "paper_is_silent_on_this": false,
+      "paper_text_relevant": "Section 3.1 Data collection (p.534): \"we collect initial firm-level data from the merged Center for Research in Security Prices (CRSP)/Compustat database for the period 1997-2015\". Appendix A Table A1, Firm Age entry: \"Natural logarithm of the number of years a firm has been listed in the merged CRSP/Compustat database\". Both sentences require CRSP/Compustat merged-database membership. Step 3 is therefore CORRECTLY applied, NOT over-aggressive. The 29,491-obs drop from Step 2 to Step 3 is intended. Listed here to RULE OUT as a source of the gap.",
+      "estimated_n_if_removed": "Would add ~29,000 obs but contradict paper verbatim. Do NOT remove."
+    },
+    {
+      "our_filter": "Step 2 -- loc = 'USA' restriction",
+      "paper_is_silent_on_this": true,
+      "paper_text_relevant": "The paper restricts attention to US firms implicitly throughout (\"the cash policies of corporations in the United States\", Abstract; \"all 50 US states\", Section 2.1, p.533) but never says 'loc = USA'. The Compustat 'loc' field is country-of-incorporation, while the relevant treatment-assignment field is 'state' (HQ state). For a US-headquartered firm that happens to be incorporated abroad (e.g., Bermuda-domiciled with Delaware HQ), loc != 'USA' would drop it while state is still in {US states + DC} and the firm WOULD be treated by the paper's design. A more faithful filter is state in {50 US states + DC}, which is necessary anyway for Disclosure Law(0/1) assignment.",
+      "estimated_n_if_removed": "Minor impact, plausibly 500-1,500 obs recovered. Switching from loc='USA' to state-in-US-jurisdictions would pick up foreign-domiciled US-HQ'd firms."
+    }
+  ],
+  "filters_paper_applies_that_we_missed": [
+    {
+      "paper_text_verbatim": "We require that firms have positive assets (Compustat data item #6) and positive sales (data item #12) to be included in a given year.",
+      "location": "Bates, Kahle, Stulz (2009), Journal of Finance, p.1995 -- the methodological template Boasiako-Keefe cites verbatim in Section 3.3 (\"We follow the literature (Bates et al., 2009; Opler et al., 1999)\"). The Boasiako-Keefe paper itself does NOT state a SALE > 0 filter, but by inheritance from the Bates 2009 template it may apply silently.",
+      "estimated_n_impact": "Would REDUCE our N further (wrong direction). Listed for completeness; not a solution to the current gap."
+    },
+    {
+      "paper_text_verbatim": "(none located)",
+      "location": "Boasiako-Keefe paper body, footnotes, Appendix A",
+      "estimated_n_impact": "The Boasiako-Keefe paper does not contain any additional explicit filter beyond what we have already applied in Steps 1-7. No Compustat-format restriction (INDL/STD/CONSOL=C/POPSRC=D) is mentioned, no exchange-listing restriction is mentioned, no SIC-missing filter is mentioned, and no minimum-firm-years-in-panel filter is mentioned. The gap is therefore most plausibly explained by our applying TOO MANY filters in Step 7, not by missing paper-stated filters."
+    }
+  ],
+  "sample_construction_table_from_appendix_if_exists": {
+    "exists": false,
+    "location": "",
+    "rows_verbatim": []
+  },
+  "resolution": {
+    "most_likely_cause_of_gap": "Step 7 over-aggression on R&D Expenditure: we are dropping firm-years with missing XRD, while the paper almost certainly sets missing XRD to zero per the inherited Bates 2009 convention. R&D is missing for ~40-50% of Compustat firm-years, making this the single largest plausible source of the 9,683-obs gap. Secondary contributor: same issue for Acquisition Expenditure (AQC), confirmed empirically by the >50% mass at exactly zero visible in Table 1 Panel A's p25/median for Acquisition Expenditure.",
+    "actions_to_close_gap": [
+      "1. PRIMARY: Set XRD = 0 when missing (do not drop). Re-run the pipeline and re-measure N. This action alone may close most or all of the 9,683-obs gap; it may also overshoot, in which case re-introduce missingness selectively.",
+      "2. SECONDARY: Set AQC = 0 when missing (do not drop). Apply only if action 1 has not closed the gap, or if the resulting Acquisition Expenditure distribution still does not show >50% mass at exactly zero (which is the published Table 1 signature).",
+      "3. TERTIARY: Replace Step 2's 'loc = USA' with 'state in {50 US states + DC}'. Small effect but more faithful to the paper's treatment-assignment design.",
+      "4. RULE-OUT CHECK: Verify Industry Cash Flow Volatility's '\\u2018at least 3 years of observations required\\u2019' prerequisite (Table A1) is implemented as drop-when-fewer-than-3-years, not as drop-when-any-year-missing-in-10-window. Our Step 7 may be too aggressive here too if implemented incorrectly.",
+      "5. DO NOT remove the CRSP-link requirement (Step 3) -- it is paper-verbatim required by both Section 3.1 and the Firm Age definition.",
+      "6. DO NOT remove Step 6 (AT_lag1 > 0) -- Cash requires BoY assets per Table A1."
+    ],
+    "can_exact_replication_be_achieved_from_paper_text_alone": false
+  },
+  "online_appendix_status": {
+    "url_referenced_in_paper": "https://sites.google.com/site/mockeefe/Data (footnote 7, p.537)",
+    "online_appendix_pdf_location": "https://www.dropbox.com/s/anlc4amo14zkyr8/BK%20EFM%20Online%20Appendix.pdf",
+    "accessible_to_this_review": false,
+    "reason": "Dropbox returned ROBOTS_DISALLOWED on direct fetch. The Online Appendix may contain a step-by-step sample-construction attrition table that would resolve the gap definitively; this is the canonical place such tables are published in the EFM/Journal-of-Finance house style. Manual download is recommended."
+  }
+}

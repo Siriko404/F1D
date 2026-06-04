@@ -1,0 +1,130 @@
+{
+  "framing": "The paper's verbatim definition leaves the construction underdetermined. The user has eliminated raw MEANEST (SD too small), winsor-only SUE (mean too positive), pooled-demeaned SUE (median too negative), and MEANEST/STDEV (everything too large). Below are construction families that COULD jointly match the paper's qualitative pattern: (i) mean roughly in [-0.07, +0.07] across panels, (ii) median small positive ~0.05–0.09 stable across panels, (iii) SD in [2.33, 4.46] with treated > control in market panel but control > treated in textual panel, (iv) mean < median (left skew) in panels C/D/E. Each hypothesis is paired with a code sketch the user can run.",
+  "key_diagnostic_clues_extracted_from_paper_stats": [
+    {
+      "clue": "Mean varies by group, median nearly invariant across groups",
+      "implication": "The construction likely centers/normalizes the distribution by a within-group OR within-period operation that doesn't fully equalize medians — pooled demeaning would NOT preserve median variation. Industry-quarter centering, or scaling by a price-like denominator, would."
+    },
+    {
+      "clue": "Mean < median (small left skew) in 4 of 5 panels",
+      "implication": "Inconsistent with pure SUE (which is right-skewed: many small positive beats, few large positive blowouts). Consistent with a forward-EPS-yield-style variable where a small fraction of distressed firms with negative or near-zero forecasts produces a long LEFT tail."
+    },
+    {
+      "clue": "Market-based control (Panel C, larger firms by SIZE=7.25 vs 6.11) has notably LOWER SD (2.33)",
+      "implication": "Inconsistent with STDEV-scaled SUE (large firms have more analysts → lower STDEV denominator → HIGHER variable values → HIGHER SD, opposite of paper). CONSISTENT with price-scaled forecasts (large firms have higher prices → smaller forward yield → tighter distribution → lower SD)."
+    },
+    {
+      "clue": "SD in 2–5 range (specifically 3.51 for Panel A)",
+      "implication": "Compatible with a percentage-points-scaled variable (something×100). Forward earnings yield × 100 typically has SD 3–5pp across firms. Demeaned forward EPS yield × 100 would preserve this SD while shifting mean toward zero."
+    },
+    {
+      "clue": "Median ≈ 0.07 in Panel A (small positive)",
+      "implication": "After centering, the median is barely above zero. This is the residual of a slightly asymmetric demeaning (most firms cluster near typical yield, left tail of distressed firms drags MEAN below typical yield more than MEDIAN)."
+    }
+  ],
+  "hypotheses_ranked_by_fit": [
+    {
+      "rank": 1,
+      "label": "H1 — Industry-quarter-demeaned forward earnings yield (in pp)",
+      "intuition": "Most natural reading of 'standardized': scaled by price (the dominant 'standardization' for cross-firm EPS comparability). 'Mean' = consensus mean analyst forecast. Demeaning by industry × calendar quarter centers the distribution around 0, allowing inter-group mean drift (treated industries differ from control industries) while preserving small positive median (skewness left).",
+      "formula": "CEF_{i,t} = (MEANEST_{i,t}^{next FQ} / PRC_{i,t-1}) × 100 − mean_{industry j(i), quarter t}[(MEANEST/PRC)×100]",
+      "predicted_properties": {
+        "mean": "near 0, slightly positive or negative depending on group composition",
+        "median": "small positive (~0.05–0.10) due to left-skewed yield distribution",
+        "SD": "3–5pp, consistent with paper's 3.51",
+        "group_pattern": "control firms (larger, less distressed) have tighter distribution → lower SD ✓ matches Panel C"
+      },
+      "code_sketch": "# In Stata/Python after merge\n# Compute forward earnings yield in pp\ngen fey = (meanest / lprc_lag) * 100\n# Demean by HP-FIC industry × calendar quarter\negen fey_mean = mean(fey), by(hp_fic100 calqtr)\ngen cef = fey - fey_mean\n# Winsorize at 1%\nwinsor2 cef, replace cuts(1 99)"
+    },
+    {
+      "rank": 2,
+      "label": "H2 — Quarter-demeaned forward earnings yield (in pp)",
+      "intuition": "Same as H1 but demeaning only by calendar quarter (no industry). Simpler. Allows industry composition to drive group mean differences.",
+      "formula": "CEF_{i,t} = (MEANEST_{i,t}^{next FQ} / PRC_{i,t-1}) × 100 − mean_{quarter t}[(MEANEST/PRC)×100]",
+      "predicted_properties": {
+        "mean": "exactly 0 within each quarter, slight nonzero in pooled means from unbalanced panels",
+        "median": "preserved positive (~0.05–0.10) from left-skewed yield distribution",
+        "SD": "3–5pp",
+        "group_pattern": "differences arise from group composition within quarters"
+      },
+      "code_sketch": "egen fey_mean = mean(fey), by(calqtr)\ngen cef = fey - fey_mean"
+    },
+    {
+      "rank": 3,
+      "label": "H3 — Forward EPS yield minus risk-free benchmark (Fed Model style)",
+      "intuition": "'Standardized' = scaled to a comparable benchmark. Fed Model variable: forward earnings yield minus 10Y Treasury yield. Captures equity risk premium proxy. Naturally centered near zero, small positive median, SD 3–5pp.",
+      "formula": "CEF_{i,t} = (MEANEST_{i,t}^{next FQ} / PRC_{i,t-1}) × 100 − GS10_{t} (annualized) — or its quarterly equivalent",
+      "predicted_properties": {
+        "mean": "slightly positive in low-rate periods, slightly negative in high-rate periods",
+        "median": "small positive",
+        "SD": "3–5pp from cross-firm dispersion in yields",
+        "group_pattern": "groups with higher-yielding (cheaper) stocks have higher means"
+      },
+      "code_sketch": "gen cef = (meanest/lprc_lag)*100 - (gs10/4)"
+    },
+    {
+      "rank": 4,
+      "label": "H4 — Forecast revision in pp of price",
+      "intuition": "'1-quarter ahead' could mean the forecast HORIZON, while 'standardized mean' could mean the consensus REVISION. ΔMEANEST scaled by price gives a small, roughly mean-zero quantity with SD in the right range. Revisions are slightly NEGATIVE on average (analyst walk-down), matching Panels C/D/E.",
+      "formula": "CEF_{i,t} = (MEANEST_{i,t}^{next FQ} − MEANEST_{i,t-1}^{same FQ}) / PRC_{i,t-1} × 100",
+      "predicted_properties": {
+        "mean": "slightly negative on average due to analyst walk-down",
+        "median": "near zero (most quarters have no revision)",
+        "SD": "could be in 2–5pp range",
+        "group_pattern": "treated/Brexit-exposed firms may have larger revisions"
+      },
+      "code_sketch": "# Compare current forecast to forecast issued one quarter ago for the same target FQ\nbysort gvkey fpedats (statpers): gen meanest_lag = meanest[_n-1]\ngen cef = (meanest - meanest_lag) / lprc_lag * 100"
+    },
+    {
+      "rank": 5,
+      "label": "H5 — Within-quarter z-score of SUE (NOT pooled-demean)",
+      "intuition": "User has only tried POOLED demeaning. Within-calendar-quarter standardization (subtract within-quarter mean, divide by within-quarter SD or by analyst STDEV) would force quarterly mean=0 but allow pooled mean to drift slightly.",
+      "formula": "CEF_{i,t} = [(ACTUAL_{i,t} − MEANEST_{i,t}^{ahead}) / STDEV_{i,t}^{ahead}] standardized within quarter t",
+      "predicted_properties": {
+        "mean": "exactly 0 within quarter, slight drift in pooled",
+        "median": "small negative if SUE is right-skewed (similar to pooled demean) — may NOT match",
+        "SD": "1 if z-scored within quarter; could be 3-ish if only demeaned within quarter"
+      },
+      "code_sketch": "gen sue = (actual - meanest)/stdev_est\negen sue_qmean = mean(sue), by(calqtr)\ngen cef = sue - sue_qmean   // only demean, do not divide"
+    },
+    {
+      "rank": 6,
+      "label": "H6 — Split-adjustment artifact (no statistical standardization)",
+      "intuition": "'Standardized' might be I/B/E/S jargon for split-adjusted (the SUMMARY file has both 'unadjusted' and 'adjusted' values; I/B/E/S documentation calls the split-adjusted series 'standardized'). The variable could be raw split-adjusted consensus EPS forecast, possibly in cents (not dollars).",
+      "formula": "CEF_{i,t} = MEANEST_{i,t}^{next FQ, split-adjusted} expressed in dollars or cents",
+      "predicted_properties": {
+        "mean": "small positive in dollars (typical EPS is $0.50–$2)",
+        "SD": "if expressed in dollars, ~1–2; the paper's 3.51 would require cents-scaled forecasts × winsorization",
+        "concern": "doesn't naturally produce negative means in some panels — would require additional demeaning"
+      },
+      "code_sketch": "# I/B/E/S STATSUMU (unadjusted) vs STATSUM (split-adjusted)\n# 'standardized' = use split-adjusted variant\ngen cef = meanest_adj  // possibly *100 for cents"
+    }
+  ],
+  "diagnostic_tests_to_run": [
+    {
+      "test": "Test 1: Recompute SUE with quarter-only demeaning (not pooled demeaning). Compare median across the user's existing SUE sample.",
+      "expected_if_match": "Pooled median should match paper better than full demean (~0.05–0.10 instead of −0.14)"
+    },
+    {
+      "test": "Test 2: Construct forward earnings yield in pp = (MEANEST/Price)*100, then demean by (a) industry, (b) quarter, (c) industry×quarter. Compare distribution to paper.",
+      "expected_if_match": "H1/H2 should produce mean≈0, median small positive, SD 3–5"
+    },
+    {
+      "test": "Test 3: Construct Fed-Model variable = forward EPS yield in pp − GS10/4. Compare to paper.",
+      "expected_if_match": "H3 should match pp magnitudes; mean should be slightly positive in 2010–2015"
+    },
+    {
+      "test": "Test 4: Verify split-adjustment status. Compare summary statistics using STATSUM (adjusted) vs STATSUMU (unadjusted).",
+      "expected_if_match": "If H6, raw values with split-adjustment should approximately match without further transformation"
+    },
+    {
+      "test": "Test 5: Sort firms by SIZE within each test and check whether large firms drive lower SD in any of H1–H5. The market-based control group (panel C) is uniquely large (SIZE=7.25); whichever construction produces a SIZE-tightening of SD is the right family.",
+      "expected_if_match": "Price-scaled constructions (H1, H2, H3) naturally produce this; STDEV-scaled constructions (the user's failed SUE attempts) produce the opposite."
+    }
+  ],
+  "single_strongest_recommendation": {
+    "candidate": "H1 (industry-quarter-demeaned forward earnings yield in pp)",
+    "reasoning_summary": "Of the six families, only price-scaled-and-demeaned variants jointly explain: (i) the small positive stable median (left-skewed yield distribution), (ii) the SD ~3.5 (typical pp magnitude for forward EPS yield), (iii) the LOW SD in the large-firm control panel (price-scaling tightens large firms), (iv) the small inter-group mean drift (demeaning removes the bulk but preserves industry-composition differences across groups), (v) the verbatim 'standardized' language (scaling by price is the textbook 'standardization' for comparable cross-firm EPS, e.g. in Bradshaw 2011, Easton 2004). SUE-based constructions cannot generate the LOW-SD-for-large-firms pattern that Panel C exhibits. The user should code H1 first and report back whether N, mean, SD, and median align."
+  },
+  "important_caveat": "All six hypotheses are inferences from the empirical pattern. The paper provides no verbatim construction beyond 'the standardized mean 1-quarter ahead earnings per share forecast.' These are testable candidates, not statements of what the authors did. If H1 fails, the next pivot point is whether 'standardized' refers to I/B/E/S split-adjustment terminology (H6) rather than statistical standardization. After exhausting H1–H6, the next step is to contact the authors directly for the exact code."
+}

@@ -1,0 +1,283 @@
+{
+  "paper_metadata": {
+    "sample_period": "Third quarter of 2014 (2014Q3) through fourth quarter of 2018 (2018Q4); nine quarters before and nine quarters after the Trump election (the fourth quarter of 2016). Observations from 2019 onwards are excluded.",
+    "sample_n": 10400,
+    "n_firms": 909,
+    "n_ceos": 1155,
+    "winsorization": "All continuous variables are winsorized at the top and bottom 1 percentile of their distributions.",
+    "cluster_variable": "Standard errors are clustered by ethnic groups (ethnicity groups).",
+    "treatment_definition": "MinorityCEO is an indicator that equals one if a given CEO belongs to one of the following ethnic minorities: African American, Asian (including Hindu and South Asian, Sikh, and East Asian), Latino/Hispanic, or Middle Eastern Muslim, and zero otherwise. CEO ethnicity is identified based on his/her origin of name in the spirit of Liu (2016), using the OriginsInfo Ltd database, with ISS (formerly RiskMetrics) used to perform a random check."
+  },
+  "variables": {
+    "MgtSentimt": {
+      "definition_verbatim": "The number of pessimistic earnings forecasts minus the number of optimistic forecasts with forecast horizons being a quarter or less, scaled by the total number of forecasts in a firm quarter. A given forecast is defined as a pessimistic (optimistic) one, if a point estimate of earnings is smaller (larger) than the actual earnings later announced, or if the upper bound of a range estimate is smaller than the actual earnings.",
+      "data_sources": ["I/B/E/S Guidance database", "I/B/E/S Actual File"],
+      "units_transformations": "Ratio (signed), scaled by total number of forecasts in a firm-quarter. Restricted to forecast horizons of one quarter or less. Winsorized at 1% and 99%.",
+      "summary_stats": {
+        "mean": 0.199,
+        "sd": 0.465,
+        "p1": -1,
+        "p25": 0,
+        "p50": 0,
+        "p75": 0.500,
+        "p99": 1
+      },
+      "notes": "Higher value indicates higher CEO pessimism. Bounded between -1 and +1."
+    },
+    "BiasScale": {
+      "definition_verbatim": "Quarterly average value of forecast bias. Forecast bias is defined as management-forecasted earnings minus actual earnings for forecasts with horizons being a quarter or less, scaled by quarterly total assets per share. For close-end forecasts, management forecast value is defined as the midpoint of the range. The value is then inflated by 100 times for interpretation purposes.",
+      "data_sources": ["I/B/E/S Guidance database", "I/B/E/S Actual File", "Compustat"],
+      "units_transformations": "Signed; scaled by quarterly total assets per share; multiplied by 100 for ease of interpretation. Range midpoint used for closed-range forecasts. Forecast horizon <= one quarter. Winsorized at 1% and 99%.",
+      "summary_stats": {
+        "mean": -0.080,
+        "sd": 0.278,
+        "p1": -1.531,
+        "p25": -0.099,
+        "p50": 0,
+        "p75": 0,
+        "p99": 0.703
+      },
+      "notes": "Lower (more negative) value indicates higher CEO pessimism (greater downward bias in forecasted earnings relative to actual)."
+    },
+    "MinorityCEO": {
+      "definition_verbatim": "An indicator that equals one if a given CEO belongs to one of the following ethnic minorities: African American, Asian, Latino or Middle Eastern Muslim, and zero otherwise. We identify a CEO's ethnicity based on his/her origin of name in the spirit of Liu (2016). Data source: OriginsInfo Ltd. We use ISS (formerly RiskMetrics) to perform a random check.",
+      "data_sources": ["OriginsInfo Ltd", "ExecuComp (CEO names)", "ISS (formerly RiskMetrics) for random check", "Manual verification via public CVs, personal main pages, Bloomberg, and newspapers"],
+      "units_transformations": "Binary indicator (0/1). No winsorization (binary).",
+      "summary_stats": {
+        "mean": 0.086,
+        "sd": 0.281,
+        "p1": 0,
+        "p25": 0,
+        "p50": 0,
+        "p75": 0,
+        "p99": 1
+      },
+      "notes": "Binary variable; SD and percentiles are not particularly meaningful in the usual sense. Approximately 9% of CEO-quarter observations are minority CEOs. Asian category includes Hindu and South Asian, Sikh, and East Asian."
+    },
+    "Post": {
+      "definition_verbatim": "An indicator that equals one for the post-Trump Election period (fourth quarter of 2016 onwards), and zero otherwise.",
+      "data_sources": ["Constructed by authors based on calendar time"],
+      "units_transformations": "Binary indicator (0/1).",
+      "summary_stats": {
+        "mean": null,
+        "sd": null,
+        "p1": null,
+        "p25": null,
+        "p50": null,
+        "p75": null,
+        "p99": null
+      },
+      "notes": "Binary variable; summary statistics not reported in Table 2 Panel B. SD/percentiles not meaningful for binary indicator. Treatment period begins 2016Q4 (the quarter containing the November 9, 2016 election)."
+    },
+    "MinorityCEO_x_Post": {
+      "definition_verbatim": "The interaction term of MinorityCEO and Post.",
+      "data_sources": ["Constructed: MinorityCEO x Post"],
+      "units_transformations": "Product of two binary indicators; binary (0/1).",
+      "summary_stats": {
+        "mean": null,
+        "sd": null,
+        "p1": null,
+        "p25": null,
+        "p50": null,
+        "p75": null,
+        "p99": null
+      },
+      "notes": "Primary DiD coefficient of interest (beta_2 in Equation 1). Binary variable; summary statistics not separately reported in Table 2 Panel B. SD/percentiles not meaningful for binary indicator."
+    },
+    "LogHorizon": {
+      "definition_verbatim": "Natural logarithm of the average of the forecast horizons of all management forecasts. The forecasting horizon is defined as the number of days between the forecast announcement date and the corresponding forecast period end-date.",
+      "data_sources": ["I/B/E/S Guidance database"],
+      "units_transformations": "Natural logarithm of average horizon in days. Winsorized at 1% and 99%.",
+      "summary_stats": {
+        "mean": 4.107,
+        "sd": 0.147,
+        "p1": 3.556,
+        "p25": 4.043,
+        "p50": 4.127,
+        "p75": 4.205,
+        "p99": 4.357
+      },
+      "notes": "Controls for amount of information available upon issuance of an earnings forecast (Bamber and Cheon 1998)."
+    },
+    "CEOAge": {
+      "definition_verbatim": "Age of a CEO in a fiscal year.",
+      "data_sources": ["ExecuComp"],
+      "units_transformations": "Age in years. Winsorized at 1% and 99%.",
+      "summary_stats": {
+        "mean": 57.060,
+        "sd": 6.319,
+        "p1": 44,
+        "p25": 53,
+        "p50": 57,
+        "p75": 61,
+        "p99": 76
+      },
+      "notes": ""
+    },
+    "ExecuDir": {
+      "definition_verbatim": "An indicator that equals one if a CEO serves as a director on the board in a fiscal year, and zero otherwise.",
+      "data_sources": ["ExecuComp"],
+      "units_transformations": "Binary indicator (0/1).",
+      "summary_stats": {
+        "mean": 0.976,
+        "sd": 0.154,
+        "p1": 0,
+        "p25": 1,
+        "p50": 1,
+        "p75": 1,
+        "p99": 1
+      },
+      "notes": "Binary variable; SD/percentiles not meaningful in usual sense. ~97.6% of CEOs also serve on the board. Reference: Campbell et al. (2011)."
+    },
+    "LogSalary": {
+      "definition_verbatim": "The logarithm of salary and bonus for a given CEO in a fiscal year.",
+      "data_sources": ["ExecuComp"],
+      "units_transformations": "Natural logarithm of (salary + bonus). Winsorized at 1% and 99%.",
+      "summary_stats": {
+        "mean": 6.834,
+        "sd": 0.400,
+        "p1": 5.794,
+        "p25": 6.594,
+        "p50": 6.858,
+        "p75": 7.053,
+        "p99": 8.167
+      },
+      "notes": "Mean of 6.834 corresponds to approximately $1.032 million."
+    },
+    "CEOGender": {
+      "definition_verbatim": "An indicator that equals one if the gender of a CEO is male, and zero otherwise.",
+      "data_sources": ["ExecuComp"],
+      "units_transformations": "Binary indicator (0/1).",
+      "summary_stats": {
+        "mean": 0.938,
+        "sd": 0.241,
+        "p1": 0,
+        "p25": 1,
+        "p50": 1,
+        "p75": 1,
+        "p99": 1
+      },
+      "notes": "Binary variable; SD/percentiles not meaningful in usual sense. ~93.8% of CEOs are male."
+    },
+    "MB": {
+      "definition_verbatim": "The market value of equity divided by the book value of equity.",
+      "data_sources": ["Compustat", "CRSP"],
+      "units_transformations": "Ratio. Winsorized at 1% and 99%.",
+      "summary_stats": {
+        "mean": 4.154,
+        "sd": 8.576,
+        "p1": -36.260,
+        "p25": 1.836,
+        "p50": 2.900,
+        "p75": 4.772,
+        "p99": 51.600
+      },
+      "notes": "Market-to-book ratio. Negative P1 reflects negative book equity firms."
+    },
+    "Size": {
+      "definition_verbatim": "The logarithm of the market value of equity for each firm in a quarter.",
+      "data_sources": ["CRSP", "Compustat"],
+      "units_transformations": "Natural logarithm of market value of equity (in millions). Winsorized at 1% and 99%.",
+      "summary_stats": {
+        "mean": 8.453,
+        "sd": 1.511,
+        "p1": 5.141,
+        "p25": 7.358,
+        "p50": 8.321,
+        "p75": 9.473,
+        "p99": 12.120
+      },
+      "notes": "Mean of 8.453 corresponds to approximately $15,075 million in market capitalization (i.e., ~$15.075 billion)."
+    },
+    "AnalystFollowing": {
+      "definition_verbatim": "The number of unique analysts following a firm in a year.",
+      "data_sources": ["I/B/E/S"],
+      "units_transformations": "Count of analysts. Winsorized at 1% and 99%.",
+      "summary_stats": {
+        "mean": 15.720,
+        "sd": 9.176,
+        "p1": 3,
+        "p25": 8,
+        "p50": 14,
+        "p75": 22,
+        "p99": 42
+      },
+      "notes": "Potential conflict / inconsistency: Appendix Table 10 defines this variable annually ('in a year'), but the paper otherwise describes the regression as quarterly. Also, the variable name in Table 2 Panel B uses 'AnalystFollowing' while Appendix Table 10 also uses 'AnalysFollowing' (likely a typographical inconsistency)."
+    },
+    "InstitHolding": {
+      "definition_verbatim": "Percentage of shares owned by institutional holders in a quarter.",
+      "data_sources": ["Thomson Reuters Institutional Holdings"],
+      "units_transformations": "Proportion/percentage of shares owned. Winsorized at 1% and 99% (P99 = 1.175 exceeds 1, reflecting reported institutional holdings sometimes exceeding 100% due to short positions/data noise).",
+      "summary_stats": {
+        "mean": 0.836,
+        "sd": 0.143,
+        "p1": 0.439,
+        "p25": 0.744,
+        "p50": 0.856,
+        "p75": 0.933,
+        "p99": 1.175
+      },
+      "notes": ""
+    },
+    "Std_Ret": {
+      "definition_verbatim": "The standard deviation of daily stock returns in a quarter.",
+      "data_sources": ["CRSP"],
+      "units_transformations": "Standard deviation of daily returns within the quarter. Winsorized at 1% and 99%.",
+      "summary_stats": {
+        "mean": 0.018,
+        "sd": 0.008,
+        "p1": 0.007,
+        "p25": 0.012,
+        "p50": 0.016,
+        "p75": 0.022,
+        "p99": 0.047
+      },
+      "notes": "Return volatility."
+    },
+    "Dloss": {
+      "definition_verbatim": "An indicator that equals one if a firm-quarter experiences a loss in operating income before depreciation, and zero otherwise.",
+      "data_sources": ["Compustat"],
+      "units_transformations": "Binary indicator (0/1).",
+      "summary_stats": {
+        "mean": 0.120,
+        "sd": 0.325,
+        "p1": 0,
+        "p25": 0,
+        "p50": 0,
+        "p75": 0,
+        "p99": 1
+      },
+      "notes": "Binary variable; SD/percentiles not meaningful in usual sense. ~12% of firm-quarters report a loss in operating income before depreciation."
+    },
+    "Leverage": {
+      "definition_verbatim": "Total liabilities divided by total assets in a quarter.",
+      "data_sources": ["Compustat"],
+      "units_transformations": "Ratio (total liabilities / total assets). Winsorized at 1% and 99% (P99 = 1.240 exceeds 1, reflecting firms with negative book equity).",
+      "summary_stats": {
+        "mean": 0.580,
+        "sd": 0.235,
+        "p1": 0.103,
+        "p25": 0.432,
+        "p50": 0.583,
+        "p75": 0.707,
+        "p99": 1.240
+      },
+      "notes": "Book leverage."
+    },
+    "Std_Earning": {
+      "definition_verbatim": "The standard deviation of quarterly ROE over the previous 16 quarters",
+      "data_sources": ["Compustat"],
+      "units_transformations": "Standard deviation of quarterly ROE over the previous 16 quarters (rolling window). Winsorized at 1% and 99%.",
+      "summary_stats": {
+        "mean": 0.110,
+        "sd": 0.445,
+        "p1": 0.003,
+        "p25": 0.011,
+        "p50": 0.020,
+        "p75": 0.043,
+        "p99": 3.571
+      },
+      "notes": "Earnings volatility. Highly right-skewed (mean 0.110 vs. median 0.020, P99 = 3.571)."
+    }
+  }
+}

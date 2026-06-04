@@ -1,0 +1,399 @@
+{
+  "audit_metadata": {
+    "reviewer_role": "Adversarial peer reviewer / red team",
+    "paper": "Hu, Kang, Li & Lin (2025), 'Trump election and minority CEO pessimism,' Review of Accounting Studies, 30:950-993",
+    "scope": "Equation (1) / Table 3 baseline DiD: all variables, sample construction, winsorization, clustering",
+    "overall_assessment": "The extracted JSON faithfully transcribes Appendix Table 10. However, Appendix Table 10 itself is sparse: it gives narrative descriptions but NEVER specifies a single Compustat (CSHO, CEQ, ATQ, LTQ, OIBDPQ, IBQ, etc.), CRSP (RET, PRC), or I/B/E/S field name. Therefore most 'Compustat item' questions resolve to 'NOT SPECIFIED IN PAPER'. The reviewer flags every such case below and also flags genuine textual conflicts."
+  },
+  "verified_variables": {
+    "MgtSentimt": {
+      "definition_verbatim_appendix_table10": "The number of pessimistic earnings forecasts minus the number of optimistic forecasts with forecast horizons being a quarter or less, scaled by the total number of forecasts in a firm quarter. A given forecast is defined as a pessimistic (optimistic) one, if a point estimate of earnings is smaller (larger) than the actual earnings later announced, or if the upper bound of a range estimate is smaller than the actual earnings.",
+      "extraction_verdict": "VERIFIED. Verbatim match with Appendix Table 10.",
+      "data_sources_required": ["I/B/E/S Guidance database (management forecasts)", "I/B/E/S Actual File (realized EPS)"],
+      "ibes_fields_NOT_SPECIFIED_IN_PAPER": ["Exact I/B/E/S guidance fields (e.g., VAL_1, VAL_2, RANGE_LOW, RANGE_HIGH, PDICITY, MEASURE, UNITS) NOT SPECIFIED", "Whether actuals are split-adjusted or unadjusted NOT SPECIFIED", "Whether GAAP vs Street earnings used NOT SPECIFIED — paper says 'earnings per share' but I/B/E/S typically Street; not made explicit"],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {
+        "mean": 0.199, "sd": 0.465, "p1": -1, "p25": 0, "p50": 0, "p75": 0.500, "p99": 1
+      },
+      "ambiguities": [
+        "RANGE FORECAST ASYMMETRY: Pessimistic is defined as 'upper bound of a range estimate is smaller than the actual earnings.' By symmetry, optimistic should be 'lower bound of a range estimate is larger than the actual earnings,' but this is NOT SPECIFIED IN PAPER. Forecasts whose actual falls inside the range are presumably classified as neither, but this is NOT explicitly stated.",
+        "POINT ESTIMATE TIE CASES: When point forecast exactly equals actual, classification NOT SPECIFIED (strict inequality '<' is used in the verbatim definition, so ties should be 'neither').",
+        "OPEN-ENDED FORECASTS: I/B/E/S includes one-sided forecasts (>=X or <=X). Treatment NOT SPECIFIED. Table 5 Panel A specificity scoring implies they exist and are used in some contexts, but their classification for MgtSentimt is NOT SPECIFIED.",
+        "QUALITATIVE FORECASTS: Treatment NOT SPECIFIED for MgtSentimt (the variable uses numeric comparisons, so likely excluded, but unstated).",
+        "FORECAST HORIZON METRIC: 'a quarter or less' is ambiguous — calendar quarter, 90 days, or up to fiscal quarter end? Footnote 10 implies forecasts whose forecast period is within the quarter. NOT FULLY OPERATIONAL.",
+        "PRE-ANNOUNCEMENT EXCLUSION: Text says 'we do not consider pre-announcements of earnings (forecasts made after the end of fiscal quarters).' This filter is NOT recorded in Appendix Table 10.",
+        "INDIVIDUAL FORECAST vs FIRM-QUARTER AGGREGATION: Numerator (pessimistic minus optimistic) and denominator (total forecasts) — should multiple forecasts for the same fiscal quarter end be deduplicated or all counted? NOT SPECIFIED."
+      ]
+    },
+    "BiasScale": {
+      "definition_verbatim_appendix_table10": "Quarterly average value of forecast bias. Forecast bias is defined as management-forecasted earnings minus actual earnings for forecasts with horizons being a quarter or less, scaled by quarterly total assets per share. For close-end forecasts, management forecast value is defined as the midpoint of the range. The value is then inflated by 100 times for interpretation purposes.",
+      "extraction_verdict": "VERIFIED. Verbatim match with Appendix Table 10.",
+      "data_sources_required": ["I/B/E/S Guidance database", "I/B/E/S Actual File", "Compustat Fundamentals Quarterly (for total assets and shares outstanding)"],
+      "compustat_items_NOT_SPECIFIED_IN_PAPER": [
+        "Total assets: ATQ (quarterly) vs AT (annual) — NOT SPECIFIED. 'quarterly total assets' suggests ATQ but item code never stated.",
+        "Shares outstanding: CSHOQ vs CSHO vs CSHPRQ vs CSHFDQ — NOT SPECIFIED. 'per share' could be basic or diluted.",
+        "Whether shares are split-adjusted (with AJEXQ) to match I/B/E/S forecast units — NOT SPECIFIED but materially important.",
+        "Timing: assets-per-share measured at start, end, or average of the quarter — NOT SPECIFIED."
+      ],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {
+        "mean": -0.080, "sd": 0.278, "p1": -1.531, "p25": -0.099, "p50": 0, "p75": 0, "p99": 0.703
+      },
+      "ambiguities": [
+        "OPEN-ENDED FORECASTS: 'For close-end forecasts, management forecast value is defined as the midpoint of the range.' What is used for OPEN-ENDED forecasts (e.g., 'at least $X')? NOT SPECIFIED. Likely excluded but unstated.",
+        "QUALITATIVE FORECASTS: cannot be numerically benchmarked. NOT SPECIFIED.",
+        "AVERAGING: 'Quarterly average value of forecast bias' — simple arithmetic mean across all qualifying forecasts in the firm-quarter? Median? NOT EXPLICIT.",
+        "ACTUAL EARNINGS: I/B/E/S Actuals vs Compustat IBQ — NOT SPECIFIED (the description 'actual earnings' is the same I/B/E/S concept as for MgtSentimt, so likely I/B/E/S Actual File).",
+        "INFLATION FACTOR: '100 times' is for interpretation. Means BiasScale is in 'percentage points of total assets per share' — units are not literal percentages."
+      ]
+    },
+    "MinorityCEO": {
+      "definition_verbatim_appendix_table10": "An indicator that equals one if a given CEO belongs to one of the following ethnic minorities: African American, Asian, Latino or Middle Eastern Muslim, and zero otherwise. We identify a CEO's ethnicity based on his/her origin of name in the spirit of Liu (2016). Data source: OriginsInfo Ltd. We use ISS (formerly RiskMetrics) to perform a random check.",
+      "extraction_verdict": "VERIFIED.",
+      "data_sources_required": ["OriginsInfo Ltd (name-origin matching, proprietary)", "ExecuComp (CEO names)", "ISS / RiskMetrics (random verification)", "Manual sources: public CVs, Bloomberg, newspapers"],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {
+        "mean": 0.086, "sd": 0.281, "p1": 0, "p25": 0, "p50": 0, "p75": 0, "p99": 1
+      },
+      "ambiguities": [
+        "INTERNAL INCONSISTENCY between definition and use: Appendix Table 10 says 'random check' via ISS, but Section 3.2.2 text says authors 'use ISS (formerly RiskMetrics) to double-check the CEOs' ethnicity' (apparently more than random) AND 'manually check and confirm the ethnic identities' of those flagged as minority. The Appendix understates the verification procedure.",
+        "ASIAN SUBCATEGORIES: Section 3.2.2 lists 'Asian (including Hindu and South Asian, Sikh and East Asian)' — broader than just East Asian. Appendix Table 10 just says 'Asian' without sub-detail.",
+        "REPLICABILITY: OriginsInfo Ltd is a proprietary commercial database (per Webber 2007); exact name-to-ethnicity mapping NOT REPLICABLE without subscription.",
+        "JEWISH / GREEK / EASTERN EUROPEAN: OriginsInfo classifies names into 10 categories per Section 3.1, but only 4 are 'minority' here. Why Jewish, Greek, Eastern European, Western European, Celtic are non-minority is implied (not under-represented in same way) but NOT EXPLICITLY JUSTIFIED in Table 10.",
+        "TIME-VARIANCE: Whether MinorityCEO ever changes within a CEO across years (it should not, by construction) NOT EXPLICITLY STATED."
+      ]
+    },
+    "Post": {
+      "definition_verbatim_appendix_table10": "An indicator that equals one for the post-Trump Election period (fourth quarter of 2016 onwards), and zero otherwise.",
+      "extraction_verdict": "VERIFIED.",
+      "data_sources_required": ["Constructed by authors from calendar date"],
+      "summary_stats_verified": "NOT REPORTED in Table 2 Panel B",
+      "ambiguities": [
+        "QUARTER ASSIGNMENT: Election was November 9, 2016 (mid-Q4). The 4th calendar quarter of 2016 is classified as Post=1 wholly, even though it contains pre-election weeks. NOT EXPLICITLY DISCUSSED as a robustness concern in the paper, although the dynamic effect P1 covers 2016Q4 + 2017Q1.",
+        "CALENDAR vs FISCAL QUARTER: The Post indicator's quarter alignment (calendar quarter or firm fiscal quarter) NOT SPECIFIED. Most non-December fiscal-year firms could be ambiguous."
+      ]
+    },
+    "MinorityCEO_x_Post": {
+      "definition_verbatim_appendix_table10": "The interaction term of MinorityCEO and Post.",
+      "extraction_verdict": "VERIFIED.",
+      "summary_stats_verified": "NOT REPORTED in Table 2 Panel B",
+      "ambiguities": []
+    },
+    "LogHorizon": {
+      "definition_verbatim_appendix_table10": "Natural logarithm of the average of the forecast horizons of all management forecasts. The forecasting horizon is defined as the number of days between the forecast announcement date and the corresponding forecast period end-date.",
+      "extraction_verdict": "VERIFIED.",
+      "data_sources_required": ["I/B/E/S Guidance database (announcement date, forecast period end-date)"],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {
+        "mean": 4.107, "sd": 0.147, "p1": 3.556, "p25": 4.043, "p50": 4.127, "p75": 4.205, "p99": 4.357
+      },
+      "ambiguities": [
+        "SCOPE: 'all management forecasts' — does this include long-horizon forecasts excluded from MgtSentimt/BiasScale (which restrict to <=1 quarter), or only those used? The phrase suggests ALL forecasts in the firm-quarter regardless of horizon, but Appendix Table 10 contradicts the regression sample. Mean log horizon = 4.107 implies ~60 days average, consistent with within-quarter horizon (=ln(60.7)). So in practice the restriction is consistent. NOT EXPLICITLY RECONCILED.",
+        "LOG TRANSFORMATION: Is the log taken of an arithmetic mean or is it the mean of logs? Appendix says 'logarithm of the average,' i.e., ln(mean(horizon)). VERIFIED from wording.",
+        "ANNOUNCEMENT DATE: I/B/E/S has ANNDATS (announcement date) — NOT SPECIFIED."
+      ]
+    },
+    "CEOAge": {
+      "definition_verbatim_appendix_table10": "Age of a CEO in a fiscal year.",
+      "extraction_verdict": "VERIFIED.",
+      "data_sources_required": ["ExecuComp (AGE field) — NOT SPECIFIED as field name in paper"],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {"mean": 57.060, "sd": 6.319, "p1": 44, "p25": 53, "p50": 57, "p75": 61, "p99": 76},
+      "ambiguities": [
+        "FISCAL YEAR vs CALENDAR YEAR: Definition says 'in a fiscal year' but the regression is quarterly. The fiscal-year age presumably applied to all four quarters of that fiscal year. NOT EXPLICITLY STATED.",
+        "MISSING AGE: ExecuComp AGE is missing for some CEO-years. Imputation/exclusion treatment NOT SPECIFIED."
+      ]
+    },
+    "ExecuDir": {
+      "definition_verbatim_appendix_table10": "An indicator that equals one if a CEO serves as a director on the board in a fiscal year, and zero otherwise.",
+      "extraction_verdict": "VERIFIED.",
+      "data_sources_required": ["ExecuComp — likely TITLE field containing 'Dir' or 'Chairman', OR an explicit board-membership flag — NOT SPECIFIED"],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {"mean": 0.976, "sd": 0.154, "p1": 0, "p25": 1, "p50": 1, "p75": 1, "p99": 1},
+      "ambiguities": [
+        "CONSTRUCTION: ExecuComp does not have a clean 'serves as director' flag; usually inferred from TITLEANN. NOT SPECIFIED.",
+        "Reference Campbell et al. (2011) is cited but their exact construction is not reproduced in Appendix Table 10."
+      ]
+    },
+    "LogSalary": {
+      "definition_verbatim_appendix_table10": "The logarithm of salary and bonus for a given CEO in a fiscal year.",
+      "extraction_verdict": "VERIFIED.",
+      "data_sources_required": ["ExecuComp — SALARY + BONUS fields (NOT SPECIFIED in paper)"],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {"mean": 6.834, "sd": 0.400, "p1": 5.794, "p25": 6.594, "p50": 6.858, "p75": 7.053, "p99": 8.167},
+      "ambiguities": [
+        "UNITS: Salary and bonus in $ thousands (ExecuComp default) vs $ millions — NOT SPECIFIED. exp(6.834) = $930 (in thousands) ≈ $0.93M, consistent with the paper's stated '$1.032 million' interpretation if thousands. Paper says mean salary ≈ $1.032M, suggesting ExecuComp's $thousands convention is used.",
+        "LOG OF ZERO: If bonus or salary is zero, log is undefined. Treatment NOT SPECIFIED (likely ln(1+x) is NOT used since percentile distribution is tight, but unstated).",
+        "TOTAL COMP vs CASH COMP: Only SALARY+BONUS, not TDC1/TDC2. Stated clearly."
+      ]
+    },
+    "CEOGender": {
+      "definition_verbatim_appendix_table10": "An indicator that equals one if the gender of a CEO is male, and zero otherwise.",
+      "extraction_verdict": "VERIFIED.",
+      "data_sources_required": ["ExecuComp — GENDER field (NOT SPECIFIED as field name)"],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {"mean": 0.938, "sd": 0.241, "p1": 0, "p25": 1, "p50": 1, "p75": 1, "p99": 1},
+      "ambiguities": []
+    },
+    "MB": {
+      "definition_verbatim_appendix_table10": "The market value of equity divided by the book value of equity.",
+      "extraction_verdict": "VERIFIED but UNDER-SPECIFIED.",
+      "data_sources_required": ["Compustat", "CRSP"],
+      "compustat_items_NOT_SPECIFIED_IN_PAPER": [
+        "MARKET VALUE OF EQUITY formula NOT SPECIFIED: typically PRCCQ × CSHOQ (Compustat quarterly) or PRC × SHROUT/1000 (CRSP). Either is plausible; paper does not say.",
+        "BOOK VALUE OF EQUITY formula NOT SPECIFIED: candidates include CEQQ (common equity), CEQQ + TXDITCQ (with deferred taxes), SEQQ (stockholders' equity), or AT-LT (book equity proxy). The negative P1 of -36.26 indicates the book value goes negative (suggests CEQQ-based, allowing negative book equity to flow through).",
+        "TIMING: Beginning, end, or average of quarter NOT SPECIFIED."
+      ],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {"mean": 4.154, "sd": 8.576, "p1": -36.260, "p25": 1.836, "p50": 2.900, "p75": 4.772, "p99": 51.600},
+      "ambiguities": [
+        "Major reproducibility concern: MB can vary by an order of magnitude depending on which book equity definition is used.",
+        "ALTERNATIVE INTERPRETATION: 'market value of equity divided by book value of equity' could also mean a per-share ratio (PRCC/BKVLPS), which gives different values when there are share-class differences. NOT SPECIFIED."
+      ]
+    },
+    "Size": {
+      "definition_verbatim_appendix_table10": "The logarithm of the market value of equity for each firm in a quarter.",
+      "extraction_verdict": "VERIFIED but UNDER-SPECIFIED.",
+      "data_sources_required": ["Compustat or CRSP"],
+      "compustat_items_NOT_SPECIFIED_IN_PAPER": [
+        "Whether ln(PRCCQ × CSHOQ) [Compustat quarterly] or ln(|PRC| × SHROUT) [CRSP] — NOT SPECIFIED.",
+        "UNITS: $millions assumed but NOT EXPLICITLY STATED. Mean Size = 8.453 ⇒ exp(8.453) ≈ 4,684 ⇒ if $millions then $4.7B (median is $4.1B). Paper text claims mean of $15,075 million (≈ $15.1B) which corresponds to ln(15075) ≈ 9.62, NOT 8.453. INTERNAL INCONSISTENCY: The paper's narrative in Section 3.3 says mean log market cap of 8.45 corresponds to $15,075M, but ln(15075) = 9.62 ≠ 8.45. exp(8.453) ≈ 4,684, suggesting either $4.7B average or units are not literally millions. This is a textual error in the paper, not in the extraction."
+      ],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {"mean": 8.453, "sd": 1.511, "p1": 5.141, "p25": 7.358, "p50": 8.321, "p75": 9.473, "p99": 12.120},
+      "ambiguities": [
+        "PAPER-INTERNAL ERROR (flagged in earlier extraction note): the published text states mean Size of 8.45 corresponds to $15,075 million; arithmetic of exp(8.45)≈4,684. Either Size is in $thousands (4,684 × 1000 = $4.7M, too small) or paper text mis-multiplied. Most likely $ millions and the paper text is wrong about $15,075M. Reviewer flags as paper error."
+      ]
+    },
+    "AnalystFollowing": {
+      "definition_verbatim_appendix_table10": "The number of unique analysts following a firm in a year.",
+      "label_in_appendix_table10": "AnalysFollowing (likely typographical; Table 2 / Table 3 use 'AnalystFollowing')",
+      "extraction_verdict": "VERIFIED — but CONFLICT with quarterly panel.",
+      "data_sources_required": ["I/B/E/S Detail file (analyst-level forecasts)"],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {"mean": 15.720, "sd": 9.176, "p1": 3, "p25": 8, "p50": 14, "p75": 22, "p99": 42},
+      "ambiguities": [
+        "INTERNAL INCONSISTENCY (FLAG): Appendix Table 10 says 'in a year' but the unit of observation in Table 3 is firm-quarter, and all other firm controls are quarterly. Either the variable is annual (and repeated for all four quarters) or it is actually quarterly and the appendix label is wrong. NOT RECONCILED.",
+        "FIELD NAME INCONSISTENCY: Appendix Table 10 entry is labelled 'AnalysFollowing' while text and tables use 'AnalystFollowing'. Typographical only.",
+        "FORECAST TYPE: Annual EPS analysts, quarterly EPS analysts, or any analyst? NOT SPECIFIED.",
+        "WINDOW DEFINITION: 'in a year' is ambiguous — fiscal year, calendar year, trailing 12 months? NOT SPECIFIED."
+      ]
+    },
+    "InstitHolding": {
+      "definition_verbatim_appendix_table10": "Percentage of shares owned by institutional holders in a quarter.",
+      "extraction_verdict": "VERIFIED.",
+      "data_sources_required": ["Thomson Reuters Institutional Holdings (13F, formerly Thomson Reuters s34)"],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {"mean": 0.836, "sd": 0.143, "p1": 0.439, "p25": 0.744, "p50": 0.856, "p75": 0.933, "p99": 1.175},
+      "ambiguities": [
+        "P99 > 1: P99 = 1.175 (>100%). Could reflect 13F aggregation issues, multiple share classes, or short interest. NOT EXPLAINED.",
+        "FIELD: The Thomson Reuters s34 file has SHARES and SHROUT2 fields; the exact ratio computation NOT SPECIFIED.",
+        "AGGREGATION: Sum of holdings across all 13F filers divided by total shares outstanding — NOT EXPLICITLY STATED.",
+        "TIMING: Calendar quarter end vs fiscal quarter end NOT SPECIFIED. 13F filings are calendar-quarter-based."
+      ]
+    },
+    "Std_Ret": {
+      "definition_verbatim_appendix_table10": "The standard deviation of daily stock returns in a quarter.",
+      "extraction_verdict": "VERIFIED.",
+      "data_sources_required": ["CRSP Daily Stock File (RET field)"],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {"mean": 0.018, "sd": 0.008, "p1": 0.007, "p25": 0.012, "p50": 0.016, "p75": 0.022, "p99": 0.047},
+      "ambiguities": [
+        "CALENDAR vs FISCAL QUARTER: NOT SPECIFIED. CRSP daily returns are date-indexed; mapping to fiscal quarter requires fiscal calendar alignment. Most likely calendar quarter but unstated.",
+        "DELISTING RETURNS: Whether DLRET/DLPRC are folded in NOT SPECIFIED.",
+        "RAW vs EXCESS RETURNS: NOT SPECIFIED. Likely raw (closest reading of 'daily stock returns').",
+        "MIN OBSERVATIONS: Minimum trading days required in a quarter NOT SPECIFIED."
+      ]
+    },
+    "Dloss": {
+      "definition_verbatim_appendix_table10": "An indicator that equals one if a firm-quarter experiences a loss in operating income before depreciation, and zero otherwise.",
+      "extraction_verdict": "VERIFIED.",
+      "data_sources_required": ["Compustat Fundamentals Quarterly"],
+      "compustat_items_NOT_SPECIFIED_IN_PAPER": [
+        "OPERATING INCOME BEFORE DEPRECIATION: most likely OIBDPQ (Operating Income Before Depreciation, Quarterly), but item code NOT SPECIFIED.",
+        "Alternative could be SALEQ - COGSQ - XSGAQ, but OIBDPQ is conventional."
+      ],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {"mean": 0.120, "sd": 0.325, "p1": 0, "p25": 0, "p50": 0, "p75": 0, "p99": 1},
+      "ambiguities": ["MISSING OIBDPQ: treatment NOT SPECIFIED."]
+    },
+    "Leverage": {
+      "definition_verbatim_appendix_table10": "Total liabilities divided by total assets in a quarter.",
+      "extraction_verdict": "VERIFIED but UNDER-SPECIFIED.",
+      "data_sources_required": ["Compustat Fundamentals Quarterly"],
+      "compustat_items_NOT_SPECIFIED_IN_PAPER": [
+        "TOTAL LIABILITIES: most likely LTQ but item NOT SPECIFIED. Could alternatively be DLCQ + DLTTQ (short-term + long-term debt) — but that would be 'debt' not 'total liabilities,' so LTQ is the more natural reading.",
+        "TOTAL ASSETS: most likely ATQ but item NOT SPECIFIED.",
+        "TIMING within quarter NOT SPECIFIED (beginning, end, average)."
+      ],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {"mean": 0.580, "sd": 0.235, "p1": 0.103, "p25": 0.432, "p50": 0.583, "p75": 0.707, "p99": 1.240},
+      "ambiguities": ["P99 = 1.240 indicates firms with negative book equity (total liabilities > total assets). Treatment of these firms NOT DISCUSSED."]
+    },
+    "Std_Earning": {
+      "definition_verbatim_appendix_table10": "The standard deviation of quarterly ROE over the previous 16 quarters",
+      "extraction_verdict": "VERIFIED but UNDER-SPECIFIED.",
+      "data_sources_required": ["Compustat Fundamentals Quarterly"],
+      "compustat_items_NOT_SPECIFIED_IN_PAPER": [
+        "ROE NUMERATOR: NOT SPECIFIED. Candidates: NIQ (net income, quarterly), IBQ (income before extraordinary items), or annualized variants. Most common ROE uses NIQ or IBQ.",
+        "ROE DENOMINATOR: NOT SPECIFIED. Candidates: CEQQ (common equity), SEQQ (stockholders' equity), beginning- or end-of-quarter book equity, or average.",
+        "WINDOW: 'previous 16 quarters' — does this include the current quarter or strictly the prior 16? NOT SPECIFIED.",
+        "MINIMUM OBSERVATIONS: how many non-missing ROE values are required in the 16-quarter window to compute the std? NOT SPECIFIED."
+      ],
+      "summary_stats_verified": true,
+      "summary_stats_table2_panelB": {"mean": 0.110, "sd": 0.445, "p1": 0.003, "p25": 0.011, "p50": 0.020, "p75": 0.043, "p99": 3.571},
+      "ambiguities": ["P99 = 3.571 is enormous relative to median 0.020, indicating extreme outliers even after winsorization. Suggests numerator/denominator pairing has unstable behavior for some firms (e.g., near-zero book equity)."]
+    }
+  },
+  "flags": [
+    {
+      "id": "F01",
+      "severity": "high",
+      "topic": "Compustat item codes missing throughout Appendix Table 10",
+      "detail": "Appendix Table 10 NEVER cites a single Compustat (ATQ, LTQ, CEQQ, NIQ, IBQ, OIBDPQ, CSHOQ, PRCCQ, etc.) or CRSP (PRC, SHROUT, RET, DLRET) field name. This makes exact replication impossible without making assumptions. Affected variables: MB, Size, Leverage, Dloss, Std_Earning, BiasScale (denominator)."
+    },
+    {
+      "id": "F02",
+      "severity": "high",
+      "topic": "AnalystFollowing — annual vs quarterly inconsistency",
+      "detail": "Appendix Table 10 says 'in a year,' but the regression panel is quarterly. Either the variable is annual (constant within fiscal year) or quarterly and the appendix is wrong. Not reconciled in the paper. Also: label 'AnalysFollowing' in Appendix Table 10 vs 'AnalystFollowing' elsewhere is a typographical inconsistency."
+    },
+    {
+      "id": "F03",
+      "severity": "medium",
+      "topic": "Size — internal arithmetic inconsistency in paper text",
+      "detail": "Section 3.3 narrative claims mean Size = 8.45 corresponds to $15,075 million (≈$15.1B), but exp(8.45) ≈ 4,684, not 15,075. If Size is ln(market cap in $millions), the mean firm has market cap ≈ $4.7B. ln(15075) ≈ 9.62 ≠ 8.453. Paper text appears to have an arithmetic / units error."
+    },
+    {
+      "id": "F04",
+      "severity": "high",
+      "topic": "MgtSentimt — asymmetric definition for range forecasts",
+      "detail": "Pessimistic range forecast is defined as 'upper bound < actual.' Symmetric optimistic definition ('lower bound > actual') is implied but NEVER stated in Appendix Table 10. Range forecasts straddling the actual are presumably classified as neither, but this is not stated."
+    },
+    {
+      "id": "F05",
+      "severity": "medium",
+      "topic": "MgtSentimt / BiasScale — treatment of open-ended and qualitative forecasts not specified",
+      "detail": "I/B/E/S guidance includes one-sided ('at least $X') and qualitative forecasts. Their treatment in MgtSentimt/BiasScale is not specified. Appendix Table 10 says 'For close-end forecasts, management forecast value is defined as the midpoint of the range' — implying open-end forecasts are handled differently, but how is not stated."
+    },
+    {
+      "id": "F06",
+      "severity": "high",
+      "topic": "BiasScale denominator — 'total assets per share' ambiguous",
+      "detail": "Could be ATQ/CSHOQ, ATQ/CSHPRQ, AT/CSHO (annual), or split-adjusted variants. The ratio depends critically on whether shares are split-adjusted to match I/B/E/S forecast convention. Material for replication."
+    },
+    {
+      "id": "F07",
+      "severity": "high",
+      "topic": "MB definition — book equity not specified",
+      "detail": "Book value of equity has multiple Compustat operationalizations (CEQQ, SEQQ, CEQQ+TXDITCQ, AT-LT). The negative P1 = -36.26 indicates negative book equity firms are retained, suggesting CEQQ or similar. Mean of 4.154 with SD 8.576 is plausible for CEQQ-based ratio. NOT SPECIFIED."
+    },
+    {
+      "id": "F08",
+      "severity": "medium",
+      "topic": "Std_Earning — ROE definition completely unspecified",
+      "detail": "'Quarterly ROE' has multiple operationalizations: NIQ/CEQQ, IBQ/CEQQ, with or without lagging denominator, etc. Without specification, replicators get different distributions. Highly right-skewed (P99 = 3.571 vs P50 = 0.020) suggests instability."
+    },
+    {
+      "id": "F09",
+      "severity": "low",
+      "topic": "Winsorization scope ambiguous",
+      "detail": "'All continuous variables are winsorized at the top and bottom 1 percentile of their distributions.' Pooled across full sample? By year? By industry? NOT SPECIFIED (most likely pooled across the full sample given standard practice)."
+    },
+    {
+      "id": "F10",
+      "severity": "medium",
+      "topic": "Cluster variable — 'ethnic groups' not enumerated",
+      "detail": "Standard errors clustered 'by ethnic groups.' The exact number and definition of clusters is not stated. OriginsInfo has 10 broad categories (Anglo-Saxon, Celtic, Hispanic/Latino, Western European, Eastern European, Greek, Jewish, African American, Middle Eastern Muslim, Asian). If all 10 are used, the number of clusters is small — too small for valid cluster-robust inference (standard rule of thumb >30-50 clusters). PAPER USES VERY FEW CLUSTERS, but never discusses cluster-count robustness."
+    },
+    {
+      "id": "F11",
+      "severity": "low",
+      "topic": "Treatment of CEO turnover within the panel",
+      "detail": "Section 4.2.3 mentions that 'only a few observations experienced a change in CEO' and runs robustness tests, but the baseline Table 3 regression's treatment of within-firm CEO changes is not specified at the variable-definition level. Implications for ExecuDir, LogSalary, CEOAge, CEOGender within a firm-quarter when there is a mid-quarter turnover NOT SPECIFIED."
+    },
+    {
+      "id": "F12",
+      "severity": "low",
+      "topic": "Calendar vs fiscal quarter alignment",
+      "detail": "I/B/E/S forecasts and CRSP returns are calendar-date indexed; Compustat fundamentals are fiscal-quarter indexed. The paper does not specify the alignment convention. This matters for Post indicator timing (especially for firms with non-December fiscal year end), Std_Ret window, and quarter-of-event assignment."
+    },
+    {
+      "id": "F13",
+      "severity": "low",
+      "topic": "Pre-announcement filter not documented in Appendix Table 10",
+      "detail": "Section 3.1 states 'we do not consider pre-announcements of earnings (forecasts made after the end of fiscal quarters).' This sample-construction filter is critical to the MgtSentimt and BiasScale definitions but is not reflected in Appendix Table 10."
+    },
+    {
+      "id": "F14",
+      "severity": "medium",
+      "topic": "ExecuDir construction not specified",
+      "detail": "ExecuComp does not have a one-shot 'director' flag. Construction typically infers from TITLEANN containing 'Dir' or 'Chair' or from being listed as a board member. The paper references Campbell et al. (2011) but does not reproduce the construction. Reproducibility limited."
+    },
+    {
+      "id": "F15",
+      "severity": "low",
+      "topic": "Summary statistics for Post and MinorityCEO × Post not reported",
+      "detail": "Table 2 Panel B does not report mean/SD for Post or for the interaction term. These can be reconstructed from sample composition (Panel D quarter distribution + MinorityCEO share) but are not directly reported."
+    },
+    {
+      "id": "F16",
+      "severity": "low",
+      "topic": "MinorityCEO sample composition — bin breakdown",
+      "detail": "MinorityCEO mean = 0.086, n=10,400 implies ~896 minority observations (consistent with Table 2 Panel A 'Treat' n=896). Section 3.2.2 says by 2017 'majority (44% = 4%/9%) of minority CEOs were Asians,' which is consistent with Figure 1. Composition by ethnicity within the sample (treated n=896) NOT BROKEN DOWN in Table 2."
+    },
+    {
+      "id": "F17",
+      "severity": "medium",
+      "topic": "Forecast horizon restriction (≤1 quarter) — actual operationalization",
+      "detail": "Footnote 10 says 'we restrict the management forecast horizon to a quarter or less because we find that the forecast horizons in our sample mainly fall within a quarter.' The exact cutoff (e.g., ≤90 days, ≤92 days, ≤fiscal-quarter-end) NOT SPECIFIED. Mean LogHorizon ≈ 4.1 → mean horizon ≈ 60 days; max LogHorizon P99 ≈ 4.36 → ~78 days, consistent with a roughly quarterly cap but cap value never stated."
+    },
+    {
+      "id": "F18",
+      "severity": "low",
+      "topic": "Industry classification for industry FE",
+      "detail": "Equation (1) uses 'industry fixed effects based on two-digit SIC codes' — historical SIC vs SIC-from-Compustat (SICH) vs CRSP — NOT SPECIFIED."
+    },
+    {
+      "id": "F19",
+      "severity": "low",
+      "topic": "Database vintages / snapshot dates",
+      "detail": "The vintage of Compustat / CRSP / I/B/E/S / ExecuComp / Thomson Reuters snapshots is not stated. Restatements after the snapshot date could change actuals (and hence pessimism classification)."
+    },
+    {
+      "id": "F20",
+      "severity": "low",
+      "topic": "Fiscal-year vs firm-quarter scope for CEO controls",
+      "detail": "CEOAge, ExecuDir, LogSalary, CEOGender are defined 'in a fiscal year,' implying these are annual values repeated across the four quarters of the fiscal year. NOT EXPLICITLY STATED."
+    }
+  ],
+  "compustat_field_inference_table": {
+    "purpose": "Best-guess Compustat item codes, useful for replication. NOT VERIFIED FROM PAPER.",
+    "BiasScale_denominator": "Total assets per share — likely ATQ / CSHOQ (with split adjustment ATQ / (CSHOQ × AJEXQ) optional). NOT SPECIFIED IN PAPER.",
+    "MB_market_equity": "PRCCQ × CSHOQ (Compustat) or |PRC| × SHROUT/1000 (CRSP). NOT SPECIFIED IN PAPER.",
+    "MB_book_equity": "CEQQ (most likely given the negative P1). NOT SPECIFIED IN PAPER.",
+    "Size_market_equity": "ln(PRCCQ × CSHOQ) in $millions (Compustat default). NOT SPECIFIED IN PAPER. NOTE: paper text appears to have an arithmetic error in interpreting Size mean.",
+    "Leverage_numerator": "LTQ (total liabilities, quarterly). NOT SPECIFIED IN PAPER.",
+    "Leverage_denominator": "ATQ (total assets, quarterly). NOT SPECIFIED IN PAPER.",
+    "Dloss_metric": "OIBDPQ < 0. NOT SPECIFIED IN PAPER.",
+    "Std_Earning_ROE_numerator": "Most likely IBQ (income before extraordinary items) or NIQ (net income). NOT SPECIFIED IN PAPER.",
+    "Std_Earning_ROE_denominator": "Most likely CEQQ (common equity, quarterly). NOT SPECIFIED IN PAPER.",
+    "Std_Earning_window": "Trailing 16 quarters; inclusion of current quarter NOT SPECIFIED.",
+    "Std_Ret_returns": "CRSP daily RET (likely raw, not adjusted). NOT SPECIFIED IN PAPER.",
+    "InstitHolding": "Sum of SHARES across 13F filers / total shares outstanding (Thomson Reuters s34 / WRDS Institutional Holdings). NOT SPECIFIED IN PAPER.",
+    "AnalystFollowing": "Count of distinct ANALYS in I/B/E/S Detail file. Annual vs quarterly NOT SPECIFIED."
+  },
+  "replicability_summary": {
+    "verbatim_extraction_quality": "HIGH — every definition in the source JSON matches Appendix Table 10 word for word.",
+    "exact_replicability_from_paper_alone": "LOW. The paper's Appendix Table 10 is narrative; it specifies NO Compustat/CRSP/I/B/E/S field codes. Any replication requires the analyst to choose among multiple plausible operationalizations for MB, Size, Leverage, Dloss, Std_Earning, BiasScale (denominator), InstitHolding, AnalystFollowing, and Std_Ret window.",
+    "biggest_red_flags": [
+      "F02 (AnalystFollowing annual vs quarterly)",
+      "F03 (Size text arithmetic inconsistency in the paper itself)",
+      "F07 (MB book equity unspecified)",
+      "F08 (Std_Earning ROE unspecified)",
+      "F10 (cluster count small — '< 10 ethnic clusters' likely)",
+      "F06 (BiasScale denominator unit ambiguity)"
+    ],
+    "extraction_corrections_needed": "None to the verbatim definitions. The earlier extraction note that 'AnalysFollowing' in Appendix Table 10 was a typo is confirmed (it is)."
+  }
+}

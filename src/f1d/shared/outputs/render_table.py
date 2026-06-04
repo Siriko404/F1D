@@ -73,6 +73,17 @@ def _fmt_se(coef: Optional[Coef], decimal_places: int) -> str:
     return f"({coef.se:.{decimal_places}f})"
 
 
+def _esc(name: str) -> str:
+    """Escape a raw pipeline variable name for LaTeX text mode (underscores).
+
+    Used by the ``names_only`` render path so a literal pipeline identifier
+    (e.g. ``US_EPU_log``, ``UncResCEO_c_x_Unrated``) compiles instead of
+    aborting on the bare ``_``. Pipeline names are Python identifiers, so the
+    underscore is the only LaTeX-special character that can appear.
+    """
+    return name.replace("_", r"\_")
+
+
 # ---------------------------------------------------------------------------
 # Header row emission (top col-numbers + multi-row group headers)
 # ---------------------------------------------------------------------------
@@ -131,6 +142,7 @@ def _emit_var_rows(
     iv_tails: dict[str, str],
     decimal_places: int,
     mask_by_control_vars: bool,
+    names_only: bool = False,
 ) -> list[str]:
     """Emit `var_name & beta & ... \\` + `& (se) & ... \\` pair per variable.
 
@@ -152,7 +164,7 @@ def _emit_var_rows(
             coef_cells.append(_fmt_coef(coef, var, iv_tails, decimal_places))
             se_cells.append(_fmt_se(coef, decimal_places))
 
-        label = labels.get(var, var)
+        label = _esc(var) if names_only else labels.get(var, var)
         lines.append(f"{label} & " + " & ".join(coef_cells) + r" \\")
         lines.append(" & " + " & ".join(se_cells) + r" \\")
     return lines
@@ -239,7 +251,7 @@ def _emit_footnote(spec: SuiteSpec) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
-def render_suite(spec: SuiteSpec) -> str:
+def render_suite(spec: SuiteSpec, names_only: bool = False) -> str:
     """Render a SuiteSpec as a complete LaTeX table chunk.
 
     Output matches the academic-convention format currently in
@@ -247,6 +259,11 @@ def render_suite(spec: SuiteSpec) -> str:
     rules, multicolumn group headers, IV + control rows with bold-and-
     starred significance, FE indicator rows, summary stats, and a
     Notes minipage footer.
+
+    When ``names_only`` is True, IV and control rows render the raw pipeline
+    variable name (underscore-escaped) instead of the spec's display label —
+    used for the thesis_tables.tex pass so every variable shows its literal
+    pipeline identifier. Headers and footnotes are unaffected.
     """
     iv_tails = {iv.name: iv.tail for iv in spec.ivs}
     iv_labels = {iv.name: iv.label for iv in spec.ivs}
@@ -279,6 +296,7 @@ def render_suite(spec: SuiteSpec) -> str:
             iv_tails=iv_tails,
             decimal_places=decimal_places,
             mask_by_control_vars=False,  # IVs are always in every column
+            names_only=names_only,
         )
     )
     lines.append(r"\midrule")
@@ -291,6 +309,7 @@ def render_suite(spec: SuiteSpec) -> str:
             iv_tails=iv_tails,  # used only to skip p_one gating for controls
             decimal_places=decimal_places,
             mask_by_control_vars=True,
+            names_only=names_only,
         )
     )
     lines.append(r"\midrule")

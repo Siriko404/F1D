@@ -1,0 +1,276 @@
+{
+  "review_metadata": {
+    "reviewer_stance": "adversarial peer review",
+    "verdict": "The workflow is well-organized for a HLM-based replication but has CRITICAL non-determinism even with identical inputs (WF02, WF03, WF04, WF05 are blockers). With AA substitution, Phase 1-2 are structurally invalid — the workflow does not address the substitution at all, and pretending the 2,705 → 949 waterfall is reachable from AA misleads the replicator into believing they failed at execution when in fact the targets were never reachable.",
+    "determinism_assessment": "TWO independent replicators with IDENTICAL HLM data would NOT get identical results. Sources of divergence: PSM covariate inference (WF03), greedy match tie-breaking (WF04), SIGMA convention (WF05), AND/OR in $10M filter (WF07), NSEG segment-file choice (WF11), split-sample estimator form (WF02). At minimum, three of these (WF02, WF03, WF04) materially shift the POST coefficient.",
+    "new_issues_found": ["WF19", "WF20", "WF21", "WF22", "WF23", "WF24", "AA01", "AA02", "AA03", "AA04", "AA05", "AA06"]
+  },
+
+  "endorsed": [
+    {
+      "id": "WF13",
+      "phase": 5,
+      "verdict": "Correct: paper makes no winsorization claim; default to none.",
+      "note": "Replicator should verify no extreme values in CASH after filters — filter 2.7 caps CHE/AT at 1, so CASH ∈ [0,1] by construction. Q has no cap; Tobin's Q > 50 outliers can dominate. Worth a sanity check."
+    },
+    {
+      "id": "WF14",
+      "phase": 6,
+      "verdict": "Correct: ~13-16 year clusters is borderline but the paper's choice is documented and not actionable for the replicator."
+    },
+    {
+      "id": "WF15",
+      "phase": 2,
+      "verdict": "Correct: 'first' = announcement_date is the conventional and only sensible reading. The 396 drop count is consistent with this convention against HLM."
+    },
+    {
+      "id": "WF17",
+      "phase": 3,
+      "verdict": "Correct as a validation checkpoint. Pseudo-R² collapsing from 0.101 to 0.007 is a strong PSM diagnostic and the right success criterion."
+    },
+    {
+      "id": "WF18",
+      "phase": 4,
+      "verdict": "Correct sanity check: 4941/949 = 5.21 and 5004/949 = 5.27 imply ~13% attrition from 6-year max — a replicator hitting 4.0 or 6.0 has a construction error."
+    },
+    {
+      "id": "step_4.1_event_year_assignment",
+      "verdict": "Operationally clear: t ∈ {-3,-2,-1,+1,+2,+3} relative to year 0 fiscal year. No genuine ambiguity once WF06 resolves the year-0 mapping."
+    },
+    {
+      "id": "step_4.3_POST_construction",
+      "verdict": "Unambiguous. Year 0 dropped, not coded as 0 or 1. Symmetric pre/post."
+    }
+  ],
+
+  "amended": [
+    {
+      "id": "WF01",
+      "severity_revised": "CRITICAL",
+      "phase": 2,
+      "issue": "The 496-filter has two paper descriptions that the workflow tries to apply jointly. They are NOT operationally equivalent.",
+      "diagnostic": "Table 1 row says 'missing variables used to estimate the propensity scores.' Body text describes data-quality screens (missing financials, CHE>AT, AT/MVE<$10M, growth>100%). For these to coincide at exactly 496, every observation failing one screen would have to fail the other — implausible.",
+      "amendment_required": "Workflow must commit to ONE filter operationalization and report the substep counts. Recommended order: (a) drop CHE>AT [tiny set]; (b) drop AT<10M OR MVE<10M; (c) drop |ΔAT/lag(AT)|>1 OR |ΔSALE/lag(SALE)|>1; (d) drop missing any of {SIZE, Q, CF, LEV, NWC, SIGMA, NSEG, AGE, CAPX, R&D, ACQUISITION, DIV, SGRW, FINANCE, DNWC, LOSS, Z-SCORE, BigN, CASH, DCASH}. Report counts at each substep. Total drop will likely NOT equal 496 — accept this and document the deviation. The 496 in the paper is a black box."
+    },
+    {
+      "id": "WF02",
+      "severity_revised": "CRITICAL — most impactful non-determinism after sample selection",
+      "phase": 6,
+      "issue": "Paper says 'estimated simultaneously' without specifying the estimator. Three operationally distinct implementations exist, yielding DIFFERENT point estimates.",
+      "operationally_distinct_options": {
+        "option_A_separate_OLS": "Estimate two OLS regressions on the two samples; report coefficients separately; bootstrap or sandwich-stack the VCV for the difference test. Yields POINT estimates exactly as if run separately.",
+        "option_B_stacked_with_full_interactions": "Stack panels with a TREAT indicator; interact TREAT with EVERY regressor (POST, Q, SIZE, ..., AGE, firm FE). Treatment effect = coefficient on TREAT×POST. POINT estimates IDENTICAL to option A; SEs are joint by construction.",
+        "option_C_stacked_with_POST_interaction_only": "Stack with TREAT*POST as the interaction, but allow CONTROLS to vary by sample only via main effects, not interactions. Constrains control coefficients to be equal across samples. POINT estimates DIFFERENT from A or B."
+      },
+      "amendment_required": "Workflow must specify Option B (stacked with full interactions) as the operational equivalent of 'separate regressions + joint VCV.' This matches Gow-Ormazabal-Taylor (2010) recommended practice. Document explicitly: 'Stack treated and control panels; create TREAT dummy; interact TREAT with POST, all 8 controls, and firm FE; cluster at matched-pair and year; treatment effect on cash = β(TREAT×POST) with t-stat from joint VCV.' Two replicators following Option B will get identical point estimates. Two replicators choosing between A/B/C may not."
+    },
+    {
+      "id": "WF03",
+      "severity_revised": "CRITICAL — affects PSM matches, propagates to all downstream tests",
+      "phase": 3,
+      "issue": "SGRW, FINANCE, DNWC, LOSS, Z-SCORE formulas not in paper. Different inference yields different propensity scores → different matched pairs → different control firms → different POST coefficients.",
+      "amendment_required": "Pin down exact formulas in the workflow before estimation. Recommended (matching closest convention in the cash-holdings literature, Bates-Kahle-Stulz 2009, Dittmar-Mahrt-Smith 2007): SGRW = (SALE_t − SALE_{t-1})/SALE_{t-1}; FINANCE = (DLTIS − DLTR + SSTK − PRSTKC)/AT; DNWC = ΔNWC/AT_{t-1} where NWC = ACT − CHE − LCT + DLC; LOSS = 1[NI < 0]; Z-SCORE = 1.2(WCAP/AT) + 1.4(RE/AT) + 3.3(OIADP/AT) + 0.6(MVE/LT) + 1.0(SALE/AT) per Altman (1968). Document each choice; sensitivity-test alternatives if final POST estimate is off-target."
+    },
+    {
+      "id": "WF04",
+      "severity_revised": "CRITICAL — fundamental non-determinism of greedy matching",
+      "phase": 3,
+      "issue": "Greedy iterative matching is order-dependent. The paper's wording ('select the pair with the smallest difference') resolves a 2-way conflict but not a 3+way conflict cascade. Two replicators using different cascade orders will get non-identical match sets.",
+      "amendment_required": "Replace greedy with optimal bipartite matching (Hungarian algorithm) to minimize total absolute pscore difference subject to no-replacement and within-FF48-industry constraint. This is deterministic given identical inputs. If keeping greedy: specify an explicit processing order, e.g., 'process treated firms in ascending propensity-score gap to their nearest available control; on ties, ascending GVKEY.' Without this, two replicators cannot reproduce each other.",
+      "impact_estimate": "On a sample of ~270 irregularity firms with industry-year matching pools typically of size 5-20, optimal vs greedy matching differs on ~5-15% of pairs. This shifts the POST_control coefficient by O(0.001-0.003), well within the t-statistic range that could push p-values across the 0.05 threshold."
+    },
+    {
+      "id": "WF05",
+      "severity_revised": "HIGH",
+      "phase": 5,
+      "issue": "SIGMA Convention A (industry-median of firm-level SDs) vs Convention B (SD of industry-median series). Paper's Table 4 PS_DEMAND construction uses Convention B unambiguously. Table 3 baseline SIGMA is ambiguous.",
+      "amendment_required": "Adopt Convention A for Table 3 baseline (consistent with Opler-Pinkowitz-Stulz-Williamson 1999, which the paper explicitly cites for the variable). Use Convention B for Table 4's IND_STDCF (where the paper's wording 'standard deviation of industry-median operating cash flows' is unambiguous). Document the choice and the inconsistency in the paper. Note: this is the SAME quantity by name (SIGMA / IND_STDCF) computed two different ways in the same paper — a flag against the paper itself, not the workflow."
+    },
+    {
+      "id": "WF06",
+      "severity_revised": "HIGH",
+      "phase": 4,
+      "issue": "'Year 0' = 'fiscal year of the restatement announcement' is ambiguous for off-calendar fiscal year-ends. A March-fiscal-year-end firm with a January announcement could plausibly take year 0 as either (a) the fiscal year ending the following March, or (b) the just-closed fiscal year (April-prior-year to March-current).",
+      "amendment_required": "Convention (b) is more defensible because the announcement reveals information about the just-closed period and the firm's behavioral response in the NEXT fiscal year is post-treatment. But the paper does not pin it down. Specify: 'year 0 = fiscal year FYEAR for which FYEAR's fiscal-year-end-month >= announcement_date's calendar month-year relative to a 12-month window.' Or simpler: 'year 0 = the next fiscal year whose datadate >= announcement_date.' Document and verify match to ~5.21 mean panel length per restatement."
+    },
+    {
+      "id": "WF07",
+      "severity_revised": "HIGH",
+      "phase": 2,
+      "issue": "'AT and MVE below $10M' literal vs conventional. Literal (AND) drops only tiny firms with both AT<10M AND MVE<10M, retaining mid-cap small firms with one but not the other. Conventional (OR) drops more aggressively.",
+      "amendment_required": "Apply OR (the conventional reading; consistent with size screens in Opler-Pinkowitz-Stulz-Williamson 1999 and Bates-Kahle-Stulz 2009). Document the departure from literal text. If workflow's 496 count is unreachable, sensitivity-test the AND version."
+    },
+    {
+      "id": "WF08",
+      "phase": 5,
+      "issue": "Industry classification for SIGMA at baseline not stated.",
+      "amendment_required": "Adopt FF48 for consistency with the rest of the paper. Document."
+    },
+    {
+      "id": "WF09",
+      "severity_revised": "HIGH",
+      "phase": 3,
+      "issue": "Are financial/utility firms also excluded from the CONTROL POOL for PSM? Paper is silent. If only treated firms are filtered, the matching pool is contaminated.",
+      "amendment_required": "Apply identical SIC exclusions (6000-6999 and 4900-4999) to the control pool. Standard practice. Otherwise PSM may match a treated industrial firm to a control bank, breaking the industry-FE identification in the second stage."
+    },
+    {
+      "id": "WF10",
+      "phase": 1,
+      "amendment_required": "Use CCM linktable (LINKTYPE in ('LU','LC')); take primary GVKEY (LINKPRIM='P'); link valid on announcement_date (LINKDT <= announcement_date <= LINKENDDT or LINKENDDT IS NULL)."
+    },
+    {
+      "id": "WF11",
+      "severity_revised": "HIGH — paper says 'business segments' but SFAS 131 transition makes pure BUSSEG infeasible post-1998",
+      "phase": 5,
+      "issue": "Paper text: 'number of business segments.' Pre-SFAS 131, Compustat segments file uses stype='BUSSEG'. Post-SFAS 131 (1998+), most firms reclassify to stype='OPSEG'. Sample spans both periods.",
+      "amendment_required": "Use stype IN ('BUSSEG','OPSEG'); deduplicate on (gvkey, datadate, sid); filter srcdate=datadate (or take MAX(srcdate) per (gvkey,datadate)) to avoid restatement-vintage duplicates; count distinct segments with non-zero IAS (identifiable assets) > 0. NSEG=1 if missing or zero. The paper's literal 'business segments' phrasing, applied as stype='BUSSEG' only, gives near-universal missingness post-1998 and effectively imputes NSEG=1 for most of the sample — clearly not what the paper did (their Table 1 Panel B shows mean NSEG=5.1, requiring genuine segment data)."
+    },
+    {
+      "id": "WF12",
+      "phase": 5,
+      "amendment_required": "Use funda (annual); first_year = MIN(fyear) per gvkey. Add 1 inside log to handle the first-year case."
+    }
+  ],
+
+  "rejected": [
+    {
+      "id": "no_flags_outright_rejected",
+      "note": "None of the 18 flags is wrong-headed; the workflow's diagnostic is sound. However, several flags UNDERSTATE their severity (see 'amended' upgrades) and one flag is mislabeled INFO when it should be HIGH:",
+      "specifics": [
+        "WF16 marked INFO but the GAO-03/GAO-06 overlap is non-trivial: GAO-03-138 covers Jan-1997 to Jun-2002; GAO-06-678 covers Jul-2002 to Sep-2005. Overlap is small but the paper's '203 duplicates' includes some cross-report duplicates that HLM may or may not have deduplicated. Not rejected, just upgrade to MEDIUM.",
+        "WF14 marked LOW but cluster-robust SE validity with 13-16 year clusters is genuinely shaky. Upgrade to MEDIUM. Workflow should at least mention wild-bootstrap as a robustness check."
+      ]
+    }
+  ],
+
+  "fatal": [
+    {
+      "id": "AA01",
+      "category": "AA substitution — sample coverage gap",
+      "issue": "AA starts 2000; GAO/HLM covers 1997-2006. Loss of 1997-1999 restatements is FATAL for matching the paper's 2705 → 949 waterfall. Without HLM, the workflow's expected_count=2705 and expected_final_N values are unreachable as a matter of arithmetic.",
+      "impact": "Per HLM (2008) Table 1, of 2,705 total restatements, approximately 30-40% were announced 1997-1999 (the pre-SOX surge). Starting count from AA filtered to 2000-2006 announcements will be ~1,500-1,800, NOT 2,705. Downstream the 949 / 270 / 679 sample sizes are unrecoverable.",
+      "implication": "Replication target n=270 irregularities is unrealistic. Expect ~150-200 irregularities after analogous filters. Do NOT treat sample-size mismatch as workflow execution failure — it is a data-source structural difference. Validation checkpoints in workflow Phase 2 and Phase 4 must be DISCARDED, not 'verified.'",
+      "remediation": "EITHER (a) acquire HLM dataset (still the only legitimate path to true replication), OR (b) accept that the project is now a CONCEPTUAL REPLICATION on a 2000-2006 subsample using AA classification — document this explicitly, do not present results as replicating the paper's numbers. The expected_final_N_per_column in the workflow's _meta block becomes misleading and should be replaced with AA-derived expected counts."
+    },
+    {
+      "id": "AA02",
+      "category": "AA substitution — irregularity classification mapping",
+      "issue": "HLM's irregularity definition is the OR of three conditions: (i) restatement description contains 'fraud' or 'irregularity'; (ii) firm is subject to SEC or DOJ investigation; (iii) firm is subject to independent investigation of accounting matters. AA fields res_fraud, res_sec_investigation, res_regulatory_investigation map to (i) and (ii) approximately, but DO NOT capture (iii).",
+      "specifics": {
+        "HLM_condition_i_fraud": "Maps to AA res_fraud. Coverage: AA flags this based on disclosure text mining and SEC AAERs. Likely captures most cases.",
+        "HLM_condition_ii_SEC_investigation": "Maps to AA res_sec_investigation. Coverage: AA tracks SEC enforcement releases; DOJ investigations only if disclosed in 8-K/10-K. Reasonable but imperfect.",
+        "HLM_condition_iii_independent_investigation": "NO clean AA analog. AA has res_board_app_special_committee for some cases but coverage is inconsistent and not directly comparable. Hennes-Leone-Miller specifically used hand-coding to identify these cases from 8-K text and proxy disclosures.",
+        "user_proposed_Variant_B": "res_fraud OR res_sec_investigation — closest to HLM but UNDER-COUNTS by missing condition (iii). HLM's category (iii) represents an estimated 15-25% of their irregularity classifications.",
+        "user_proposed_Variant_C": "B + res_regulatory_investigation — likely OVER-COUNTS because regulatory investigations include PCAOB, state AG, IRS actions that HLM did not include."
+      },
+      "impact": "Variant B will produce ~200-220 irregularities from AA-2000-2006 (vs paper's 270 across 1997-2006). After PSM and panel construction, irregularity sample n_obs will be ~1,000-1,200 (vs paper's 1,391). Variant C will produce ~270-300 but with substantively different composition (more reporting-quality-issue firms, fewer fraud firms). NEITHER reproduces HLM.",
+      "remediation": "Adopt Variant B as the operational compromise. Document explicitly: 'Our irregularity definition omits HLM's category (iii) independent-investigation cases. Compared to the original paper, this introduces measurement error toward the null in the irregularity-vs-error contrast (cf. Hennes-Leone-Miller 2008 Figure 1). We do not claim to replicate the paper's classification; we replicate the broader design with a transparent AA-based irregularity proxy.' Sensitivity-test Variant A (res_fraud only) and Variant C to bracket the estimates."
+    },
+    {
+      "id": "AA03",
+      "category": "AA substitution — sample period truncation cascades into PSM control pool",
+      "issue": "If the AA-based replicator restricts to 2000-2006 announcements, the pre-restatement window (years -3 to -1) for 2000 restaters is 1997-1999. The matched control pool in those years would normally include 'non-restatement firms in 1997-1999.' But because AA can't see 1997-1999 restatements, some firms that DID restate in 1997-1999 will be incorrectly classified as non-restaters and used as controls. This contaminates the control pool with treated firms.",
+      "impact": "Biases the difference-in-differences estimator TOWARD ZERO (controls move with the treatment) and inflates control-firm cash-holding trends.",
+      "remediation": "EITHER (a) restrict the analysis sample to restatements announced 2003-2006 so that pre-period (2000-2002) is fully within AA's coverage and control firms classifiable, OR (b) supplement AA with another source for 1997-1999 restatements (e.g., manual SEC AAER search), OR (c) accept the contamination and acknowledge it as a study limitation. Option (a) further shrinks sample size."
+    },
+    {
+      "id": "AA04",
+      "category": "AA substitution — announcement-date convention differs",
+      "issue": "AA's res_notif_date / res_accept_date / restatement disclosure date differs from GAO/HLM's 'announcement date.' AA typically records the 8-K Item 4.02 disclosure date. HLM used the 'first public announcement' which may be a press release predating the 8-K by days to weeks. This shifts year 0 for some restatements.",
+      "impact": "For firms with off-calendar fiscal year-ends and announcements near fiscal-year-end, year-0 misalignment by a few weeks can swap which fiscal year is year 0 vs year -1. Affects pre/post classification.",
+      "remediation": "Use AA's res_disclosure_date as the canonical announcement_date. Document. Expected to introduce noise but not systematic bias."
+    },
+    {
+      "id": "AA05",
+      "category": "AA substitution — duplicate-handling convention differs",
+      "issue": "AA records restatement disclosures, not 'restatement events.' A single underlying restatement can generate multiple AA rows (initial 8-K Item 4.02 → subsequent 10-K/A → further amendments). The paper's 203-duplicate drop assumes HLM's pre-deduplicated event-level data.",
+      "remediation": "Define 'restatement event' = unique (gvkey, res_begin_date, res_end_date) tuple; collapse multiple AA rows to one event, taking earliest disclosure_date. Then the 203-drop step from the workflow is replaced with this collapse, with a NEW expected drop count to be determined empirically."
+    },
+    {
+      "id": "AA06",
+      "category": "AA substitution — workflow validation checkpoints become invalid",
+      "issue": "The workflow's validation_checkpoints block targets specific counts (2705, 949, 270, 679, 1391, 1434, 4941, 5004, etc.). NONE of these are reachable from AA-substituted data. A replicator following the workflow will see all checkpoints fail and incorrectly conclude they executed Phase 1-2 wrong.",
+      "remediation": "Replace validation checkpoints with QUALITATIVE checks: (a) irregularity sample is 25-35% of total restatements (paper: 270/949 = 28.5%); (b) post-matching pseudo-R² < 0.02; (c) mean CASH 0.15-0.20; (d) POST coefficient for irregularity-treated is positive and 2-4x the control coefficient. Do NOT validate against absolute counts."
+    },
+    {
+      "id": "WF03_under_AA",
+      "category": "WF03 elevated to FATAL under AA substitution",
+      "issue": "Already CRITICAL under HLM (probit covariate formulas not given). Under AA, the absence of a sample-size validation checkpoint (because AA01 invalidates them) means the replicator has no signal of whether their covariate inference is correct. PSM diagnostics (Table A1 pseudo-R² before/after) are still useful as a QUALITATIVE check but cannot validate absolute counts.",
+      "remediation": "Adopt the formulas in the WF03 amendment above; commit and document; sensitivity-test only if the qualitative POST pattern fails to materialize."
+    }
+  ],
+
+  "newly_identified_flags_beyond_the_original_18": [
+    {
+      "id": "WF19",
+      "severity": "HIGH",
+      "phase": 3,
+      "issue": "Probit pooled regression uses 21,201 observations (984 treated + 20,217 control firm-years). The 20,217 non-restater firm-years almost certainly include MULTIPLE observations per non-restater firm (each non-restater contributes one observation per fiscal year they appear in the sample window). This induces within-firm serial correlation in the probit residuals that biases the probit's standard errors. Paper's Table A1 t-statistics for probit covariates are computed without clustering, ignoring this. Affects which covariates appear 'significant' and indirectly the propensity score precision.",
+      "remediation": "Cluster probit SEs at firm level. Document. May not change point estimates of pscore meaningfully but affects diagnostic interpretation."
+    },
+    {
+      "id": "WF20",
+      "severity": "MEDIUM",
+      "phase": 3,
+      "issue": "Probit specification includes year FE AND industry FE. If an industry-year cell has zero treated observations, the FE absorbs perfectly and observations drop. With FF48 industries × ~10 years = ~480 industry-years, many will have zero treated. Sample-size shrinkage in probit is NOT mentioned in the workflow's Phase 3.",
+      "remediation": "Verify probit sample size of 21,201 reconciles after FE absorption. If not, document drops."
+    },
+    {
+      "id": "WF21",
+      "severity": "MEDIUM",
+      "phase": 6,
+      "issue": "Year clustering ambiguity: 'cluster at year' could mean calendar year of the firm-year observation OR event year (-3,-2,-1,+1,+2,+3) OR fiscal year. Convention is calendar year, but the workflow does not specify. Event-year clustering would be wrong (POST is collinear with event year sign). Fiscal-year clustering is sensible.",
+      "remediation": "Specify calendar year of datadate as the year cluster. ~13 clusters spanning 1994-2009."
+    },
+    {
+      "id": "WF22",
+      "severity": "LOW",
+      "phase": 5,
+      "issue": "BigN coding around Arthur Andersen collapse (2002): firms with Andersen as auditor in early 2002 transitioned mid-year. The BigN indicator could be coded by year-end auditor (post-transition) or by majority-of-year auditor. Convention: year-end. Workflow doesn't address.",
+      "remediation": "Use Compustat AU code at fiscal-year-end. Document."
+    },
+    {
+      "id": "WF23",
+      "severity": "MEDIUM",
+      "phase": 4,
+      "issue": "For univariate test in Table 2 (precursor to Table 3), firms with partial event windows (e.g., 2 pre-years and 3 post-years instead of 3+3) have firm-specific averages computed on unequal weights between pre/post. The workflow doesn't address whether to (a) require balanced firms only, (b) use all available data, or (c) require minimum K years per side.",
+      "remediation": "Use all available data (convention). Document that firm-specific averages have unequal precision, but firm FE in Table 3 multivariate regression handles this correctly."
+    },
+    {
+      "id": "WF24",
+      "severity": "LOW",
+      "phase": 6,
+      "issue": "Adjusted R² calculation differs across packages with firm FE. Stata's xtreg, fe reports within R²; reghdfe reports an absorbed-R²; R's plm reports something different again. The paper's reported adj-R² of 0.156-0.180 likely corresponds to Stata's overall R² (including FE) or xtreg's within R². Cosmetic but creates apparent mismatch.",
+      "remediation": "Document the package used and the R² flavor. Don't treat 0.156 vs 0.20 as a sample-construction error."
+    }
+  ],
+
+  "internal_workflow_contradictions": [
+    {
+      "id": "contradiction_1",
+      "location": "Step 2.7 vs Table 1 row label",
+      "issue": "Workflow's step 2.7 expected_count=496 corresponds to applying BOTH the paper's body-text data-quality filters AND the missing-PSM-variables filter. But the paper's Table 1 attributes the 496 to ONLY the PSM-variables filter. The two cannot both be correct."
+    },
+    {
+      "id": "contradiction_2",
+      "location": "Step 4.1 vs 4.4",
+      "issue": "Step 4.1 says firms get up to 6 event-years. Step 4.4 expects 4,941 / 949 ≈ 5.21 firm-years per restater. The 13% attrition isn't decomposed: how much is from year-0 dropping (mechanical, accounts for all 6→5? No, year 0 is excluded but the 6 was already net of year 0). The 6-max already excludes year 0. Attrition is from missing covariates in event years. Workflow should clarify."
+    },
+    {
+      "id": "contradiction_3_paper_vs_workflow",
+      "location": "NSEG: 'business segments' (paper) vs BUSSEG+OPSEG (workflow Phase 5 convention)",
+      "issue": "Paper text says 'business segments' which, taken literally, means stype='BUSSEG' only. Workflow says use both. Workflow's choice is correct in spirit (the paper clearly intends genuine segment counts, not BUSSEG-only which would near-universally be missing post-1998), but the deviation from paper text should be documented."
+    },
+    {
+      "id": "contradiction_4_paper_internal",
+      "location": "SIGMA in Table 3 vs IND_STDCF in Table 4 (both within the paper)",
+      "issue": "The paper itself uses two operationalizations of 'standard deviation of industry-median cash flows' — one as the SIGMA control, another as IND_STDCF for cross-sectional partitioning. The workflow's WF05 correctly flags the ambiguity but the underlying contradiction is in the PAPER, not the workflow. Replicator should note that Chen et al. themselves may not have used identical SIGMA constructions across tables."
+    }
+  ],
+
+  "summary_recommendation": {
+    "for_replication_with_HLM": "Workflow needs AMENDMENTS to WF02, WF03, WF04, WF05, WF07, WF09, WF11 to be deterministic. Once amended, two replicators with HLM data and the amended workflow should reach POST coefficients within 0.001-0.003 of each other.",
+    "for_replication_with_AA": "Workflow is FOUNDATIONALLY INCOMPATIBLE with AA substitution at Phase 1-2. Reframe the project as a CONCEPTUAL REPLICATION on 2003-2006 announcements using Variant B irregularity classification. Discard all absolute count validation checkpoints. Expected POST_irregularity coefficient: positive, larger than POST_control, in the range 0.025-0.055 (vs paper's 0.046). If the qualitative pattern holds, declare conceptual success. If the point estimate is materially smaller (e.g., < 0.02), it likely reflects AA's missing condition-(iii) irregularities — not a workflow execution failure.",
+    "honest_communication_to_stakeholders": "The workflow as written promises bit-level replication of Table 3 Panel A. Under AA substitution this is unattainable. The user should be informed BEFORE execution that (a) the 949/270/679 targets are unreachable, (b) the POST coefficient may differ by 0.01-0.02 from the paper, and (c) any 'failure' to hit paper numbers is a data-source artifact, not workflow defect."
+  }
+}
