@@ -3,11 +3,13 @@
 
 Reverse-causality probe for the UncResCEO -> Cash finding. Treatment = call-firms
 in the SINGLE quarter BEFORE they announce a >=50%-cash acquisition (SDC, US public
-acquirers, 2002-2018, payment method known). Two outcomes, same pre-announce quarter:
-  (1) CashRatio   -> do they hold more cash the quarter before the deal? (first stage)
-  (2) UncResCEO   -> does CEO Q&A uncertainty rise that same quarter? (the probe)
+acquirers, 2002-2018, payment method known). Three outcomes, same pre-announce quarter:
+  (1) CashRatio     -> do they hold more cash the quarter before the deal? (first stage)
+  (2) UncResCEO     -> does CEO Q&A uncertainty rise that same quarter? (the probe)
+  (3) CashScrutiny  -> do analysts scrutinize cash more that same quarter? (% analyst Q&A turns)
+  (4) HighCashScrutiny -> 1[CashScrutiny > median] (LPM); median=0 (89% zeros) so = any cash scrutiny
 
-STOCK-ACQUIRER PLACEBO (cols 3-4): the t-1 uncertainty rise could be a confound --
+STOCK-ACQUIRER PLACEBO (stock arm): the t-1 uncertainty rise could be a confound --
 before any secret deal the CEO is under a legal gag (MNPI/Reg FD) and sounds evasive
 regardless of cash. Stock-financed acquirers (>=50% STOCK) have the SAME pending-deal
 gag but NO cash war-chest. So if uncertainty rises for stock acquirers too, the rise
@@ -44,7 +46,8 @@ from linearmodels.panel import PanelOLS
 ROOT = Path(__file__).resolve().parents[1]
 CTRL = ["Leverage", "lnAssets", "TobinsQ", "ROA", "Capex", "DivDummy", "sCFO"]  # base minus Lagged_DV
 PRE_LAGS = (-1, -1)  # treatment = the single quarter before announcement (e == -1)
-DVS = ["CashRatio", "UncResCEO"]
+DVS = ["CashRatio", "UncResCEO", "CashScrutiny", "HighCashScrutiny"]
+SCORE = ROOT / "tmp" / "_cash_stock_score_call.parquet"  # analyst cash-attention (CashScrutiny)
 TEX_OUT = ROOT / "docs" / "Draft" / "_empire_building_did.tex"
 
 
@@ -65,6 +68,12 @@ def base_panel() -> pd.DataFrame:
         columns=["file_name", "UncResCEO"],
     )
     p = p.merge(res, on="file_name", how="left")
+    score = pd.read_parquet(SCORE, columns=["file_name", "stock_score"])
+    p = p.merge(score, on="file_name", how="left")
+    p["CashScrutiny"] = p["stock_score"] * 100.0   # % of analyst Q&A turns on cash/liquidity
+    _med = p["CashScrutiny"].median()              # above-median cash-scrutiny (LPM). median=0
+    p["HighCashScrutiny"] = np.where(p["CashScrutiny"] > _med, 1.0, 0.0)   # >median; 89% zeros -> any scrutiny
+    p.loc[p["CashScrutiny"].isna(), "HighCashScrutiny"] = np.nan
     p["gvkey"] = p["gvkey"].astype(str).str.zfill(6)
     p["start_date"] = pd.to_datetime(p["start_date"])
     p["cq"] = p["start_date"].dt.year * 4 + (p["start_date"].dt.quarter - 1)
@@ -113,8 +122,11 @@ def build(p: pd.DataFrame, s: pd.DataFrame, m: pd.DataFrame, mask: pd.Series) ->
     return q, treat["gvkey"].nunique()
 
 
-def run(q: pd.DataFrame, dv: str) -> dict:
-    d = q.replace([np.inf, -np.inf], np.nan).dropna(subset=[dv, "PreAnnounceQtr"] + CTRL).copy()
+def run(q: pd.DataFrame, dv: str, match: str | None = None) -> dict:
+    # `match` restricts the sample to rows where another DV is also present, so
+    # CashScrutiny is estimated on the SAME universe as UncResCEO (comparable column).
+    need = [dv, "PreAnnounceQtr"] + CTRL + ([match] if match else [])
+    d = q.replace([np.inf, -np.inf], np.nan).dropna(subset=need).copy()
     n_firms = int(d["gvkey"].nunique())
     d = d.set_index(["gvkey", "cq"])
     f = f"{dv} ~ 1 + PreAnnounceQtr + " + " + ".join(CTRL) + " + EntityEffects + TimeEffects"
@@ -141,20 +153,20 @@ def cell(coef: float, p: float) -> str:
 
 def write_tex(res: dict, counts: dict) -> None:
     # column order: (arm, dv)
-    cols = [("cash", "CashRatio"), ("cash", "UncResCEO"),
-            ("stock", "CashRatio"), ("stock", "UncResCEO")]
+    cols = [("cash", "CashRatio"), ("cash", "UncResCEO"), ("cash", "CashScrutiny"), ("cash", "HighCashScrutiny"),
+            ("stock", "CashRatio"), ("stock", "UncResCEO"), ("stock", "CashScrutiny"), ("stock", "HighCashScrutiny")]
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
         r"\caption{Empire-Building Run-Up Test}",
         r"\label{tab:empire_building_did}",
         r"\scriptsize",
-        r"\begin{tabular}{lcccc}",
+        r"\begin{tabular}{lcccccccc}",
         r"\toprule",
-        r" & \multicolumn{2}{c}{Cash acquirers} & \multicolumn{2}{c}{Stock acquirers (placebo)} \\",
-        r"\cmidrule(lr){2-3}\cmidrule(lr){4-5}",
-        r" & (1) & (2) & (3) & (4) \\",
-        r" & CashRatio & UncResCEO & CashRatio & UncResCEO \\",
+        r" & \multicolumn{4}{c}{Cash acquirers} & \multicolumn{4}{c}{Stock acquirers (placebo)} \\",
+        r"\cmidrule(lr){2-5}\cmidrule(lr){6-9}",
+        r" & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\",
+        r" & CashRatio & UncResCEO & CashScrutiny & HighCashScrutiny & CashRatio & UncResCEO & CashScrutiny & HighCashScrutiny \\",
         r"\midrule",
         "PreAnnounceQtr & "
         + " & ".join(cell(res[k]["beta"], res[k]["p1"]) for k in cols) + r" \\",
@@ -168,8 +180,8 @@ def write_tex(res: dict, counts: dict) -> None:
         lines.append(" & " + " & ".join(f"({res[k]['ctrls'][c]['se']:.4f})" for k in cols) + r" \\")
     lines += [
         r"\midrule",
-        r"Firm FE & Yes & Yes & Yes & Yes \\",
-        r"Cal. Year-Quarter FE & Yes & Yes & Yes & Yes \\",
+        r"Firm FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\",
+        r"Cal. Year-Quarter FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\",
         r"\midrule",
         "Firms & " + " & ".join(f"{res[k]['n_firms']:,}" for k in cols) + r" \\",
         "N (firm-quarters) & " + " & ".join(f"{res[k]['n']:,}" for k in cols) + r" \\",
@@ -179,7 +191,8 @@ def write_tex(res: dict, counts: dict) -> None:
         r"\begin{minipage}{\linewidth}",
         r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the treatment coefficient, $\beta > 0$; two-tailed for controls). ",
-        r"Significant coefficients in \textbf{bold}. Standard errors (in parentheses) clustered at firm level.",
+        r"Significant coefficients in \textbf{bold}. Standard errors (in parentheses) clustered at firm level. "
+        r"CashScrutiny (cols 3, 7) and HighCashScrutiny (cols 4, 8) are estimated on the UncResCEO call universe. HighCashScrutiny is an LPM on $\mathbf{1}$[CashScrutiny $>$ median]; the median is $0$ (89\% of calls raise no cash turns), so it flags any cash scrutiny ($\approx$11\% of calls).",
         r"\end{minipage}",
         r"\end{table}",
     ]
@@ -194,7 +207,8 @@ def main() -> None:
         q, n = build(p, s, m, mask)
         counts[arm] = n
         for dv in DVS:
-            res[(arm, dv)] = run(q, dv)
+            mu = "UncResCEO" if dv in ("CashScrutiny", "HighCashScrutiny") else None   # match to UncResCEO universe
+            res[(arm, dv)] = run(q, dv, match=mu)
 
     ts = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     out = ROOT / "outputs" / "econometric" / "empire_building_did" / ts

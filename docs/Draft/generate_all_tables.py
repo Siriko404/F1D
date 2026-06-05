@@ -76,6 +76,10 @@ THESIS_FRAGMENT_BLOCK = [
     r"\clearpage",
     r"% Cash-Scrutiny channel test (Link 2). Regenerate: python scripts/gen_cash_scrutiny_channel_table.py",
     r"\input{_cash_scrutiny_channel}",
+    r"\clearpage",
+    r"% Cash-Scrutiny reason-gating test (CashScrutiny x PreAnnounceQtr interaction on the",
+    r"% UncRes-matched cash-acquirer pre-announce universe). Regenerate: python scripts/gen_reason_gating_table.py",
+    r"\input{_reason_gating}",
 ]
 
 

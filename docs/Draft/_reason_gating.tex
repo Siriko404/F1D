@@ -1,0 +1,32 @@
+\begin{table}[htbp]
+\centering
+\caption{Cash-Scrutiny Reason-Gating Test}
+\label{tab:reason_gating}
+\small
+\begin{tabular}{lcc}
+\toprule
+ & \multicolumn{2}{c}{UncResCEO} \\
+\cmidrule(lr){2-3}
+ & (1) & (2) \\
+\midrule
+CashScrutiny & 0.0000 & 0.0001 \\
+ & (0.0018) & (0.0018) \\
+PreAnnounceQtr & \textbf{0.0413}$^{***}$ & \textbf{0.0439}$^{**}$ \\
+ & (0.0177) & (0.0189) \\
+CashScrutiny $\times$ PreAnnounceQtr &  & -0.0056 \\
+ &  & (0.0111) \\
+\midrule
+Controls & Yes & Yes \\
+Firm FE & Yes & Yes \\
+Cal. Year-Quarter FE & Yes & Yes \\
+\midrule
+N (firm-quarters) & 26,216 & 26,216 \\
+Firms & 1,237 & 1,237 \\
+$R^2$ & 0.001 & 0.001 \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{2pt}\scriptsize
+\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed, $\beta>0$, for the directional terms); significant coefficients in \textbf{bold}. Standard errors (in parentheses) clustered at firm level. Estimated on cash-acquirer firms ($\geq$50\%-cash acquisitions; SDC, US public, 2002--2018) over their pre-announcement and earlier quarters (post-announcement quarters dropped); \texttt{PreAnnounceQtr} $=$ $\mathbf{1}$[the single quarter before announcement]. Sample restricted to calls with both \texttt{CashScrutiny} and \texttt{UncResCEO} (the matched universe). \texttt{CashScrutiny} $=$ \% of a call's analyst Q\&A turns on cash/liquidity. The reason (\texttt{PreAnnounceQtr}) raises CEO residual uncertainty; analyst cash-scrutiny does not, and the interaction is insignificant.
+\end{minipage}
+\end{table}
