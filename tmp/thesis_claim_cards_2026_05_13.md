@@ -1,3 +1,5 @@
+> ⛔ **SUPERSEDED — DELETED VERSION (plan restarted 2026-06-06 per Sina).** These v2 cards belong to the discarded UncResCEO→cash draft. Not load-bearing. History only.
+
 # Thesis Claim Cards — Sequential Defense
 
 **Date started:** 2026-05-13

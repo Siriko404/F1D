@@ -1,3 +1,6 @@
+> ⛔ **SUPERSEDED — DELETED VERSION. Do NOT treat as canonical or live.**
+> This 2026-05-13 `plan_thesis_v1` (UncResCEO → precautionary cash) belongs to a thesis draft version Sina discarded. Plan mode was **restarted fresh on 2026-06-06** per Sina. Retained for history only; nothing here is load-bearing for the current paper.
+
 # Material Passport — F1D Thesis Plan-Mode Run
 
 (Schema 9, ARS v3.7.0)

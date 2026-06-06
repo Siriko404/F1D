@@ -259,3 +259,7 @@ tmp/openalex_trump_cash_*/
 /1.20
 /2026-04-30-182832-this-session-is-being-continued-from-a-previous-c.txt
 /2026-05-01-042143-local-command-caveatcaveat-the-messages-below.txt
+
+# MemPalace per-project files (issue #185)
+mempalace.yaml
+entities.json
