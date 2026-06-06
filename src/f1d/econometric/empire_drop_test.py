@@ -40,6 +40,11 @@ CTRL = ["Leverage", "lnAssets", "TobinsQ", "ROA", "Capex", "DivDummy", "sCFO"]
 DVS = ["UncResCEO", "CashRatio"]
 BINS = ["PRE2", "PRE1", "GAP", "POST"]
 POST_CAP = 4  # quarters of post-announcement window retained
+TEX_OUT = ROOT / "docs" / "Draft" / "_empire_drop_placebo.tex"
+BIN_LABEL = {"PRE2": r"PRE2 ($t{-}2$, pre-trend)",
+             "PRE1": r"PRE1 ($t{-}1$, pre-announce)",
+             "GAP":  r"GAP (announced, pre-close)",
+             "POST": r"POST (completed)"}
 
 
 def _latest(pattern: str) -> str:
@@ -169,6 +174,67 @@ def run_bins(q: pd.DataFrame, dv: str) -> dict:
             "n": int(mod.nobs), "n_firms": n_firms, "r2": float(mod.rsquared)}
 
 
+def stars(p: float) -> str:
+    return "***" if p < 0.01 else ("**" if p < 0.05 else ("*" if p < 0.10 else ""))
+
+
+def cell(coef: float, p: float) -> str:
+    s = stars(p)
+    return f"\\textbf{{{coef:.4f}}}$^{{{s}}}$" if s else f"{coef:.4f}"
+
+
+def write_tex(summary_path: Path) -> None:
+    """UncResCEO event study, cash vs stock acquirers (placebo), +4 primary. Built FROM the json."""
+    summary = json.loads(Path(summary_path).read_text(encoding="utf-8"))
+    res = summary["specs"]["post_cap_4"]["results"]
+    keys = ["cash:UncResCEO", "stock:UncResCEO"]
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Pre-Acquisition UncResCEO Event Study: Cash vs.\ Stock Acquirers (placebo)}",
+        r"\label{tab:empire_drop_placebo}",
+        r"\scriptsize",
+        r"\begin{tabular}{lcc}",
+        r"\toprule",
+        r" & \multicolumn{2}{c}{DV: UncResCEO} \\",
+        r"\cmidrule(lr){2-3}",
+        r" & (1) Cash acquirers & (2) Stock acquirers \\",
+        r"\midrule",
+    ]
+    for bn in BINS:
+        coefs = " & ".join(cell(res[k]["bins"][bn]["beta"], res[k]["bins"][bn]["p1"]) for k in keys)
+        ses = " & ".join(f"({res[k]['bins'][bn]['se']:.4f})" for k in keys)
+        lines.append(f"{BIN_LABEL[bn]} & {coefs} \\\\")
+        lines.append(f" & {ses} \\\\")
+    lines.append(r"\midrule")
+    for dkey, lab in (("drop_pre1_gap", r"Drop: PRE1 $-$ GAP"), ("drop_pre1_post", r"Drop: PRE1 $-$ POST")):
+        coefs = " & ".join(cell(res[k][dkey]["diff"], res[k][dkey]["p2"]) for k in keys)
+        ses = " & ".join(f"({res[k][dkey]['se']:.4f})" for k in keys)
+        lines.append(f"{lab} & {coefs} \\\\")
+        lines.append(f" & {ses} \\\\")
+    lines += [
+        r"\midrule",
+        r"Firm FE / Year-Qtr FE / Controls & Yes & Yes \\",
+        "N (firm-quarters) & " + " & ".join(f"{res[k]['n']:,}" for k in keys) + r" \\",
+        "Firms & " + " & ".join(f"{res[k]['n_firms']:,}" for k in keys) + r" \\",
+        r"\bottomrule",
+        r"\end{tabular}",
+        r"\begin{minipage}{\linewidth}\vspace{2pt}\scriptsize",
+        r"\textit{Notes:} Two-way FE OLS (firm + calendar year-quarter), firm-clustered SE; DV = "
+        r"UncResCEO. Event bins around the firm's first $\geq$50\%-cash (col 1) or $\geq$50\%-stock "
+        r"(col 2) acquisition: PRE2/PRE1 = two / one quarter pre-announcement; GAP = announced, not yet "
+        r"completed; POST = completed. Baseline = $e\leq-3$ plus never-acquirers. The \textbf{stock arm "
+        r"is the placebo}: stock-financed acquirers carry the same pending-deal disclosure gag but no cash "
+        r"war-chest, so a flat stock pattern means the cash-arm run-up and collapse are cash-specific. "
+        r"$^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$; bins one-tailed ($\beta>0$), Drop rows two-tailed. "
+        r"Standard errors in parentheses. (Per-DV samples differ here; the matched-universe table "
+        r"re-estimates both DVs on one sample. +8-quarter window in the summary JSON.)",
+        r"\end{minipage}",
+        r"\end{table}",
+    ]
+    TEX_OUT.write_text("\n".join(lines), encoding="utf-8")
+
+
 def main() -> None:
     global POST_CAP
     p, s, m = base_panel(), sdc(), manifest()
@@ -212,7 +278,9 @@ def main() -> None:
 
     summary = {"controls": CTRL, "specs": all_specs, "timestamp": ts}
     (out / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    write_tex(out / "summary.json")
     print(f"\nwrote {out / 'summary.json'}")
+    print(f"wrote {TEX_OUT}")
 
 
 if __name__ == "__main__":

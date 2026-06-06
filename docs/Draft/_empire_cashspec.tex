@@ -1,0 +1,26 @@
+\begin{table}[htbp]
+\centering
+\caption{Formal Cash-Specificity of the Pre-Announcement Uncertainty Run-Up (cash vs.\ stock acquirers, pooled)}
+\label{tab:empire_cashspec}
+\scriptsize
+\begin{tabular}{lcc}
+\toprule
+ & (1) UncResCEO & (2) CashRatio \\
+\midrule
+Pre-announce qtr, Cash acquirer & \textbf{0.0459}$^{***}$ & \textbf{0.0104}$^{***}$ \\
+ & (0.0185) & (0.0043) \\
+Pre-announce qtr, Stock acquirer & -0.0524 & \textbf{0.0182}$^{*}$ \\
+ & (0.0436) & (0.0122) \\
+\midrule
+Cash $-$ Stock (formal test) & \textbf{0.0983}$^{**}$ & -0.0078 \\
+ & (0.0476) & (0.0131) \\
+\midrule
+Firm FE / Year-Qtr FE / Controls & Yes & Yes \\
+N (firm-quarters) & 25,600 & 25,600 \\
+Firms & 1,191 & 1,191 \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}\vspace{2pt}\scriptsize
+\textit{Notes:} Two-way FE OLS (firm + calendar year-quarter), firm-clustered SE, with both columns estimated on the \emph{identical} UncResCEO$\,\cap\,$CashRatio sample. Both pre-announce dummies enter the SAME model; the omitted baseline is the firm's pre-deal and never-acquirer quarters. \textbf{Pre-announce qtr} = the single quarter before the firm's first $\geq$50\%-cash (resp.\ stock) acquisition. The \textbf{Cash $-$ Stock} row is the formal cash-specificity test (Wald on the coefficient difference) the side-by-side placebo never ran. $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$; the two pre-announce rows one-tailed ($\beta>0$), the Cash $-$ Stock row two-tailed. Standard errors in parentheses. For UncResCEO the cash run-up is robust and the cash$-$stock difference is significant, but that significance rides on the imprecise, theory-unpredicted negative stock estimate (small N$_{\text{stock}}$): read it as supported-but-fragile, not settled. CashRatio (col 2) is not cash-specific, as expected --- the claim concerns the uncertainty response, not cash levels.
+\end{minipage}
+\end{table}

@@ -85,3 +85,34 @@ exhibits:
       - '% Cash-Scrutiny reason-gating test (CashScrutiny x PreAnnounceQtr interaction on the'
       - '% UncRes-matched cash-acquirer pre-announce universe). Regenerate: python scripts/gen_reason_gating_table.py'
       - '\input{_reason_gating}'
+
+  - id: empire_drop_matched
+    generator: src/f1d/econometric/empire_drop_matched_universe.py
+    lines:
+      - '\clearpage'
+      - '% Empire drop-test on the matched (UncResCEO) universe -- UncResCEO vs CashRatio'
+      - '% disclosure-window event study: uncertainty collapses at announcement (GAP) while'
+      - '% cash holds until close (differential timing). Generated from summary.json by'
+      - '% src/f1d/econometric/empire_drop_matched_universe.py (NOT hand-edited).'
+      - '% Regenerate: python src/f1d/econometric/empire_drop_matched_universe.py'
+      - '\input{_empire_drop_matched}'
+
+  - id: empire_drop_placebo
+    generator: src/f1d/econometric/empire_drop_test.py
+    lines:
+      - '\clearpage'
+      - '% Empire drop-test event study -- UncResCEO, cash vs stock acquirers (placebo).'
+      - '% Stock arm = same pending-deal gag, no cash war-chest; flat => cash-specific.'
+      - '% Generated from summary.json by src/f1d/econometric/empire_drop_test.py (NOT hand-edited).'
+      - '% Regenerate: python src/f1d/econometric/empire_drop_test.py'
+      - '\input{_empire_drop_placebo}'
+
+  - id: empire_cashspec
+    generator: src/f1d/econometric/empire_cashspec_interaction.py
+    lines:
+      - '\clearpage'
+      - '% Formal cash-specificity -- pooled cash vs stock pre-announce difference test'
+      - '% (Wald), the test the side-by-side placebo never ran. Supported-but-fragile.'
+      - '% Generated from summary.json by src/f1d/econometric/empire_cashspec_interaction.py (NOT hand-edited).'
+      - '% Regenerate: python src/f1d/econometric/empire_cashspec_interaction.py'
+      - '\input{_empire_cashspec}'

@@ -1,0 +1,32 @@
+\begin{table}[htbp]
+\centering
+\caption{Pre-Acquisition Uncertainty vs.\ Cash on the Matched Universe (disclosure-window event study)}
+\label{tab:empire_drop_matched}
+\scriptsize
+\begin{tabular}{lcc}
+\toprule
+ & (1) UncResCEO & (2) CashRatio \\
+\midrule
+PRE2 ($t{-}2$, pre-trend) & 0.0105 & \textbf{0.0065}$^{*}$ \\
+ & (0.0174) & (0.0041) \\
+PRE1 ($t{-}1$, pre-announce) & \textbf{0.0486}$^{***}$ & \textbf{0.0108}$^{***}$ \\
+ & (0.0174) & (0.0046) \\
+GAP (announced, pre-close) & 0.0058 & \textbf{0.0120}$^{**}$ \\
+ & (0.0181) & (0.0056) \\
+POST (completed) & -0.0195 & -0.0197 \\
+ & (0.0127) & (0.0052) \\
+\midrule
+Drop: PRE1 $-$ GAP & \textbf{0.0428}$^{*}$ & -0.0013 \\
+ & (0.0221) & (0.0049) \\
+Drop: PRE1 $-$ POST & \textbf{0.0681}$^{***}$ & \textbf{0.0305}$^{***}$ \\
+ & (0.0187) & (0.0043) \\
+\midrule
+Firm FE / Year-Qtr FE / Controls & Yes & Yes \\
+N (firm-quarters) & 29,535 & 29,535 \\
+Firms & 1,326 & 1,326 \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}\vspace{2pt}\scriptsize
+\textit{Notes:} Two-way FE OLS (firm + calendar year-quarter), firm-clustered SE, on the \emph{identical} 29,535-observation sample where both UncResCEO and CashRatio are present (the UncResCEO call universe). Event bins around the firm's first $\geq$50\%-cash acquisition: PRE2/PRE1 = two / one quarter pre-announcement; GAP = announced but not yet completed; POST = completed. Baseline = $e\leq-3$ plus never-acquirers. Bin coefficients: $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ one-tailed; Drop rows (Wald on the bin difference): stars two-tailed. Standard errors in parentheses throughout. Pre-completion bin counts (PRE2/PRE1/GAP/POST): 389/396/378/1,535. UncResCEO peaks at PRE1 and collapses at GAP (announcement); CashRatio stays elevated through GAP and falls only at POST (completion). The uncertainty tracks the disclosure state, not the cash balance. Robustness: +8-quarter post-window in the summary JSON.
+\end{minipage}
+\end{table}
