@@ -26,29 +26,29 @@ RUNS = ROOT / "outputs" / "econometric" / "h1_5_disclosure_law_did"
 RUNS_UNCRES = ROOT / "outputs" / "econometric" / "h1_5_disclosure_law_did_uncres"
 OUT = ROOT / "docs" / "Draft" / "_disclosure_law_compact.tex"
 
-# Boasiako-O'Connor Keefe (2020) EFM 27(3):528-551, Table 2 col (1) (baseline:
-# year+industry+state FE, state-clustered SE). Verbatim from paper p538 (fresh
-# pdfplumber extract tmp/boasiako_pages_fresh/p11.txt). Published constants,
-# cited — NOT F1D estimates.
-BOASIAKO_PUB = {
-    "beta": "0.0076", "se": "0.0031", "stars": "**",
-    "n": "56,646", "r2": "0.494",  # their Adj. R^2
-    "src": r"Boasiako-O'Connor Keefe (2020) EFM Tbl~2 col~1 (p538)",
-}
-# (json_key, display label, Boasiako pub beta, se, stars) — paper p538 col 1.
-CONTROLS = [
-    ("firm_size",                r"firm\_size",               "-0.0110", "0.0022", "***"),
-    ("firm_age",                 r"firm\_age",                "-0.0213", "0.0044", "***"),
-    ("book_leverage",            r"book\_leverage",           "-0.1400", "0.0206", "***"),
-    ("market_to_book",           r"market\_to\_book",          "0.0080", "0.0015", "***"),
-    ("cash_flow",                r"cash\_flow",               "-0.0049", "0.0018", "***"),
-    ("capital_expenditure",      r"capital\_expenditure",     "-0.0709", "0.0280", "**"),
-    ("acquisition_expenditure",  r"acquisition\_expenditure", "-0.0052", "0.0048", ""),
-    ("rd_expenditure",           r"rd\_expenditure",           "0.1909", "0.0281", "***"),
-    ("nwc",                      r"nwc",                      "-0.0001", "0.0004", ""),
-    ("dividend_paying",          r"dividend\_paying",          "-0.0072", "0.0028", "**"),
-    ("industry_cf_vol",          r"industry\_cf\_vol",          "0.0273", "0.0068", "***"),
+# Boasiako-O'Connor Keefe (2020) EFM 27(3):528-551, Table 2 col (1): published
+# constants transcribed verbatim in inputs/benchmarks/boasiako_2020.json (cited
+# there; baseline year+industry+state FE, state-clustered SE; NOT F1D estimates).
+# Read here, never hardcoded.
+_BENCH = ROOT / "config" / "benchmarks" / "boasiako_2020.json"
+_b2 = json.loads(_BENCH.read_text(encoding="utf-8"))["table2_col1"]
+BOASIAKO_PUB = dict(_b2["headline"])
+# (json_key, display label) — beta/se/stars pulled from the benchmark JSON.
+_CTRL_LABELS = [
+    ("firm_size",                r"firm\_size"),
+    ("firm_age",                 r"firm\_age"),
+    ("book_leverage",            r"book\_leverage"),
+    ("market_to_book",           r"market\_to\_book"),
+    ("cash_flow",                r"cash\_flow"),
+    ("capital_expenditure",      r"capital\_expenditure"),
+    ("acquisition_expenditure",  r"acquisition\_expenditure"),
+    ("rd_expenditure",           r"rd\_expenditure"),
+    ("nwc",                      r"nwc"),
+    ("dividend_paying",          r"dividend\_paying"),
+    ("industry_cf_vol",          r"industry\_cf\_vol"),
 ]
+CONTROLS = [(k, lbl, _b2["controls"][k]["beta"], _b2["controls"][k]["se"], _b2["controls"][k]["stars"])
+            for k, lbl in _CTRL_LABELS]
 
 
 def _latest_spec() -> Path:
@@ -160,7 +160,8 @@ def main() -> None:
     ]
     OUT.write_text("\n".join(L) + "\n", encoding="utf-8")
     print(f"wrote {OUT}")
-    print(f"  Boasiako pub : 0.0076** (0.0031) N 56,646")
+    print(f"  Boasiako pub : {BOASIAKO_PUB['beta']}{BOASIAKO_PUB['stars']} "
+          f"({BOASIAKO_PUB['se']}) N {BOASIAKO_PUB['n']}")
     print(f"  F1D CASH     : {cash['head_beta']}{cash['head_stars']} "
           f"({cash['head_se']}) N {cash['n']}")
     print(f"  F1D UncResCEO: {uncres['head_beta']}{uncres['head_stars']} "

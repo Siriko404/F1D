@@ -1,0 +1,39 @@
+{
+  "_source": "Boasiako, K. A., & O'Connor Keefe, M. (2020). Data breaches and corporate liquidity management. European Financial Management, 27(3), 528-551.",
+  "_note": "Published comparison values, transcribed verbatim from the paper. NOT F1D estimates. table2_col1 values cited from p538 (fresh pdfplumber extract tmp/boasiako_pages_fresh/p11.txt); table1_panelA from Table 1 Panel A (verified via 02b_recipe_definitions_redteamed.json). Strings in table2_col1 are embedded as-is by the renderer; table1_panelA numbers are formatted %.4f.",
+  "table2_col1": {
+    "_caption": "Table 2 col (1): disclosure-law DiD baseline (year + industry + state FE, state-clustered SE).",
+    "headline": {"beta": "0.0076", "se": "0.0031", "stars": "**", "n": "56,646", "r2": "0.494"},
+    "controls": {
+      "firm_size":               {"beta": "-0.0110", "se": "0.0022", "stars": "***"},
+      "firm_age":                {"beta": "-0.0213", "se": "0.0044", "stars": "***"},
+      "book_leverage":           {"beta": "-0.1400", "se": "0.0206", "stars": "***"},
+      "market_to_book":          {"beta": "0.0080",  "se": "0.0015", "stars": "***"},
+      "cash_flow":               {"beta": "-0.0049", "se": "0.0018", "stars": "***"},
+      "capital_expenditure":     {"beta": "-0.0709", "se": "0.0280", "stars": "**"},
+      "acquisition_expenditure": {"beta": "-0.0052", "se": "0.0048", "stars": ""},
+      "rd_expenditure":          {"beta": "0.1909",  "se": "0.0281", "stars": "***"},
+      "nwc":                     {"beta": "-0.0001", "se": "0.0004", "stars": ""},
+      "dividend_paying":         {"beta": "-0.0072", "se": "0.0028", "stars": "**"},
+      "industry_cf_vol":         {"beta": "0.0273",  "se": "0.0068", "stars": "***"}
+    }
+  },
+  "table1_panelA": {
+    "_caption": "Table 1 Panel A summary statistics: [mean, SD, p25, p50, p75].",
+    "n_obs": "56,646",
+    "vars": {
+      "cash_w":                    [0.2008,  0.2231, 0.0285, 0.1044, 0.2913],
+      "firm_size_w":               [5.6136,  2.0593, 4.0819, 5.5717, 7.0455],
+      "firm_age_w":                [7.3003,  0.8889, 2.0179, 5.0435, 11.0918],
+      "book_leverage_w":           [0.2362,  0.3177, 0.0229, 0.1863, 0.3528],
+      "market_to_book_w":          [2.1592,  2.9919, 1.1104, 1.5113, 2.3119],
+      "cash_flow_w":               [-0.3758, 4.8386, -0.0150, 0.0684, 0.1210],
+      "capital_expenditure_w":     [0.0657,  0.1248, 0.0174, 0.0364, 0.0729],
+      "acquisition_expenditure_w": [0.0451,  0.1672, 0,      0,      0.0144],
+      "rd_expenditure_w":          [0.0709,  0.1895, 0,      0.0021, 0.0738],
+      "nwc_w":                     [-0.0584, 1.0372, -0.0589, 0.0636, 0.2157],
+      "dividend_paying_w":         [0.2767,  null,   0,      0,      1],
+      "industry_cf_vol_w":         [0.3440,  0.5270, 0.0825, 0.1403, 0.2499]
+    }
+  }
+}

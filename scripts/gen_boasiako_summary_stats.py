@@ -9,21 +9,12 @@ ROOT = Path(__file__).resolve().parents[1]
 STATS_FILE = ROOT / "outputs" / "econometric" / "h1_5_disclosure_law_did" / "summary_stats" / "latest_summary_stats.json"
 OUT = ROOT / "docs" / "Draft" / "_boasiako_summary_stats.tex"
 
-# ── Paper Panel A anchors (verbatim from Table 1, verified via 02b_recipe_definitions_redteamed.json) ──
-PAPER = {
-    "cash_w":                    (0.2008,  0.2231, 0.0285, 0.1044, 0.2913),
-    "firm_size_w":               (5.6136,  2.0593, 4.0819, 5.5717, 7.0455),
-    "firm_age_w":                (7.3003,  0.8889, 2.0179, 5.0435, 11.0918),
-    "book_leverage_w":           (0.2362,  0.3177, 0.0229, 0.1863, 0.3528),
-    "market_to_book_w":          (2.1592,  2.9919, 1.1104, 1.5113, 2.3119),
-    "cash_flow_w":               (-0.3758, 4.8386, -0.0150, 0.0684, 0.1210),
-    "capital_expenditure_w":     (0.0657,  0.1248, 0.0174, 0.0364, 0.0729),
-    "acquisition_expenditure_w": (0.0451,  0.1672, 0,      0,      0.0144),
-    "rd_expenditure_w":          (0.0709,  0.1895, 0,      0.0021, 0.0738),
-    "nwc_w":                     (-0.0584, 1.0372, -0.0589, 0.0636, 0.2157),
-    "dividend_paying_w":         (0.2767,  None,   0,      0,      1),
-    "industry_cf_vol_w":         (0.3440,  0.5270, 0.0825, 0.1403, 0.2499),
-}
+# ── Paper Panel A anchors: transcribed verbatim in inputs/benchmarks/boasiako_2020.json
+#    (NOT F1D estimates; cited there). Read here, never hardcoded. ──
+BENCH = ROOT / "config" / "benchmarks" / "boasiako_2020.json"
+_t1 = json.loads(BENCH.read_text(encoding="utf-8"))["table1_panelA"]
+PAPER = {k: tuple(v) for k, v in _t1["vars"].items()}
+PAPER_N = _t1["n_obs"]
 
 LABELS = {
     "cash_w": r"cash\_w", "firm_size_w": r"firm\_size\_w", "firm_age_w": r"firm\_age\_w",
@@ -62,7 +53,7 @@ def main():
 
     L += [
         r"\midrule",
-        f"  Observations & \\multicolumn{{5}}{{c}}{{56,646}} & \\multicolumn{{5}}{{c}}{{{our_N:,}}} \\\\",
+        f"  Observations & \\multicolumn{{5}}{{c}}{{{PAPER_N}}} & \\multicolumn{{5}}{{c}}{{{our_N:,}}} \\\\",
         r"\bottomrule",
         r"\end{tabular}",
         r"\end{table}",
