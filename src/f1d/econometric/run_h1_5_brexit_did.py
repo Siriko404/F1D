@@ -242,11 +242,12 @@ def main() -> int:
     out_dir = ROOT / "outputs" / "econometric" / SUITE_DIR_NAME / ts
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Campello paper benchmarks (programmatic extraction from table8_pdfpage31.txt)
-    camp_buk = {"cash_delta": 0.231, "se": 0.047, "n": 17170, "rsquared": 0.21,
-                "stars": "***", "source": "Campello Table 8 col.1 (β^UK-tercile CASH)"}
-    camp_txt = {"cash_delta": 0.357, "se": 0.062, "n": 24195, "rsquared": 0.24,
-                "stars": "***", "source": "Campello Table 8 col.2 (textual CASH)"}
+    # Campello Table 8 paper benchmarks: transcribed verbatim in
+    # config/benchmarks/campello_2022.json (cited; NOT F1D estimates). Read, never hardcoded.
+    _camp_t8 = json.loads(
+        (ROOT / "config" / "benchmarks" / "campello_2022.json").read_text(encoding="utf-8"))["table8"]
+    camp_buk = _camp_t8["buk"]
+    camp_txt = _camp_t8["textual"]
 
     # Treatment counts for the summary
     mkt_counts = {"treated": int((mkt["HIGH_UK_EXPOSURE"]==1).sum()),

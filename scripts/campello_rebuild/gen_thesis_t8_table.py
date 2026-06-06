@@ -95,8 +95,10 @@ def main() -> None:
     r_pb, r_p7 = s_psm["results"][0], s_psm["results"][1]  # CASH PSM
     # UncResCEO full grid: index by (dv_kind, method, arm)
     E = {(r["dv_kind"], r["method"], r["arm"]): r for r in s_ext["results"]}
-    ref_b = s_bx["campello_reference_buk"]
-    ref_t = s_bx["campello_reference_textual"]
+    # Campello Table 8 benchmark: read directly from the cited JSON (never the runner summary).
+    _camp = json.loads(
+        (ROOT / "config" / "benchmarks" / "campello_2022.json").read_text(encoding="utf-8"))["table8"]
+    ref_b, ref_t = _camp["buk"], _camp["textual"]
 
     R = {
         "cb": r_cb, "c7": r_c7, "pb": r_pb, "p7": r_p7,

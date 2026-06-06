@@ -1,0 +1,8 @@
+{
+  "_source": "Campello, M., Cortes, G. S., d'Almeida, F., & Kankanhalli, G. (2022). Exporting uncertainty: The impact of Brexit on corporate America. Journal of Financial and Quantitative Analysis. Table 8 (CASH).",
+  "_note": "Published comparison values, transcribed verbatim from Table 8 (programmatic extraction from table8_pdfpage31.txt). NOT F1D estimates. Numbers are reformatted by the renderer (cash_delta/se %.4f, n with thousands separator, rsquared %.2f); stars embedded as-is.",
+  "table8": {
+    "buk":     {"cash_delta": 0.231, "se": 0.047, "n": 17170, "rsquared": 0.21, "stars": "***", "source": "Campello Table 8 col.1 (beta^UK-tercile CASH)"},
+    "textual": {"cash_delta": 0.357, "se": 0.062, "n": 24195, "rsquared": 0.24, "stars": "***", "source": "Campello Table 8 col.2 (textual CASH)"}
+  }
+}

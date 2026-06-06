@@ -344,10 +344,6 @@ def main() -> int:
                            "divestitures, NOT cash; PSM-on-cash is our extension"),
         "n_neighbors": N_NEIGHBORS,
         "covariate_window": f"cal_yr_qtr < {PRE_POST_MAX} firm mean (paper-silent)",
-        "campello_reference_buk": {"cash_delta": 0.231, "se": 0.047,
-            "stars": "***", "note": "Table 8 col.1 UNMATCHED (no cash PSM in paper)"},
-        "campello_reference_textual": {"cash_delta": 0.357, "se": 0.062,
-            "stars": "***", "note": "Table 8 col.2 UNMATCHED (no cash PSM in paper)"},
         "results": results,
         "verdict_gated_on_sina": True,
     }
