@@ -1,0 +1,87 @@
+# Non-suite thesis exhibits — benchmark replications, summary-stats, and bespoke
+# regression tables that are NOT produced by the suite_spec render path.
+#
+# docs/Draft/generate_all_tables.py iterates this file to build the fragment block
+# appended to thesis_tables.tex (replacing the former hand-maintained Python list
+# THESIS_FRAGMENT_BLOCK). Single source of order + provenance for these exhibits.
+#
+# Each exhibit:
+#   id        — stable identifier
+#   generator — the script that writes docs/Draft/<fragment>.tex (run it to regenerate)
+#   lines     — the EXACT LaTeX lines emitted into thesis_tables.tex, verbatim
+#               (incl. \clearpage / comments / spacing). Concatenated in order.
+#
+# Adding an exhibit: append an entry here + ensure its generator writes the fragment.
+exhibits:
+  - id: campello_rebuild_t8
+    generator: scripts/campello_rebuild/gen_thesis_t8_table.py
+    lines:
+      - '\clearpage'
+      - '% Campello Table-8 rebuild — generated from step6 summary.json by'
+      - '% scripts/campello_rebuild/gen_thesis_t8_table.py (NOT hand-edited).'
+      - '% Regenerate: python scripts/campello_rebuild/gen_thesis_t8_table.py'
+      - '\input{_campello_rebuild_t8}'
+
+  - id: campello_summary_stats
+    generator: scripts/campello_rebuild/gen_summary_stats_tex.py
+    lines:
+      - '\clearpage'
+      - '% Campello variable forensic audit — summary-stats compare (3 panels),'
+      - '% generated from tmp/campello_summary_stats_compare_2026_05_17.md by'
+      - '% scripts/campello_rebuild/gen_summary_stats_tex.py (NOT hand-edited).'
+      - '% Regenerate: python scripts/campello_rebuild/gen_summary_stats_tex.py'
+      - '\input{_campello_summary_stats}'
+
+  - id: disclosure_law_compact
+    generator: scripts/gen_disclosure_law_compact_table.py
+    lines:
+      - '\clearpage'
+      - '% Disclosure-Law DiD — compact 3-col (Boasiako published benchmark |'
+      - '% our cash clone | our UncResCEO DV), canonical industry+state+year spec.'
+      - '% Generated from the latest run''s suite_spec JSON by'
+      - '% scripts/gen_disclosure_law_compact_table.py (NOT hand-edited).'
+      - '% Regenerate: python scripts/gen_disclosure_law_compact_table.py'
+      - '\input{_disclosure_law_compact}'
+
+  - id: boasiako_summary_stats
+    generator: scripts/gen_boasiako_summary_stats.py
+    lines:
+      - ''
+      - '\newpage'
+      - '\input{_boasiako_summary_stats}'
+
+  - id: empire_building
+    generator: scripts/gen_empire_did_table.py
+    lines:
+      - '\clearpage'
+      - '% Empire-Building reverse-causality probe — pre-acquisition cash war-chest +'
+      - '% CEO uncertainty run-up test (two-way FE OLS; within-firm pre-window mean'
+      - '% shift, NOT a pre/post DiD). Generated from SDC + H1 panel by'
+      - '% scripts/gen_empire_did_table.py (NOT hand-edited).'
+      - '% Regenerate: python scripts/gen_empire_did_table.py'
+      - '\clearpage'
+      - '\input{_empire_building_spec}'
+      - '\clearpage'
+      - '\input{_empire_building_did}'
+
+  - id: cash_scrutiny_validity
+    generator: scripts/gen_cash_scrutiny_validity_table.py
+    lines:
+      - '\clearpage'
+      - '% Cash-Scrutiny external validity (Link 1). Regenerate: python scripts/gen_cash_scrutiny_validity_table.py'
+      - '\input{_cash_scrutiny_validity}'
+
+  - id: cash_scrutiny_channel
+    generator: scripts/gen_cash_scrutiny_channel_table.py
+    lines:
+      - '\clearpage'
+      - '% Cash-Scrutiny channel test (Link 2). Regenerate: python scripts/gen_cash_scrutiny_channel_table.py'
+      - '\input{_cash_scrutiny_channel}'
+
+  - id: reason_gating
+    generator: scripts/gen_reason_gating_table.py
+    lines:
+      - '\clearpage'
+      - '% Cash-Scrutiny reason-gating test (CashScrutiny x PreAnnounceQtr interaction on the'
+      - '% UncRes-matched cash-acquirer pre-announce universe). Regenerate: python scripts/gen_reason_gating_table.py'
+      - '\input{_reason_gating}'

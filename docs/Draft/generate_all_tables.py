@@ -31,56 +31,23 @@ ECONOMETRIC = REPO_ROOT / "outputs" / "econometric"
 RENDER_ORDER = REPO_ROOT / "config" / "suite_render_order.yaml"
 PER_SUITE_DIR = Path(__file__).resolve().parent / "per_suite"
 
-# Hand-curated benchmark/replication tables that appear in thesis_tables.tex but
-# are NOT produced by the suite-spec render path. Each is a standalone fragment
-# emitted by its own gen_*.py (see per-fragment comments below). They were
-# previously appended to thesis_tables.tex by hand — which a regen silently
-# dropped. Listing them here makes the generated thesis_tables.tex complete and
-# reproducible. The block starts with its own \clearpage (separates it from the
-# last rendered suite). Keep in sync with the gen_*.py fragment outputs.
-THESIS_FRAGMENT_BLOCK = [
-    r"\clearpage",
-    r"% Campello Table-8 rebuild — generated from step6 summary.json by",
-    r"% scripts/campello_rebuild/gen_thesis_t8_table.py (NOT hand-edited).",
-    r"% Regenerate: python scripts/campello_rebuild/gen_thesis_t8_table.py",
-    r"\input{_campello_rebuild_t8}",
-    r"\clearpage",
-    r"% Campello variable forensic audit — summary-stats compare (3 panels),",
-    r"% generated from tmp/campello_summary_stats_compare_2026_05_17.md by",
-    r"% scripts/campello_rebuild/gen_summary_stats_tex.py (NOT hand-edited).",
-    r"% Regenerate: python scripts/campello_rebuild/gen_summary_stats_tex.py",
-    r"\input{_campello_summary_stats}",
-    r"\clearpage",
-    r"% Disclosure-Law DiD — compact 3-col (Boasiako published benchmark |",
-    r"% our cash clone | our UncResCEO DV), canonical industry+state+year spec.",
-    r"% Generated from the latest run's suite_spec JSON by",
-    r"% scripts/gen_disclosure_law_compact_table.py (NOT hand-edited).",
-    r"% Regenerate: python scripts/gen_disclosure_law_compact_table.py",
-    r"\input{_disclosure_law_compact}",
-    r"",
-    r"\newpage",
-    r"\input{_boasiako_summary_stats}",
-    r"\clearpage",
-    r"% Empire-Building reverse-causality probe — pre-acquisition cash war-chest +",
-    r"% CEO uncertainty run-up test (two-way FE OLS; within-firm pre-window mean",
-    r"% shift, NOT a pre/post DiD). Generated from SDC + H1 panel by",
-    r"% scripts/gen_empire_did_table.py (NOT hand-edited).",
-    r"% Regenerate: python scripts/gen_empire_did_table.py",
-    r"\clearpage",
-    r"\input{_empire_building_spec}",
-    r"\clearpage",
-    r"\input{_empire_building_did}",
-    r"\clearpage",
-    r"% Cash-Scrutiny external validity (Link 1). Regenerate: python scripts/gen_cash_scrutiny_validity_table.py",
-    r"\input{_cash_scrutiny_validity}",
-    r"\clearpage",
-    r"% Cash-Scrutiny channel test (Link 2). Regenerate: python scripts/gen_cash_scrutiny_channel_table.py",
-    r"\input{_cash_scrutiny_channel}",
-    r"\clearpage",
-    r"% Cash-Scrutiny reason-gating test (CashScrutiny x PreAnnounceQtr interaction on the",
-    r"% UncRes-matched cash-acquirer pre-announce universe). Regenerate: python scripts/gen_reason_gating_table.py",
-    r"\input{_reason_gating}",
-]
+# Non-suite exhibits (benchmark replications, summary-stats, bespoke regressions)
+# are NOT produced by the suite-spec render path. Their order + provenance live in
+# config/exhibit_registry.yaml — one registry, no hand-maintained Python list. Each
+# fragment is emitted by its own generator (run it to regenerate). See that file's
+# header for the schema.
+EXHIBIT_REGISTRY = REPO_ROOT / "config" / "exhibit_registry.yaml"
+
+
+def thesis_fragment_block() -> list[str]:
+    """Build the non-suite exhibit block from config/exhibit_registry.yaml.
+
+    Replaces the former hand-maintained THESIS_FRAGMENT_BLOCK. Each exhibit's
+    ``lines`` are emitted verbatim (comments + ``\\clearpage`` + ``\\input``), so
+    thesis_tables.tex output is byte-identical to the prior hand-listed block.
+    """
+    reg = yaml.safe_load(EXHIBIT_REGISTRY.read_text(encoding="utf-8"))
+    return [line for ex in reg["exhibits"] for line in ex["lines"]]
 
 
 def suite_to_slug(suite_id: str) -> str:
@@ -280,7 +247,7 @@ def main() -> int:
             thesis_master.append(r"\clearpage")
     # Benchmark fragments (block starts with its own \clearpage) so the
     # generated thesis_tables.tex is complete + reproducible (no hand-append).
-    thesis_master.extend(THESIS_FRAGMENT_BLOCK)
+    thesis_master.extend(thesis_fragment_block())
     thesis_master.append(r"\end{document}")
     thesis_tex_path = out_dir / "thesis_tables.tex"
     thesis_tex_path.write_text("\n".join(thesis_master), encoding="utf-8")
