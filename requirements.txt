@@ -51,4 +51,4 @@ pytest-mypy>=0.10.0
 
 # Docstring Verification
 pydocstyle>=2.3.0
-interrogate>=1.5.0
+interrogate>=1.7.0
