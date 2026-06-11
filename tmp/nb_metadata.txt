@@ -1,0 +1,115 @@
+﻿Notebook: F1D
+ID: 63e3b970-7976-47bc-8291-37ce7ac9bf74
+Created: 2026-06-09 16:44
+Access: Owner
+
+Sources (92):
+  1.  [pdf]  1-s2.0-S0024630123001000-main.pdf
+  2.  [pdf]  1-s2.0-S0049089X20300843-main.pdf
+  3.  [pdf]  1-s2.0-S0148296318304752-main.pdf
+  4.  [pdf]  1-s2.0-S0165410109000469-main (1).pdf
+  5.  [pdf]  1-s2.0-S0165410116300362-main.pdf
+  6.  [pdf]  1-s2.0-S0304405X01000381-main.pdf
+  7.  [pdf]  1-s2.0-S0304405X03001867-main.pdf
+  8.  [pdf]  1-s2.0-S0304405X09000415-main.pdf
+  9.  [pdf]  1-s2.0-S0304405X0900230X-main.pdf
+  10.  [pdf]  1-s2.0-S0304405X99000033-main.pdf
+  11.  [pdf]  1-s2.0-S0929119906000253-main.pdf
+  12.  [pdf]  1-s2.0-S0929119916301560-main.pdf
+  13.  [pdf]  1-s2.0-S0929119921001504-main.pdf
+  14.  [pdf]  1-s2.0-S1042957307000186-main (1).pdf
+  15.  [pdf]  1-s2.0-S105752191730039X-main.pdf
+  16.  [pdf]  1-s2.0-S1094202521000119-main.pdf
+  17.  [pdf]  1-s2.0-S1386418101000246-main (1).pdf
+  18.  [pdf]  118-4-1169.pdf
+  19.  [pdf]  150691.pdf
+  20.  [pdf]  20240212_Ghafoor et al - CAFE WP27 -  Co-opted.pdf
+  21.  [pdf]  467297.pdf
+  22.  [pdf]  496.pdf
+  23.  [pdf]  688176.pdf
+  24.  [unknown]  Auditing Sample Attrition Waterfall Definitions
+  25.  [unknown]  Brexit Paper Found
+  26.  [pdf]  Business Fin   Account - 2024 - Duong - Managers  staging of 
+earnings conference calls around actual share repurchases (1).pdf
+  27.  [pdf]  Coller-ManagementForecastsInformation-1997.pdf
+  28.  [pdf]  DebtMaturityCrisis_CFR_FinalDraft.pdf
+  29.  [pdf]  EBSCO-FullText-04_01_2026 (1).pdf
+  30.  [pdf]  EBSCO-FullText-04_01_2026.pdf
+  31.  [pdf]  EBSCO-FullText-04_29_2026.pdf
+  32.  [unknown]  Earnings Forecast Control Timing Analysis
+  33.  [unknown]  Equation (14) Panel Period Determination
+  34.  [pdf]  Euro Fin Management - 2020 - Boasiako - Data breaches and 
+corporate liquidity management.pdf
+  35.  [pdf]  FWP_2017_02_v2.pdf
+  36.  [pdf]  Faulkender-SourceCapitalAffect-2006.pdf
+  37.  [pdf]  Financial Management - 2023 - Javadi - Climate change and 
+corporate cash holdings  Global evidence.pdf
+  38.  [unknown]  Forensic Audit of Sample Construction
+  39.  [unknown]  Forensic Data Extraction: Campello et al.
+  40.  [unknown]  Forensic Extraction of Research Paper
+  41.  [unknown]  Forensic Replication Audit: Brexit Impact
+  42.  [pdf]  Huang_Accounting_Restatements_Corporate.pdf
+  43.  [unknown]  Investment vs. Cash Observations Explained
+  44.  [pdf]  J of Accounting Research - 2012 - LARCKER - Detecting Deceptive 
+Discussions in Conference Calls.pdf
+  45.  [pdf]  J of Accounting Research - 2017 - BUSHEE - Linguistic Complexity 
+in Firm Disclosures  Obfuscation or Information.pdf
+  46.  [pdf]  PeckingOrderJFE2010.pdf
+  47.  [unknown]  Research Methodology Step Extraction
+  48.  [pdf]  S0022109000003173.pdf
+  49.  [unknown]  Sample Attrition Pipeline Reconstruction
+  50.  [pdf]  The Financial Review - 2025 - Hossain - Political Risk  Political
+Polarization  and Earnings Management.pdf
+  51.  [pdf]  The Journal of Finance - 2005 - Almeida - The Cash Flow 
+Sensitivity of Cash.pdf
+  52.  [pdf]  The Journal of Finance - 2007 - CHANG - Analyst Coverage and 
+Financing Decisions.pdf
+  53.  [pdf]  The Journal of Finance - 2009 - AGUERREVERE - Real Options  
+Product Market Competition  and Asset Returns.pdf
+  54.  [pdf]  The Journal of Finance - 2009 - BATES - Why Do U S  Firms Hold So
+Much More Cash than They Used To.pdf
+  55.  [pdf]  The Journal of Finance - 2011 - DHARMAPALA - Watch What I Do  Not
+What I Say  The Unintended Consequences of the Homeland.pdf
+  56.  [pdf]  The Journal of Finance - 2012 - MAYEW - The Power of Voice  
+Managerial Affective States and Future Firm Performance.pdf
+  57.  [pdf]  The Journal of Finance - 2014 - BALAKRISHNAN - Shaping Liquidity 
+On the Causal Effects of Voluntary Disclosure.pdf
+  58.  [pdf]  The Journal of Finance - 2020 - BENNEDSEN - Do CEOs Matter  
+Evidence from Hospitalization Events.pdf
+  59.  [pdf]  The Journal of Finance - December 1995 - RAJAN - What Do We Know 
+about Capital Structure  Some Evidence from International.pdf
+  60.  [unknown]  Tracing Volatility Operator Construction
+  61.  [unknown]  Tracing Volatility Operator Construction
+  62.  [pdf]  bloom-2014-fluctuations-in-uncertainty.pdf
+  63.  [pdf]  bloom-2014-fluctuations-in-uncertainty.pdf
+  64.  [pdf]  caldara-iacoviello-2022-measuring-geopolitical-risk.pdf
+  65.  [pdf]  campello_corrigendum.pdf
+  66.  [pdf]  campello_corrigendum.pdf
+  67.  [pdf]  campello_etal_2022_brexit_jfqa.pdf
+  68.  [pdf]  campello_etal_2022_brexit_jfqa.pdf
+  69.  [pdf]  campello_etal_2022_brexit_supplementary.pdf
+  70.  [pdf]  campello_etal_2022_brexit_supplementary.pdf
+  71.  [pdf]  
+chen-et-al-2017-accounting-restatements-and-corporate-cash-policy.pdf
+  72.  [pdf]  chetty-saezQJE05dividends.pdf
+  73.  [pdf]  
+exporting-uncertainty-the-impact-of-brexit-on-corporate-america.pdf
+  74.  [pdf]  hhae023.pdf
+  75.  [pdf]  hhn073.pdf
+  76.  [pdf]  hhx045.pdf
+  77.  [pdf]  hhy038.pdf
+  78.  [pdf]  hhy124.pdf
+  79.  [pdf]  out.pdf
+  80.  [pdf]  qjw024.pdf
+  81.  [pdf]  qjz021 (1).pdf
+  82.  [pdf]  s11142-024-09843-7.pdf
+  83.  [pdf]  s11142-025-09888-2.pdf
+  84.  [pdf]  s11156-020-00944-3.pdf
+  85.  [pdf]  s11156-022-01049-9.pdf
+  86.  [pdf]  ssrn-1923467.pdf
+  87.  [pdf]  ssrn-269608.pdf
+  88.  [pdf]  ssrn-4900453.pdf
+  89.  [pdf]  ssrn-4954055.pdf
+  90.  [pdf]  ssrn-5128385.pdf
+  91.  [pdf]  ssrn-5728002.pdf
+  92.  [pdf]  w22740.pdf

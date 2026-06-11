@@ -170,7 +170,9 @@ def run_bins(q: pd.DataFrame, dv: str) -> dict:
     return {"dv": dv,
             "bins": {bn: one(bn) for bn in BINS if bn in par.index},
             "drop_pre1_gap": wald("PRE1", "GAP"),
+            "drop_gap_post": wald("GAP", "POST"),
             "drop_pre1_post": wald("PRE1", "POST"),
+            "controls": {c: one(c) for c in CTRL if c in par.index},
             "n": int(mod.nobs), "n_firms": n_firms, "r2": float(mod.rsquared)}
 
 
@@ -184,10 +186,13 @@ def cell(coef: float, p: float) -> str:
 
 
 def write_tex(summary_path: Path) -> None:
-    """UncResCEO event study, cash vs stock acquirers (placebo), +4 primary. Built FROM the json."""
+    """UncResCEO event study, cash vs stock acquirers (placebo), +4 primary. Built FROM the json.
+
+    All significance is uniform two-tailed (bin coefficients + Drop rows alike)."""
     summary = json.loads(Path(summary_path).read_text(encoding="utf-8"))
     res = summary["specs"]["post_cap_4"]["results"]
     keys = ["cash:UncResCEO", "stock:UncResCEO"]
+    pdir = "p2"                                # uniform two-tailed
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
@@ -202,16 +207,26 @@ def write_tex(summary_path: Path) -> None:
         r"\midrule",
     ]
     for bn in BINS:
-        coefs = " & ".join(cell(res[k]["bins"][bn]["beta"], res[k]["bins"][bn]["p1"]) for k in keys)
+        coefs = " & ".join(cell(res[k]["bins"][bn]["beta"], res[k]["bins"][bn][pdir]) for k in keys)
         ses = " & ".join(f"({res[k]['bins'][bn]['se']:.4f})" for k in keys)
         lines.append(f"{BIN_LABEL[bn]} & {coefs} \\\\")
         lines.append(f" & {ses} \\\\")
     lines.append(r"\midrule")
-    for dkey, lab in (("drop_pre1_gap", r"Drop: PRE1 $-$ GAP"), ("drop_pre1_post", r"Drop: PRE1 $-$ POST")):
+    for dkey, lab in (("drop_pre1_gap", r"Drop: PRE1 $-$ GAP"), ("drop_gap_post", r"Drop: GAP $-$ POST"),
+                     ("drop_pre1_post", r"Drop: PRE1 $-$ POST")):
         coefs = " & ".join(cell(res[k][dkey]["diff"], res[k][dkey]["p2"]) for k in keys)
         ses = " & ".join(f"({res[k][dkey]['se']:.4f})" for k in keys)
         lines.append(f"{lab} & {coefs} \\\\")
         lines.append(f" & {ses} \\\\")
+    lines.append(r"\midrule")
+    lines.append(r"\multicolumn{3}{l}{\textit{Controls}} \\")
+    for c in CTRL:
+        cv = " & ".join((cell(res[k]["controls"][c]["beta"], res[k]["controls"][c]["p2"])
+                         if c in res[k].get("controls", {}) else "---") for k in keys)
+        cs = " & ".join((f"({res[k]['controls'][c]['se']:.4f})"
+                        if c in res[k].get("controls", {}) else "") for k in keys)
+        lines.append(f"{c} & {cv} \\\\")
+        lines.append(f" & {cs} \\\\")
     lines += [
         r"\midrule",
         r"Firm FE / Year-Qtr FE / Controls & Yes & Yes \\",
@@ -220,15 +235,7 @@ def write_tex(summary_path: Path) -> None:
         r"\bottomrule",
         r"\end{tabular}",
         r"\begin{minipage}{\linewidth}\vspace{2pt}\scriptsize",
-        r"\textit{Notes:} Two-way FE OLS (firm + calendar year-quarter), firm-clustered SE; DV = "
-        r"UncResCEO. Event bins around the firm's first $\geq$50\%-cash (col 1) or $\geq$50\%-stock "
-        r"(col 2) acquisition: PRE2/PRE1 = two / one quarter pre-announcement; GAP = announced, not yet "
-        r"completed; POST = completed. Baseline = $e\leq-3$ plus never-acquirers. The \textbf{stock arm "
-        r"is the placebo}: stock-financed acquirers carry the same pending-deal disclosure gag but no cash "
-        r"war-chest, so a flat stock pattern means the cash-arm run-up and collapse are cash-specific. "
-        r"$^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$; bins one-tailed ($\beta>0$), Drop rows two-tailed. "
-        r"Standard errors in parentheses. (Per-DV samples differ here; the matched-universe table "
-        r"re-estimates both DVs on one sample. +8-quarter window in the summary JSON.)",
+        r"\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed).",
         r"\end{minipage}",
         r"\end{table}",
     ]
@@ -270,7 +277,7 @@ def main() -> None:
                         bb = r["bins"][bn]
                         print(f"    {bn:5} b={bb['beta']:+.5f} se={bb['se']:.5f} "
                               f"p1={bb['p1']:.3f}  (pop={r['bin_pop'][bn]:,})")
-                for key, lab in (("drop_pre1_gap", "PRE1-GAP "), ("drop_pre1_post", "PRE1-POST")):
+                for key, lab in (("drop_pre1_gap", "PRE1-GAP "), ("drop_gap_post", "GAP-POST "), ("drop_pre1_post", "PRE1-POST")):
                     w = r[key]
                     if w:
                         print(f"    DROP {lab} = {w['diff']:+.5f} se={w['se']:.5f} "

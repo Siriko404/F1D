@@ -1,0 +1,25 @@
+﻿Matched: ebca6160-16e... (qjw024.pdf)
+{
+  "answer": "Based on the first page of the provided document, the requested publication details are quoted verbatim below:\n\n*   **Journal Name, Volume, Issue, and Year:** \"THE QUARTERLY JOURNAL OF ECONOMICS Vol. 131 November 2016 Issue 4\" [1]\n*   **Full Title:** \"MEASURING ECONOMIC POLICY UNCERTAINTY\" [1]\n*   **All Authors:** \"SCOTT R. BAKER NICHOLAS BLOOM STEVEN J. DAVIS\" [1]\n*   **Journal Name, Year, and Page Range:** \"The Quarterly Journal of Economics (2016), 1593\u20131636.\" [2]",
+  "conversation_id": "b42bb373-47a0-4909-ae49-c6a4f2eee5e2",
+  "turn_number": 1,
+  "is_follow_up": true,
+  "references": [
+    {
+      "source_id": "ebca6160-16e8-49dc-8fd5-9026daa9013e",
+      "citation_number": 1,
+      "cited_text": "THE",
+      "start_char": 0,
+      "end_char": 4,
+      "chunk_id": "085b039a-dd16-40a0-8700-2442177759c0"
+    },
+    {
+      "source_id": "ebca6160-16e8-49dc-8fd5-9026daa9013e",
+      "citation_number": 2,
+      "cited_text": "! The Author(s) 2016. Published by Oxford University Press, on behalf of President and Fellows of Harvard College. All rights reserved. For Permissions, please email: journals.permissions@oup.com The Quarterly Journal of Economics (2016), 1593\u20131636. doi:10.1093/qje/qjw024.",
+      "start_char": 2351,
+      "end_char": 2625,
+      "chunk_id": "2dd3c1ac-f9a7-4fe2-91d4-4a3e076270ae"
+    }
+  ]
+}

@@ -1,0 +1,3421 @@
+
+===== PAGE 1 =====
+d
+Manipulating Disclosure Tone: Understanding Acquiring Firms' Strategies in Stock-for-Stock
+e
+Mergers and Acquisitions
+Short title w
+Disclosure tone management around stock-for-stock M&As
+James Thewissen Beeibei Yan
+Université of Louvain Shanghai University
+james.thewissen@uclouvain.be yanbeibei@shu.edu.cn
+i
+v
+Özgür Arslan-Ayaydin Shuo Yan
+University of Illinois at Chicago Southern University of Science and Technology
+e
+orslan@uic.edu yans@sustech.edu.cn
+r
+ABSTRACT
+r
+Based on a sample of 5,558 stock-for-stock mergers and acquisitions (M&As) between 2004 and 2020, we show
+that, in the year before the M&A announcement, stock ebidders manipulate the narrative content of corporate
+disclosures by inflating the tone of earnings press releases in order to curtail the target acquisition cost.
+Furthermore, tone inflation is more pronounced in firms executing larger-scale deals, firms with weaker
+e
+historical performance, and firms with limited monitoring mechanisms in place. We also find that, although tone
+inflation propels an upswing in the bidder’s stock prices and leads to a reduction in the overall target acquisition
+cost, it exposes the bidder to unfavorable long-pterm returns after the merger and acquisition announcement. We
+subject our analyses to an exhaustive array of robustness and endogeneity tests, which consistently affirm the
+validity of our conclusions. By distorting the narrative tone, stock bidders compromise the quality and reliability
+of information provided to stakeholders, undermining the transparency and trust upon which effective financial
+t
+reporting relies.
+o
+Highlights
+n
+1. Stock-for-stock mergers and acquisitions (M&As) strategically inflate the tone of earnings press releases
+during the year preceding the M&A announcement, aiming to diminish the target acquisition cost.
+2. The analysis reveals a significant surge of 15.32% in the tone of earnings press releases during the pre-
+merger period, resultintg in substantial estimated savings of $21.777 million for the average stock bidder
+in acquisition cosnts.
+3. The degree of tone manipulation exhibits variations based on specific factors: larger deals, firms with
+lower historical performance, and firms lacking robust monitoring mechanisms experience a stronger
+i
+inclination towards tone inflation.
+r
+4. A consequential outcome of this deliberate tone manipulation is the emergence of negative long-term
+returns psubsequent to the M&A announcement.
+5. We also find that, prior to the announcement of a merger or acquisition (M&A), bidders tend to
+manipulate the corporate narrative structure by deliberately amplifying positive tone dispersion within
+e
+their earnings press releases, thereby enhancing the overall impact of their tone inflation strategy.
+JErL Classification : M13, G32, N20, O57, L26
+P
+Keywords: M&As, Disclosure tone management, Earnings press releases, Textual analysis
+Corresponding Author: James Thewissen, Université catholique de Louvain, Belgium,
+james.thewissen@uclouvain.be
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 2 =====
+d
+Availability: Data is available through the public sources cited in this paper. The earnings press
+e
+releases are available on the SEC EDGAR platform, while the accounting and finance variables were
+retrieved from the WRDS platform. Mergers and acquisition data were obtained from the Securities
+Data Company’s (SDC’s) Mergers and Acquisitions database. w
+Declaration of Interest: None
+Acknowledgment: We thank Serene Ni (Shanghai University), Elaine Henry (Steveens Institute of Technology),
+Anna Pastwa (MIT), Sébastien Wilmet (UCLouvain), Wouter Torsin (ULiège) and Andriy Bodnaruk (UIC) for
+their helpful comments. We also would like to thank the participants of seminairs at the Université catholique
+de Louvain, Katholieke Universiteit Leuven, Shanghai University and the Vvrije Universiteit Brussel.
+e
+r
+r
+e
+e
+p
+t
+o
+n
+t
+n
+i
+r
+p
+e
+r
+P
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 3 =====
+d
+Manipulating Disclosure Tone: Understanding Acquiring Firms' Strategies in Stock-for-Stock Mergers
+and Acquisitions e
+Short title
+w
+Disclosure tone management around stock-for-stock M&As
+e
+ABSTRACT
+i
+v
+Based on a sample of 5,558 stock-for-stock mergers and acquisitions (M&As) between 2004 and 2020, we show
+that, in the year before the M&A announcement, stock bidders manipulate the narrative content of corporate
+e
+disclosures by inflating the tone of earnings press releases in order to curtail the target acquisition cost.
+Furthermore, tone inflation is more pronounced in firms executing larger-scale deals, firms with weaker historical
+performance, and firms with limited monitoring mechanisms in place. We also find that, although tone inflation
+r
+propels an upswing in the bidder’s stock prices and leads to a reduction in the overall target acquisition cost, it
+exposes the bidder to unfavorable long-term returns after the merger and acquisition announcement. We subject
+our analyses to an exhaustive array of robustness and endogreneity tests, which consistently affirm the validity of
+our conclusions. By distorting the narrative tone, stock bidders compromise the quality and reliability of
+e
+information provided to stakeholders, undermining the transparency and trust upon which effective financial
+reporting relies.
+e
+Highlights
+p
+1. Stock-for-stock mergers and acquisitions (M&As) strategically inflate the tone of earnings press releases during
+the year preceding the M&A announcement, aiming to diminish the target acquisition cost.
+2. The analysis reveals a significant surge of 15.32% in the tone of earnings press releases during the pre-merger
+period, resulting in substantial estimated savings of $21.777 million for the average stock bidder in acquisition
+t
+costs.
+o
+3. The degree of tone manipulation exhibits variations based on specific factors: larger deals, firms with lower
+historical performance, and firms lacking robust monitoring mechanisms experience a stronger inclination
+towards tone inflation. n
+4. A consequential outcome of this deliberate tone manipulation is the emergence of negative long-term returns
+subsequent to the M&A announcement.
+5. We also find that, prior to the announcement of a merger or acquisition (M&A), bidders tend to manipulate the
+corporate narrative sttructure by deliberately amplifying positive tone dispersion within their earnings press
+releases, therebyn enhancing the overall impact of their tone inflation strategy.
+i
+JEL Classification : M13, G32, N20, O57, L26
+r
+Keywords: M&As, Disclosure tone management, Earnings press releases, Textual analysis
+p
+Data Availability: Data is available through the public sources cited in this paper. The earnings
+press releases are available on the SEC EDGAR platform, while the accounting and finance
+e
+variables were retrieved from the WRDS platform. Mergers and acquisition data were obtained from the
+Securities Data Company’s (SDC’s) Mergers and Acquisitions database.
+r
+Declaration of Interest: None
+P
+1
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 4 =====
+d
+1. Introduction
+e
+Although mergers and acquisitions (M&As) activity has significantly grown over the last decade, there
+w
+remains much about the M&A process that we need to comprehend, including the implication of the
+method of payment on managers’ opportunistic behavior.1 The use of stocke as a method of payment is
+also known to create a strong incentive for managers to manipulate earnings to positively influence the
+i
+stock price, and therefore reduce the target’s acquisition cost (Ericksovn and Wang, 1999; Louis, 2004).
+However, it remains unclear whether stock bidders also strategiceally vary the narrative content of their
+corporate disclosures. Given the substantial influence of qualitative information on the firm’s stock price
+r
+(Henry, 2008; Henry and Leone, 2016; Fu, Wu, and Zhang, 2021; Arslan-Ayaydin, Boudt, and
+r
+Thewissen, 2016), it is essential to examine whether the use of stock as a form of payment leads managers
+e
+to manipulate the content of qualitative information in corporate disclosures.
+In the majority of M&As, the acquiring efirm buys the target’s assets using cash. However, in
+some cases, the acquiring firm uses its stock in exchange for the target’s stock. In stock-for-stock
+p
+mergers, acquiring firms exchange their stock against the stock of the target at a predefined rate.
+This means that the higher the price of the acquiring firm’s stock on the agreement date, the fewer the
+t
+o
+number of shares that must be issued to purchase the target firm. Prior literature shows that such a
+negative relationship betwenen bidders’ stock price and shares issued in the transaction leads bidders to
+increase their own premerger stock price to lower the target’s acquisition cost. For instance, Erickson
+and Wang (1999), Lotuis (2004) and Higgins (2013) find that acquiring firms tend to manipulate
+n
+total accruals upwards in the periods prior to the merger announcement, while He, Liu, Netter, and Shu
+(2020) find thiat bidders significantly manage down analyst earnings forecasts prior to merger
+r
+announcements. Overall, prior research provides strong evidence that the information environment
+p
+around stock-for-stock mergers is characterized for being highly uncertain and subject to opportunistic
+e
+manipulation.
+r
+P
+1 The method of payment in a M&A transaction can either be cash, stock (in which an exchange ratio is specified for conversion
+of target shares into acquirer shares), or a combination of the two (mixed deals).
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 5 =====
+d
+Yet, there remains limited research on whether bidders in stock-for-stock mergers tend to manipulate
+e
+the content of corporate disclosures to increase their stock price. Disclosure tone measures both what
+and how information is disclosed (Loughran and McDonald, 2011), reflecting bowth firms’ performance
+and managers’ disclosure incentives (Fu et al., 2021). A growing body of literature highlights that the
+e
+narrative section of corporate disclosures provides incremental information to financial numbers and
+management forecasts in explaining the firm’s future cash flows (Henry, 2i008; Henry and Leone, 2016;
+v
+Baginski, Demers, Kausar, and Yu, 2018; Arslan-Ayaydin et al., 2016; Cho, Phillips, Hageman, and
+e
+Patten, 2009; Cho, Roberts, and Patten, 2010; Davis, Piger, and Sedor, 2012). However, managers can
+also use the tone as a tool to mislead stakeholders. Arslan-Ayarydin et al. (2016) show that CEOs’ equity-
+based incentives leads managers to inflate the tone of earnings press releases, while Henry, Thewissen,
+r
+and Torsin (2021) find that a cautious disclosure toene mitigates potential home bias-related credibility
+and asymmetric information concerns arising from cultural and institutional distance. In this paper, we
+e
+therefore extent prior research and propose that, in order to increase their stock price and reduce the
+p
+acquisition cost of the target, bidders in stock-for-stock mergers inflate the tone of corporate
+disclosures.
+t
+It is not ex ante obvious whether the potential gains outweigh the costs of inflating the tone of their
+o
+corporate disclosures. First, it is unclear whether acquirers would be willing to exaggerate the use of
+n
+positive news at the cost of reducing their credibility with regard to investors. That is, if the manager’s
+optimism is inappropria te, investors may be potentially misled in terms of the current and future
+t
+earnings and firm value of the newly combined corporation. The company’s credibility may be
+n
+jeopardized (Yuthas, Rogers, and Dillard, 2002), along with the reliability, value, and trust in their
+i
+corporate cormmunication. In addition, litigation risks are a significant cost associated with tone inflation
+p
+in qualitative disclosures. According to Rogers, Van Buskirk, and Zechman (2011a), the use of optimistic
+language by managers heightens litigation risk. Their research indicates that plaintiffs often target
+e
+optimistic statements in their lawsuits and that companies facing lawsuits tend to have unusually
+r
+optimistic language in their earnings announcements. Therefore, the fear of litigation due to overly
+P
+optimistic voluntary disclosures can discourage managers from being overly optimistic in their
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 6 =====
+d
+communications, especially during high-profile events like stock-for-stock mergers. In fact, Ball and
+e
+Shivakumar (2008) question the notion that managers manipulate earnings upwards before stock
+issuance because of the high market scrutiny and litigation risk that characterizew these events. Finally,
+the target and its advisors are informed professionals and users of accounting information. As such, they
+e
+are likely to be familiar with the tone inflation used by the bidder. In light of this manipulation of
+corporate narratives, the target may oppose and reject the deal. i
+v
+Against this backdrop, whether stock-for-stock acquirers engage in tone manipulation is not only an
+e
+empirical question, but also raises ethical concerns as effective information disclosure and information
+transparency are key aspects of corporate ethical behaviorr that could build stakeholder trust and
+sustainable competitive advantage (das Neves and Vaccaro, 2013). Despite being exposed to several
+r
+costs associated with the manipulation of narrative edisclosures, the question is therefore whether stock-
+for-stock bidders engage in the upward manipulation of the tone of their voluntary corporate disclosure.
+e
+This question is of interest, given that both quantitative and qualitative features are used to evaluate
+p
+managerial abilities and firm performance (Amir and Lev, 1996; Arslan-Ayaydin, Bishara, Thewissen,
+and Torsin, 2020). We start by examin ing the use of tone management before M&A announcements,
+t
+and specifically, whether bidders in stock mergers are more likely to inflate the tone of earnings press
+o
+releases. We then conduct additional cross-sectional tests to analyze the impact of the acquiror’s pre-
+n
+merger performance, deal value and firm monitoring on bidders’ propensity to manipulate qualitative
+information. We further study how this manipulation of qualitative content, if used, impacts bidders’
+t
+stock prices and, in turn, their acquisition costs.
+n
+We use a sample of 5,558 M&A deals between 2004 and 2020, including 302 stock deals, 4,088 hybrid
+i
+deals (takeovrers that use both cash and stock) and 1,168 cash deals. To measure the linguistic tone, we
+p
+follow prior literature (see, e.g., Henry and Leone, 2016) and compute the spread in the number of
+positive and negative terms in the earnings press release from the Henry (2008) lists of words. We follow
+e
+prior M&A literature and examine quarterly earnings press releases of bidder firms over five quarters
+r
+before the merger announcement. We find that the tone of earnings press releases for stock-for-stock
+P
+mergers significantly increases in the four quarters before the M&A announcement quarter to reach a
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 7 =====
+d
+peak two quarters ahead of the M&A announcement. In fact, the median (average) tone increases by
+e
+15.320% (4.447%) between quarter -6 and quarter -2. In the quarter of the M&A announcement and the
+subsequent quarters, we observe that the tone of earnings press releases returns two its original level and
+no longer significantly differs from that of cash-based deals.
+e
+In contrast, we find that the tone of earnings press releases of cash deals does not significantly change
+over the five quarters before the M&A announcement, which is in line with ithe lack of incentive to engage
+v
+in tone management in these deals. Controlling for a series of deal and firm characteristics, as well as
+e
+year and industry fixed effects, the multivariate analysis confirms that the tone of stock deals significantly
+increases before the M&A announcement, relative to cash derals. Our analyses further indicate that the
+degree of tone inflation increases with the deal size, but decreases with the presence of control
+r
+mechanisms in the firm and the firm’s past performeance.
+Overall, our results are consistent with the strategic manipulation of tone by bidding firms in
+e
+the period prior to the announcement of the merger agreement. To further ensure that our results are not
+p
+driven by confounding factors, we conduct a number of identification tests for alternative explanations.
+We first examine the impact of earning s manipulation and explore whether the upward effect of stock
+t
+deals on tone is a separate effect and cannot be explained by upward earnings management (Erickson
+o
+and Wang, 1999). If the more optimistic tone of firms is mostly driven by the manipulation of earnings
+n
+numbers, the impact of stock deals on the content of earnings press releases should become statistically
+insignificant once we c ontrol for earnings management. Contrary to this perspective, our findings
+t
+reveal that the relationship between stock deals and tone continues even with upward earnings
+n
+management. This indicates that stock deals cause managers to consistently manipulate the content of
+i
+earnings prerss releases, independent of their earnings management practices.
+p
+A second potential concern is that unobserved characteristics correlated with the method of payment
+explains the tone of earnings press releases. We therefore correct for this potential endogeneity between
+e
+tone and the method of payment by conducting five tests to exclude the possibility that alternative
+r
+variables explain the impact of the method of payment on the tone. We first follow Fisch and Momtaz
+P
+(2020) and employ a restricted control function regression. We then exploit an instrumental variable
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 8 =====
+d
+approach using investors’ ownership as instrument. We then also compare stock and cash bidders using
+e
+the propensity score matching (PSM) and entropy-balancing methods. Finally, we conduct two
+pseudo-events studies by shifting merger announcements either forward or backwward by four quarters and
+repeat our baseline regressions. Although no approach can perfectly rule out endogeneous relationships,
+e
+our results from our endogeneity tests provide supporting evidence that bidders’ tone inflation is likely
+to be caused by the use of stock payment and not by omitted bidder-, target-i, deal-specific characteristics.
+v
+Based on this causal evidence, we next estimate the impact of inflating the tone of earnings press
+e
+releases on stock bidders before the merger. To do this, we conduct several regressions of a bidder’s
+abnormal stock return around earnings announcements on ther abnormal tone in earnings press releases.
+Controlling for other firm-, year- and industry-specific characteristics, we find that increasing the tone
+r
+of earnings press releases is significantly associatede with an increase in pre-merger stock prices. In fact,
+we estimate that tone inflation leads to savings in acquisition costs of $21.777 million for an average
+e
+stock bidder in the pre-merger period. In addition, we examine the impact of this tone inflation on
+p
+bidders’ abnormal stock returns around and after the merger announcement. If the tone inflation is
+opportunistic, we expect the abnormal t one in earnings press releases to cause a temporary overpricing of
+t
+bidders’ stocks at the M&A announcement and its effect to reverse in the long run. In line with this
+o
+prediction, our results show that stock-for-stock bidders who engage in tone inflation benefit from
+n
+superior returns at the M&A announcement. However, in the long-term, we document that stock bidders
+suffer from worse long -term returns. This evidence is in line with prior research on earnings
+t
+management, which documents that firms that manipulate earnings to beat expectations are still able to
+n
+benefit from higher short term returns, but suffer from long term losses (Bartov, Givoly, and Hayn, 2002;
+i
+Sloan, 1996)r.
+p
+Our study adds to the literature in several ways. First, motivated by prior research on the relation
+between disclosure tone and stock valuation, our study provides novel empirical evidence on the impact
+e
+of M&As’ method of payment on managers’ strategic motives. In particular, we contribute to Erickson
+r
+and Wang (1999), Higgins (2013), He et al. (2020) and Louis (2004) by showing that influencing
+P
+investors’ decisions is not only achieved by manipulating hard financial information, but also the content
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 9 =====
+d
+of disclosure narratives. As such, the management of tone should be regarded as an independent and
+e
+distinct manipulation tool utilized by acquirers in an attempt to inflate the stock price around stock-for-
+stock M&As. w
+Second, this paper adds to prior literature on voluntary disclosure by examining how important
+e
+economic events influence the quality of corporate narratives (see, e.g., Erickson and Wang, 1999; Louis,
+2004; He et al., 2020; Henry et al., 2021). Instead of focusing on the ideintification of new methods to
+v
+optimize the definition of tone in corporate disclosures (Jegadeesh and Wu, 2013; Loughran and McDonald,
+e
+2011; Boudt and Thewissen, 2019), our study aims at highlighting the strategic motives that may lead
+managers to manipulate the content of such information andr how the stock market responds to such
+manipulation. Our focus on one of the most important events in a company’s lifetime (e.g., M&As)
+r
+clearly illustrates that the content of corporate nareratives has both information-sharing purposes and
+strategic motives to influence the stock price (Yan, Aerts, and Thewissen, 2019). As such, our results
+e
+help investors understand the informational dynamics around stock-for-stock M&As and better
+p
+comprehend the influence of managerial incentives on corporate reporting and the firm’s value in the
+short and long term around M&A eve nts.
+t
+Third, our paper highlights an important ethical concern with respect to the quality of the narratives
+o
+contained in corporate disclosures. Our findings indicate that acquirers put forward events that serve at
+n
+inflating the stock price, rather than being accountable to the firm’s stakeholders and to the society. As
+such, the opportunistic u se of corporate disclosures as an instrument to construct reality in a way that
+t
+benefits bidders at the expense of the target represents an ethical issue, as “it sustains relations of
+n
+domination” (Beelitz and Merkl-Davies, 2012, p. 102). Many questions have been raised concerning the
+i
+ethical proprriety of these relations of domination in the context of M&As. Most of these relate to the
+p
+tactics used by the target when trying to avoid being acquired (for a discussion, see; Werhane, 1988),
+such as the poison-pill tactics, the institution of golden parachutes, the granting of lock-up options and
+e
+the anti-trust challenges. Instead of focusing on the tactics used by the target firm, our paper focuses on
+r
+unethical methods used by bidders during stock-for-stock M&As to reduce the acquisition price. The
+P
+main ethical implication of such tone inflation is that, if discretionary narrative disclosures are used to
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 10 =====
+d
+strategically inflate the stock price rather than incremental information purposes, then financial reporting
+e
+quality will be undermined. Given that we show that investors are susceptible to it, then adverse capital
+misallocations may result. Such manipulation of corporate disclosures’ quawlitative information is
+therefore an important corporate governance and regulatory issue. Through this paper, our findings
+e
+address this issue by understanding the incentives that influence managers in manipulating their
+disclosures. In particular, we extent the findings of Erickson et al. (2008)i, who discover that managers
+v
+manipulate earnings figures to present a favorable image of their performance prior to stock M&As. We
+e
+demonstrate that, irrespective of managers' tendency to manipulate earnings numbers, they strategically
+craft the content of the narrative sections of corporate disclosurres before the M&A announcement.
+r
+2. Literature review and hypothesis development
+e
+2.1. Stock-for-stock M&As and earnings management
+e
+The total number of shares issued by the acquiring firm is determined by an exchange ratio, which is the
+number of shares of the acquiring firm'sp stock to be issued for each share of the target's stock, as
+negotiated by the acquirer and the target. For example, the exchange ratio is four if the acquirer agrees
+to exchange four of its stocks for onet target firm share. This ratio is defined such that target shareholders
+o
+generally obtain a significant premium above the current market price (Erickson and Wang, 1999). In
+order to get to the exchangne ratio, the acquiring firm usually first defines the offer to the target firm by
+specifying a fixed dollar value amount for each target share. The number of stocks of the acquiring
+t
+firm’s shares exchanged for each of the target’s shares is then calculated based on the acquiring firm’s
+n
+stock price near the merger agreement date.2 As a result, there exists a negative relationship between the
+i
+price paid for the target and the bidder’s stock value.
+r
+Priorp literature extensively analyses the implication of the method of payment on managers’ M&A
+decisions. In particular, Shleifer and Vishny (2003) propose a theoretical model, where managers
+e
+are completely rational, understand stock market inefficiencies, and take advantage of them, in part
+r
+P
+2 As detailed by Erickson and Wang (1999), the target usually hires an investment bank to evaluate the exchange ratio. The investment
+bank evaluates a variety of information, including earnings and the content of corporate disclosures, in arriving at their opinion of the
+fair market (appraised) value of the acquiring firm.
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 11 =====
+d
+through merger decisions. They suggest that M&As are a form of arbitrage by rational managers
+e
+operating in inefficient markets. Assuming managers respond rationally to irrational markets, the
+findings indicate that overvalued firms are more likely to become acquirers, whilew undervalued firms are
+more likely to become takeover targets. Consistent with the model by Shleifer and Vishny (2003),
+e
+Rhodes-Kropf and Viswanathan (2004) empirically demonstrate that overvalued stocks increase the
+likelihood of mergers occurring, and these mergers are more likely to be finianced with stock. In addition,
+v
+Rhodes-Kropf, Robinson, and Viswanathan (2005), Ang and Cheng (2006) and Dong, Hirshleifer,
+e
+Richardson, and Teoh (2006) find that merger waves are more likely to occur when market-to-book
+ratios are high. In particular, Chidambaran, John, Shangguan, rand Vasudevan (2010) and Erel, Liao, and
+Weisbach (2012) evidence that, in order to reduce the target’s relative cost, bidders tend to use stock
+r
+financing when their stock is most overvalued. e
+This prior evidence shows that managers tend to strategically time the moment to acquire another firm
+e
+when the stock is most valuable. It also implies that managers are likely to resort to various strategies to
+p
+induce such misvaluation. Shleifer and Vishny (2003) argue that this phenomenon prevalence is
+becoming increasingly apparent, as evidenced by the number of studies investigating earnings
+t
+management around stock-for-stock M&As transactions. For instance, Erickson and Wang (1999) study
+o
+the earnings of acquiring firms in the quarters before the announcement and agreement dates when the
+n
+acquisitions are paid with acquirers’ own stock. Their results show that acquiring firms inflate earnings
+in the quarter before th e deal announcement. In fact, they find that the unexpected accruals are
+t
+significantly higher by 2 to 3% before the event. They also find that the degree of earnings management
+n
+is positively related to the size of the deal as a large deal provide stronger incentives to manipulate
+i
+earnings. Simrilar evidence is provided by Louis (2004), Higgins (2013), Gong, Louis, and Sun (2008)
+p
+for lawsuits in the US and Botsari and Meeks (2008) for the London Stock Exchange. In addition
+to earnings management, He et al. (2020) show how managers of stock-for-stock M&As manage down
+e
+analyst earnings forecasts prior to announcement.
+r
+P
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 12 =====
+d
+2.2. Stock-for-stock M&As and the manipulation of corporate disclosures
+e
+Instead of investigating the manipulation of quantitative financial information, we examine whether
+w
+M&A deals lead managers to manipulate the content of the narrative sections contained in corporate
+disclosures and test whether stock-for-stock acquirers, manipulate this content, relative to cash and hybrid
+e
+acquirors. This focus on corporate narratives over numbers is supported by strong evidence that
+i
+stakeholders use qualitative information from corporate disclosures to understand managers' private
+v
+insights into the firm’s financial performance. For example, Davis et al. (2012) highlight the information
+e
+value of earnings press releases, documenting a positive correlation between the tone of these releases
+r
+and future firm profitability, as well as investor reactions at earnings announcements. Henry (2008) also
+finds that the tone of earnings press releases is positivelyr correlated with short-term returns around the
+e
+disclosure date, even after accounting for a firm’s financial data and earnings surprises. Furthermore,
+Boudt, Thewissen, and Torsin (2018) show that the tone of earnings press releases holds informational
+e
+value for stakeholders, with its significance increasing with the level of information asymmetry between
+p
+firms and investors. Overall, the literature strongly supports the idea that investors respond positively to
+the tone of earnings press releases around earnings announcements.
+t
+o
+This focus on corporate narratives instead of numbers is justified by the fact that there is strong
+evidence that stakeholders unse qualitative information from corporate disclosures to infer the manager’s
+private information about the firm’s financial performance. For instance, Henry (2008) shows that the
+tone of earnings press rtelease is positively correlated with short window contemporaneous returns around
+n
+the date of the disclosures, even after controlling for a firm’s financial information and earnings surprise.
+In addition, Daviis et al. (2012) examine the information value of earnings press releases and document a
+r
+positive correlation between the tone of earnings press releases and future firm profitability, as well as a
+p
+positive relationship between tone and investors’ reaction at earnings announcement. Boudt, Thewissen,
+e
+and Torsin (2018) further find that the tone of earnings press releases provides information value to
+r
+stakeholders and that the informativeness of tone increases with the information asymmetry between
+P
+firms and investors. Similarly, Fu et al. (2021) investigate how the disclosure tone of earnings conference
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 13 =====
+d
+calls helps predict future stock price crash risk. Their result shows how firms exhibiting more
+e
+pessimistic tone during the current year-end call experience higher stock price crash risk in the coming
+year. Overall, the evidence in the literature lends considerable support to thwe notion that investors
+respond positively to the tone of earnings press releases around the earnings announcement.
+e
+However, unlike quantitative information, the narrative sections of earnings press releases remain
+i
+unregulated, granting managers considerable latitude in how information is presented to stakeholders.
+v
+This lack of regulation makes the information in these disclosures harder to legally contest and allows
+e
+managers the opportunity to subtly shape investors' perceptions of the firm's performance by carefully
+r
+choosing the language used in earnings press releases. There is growing evidence showing that the tone
+of earnings press releases is also affected by the presenrce of manager- specific incentives, such as the
+e
+CEO’s compensation structure (Arslan-Ayaydin et al., 2016), the presence of labor unions (Arslan-
+Ayaydin et al., 2020), the issue of equity and stock option grants (Huang, Teoh, and Zhang, 2014) and
+e
+CEO narcissism (Marquez-Illescas, Zebedee, and Zhou, 2019). Other studies also corroborate that
+p
+managers tend to hype their stock by increasing discretionary and optimistic disclosure with the objective
+of reducing the cost of capital or influencing short-term prices, especially before new stock issues (Huang
+t
+et al., 2014). This evidence clearoly shows that managers not only manipulate earnings numbers, but also
+engage in the manipulation of qualitative information due the incentives.
+n
+Given the role played by disclosures’ tone on the firm’s stock price, we therefore hypothesize that
+stock-for-stock acquirers may exploit the content of corporate disclosures and use more optimistic
+t
+language in theirn earnings press releases before the M&A announcement. In doing so, managers will
+hype their stock before the transaction announcement and reduce the cost of the acquisition. We therefore
+i
+r
+define to the following hypothesis:
+p
+H1a: Stock-for-stock acquirers inflate the tone of corporate disclosures before merger & acquisition
+e
+announcements.
+r
+However, it is crucial to recognize that opportunistic departures from standard practices aimed at
+P
+inflating the bidder stock's price can also come with significant costs. One such cost is the loss of
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 14 =====
+d
+credibility (Hirst, Koonce, and Miller, 1999). For example, Mercer (2004) illustrates how investors place
+e
+less reliance on corporate disclosures when managers are incentivized to mislead or provide inaccurate
+information during disclosures. During the negotiation of the exchange ratiow of the stock-for-stock
+merger, investors may therefore grow skeptical of the credibility of financial narratives and are therefore
+e
+likely to discount the information value of the tone of the qualitative information (Arslan-Ayaydin et al.,
+2016; El-Haj, Rayson, Walker, Young, and Simaki, 2019). As a result, if violuntary corporate narratives
+v
+are interpreted as a tool to manage investors’ impression, with no real value, it is unlikely that the
+e
+bidders would alter the wording to manage investors’ impression of the stock’s value before the M&A.
+In addition to a loss in credibility, litigation costs also consrtitute an important risk for bidders before
+stock-for-stock M&As. There is strong evidence that managers’ use of positive words in corporate
+r
+disclosures significantly increases litigation risk. eFor example, Rogers, Van Buskirk, and Zechman
+(2011) observe a positive relationship between managers' use of optimistic language in corporate
+e
+disclosures and litigation risk. Their research indicates that plaintiffs often target optimistic statements
+p
+in lawsuits, and firms facing litigation tend to have a disproportionately high number of positive words
+in their disclosures. This risk of litiga tion after M&As, which can be highly publicized, can reduce
+t
+managers’ incentives to change the tone of corporate disclosures before the event. Finally, the target’s
+o
+manager is typically an informed rational agent. As a result, they are likely to be familiar with the
+n
+impression management methods used by the bidder. One could therefore expect rational target
+managers to adjust their information set during the negotiation of the exchange ratio or to oppose and
+t
+reject the transaction.
+n
+H1b: Stock-for-stock acquirers do not inflate the tone of corporate disclosures around merger &
+i
+r
+acquisition announcements.
+p
+2.3. Economic benefits of tone management – Deal value, profitability and control
+emechanisms
+rThe impact of stock-for-stock M&As on tone is likely to vary cross-sectionally with deal- and firm-
+P
+specific characteristics. We predict that stock-for-stock acquisitions have the largest impact on tone
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 15 =====
+d
+management when the economic benefits at stake for the acquirer are the highest. In particular, given the
+e
+cost of tone management, we expect tone management to be an increasing function of the size of the
+transaction value. If the size of the transaction is relatively small, the economic bwenefit from increasing
+the stock price would also be relatively small. On the contrary, if the size of the transaction is relatively
+e
+large, the economic benefits at stake are of greater magnitude, leading bidders to have more incentives
+to opportunistically increase the tone of the corporate disclosure. As a reisult, we expect the acquiring
+v
+firm’s tone management before the transaction to be an increasing function of the deal value.
+e
+H2: The management of tone before stock-for-stock M&As increases with the merger’s deal value.
+r
+Similar to deal characteristics, we further expect firm-specific characteristics to affect the relation-
+r
+ship between tone management and stock-for-stock acquisitions. We expect profitable firms to be less
+e
+likely to engage in acquisition transactions as they have a high value from their existing operations (Park,
+Yoon, and Kim, 2013), and therefore already beenefit from a relatively high stock price. On the contrary,
+unprofitable firms are pro-actively looking for targets and more likely to enter acquisition transactions.
+p
+This relationship is in line with prospect theory, which argues that managers in less profitable firms are
+more likely to look for high-risk ventures, whereas highly profitable acquirers tend to be more risk
+t
+o
+averse and to enter M&A deals of higher quality. As a result, we hypothesize that the incentive to
+manage the tone of corporate disclosures before M&A announcements is stronger for firms with a low
+n
+past profitability.
+t
+H3: The management of tone before M&As decreases with the acquirer’s past profitability.
+n
+Finally, firm-specific monitoring mechanisms are expected to affect the impact of stock-for-stock
+i
+decisions onr tone management. On the one hand, the presence of control mechanisms, such as financial
+analystsp or leverage, have been shown to reduce managerial opportunistic behavior, such as earnings
+management by providing additional monitoring. For example, Hong, Huseynov, and Zhang (2014)
+e
+show that the number of analysts following a firm has important monitoring effects on managerial
+r
+behavior, which results in lower levels of both accrual- and real-based earnings management. Similarly,
+P
+other studies finds that there exists a negative relationship between leverage and earnings manipulation
+13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 16 =====
+d
+(Rodriguez-Perez and van Hemmen, 2010; Alsharairi, 2012), as managers in leveraged firms may face
+e
+more control from creditors, limiting the manipulation of earnings. On the other hand, the presence of
+financial analysts may put more pressure on managers and lead them to ewngage in greater tone
+management. For instance, Bratten, Payne, and Thomas (2016) show that managers tend to resort to
+e
+opportunistic behavior when followed by a larger number of analysts. As such, higher analyst coverage
+increases the scrutiny of managers and leads to manipulative behavior. Othier studies also show that firm
+v
+leverage can be positively associated with earnings management (DeFond and Jiambalvo, 1994; Iatridis
+e
+and Kadorinis, 2009). Overall, the expected impact of leverage or analysts’ coverage on tone
+management around M&A transactions is ambiguous and remrains to be empirically investigated.
+H4a: Tone manipulation decreases with the number orf analysts (leverage) following the firm before
+the stock-for-stock acquisition. e
+e
+H4b: Tone manipulation increases with the number of analysts (leverage) following the firm before
+the stock-for-stock acquisition. p
+3. Sample selection and variable definition
+t
+o
+In this section, we provide an overview of the model construction, variable definitions and sample
+n
+construction.
+3.1. Collection of etarnings press releases
+n
+We use earnings press releases as the disclosure because a significant amount of prior research
+i
+documents thre economic relevance of earnings announcements as a means by which firms communicate
+p
+with investors (see, e.g., Kothari, 2001) and provides evidence that earnings announcements generally
+lead to a higher market reaction than other SEC filings (Li and Ramesh, 2009). Furthermore, the type of
+e
+information disclosed in earnings announcements is not as strictly specified by the SEC relative to
+r
+more highly regulated documents, such as annual reports. As such, earnings press releases leave
+P
+managers to freely express linguistic and stylistic content as they see fit, particularly around M&As.
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 17 =====
+d
+We retrieve quarterly earnings press releases from the EDGAR website. Since 2003, publicly
+e
+listed firms are required to submit earnings releases to the SEC via a Form 8-K within four days of their
+announcement. We identify earnings releases by selecting 8-K filings containinwg Item Code 2.02 and
+exclude those filed beyond the mandated four trading days.
+e
+Earnings press releases are located under the tag "<TYPE> EX 99.1". To ensure our sample
+exclusively comprise earnings press releases, we review all electronic fiiles larger than 10 kilobytes,
+v
+filtering out conference call announcements and other non-earnings-related notices. We manually
+e
+reformat the downloaded HTML files containing earnings press releases into a readable format. While
+parsing the text, we proceed with the following steps applied rin prior research (e.g., Boudt et al., 2018;
+Davis and Tama-Sweet, 2012; Davis et al., 2012; Henry, 2008; Arslan-Ayaydin et al., 2016; Loughran
+r
+and McDonald, 2011;): e
+(1) Delete graphics and other infographics. e
+(2) Re-encoding characters such as &NBSP (blank space) or &AMP (&) back to their original
+p
+ACSII form.
+(3) Delete all text appearing within < TABLE > HTML tags, where more than 15% of the
+t
+nonblank characters are onumbers.
+n
+Following Davis et al. (2012), we define a minimum threshold of words in the document. We
+therefore require a press release to have at least 100 words and remove any observation otherwise.
+t
+n
+3.2. Research design
+i
+To test Hypothesis 1, we estimate the following cross-sectional regression:
+r
+p 𝑇𝑜𝑛𝑒 = 𝛼+ 𝛿 ×𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘+ 𝛽 ×𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠+ 𝜀, (1)
+𝑀&𝐴
+where 𝜀 are Newey West standard errors, corrected for heteroskedasticity and autocorrelation.3
+e
+𝑇𝑜𝑛𝑒 is the sum of the bidder tone over four earnings press releases prior to the merger
+𝑀&𝐴
+r
+P
+3 Our main results continue to hold if we (i) cluster at the firm level, (ii) adopt a two-way clustering (firm and year quarter, and
+two-digit SIC industry and year quarter) (Gow, Ormazaba, and Taylor, 2010; Petersen, 2009), (iii) use the Huber White standard
+error without clustering or (iv) cluster at the two-digit SIC industry level.
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 18 =====
+d
+announcement. 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is a dummy variable equal to one for stock deals, and zero for hybrid
+e
+and cash deals. 𝛿 is the coefficient of interest, which captures the impact of stock-for-stock deals on the
+tone of earnings press releases. If firms strategically inflate the tone of earningws press releases before
+stock-for-stock announcements, we expect 𝛿 to be positive.
+e
+We define the tone of earnings press releases (in %) as the relative spread between the number of
+i
+positive and negative words (see, e.g., Brockman and Cicon, 2013; Arslan-Ayaydin et al., 2016;
+v
+Marquez-Illescas et al., 2019; Fu et al., 2021):
+e
+−5
+𝑃𝑜𝑠𝑖𝑡𝑖𝑣𝑒𝑊𝑜𝑟𝑑𝑠 −𝑁𝑒𝑔𝑎𝑡𝑖𝑣𝑒𝑊𝑜𝑟𝑑𝑠
+𝑞 𝑞
+𝑇𝑜𝑛𝑒 = 100× ∑ , (2)
+𝑀&𝐴 𝑇𝑜𝑡r𝑎𝑙𝑊𝑜𝑟𝑑𝑠
+𝑞
+𝑞−1
+where 𝑇𝑜𝑡𝑎𝑙𝑊𝑜𝑟𝑑𝑠 is the total number of words in the disclosure from firm i in quarter q of year t.
+r
+𝑃𝑜𝑠𝑖𝑡𝑖𝑣𝑒𝑊𝑜𝑟𝑑𝑠 and 𝑁𝑒𝑔𝑎𝑡𝑖𝑣𝑒𝑊𝑜𝑟𝑑𝑠 are the numebers of positive and negative words in the earnings
+press releases, respectively. The main issue with this bag of words approach is that there currently exists
+e
+no consensus in the literature regarding which word list is more appropriate for the analysis of language
+p
+in contexts such as financial disclosures. One exception prevails, however. Henry and Leone (2016)
+present evidence that word-frequency tone measures based on domain-specific wordlists (compared to
+t
+general wordlists, e.g., DICTION) better predict the market reaction to earnings announcements, have
+o
+greater statistical power in short-window event studies, and exhibit more economically consistent post-
+n
+announcement drift. We therefore conduct our main analyses based on the Henry (2008) wordlists.4
+To analyze the impact of stock-for-stock M&As on the tone of earnings press releases before the M&A
+t
+announcement, wne rely on prior literature (He et al., 2020; Erickson and Wang, 1999) and use of the
+sum of the tone over the five quarters preceding the quarter of the M&A announcement (e.g. the sum of
+i
+r
+𝑇𝑜𝑛𝑒 from q − 5 to q − 1). We then take the percentage of that value. The reasoning for this five-
+𝑀&𝐴
+p
+quarter period prior to the M&A announcement is that acquirors’ merger discussions with the target
+e
+typically take place over several quarters prior to the formal merger announcement (see, e.g., He et al.,
+r
+P
+4 The Loughran and McDonald (2011) libraries are also a popular choice in the analysis of corporate disclosures. We therefore
+also provide robustness tests with those libraries. We show in Appendix A that our results remain qualitatively similar if we use
+Loughran and McDonald (2011) lists to identify positive and negative words.
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 19 =====
+d
+2020; Erickson and Wang, 1999; Boone and Mulherin, 2008). In spite of negotiation processes varying
+e
+widely across deals, bidders usually start reaching out to the target three to five quarters before the M&A
+announcement (He et al., 2020). They then submit formal takeover proposals sevweral months before the
+M&A announcement. As a result, bidders’ incentives for engaging in tone management is likely to
+e
+become obvious as early as one year before the announcement, but we expect this effect to become
+stronger during the last two or three quarters before the announcement, ias the bidder and target reach
+v
+the final terms of their agreement. To capture such effect on tone, we therefore take the sum of the tone
+e
+over the last four semesters.5
+𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠 represent the set of determinants that have been srhown to explain the tone of press releases
+and are measured one year prior to the M&A announcement. Prior literature shows that tone is also
+r
+related to a set of economic attributes, such as earnings uncertainty, firm characteristics and the firm’s
+e
+informational environment (see, e.g., Henry, 2008; Huang et al., 2014). To control for firm-specific
+e
+characteristics, we include firm size (measured as the logarithm of the firm’s market capitalization,
+p
+𝑆𝑖𝑧𝑒), leverage (𝐿𝑒𝑣𝑒𝑟𝑎𝑔𝑒) as the long-term debt divided by total assets at the end of year t − 2 and
+the firm’s book-to-market (𝐵𝑇𝑀) as the ratio of the market value of common equity at the end of year
+t
+t − 1 to the book value of equity in year t − 1. In line with Arslan-Ayaydin et al. (2016, 2020), we also
+o
+include four variables to control for the firm’s performance: (i) the return on assets in year t − 1 (𝑅𝑂𝐴),
+n
+which is defined as the ratio of the income before extraordinary items of firm divided by the firm’s total
+assets at the end of year t − 2, (ii) a dummy variable 𝐿𝑜𝑠𝑠 that equals one if the firm’s 𝑅𝑂𝐴 in year t
+t
+− 1 is negative, and zero otherwise, (iii) analysts’ forecast error as the forecast error of the previous
+n
+year (𝐹𝐸), and (iv) the 12-month buy-and-hold monthly returns, ending in year t − 1 (𝑅𝑒𝑡𝑢𝑟𝑛). To
+i
+control for trhe firm’s information environment, we further include the logarithm of the number of
+p
+financial analysts following the firm in year t − 1 (𝑁𝑜𝐴), the dispersion of analysts’ forecasts in year t −
+1 (𝜎 ) as defined by Das, Levine, and Sivaramakrishnan (1998) and the standard deviation of the
+e𝐹𝐸
+firm’s profitability (𝜎 ) over the four quarters in the preceding year t − 1, as defined by Core and
+𝑅𝑂𝐴
+r
+P
+5 Taking the last two or three semesters before the M&A announcement does not alter our conclusions. The results are available upon
+request.
+17
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 20 =====
+d
+Wayne (2002).
+e
+We also include an array of deal-specific variables. We first include the logarithm of the number
+w
+of bidders (𝑁𝑏𝑟𝐵𝑖𝑑𝑑𝑒𝑟𝑠) competing for the target. We also control for logarithm of the deal value
+(𝐷𝑒𝑎𝑙𝑉alue), which is the transaction’s value reported by SDC in millions of dollars. We further add
+e
+a dummy variable for tender offers (𝑇𝑒𝑛𝑑𝑒𝑟), which is defined as an indicator variable that equals
+i
+one if the SDC reports that the deal is a tender offer, and equals zero otherwise. Furthermore, we control
+v
+for diversifying deals (𝐷𝑖𝑣𝑒𝑟𝑠𝑖𝑓𝑖𝑐𝑎𝑡𝑖𝑜𝑛), which is an indicator variable that equals one if the bidder
+e
+is not from the same two-digit SIC industry as the target firm, zero otherwise. Finally, we control
+r
+for industry, year and quarter fixed-effects. The industry fixed-effects (based on two-digit SIC codes)
+and time fixed-effects allow our model to control for the general state of the economy, as well as
+r
+industry- and time-specific characteristics. e
+To test Hypotheses 2, 3 and 4, we estimate the following model:
+e
+p
+𝑇𝑜𝑛𝑒 = 𝛼+ 𝛿 ×𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 ×𝐹𝑎𝑐𝑡𝑜𝑟+ 𝛽 ∙𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠+ 𝜀, (3)
+𝑀&𝐴
+t
+We test for the significance of tohe coefficients using Newey-West standard errors, where 𝐹𝑎𝑐𝑡𝑜𝑟 is the
+set of firm- and deal-specific factors that influence the effect of stock-for-stock M&As on managers’ use
+n
+of tone inflation. For Hypothesis 2, we use the deal value (𝐷𝑒𝑎𝑙𝑉𝑎𝑙𝑢𝑒) provided by the SDC database
+and predict ρ to be positive. Hypothesis 3 focuses on the influence of firm past performance on the
+t
+relationship betwneen stock-for-stock M&As and tone management. To proxy for firm performance,
+we first use the firm’s return on assets in year t− 1 (𝑅𝑂𝐴). We then use the firms’ stock performance in
+i
+r
+the year preceding the M&A announcement (𝑅𝑒𝑡𝑢𝑟𝑛). We predict 𝛿 to be negative for both performance
+p
+proxies. Hypothesis 4 investigates the impact of firm monitoring on tone management around M&As.
+e
+We use analysts’ coverage (𝑁𝑜𝐴) and the firm’s leverage ratio (𝐿𝑒𝑣𝑒𝑟𝑎𝑔𝑒) as proxies for firm
+rmonitoring. If analysts and leverage increase the control mechanisms in the firm, we expect 𝛿 to be
+P
+negative (Hypothesis 4a). On the contrary, if analysts and leverage put pressure on managers and leads
+18
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 21 =====
+d
+them to increase the tone, we then expect 𝛿 to be positive (Hypothesis 4b).
+e
+3.3. Sample selection
+w
+The sample includes 5,558 M&As by U.S. public bidders from 2004 and 2020, retrieved from the
+Securities Data Company’s (SDC’s) Mergers and Acquisitions database. eWe start with 147,188 U.S.
+domestic M&As with announcement dates between January 1st, 2004 and December 31st, 2020. We then
+i
+v
+follow Kisgen (2009) and require a deal to have a transaction value above $5 million, which leaves
+us with 98,000 deals.6 We further require the bidders to be publiecly traded firms, which leads to 75,000
+deals. Moreover, we keep the deals for which we have available information about the target’s ownership
+r
+status (e.g., public, private or subsidiary) and deal status (c ompleted, withdrawn). We also request the
+r
+bidder to acquire at least 50% of the target’s stocks. This data selection leaves us with 10,456 deals. We
+e
+then require the bidder to have stock price information in CRSP, accounting data in COMPUSTAT
+e
+and analyst forecasts in I/B/E/S.
+We then keep observations for which pwe have earnings press releases for five quarters before the
+quarter that announces the M&A, the quarter of the M&A announcement, as well as for four earnings
+press releases after the earnings antnouncement.7 This restriction significantly decreases the sample
+o
+size and gives a final number of 5,558 deals, split between 302 stock deals, 4,088 hybrid deals and 1,168
+cash deals. Panel A of Tanble 1 reports the distribution of the M&A sample. Consistent with market
+conditions, a large proportion of the deals are taking place in the second period of the sample, between
+t
+2011 and 2018.
+n
+3.4. Summariy statistics
+r
+Panel Bp of Table 1 provides the deal and firm characteristics for our sample. To address concerns for
+outliers, we have winsorized all continuous variables in our analyses at the 1st and 99th percentile. We
+e
+find that the average deal has a deal value of $65 million, with the bidder having an average market size
+r
+P
+6 Using other cutoffs for the minimum deal size does not affect our results, which are available upon request.
+7 This represents a total of ten earnings press releases per deal.
+19
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 22 =====
+d
+(𝑆𝑖𝑧𝑒) of $20.783 billion. The data indicate that the acquiring firms are on average profitable with
+e
+a positive earnings surprise (𝐹𝐸), a return on assets (𝑅𝑂𝐴) of 1.1% and a positive stock market
+(Return) of 8.6% over the past year. The average bidder also has an average of 9.5w92 analysts’ following
+its stock and 24% leverage ratio.
+e
+< Insert Table 1 here.>
+i
+v
+Panel C of Table 1 reports the firm and deal characteristics for deals using different methods of
+e
+payment. Compared to cash deals, stock deals tend to be less profitable (𝑅𝑂𝐴), smaller (𝑆𝑖𝑧𝑒), less
+r
+leveraged (𝐿𝑒𝑣𝑒𝑟𝑎𝑔𝑒) and more growth oriented (𝐵𝑇𝑀), which is consistent with prior literature
+that on average stock bidders have a lower book-to-market ratio (Martin, 1996). In addition, stock bids
+r
+are less likely to be tenders (𝑇𝑒𝑛𝑑𝑒𝑟), in competiteion with other companies (𝑁𝑏𝑟𝐵𝑖𝑑𝑑𝑒𝑟𝑠) and tend
+to occur in the same industry (𝐷𝑖𝑣𝑒𝑟𝑠𝑖𝑓𝑖𝑐𝑎𝑡𝑖𝑜𝑛). Furthermore, the deal size (𝐷𝑒𝑎𝑙𝑉𝑎𝑙𝑢𝑒) for stock
+e
+bidders ($1.342 billion) tends to be higher than for cash bidders ($1.001 billion).
+p
+Table 2 reports the Pearson and Spearman correlations of our independent variables and relevant
+control variables. There is a positive correlation between 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 and 𝑇𝑜𝑛𝑒 . This positive
+𝑀&𝐴
+t
+correlation is in line with Hypoothesis 1a, which argues that the tone of earnings press releases is more
+optimistic before stock-for-stock M&A announcements. In addition, control variables are significantly
+n
+correlated with 𝑇𝑜𝑛𝑒 , indicating that multivariate regressions are appropriate.
+𝑀&𝐴
+t
+< Insert Table 2 here.>
+n
+4. Results i
+r
+p
+This section first describes the univariate relationship between tone and M&A announcements by
+higehlighting the dynamics of tone around stock-for-stock M&As as well as for cash and hybrid deals.
+Given the strong correlation between tone and the control variables, we then provide the results of the
+r
+multivariate regressions and show that our results hold after we correct for endogeneity concerns. Finally,
+P
+we conduct cross-sectional analyses that test whether this manipulation of tone varies across firm and
+20
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 23 =====
+d
+across deals. In particular, we focus on the (i) deal size, (ii) firm performance and (iii) firm monitoring.
+e
+4.1. Tone management around M&A announcements w
+Table 3 provides the average tone for acquirors’ five quarterly earnings announcements from Quarter -5 to
+e
+-1, where Quarter -1 is the bidder’s quarterly earnings announcement before the quarter of the M&A
+i
+announcement. To provide a complete description of the dynamics of tone around the M&A announcement,
+v
+we also show the average tone for the four quarters following the M&A announcement quarter. The timeline
+e
+of the evolution of tone around M&A announcements is plotted in Figure 1.
+r
+< Insert Figure 1 here.>
+r
+e
+For stock-for-stock transactions, Figure 1 shows that both the mean and median tone substantially
+e
+increase before the M&A quarter. The median tone reaches a peak of 1.460 in Quarter -2, compared to
+p
+a tone of 1.266 in Quarter -5. This increase means that the tone of earnings press releases of stock
+bidders is 15.32% higher two quarters b efore the M&A announcement, compared to five quarters before
+t
+the announcement, which is both statistically and economically significant. In contrast, we find that the
+o
+tone of earnings press releases of cash deals does not significantly increase between Quarter -5 and -1.
+n
+The median tone of cash deals ranges between a minimum of 1.196 in Quarter -3 and 1.260 in Quarter
+0. Moreover, the results of t-tests and Wilcoxon tests show that, while the tone for stock deals are
+t
+insignificantly different from cash deals in Quarter -5, the difference progressively becomes more
+n
+significant as the M&A announcement approaches and reaches a peak in Quarter -2. The difference
+i
+in the tone orf stock and cash deals then decreases and becomes insignificantly different from cash deals
+p
+again in Quarter 0. This significant difference between stock and cash deals is consistent with the
+stronger incentives for tone management by stock-for-stock bidders than cash acquirors. This incentive
+e
+is also clearly evidenced by the tone dynamics of hybrid M&A deals around the M&A announcement.
+r
+We find that the tone of hybrid deals tends to be more optimistic before the M&A announcement, but at
+P
+a more moderate degree compared to stock-for-stock deals. This pattern is clearly evidenced in Figure
+21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 24 =====
+d
+1.
+e
+Furthermore, the stock bidders become less optimistic after the M&A announcement (Quarter 1 to 4).
+We find that the differences between the stock and cash bidders become statisticawlly insignificant in the
+quarter of the M&A announcement, as well as in the subsequent ones. The results highlight that
+e
+bidders showcase less tone inflation after the M&A announcement, where the incentives of manipulating
+the content of narratives are significantly smaller than before the announciement. Overall, the evidence
+v
+of Figure 1 and Table 3 provide initial support to Hypothesis 1a that managers tend to manipulate the
+e
+content of earnings press releases by inflating the tone of earnings press releases prior to the quarterly
+earnings announcement before a stock-for-stock merger. r
+r
+< Insert Tabele 3 here.>
+e
+4.2. The multivariate setting of tone management
+p
+We next examine the tone of earnings press releases around M&As using multiple regression analyses
+that control for firm and deal characteristics. Table 4 presents the results of Equation 1, which tests for
+t
+the impact of stock-for-stock M&As on the tone of earnings press releases around M&A announcements.
+o
+The dependent variable (𝑇𝑜𝑛𝑒 ) is the average of bidders’ tone for five quarters before the M&A
+𝑀&𝐴
+n
+announcement (for Quarter -5 to -1). The independent variable of interest is 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘, which
+equals one if the M&A de al is stock-based, zero otherwise.8 In Model (1), the parsimonious specification
+t
+only includes year and industry fixed effects, but no other control variables. The results show that the
+n
+coefficient 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is significantly positive, which is consistent with the results in Table 3.
+i
+Model (2) further includes the control variables. We find that the results remain statistically significant
+r
+at a 99%p confidence interval. In fact, we observe that the magnitude of the coefficient is even larger.
+Regarding the control variables, a large number of firm- and deal-specific characteristics are correlated
+e
+with 𝑇𝑜𝑛𝑒 . We find that 𝑇𝑜𝑛𝑒 is significantly and positively associated with the earnings
+𝑀&𝐴 𝑀&𝐴
+r
+P
+8 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is defined as a dummy variable that equals one for stock-for-stock deals and zero for hybrid and cash deals. However,
+excluding hybrid deals and exclusively focusing on cash and stock deals provide qualitatively similar results. Appendix B provides the result
+description if we exclude hybrid deals, and only select cash and stock deals.
+22
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 25 =====
+d
+surprise (𝐹𝐸), while it is negatively associated with analysts’ coverage (𝑁𝑜𝐴), the loss dummy
+e
+(𝐿𝑜𝑠𝑠) and the standard deviation in past performance (𝜎 ). We also find that the number of
+𝑅𝑂𝐴
+w
+competing bidders (𝑁𝑏𝑟𝐵𝑖𝑑𝑑𝑒𝑟𝑠) significantly increases the tone around the M&A announcement.
+Finally, if the deal leads to a diversification in the firm’s operations (𝐷𝑖𝑣𝑒𝑟𝑠𝑖𝑓𝑖𝑐𝑎𝑡𝑖𝑜𝑛), the tone of
+e
+earnings press releases is less optimistic.
+i
+v
+< Insert Table 4 here.>
+e
+To investigate the trends in tone management approaching the M&A announcement, we show in
+r
+Model (3) to (7) the regressions of quarterly tone for each of the Quarters -5 to -1, respectively. As
+expected and consistent with our univariate results, we find that the tone is significantly increasing
+r
+from Quarter -5 to Quarter -2. The coefficient for 𝑆e𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 in Model (3) starts at 0.099, which
+is significant at a 95% confidence level. The coefficient for the same variable increases to 0.128 for
+e
+Quarter -4, 0.155 for Quarter -3 and 0.176 for Quarter -2. It then decreases to 0.138 for Quarter -1.
+p
+All are significant at a 99% confidence interval. This evidence highlights that stock bidders’ tone in
+earnings press releases are more optimistic when approaching the public announcement of the M&A.
+t
+Because Erickson and Wang o(1999) find that stock bidders tend to manipulate their earnings
+numbers before the M&A announcement, it is possible that the use of tone inflation stems from this
+n
+upward management of earnings, instead of the approaching M&A announcement. To correct for
+this effect, we control for earnings management by introducing the absolute value of discretionary
+t
+accruals as a pronxy for earnings management (𝐸𝑎𝑟𝑛𝑖𝑛𝑔𝑠𝑀𝑎𝑛𝑎𝑔𝑒𝑚𝑒𝑛𝑡) (see, e.g., Prior, Surroca,
+and Trib´o, 2008). We show in Appendix C that the relationship between 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 and tone
+i
+r
+inflation (𝑇𝑜𝑛𝑒 ) remains highly significant after controlling for earnings management.
+𝑀&𝐴
+p
+While Table 4 shows a significant increase in the tone just before the announcement of stock-for-stock
+e
+M&As relative to cash deals, it remains unclear whether bidders become more positive or less negative, or
+both in their communications with stakeholders. We therefore distinguish between positive and negative tone
+r
+Pas dependent variables in Equation 1. Panel A and B of Table 5 report the results for the positive and negative
+tone, respectively. We find that 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is significantly positive with the number of positive words,
+23
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 26 =====
+d
+but is insignificantly associated with negative tone before the M&A announcement. The results suggest that
+e
+the announcement of stock-for-stock M&As significantly increases the use of positive words in earnings press
+releases, rather than decreases the use of negative words in the document. w
+< Insert Table 5 here.> e
+4.3. Endogeneity concerns i
+v
+Our results so far provide strong evidence of a manipulation of the content of earnings press releases in
+e
+the quarters leading to the M&A announcement of stock-for-stock deals. This result highlights the
+r
+incentive for managers to engage in the inflation of tone to boost the stock price and reduce the target
+acquisition cost before the M&A announcement. However, obtaining causal evidence is challenging
+r
+as the decision to use stocks to acquire targets meay be based on a variety of attributes that are not
+readily quantifiable, but that might be correlated with the tone of earnings press releases. For instance,
+e
+hubris behavior or managerial overconfidence in the firm’s future performance may explain the inflation
+p
+in tone (Moeller, Schlingemann, and Stulz, 2004; Malmendier and Tate, 2008). Given that such
+variables are not accurately quantifiable, our current economic interpretation may either be a spurious
+t
+statistical artefact (that is, our significance is a false positive), or driven by an omitted variable bias.
+o
+Several methodological approaches exist to account for this endogeneity. In line with prior studies
+n
+(see, e.g., Thewissen, Thewissen, Torsin, and Arslan-Ayaydin, 2022; Colombo and Grilli, 2010), we
+employ a large array of endogeneity tests to confirm the causality of our results: (i) the restricted control
+t
+function (rCF), (ini) pseudo-event study, (iii) instrumental variable, (iv) propensity- score matching and
+(v) entropy balancing.
+i
+r
+p
+4.3.1. Propensity-score matching
+e
+One could argue that firms conducting stock-for-stock deals tend to be more profitable, larger and less
+rleveraged (e.g. more cash). If that is the case then it may be that the more optimistic tone is explained by
+P
+firm-specific characteristics, such as performance or size. As a result, it may not be the method of
+24
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 27 =====
+d
+payment that is leading firms to be more optimistic, but rather that they are more profitable or less
+e
+leveraged. In addition, our original OLS model assumes a linear relationship between the controls and
+the dependent variable. If these associations are not linear then our model’s specifiwcation is mis-specified.
+To circumvent such issues, we use the propensity score matching (PSM) method to construct a new
+e
+sample. Contrary to the OLS regression, which assumes a linear relationship between the dependent
+variable and the covariates, the PSM does not pre-suppose any functionail association. In fact, it is an
+v
+empirical method adjusted to assess a causal relationship. Many studies in prior literature use this
+e
+approach to address concerns that the treated sample is not similar to the control sample (Thewissen et
+al., 2022). As such, this practice helps mitigate the issue thatr omitted firm-specific characteristics may
+simultaneously explain both the choice of the method of payment and tone management.
+r
+We first divide our sample into two subsamplees based on the method of payment. We consider
+the subsample of firms that use stocks as a method of payment as our treatment group. Our control group
+e
+contains deals that either use cash or both stock and cash as method of payment. We then run a logit
+p
+regression on all the firm-specific variables of Equation 4 to estimate the probability that a firm
+would choose stocks to conduct an M& A deal:
+t
+o
+StockforStock = α + β × ROA + β × BTM + β × Return + β × log Size (4)
+1 2 3 4
+n
++ β × 𝜎 +β × 𝜎 + β × Leverage + β ·× Loss + β × FE + β × 𝜎
+5 𝑅𝑒𝑡 6 𝑅𝑂𝐴 7 8 9 10 𝐹𝐸
++ β × log NoA + Year and industry fixed effects +𝜀.
+11
+t
+n
+We then match each stock-for-stock deal with the closest propensity score to the cash or hybrid deals
+i
+based on the neighbor matching method. This means that for each observation from the treatment group,
+r
+we get opne observation from the control sample. As a result, our final sample for the PSM second-stage
+regression consists of 604 observations (302 stock deals and 302 cash or hybrid deals). Panel A of Table
+e
+6 depicts differences in mean scores for all covariates between the stock-for-stock firms and the
+r
+propensity matched control group. Overall, while we observe a significant difference across all variables
+P
+before the matching procedure, we observe no statistically significant differences in the means between
+25
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 28 =====
+d
+the two groups after we match each deal. Overall, the results in Table 6 suggest that the propensity score
+e
+matched control group mirrors the stock-for-stock deals reasonably well, given the covariates.
+w
+< Insert Table 6 here.>
+e
+Panel B reports the differences in the mean and median tone between Quarter -5 and 0. Similar to
+i
+our initial results, we find that the tone of stock-for-stock deals significantly increases as the date of
+v
+the M&A announcement approaches. The difference between the mean tone for the treatment and control
+e
+groups becomes significantly different from Quarter -4 to -1, while the difference in the median tone is
+r
+significant between Quarter -3 and -2. This statistical difference is confirmed in Model (2) of Panel C.
+The coefficient StockforStock is positive and statistically significant at a 95% confidence interval.
+r
+e
+4.3.2. Entropy balancing
+e
+In spite of the PSM approach being commonly used in prior literature (Shipman, Swanquist, and Whited,
+p
+2017), more recent literature discusses that PSM is subject to several caveats. First, the PSM often
+relies on random matches and fails to meet the covariate balance condition (King and Nielsen, 2016). In
+t
+addition, the nearest neighbor method ignores a subset of control observations, which can cause some
+o
+loss of information or lack of power (Hainmueller, 2012). Contrarily to the PSM, entropy balancing
+n
+almost always reaches a high covariate balance. It reweights each covariate observation through an
+iterative process until the first, second and even higher moments of the control group equal those of the
+t
+treated group.
+n
+To conduct the entropy balancing, we use the same matching variables used in the PSM. We then
+i
+match the mean, variance and skewness of the deals. After multiple iterations, each control observation is
+r
+assignedp a weight and we use these weights to estimate the regressions. As shown in Panel A ofTable
+7, there is convergence for the mean, variance and skewness of the control variables. Panel B shows that the
+e
+tone difference between the treatment and control groups become significantly larger as the date
+r
+approaches the M&A announcement. This trend is verified in Model 1 of Panel C, with a positive and
+P
+significant coefficient of 0.145 for the variable 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘.
+26
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 29 =====
+d
+< Insert Table 7 here.> e
+4.3.3. Instrumental variable approach w
+The instrumental variable approach ensures that unobserved features that may simultaneously explain
+e
+the method of payment and the tone of earnings press releases are not driving our results. A proper
+i
+instrument exclusively affects the outcome variable (𝑇𝑜𝑛𝑒 ) through its impact on the independent
+𝑀&𝐴 v
+variable (𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘). As such, it needs to fit the relevance (e.g. the instrument should be
+e
+correlated with 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘) and exclusion criteria (no direct correlation between the instrument and
+r
+𝑇𝑜𝑛𝑒 ).
+𝑀&𝐴
+We define our instrument as the percentage ownership orf institutional shareholders as of the month prior
+e
+to the acquisition announcement date (Inst). Institutional investors are known to actively conduct costly
+monitoring and to take action that more properly align managers’ interests with those of shareholders
+e
+(Black, 1992). For instance, institutional shareholders are in a position to promote an appropriate
+p
+management compensation structure, strengthen the institutional voice on the board of directors and
+serve on the board itself (Martin, 1996). In addition, some institutional investors directly contact senior
+t
+management and thus may influoence the conditions of the acquisition bid. As empirical evidence shows
+that stock-based deals typically reduce the wealth of the acquiring firm, the likelihood of acquisitions
+n
+being financed with stock should be lower when institutional shareholders are higher. In line with this
+reasoning, Martin (1996) provide strong evidence of a negative relationship between the proportion of
+t
+institutional ownenrship and stocks as the method of payment.
+Our correlation analysis confirms Martin’s results. The correlation between our instrument, Inst, and
+i
+r
+the independent variable, StockforStock, is highly significant and negative (r(5740) = –8%,
+p
+p<0.001). On the other hand, we find no significant correlation between Inst and Tone (r(5740) =
+1%e; p = 0.516). Given that our instrument fits the restriction and exclusion criteria, we conduct the
+following regression:
+r
+P
+27
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 30 =====
+d
+StockforStock = α + ζ ∙ Inst + β × ROA + β × BTM + β × Return + β × log Size (5)
+1 2 3 4
+e
++ β × 𝜎 +β × 𝜎 + β × Leverage + β ·× Loss + β × FE + β × 𝜎
+5 𝑅𝑒𝑡 6 𝑅𝑂𝐴 7 8 9 10 𝐹𝐸
+w
++ β × log NoA + Year and industry fixed effects +𝜀.
+11
+e
+where 𝜀 are Newey West standard errors, corrected for heteroskedasticity and autocorrelation. We report
+this result in Model (1) of Table 8. As expected, the coefficient for the variiable 𝐼𝑛𝑠𝑡 is negative (-0.637)
+v
+and statistically significant at a 95% confidence level. In addition, the IV diagnostic tests confirm the
+e
+choice of 𝐼𝑛𝑠𝑡 as instrumental variable. The F-statistic testing whether instruments are unrelated to the
+endogeneous regressor indicates that our instrumental variablre is sufficiently strong.
+r
+< Insert Table 8 here.>
+e
+We next obtain the fitted values from Equation 5 and repeat our main analysis using the fitted
+e
+observations. The result is provided in Model (2) of Table 8. We find a statistically significant and
+p
+positive coefficient between 𝑇𝑜𝑛𝑒 and 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘(𝑓𝑖𝑡𝑡𝑒𝑑). In addition, the Wu-Hausman
+𝑀&𝐴
+statistic shows that our OLS estimatio n is an equally consistent method to the IV analysis, which
+t
+increases our confidence in the outcome of our initial analyses.
+o
+n
+4.3.4. Restricted control function
+As a fourth method to co rrect for endogeneity concerns, we rely on seminal work by Heckman (1978) and
+t
+reconduct our analyses using a two-step restricted control function (rCF) regression. The rCF approach
+n
+reduces the possibility of endogeneity generated by spurious correlations or reverse causality, leading to the
+i
+“experimentral average treatment effect” (Heckman, 1978; Colombo and Grilli, 2010; Thewissen, Shrestha,
+p
+Torsin, and Pastwa, 2022) of the method of payment (𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘) on the tone of earnings press releases
+(𝑇𝑜e𝑛𝑒 ). The benefit of the rCF approach over matching method is that, rather than assuming that the
+𝑀&𝐴
+conditioning set of relevant control variables is sufficiently complete, the rCF method models omitted
+r
+Pvariables (Heckman and Navarro-Lozano, 2004). Another feature is that the generalized residual obtain from
+the first stage can be regarded as an explicit test for endogeneity (Colombo and Grilli, 2010).
+28
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 31 =====
+d
+In the first step of the restricted control function analysis, we estimate the probability that the deal
+e
+will use stocks as a method of payment, based on the same control variables as those employed in Equation
+w
+1. Using this model, we calculate the generalized residual (𝐺𝐸𝑁𝑅𝐸𝑆) and insert this residual as an additional
+control variable in a second step regression, where we estimate the impact of the method of payment on the
+e
+tone. We report the results of the first-step regression in Model (3) and the results of the second step in Model
+i
+(4) of Table 8 (Panel B). We find that the relationship between 𝑇𝑜𝑛𝑒 and 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 remains
+v𝑀&𝐴
+significantly positive.
+e
+r
+4.3.5. Pseudo-event study
+r
+We then conduct pseudo-event analysis by shifting the merger announcement dates forward and
+e
+backwards by one year (e.g. four quarters). Table 9 provides the results of Equation 1 using the two
+e
+pseudo-events. Model (1) and (2) present the results when we shift the M&A announcement four
+quarters backward and forward, respectively. We find that in both situations, the estimate for the
+p
+𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 variable is statistically insignificant, which strongly departs from the significantly
+positive coefficients obtained in Tabtle 4.
+o
+< Insert Table 9 here.>
+n
+4.4. Factors moderating and reinforcing the effect of stock-for-stock M&A
+t
+announcements
+n
+In the previous section, we establish a clear causal relationship between stock-for-stock deals and
+i
+managers’ mranipulation of the tone of earnings press releases. However, the impact of such transactions
+p
+is likely to vary cross-sectionally with deal- and firm-specific characteristics. In this section, we
+coneduct several cross-sectional analyses that test whether this behavior changes across deals and firms.
+In particular, we focus on (i) the deal size, (ii) the firm’s past performance and (iii) monitoring. The
+r
+results of Equation 3 are reported in Table 10.
+P
+29
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 32 =====
+d
+< Insert Table 10 here.>
+e
+w
+4.4.1. Deal size
+Hypothesis 2 examines the impact of the deal’s size on the propensity to manage the content of corporate
+e
+disclosures. Since tone management is not costless, when the economic benefits are small, there is a
+i
+lower incentive to manipulate the tone of corporate disclosures. On thve contrary, if the economic benefits
+at stake are large, the incentive to inflate the tone of earnings press releases increases before the M&A
+e
+announcement. In line with this reasoning, we run Equation 3 and report the results in Model (1) of Panel
+r
+A in Table 10. Overall, our results are consistent with this hypothesis. We find that the interaction
+coefficient 𝐷𝑒𝑎𝑙𝑉𝑎𝑙𝑢𝑒× 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is positive arnd significant at a 99% confidence level. This
+e
+positive coefficient indicates that greater the deal’s value, the larger is the manager’s incentive to inflate
+the tone of earnings press releases before stocek-for-stock acquisitions. With a magnitude of 0.218, the
+coefficient for the 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 variable remains significantly positive and even increases in
+p
+magnitude compared to the coefficient of 0.152 in Table 4. Overall, our results provide support to the
+hypothesis that tone inflation is positively related to economic benefits at stake in the merger.
+t
+o
+4.4.2. Firm performance
+n
+Hypothesis 3 predicts that tone management before stock-for-stock M&As decreases with the acquirer’s
+profitability. In Panel B of Table 10, Model (2) first tests the moderating impact of the acquirer’s return
+t
+on assets (ROAn). We find a negative and significant effect for the interaction variable
+𝑅𝑂𝐴 × 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘. In Model (3), we observe a similar relationship if we consider 𝑅𝑒𝑡𝑢𝑟𝑛 as
+i
+r
+a proxy for the acquirer’s past stock performance. However, while the main effect of 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘
+p
+remains positive and highly significant for Model (3), the coefficient for 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is
+e
+insignificant for Model (2), which suggests that the tone inflation before stock-for-stock M&As tends to
+rbe concentrated among firms that suffer from a low 𝑅𝑂𝐴. Taken together, these results are in line with
+PHypothesis 3 and indicate that firm past profitability tends to significantly decrease managers’ use of
+tone inflation before stock-for-stock M&A transactions.
+30
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 33 =====
+d
+4.4.3. Firm monitoring
+e
+Hypothesis 4 further tests the impact of monitoring mechanisms on the management’s likelihood in
+w
+manipulating the tone of earnings press releases before stock-for-stock M&A transactions. While
+Hypothesis 4a predicts that analysts and leverage act as monitoring mechanisms that limit managerial
+e
+opportunistic behavior, Hypothesis 4b argues that analysts’ coverage and leverage tend to increase the
+i
+pressure on managers to meet targets, which leads them to resort to opportunistic behavior. In Panel C
+v
+of Table 10, we first test the impact of analysts’ forecasts (𝑁𝑜𝐴). In Model (4), we find a negative
+e
+and significant effect for the interaction variable 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 × 𝑁𝑜𝐴. In line with this, we also
+r
+find in Model (5) a significantly negative interaction effect between 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 and 𝐿𝑒𝑣𝑒𝑟𝑎𝑔𝑒.
+Taken together, these results provide support to Hypothresis 4a and indicate that analysts and leverage
+e
+act as monitoring mechanisms that tend to limit managerial opportunistic behavior before stock-for-stock
+M&A transactions.
+e
+p
+5. Additional analyses – Stock market reaction and the target’s behavior
+Based on the presence of tone inflattion before M&A announcements, it is central to better understand
+o
+whether and how the market responds to such strategic manipulation of the qualitative content of
+corporate disclosures. In thnis section, we are interested in quantifying the dollar impact of tone inflation
+in boosting the stock price, as well as in studying the relationship between tone inflation and the
+t
+bidder’s post-merger stock return in the long run. We further analyze the target’s behavior around the
+n
+M&A announcement.
+i
+r
+5.1. Dpoes tone management profit bidders?
+5.1e.1. The effect of tone management on the bidder’s stock price before the M&A announcement
+rTo assess the effect of the acquirer’s tone management on its stock price, we conduct regressions of its
+P
+cumulative abnormal returns around pre-merger earnings announcements using the sample of the acquirer’s
+31
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 34 =====
+d
+five quarterly earnings announcements before the merger:
+e
+𝐶𝐴𝑅[−1; +1] = 𝛼 + 𝛽 × 𝐴𝑏𝑇𝑜𝑛𝑒 + 𝛽 × 𝐸𝑥𝑝𝑒w𝑐𝑡𝑒𝑑𝑇𝑜𝑛𝑒 (6)
+1 𝑀&𝐴 2 𝑀&𝐴
++𝛽 × 𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠 + 𝜀,
+3
+e
+where the dependent variable is the cumulative abnormal return (CAR[−1; +1]) of the acquirer from one
+i
+day before the earnings announcement of quarter t until one day afvter the earnings announcement of
+quarter t. The main independent variables include the abnormael tone (𝐴𝑏𝑇𝑜𝑛𝑒
+𝑀&𝐴
+) and the expected
+tone (𝐸𝑥𝑝𝑒𝑐𝑡𝑒𝑑𝑇𝑜𝑛𝑒 ). The expected tone (𝐸𝑥𝑝𝑒𝑐𝑡𝑒𝑑𝑇𝑜𝑛𝑒 ) yields the normal tone, i.e. the
+𝑀&𝐴 𝑀&𝐴
+r
+tone that is expected when the M&A announcement has no influence on the tone. The expected tone is
+r
+estimated using the following equation:
+e
+𝑇𝑜𝑛𝑒 = 𝛼e +𝛽×𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠 +𝜀. (7)
+𝑀&𝐴
+p
+Following Arslan-Ayaydin et al. (2016), our measure of abnormal tone 𝐴𝑏𝑇𝑜𝑛𝑒 is the difference
+𝑀&𝐴
+between the tone of earningts press releases (𝑇𝑜𝑛𝑒
+𝑀&𝐴
+) and the expected tone
+o
+(𝐸𝑥𝑝𝑒𝑐𝑡𝑒𝑑𝑇𝑜𝑛𝑒 ). By construction, the abnormal level of tone (𝐴𝑏𝑇𝑜𝑛𝑒 ) is the residual
+𝑀&𝐴 𝑀&𝐴
+component (𝜀) of Equationn 7 and designed to be uncorrelated to the firm’s fundamentals, information
+asymmetry or environment. We control for a number of firm characteristics, such as firm performance
+(𝑅𝑂𝐴), stock return tstandard deviation (𝜎 ), loss dummy (𝐿𝑜𝑠𝑠), book-to-market ratio (𝐵𝑇𝑀),
+𝑅𝑒𝑡
+n
+analysts’ forecast error (𝐹𝐸), the dispersion in analysts’ forecasts (𝜎 ) and the number of financial
+𝐹𝐸
+i
+analysts (𝑁𝑜𝐴). We also control for industry, year and quarter fixed effects. The coefficient 𝛽 in
+1
+r
+Equatio p n (6) measures the impact of a bidder’s tone inflation on its stock return, while 𝛽 2 represents the
+influence of the acquirer’s expected tone on its stock return. A significant positive 𝛽 indicates a net
+1
+e
+benefit from tone inflation after controlling for the expected (true) tone in the earnings press release.
+r
+Model (1) of Table 11 presents the regression of CAR[−1; +1] on 𝐴𝑏𝑇𝑜𝑛𝑒 and
+𝑀&𝐴
+P
+𝐸𝑥𝑝𝑒𝑐𝑡𝑒𝑑𝑇𝑜𝑛𝑒 with the control variables. The coefficient estimate of 𝛽 is 0.003 and significant at
+𝑀&𝐴 1
+32
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 35 =====
+d
+a 1% confidence level, which indicates that a bidder’s pre-merger stock return is increasing with tone
+e
+inflation. On the contrary, the 𝐸𝑥𝑝𝑒𝑐𝑡𝑒𝑑𝑇𝑜𝑛𝑒 coefficient is insignificantly different from zero,
+𝑀&𝐴
+which suggests that the normal tone of earnings press releases has little impact own investors’ reaction at
+earnings announcement. Overall, this result is consistent with Arslan-Ayaydin et al. (2016) and shows
+e
+how bidders can benefit from inflating the tone of earnings press releases, and thereby increase the stock
+price. i
+v
+< Insert Table 11 here.>e
+r
+We further estimate the dollar savings of acquisition costs due to tone management for an average
+stock bidder. In Model (1), 𝛽 is 0.003, which suggests that the net benefit of tone management
+1 r
+in terms of an increase in stock returns around tehe quarterly earnings announcement is 0.3%. We
+therefore take all acquirer-quarters for stock bidders in our sample and calculate the dollar saving of
+e
+acquisition costs for each bidder-quarter as 𝐷𝑒𝑎𝑙𝑉𝑎𝑙𝑢𝑒×𝐴𝑏𝑇𝑜𝑛𝑒 × 0.3%. To estimate the dollar
+𝑀&𝐴
+p
+savings for an average stock bidder in our sample, we average the dollar savings across acquirers,
+quarters and then multiply this average by five as our analysis covers a bidder’s five quarterly earnings
+t
+announcements before the M&A announcement. This approach estimates that the dollar saving of
+o
+acquisition cost through tone management is around $21,777,798 for an average stock bidder in our
+n
+sample, which is economically significant. We also conduct a robustness check by using a three day
+window around the earnings announcement date (CAR[-3;+3]) and find similar results, as shown in
+t
+Model (2) of Table 11. Overall, the results of Table 11 show that tone manipulation is likely to bring
+n
+considerable benefits to acquirers before the M&A announcement.
+i
+r
+5.1.2. Tphe impact of tone management on the bidder’s long-term return after the M&A
+announcement
+e
+If tone management leads to a temporary increase in the acquirer’s stock price, we would expect such
+r
+mispricing to be subsequently corrected in the long run. For instance, Sloan (1996) finds a significant
+P
+inverse relation between accruals and long-term returns. Similarly, Arslan-Ayaydin et al. (2016) and
+33
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 36 =====
+d
+Huang et al. (2014) show how abnormal tone in earnings press releases lead to a temporary increase in
+e
+stock price, which is subsequently corrected by the market in the long term. They interpret their result as
+evidence that investors can see through the tone inflation in corporate discwlosures and therefore
+subsequently discount the information signal in the abnormal tone in the presence of managerial
+e
+opportunistic motives. To examine this possible reversal of stock prices, we estimate regressions of
+bidders’ short term cumulative abnormal returns around the M&A announciement (CAR[−3; +3]), as well
+v
+as the long term cumulative abnormal returns over the 60, 180, 360 trading-day windows after the M&A
+e
+announcement.
+Table 12 regresses the abnormal returns around M&A anrnouncements on its premerger abnormal
+tone (𝐴𝑏𝑇𝑜𝑛𝑒 ) and a dummy variable for stock payment, as well as their interaction term. We
+𝑀&𝐴
+r
+also control for various firm- and deal-specific characteristics. Model (1) presents the regression
+e
+results for the cumulative abnormal returns over the trading window [-3;+3] around the earnings
+e
+announcement date. Our results show that the coefficient estimate of the interaction variable
+p
+(𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑠𝑡𝑜𝑐𝑘 · 𝐴𝑏𝑇𝑜𝑛𝑒 ) is significantly positive, which indicates that pre-merger tone
+𝑀&𝐴
+management is associated with a posit ive stock price reaction around the M&A announcement date.
+t
+o
+< Insert Table 12 here.>
+n
+However, our results show a clear reversal after the M&A announcement. Model (2), (3) and (4) repeat
+the regression analyses using [1;+60], [+1;+180] and [+1;+360] trading windows, respectively. We find
+t
+that the magnitunde of the coefficient for the interaction variable 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑠𝑡𝑜𝑐𝑘 · 𝐴𝑏𝑇𝑜𝑛𝑒
+𝑀&𝐴
+progressively decreases with the trading window. While the interaction coefficient remains positive but
+i
+statistically rinsignificant for Model (2), it becomes statistically negative for Model (3) at a 90%
+p
+confidence level for Model (3) and 95% confidence level for Model (3). This negative coefficient shows
+thaet premerger tone management is associated with statistically lower bidder returns in the 60-, 180-
+and 360-day period after the M&A announcement. Overall, this evidence shows that, although tone
+r
+Pinflation before the M&A announcement temporarily boosts stock prices prior to the deal announcement,
+investors can progressively see through this tone inflation, which leads this effect to be progressively
+34
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 37 =====
+d
+reversed after the M&A is completed.
+e
+5.2. The tone management by the target w
+The target is likely to be aware of the bidder’s incentive to manipulate the tone upwards before the M&A
+e
+announcement in an attempt to increase its stock price. We therefore analyze the manipulation of tone
+i
+of target firms around the M&A announcement. We re-estimate Equation 1 using our sample of target
+v
+firms, based on the same event date and tone definitions as defined above. Our results in Table 13 show
+e
+that the coefficient for the variable 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑠𝑡𝑜𝑐𝑘 is insignificantly different from zero at traditional
+r
+confidence levels. Overall, this result tends to indicate that the target does not engage in tone
+manipulation before M&A announcements, which may rbe explained by the fact that the target ignores
+e
+the potential purchase until the bidder initiates the negotiations. Given that the M&A is typically
+announced and agreed in the same quarter, the target has limited time to manipulate its earnings
+e
+before the merger. However, note that defining a sample of firms based on the target significantly
+p
+decreases the sample size to 37 observations, which may limit the inferences we can draw from our
+analysis on the target firms.
+t
+o
+< Insert Table 13 here.>
+n
+5.3. The structure of earnings press releases before mergers and acquisitions
+The present paper provides ample evidence on the manipulation of earnings press release tone preceding
+t
+n
+M&A announcements. However, corporate disclosures are structured in a specific way that reflects managers'
+organization of iinterconnected ideas and helps users interpret and comprehend their message (Boudt and
+r
+Thewissen, 2019; Kintsch and Yarbrough, 1982). As such, it is important to recognize that managers not only
+p
+present individual pieces of information, but also construct a disclosure narrative that conveys their interpretation
+e
+of current performance and its implications for future firm performance. We therefore examine whether the
+r
+structure of the narrative also gets strategically manipulated prior to stock-for-stock M&A announcements.
+P
+35
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 38 =====
+d
+Boudt and Thewissen (2019) and Allee et al. (2015) demonstrate that this structured format of corporate
+e
+disclosures holds valuable information for investors and significantly influences stock prices. Boudt and Thewissen
+w
+(2019) show that corporate disclosures exhibit an intra-textual dispersion of sentiment, strategically positioning
+positive and negative words within the disclosure as a subtle form of impression management. They further find
+e
+that managers tend to structure corporate disclosures in a way that fosters a more positive perception of the
+i
+underlying message. Specifically, they uncover a "smile" pattern in the frequency of positive words, and a "half-
+v
+smile" pattern in the distribution of negative words, with negative words predominantly appearing at the beginning
+e
+of the letter. Allee et al. (2015) further find that an evenly distributed tone throughout the narrative signifies positive
+r
+news, while an uneven distribution isolates the news to specific negative performance components. Their findings
+suggest that the market responds more favorably (adversely)r when positive (negative) tone is dispersed. Based on
+e
+this evidence, we argue that, in addition to tone inflation, bidders also strive to optimize their stock price by
+manipulating the structure of the narrative contente in corporate disclosures. We anticipate that managers increase
+(decrease) the dispersion of positive (negative) tone in earnings press releases before M&A announcements to
+p
+enhance investors' reactions and optimize their stock price.
+Following Allee et al. (2015) and Boudt and Thewissen (2019), we use the average reduced frequency
+t
+o
+(𝐴𝑅𝐹 ) to measure tone dispersion. The disclosure is divided into equally sized sections based on the number
+𝑀&𝐴
+of tone words from the Henryn (2008) libraries of positive and negative words. The number of sections containing
+at least one tone word is then counted and divided by the total number of sections, yielding 𝐴𝑅𝐹 . We follow
+𝑀&𝐴
+the same procedure to mteasure the ARF of the positive (negative) tone, but only use the list of positive (negative)
+n
+words from the Henry (2008) library. Equation (1) is then rerun, replacing the dependent variable with the
+i
+disclosure's ARF:
+r
+p
+𝐴𝑅𝐹 = 𝛼+ 𝛿 ×𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 ×𝐹𝑎𝑐𝑡𝑜𝑟+ 𝛽 ∙𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠+ 𝜀. (8)
+e𝑀&𝐴
+Ifr bidders attempt to increase the dispersion of the net (𝐴𝑅𝐹 ) or positive tone (𝐴𝑅𝐹 ) before the
+𝑀&𝐴 𝑃𝑜𝑠𝑇𝑜𝑛𝑒𝑀&𝐴
+P
+M&A announcement, a positive 𝛿 coefficient is expected. On the contrary, if bidders attempt to concentrate
+36
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 39 =====
+d
+bad news and, thereby, decrease the dispersion of negative tone (𝐴𝑅𝐹 ), a negative δ is expected.
+𝑁𝑒𝑔𝑇𝑜𝑛𝑒𝑀&𝐴
+e
+The findings in Column (1) of Table 14 indicate a statistically significant positive association between
+w
+the 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 variable's 𝛿 coefficient and the 𝐴𝑅𝐹 measure of tone dispersion, at a 90% confidence
+𝑀&𝐴
+level. Further analysis reveals that this increase in tone dispersion around the M&A announcement primarily
+e
+stems from a larger dispersion in positive tone. Columns (2) and (3) of Table 14 divide the 𝑇𝑜𝑛𝑒 measure
+𝑀&𝐴
+i
+into the Henry (2008) libraries of positive and negative words. While M&A announcements appear to have no
+v
+impact on the dispersion of negative tone (𝐴𝑅𝐹 ) across the earnings press release (Column (3)) with
+𝑁𝑒𝑔𝑇𝑜𝑛𝑒𝑀&𝐴 e
+a coefficient of 0.001 for the 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 variable, managers tend to increase the dispersion of positive
+r
+tone (𝐴𝑅𝐹 ) before the M&A announcement. Column (2) shows a coefficient of 0.003, which is
+𝑃𝑜𝑠𝑇𝑜𝑛𝑒𝑀&𝐴
+r
+significant at 90% confidence interval. Overall, this additional analysis aligns with the notion that managers
+e
+strategically distribute positive news throughout the earnings press release to elicit a more positive response
+e
+from investors. It suggests that stock-for-stock bidders not only inflate the tone of earnings press releases, but
+also slightly adjust the structure of corporpate disclosures. However, it is important to note that the low
+significance of this additional analysis implies that the impact of M&A announcements on the dispersion of
+positive tone is marginal compared to tthe influence of stock-for-stock M&As on tone and constitute only a
+o
+second-order effect on the stock price.
+n
+6. Conclusion
+t
+n
+This paper contributes to prior literature by investigating whether stock-for-stock M&As induce
+managers to strategically manipulate the content of corporate disclosures by inflating the tone of earnings
+i
+r
+press releases to positively influence the stock price, and therefore reduce the target’s acquisition cost.
+p
+Based on a sample of 5,558 M&A deals between 2004 and 2020, we find evidence that stock bidders are
+e
+more likely than cash or hybrid bidders to engage in tone management and that the tone of earnings press
+rreleases significantly increases by 15% in the year preceding the M&A announcement. This result cannot
+P
+be explained by differences in information asymmetry, earnings management, industry or time fixed
+37
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 40 =====
+d
+effects and has been tested for endogeneity biases, which strengthens the causal relationship between
+e
+stock M&As and tone inflation. We provide further insights on the underlying mechanisms by
+revealing more pronounced effects of stock-for-stock deals on tone inflation forw (i) larger M&A deals,
+(ii) firms with lower past performance and (iii) firms with less control mechanisms. We further find that
+e
+increasing the tone of earnings press releases is associated with an increase in stock prices in the pre-
+merger period. In fact, this tone inflation leads to savings in acquisitioni costs by $21.777 million, on
+v
+average. However, in the long-term, we document that stock bidders suffer from lower stock returns,
+e
+which is in line with prior evidence that firms that manipulate earnings to beat expectations are still
+able to benefit from higher stock returns, but also larger longr-term losses. Overall, our paper therefore
+raises essential ethical concerns with respect to the quality of the narratives contained in corporate
+r
+disclosures and calls for market agents to consider tehe impact of the method of payment in M&A deals
+to enhance their capacity to interpret and process the disclosed information in earnings announcements.
+e
+p
+t
+o
+n
+t
+n
+i
+r
+p
+e
+r
+P
+38
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 41 =====
+d
+7. Appendix
+e
+w
+e
+i
+v
+e
+r
+r
+e
+e
+p
+t
+o
+n
+t
+n
+i
+r
+p
+e
+r
+P
+39
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 42 =====
+d
+Appendix A: Robustness Tests - Multivariate Analysis of Bidders' Tone around M&A Anneouncement
+Quarters using the Loughran and McDonald (2011) libraries
+Sum of Quarterly Bidder’s quarterly tone around M&A awnnouncement
+Dependent Variable
+𝑇𝑜𝑛𝑒𝐿𝑀 Quarter -5 Quarter -4 Quarter -3 Quarter -2 Quarter -1
+𝑀&𝐴
+(1) (2) (3) (4) (5) (6) (7)
+Constant -0.0004*** 0.003 0.002 0.002 0.002 e0.003 0.004
+(0.0001) (0.003) (0.003) (0.003) (0.003) (0.003) (0.003)
+StockforStock 0.043*** 0.032** 0.021 0.025** 0.029*** 0.052*** 0.020
+i
+(0.011) (0.009) (0.011) (0.005) (0.004) (0.005) (0.012)
+ROA -0.001 -0.001 -0.001 -0v.004 0.002 -0.001
+(0.003) (0.004) (0.004) (0.004) (0.004) (0.004)
+Loss -0.002*** -0.001*** -0.002*** e-0.002*** -0.002*** -0.002***
+(0.003) (0.003) (0.003) (0.003) (0.003) (0.003)
+Return -0.004 -0.003 -0.001 -0.002 0.001 0.0004
+(0.002) (0.002) (0.002) r(0.002) (0.002) (0.002)
+FE 0.0003** 0.002 0.003** 0.003* 0.002 0.003**
+(0.0001) (0.001) (0.001) (0.001) (0.001) (0.001)
+BTM -0.001*** -0.001*** -0r.001*** -0.001*** -0.001*** -0.001***
+(0.002) (0.002) (0.002) (0.002) (0.002) (0.002)
+𝑆𝑖𝑧𝑒+ -0.005*** -0.004*** e -0.005*** -0.005*** -0.001*** -0.004***
+(0.001) (0.001) (0.001) (0.001) (0.001) (0.001)
+Leverage -0.001*** -0.001*** -0.001*** -0.001*** -0.001** -0.001***
+e
+(0.004) (0.004) (0.004) (0.004) (0.004) (0.004)
+𝜎 -0.019*** -0.020*** -0.011** -0.023*** -0.022*** -0.021***
+𝑅𝑒𝑡
+(0.005) p(0.005) (0.005) (0.005) (0.005) (0.005)
+𝜎 0.0003 -0.0001 -0.0001 0.001 0.001*** 0.001***
+𝑅𝑂𝐴
+(0.002) (0.002) (0.002) (0.002) (0.002) (0.002)
+𝑁𝑜𝐴+ -0.003 -0.001 -0.001 -0.004 0.001 -0.001
+(0.002)t (0.002) (0.002) (0.002) (0.002) (0.002)
+𝜎 0.005 -0.002 0.004 0.001 0.001 0.001
+𝐴𝑛𝑎𝑙𝑦𝑠𝑡
+o
+(0.001) (0.001) (0.001) (0.001) (0.001) (0.001) )
+𝑁𝑏𝑟𝐵𝑖𝑑𝑑𝑒𝑟𝑠+ 0.004 0.001 0.002 0.001 -0.002 -0.001
+(0.003) (0.003) (0.003) (0.003) (0.003) (0.003)
+n
+Diversification 0.004** 0.003* 0.004** 0.003** 0.004** 0.003*
+(0.002) (0.002) (0.002) (0.002) (0.002) (0.002)
+Tender 0.004 0.005 0.001 0.001 0.001 0.0003
+t(0.001) (0.001) (0.001) (0.001) (0.001) (0.001)
+DealValue+ -0.004 0.001 -0.002 -0.001 -0.005 -0.001
+n
+(0.004) (0.005) (0.005) (0.005) (0.005) (0.004)
+Year fixed effects No Yes Yes Yes Yes Yes Yes
+Quarter fixed iNo Yes Yes Yes Yes Yes Yes
+effects r
+Observations 5,558 5,558 5,558 5,558 5,558 5,558 5,558
+R2 0.001 0.076 0.055 0.063 0.062 0.065 0.063
+p
+Adjusted R2 -0.001 0.069 0.048 0.055 0.055 0.058 0.055
+This table provides evidence on Hypothesis 1. It reports the regressions of bidders’ tone on the method of payment and other control
+varieables. Instead of measuring tone based on the Henry (2008) libraries, we measure tone based on the Loughran and McDonald
+(2011) libraries. Stock deals use stocks as the only method of payments, while the other deals either use only cash or both cash and
+stock as the method of payment. The dependent variable for Model (1) and (2) is the sum of the tone over the five semesters before
+trhe semester of the M&A announcement. 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is a dummy variable that equals one for stock deals, zero otherwise. All
+continuous variables are winsorized at the 1% and 99% percentiles. The significance of the coefficients is tested using Newey-
+PWest standard errors, which are reported in parentheses. *, ** and *** represent the significance at the 10%, 5% and 1% confidence
+l evels, respectively, based on a two-sided t-test. Goodness of fit is evaluated by R2 and adj. R2.
+40
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 43 =====
+d
+Appendix B: The impact of M&A announcement of stock and cash deals on the tone of earnings press releases,
+excluding hybrid deals
+e
+Sum of Quarterly Bidder’s quarterly tone around M&A announcement
+Dependent Variable 𝑇𝑜𝑛𝑒
+𝑀&𝐴
+Quarter -5 Quarter -4 Quarter -3 wQuarter -2 Quarter -1
+(1) (2) (3) (4) (5) (6) (7)
+Constant 1.287*** 0.813** 0.500 0.322 0.892* 0.849* 1.191***
+(0.017) (0.380) (0.488) (0.477) (0.471) (0.448) (0.440)
+e
+𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 0.136*** 0.140*** 0.132** 0.145*** 0.151*** 0.130** 0.136***
+𝑁𝑜𝐻𝑦𝑏𝑟𝑖𝑑
+(0.037) (0.043) (0.056) (0.054) (0.054) (0.051) (0.050)
+ROA 0.185 0.517 0.565 -0.47i8 0.380 0.271
+(0.689) (0.885) (0.865) v(0.854) (0.812) (0.797)
+Loss -0.030 0.005 0.034 -0.081 -0.020 -0.054
+(0.051) (0.066) (0.064) (0.064) (0.060) (0.059)
+e
+Return -0.592 -0.715 -0.948* -0.386 -0.124 -0.908*
+(0.422) (0.542) (0.530) (0.523) (0.497) (0.488)
+FE -0.027 -0.059 -0.09r0 -0.019 0.037 -0.037
+(0.094) (0.121) (0.118) (0.117) (0.111) (0.109)
+BTM -0.236*** -0.198** -0.23 1*** -0.252*** -0.212*** -0.251***
+(0.063) (0.080) r(0.079) (0.077) (0.074) (0.072)
+Size (log) -0.004 -0.005 -0.014 0.007 -0.004 -0.002
+e
+(0.012) (0.015) (0.015) (0.015) (0.014) (0.014)
+Leverage -0.422*** -0.490*** -0.484*** -0.390*** -0.414*** -0.401***
+(0.080) (0.103) (0.101) (0.100) (0.095) (0.093)
+e
+𝜎 0.033 -0.088 -0.023 0.006 0.044 0.107**
+𝑅𝑒𝑡
+(0.044) (0.056) (0.055) (0.054) (0.051) (0.050)
+𝜎 -2.340** p-1.028 -1.692 -3.325** -1.511 -2.833**
+𝑅𝑂𝐴
+-1.150 -1.477 -1.443 -1.425 -1.356 -1.331
+NoA+ -0.063* -0.011 -0.035 -0.104** -0.045 -0.066*
+(0.033) (0.042) (0.041) (0.041) (0.039) (0.038)
+𝜎
+𝐶𝑜𝑛𝑠𝑒𝑛𝑠𝑢𝑠
+-0.018t -0.076 -0.134 -0.020 0.095 -0.015
+(0.161) (0.207) (0.202) (0.200) (0.190) (0.187)
+o
+NbrBidders+ 0.961*** 1.061** 1.380*** 0.763* 0.721* 0.980**
+(0.362) (0.464) (0.454) (0.448) (0.426) (0.418)
+Diversification n0.028 0.098** 0.045 0.024 0.011 0.032
+(0.032) (0.041) (0.040) (0.040) (0.038) (0.037)
+Tender -0.084 -0.003 0.035 -0.030 -0.163* -0.177**
+(0.071) (0.092) (0.090) (0.088) (0.084) (0.083)
+DealValue+ t0.006 0.014 0.010 0.005 0.007 0.004
+(0.008) (0.011) (0.010) (0.010) (0.010) (0.010)
+n
+Year fixed effects No Yes Yes Yes Yes Yes Yes
+Quarter fixed effects No Yes Yes Yes Yes Yes Yes
+i
+Observations 1,469 1,469 1,469 1,469 1,469 1,469 1,469
+R2 r 0.009 0.111 0.092 0.103 0.086 0.089 0.096
+Adjusted R2 0.009 0.084 0.064 0.075 0.058 0.061 0.068
+p
+This table provides evidence on Hypothesis 1. It reports the regressions of bidder’s tone on the method of payment and other control
+variables. The difference between this table and Table 4 is that we exclude hybrid deals, which reduces the sample from 5,558 to
+1,46e9 deals. 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is defined in this table as a dummy variable that takes the value of one for stock-deals, and zero for cash
+deals. Stock deals use stocks as the only method of payments, while the other deals use only cash as the method of payment. The
+dependent variable for Model (1) and (2) is the sum of tone over the five semesters before the semester of the M&A announcement.
+Arll continuous variables are winsorized at the 1% and 99% percentiles. The significance of the coefficients is tested using Newey-
+West standard errors, which are reported in parentheses. *, ** and *** represent the significance at the 10%, 5% and 1% confidence
+Pl evels, respectively, based on a two-sided t-test. Goodness of fit is evaluated by R2 and adj. R2.
+41
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 44 =====
+d
+Appendix C: Multivariate Analysis of Bidders’ Tone Around M&A Announcement Quarters –
+Inclusion of earnings management as control variable e
+Sum of Quarterly Bidder’s quarterly tone around M&A announcement
+Dependent Variable 𝑇𝑜𝑛𝑒 𝑴&𝑨 Quarter -5 Quarter -4 Quarter -3 Qua w rter -2 Quarter -1
+(1) (2) (3) (4) (5) (6) (7)
+Constant 1.306*** 1.191*** 0.807** 0.775* 1.268*** e1.158*** 1.563***
+(0.008) (0.310) (0.411) (0.395) (0.388) (0.351) (0.370)
+StockforStock 0.117*** 0.151*** 0.100** 0.138*** 0.154*** 0.174*** 0.137***
+(0.034) (0.035) (0.046) (0.044) (0.043)i (0.039) (0.041)
+v
+EarningsManagement 0.004** 0.005** 0.018** 0.001* 0.011** 0.023**
+(0.004) (0.001) (0.001) (0.004) (0.008) (0.010)
+e
+ROA 0.184 -0.380 0.492 -0.222 0.108 0.358
+(0.362) (0.480) (0.462) (0.454) (0.411) (0.432)
+Loss -0.108*** -0.122*** -0.101r*** -0.125*** -0.109*** -0.097***
+(0.026) (0.035) (0.034) (0.033) (0.030) (0.031)
+Return -0.385*** -0.417 -0 .344 -0.547** -0.121 -0.526**
+(0.196) (0.260) (0.251) (0.246) (0.223) (0.235)
+r
+FE 0.028** 0.013 0.038** 0.023 0.024* 0.028*
+(0.013) (0.017) (0.016) (0.016) (0.014) (0.015)
+e
+BTM -0.115*** -0.089*** -0.102*** -0.115*** -0.130*** -0.111***
+(0.020) (0.026) (0.025) (0.024) (0.022) (0.023)
+Size+ -0.007 -0.005 -0.008 -0.009 -0.007 -0.002
+e
+(0.006) (0.007) (0.007) (0.007) (0.006) (0.007)
+Leverage -0.235*** -0.256*** -0.267*** -0.221*** -0.199*** -0.251***
+(0.040) (0.053) (0.051) (0.050) (0.045) (0.048)
+p
+𝜎 0.001 -0.060*** -0.067*** -0.044** 0.020 0.094***
+𝑅𝑒𝑡
+(0.018) (0.023) (0.022) (0.022) (0.020) (0.021)
+𝜎 -1.284*** -1.448** -0.513 -1.302** -1.539*** -1.781***
+𝑅𝑂𝐴
+(0.475) (0.630) (0.606) (0.595) (0.539) (0.567)
+NoA+ -0t.046*** -0.019 -0.035* -0.049** -0.043** -0.056***
+(0.016) (0.022) (0.021) (0.020) (0.019) (0.020)
+o
+𝜎 -0.074 -0.074 -0.106 -0.053 -0.029 -0.108
+𝐹𝐸
+(0.083) (0.111) (0.106) (0.104) (0.095) (0.100)
+NbrBidders+ 0.511* 0.807** 0.720* 0.363 0.431 0.531
+n
+(0.296) (0.393) (0.378) (0.371) (0.336) (0.354)
+Diversification -0.035** -0.015 -0.024 -0.041** -0.044** -0.029
+(0.016) (0.021) (0.020) (0.020) (0.018) (0.019)
+Tender -0.117* -0.063 -0.054 -0.071 -0.177** -0.168**
+t (0.062) (0.082) (0.079) (0.078) (0.070) (0.074)
+DealValue+ -0.009** -0.006 -0.005 -0.010* -0.007 -0.014***
+n
+(0.004) (0.005) (0.005) (0.005) (0.005) (0.005)
+Year fixed effects Yes Yes Yes Yes Yes Yes Yes
+Quarter fixed effects Yes Yes Yes Yes Yes Yes Yes
+i
+r
+Observations 5,558 5,558 5,558 5,558 5,558 5,558 5,558
+Rp2 0.002 0.089 0.076 0.074 0.067 0.076 0.079
+Adjusted R2 0.002 0.081 0.069 0.067 0.059 0.069 0.071
+This table provides evidence on Hypothesis 1, while controlling for earnings management. It reports the regressions of
+ebidders' tone on the method of payment and other control variables. Stock deals use stocks as the only method of
+payments, while the other deals either use only cash or both cash and stock as the method of payment. The dependent
+variable for Model (1) and (2) is the sum of the tone over the five semesters before the semester of the M&A
+rannouncement. 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is a dummy variable that equals one for stock deals, zero otherwise. All continuous
+variables are winsorized at the 1% and 99% percentiles. The significance of the coefficients is tested using Newey-
+PWest standard errors, which are reported in parentheses. *, ** and *** represent the significance at the 10%, 5% and
+1% confidence levels, respectively, based on a two-sided t-test. Goodness of fit is evaluated by R2 and adj. R2.
+42
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 45 =====
+d
+References
+e
+Allee, K. and M. DeAngelis (2015). The structure of voluntary disclosure narratives: Evidence from tone dispersion.
+Journal of Accounting Research 53(2), 241-274.
+Alsharairi, M. (2012). Does high leverage impact earnings management? Evidence from non-cash mergers and
+w
+acquisitions. Journal of Financial and Economic Practice 12 (1), 18–36.
+Amir, E. and B. Lev (1996). Value-relevance of nonfinancial information: The wireless communication industry.
+Journal of Accounting & Economics 22, 3–30.
+Ang, J. S. and Y. Cheng (2006). Direct evidence on the market-driven acquisietion theory. Journal of Financial
+Research 29 (2), 199–216.
+Arslan-Ayaydin, O¨ ., N. Bishara, J. Thewissen, and W. Torsin (2020). Managerial career concerns and the
+i
+content of corporate disclosures: An analysis of the tone of earnings press releases. International Review of Financial
+v
+Analysis 72, 101598.
+Arslan-Ayaydin, Ö., K. Boudt, and J. Thewissen (2016). Managers set the tone: Equity incentives and the
+tone of earnings press releases. Journal of Banking and Finance e72, 132–147.
+Baginski, S., E. Demers, A. Kausar, and Y. Yu (2018). Linguistic tone and the small trader. Accounting,
+Organizations and Society 68, 21–37.
+Ball, R. and L. Shivakumar (2008). Earnings quality at initiarl public offerings. Journal of Accounting and
+Economics 45 (2-3), 324–349.
+Bartov, E., D. Givoly, and C. Hayn (2002). The rewards to meeting or beating earnings expectations. Journal of
+Accounting and Economics 33 (2), 173–204. r
+Beelitz, A. and D. M. Merkl-Davies (2012). Using discourse to restore organizational legitimacy: ‘CEO-speak’ after
+an incident in a German nuclear power plant. Journael of Business Ethics 108 (1), 101–120.
+Black, B. S. (1992). Institutional investors and corporate governance: The case of institutional voice. Journal of
+Applied Corporate Finance 5 (3), 19–32.
+e
+Boone, A. L. and J. Mulherin (2008). Do auctions induce a winner’s curse? new evidence from the corporate
+takeover market. Journal of Financial Economics 89 (1), 1–19.
+Botsari, A. and G. Meeks (2008). Do acquirers manage earnings prior to a share for share bid? Journal of
+p
+Business Finance & Accounting 35 (5-6), 633–670.
+Boudt, K. and J. Thewissen (2019). Jockeying for position in CEO letters: Impression management and sentiment
+analytics. Financial Management 48 (1 ), 77–115.
+Boudt, K., J. Thewissen, and W. Torsin (2018). When does the tone of earnings press releases matter?
+t
+International Review of Financial Analysis 57, 231–245.
+Bratten, B., J. Payne, and W. Thoomas (2016). Earnings management: Do firms play “follow the leader”?
+Contemporary Accounting Research 33, 616–643.
+Brockman, P. and J. Cicon (2013). The information content of management earnings forecasts. Journal of Financial
+n
+Research 36, 147–174.
+Chidambaran, N., K. John, Z. Shangguan, and G. Vasudevan (2010). Hot and cold merger markets. Review of
+Quantitative Finance and Accounting 34 (3), 327–349.
+Cho, C. H., J. R. Phillips, A. M. Hageman, and D. M. Patten (2009). Media richness, user trust, and perceptions of
+corporate social respontsibility: An experimental investigation of visual web site disclosures. Accounting, Auditing &
+Accountability Jnournal.
+Cho, C. H., R. W. Roberts, and D. M. Patten (2010). The language of us corporate environmental disclosure.
+Accounting, Organizations and Society 35 (4), 431–443.
+Colombo, M. G.i and L. Grilli (2010). On growth drivers of high-tech start-ups: Exploring the role of founders’
+human capirtal and venture capital. Journal of Business Venturing 25 (6), 610–626.
+Core, J. and G. Wayne (2002). Estimating the value of employee stock option portfolios and their sensitivities to
+price apnd volatility. Journal of Accounting Research 40, 613–630.
+Das, S., C. Levine, and S. Sivaramakrishnan (1998). Earnings predictability and bias in analysts’ earnings
+forecasts. The Accounting Review 73, 277–294.
+e
+das Neves, J. C. and A. Vaccaro (2013). Corporate transparency: A perspective from Thomas Aquinas’ summa
+theologiae. Journal of Business Ethics 113 (4), 639–648.
+Davis, A., J. Piger, and L. Sedor (2012). Beyond the numbers: Measuring the information content of earnings press
+r
+release language. Contemporary Accounting Research 29, 845–868.
+P
+43
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 46 =====
+d
+Davis, A. and I. Tama-Sweet (2012). Managers’ use of language across alternative disclosure outlets: Earnings press
+releases versus MD&A. Contemporary Accounting Research 29, 804–837.
+e
+DeFond, M. L. and J. Jiambalvo (1994). Debt covenant violation and manipulation of accruals. Journal of
+Accounting and Economics 17 (1-2), 145–176.
+Dong, M., D. Hirshleifer, S. Richardson, and S. H. Teoh (2006). Does investor misvaluatiwon drive the takeover market?
+The Journal of Finance 61 (2), 725–762.
+El-Haj, M., P. Rayson, M. Walker, S. Young, and V. Simaki (2019). In search of meaning: Lessons, resources and next
+steps for computational analysis of financial discourse. Journal of Business Finance & Accounting 46, 265–306.
+Erel, I., R. C. Liao, and M. S. Weisbach (2012). Determinants of cross-bordeer mergers and acquisitions. The
+Journal of Finance 67 (3), 1045–1082.
+Erickson, M. and S.-w. Wang (1999). Earnings management by acquiring firms in stock for stock mergers.
+i
+Journal of Accounting and Economics 27 (2), 149–176.
+v
+Faccio, M. and R. W. Masulis (2005). The choice of payment method in European mergers and acquisitions.
+The Journal of Finance 60, 1345–1388.
+Fisch, C. and P. P. Momtaz (2020). Institutional investors and poset-ICO performance: an empirical analysis of
+investor returns in initial coin offerings (icos). Journal of Corporate Finance 64, 101679.
+Fu, X., X. Wu, and Z. Zhang (2021). The information role of earnings conference call tone: Evidence from stock
+price crash risk. Journal of Business Ethics, 173. 643–660. r
+Gong, G., H. Louis, and A. X. Sun (2008). Earnings management, lawsuits, and stock-for-stock acquirers’ market
+performance. Journal of Accounting and Economics 46 (1), 62–77.
+Gow, I. D., G. Ormazaba, and D. Taylor (2010). Correcting for rcross-sectional and time-series dependence in accounting
+research. The Accounting Review 85 (2), 483–512.
+e
+Hainmueller, J. (2012). Entropy balancing for causal effects: A multivariate reweighting method to produce
+balanced samples in observational studies. Political analysis 20 (1), 25–46.
+He, J., T. Liu, J. Netter, and T. Shu (2020). Expectation management in mergers and acquisitions. Management Science
+e
+66 (3), 1205–1226.
+Heckman, J. and S. Navarro-Lozano (2004). Using matching, instrumental variables, and control functions to
+estimate economic choice models. Review of Economics and Statistics 86 (1), 30–57.
+p
+Heckman, J. J. (1978). Simple statistical models for discrete panel data developed and applied to test the hypothesis of
+true state dependence against the hypothesis of spurious state dependence. In Annales de l’INSEE, pp. 227–269.
+JSTOR.
+Henry, E. (2008). Are investors influenced by how earnings press releases are written? Journal of Business
+t
+Communications 45, 363–407.
+Henry, E. and A. J. Leone (2016, 0o1). Measuring Qualitative Information in Capital Markets Research: Comparison
+of Alternative Methodologies to Measure Disclosure Tone. The Accounting Review 91 (1), 153–178.
+Henry, E., J. Thewissen, and W. Torsin (2021). International earnings announcements: tone, forward-looking
+statements, and informatinveness. European Accounting Review, 1–35.
+Higgins, H. N. (2013). Do stock-for-stock merger acquirers manage earnings? evidence from japan. Journal of
+Accounting and Public Policy 32 (1), 44–70.
+Hirst, D. E., L. Koonce, and J. Miller (1999). The joint effect of management’s prior forecast accuracy and the form
+of its financial forecatsts on investor judgment. Journal of Accounting Research 37, 101–124.
+Hong, Y., F. Huseynov, and W. Zhang (2014). Earnings management and analyst following: A simultaneous
+n
+equations analysis. Financial Management 43 (2), 355–390.
+Huang, X., S. Teoh, and Y. Zhang (2014). Tone management. The Accounting Review 89, 1083–1113.
+Iatridis, G. and G.i Kadorinis (2009). Earnings management and firm financial motives: A financial investigation of
+UK listed frirms. International Review of Financial Analysis 18 (4), 164–173.
+Jegadeesh, N. and D. Wu (2013). Word power: A new approach for content analysis. Journal of Financial
+Econopmics 110 (3), 712–729.
+King, G. and R. Nielsen (2016). Why propensity scores should not be used for matching: Supplementary
+appendix.
+e
+Kintsch, W. and J.C. Yarbrough (1982). Role of rhetorical structure in text comprehension. Journal of Educational
+Psychology 74, 828-834.
+Kisgen, D. J. (2009). Do firms target credit ratings or leverage levels? Journal of Financial and Quantitative
+r
+Analysis 44 (6), 1323–1344.
+P
+44
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 47 =====
+d
+Kothari, S. (2001). Capital markets research in accounting. Journal of Accounting and Economics 31 (1-3), 105–231.
+Li, E. X. and K. Ramesh (2009). Market reaction surrounding the filing of periodic sec reports. The Accounting
+e
+Review 84 (4), 1171–1208.
+Loughran, T. and B. McDonald (2011). When is a liability not a liability? Textual analysis, dictionaries, and 10-
+Ks. The Journal of Finance 66, 35–65. w
+Louis, H. (2004). Earnings management and the market performance of acquiring firms. Journal of Financial
+Economics 74 (1), 121–148.
+Malmendier, U. and G. Tate (2008). Who makes acquisitions? CEO overconfidence and the market’s reaction.
+Journal of Financial Economics 89 (1), 20–43. e
+Marquez-Illescas, G., A. A. Zebedee, and L. Zhou (2019). Hear me write: Does CEO narcissism affect disclosure?
+Journal of Business Ethics 159, 401–417.
+i
+Martin, K. (1996). The method of payment in corporate acquisitions, investment opportunities, and management
+v
+ownership. The Journal of Finance 51 (4), 1227–1246.
+Mercer, M. (2004). How do investors assess the credibility of management disclosures? Accounting Horizons 18, 185–
+196. e
+Moeller, S. B., F. P. Schlingemann, and R. M. Stulz (2004). Firm size and the gains from acquisitions. Journal of
+Financial Economics 73 (2), 201–228.
+Park, H., J. Yoon, and K. Kim (2013). Identification and evaluartion of corporations for merger and acquisition
+strategies using patent information and text mining. Scientometrics 97 (3), 883–909.
+Petersen, M. A. (2009). Estimating standard errors in finance panel data sets: Comparing approaches. The Review of
+Financial Studies 22 (1), 435–480. r
+Pior, D., J. Surroca and J. A. Trib´o (2008). Are socially responsible managers really ethical? exploring the relationship
+between earnings management and corporate social respeonsibility. Corporate Governance: An International Review
+16 (3), 160–177.
+Rhodes-Kropf, M., D. T. Robinson, and S. Viswanathan (2005). Valuation waves and merger activity: The
+e
+empirical evidence. Journal of Financial Economics 77 (3), 561–603.
+Rhodes-Kropf, M. and S. Viswanathan (2004). Market valuation and merger waves. The Journal of Finance 59
+(6), 2685–2718.
+p
+Rodriguez-Perez, G. and S. van Hemmen (2010). Debt, diversification and earnings management. Journal of Accounting
+and Public Policy 29 (2), 138–159.
+Rogers, J., A. Van Buskirk, and S. Zechman (2011a). Disclosure tone and shareholder litigation. The Accounting Review
+86, 2155–2183.
+t
+Shipman, J. E., Q. T. Swanquist, and R. L. Whited (2017). Propensity score matching in accounting research.
+The Accounting Review 92 (1), 2o13–244.
+Shleifer, A. and R. W. Vishny (2003). Stock market driven acquisitions. Journal of financial Economics 70 (3), 295–
+311.
+n
+Sloan, R. G. (1996). Do stock prices fully reflect information in accruals and cash flows about future earnings?
+The Accounting Review 71 (3), 289–315.
+Thewissen, J., P. Shrestha, W. Torsin, and A. M. Pastwa (2022). Unpacking the black box of ICO white papers: A
+topic modeling approach. Journal of Corporate Finance 75, 102225.
+Thewissen, J., J. Thewtissen, W. Torsin, and O. Arslan-Ayaydin (2022). Linguistic errors and investment
+decisions: The case of ICO white papers. The European Journal of Finance 0 (0), 1–43.
+n
+Werhane, P. H. (1988). Two ethical issues in mergers and acquisitions. Journal of Business Ethics 7 (1), 41–45.
+Yan, B., W. Aerts, and J. Thewissen (2019). The informativeness of impression management financial analysts and
+rhetorical stylei of CEO letters. Pacific Accounting Review 31 (3), 462–496.
+Yuthas, K., Rr. Rogers, and J. Dillard (2002). Communicative action and corporate annual reports. Journal of
+Business Ethics 41, 141–157.
+p
+e
+r
+P
+45
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 48 =====
+d
+Tables
+e
+Figure 1.: Tone around stock-for-stock, cash and hybrid mergers and acquisitions
+w
+e
+i
+sro v
+riu
+q
+c
+a
+fo e
+e
+n
+o
+t
+n
+a
+id
+e r
+M
+r
+e
+Quarters around the M&A announcement
+e
+This figure reports the median tone around the M&A announcement quarter (Q-5 to Q+4), were quarter
+zero is the quarter of the M&A announcement.
+p
+t
+o
+n
+t
+n
+i
+r
+p
+e
+r
+P
+46
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 49 =====
+d
+Table 1.: Sample Distribution and Summary Statistics
+e
+Panel A: Distribution of sample merger and acquisition deals
+Number of cash
+Total No. of Deals Percent (%) Nbr. of stock deals Number of hybrid deals
+deals
+w
+2004 6 0.108 4 1 1
+2005 211 3.796 8 144 59
+2006 267 4.803 12 184 71
+2007 286 5.145 13 192 81
+2008 235 4.228 17 162 56 e
+2009 188 3.382 7 139 42
+2010 323 5.811 9 229 85
+2011 337 6.063 8 257 72
+2012 376 6.765 11 282 83 i
+2013 378 6.801 22 256 100 v
+2014 466 8.384 31 307 128
+2015 460 8.276 25 343 92
+2016 460 8.276 26 368 66
+e
+2017 464 8.348 33 366 65
+2018 459 8.258 41 345 73
+2019 378 6.801 30 296 52
+2020 264 4.749 5 217 r42
+Total 5,558 100.000 302 4,088 1,168
+Panel B: Summary statistics for the full sample r
+Standard
+Variable Mean Q1 Median Q3
+deviation e
+ROA 0.011 0.025 0.003 0.011 0.021
+Loss 0.138 0.345 0.000 0.000 0.000
+Return 0.086 0.047 0.055 0.075 0.104
+FE 0.019 0.585 0.002 e0.001 0.034
+BTM 0.443 0.425 0.229 0.389 0.620
+Size+ 20.783 79.177 0.789 2.582 10.153
+Leverage 0.240 0.204 0.072 0.207 0.360
+p
+𝜎 𝑅𝑂𝐴 0.008 0.017 0.002 0.004 0.008
+𝜎 𝑅𝑒𝑡 0.151 0.444 -0.051 0.097 0.269
+NoA+ 9.592 6.382 6.000 8.264 11.000
+𝜎 𝐹𝐸 0.052 0.092 0.015 0.044 0.058
+NbrBidders+ 1.004 0.061 t1.000 1.000 1.000
+Diversification 0.458 0.498 0.000 0.000 1.000
+Tender 0.015 0.121 o0.000 0.000 0.000
+DealValue+ 1.992 6.382 0.089 0.255 0.976
+Panel C: Summary statistics for subsamples based on methods of payment
+Stock deals n Hybrid dear Cash deals
+Variable Mean Median Mean Median Mean Median
+ROA 0.001 0.003 0.012 0.012 0.012 0.012
+Loss 0.109 0.000 0.136 0.000 0.155 0.000
+Return 0.080 0.073 0.087 0.075 0.087 0.078
+FE 0.008 0.001 0.024 0.002 0.002 0.001
+BTM 0.422 0.t364 0.438 0.381 0.593 0.607
+Size+ 8.086 1.666 23.154 2.712 15.768 2.503
+n
+Leverage 0.155 0.069 0.246 0.214 0.242 0.212
+𝜎 𝑅𝑂𝐴 0.006 0.001 0.008 0.004 0.008 0.005
+𝜎 𝑅𝑒𝑡 0.101 0.070 0.149 0.093 0.169 0.120
+NoA+ 8.327 i8.264 9.688 8.264 9.584 8.264
+𝜎 𝐹𝐸 0.05r3 0.032 0.052 0.047 0.052 0.036
+NbrBidders+ 1.010 1.000 1.001 1.000 1.010 1.000
+Diversificatipon 0.166 0.000 0.490 0.000 0.421 0.000
+Tender 0.007 0.000 0.003 0.000 0.058 0.000
+DealValue+ 1.342 0.598 2.45 0.654 1.001 0.632
+This table reports the distribution and summary statistics of our sample. Panel A provides the distribution of the
+e
+M&A deals in our sample by year. The sample contains 5,558 deals including 302 stock deals, 4,088 hybrid deals,
+and 1,168 cash deals. Panel B provides the summary statistics for the deals in the full sample. Panel C splits the
+sample provides the summary statistics for each subsample based on the method of payment. Note that in our
+r
+regression analyses, we use the logarithm of the variables indicated by a + but report the untransformed summary
+statistics for interpretation purposes.
+P
+47
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 50 =====
+d
+Table 2.: Correlation Table
+Variable 1 2 3 4 5 6 7 8e
+1. StockforStock 1.000 0.047*** -0.094*** -0.020 -0.032* -0.005 0.085*** -0.060***
+2. 𝑇𝑜𝑛𝑒 𝑀&𝐴 0.047*** 1.000 0.083*** -0.099*** -0.058*** 0.028* -0.080*** 0.006
+w
+3. ROA -0.094*** 0.083*** 1.000 -0.535*** -0.201*** -0.055*** -0.120*** 0.231***
+4. Loss -0.020 -0.099*** -0.535*** 1.000 0.233*** 0.036** 0.029* -0.174***
+5. Return -0.032* -0.058*** -0.201*** 0.233*** 1.000 0.056*** -0.008 -0.310***
+6. FE -0.005 0.028* -0.055*** 0.036** 0.056*** 1.000 0 e .003 -0.035**
+7. BTM 0.085*** -0.080*** -0.120*** 0.029* -0.008 0.003 1.000 -0.262***
+8. Size+ -0.060*** 0.006 0.231*** -0.174*** -0.310*** -0.035** -0.262*** 1.000
+9. Leverage -0.101*** -0.091*** -0.070*** 0.102*** 0.010 -0.031* i-0.228*** -0.018
+10. 𝜎 𝑅𝑒𝑡 -0.027* -0.017 0.014 0.001 0.234*** 0.00v2 -0.118*** 0.016
+11. 𝜎 𝑅𝑂𝐴 -0.032* -0.051*** -0.278*** 0.260*** 0.231*** 0.016 -0.104*** -0.071***
+12. NoA+ -0.051*** -0.025 0.123*** -0.038** -0.066*** -0.011 -0.127*** 0.591***
+e
+13. 𝜎 𝐹𝐸 0.001 -0.048*** -0.080*** 0.114*** 0.088*** 0.138*** 0.021 0.041**
+14. NbrBidders+ 0.024 0.025 -0.031* 0.009 -0.007 -0.001 -0.021 0.050***
+15. Diversification -0.141*** -0.050*** 0.010 -0.028* -0.070*** 0.012 0.032* 0.040**
+r
+16. Tender -0.016 -0.024 -0.033* 0.012 -0.023 -0.003 -0.019 0.102***
+17. DealValue+ 0.147*** -0.083*** -0.097*** 0.089*** -0.0 40** -0.012 0.047*** -0.070***
+r
+Variable 9 10 11 12 13 14 15 16 17
+1. StockforStock -0.101*** -0.027* -0.032* -0.05e1*** 0.001 0.024 -0.141*** -0.016 0.147***
+2. 𝑇𝑜𝑛𝑒 𝑀&𝐴 -0.091*** -0.017 -0.051*** -0.025 -0.048*** 0.025 -0.050*** -0.024 -0.083***
+3. ROA -0.070*** 0.014 -0.278*** 0.123*** -0.080*** -0.031* 0.010 -0.033* -0.097***
+4. Loss 0.102*** 0.001 0.260*** e-0.038** 0.114*** 0.009 -0.028* 0.012 0.089***
+5. Return 0.010 0.234*** 0.231*** -0.066*** 0.088*** -0.007 -0.070*** -0.023 -0.040**
+6. FE -0.031* 0.002 0.016 -0.011 0.138*** -0.001 0.012 -0.003 -0.012
+7. BTM -0.228*** -0.118*** -0.1p04*** -0.127*** 0.021 -0.021 0.032* -0.019 0.047***
+8. Size+ -0.018 0.016 -0.071*** 0.591*** 0.041** 0.050*** 0.040** 0.102*** -0.070***
+9. Leverage 1.000 0.009 0.039** -0.089*** 0.120*** 0.001 0.127*** -0.005 0.087***
+10. 𝜎 𝑅𝑒𝑡 0.009 1.000 0.007 0.001 0.008 -0.023 -0.044** -0.011 0.029*
+11. 𝜎 𝑅𝑂𝐴 0.039** 0.007 t1.000 0.002 0.048*** 0.008 -0.010 0.049*** 0.016
+12. NoA+ -0.089*** 0.001 0.002 1.000 0.075*** 0.034* -0.074*** 0.068*** -0.081***
+o
+13. 𝜎 𝐹𝐸 0.120*** 0.008 0.048*** 0.075*** 1.000 -0.010 0.060*** -0.018 0.003
+14. NbrBidders+ 0.001 -0.023 0.008 0.034* -0.010 1.000 -0.027* 0.114*** -0.010
+15. Diversification 0.127***n -0.044** -0.010 -0.074*** 0.060*** -0.027* 1.000 -0.062*** -0.008
+16. Tender -0.005 -0.011 0.049*** 0.068*** -0.018 0.114*** -0.062*** 1.000 0.061***
+17. DealValue+ 0.087*** 0.029* 0.016 -0.081*** 0.003 -0.010 -0.008 0.061*** 1.000
+This table reports the Pears on (Spearman) correlation for the dependent and independent variables above (below) the diagonal.
+We use the logarithm of the variables indicated by a +. *, ** and *** represent the significance at the 10%, 5% and 1% levels,
+t
+respectively.
+n
+i
+r
+p
+e
+r
+P
+48
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 51 =====
+d
+Table 3.: Average and Median Tone around M&A Announcement Quarters
+Stock Hybrid Cash Cash vs. stock
+Quarter Mean Median Mean Median Mean Median t-teset Wilcoxon
+Q-5 1.387 1.266 1.322 1.249 1.290 1.217 0.102 0.297
+Q-4 1.428 1.272 1.329 1.262 1.293 1.250 w0.019 0.087
+Q-3 1.450 1.444 1.314 1.268 1.270 1.196 0.001 0.001
+Q-2 1.449 1.460 1.274 1.264 1.270 1.238 0.001 0.001
+e
+Q-1 1.430 1.358 1.350 1.278 1.333 1.233 0.034 0.096
+Q-0 1.306 1.258 1.395 1.287 1.368 1.260i 0.161 0.197
+v
+Q+1 1.298 1.229 1.364 1.271 1.330 1.256 0.527 0.355
+Q+2 1.366 1.289 1.337 1.246 1.30e1 1.246 0.164 0.136
+Q+3 1.297 1.281 1.311 1.222 1.312 1.248 0.740 0.924
+r
+Q+4 1.278 1.173 1.283 1.207 1.272 1.201 0.899 0.833
+This table reports the tone of earnings press releases for the five qu arters preceding the merger announcement, where
+quarter 0 is the quarter containing the merger announcement date. We also provide the average tone for four quarters
+r
+after the earnings announcement quarter. The last two columns test for differences in average tone for cash and stock
+deals. They report the p-values for the t-statistics comparing the means and p-values for Wilcoxon signed rank tests
+e
+comparing the medians.
+e
+p
+t
+o
+n
+t
+n
+i
+r
+p
+e
+r
+P
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 52 =====
+Table 4.: Multivariate Analysis of Bidders’ Tone around M&A Announcement Quarters
+d
+Sum of Quarterly Bidders' quarterly tone around M&A announcement
+Dependent Variable 𝑇𝑜𝑛𝑒 𝑀&𝐴 Quarter -5 Quarter -4 Quarter -3 Quarter -2 eQuarter -1
+(1) (2) (3) (4) (5) (6) (7)
+w
+Constant 1.306*** 1.190*** 0.808** 0.777** 1.266*** 1.157*** 1.561***
+(0.008) (0.310) (0.410) (0.395) (0.388) (0.351) (0.370)
+StockforStock 0.117*** 0.152*** 0.099** 0.138*** 0.155*** 0.176*** 0.138***
+(0.034) (0.035) (0.046) (0.044) (0.043) (0.039) (0.041)
+e
+ROA 0.181 -0.381 0.485 -0.221 0.104 0.357
+(0.362) (0.479) (0.462) (0.453) (0.410) (0.432)
+Loss -0.108*** -0.121*** -0.100*** -0.124*** -0.109*** -0.097***
+i
+(0.026) (0.035) (0.033) (0.033) (0.030) (0.031)
+v
+Return 0.370*** 0.415 -0.338 0.531** -0.103 0.508**
+(0.196) (0.260) (0.250) (0.246) (0.223) (0.234)
+FE 0.028** 0.013 0.037n 0.023 0.024 0.028*
+e
+(0.013) (0.017) (0.016) (0.016) (0.014) (0.015)
+BTM -0.115*** -0.089*** -0.102*** -0.116*** -0.130*** -0.112***
+(0.020) (0.026) (0.025) (0.024) (0.022) (0.023)
+r
+Size+ -0.006 -0.005 -0.007 -0.008 -0.006 -0.002
+(0.006) (0.007) (0.0 07) (0.007) (0.006) (0.007)
+Leverage -0.242*** -0.260*** -0.273*** -0.229*** -0.207*** -0.260***
+(0.040) (0.053) r(0.051) (0.050) (0.045) (0.047)
+𝜎
+𝑅𝑂𝐴
+-1.275*** -1.436** -0.506 -1.296*** -1.529*** -1.770***
+e
+(0.475) (0.629) (0.605) (0.595) (0.538) (0.567)
+𝜎
+𝑅𝑒𝑡
+0.0003 -0.060*** -0.067*** -0.044*** 0.019 0.093***
+(0.018) (0.023) (0.022) (0.022) (0.020) (0.021)
+NoA+ -0.048*** e -0.020 -0.037* -0.051** -0.046** -0.058***
+(0.016) (0.022) (0.021) (0.020) (0.018) (0.019)
+𝜎
+𝐹𝐸
+-0.074 -0.073 -0.105 -0.053 -0.029 -0.108
+(0.083) p(0.110) (0.106) (0.104) (0.095) (0.099)
+NbrBidders+ 0.512* 0.807** 0.719* 0.364 0.431 0.534
+(0.296) (0.393) (0.378) (0.371) (0.336) (0.354)
+Diversification -0.03 4** -0.014 -0.023 -0.040** -0.043** -0.028
+(0.016) (0.021) (0.020) (0.020) (0.018) (0.019)
+t
+Tender -0.117* -0.062 -0.053 -0.071 -0.177** -0.167**
+o(0.062) (0.082) (0.079) (0.078) (0.070) (0.074)
+DealValue+ -0.009** -0.006 -0.005 -0.010* -0.007 -0.014***
+(0.004) (0.005) (0.005) (0.005) (0.005) (0.005)
+Year fixed effects nYes Yes Yes Yes Yes Yes Yes
+Quarter fixed effects Yes Yes Yes Yes Yes Yes Yes
+Observations 5,558 5,558 5,558 5,558 5,558 5,558 5,558
+R2 0.002 0.089 0.076 0.075 0.067 0.076 0.079
+t
+Adjusted R2 0.002 0.082 0.069 0.067 0.060 0.069 0.072
+This table prnovides evidence on Hypothesis 1. It reports the regressions of bidders' tone on the method of payment
+and other control variables. Stock deals use stocks as the only method of payment, while the other deals either use
+only cash or both cash and stock as the method of payment. The dependent variable for Model (1) and (2) is the
+sum of thie tone over the five semesters before the semester of the M&A announcement. 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is a
+dummry variable that equals one for stock deals, zero otherwise. All continuous variables are winsorized at the 1%
+and 99% percentiles. The significance of the coefficients is tested using Newey-West standard errors, which are
+preported in parentheses. *, ** and *** represent the significance at the 10%, 5% and 1% confidence levels,
+respectively, based on a two-sided t-test. Goodness of fit is evaluated by R2 and adj. R2.
+e
+r
+P
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 53 =====
+Table 5.: Multivariate Analysis of the Bidders’ Positive (𝑃𝑜𝑠𝑇𝑜𝑛𝑒 )and Negative Tone
+𝑀&𝐴
+(𝑁𝑒𝑔𝑇𝑜𝑛𝑒 ) around M&A Announcement Quarters d
+𝑀&𝐴
+Panel A - Bidder's quarterly positive tone
+e
+Sum of Quarterly Bidder's quarterly positive tone around M&A announcement
+𝑇𝑜𝑛𝑒
+Dependent Variable 𝑀&𝐴 Quarter -5 Quarter -4 Quarter -3 Quarter -2 Quarter -1
+w
+(1) (2) (3) (4) (5) (6) (7)
+Constant 1.691*** 1.736*** 1.635*** 1.609*** 1.632*** 1.434*** 2.269***
+(0.007) (0.262) (0.335) (0.326) (0.313) (0.272) (0.305)
+StokforStock 0.354*** 0.369*** 0.317*** 0.348*** 0.353*** 0.4e12*** 0.361***
+(0.029) (0.029) (0.037) (0.036) (0.035) (0.030) (0.034)
+Control variables No Yes Yes Yes Yes Yes Yes
+Year fixed effects No Yes Yes Yes Yes Yes Yes
+i
+Quarter fixed effects No Yes Yes Yes Yes Yes Yes
+v
+Observations 5,558 5,558 5,558 5,558 5,558 5,558 5,558
+R2 0.027 0.126 0.088 0.093 0.095 0.119 0.109
+Adjusted R2 0.026 0.119 0.081 0.086 e0.088 0.112 0.103
+Panel B - Bidder's quarterly negative tone r
+Sum of Quarterly Bidder's quarterly negative tone around M&A announcement
+Dependent Variable 𝑇𝑜𝑛𝑒 𝑀&𝐴 Quarter -5 Quarter -4 Quarter -3 Quarter -2 Quarter -1
+r
+(1) (2) (3) (4) (5) (6) (7)
+e
+Constant 0.871*** 0.989*** 1.088*** 1.092*** 1.214*** 0.869*** 0.783***
+(0.005) (0.157) (0.179) (0.179) (0.181) (0.185) (0.176)
+StockforStock 0.007 -0.019 0.007 -0.009 -0.030 -0.006 -0.030
+(0.019) (0.020) (0.0e22) (0.022) (0.023) (0.023) (0.022)
+Control variables No Yes Yes Yes Yes Yes Yes
+Year fixed effects No Yes Yes Yes Yes Yes Yes
+Quarter fixed effects No Yes pYes Yes Yes Yes Yes
+Observations 5,558 5,558 5,558 5,558 5,558 5,558 5,558
+R2 0.001 0.104 0.092 0.092 0.087 0.087 0.088
+Adjusted R2 -0.0002 0.096 0.085 0.085 0.079 0.079 0.081
+This table reports the regressions of the bidder's positive (Panel A) and negative (Panel B) tone on the method of payment
+t
+and other control variables. Stock deals use stocks as the only method of payments, while the other deals either use only
+cash or both cash and stock as the methodo of payment. The dependent variable for Model (1) and (2) is the sum of the
+tone over the five semesters before the semester of the M&A announcement. 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is a dummy variable that
+equals one for stock deals, zero otherwise. All continuous variables are winsorized at the 1% and 99% percentiles. The
+significance of the coefficients is tesnted using Newey-West standard errors, which are reported in parentheses. *, ** and
+*** represent the significance at the 10%, 5% and 1% confidence levels, respectively, based on a two-sided t-test.
+Goodness of fit is evaluated by R2 and adj. R2.
+t
+n
+i
+r
+p
+e
+r
+P
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 54 =====
+Table 6.: Propensity score matching
+d
+Panel A - Diagnostics test: Univariate test of mean differences between treatment and control groups
+Unmatched sample Matched sample
+Variable Mean Treatment Mean Control Mean Control
+301 obs. 5,256 obs. T-test 302 obs. T-test e
+ROA 0.001 0.012 0.000 -0.001 0.528
+BTM 0.593 0.435 0.000 0.568 0.517
+Size 8.086 21.512 0.000 9.317 0.575 w
+𝜎𝑅𝑒𝑡 0.101 0.153 0.008 0.098 0.897
+𝜎𝑅𝑂𝐴 0.006 0.008 0.031 0.007 0.471
+Leverage 0.155 0.245 0.000 0.151 0.814
+Loss 0.109 0.140 0.101 0.106 0.896 e
+Return 0.080 0.087 0.004 0.080 0.935
+FE 0.008 0.019 0.162 -0.005 0.334
+𝜎𝐹𝐸 0.053 0.052 0.959 0.050 0.775
+i
+NoA 8.327 9.665 0.001 7.966 0.421
+Panel B - Tone around M&As with the matched sample v
+Treatment Control T-test Wilcoxon test
+Quarter Mean Median Mean Median
+Q-5 1.366 1.226 1.290 1.226 0.244 e0.496
+Q-4 1.405 1.227 1.293 1.261 0.074 0.553
+Q-3 1.429 1.372 1.279 1.234 0.016 0.058
+Q-2 1.428 1.353 1.254 1.267 0.003 0.020
+Q-1 1.430 1.358 1.299 1.271 0.001
+r
+0.114
+Q-0 1.306 1.258 1.358 1.262 0.326 0.328
+Panel C - Regressions with the matched r
+sample Dependent variable StockforStock 𝑇𝑜𝑛𝑒𝑀&𝐴
+Constant 3.515*** e0.668
+(1.206) (0.582)
+StockforStock 0.125**
+(0.054)
+ROA 0.198*** e -0.129
+(0.192) (1.198)
+Loss -0.661** -0.004
+(0.260) (0.113)
+Return 1.454 p -1.146
+(1.679) (0.745)
+FE -0.481 -0.027
+(0.399) (0.160)
+BTM -0.0 56 -0.201***
+(0.212) (0.063)
+Size+ t-0.084* -0.020
+(0.047) (0.016)
+Leverage o-2.874*** -0.682***
+(0.390) (0.161)
+𝜎𝑅𝑂𝐴 -13.847** -0.931
+(5.748) (1.905)
+𝜎𝑅𝑒𝑡 n-0.195 -0.003
+(0.223) (0.092)
+NoA+ 0.074 -0.084
+(0.136) (0.055)
+𝜎𝐹𝐸 0.231 0.063
+(0.664) (0.287)
+NbrBidders+ t 1.069
+(0.709)
+n
+Diversification -0.006
+(0.060)
+Tender -0.371
+(0.311)
+i
+DealValue+ 0.003
+r (0.014)
+Year fixed effects Yes Yes
+Quarter fixed peffects Yes Yes
+Observations 5,558 604
+R2 0.139
+Adjusted R2 0.080
+Log Leikelihood -931.033
+Akaike Inf. Crit. 1,940.065
+This table provides evidence on Hypothesis 1 and reports the results using the PSM samples. Panel A reports the diagnostics test to
+show that there are (no) differences between the covariates of treatment and control groups before (after) the matching. Panel B
+cormpares the average of the sum of tone over the five semesters before the semester of the M&A announcement. The last two
+columns respectively report the p-values of the t-statistics comparing the means and the p-values of the Wilcoxon signed rank tests
+comparing the median. Model (1) and (2) in Panel C respectively report the regression results of the first-stage and the second-stage
+P
+regression. The main independent variable of interest is 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘, which is defined as a dummy variable that equals one for
+stock deals, zero otherwise. All continuous variables are winsorized at the 1% and 99% percentiles. The significance of the
+coefficients is tested using Newey-West standard errors, which are reported in parentheses. *, ** and *** represent the significance
+at the 10%, 5% and 1% confidence levels, respectively, based on a two-sided t-test. Goodness of fit is evaluated by R2 and adj. R2.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 55 =====
+Table 7.: Entropy Balancing
+d
+Panel A - Diagnostics test: Proof of convergence after entropy balancing
+Variance
+Mean Treatment Mean Control Variance Control Skewness Treatment Skewness Control
+Treatment
+ROA 0.001 0.001 0.001 0.001 -5.708 -5.734 e
+Loss 0.109 0.109 0.098 0.097 2.492 2.508
+Return 0.080 0.080 0.001 0.001 1.798 1.805
+FE 0.008 0.008 0.001 0.001 -11.931 -8.715 w
+BTM 0.593 0.593 0.099 0.099 0.267 0.244
+Size 8.086 8.094 526.829 534.784 5.339 5.724
+Leverage 0.155 0.155 0.039 0.039 1.924 1.931
+𝜎𝑅𝑂𝐴 0.006 0.006 0.0003 0.0003 7.034 7e.134
+𝜎𝑅𝑒𝑡 0.101 0.101 0.103 0.103 2.237 2.312
+NoA 8.327 8.325 34.161 34.008 2.045 2.054
+𝜎𝐹𝐸 0.053 0.053 0.011 0.011 7.158
+i
+7.199
+Panel B - Tone around M&As with the matched sample v
+Treatment – 302 obs. Control - 5,256 obs. T-test Wilcoxon test
+Quarter Mean Median Mean Median
+Q – 5 1.366 1.226 1.267 1.226 e0.040 0.345
+Q – 4 1.405 1.227 1.282 1.226 0.011 0.015
+Q – 3 1.429 1.372 1.288 1.222 0.003 0.001
+Q – 2 1.428 1.353 1.257 1.235 0.002 0.001
+Q – 1 1.430 1.358 1.312 1.27r1 0.004 0.030
+Q – 0 1.306 1.258 1.363 1.264 0.173 0.200
+Panel C - Regressions after entropy balancing
+r
+Dependent variable 𝑇𝑜𝑛𝑒𝑀&𝐴
+StockforStock 0.145*e**
+(0.034)
+ROA 0.811**
+(0.403)
+Loss e-0.107***
+(0.034)
+Return -0.281
+(0.245)
+FE p 0.544**
+(0.254)
+BTM -0.311***
+(0.030)
+Size+ -0.030***.
+(0.006)
+Leverage t -0.400***
+(0.043)
+𝜎𝑅𝑂𝐴 o -0.628
+(0.613)
+𝜎𝑅𝑒𝑡 -0.072***
+(0.026)
+NoA+ n -0.052***
+(0.017)
+𝜎𝐹𝐸 0.060
+(0.085)
+NbrBidders+ 0.774**
+(0.319)
+Diversification t -0.053***
+(0.016)
+Tender n -0.032
+(0.076)
+DealValue+ -0.011**
+(0.004)
+Year fixed effecits Yes
+Quarter fixerd
+Yes
+effects
+p
+Observations 5,558
+R2 0.112
+Adjusted R2 0.106
+eThis table provides evidence on Hypothesis 1 and reports results using the entropy balancing method. Panel A reports the diagnostics
+test to show that convergence is achieved in all three dimensions (e.g. mean, variance and skewness). Panel B compares the weighted
+average and median of the sum of tone over the five semesters before the semester of the M\&A announcement. The last two columns
+respectively report the p-values of the t-statistics comparing the means and the p-values of the Wilcoxon signed rank tests comparing
+rthe median. Panel C provides the regression results of the impact of stock-for-stock deals on the sum of the bidder's tone in earnings
+press releases over the five quarters preceding the M&A announcement. The regression output is based on a weighted OLS, where
+the weights are defined by the entropy matching. The main independent variable of interest is 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘, which is defined as
+Pa dummy variable that equals one for stock deals, zero otherwise. The control variables are the same as those included in Table 4.
+All continuous variables are winsorized at the 1% and 99% percentiles. The significance of the coefficients is tested using Newey-
+West standard errors, which are reported in parentheses. *, ** and *** represent the significance at the 10%, 5% and 1% confidence
+levels, respectively, based on a two-sided t-test. Goodness of fit is evaluated by R2 and adj. R2.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 56 =====
+d
+Table 8.: Instrumental Variable and Restricted Control Function Approaches – The impact
+of stock-for-stock M&As on tone
+Panel A - Instrumental variable approach Panel B - Restricted contreol function
+Dependent Variable StockforStock 𝑇𝑜𝑛𝑒 StockforStock 𝑇𝑜𝑛𝑒
+𝑀&𝐴 𝑴&𝑨
+(1) (2) (3) (4)
+Constant 1.215 0.666* 1.215 w0.461
+(2.106) (0.370) (2.106) (0.372)
+Inst -0.637**
+(0.295)
+StockforStock (fitted) 0.029**
+e
+(0.014)
+StockforStock 0.231***
+(0.061)
+ROA -14.143*** 0.404 -14.14i3*** 0.448
+(3.565) (0.371) (3.565) (0.372)
+v
+Loss -0.425 -0.072*** -0.425 -0.067**
+(0.277) (0.027) (0.277) (0.027)
+Return 2.986 -0.410** 2.986 -0.352*
+e
+(1.947) (0.205) (1.947) (0.206)
+FE -0.275 0.030** -0.275 0.032**
+(0.425) (0.013) (0.425) (0.013)
+BTM -0.049 -0.132*** r -0.049 -0.123***
+(0.159) (0.020) (0.159) (0.021)
+Size+ 0.062 0.003 0.062 0.007
+(0.056) (0.006) (0.056) (0.006)
+Leverage -0.146 -0.096** r -0.146 -0.107**
+(0.538) (0.047) (0.538) (0.048)
+𝜎 -4.186 -0.97e4** -4.186 -0.853*
+𝑅𝑂𝐴
+(4.465) (0.489) (4.465) (0.488)
+𝜎 -0.321 -0.012 -0.321 -0.011
+𝑅𝑒𝑡
+(0.220) e(0.018) (0.220) (0.018)
+NoA+ -0.041 -0.079*** -0.041 -0.076***
+(0.159) (0.017) (0.159) (0.017)
+𝜎 0.771 -0.052 0.771 -0.108
+𝐹𝐸 p
+(0.694) (0.089) (0.694) (0.090)
+NbrBidders+ 3.215* 0.650** 3.215* 0.624**
+(1.866) (0.303) (1.866) (0.302)
+Diversification -1.411** * -0.002 -1.411*** 0.005
+(0.195) (0.017) (0.195) (0.017)
+Tender -1t.016 -0.125** -1.016 -0.121*
+(0.835) (0.063) (0.835) (0.063)
+o
+DealValue+ 0.257*** -0.002 0.257*** -0.006
+(0.040) (0.004) (0.040) (0.004)
+GENRES -0.014***
+n (0.005)
+Year fixed effects Yes Yes Yes Yes
+Quarter fixed effects Yes Yes Yes Yes
+Observations 5,558 5,558 5,558 5,558
+Log Likelihood -686.290 -760.122
+Akaike Inf. Critt. 1,554.579 1,704.244
+R2 0.175 0.174
+Adjustedn R2 0.161 0.159
+IV Diagnostic tests
+Statistic p-value
+Weaki instruments 3.793 0.0515
+Wu-Hausman 0.335 0.5626
+r
+This table provides evidence on Hypothesis 1 and reports the results of the instrumental variable analysis. The first step
+(Model 1) regresses the firm's institutional ownership percentage on the dummy variable 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘, which equals one
+p
+if the deal is financed through the bidder's stock and zero otherwise. The fitted values of the first step
+(𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘(𝑓𝑖𝑡𝑡𝑒𝑑)) are then regressed against the average tone in the second step (Model 2). In Panel B, the fitted
+values of (𝐺𝐸𝑁𝑅𝐸𝑆) in the first step are regressed against the tone of earnings press releases in the second step (Model 2).
+eThe main independent variable of interest is 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘, which is defined as a dummy variable that equals one for stock
+deals, zero otherwise. The control variables are the same as those included in Table 4. All continuous variables are winsorized
+at the 1% and 99% percentiles. The significance of the coefficients is tested using Newey-West standard errors, which are
+reported in parentheses. *, ** and *** represent the significance at the 10%, 5% and 1% confidence levels, respectively,
+r
+based on a two-sided t-test. Goodness of fit is evaluated by R2 and adj. R2.
+P
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 57 =====
+Table 9.: Pseudo Event Study
+d
+Setting the event two years Setting the event two years
+backward forward
+D ependent Variable
+𝑇𝑜𝑛𝑒 𝑇𝑜𝑛𝑒 e
+𝑀&𝐴 𝑀&𝐴
+(1) (2)
+Constant 1.759*** 1.306***
+w
+(0.386) (0.227)
+StockforStock 0.071 -0.074
+(0.045) (0.047)
+ROA -0.025 0.424
+e
+(0.356) (0.334)
+Loss -0.122*** -0.082***
+(0.034) (0.028)
+Return -0.408* -0.874*** i
+(0.222) (0.201) v
+FE -0.058 -0.038
+(0.049) (0.033)
+BTM -0.096*** -0e.060***
+(0.023) (0.015)
+Size+ -0.009 -0.003
+(0.007) r(0.006)
+Leverage -0.296*** -0.297***
+(0.056) (0.048)
+𝜎 -0.920* -1.296***
+𝑅𝑂𝐴 r
+(0.474) (0.382)
+𝜎 -0.051** -0.017
+𝑅𝑒𝑡𝑢𝑟𝑛 e
+(0.026) (0.023)
+NoA+ -0.012 -0.048**
+(0.021) (0.019)
+𝜎 -0.008 e -0.142
+𝐹𝐸
+(0.122) (0.091)
+NbrBidders+ -0.226 0.143
+(0.402) p (0.305)
+Diversification -0.033 -0.038**
+(0.021) (0.018)
+Tender -0.186 ** -0.241***
+(0.079) (0.072)
+DealValue+ -0.0t09* -0.010*
+(0.005) (0.006)
+o
+Year fixed effects Yes Yes
+Quarter fixed effects Yes Yes
+Observations 3,139 3,961
+n
+R2 0.107 0.091
+Adjusted R2 0.096 0.082
+This table provides evidence on Hypothesis 1 and reports regressions of bidders’ tone management for
+two sets of pseudo-events. For each stock deal and cash deal in our sample, we create a corresponding
+pseudo-event by sthifting the announcement quarter by one year either backward (Models (1)) or
+forward (Models (2)). The main independent variable of interest is 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘, which is defined
+n
+as a dummy variable that equals one for stock deals, zero otherwise. The control variables are the same
+as those included in Table 4. All continuous variables are winsorized at the 1% and 99% percentiles.
+The significance of the coefficients is tested using Newey-West standard errors, which are reported in
+i
+parentheses. *, ** and *** represent the significance at the 10%, 5% and 1% confidence levels,
+respec r tively, based on a two-sided t-test. Goodness of fit is evaluated by R2 and adj. R2.
+p
+e
+r
+P
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 58 =====
+d
+Table 10.: The moderating effects of deal characteristics and firm monitoring on tone
+management around M&A deals
+Dependent Variable 𝑇𝑜𝑛𝑒 𝑀&𝐴 e
+Panel A: Deal Panel B: Firm
+Panel C: Firm monitoring
+characteristic performance
+Factor DealValue ROA Return NoA (log) wLeverage
+(log)
+(1) (2) (3) (4) (5)
+Constant 1.955*** 1.887*** 1.848*** 1.830*** 1.837***
+e
+(0.338) (0.338) (0.338) (0.339) (0.338)
+Factor ∙ StockforStock 0.065*** -2.344** -2.293** -0.140** -0.695***
+(0.016) (1.125) (0.922) (0.063) (0.182)
+i
+StockforStock 0.218*** -0.010 0.173** 0.280** 0.103**
+(0.064) (0.038) (0.084) v (0.138) (0.049)
+ROA 0.618 0.854** 0.582 0.637 0.696*
+(0.395) (0.410) (0.395) (0.395) (0.395)
+e
+Loss -0.119*** -0.117*** -0.120*** -0.119*** -0.118***
+(0.029) (0.029) (0.029) (0.029) (0.029)
+Return -0.550** -0.543** -0.483** -0.544** -0.555***
+r
+(0.214) (0.214) (0.216) (0.214) (0.214)
+FE 0.013 0.014 0.012 0.013 0.013
+(0.014) (0.014) (0.014) (0.014) (0.014)
+BTM -0.093*** -0.094*** r-0.095*** -0.094*** -0.092***
+(0.021) (0.021) (0.021) (0.021) (0.021)
+Size+ -0.008 -0.00e9 -0.008 -0.009 -0.007
+(0.006) (0.006) (0.006) (0.006) (0.006)
+Leverage -0.238*** -0.248*** -0.253*** -0.248*** -0.216***
+(0.043) e (0.043) (0.043) (0.043) (0.044)
+𝜎 0.104*** 0.103*** 0.104*** 0.103*** 0.102***
+𝑅𝑒𝑡
+(0.019) (0.019) (0.019) (0.019) (0.019)
+𝜎 -0.996* p -1.139** -1.026** -1.039** -0.990*
+𝑅𝑂𝐴
+(0.518) (0.520) (0.518) (0.518) (0.518)
+NoA+ -0.061*** -0.061*** -0.062*** -0.055*** -0.062***
+(0.018) (0.018) (0.018) (0.018) (0.018)
+𝜎 -0.097 -0.111 -0.088 -0.091 -0.095
+𝐹𝐸 t
+(0.091) (0.091) (0.091) (0.091) (0.091)
+NbrBidders+ o0.303 0.272 0.250 0.283 0.273
+(0.323) (0.324) (0.323) (0.324) (0.323)
+Diversification -0.016 -0.018 -0.014 -0.016 -0.016
+n(0.017) (0.017) (0.017) (0.017) (0.017)
+Tender -0.084 -0.087 -0.090 -0.089 -0.090
+(0.068) (0.068) (0.068) (0.068) (0.068)
+DealValue+ -0.026*** -0.022*** -0.022*** -0.022*** -0.023***
+(0.005) (0.005) (0.005) (0.005) (0.005)
+Year fixed effetcts Yes Yes Yes Yes Yes
+Quarter nfixed effects Yes Yes Yes Yes Yes
+Observations 5,558 5,558 5,558 5,558 5,558
+R2 0.082 0.080 0.081 0.080 0.082
+Adjus i ted R2 0.075 0.073 0.073 0.073 0.075
+Thris table provides evidence on Hypothesis 2 (Panel A), Hypothesis 3 (Panel B) and Hypothesis 4 (Panel C).
+In Panel A, Model (1) focuses on the impact of the deal's value (𝐷𝑒𝑎𝑙𝑉𝑎𝑙𝑢𝑒), which is obtained from the SDC
+pdatabase. In Panel B, Model (2) and (3) focus on the impact of firm performance, which is respectively
+measured based on the firm's return on assets (𝑅𝑂𝐴) and past stock returns (𝑅𝑒𝑡𝑢𝑟𝑛). In Panel C, Model (4)
+and (5) respectively proxy firm monitoring with analysts' coverage and the proportion of leverage in the firm.
+eThe main independent variable of interest 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is, which is defined as a dummy variable that equals
+one for stock deals, zero otherwise. The control variables are the same as those included in in Table 4. All
+continuous variables are winsorized at the 1% and 99% percentiles. The significance of the coefficients is tested
+rusing Newey-West standard errors, which are reported in parentheses. *, ** and *** represent the significance
+at the 10%, 5% and 1% confidence levels, respectively, based on a two-sided t-test. Goodness of fit is evaluated
+Pby R2 and adj. R2.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 59 =====
+Table 11.: Impact of tone on the bidder’s stock return around the earnings announcement
+d
+Cumulative abnormal returns
+e
+Dependent Variable CAR[-1,+1] CAR[-3,+3]
+(1) (2)
+Constant 0.006 0.006 w
+(0.018) (0.021)
+𝐴𝑏𝑇𝑜𝑛𝑒 0.003*** 0.004***
+𝑀&𝐴
+(0.0005) (0.001)
+e
+𝐸𝑥𝑝𝑒𝑐𝑡𝑒𝑑𝑇𝑜𝑛𝑒 -0.002 0.001
+𝑀&𝐴𝑠
+(0.002) (0.002)
+ROA 0.012 0.019
+(0.010) (0.0i12)
+Loss -0.003*** v-0.003***
+(0.001) (0.001)
+FE 0.156*** 0.176***
+e
+(0.016) (0.018)
+BTM 0.002 0.001
+(0.003) (0.003)
+r
+𝜎 -0.002*** -0.004***
+𝑅𝑒𝑡
+(0.001) (0.001)
+𝜎 0.0002 0.004
+𝑅𝑂𝐴
+(0.013) r(0.015)
+NoA+ -0.001* -0.001**
+(0.0005) e (0.001)
+𝜎 -0.003 -0.006*
+𝐹𝐸
+(0.003) (0.004)
+Year fixed effects Yes e Yes
+Quarter fixed effects Yes Yes
+Observations 27,790 27,790
+p
+R2 0.010 0.011
+Adjusted R2 0.009 0.009
+This table reports the impact of tone management on bidder’s premerger stock returns. The dependent variable is the
+bidder's cumulative abnormal stock returns around the earnings announcement day. The dependent variable of Model
+(1) is the cumulative abnormal treturn from one day before to one day after the earnings announcement day
+(𝐶𝐴𝑅[−1,+1]). Model (2)'s dependent variable is the cumulative abnormal return from three days before to three days
+o
+after the earnings announcement day (𝐶𝐴𝑅[−3,+3]).The independent variables include earnings characteristics as well
+as firm characteristics. 𝐴𝑏𝑇𝑜𝑛𝑒 is the difference between the actual tone and the expected tone
+(𝐸𝑥𝑝𝑒𝑐𝑡𝑒𝑑𝑇𝑜𝑛𝑒 ) estimated from Equation 7. Year fixed effects and industry fixed effects are included. All
+𝑀&𝐴𝑠n
+continuous variables are winsorized at the 1% and 99% percentiles. The significance of the coefficients is tested using
+Newey-West standard errors, which are reported in parentheses. *, ** and *** represent the significance at the 10%, 5%
+and 1% confidence levels, respectively, based on a two-sided t-test. Goodness of fit is evaluated by R2 and adj. R2.
+t
+n
+i
+r
+p
+e
+r
+P
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 60 =====
+Table 12.: Stock-for-Stock merger and acquisition announcement, tone and bidder’s londg-
+term stock returns after the merger
+Cumulative abnormal returns e
+Dependent Variable CAR[-3,+3] CAR[+1,+60] CAR[+1,+180] CAR [+1, +360]
+(1) (2) (3) (4)
+Constant 0.029 -0.0002 0.007 w-0.182
+(0.030) (0.056) (0.086) (0.142)
+𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 ∙ Ab𝑇𝑜𝑛𝑒 0.015** 0.012 -0.031* -0.052**
+𝑀&𝐴
+(0.006) (0.011) (0.018) (0.022)
+StockforStock -0.023*** -0.029*** -0.040***e -0.048**
+(0.005) (0.008) (0.013) (0.022)
+AbTone 0.004** 0.013*** 0.030*** 0.030***
+(0.002) (0.003) (0.005i) (0.008)
+ROA -0.050 0.239*** 0.505*** 0.533**
+v
+(0.047) (0.087) (0.134) (0.222)
+Loss -0.004 -0.014** -0.021** -0.019
+(0.003) (0.006) e(0.010) (0.016)
+Return 0.041 -0.033 0.122* 0.310**
+(0.026) (0.048) (0.073) (0.122)
+FE 0.0004 -0.005* r-0.007 -0.022***
+(0.002) (0.003) (0.005) (0.008)
+BTM -0.011*** -0.012* * -0.006 0.015
+(0.003) (0.005) (0.007) (0.012)
+Size+ -0.003*** -0.0 r 03** -0.002 -0.006
+(0.001) (0.001) (0.002) (0.003)
+e
+Leverage -0.013** -0.006 -0.010 -0.011
+(0.005) (0.010) (0.015) (0.025)
+𝜎 0.032*** 0.063*** 0.032*** 0.095***
+𝑅𝑒𝑡 e
+(0.002) (0.004) (0.007) (0.014)
+𝜎 0.085 -0.031 -0.003 0.387
+𝑅𝑂𝐴
+(0.062) (0.114) (0.176) (0.292)
+p
+NoA+ 0.002 0.00003 0.001 0.010
+(0.002) (0.004) (0.006) (0.010)
+𝜎 -0.004 -0.020 -0.027 -0.115**
+𝐹𝐸
+(0.011) (0.020) (0.031) (0.051)
+NbrBidders+ t0.354 0.172 0.253 0.182
+(0.323) (0.326) (0.423) (0.222)
+o
+Diversification -0.002 -0.005 0.001 0.005
+(0.002) (0.004) (0.006) (0.010)
+Tender -0.010 -0.014 -0.015 0.001
+n
+(0.008) (0.015) (0.023) (0.039)
+DealValue+ 0.003*** 0.001 -0.001 -0.002
+(0.001) (0.001) (0.002) (0.003)
+Year fixed effect s Yes Yes Yes Yes
+Quarter fixedt effects Yes Yes Yes Yes
+Observations 5,558 5,558 5,558 5,558
+R2 n 0.069 0.071 0.047 0.055
+Adjusted R2 0.061 0.063 0.039 0.047
+This table analyzes the bidder's stock returns around the M&A announcement as well as the stock returns in the post-
+merger periiod. The dependent variable in this table is the bidder's cumulative abnormal stock returns around the M&A
+announrcement day. In Model (1), the dependent variable around the M&A announcement is the cumulative abnormal
+return three days before to three days after the M\&A announcement day. In Model (2), the dependent variable focuses
+opn the cumulative abnormal returns over sixty days after the M&A announcement day, starting one day after the M&A
+announcement day. Model (3) focuses on the cumulative abnormal returns for a 180 day period, starting one day after
+the M&A announcement; Model (4) has as dependent variable the cumulative abnormal return over 360 days, starting
+eone day after the M&A announcement day. The main variable of interest in this table is the interaction between
+𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 and 𝐴𝑏𝑇𝑜𝑛𝑒. 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is defined as a dummy variable that equals one for stock deals, zero
+otherwise. 𝐴𝑏𝑇𝑜𝑛𝑒 is the difference between the actual tone and the expected tone (𝐸𝑥𝑝𝑒𝑐𝑡𝑒𝑑𝑇𝑜𝑛𝑒 ) estimated
+𝑀&𝐴𝑠
+rfrom Equation 7. The independent variables include earnings and deal characteristics, as well as firm characteristics.
+Year fixed effects and industry fixed effects are included. All continuous variables are winsorized at the 1% and 99%
+Ppercentiles. The significance of the coefficients is tested using Newey-West standard errors, which are reported in
+parentheses. *, ** and *** represent the significance at the 10%, 5% and 1% confidence levels, respectively, based on
+a two-sided t-test. Goodness of fit is evaluated by R2 and adj. R2.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 61 =====
+Table 13.: Multivariate Analysis of Targets’ Tone around M&A Announcement Quarters
+Sum of Quarterly Targets' quarterly tone around M&A announcemendt
+𝑇𝑜𝑛𝑒
+Dependent Variable 𝑀&𝐴 Quarter -5 Quarter -4 Quarter -3 Quarter -2 Quarter -1
+e
+(1) (2) (3) (4) (5) (6) (7)
+Constant -0.001* 0.013 14.311 12.463 12.767 4.331 10.798
+(0.001) (0.020) (9.186) (3.503) (3.121) (w3.397) (4.968)
+StockforStock -0.002 -0.023 7.677 0.703 9.150 1.045 2.590
+(0.005) (0.020) (9.388) (3.579) (3.190) (3.472) (5.077)
+ROA 0.037 17.848 -6.466 -17.739 -2.073 53.570
+(0.082) (38.275) (14.594) (13.005) e(14.154) (20.699)
+Loss 0.005 1.380 -0.832 -0.584 -0.144 2.279
+(0.004) (2.007) (0.765) (0.682) (0.742) (1.085)
+Return 0.007 2.624 -9.041 0.707i -3.137 10.635
+(0.034) (15.724) (5.995) (5.343) (5.815) (8.503)
+v
+FE -0.0001 0.048 -0.025 0.010 0.006 0.098
+(0.0002) (0.087) (0.033) (0.030) (0.032) (0.047)
+BTM 0.00004 -0.003 0.006 e-0.007 0.008 -0.007
+(0.00003) (0.016) (0.006) (0.005) (0.006) (0.009)
+𝑆𝑖𝑧𝑒+ -0.001 0.063 -0.623 -0.098 -0.181 -0.004
+(0.001) (0.389) (0.14r8) (0.132) (0.144) (0.211)
+Leverage 0.015 -9.486 -1.255 -7.173 -0.281 -7.514
+(0.019) (8.945) (3 .410) (3.039) (3.308) (4.837)
+𝜎 -0.010 2.122 1.395 1.851 1.001 1.698
+𝑅𝑒𝑡𝑢𝑟𝑛 r
+(0.003) (1.250) (0.477) (0.425) (0.462) (0.676)
+𝜎 -0.041 -82.096 -45.948 -78.366 -23.436 -134.559
+𝑅𝑂𝐴 e
+(0.228) (106.613) (40.650) (36.224) (39.424) (57.655)
+𝑁𝑜𝐴+ 0.002 -1.903 0.034 -1.491 -0.258 -2.177
+(0.005) (2.256) (0.860) (0.766) (0.834) (1.220) )
+e
+𝜎 -0.041 14.645 -8.439 3.850 -0.122 27.624
+𝐹𝐸
+(0.056) (26.180) (9.982) (8.895) (9.681) (14.158)
+𝑁𝑏𝑟𝐵𝑖𝑑𝑑𝑒𝑟𝑠+ -0.016 -7.598 -5.588 -5.582 -1.154 -2.380
+p
+(0.012) (5.612) (2.140) (1.907) (2.075) (3.035)
+Diversification 0.0004 0.236 -0.306 -0.260 0.876 0.503
+(0.002) (0.774) (0.295) (0.263) (0.286) (0.419)
+Tender 0.008 -2.326 -0.460 -2.080 0.128 -2.040
+(t0.005) (2.295) (0.875) (0.780) (0.849) (1.241)
+𝐷𝑒𝑎𝑙𝑉𝑎𝑙𝑢𝑒+ -0.0005 0.420 -0.057 0.346 -0.080 0.328
+o
+(0.001) (0.491) (0.187) (0.167) (0.181) (0.265)
+Year fixed effects No Yes Yes Yes Yes Yes Yes
+Quarter fixed effects No Yes Yes Yes Yes Yes Yes
+n
+Observations 37 37 37 37 37 37 37
+R2 0.006 0.996 0.963 0.994 0.996 0.994 0.986
+Adjusted R2 -0.023 0.857 -0.346 0.794 0.848 0.778 0.48
+This table reports the regressions of the target’s tone on the method of payment and other control variables. Stock deals
+use stocks as the otnly method of payments, while the other deals either use only cash or both cash and stock as the
+method of payment. The dependent variable for Model (1) and (2) is the sum of the tone over the five semesters before
+n
+the semester of the M&A announcement. 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is a dummy variable that equals one for stock deals, zero
+otherwise. All continuous variables are winsorized at the 1% and 99% percentiles. The significance of the coefficients
+is tested using Newey-West standard errors, which are reported in parentheses. *, ** and *** represent the significance
+i
+at the 10%, 5% and 1% confidence levels, respectively, based on a two-sided t-test. Goodness of fit is evaluated by R2
+and adrj. R2.
+p
+e
+r
+P
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453
+
+===== PAGE 62 =====
+Table 14.: Multivariate Analysis of the Bidder’s Tone Dispersion (𝐴𝑅𝐹) for Net d
+(𝑇𝑜𝑛𝑒 ), Positive (𝑃𝑜𝑠𝑇𝑜𝑛𝑒 ) and Negative Tone (𝑁𝑒𝑔𝑇𝑜𝑛𝑒 ) before
+𝑀&𝐴 𝑀&𝐴 𝑀&𝐴
+M&A Announcement Quarters
+e
+Dependent variable ARF
+w
+𝑇𝑜𝑛𝑒
+𝑀&𝐴
+𝑃𝑜𝑠𝑇𝑜𝑛𝑒
+𝑀&𝐴
+𝑁𝑒𝑔𝑇𝑜𝑛𝑒
+𝑀&𝐴
+(1) (2) (3)
+Constant 0.530*** 0.511*** 0.548***
+(0.014) (0.014) (0.029) e
+StockforStock 0.002* 0.003* 0.001
+(0.001) (0.001) (0.003)
+ROA 0.009* 0.018* 0.047 i
+(0.004) (0.008) (0v.029)
+Loss -0.001 -0.001 0.002
+(0.001) (0.001) (0.002)
+e
+Return -0.003 0.008 0.016
+(0.008) (0.008) (0.016)
+FE 0.004 -0.003 -0.004
+(0.005) (0.005) r(0.001)
+BTM 0.001 -0.005 -0.005***
+(0.001) (0.001) (0.002)
+𝑆𝑖𝑧𝑒+ -0.004* -0.003 r-0.002***
+(0.002) (0.002) (0.005)
+Leverage -0.001 -0.0e03 -0.006*
+(0.002) (0.002) (0.004)
+𝜎 0.001* -0.001 0.001
+𝑅𝑒𝑡𝑢𝑟𝑛
+(0.001) e(0.001) (0.001)
+𝜎 -0.032* 0.019 -0.041
+𝑅𝑂𝐴
+(0.019) (0.018) (0.038)
+𝑁𝑜𝐴+ 0.004 p-0.001 0.002
+(0.001) (0.001) (0.001)
+𝜎 -0.002 0.003 -0.002
+𝐶𝑜𝑛𝑠𝑒𝑛𝑠𝑢𝑠
+(0.003) (0.003) (0.007)
+𝑁𝑏𝑟𝐵𝑖𝑑𝑑𝑒𝑟𝑠+ 0.002 0.001 -0.010
+t
+(0.012) (0.011) (0.024)
+Diversification -0.0o04 -0.001 0.001
+(0.001) (0.001) (0.001)
+Tender -0.001 0.0004 0.005
+n(0.002) (0.002) (0.005)
+𝐷𝑒𝑎𝑙𝑉𝑎𝑙𝑢𝑒+ -0.001 -0.003* -0.0002
+(0.002) (0.002) (0.003)
+Year fixed effects Yes Yes Yes
+Quarter fixed effects Yes Yes
+t Yes
+Observationns 5,558 5,558 5,558
+R2 0.027 0.026 0.046
+Adjusted R2 0.010 0.008 0.029
+i
+This table reports the regressions of the bidder's tone dispersion on the method of payment and
+otherr control variables. Stock deals use stocks as the only method of payments, while the other
+deals either use only cash or both cash and stock as the method of payment. The dependent
+p
+variable for Model (1) and (2) is the average reduced frequency (𝐴𝑅𝐹) of net (𝑇𝑜𝑛𝑒 ),
+𝑀&𝐴
+positive (𝑃𝑜𝑠𝑇𝑜𝑛𝑒 ) and negative tone (𝑁𝑒𝑔𝑇𝑜𝑛𝑒 ) over the five semesters before the
+𝑀&𝐴 𝑀&𝐴
+semester of the M&A announcement. 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘 is a dummy variable that equals one for
+e
+stock deals, zero otherwise. All continuous variables are winsorized at the 1% and 99%
+percentiles. The significance of the coefficients is tested using Newey-West standard errors,
+which are reported in parentheses. *, ** and *** represent the significance at the 10%, 5% and
+r1% confidence levels, respectively, based on a two-sided t-test. Goodness of fit is evaluated by
+R2 and adj. R2.
+P
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4900453

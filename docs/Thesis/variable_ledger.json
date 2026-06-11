@@ -1,0 +1,1374 @@
+{
+  "_meta": {
+    "purpose": "Variable provenance ledger for the thesis draft (S3.1 rewrite). One entry per table (read directly from its bible fragment), every variable labeled by corporate-finance convention and traced to its construction site with file:line evidence. Later reused to build the Table 1 summary-statistics exhibit.",
+    "method": "Each table fragment read directly; every variable traced by reading the generator + builder code in this session. No memory, no transcription from prior notes.",
+    "created": "2026-06-10",
+    "status": "in progress — table-by-table under user supervision",
+    "tables_done": [
+      "tab:empire_building_did",
+      "tab:empire_drop_matched",
+      "tab:empire_cashspec",
+      "tab:reason_gating",
+      "tab:h11_prisk_uncertainty",
+      "tab:h23_competition_uncertainty",
+      "tab:h24_us_epu",
+      "tab:h24b_global_epu",
+      "tab:cash_scrutiny_validity",
+      "tab:cash_scrutiny_channel",
+      "tab:empire_drop_placebo",
+      "tab:h14c_ceo2_decomp",
+      "tab:h18_ceo2_decomp",
+      "tab:summary_stats"
+    ],
+    "tables_pending": [],
+    "status_note": "ALL 13 regression tables recorded 2026-06-10; tab:summary_stats (Table 1) generated + slots filled 2026-06-10."
+  },
+  "tables": {
+    "tab:empire_building_did": {
+      "title": "Empire-Building Run-Up Test",
+      "fragment": "docs/Draft/_empire_building_did.tex",
+      "generator": "scripts/gen_empire_did_table.py (runner + renderer; also writes outputs/econometric/empire_building_did/<ts>/summary.json)",
+      "design": {
+        "estimator": "PanelOLS (linearmodels), two-way FE: firm (EntityEffects) + calendar year-quarter (TimeEffects); gen_empire_did_table.py L141-143",
+        "standard_errors": "clustered by firm (cov_type='clustered', cluster_entity=True); L142-143",
+        "inference": "one-tailed for treatment (H: PreAnnounceQtr > 0, L146); two-tailed for controls (table note)",
+        "arms": "cash acquirers (Percentage of Cash >= 50) vs stock acquirers (Percentage of Stock >= 50), identical spec; L220",
+        "deal_filter": "SDC: Date Announced year 2002-2018, Acquiror Nation == 'United States', Acquiror Public Status == 'Public', Deal Status in {Completed, Pending, Withdrawn}, pct cash or pct stock non-missing; L96-101",
+        "treatment_definition": "first qualifying deal per acquirer (6-digit CUSIP); event quarter e = call calendar-quarter minus announcement quarter; post-announcement quarters (e >= 0) dropped; PreAnnounceQtr = 1[e == -1]; never-acquirers kept as controls; L115-128",
+        "firm_link": "SDC acquirer 6-digit CUSIP -> gvkey via outputs/1.4_AssembleManifest/*/master_sample_manifest.parquet (cusip[:6]); L105-112",
+        "universe_note": "CashScrutiny and HighCashScrutiny columns estimated on the UncResCEO-present call universe (match='UncResCEO'); L226, L131-137",
+        "cash_dv_note": "CashRatio columns add CashRatio_lag (partial adjustment) so the treatment coefficient tracks the CHANGE in cash, not the level; L131-136, table note"
+      },
+      "variables": {
+        "CashRatio": "dependent variable (cols 1, 5)",
+        "UncResCEO": "key dependent variable (cols 2, 6 — the probe)",
+        "CashScrutiny": "dependent variable (cols 3, 7)",
+        "HighCashScrutiny": "dependent variable (cols 4, 8; LPM)",
+        "PreAnnounceQtr": "treatment / key independent variable",
+        "CashRatio_lag": "lagged dependent variable (partial-adjustment control; CashRatio columns only)",
+        "Leverage": "control",
+        "lnAssets": "control",
+        "TobinsQ": "control",
+        "ROA": "control",
+        "Capex": "control",
+        "DivDummy": "control",
+        "sCFO": "control",
+        "FirmFE": "fixed effect",
+        "CalYearQuarterFE": "fixed effect"
+      }
+    },
+    "tab:empire_drop_matched": {
+      "title": "Pre-Acquisition Uncertainty vs. Cash on the Matched Universe (disclosure-window event study)",
+      "fragment": "docs/Draft/_empire_drop_matched.tex",
+      "generator": "src/f1d/econometric/empire_drop_matched_universe.py (runner; writes outputs/econometric/empire_drop_matched/<ts>/summary.json; tex built FROM the json by write_tex L90-147). Reuses empire_drop_test.py helpers (CTRL, BINS, base_panel, sdc, manifest, build_event).",
+      "design": {
+        "estimator": "PanelOLS, firm (EntityEffects) + calendar year-quarter (TimeEffects) FE; empire_drop_matched_universe.py run_on L49-56",
+        "standard_errors": "clustered by firm; L55-56",
+        "inference": "uniform two-tailed for bins AND Drop rows (write_tex docstring L91-93, pdir='p2' L98)",
+        "arm": "cash acquirers only (Percentage of Cash >= 50; L162)",
+        "matched_universe": "ONE shared sample: rows with UncResCEO AND CashRatio AND CashRatio_lag AND all bins AND all controls non-missing; both DVs estimated on those exact rows (L163-166) — defends differential timing against a sample-composition artifact (docstring L4-12)",
+        "event_bins": "e = call quarter - first-deal announcement quarter (SDC). PRE2: e==-2; PRE1: e==-1; GAP: e>=0 & deal not yet closed; POST: e>=0 & closed (call quarter >= Date Effective quarter). Baseline (omitted) = e<=-3 + never-acquirers. empire_drop_test.py build_event L109-141 + docstring L10-15",
+        "window_hygiene": "post-announcement window capped at +4 quarters (primary; +8 robustness spec also in summary.json); post-withdrawal rows dropped; post-window truncated at the firm's 2nd qualifying announcement; empire_drop_test.py L126-133",
+        "drop_rows": "Wald differences PRE1-GAP, GAP-POST, PRE1-POST computed from the coefficient covariance matrix; empire_drop_matched_universe.py wald L63-69",
+        "cash_dv_note": "CashRatio column adds CashRatio_lag (partial adjustment) — treatment-bin coefficients track the CHANGE in cash; the lag is required in the shared sample for BOTH DVs to keep the universe identical (L152-158, L163)"
+      },
+      "variables": {
+        "UncResCEO": "key dependent variable (col 1)",
+        "CashRatio": "dependent variable (col 2)",
+        "PRE2": "event-window indicator (pre-trend guard)",
+        "PRE1": "event-window indicator (treatment quarter, t-1)",
+        "GAP": "event-window indicator (announced, pre-close — the discriminator)",
+        "POST": "event-window indicator (completed)",
+        "CashRatio_lag": "lagged dependent variable (partial-adjustment control; CashRatio column only)",
+        "Leverage": "control",
+        "lnAssets": "control",
+        "TobinsQ": "control",
+        "ROA": "control",
+        "Capex": "control",
+        "DivDummy": "control",
+        "sCFO": "control",
+        "FirmFE": "fixed effect",
+        "CalYearQuarterFE": "fixed effect"
+      }
+    },
+    "tab:empire_cashspec": {
+      "title": "Formal Cash-Specificity: Pre-Announcement Uncertainty (effect) vs. Cash Build-Up (proposed cause), cash vs. stock acquirers",
+      "fragment": "docs/Draft/_empire_cashspec.tex",
+      "generator": "src/f1d/econometric/empire_cashspec_interaction.py (runner; writes outputs/econometric/empire_cashspec/<ts>/summary.json; tex built FROM the json by write_tex L124-205). Reuses gen_empire_did_table.py base_panel/sdc/manifest so inputs are identical to Table 1.",
+      "design": {
+        "estimator": "PanelOLS, pooled single model: DV ~ PreAnn_cash + PreAnn_stock + 7 controls (+CashRatio_lag for CashRatio DVs) + firm FE + cal year-quarter FE; L90-93",
+        "standard_errors": "clustered by firm; L92-93",
+        "inference": "uniform two-tailed for all rows incl. the Cash-Stock difference (write_tex docstring L125-128, pdir='p2' L138)",
+        "pooled_sample": "firm's first deal of EITHER type; only quarters before that first deal kept (clean run-up) + never-either-acquirer firms as baseline; build_pooled L63-70",
+        "formal_test": "Wald on (PreAnn_cash - PreAnn_stock) from the coefficient covariance matrix; L100-106",
+        "columns": "(1) UncResCEO on the matched sample (UncResCEO+CashRatio both present, no lag); (2) CashRatio matched + partial-adjustment lag; (3) CashRatio full cash panel (UncResCEO restriction dropped) + lag; main() L220-224",
+        "honest_caveat": "runner docstring L23-25: the difference's significance rides on the imprecise negative stock estimate — supported-but-fragile, wording stays 'concentrated'"
+      },
+      "variables": {
+        "UncResCEO": "key dependent variable (col 1 — the effect)",
+        "CashRatio": "dependent variable (cols 2-3 — the proposed cause)",
+        "PreAnn_cash": "treatment / key independent variable (cash-arm pre-announcement quarter)",
+        "PreAnn_stock": "treatment / key independent variable (stock-arm pre-announcement quarter, placebo)",
+        "CashRatio_lag": "lagged dependent variable (partial-adjustment control; CashRatio columns only)",
+        "Leverage": "control",
+        "lnAssets": "control",
+        "TobinsQ": "control",
+        "ROA": "control",
+        "Capex": "control",
+        "DivDummy": "control",
+        "sCFO": "control",
+        "FirmFE": "fixed effect",
+        "CalYearQuarterFE": "fixed effect"
+      }
+    },
+    "tab:reason_gating": {
+      "title": "Cash-Scrutiny Reason-Gating Test",
+      "fragment": "docs/Draft/_reason_gating.tex",
+      "generator": "scripts/gen_reason_gating_table.py (runner; writes outputs/econometric/reason_gating/<ts>/summary.json + the tex). Imports base_panel/sdc/manifest/build/CTRL from gen_empire_did_table.py — sample identical to Table 1's cash arm.",
+      "design": {
+        "estimator": "PanelOLS, firm + cal year-quarter FE; fit L47-59",
+        "standard_errors": "clustered by firm; L58-59",
+        "inference": "stars from one-tailed p (beta>0) for displayed terms (cell L72-77); note labels this 'one-tailed for the directional terms'",
+        "universe": "cash-acquirer pre-announcement universe (pc>=50, post-announcement quarters dropped, exact empire wiring L137-138), restricted to calls with BOTH CashScrutiny and UncResCEO non-missing (matched universe; fit L53-54); identical sample across both columns",
+        "columns": "(1) UncResCEO ~ CashScrutiny + PreAnnounceQtr + controls; (2) adds CashScrutiny x PreAnnounceQtr (ScrXPre); L141-142",
+        "reading": "the operative channel test: the reason (PreAnnounceQtr) raises residual uncertainty, scrutiny does not, interaction null"
+      },
+      "variables": {
+        "UncResCEO": "key dependent variable (both columns)",
+        "CashScrutiny": "independent variable (the alternative-channel regressor)",
+        "PreAnnounceQtr": "treatment / key independent variable",
+        "ScrXPre": "interaction term: CashScrutiny x PreAnnounceQtr (the reason-gating test)",
+        "Leverage": "control",
+        "lnAssets": "control",
+        "TobinsQ": "control",
+        "ROA": "control",
+        "Capex": "control",
+        "DivDummy": "control",
+        "sCFO": "control",
+        "FirmFE": "fixed effect",
+        "CalYearQuarterFE": "fixed effect"
+      }
+    },
+    "tab:h11_prisk_uncertainty": {
+      "title": "Political Risk and Call Uncertainty",
+      "fragment": "thesis_tables.tex body block (label tab:h11_prisk_uncertainty, ~L213-266) — NOT a separate \\input fragment",
+      "generator": "src/f1d/econometric/run_h11_prisk_uncertainty.py (Stage 4 runner; reads outputs/variables/h11_prisk_uncertainty/<latest>/h11_prisk_uncertainty_panel.parquet built by src/f1d/variables/build_h11_prisk_uncertainty_panel.py; merges UncResCEO sidecar from ceo_clarity_extended)",
+      "role_in_thesis": "convergent-validity check (Section IV.2 of draft): does the residual move with an established firm-level uncertainty measure?",
+      "design": {
+        "estimator": "PanelOLS; 4 columns = {Industry FE, Firm FE} x {DV: UncResCEO, UncPreCEO}; all with Year FE; run_h11 L249-251, panel header L221-223",
+        "standard_errors": "clustered at firm level (table note L262)",
+        "inference": "one-tailed for IVs (beta>0), two-tailed for controls (table note L260)",
+        "regression": "Uncertainty ~ PRisk + UncQue + NegCall + lnAssets + TobinsQ + ROA + CashRatio + DivDummy + FirmMat + EarnVol [+ UncPreCEO when DV=UncResCEO]; runner L12-23, BASE_CONTROLS + PRES_CONTROL_MAP L108-109",
+        "pres_control_rule": "when DV=UncResCEO, UncPreCEO added as the presentation-segment sibling control; when DV=UncPreCEO, no sibling (PRES_CONTROL_MAP L108-109)",
+        "sample": "Main sample (excludes financial + utility firms); firms with fewer than 5 calls excluded (table note L263); N=44,497 (UncResCEO cols, Main-only sidecar) / 65,760 (UncPreCEO cols)",
+        "r2_note": "R^2 includes absorbed fixed effects, not within-R^2 (table note L264)"
+      },
+      "variables": {
+        "UncResCEO": "key dependent variable (cols 1, 3)",
+        "UncPreCEO": "dependent variable (cols 2, 4); also a control when DV=UncResCEO",
+        "PRisk": "key independent variable (the convergent-validity benchmark)",
+        "UncQue": "control (linguistic)",
+        "NegCall": "control (linguistic)",
+        "lnAssets": "control",
+        "TobinsQ": "control",
+        "ROA": "control",
+        "CashRatio": "control",
+        "DivDummy": "control",
+        "FirmMat": "control",
+        "EarnVol": "control",
+        "IndustryFE": "fixed effect (cols 1-2)",
+        "FirmFE": "fixed effect (cols 3-4)",
+        "YearFE": "fixed effect (all cols)"
+      }
+    },
+    "tab:h23_competition_uncertainty": {
+      "title": "Product-Market Competition and Call Uncertainty",
+      "fragment": "thesis_tables.tex body block (label tab:h23_competition_uncertainty, ~L323-376)",
+      "generator": "src/f1d/econometric/run_h23_competition_uncertainty.py (reads outputs/variables/h23_competition_uncertainty/<latest>/h23_competition_uncertainty_panel.parquet built by src/f1d/variables/build_h23_competition_uncertainty_panel.py)",
+      "role_in_thesis": "DISCRIMINANT validity (Section IV.2): a persistent industry condition loads on the presentation (UncPreCEO) and NOT on the residual (UncResCEO) — the residual is reserved for the call-varying shock",
+      "design": {
+        "estimator": "PanelOLS; 4 cols = {Industry FE, Firm FE} x {UncResCEO, UncPreCEO}, all + Year FE; firm-clustered SE (table note L372)",
+        "inference": "one-tailed IVs (beta>0), two-tailed controls (note L370)",
+        "unit": "firm-fiscal-year (note L373) — competition (TNIC) is annual",
+        "regression": "Uncertainty ~ z_log_TotalSimilarity + UncQue + NegCall + lnAssets + TobinsQ + ROA + CashRatio + DivDummy + FirmMat + EarnVol [+ UncPreCEO when DV=UncResCEO]",
+        "sample": "Main sample (excl. financial + utility); N=12,728 (UncResCEO) / 18,492 (UncPreCEO)"
+      },
+      "variables": {
+        "UncResCEO": "key dependent variable (cols 1, 3)",
+        "UncPreCEO": "dependent variable (cols 2, 4); control when DV=UncResCEO",
+        "z_log_TotalSimilarity": "key independent variable (competition)",
+        "UncQue": "control",
+        "NegCall": "control",
+        "lnAssets": "control",
+        "TobinsQ": "control",
+        "ROA": "control",
+        "CashRatio": "control",
+        "DivDummy": "control",
+        "FirmMat": "control",
+        "EarnVol": "control",
+        "IndustryFE": "fixed effect (cols 1-2)",
+        "FirmFE": "fixed effect (cols 3-4)",
+        "YearFE": "fixed effect"
+      }
+    },
+    "tab:h24_us_epu": {
+      "title": "US Policy Uncertainty and Call Uncertainty",
+      "fragment": "thesis_tables.tex body block (label tab:h24_us_epu, ~L378-433)",
+      "generator": "src/f1d/econometric/run_h24_us_epu.py (MACRO_IV='US_EPU_log', L87; reads shared macro panel from src/f1d/variables/build_h24_h24b_h25_macro_uncertainty_panel.py)",
+      "role_in_thesis": "convergent validity (Section IV.2): aggregate policy uncertainty loads positively on the residual",
+      "design": {
+        "estimator": "PanelOLS; 4 cols = {Industry+Cal.Year FE, Firm+Cal.Year FE} x {UncResCEO, UncPreCEO}; two-way clustered SE (firm, calendar quarter) (note L429)",
+        "inference": "one-tailed IVs (beta>0), two-tailed controls (note L427)",
+        "regression": "Uncertainty ~ US_EPU_log + UncQue + NegCall + lnAssets + TobinsQ + ROA + CashRatio + DivDummy + FirmMat + EarnVol [+ UncPreCEO when DV=UncResCEO] + Lagged_DV",
+        "sample": "Main sample (excl. financial + utility; <5-calls excluded); N=39,063 (UncResCEO) / 60,503 (UncPreCEO)"
+      },
+      "variables": {
+        "UncResCEO": "key dependent variable (cols 1, 3)",
+        "UncPreCEO": "dependent variable (cols 2, 4); control when DV=UncResCEO",
+        "US_EPU_log": "key independent variable (US policy uncertainty)",
+        "Lagged_DV": "lagged dependent variable (prior-quarter call's same DV)",
+        "UncQue": "control",
+        "NegCall": "control",
+        "lnAssets": "control",
+        "TobinsQ": "control",
+        "ROA": "control",
+        "CashRatio": "control",
+        "DivDummy": "control",
+        "FirmMat": "control",
+        "EarnVol": "control",
+        "IndustryFE": "fixed effect (cols 1-2)",
+        "FirmFE": "fixed effect (cols 3-4)",
+        "CalYearFE": "fixed effect"
+      }
+    },
+    "tab:h24b_global_epu": {
+      "title": "Global Policy Uncertainty and Call Uncertainty",
+      "fragment": "thesis_tables.tex body block (label tab:h24b_global_epu, ~L435-490)",
+      "generator": "src/f1d/econometric/run_h24b_global_epu.py (MACRO_IV='GEPU_log'; same shared macro panel as h24)",
+      "role_in_thesis": "convergent validity (Section IV.2): global policy uncertainty loads positively on the residual (GEPU twin of the US-EPU table)",
+      "design": {
+        "estimator": "identical to tab:h24_us_epu but IV = GEPU_log; two-way clustered SE (firm, calendar quarter)",
+        "inference": "one-tailed IVs (beta>0), two-tailed controls",
+        "regression": "Uncertainty ~ GEPU_log + (same controls + Lagged_DV as h24)",
+        "sample": "Main sample; N=39,063 (UncResCEO) / 60,503 (UncPreCEO) — same universe as h24"
+      },
+      "variables": {
+        "UncResCEO": "key dependent variable (cols 1, 3)",
+        "UncPreCEO": "dependent variable (cols 2, 4); control when DV=UncResCEO",
+        "GEPU_log": "key independent variable (global policy uncertainty)",
+        "Lagged_DV": "lagged dependent variable (prior-quarter call's same DV)",
+        "UncQue": "control",
+        "NegCall": "control",
+        "lnAssets": "control",
+        "TobinsQ": "control",
+        "ROA": "control",
+        "CashRatio": "control",
+        "DivDummy": "control",
+        "FirmMat": "control",
+        "EarnVol": "control",
+        "IndustryFE": "fixed effect (cols 1-2)",
+        "FirmFE": "fixed effect (cols 3-4)",
+        "CalYearFE": "fixed effect"
+      }
+    },
+    "tab:cash_scrutiny_validity": {
+      "title": "Analyst Cash-Scrutiny Validity (Link 1)",
+      "fragment": "docs/Draft/_cash_scrutiny_validity.tex (incl. a Variable-Construction page with the full search-term lists)",
+      "generator": "scripts/gen_cash_scrutiny_validity_table.py (runner; writes outputs/econometric/cash_scrutiny_validity/<ts>/summary.json; tex built FROM the json)",
+      "role_in_thesis": "Section IV.1 step 1: the scrutiny measure is real — analyst cash attention rises with the firm's cash",
+      "design": {
+        "estimator": "PanelOLS, firm FE + calendar year-quarter FE; call-level; run L89-97",
+        "standard_errors": "clustered by firm (table note L45)",
+        "inference": "one-tailed for the cash coefficient (beta>0), two-tailed for controls (note L43)",
+        "columns": "(1) CashRatio FE-only; (2) CashRatio + 7 controls; (3) HighCash FE-only; (4) HighCash + controls; COLS L54-55",
+        "sample": "Main sample (drop ff12 in {8,11} = financial/utility, L74); require >=3 analyst Q&A turns (MIN_QA L50, L76); CashRatio winsorized 1/99 in-script L79-80; N=75,087 (no controls) / 72,670 (controls)"
+      },
+      "variables": {
+        "CashScrutiny": "key dependent variable (% analyst Q&A turns on cash/liquidity)",
+        "CashRatio": "key independent variable (cols 1-2)",
+        "HighCash": "key independent variable (cols 3-4)",
+        "Leverage": "control",
+        "lnAssets": "control",
+        "TobinsQ": "control",
+        "ROA": "control",
+        "Capex": "control",
+        "DivDummy": "control",
+        "sCFO": "control",
+        "FirmFE": "fixed effect",
+        "CalYearQuarterFE": "fixed effect"
+      }
+    },
+    "tab:cash_scrutiny_channel": {
+      "title": "Analyst Cash-Scrutiny Channel (Link 2)",
+      "fragment": "docs/Draft/_cash_scrutiny_channel.tex",
+      "generator": "scripts/gen_cash_scrutiny_channel_table.py (runner; writes outputs/econometric/cash_scrutiny_channel/<ts>/summary.json + the tex)",
+      "role_in_thesis": "Section IV.1 step 2: scrutiny alone does NOT move the residual — the direct-effect test (NOT the operative channel test, which is tab:reason_gating)",
+      "design": {
+        "estimator": "Panel A: PanelOLS, firm FE + cal year-quarter FE, continuous DV; Panel B: logit on 1[DV >= sample median], industry FE + cal year-quarter FE (firm-FE logit biased by incidental parameters); runner L13-16",
+        "standard_errors": "clustered by firm (table note L28)",
+        "inference": "two-tailed (table note L28)",
+        "columns": "(1) DV=UncResCEO (DWZ residual); (2) DV=UncAnsCEO (raw Q&A); both panels; reported IV = CashScrutiny (coarser sc_any/sc_count/sc_logcount also computed, same null; L40-43)",
+        "sample": ">=3 analyst Q&A turns; N=41,512 calls"
+      },
+      "variables": {
+        "UncResCEO": "dependent variable (col 1 — the residual; the relevant null)",
+        "UncAnsCEO": "dependent variable (col 2 — raw Q&A measure)",
+        "CashScrutiny": "key independent variable (the direct-effect regressor)",
+        "FirmFE": "fixed effect (Panel A)",
+        "IndustryFE": "fixed effect (Panel B logit)",
+        "CalYearQuarterFE": "fixed effect"
+      },
+      "controls_note": "table reports only the scrutiny coefficient; the 7-var CTRL set is in the runner but not displayed in this fragment"
+    },
+    "tab:h14c_ceo2_decomp": {
+      "title": "CEO Uncertainty and the Bid-Ask Spread",
+      "fragment": "thesis_tables.tex body block (label tab:h14c_ceo2_decomp, ~L492-555)",
+      "generator": "src/f1d/econometric/run_h14c_spread_bgt_level_ceo2iv_decomp.py (reads outputs/variables/h14_bidask_spread/latest/h14_bidask_spread_panel.parquet built by src/f1d/variables/build_h14_bidask_spread_panel.py; merges ClarityCEO from ceo_clarity_fe.parquet + UncResCEO from ceo_clarity_residual.parquet)",
+      "role_in_thesis": "Section IV.2 presentation-side contrast: the prepared-remarks uncertainty (UncPreCEO) is PRICED in the spread, the residual (UncResCEO) never is",
+      "design": {
+        "estimator": "PanelOLS; 12 columns = {DV: Spread_25D contemporaneous (cols 1-6), Spread_25D_lead1 (cols 7-12)} x {industry, firm, industry+yq, firm+yq FE} x {base, extended controls}; SPEC_GRID L154-165",
+        "standard_errors": "firm-clustered (Petersen 2009; note L550, docstring L48)",
+        "inference": "one-tailed IVs (beta>0), two-tailed controls (note L548)",
+        "regression": "Spread ~ ClarityCEO + UncResCEO + UncPreCEO + base controls (lnAssets, TobinsQ, ROA, Leverage, Capex, DivDummy, sCFO, Lagged_DV) [+ extended: StockPrice, Turnover, DailyVola, AbsSurpDec]; BASE/EXTENDED_CONTROLS L122-129",
+        "dv_units": "Spread_25D = mean relative spread over [call day, +25 trading days]; RelSpread = 2(ASK-BID)/(ASK+BID) from CRSP closing quotes, pooled-1/99 winsorized, rescaled x1e4 (bps); docstring L28-32, note L553",
+        "sample": "Main only (FF12 in {1-7,9-10,12}); N=42,625 (contemporaneous) / 43,049 (lead)"
+      },
+      "variables": {
+        "BGTLevel_Spread": "key dependent variable (cols 1-6; contemporaneous spread)",
+        "BGTLevel_Spread_lead1": "key dependent variable (cols 7-12; next-quarter spread)",
+        "ClarityCEO": "independent variable (DWZ decomposition: negative of the CEO fixed effect)",
+        "UncResCEO": "key independent variable (the residual — the null this table establishes)",
+        "UncPreCEO": "key independent variable (the priced presentation component)",
+        "lnAssets": "control",
+        "TobinsQ": "control",
+        "ROA": "control",
+        "Leverage": "control",
+        "Capex": "control",
+        "DivDummy": "control",
+        "sCFO": "control",
+        "Lagged_DV": "lagged dependent variable (lagged spread)",
+        "StockPrice": "extended control",
+        "Turnover": "extended control",
+        "DailyVola": "extended control",
+        "AbsSurpDec": "extended control",
+        "IndustryFE": "fixed effect",
+        "FirmFE": "fixed effect",
+        "YearFE": "fixed effect",
+        "YearQuarterFE": "fixed effect"
+      }
+    },
+    "tab:h18_ceo2_decomp": {
+      "title": "CEO Uncertainty and SEC Comment-Letter Receipt",
+      "fragment": "thesis_tables.tex body block (label tab:h18_ceo2_decomp, ~L557-621)",
+      "generator": "src/f1d/econometric/run_h18_cccl_received_ceo2iv_decomp.py (reads outputs/variables/h18_cccl_received/latest/h18_cccl_received_panel.parquet; merges ClarityCEO + UncResCEO from ceo_clarity_extended)",
+      "role_in_thesis": "Section IV.2 presentation-side contrast (regulatory attention): SEC comment-letter receipt is weakly associated with UncPreCEO, never with UncResCEO",
+      "design": {
+        "estimator": "Linear Probability Model (PanelOLS) on the binary CCCL; 6 columns = {industry, firm, industry+yq, firm+yq FE} x {base, extended controls}; SPEC_GRID L159-164",
+        "standard_errors": "firm-clustered (note L617)",
+        "inference": "one-tailed IVs (beta>0), two-tailed controls (note L615)",
+        "regression": "CCCL ~ ClarityCEO + UncResCEO + UncPreCEO + base controls (+ Lagged_DV) [+ extended: SalesGrowth, RDSales, CashFlowAt, DailyVola]; EXTENDED_CONTROLS L128-130",
+        "dv": "CCCL = 1 if the firm received an SEC conference-call comment letter in the [call_t, call_t+1] window (Lerman et al. 2024 Management Science); docstring L40, L147",
+        "sample": "Main sample (excl. financial + utility); N=44,113 (base) / 44,096 (extended)"
+      },
+      "variables": {
+        "CCCL": "key dependent variable (SEC comment-letter receipt)",
+        "ClarityCEO": "independent variable (negative of the CEO fixed effect)",
+        "UncResCEO": "key independent variable (the residual — null)",
+        "UncPreCEO": "key independent variable (the weakly-associated presentation component)",
+        "lnAssets": "control",
+        "TobinsQ": "control",
+        "ROA": "control",
+        "Leverage": "control",
+        "Capex": "control",
+        "CashRatio": "control",
+        "DivDummy": "control",
+        "sCFO": "control",
+        "Lagged_DV": "lagged dependent variable (lagged CCCL)",
+        "SalesGrowth": "extended control",
+        "RDSales": "extended control",
+        "CashFlowAt": "extended control",
+        "DailyVola": "extended control",
+        "IndustryFE": "fixed effect",
+        "FirmFE": "fixed effect",
+        "YearFE": "fixed effect",
+        "YearQuarterFE": "fixed effect"
+      }
+    },
+    "tab:empire_drop_placebo": {
+      "title": "Pre-Acquisition UncResCEO Event Study: Cash vs. Stock Acquirers (placebo)",
+      "fragment": "docs/Draft/_empire_drop_placebo.tex",
+      "generator": "src/f1d/econometric/empire_drop_test.py (the PARENT module; write_tex L188-242 writes THIS fragment; empire_drop_matched_universe.py reuses its helpers for Table 2)",
+      "role_in_thesis": "Section III.3: side-by-side cash vs stock event study — cash reproduces the run-up+resolution, stock shows none (placebo)",
+      "design": {
+        "estimator": "PanelOLS, firm + cal year-quarter FE; run_bins L144-176; firm-clustered SE",
+        "inference": "uniform two-tailed for bins AND Drop rows (write_tex docstring L191, pdir='p2' L195, note L238)",
+        "arms": "(1) cash acquirers (pc>=50), (2) stock acquirers (ps>=50); each on its OWN complete-case universe (NOT the shared matched sample of Table 2)",
+        "event_bins": "same PRE2/PRE1/GAP/POST construction as Table 2 (build_event L109-141); post window capped at +4 (primary)",
+        "drop_rows": "Wald PRE1-GAP, GAP-POST, PRE1-POST (wald L159-168)",
+        "sample": "N=29,535 (cash, 1,326 firms) / 39,819 (stock, 1,363 firms)"
+      },
+      "variables": {
+        "UncResCEO": "key dependent variable (both arms)",
+        "PRE2": "event-window indicator (pre-trend)",
+        "PRE1": "event-window indicator (treatment, t-1)",
+        "GAP": "event-window indicator (announced, pre-close)",
+        "POST": "event-window indicator (completed)",
+        "Leverage": "control",
+        "lnAssets": "control",
+        "TobinsQ": "control",
+        "ROA": "control",
+        "Capex": "control",
+        "DivDummy": "control",
+        "sCFO": "control",
+        "FirmFE": "fixed effect",
+        "CalYearQuarterFE": "fixed effect"
+      }
+    },
+    "tab:summary_stats": {
+      "title": "Summary Statistics",
+      "fragment": "docs/Draft/_summary_stats.tex",
+      "generator": "scripts/gen_summary_stats_table.py (computes moments on the exact estimation samples of tab:empire_building_did cash arm by importing gen_empire_did_table loaders; N-gated against that table's summary.json — aborts on mismatch; tex rendered FROM the written summary.json)",
+      "design": {
+        "panel_A": "CashRatio-equation universe (col 1; N=67,590, 2,232 firms): CashRatio, CashRatio_lag, PreAnnounceQtr, 7 controls",
+        "panel_B": "UncResCEO-equation universe (col 2; N=27,622, 1,248 firms): UncResCEO, PreAnnounceQtr, 7 controls; CashScrutiny + HighCashScrutiny rows on the matched universe (cols 3-4; N=26,216, 1,237 firms)",
+        "statistics": "N, mean, SD, p25, median, p75 (4 dp)",
+        "registry": "config/exhibit_registry.yaml id=summary_stats (first exhibit)"
+      },
+      "variables": {
+        "CashRatio": "descriptive moments",
+        "CashRatio_lag": "descriptive moments",
+        "PreAnnounceQtr": "descriptive moments",
+        "Leverage": "descriptive moments",
+        "lnAssets": "descriptive moments",
+        "TobinsQ": "descriptive moments",
+        "ROA": "descriptive moments",
+        "Capex": "descriptive moments",
+        "DivDummy": "descriptive moments",
+        "sCFO": "descriptive moments",
+        "UncResCEO": "descriptive moments",
+        "CashScrutiny": "descriptive moments",
+        "HighCashScrutiny": "descriptive moments"
+      }
+    }
+  },
+  "variables": {
+    "UncResCEO": {
+      "label": "Residual CEO Q&A uncertainty (DWZ decomposition residual)",
+      "definition": "Residual from OLS of UncAnsCEO (CEO Q&A uncertainty-word share) on CEO fixed effects, speech controls (UncPreCEO, UncQue, NegCall), firm controls (StockRet, MarketRet, EPSgrowth, SurpDec), and year effects — DWZ equation-4 replication. ClarityCEO = the CEO fixed effect from the same model.",
+      "construction": {
+        "script": "src/f1d/econometric/run_h0_3_ceo_clarity_extended.py",
+        "evidence": "formula L369: 'UncAnsCEO ~ C(ceo_id) + UncPreCEO + UncQue + NegCall + StockRet + MarketRet + EPSgrowth + SurpDec + C(year)' (CEO_Baseline, L126-131); residual extracted L393-405 (column named UncResCEO L404); written to ceo_clarity_residual.parquet L505-507"
+      },
+      "panel_column_source": "outputs/econometric/ceo_clarity_extended/<latest>/ceo_clarity_residual.parquet, merged on file_name (gen_empire_did_table.py L66-70)",
+      "upstream": [
+        "UncAnsCEO = CEO Q&A uncertainty-word share from outputs/2_Textual_Analysis/2.2_Variables/linguistic_variables_{year}.parquet (builder src/f1d/shared/variables/ceo_qa_uncertainty.py, column UncAnsCEO, pooled 1%/99% winsorization at linguistic-engine level per its docstring)",
+        "uncertainty words = 'Uncertainty' category of inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv, loaded in src/f1d/text/tokenize_transcripts.py L768-786",
+        "transcripts = inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet (Capital IQ)"
+      ],
+      "raw_source": "Capital IQ earnings-call transcripts + LM Master Dictionary 1993-2024",
+      "in_draft_appendix": true,
+      "summary_stats": {
+        "exhibit": "tab:summary_stats",
+        "source": "outputs/econometric/summary_stats/2026-06-10_152109/summary.json",
+        "panels": {
+          "B": {
+            "n": 27622,
+            "mean": 0.00018051963011284937,
+            "sd": 0.3071761038443061,
+            "p25": -0.18687224709384354,
+            "p50": -0.01738307576692763,
+            "p75": 0.16858616250273326
+          }
+        }
+      }
+    },
+    "CashRatio": {
+      "label": "Cash holdings ratio",
+      "definition": "cheq / atq (cash and equivalents over total assets), Compustat quarterly",
+      "construction": {
+        "script": "src/f1d/shared/variables/_compustat_engine.py",
+        "evidence": "L996: comp['CashRatio'] = comp['cheq'] / comp['atq']; inf->NaN L1266-1280; per-year winsorization step L1290-1303 (binary vars skipped); matched to calls via backward merge_asof in engine (~L1408)"
+      },
+      "panel_column_source": "outputs/variables/h1_cash_holdings/<latest>/h1_cash_holdings_panel.parquet (built by src/f1d/variables/build_h1_cash_holdings_panel.py via CashHoldingsBuilder, src/f1d/shared/variables/cash_holdings.py)",
+      "upstream": [
+        "inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat North America quarterly)"
+      ],
+      "raw_source": "Compustat (cheq, atq)",
+      "in_draft_appendix": true,
+      "summary_stats": {
+        "exhibit": "tab:summary_stats",
+        "source": "outputs/econometric/summary_stats/2026-06-10_152109/summary.json",
+        "panels": {
+          "A": {
+            "n": 67590,
+            "mean": 0.1572949414093461,
+            "sd": 0.18335833695320883,
+            "p25": 0.026980593933988772,
+            "p50": 0.0842606258300069,
+            "p75": 0.2199612687351881
+          }
+        }
+      }
+    },
+    "CashScrutiny": {
+      "label": "Analyst cash scrutiny (% of analyst Q&A turns on cash level/liquidity)",
+      "definition": "Share (x100) of a call's analyst Q&A turns whose text contains >=1 term from the locked LEVEL+LIQUIDITY lexicon (e.g. 'cash holdings', 'war chest', 'liquidity'), with exclusion patterns (e.g. 'free cash flow') masked first; DISPOSITION terms deliberately excluded",
+      "construction": {
+        "script": "tmp/_build_stock_score_cache.py (lexicon L24-33, turn-level hit L39-41, call-level mean L52-55) -> tmp/_cash_stock_score_call.parquet (column stock_score)",
+        "evidence": "gen_empire_did_table.py L71-73: CashScrutiny = stock_score * 100.0"
+      },
+      "panel_column_source": "tmp/_cash_stock_score_call.parquet merged on file_name",
+      "upstream": [
+        "inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet, rows role=='Analyst' & context=='qa', years 2002-2018"
+      ],
+      "raw_source": "Capital IQ earnings-call transcripts (analyst Q&A turns)",
+      "in_draft_appendix": true,
+      "summary_stats": {
+        "exhibit": "tab:summary_stats",
+        "source": "outputs/econometric/summary_stats/2026-06-10_152109/summary.json",
+        "panels": {
+          "B": {
+            "n": 26216,
+            "mean": 0.3867006941373182,
+            "sd": 1.4701236096232224,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0
+          }
+        }
+      }
+    },
+    "HighCashScrutiny": {
+      "label": "Any-cash-scrutiny indicator (LPM dependent variable)",
+      "definition": "1[CashScrutiny > median]; the median is 0 (89% of calls raise no cash turns), so it flags any cash scrutiny (~11% of calls); NaN where CashScrutiny missing",
+      "construction": {
+        "script": "scripts/gen_empire_did_table.py",
+        "evidence": "L74-76: median computed in-panel; np.where(CashScrutiny > median, 1.0, 0.0); NaN propagated"
+      },
+      "panel_column_source": "derived in-script from CashScrutiny",
+      "upstream": [
+        "CashScrutiny"
+      ],
+      "raw_source": "Capital IQ earnings-call transcripts (via CashScrutiny)",
+      "in_draft_appendix": false,
+      "flag": "MISSING from draft appendix definitions table — add during S3.1 rewrite",
+      "summary_stats": {
+        "exhibit": "tab:summary_stats",
+        "source": "outputs/econometric/summary_stats/2026-06-10_152109/summary.json",
+        "panels": {
+          "B": {
+            "n": 26216,
+            "mean": 0.11145865120537077,
+            "sd": 0.314705255913341,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0
+          }
+        }
+      }
+    },
+    "PreAnnounceQtr": {
+      "label": "Pre-announcement quarter indicator (treatment)",
+      "definition": "=1 in the single quarter immediately before the firm's first qualifying SDC deal announcement (e == -1); post-announcement quarters dropped from the sample; never-acquirers always 0",
+      "construction": {
+        "script": "scripts/gen_empire_did_table.py",
+        "evidence": "sdc() L89-102 (deal filter), manifest() L105-112 (CUSIP6->gvkey link), build() L115-128 (first deal per firm, e = cq - dq, drop e>=0, PreAnnounceQtr = 1[-1 <= e <= -1]); PRE_LAGS = (-1,-1) L48"
+      },
+      "panel_column_source": "derived in-script",
+      "upstream": [
+        "inputs/SDC/sdc-ma-merged.parquet (Date Announced, Acquiror Nation/Public Status, Deal Status, Percentage of Cash/Stock, Acquiror 6-digit CUSIP)",
+        "outputs/1.4_AssembleManifest/<latest>/master_sample_manifest.parquet (gvkey-cusip link)"
+      ],
+      "raw_source": "SDC M&A",
+      "in_draft_appendix": true,
+      "summary_stats": {
+        "exhibit": "tab:summary_stats",
+        "source": "outputs/econometric/summary_stats/2026-06-10_152109/summary.json",
+        "panels": {
+          "A": {
+            "n": 67590,
+            "mean": 0.010830004438526409,
+            "sd": 0.10350301416046256,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0
+          },
+          "B": {
+            "n": 27622,
+            "mean": 0.014336398522916516,
+            "sd": 0.11887547181380438,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0
+          }
+        }
+      }
+    },
+    "CashRatio_lag": {
+      "label": "One-quarter lag of CashRatio (partial-adjustment control)",
+      "definition": "Within-firm one-quarter lag of CashRatio, set to NaN unless the previous panel row is the immediately preceding calendar quarter (consecutive-quarters-only); included only in the CashRatio regressions so the treatment coefficient tracks the change in cash",
+      "construction": {
+        "script": "scripts/gen_empire_did_table.py",
+        "evidence": "L80-85: groupby(gvkey).CashRatio.shift(1); non-consecutive quarter -> NaN; applied via add_cash_lag L131-136, L227"
+      },
+      "panel_column_source": "derived in-script from CashRatio",
+      "upstream": [
+        "CashRatio"
+      ],
+      "raw_source": "Compustat (via CashRatio)",
+      "in_draft_appendix": false,
+      "flag": "Appendix defines CashRatio but not the lag construction; table note covers it — decide in S3.1 whether the appendix needs a line",
+      "summary_stats": {
+        "exhibit": "tab:summary_stats",
+        "source": "outputs/econometric/summary_stats/2026-06-10_152109/summary.json",
+        "panels": {
+          "A": {
+            "n": 67590,
+            "mean": 0.1577684332732563,
+            "sd": 0.184237760686354,
+            "p25": 0.026962667292563223,
+            "p50": 0.08421221297604127,
+            "p75": 0.22072765547893602
+          }
+        }
+      }
+    },
+    "UncPreCEO": {
+      "label": "CEO presentation-segment uncertainty (raw word share; DWZ equation-1 measure)",
+      "definition": "Raw uncertainty-word share of the CEO's prepared presentation segment — the per-year 1%/99% winsorized Stage-2 measure CEO_Pres_Uncertainty_pct. NOT residualized. Serves as the within-call presentation control in the DWZ equation-4 regression and as a DV in validity tables.",
+      "construction": {
+        "script": "Stage 2 textual analysis -> outputs/2_Textual_Analysis/2.2_Variables/linguistic_variables_{year}.parquet; surfaced by src/f1d/shared/variables/ceo_pres_uncertainty.py via LinguisticEngine",
+        "evidence": "column map src/f1d/shared/variables/_linguistic_engine.py L181: 'CEO_Pres_Uncertainty_pct' -> 'UncPreCEO'; pooled/per-year 1%/99% winsorization at engine level"
+      },
+      "panel_column_source": "linguistic_variables_{year}.parquet (column CEO_Pres_Uncertainty_pct)",
+      "upstream": [
+        "uncertainty words = 'Uncertainty' category of inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv (tokenize_transcripts.py L768-786)",
+        "transcripts = inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet (Capital IQ); presentation segment only"
+      ],
+      "raw_source": "Capital IQ transcripts (presentation segment) + LM Master Dictionary 1993-2024",
+      "in_draft_appendix": true,
+      "summary_stats": null
+    },
+    "ClarityCEO": {
+      "label": "CEO clarity (negative of the CEO fixed effect; DWZ decomposition)",
+      "definition": "Negative of the CEO fixed effect from the DWZ equation-4 regression of UncAnsCEO — the permanent, CEO-specific component of Q&A clarity (a high-clarity CEO has a low uncertainty fixed effect)",
+      "construction": {
+        "script": "src/f1d/econometric/run_h0_3_ceo_clarity_extended.py",
+        "evidence": "CEO_Baseline FE extracted L412-416 (clarity_label='ClarityCEO'); written to ceo_clarity_fe.parquet (keyed by ceo_id); consumed in run_h14c L215 / run_h18 L212 via ceo_clarity_fe.parquet"
+      },
+      "panel_column_source": "outputs/econometric/ceo_clarity_extended/<latest>/ceo_clarity_fe.parquet (merged by ceo_id)",
+      "upstream": [
+        "same DWZ equation-4 regression as UncResCEO (run_h0_3_ceo_clarity_extended.py L369); UncAnsCEO LHS"
+      ],
+      "raw_source": "Capital IQ transcripts + LM Master Dictionary 1993-2024 (via the DWZ decomposition)",
+      "in_draft_appendix": false,
+      "flag": "appears as a regressor in the two presentation-contrast tables; not in the appendix definitions table — decide in S3.1",
+      "summary_stats": null
+    },
+    "BGTLevel_Spread": {
+      "label": "Bid-ask spread (contemporaneous, 25-day post-call window)",
+      "definition": "Mean daily relative bid-ask spread over [call day, +25 trading days]; RelSpread_d = 2(ASK_d - BID_d)/(ASK_d + BID_d) from CRSP closing quotes; pooled-1/99 winsorized; rescaled x1e4 (basis points)",
+      "construction": {
+        "script": "src/f1d/variables/build_h14_bidask_spread_panel.py (BidAskSpreadChangeBuilder)",
+        "evidence": "docstring L28-32; builders wired L151-152; run_h14c docstring L28-32, dv col 'BGTLevel_Spread' SPEC_GRID L154-159"
+      },
+      "panel_column_source": "h14_bidask_spread_panel.parquet (column BGTLevel_Spread)",
+      "upstream": [
+        "CRSP daily closing bid/ask quotes (inputs/CRSP_DSF/CRSP_DSF_{year}_Q{q}.parquet)"
+      ],
+      "raw_source": "CRSP daily quotes",
+      "in_draft_appendix": false,
+      "flag": "spread-table DV; not in appendix",
+      "summary_stats": null
+    },
+    "BGTLevel_Spread_lead1": {
+      "label": "Bid-ask spread (next-quarter lead)",
+      "definition": "BGTLevel_Spread measured around the firm's NEXT earnings call (one-quarter lead)",
+      "construction": {
+        "script": "src/f1d/variables/build_h14_bidask_spread_panel.py",
+        "evidence": "panel column 'BGTLevel_Spread_lead1'; run_h14c SPEC_GRID cols 7-12 L160-165, load_panel L237"
+      },
+      "panel_column_source": "h14_bidask_spread_panel.parquet (column BGTLevel_Spread_lead1)",
+      "upstream": [
+        "BGTLevel_Spread (one-quarter lead)"
+      ],
+      "raw_source": "CRSP daily quotes",
+      "in_draft_appendix": false,
+      "flag": "spread-table DV; not in appendix",
+      "summary_stats": null
+    },
+    "StockPrice": {
+      "label": "Stock price (extended control)",
+      "definition": "CRSP-based stock price control for the bid-ask spread regressions",
+      "construction": {
+        "script": "src/f1d/variables/build_h14_bidask_spread_panel.py (StockPriceBuilder)",
+        "evidence": "builder wired L148; per-year 1/99 winsorized (docstring Step 9 L18); EXTENDED_CONTROLS run_h14c L123"
+      },
+      "panel_column_source": "h14_bidask_spread_panel.parquet (column StockPrice)",
+      "upstream": [
+        "CRSP daily file (price)"
+      ],
+      "raw_source": "CRSP",
+      "in_draft_appendix": false,
+      "flag": "spread-table extended control; not in appendix",
+      "summary_stats": null
+    },
+    "Turnover": {
+      "label": "Share turnover (extended control)",
+      "definition": "CRSP-based share turnover (trading volume / shares outstanding) control",
+      "construction": {
+        "script": "src/f1d/variables/build_h14_bidask_spread_panel.py (TurnoverBuilder)",
+        "evidence": "builder wired L149; EXTENDED_CONTROLS run_h14c L124"
+      },
+      "panel_column_source": "h14_bidask_spread_panel.parquet (column Turnover)",
+      "upstream": [
+        "CRSP daily file (volume, shares outstanding)"
+      ],
+      "raw_source": "CRSP",
+      "in_draft_appendix": false,
+      "flag": "spread-table extended control; not in appendix",
+      "summary_stats": null
+    },
+    "DailyVola": {
+      "label": "Return volatility (extended control)",
+      "definition": "CRSP-based daily return volatility control (VolatilityBuilder); used in both the spread and the SEC comment-letter tables",
+      "construction": {
+        "script": "src/f1d/variables/build_h14_bidask_spread_panel.py / build_h18_cccl_received_panel.py (VolatilityBuilder)",
+        "evidence": "builder wired build_h14 L147; EXTENDED_CONTROLS run_h14c L125, run_h18 L131"
+      },
+      "panel_column_source": "h14_bidask_spread_panel.parquet / h18_cccl_received_panel.parquet (column DailyVola)",
+      "upstream": [
+        "CRSP daily returns"
+      ],
+      "raw_source": "CRSP",
+      "in_draft_appendix": false,
+      "flag": "extended control (spread + CCCL tables); not in appendix",
+      "summary_stats": null
+    },
+    "AbsSurpDec": {
+      "label": "Absolute earnings-surprise decile (extended control)",
+      "definition": "Absolute value of the earnings-surprise decile |SurpDec| (EarningsSurpriseBuilder), an extended control in the spread regressions",
+      "construction": {
+        "script": "src/f1d/variables/build_h14_bidask_spread_panel.py (EarningsSurpriseBuilder)",
+        "evidence": "builder wired L160; docstring Step 5 'AbsSurpDec control (|SurpDec|)' L14; EXTENDED_CONTROLS run_h14c L126"
+      },
+      "panel_column_source": "h14_bidask_spread_panel.parquet (column AbsSurpDec)",
+      "upstream": [
+        "IBES/Compustat earnings surprise (inputs/tr_ibes/tr_ibes.parquet)"
+      ],
+      "raw_source": "IBES (earnings surprise)",
+      "in_draft_appendix": false,
+      "flag": "spread-table extended control; not in appendix",
+      "summary_stats": null
+    },
+    "CCCL": {
+      "label": "SEC conference-call comment-letter receipt (binary DV)",
+      "definition": "=1 if the firm received an SEC comment letter referencing conference-call disclosures in the [call_t, call_t+1] window (Lerman, Steffen & Zhang 2024 Management Science)",
+      "construction": {
+        "script": "src/f1d/variables/build_h18_cccl_received_panel.py; run_h18_cccl_received_ceo2iv_decomp.py",
+        "evidence": "DV definition docstring L40, label L147; panel outputs/variables/h18_cccl_received/latest/h18_cccl_received_panel.parquet"
+      },
+      "panel_column_source": "h18_cccl_received_panel.parquet (column CCCL)",
+      "upstream": [
+        "SEC EDGAR comment-letter data matched to calls (Lerman et al. 2024 construction)"
+      ],
+      "raw_source": "SEC comment-letter records",
+      "in_draft_appendix": false,
+      "flag": "CCCL-table DV; not in appendix",
+      "summary_stats": null
+    },
+    "SalesGrowth": {
+      "label": "Sales growth (extended control)",
+      "definition": "Annual sales growth: (sale_annual - sale_lag)/|sale_lag|, where sale_annual = saley (annual total revenue, Q4 YTD; saleq fallback); per-year 1/99 winsorized",
+      "construction": {
+        "script": "src/f1d/shared/variables/_compustat_engine.py",
+        "evidence": "L661-678: sale_annual from saley (saleq fallback), SalesGrowth = (sale - sale_lag)/|sale_lag|, winsorized L678; assigned L1056/L1059"
+      },
+      "panel_column_source": "h18_cccl_received_panel.parquet (column SalesGrowth)",
+      "upstream": [
+        "inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat saley/saleq)"
+      ],
+      "raw_source": "Compustat (saley, saleq)",
+      "in_draft_appendix": false,
+      "flag": "CCCL-table extended control; not in appendix",
+      "summary_stats": null
+    },
+    "RDSales": {
+      "label": "R&D intensity (extended control)",
+      "definition": "Annual R&D expense over annual sales: xrdy / saley (Q4 YTD); missing R&D treated as 0; nonpositive sales -> NaN (Jiang, John & Larsen 2021)",
+      "construction": {
+        "script": "src/f1d/shared/variables/_compustat_engine.py",
+        "evidence": "L984-993: xrd_for_rd = xrdy_annual.fillna(0); sale_for_rd = saley (saleq fallback); RDSales = xrd/sale where sale>0"
+      },
+      "panel_column_source": "h18_cccl_received_panel.parquet (column RDSales)",
+      "upstream": [
+        "inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat xrdy/saley)"
+      ],
+      "raw_source": "Compustat (xrdy, saley)",
+      "in_draft_appendix": false,
+      "flag": "CCCL-table extended control; not in appendix",
+      "summary_stats": null
+    },
+    "CashFlowAt": {
+      "label": "Cash flow to assets (extended control)",
+      "definition": "Biddle (2009) operating cash-flow-to-assets ratio, computed in the engine's Biddle block, per-year winsorized",
+      "construction": {
+        "script": "src/f1d/shared/variables/_compustat_engine.py",
+        "evidence": "Biddle extension docstring L53/L130-132; CashFlowAt assigned L1055 (cf) / L1058 (NaN fallback); already-winsorized, skipped in the global winsor step L1296-1301"
+      },
+      "panel_column_source": "h18_cccl_received_panel.parquet (column CashFlowAt)",
+      "upstream": [
+        "inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat oancfy/atq)"
+      ],
+      "raw_source": "Compustat (operating cash flow, assets)",
+      "in_draft_appendix": false,
+      "flag": "CCCL-table extended control; not in appendix; exact numerator/denominator in _compute_biddle_residual — re-verify if used in summary-stats",
+      "summary_stats": null
+    },
+    "UncAnsCEO": {
+      "label": "Raw CEO Q&A uncertainty (un-residualized; DWZ equation-4 dependent variable)",
+      "definition": "Raw uncertainty-word share of the CEO's question-and-answer turns (Stage-2 CEO_QA_Uncertainty_pct), pooled-1% winsorized. This is the LHS variable that the DWZ equation-4 regression decomposes into ClarityCEO (CEO FE) + UncResCEO (residual).",
+      "construction": {
+        "script": "Stage 2 textual analysis -> linguistic_variables_{year}.parquet; surfaced via CEOQAUncertaintyBuilder / LinguisticEngine; loaded directly in gen_cash_scrutiny_channel_table.py _load_uncans L52-59",
+        "evidence": "column map _linguistic_engine.py L180: 'CEO_QA_Uncertainty_pct' -> 'UncAnsCEO'"
+      },
+      "panel_column_source": "linguistic_variables_{year}.parquet (column CEO_QA_Uncertainty_pct)",
+      "upstream": [
+        "uncertainty words = LM Master Dictionary 1993-2024 'Uncertainty' category (tokenize_transcripts.py L768-786)",
+        "transcripts = inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet (Capital IQ); CEO Q&A turns"
+      ],
+      "raw_source": "Capital IQ transcripts (CEO Q&A) + LM Master Dictionary 1993-2024",
+      "in_draft_appendix": false,
+      "flag": "the raw measure underlying UncResCEO; appears as a DV only in tab:cash_scrutiny_channel — decide in S3.1 whether to add an appendix line",
+      "summary_stats": null
+    },
+    "HighCash": {
+      "label": "High-cash indicator (top-tercile cash holdings)",
+      "definition": "=1 if CashRatio >= the top tercile (2/3 quantile, p67) of the estimation sample's winsorized CashRatio distribution; the Jensen-faithful idle-cash region",
+      "construction": {
+        "script": "scripts/gen_cash_scrutiny_validity_table.py",
+        "evidence": "load_df L79-82: CashRatio winsorized 1/99, p67 = CashRatio.quantile(2/3), HighCash = 1[CashRatio >= p67]"
+      },
+      "panel_column_source": "derived in-script from CashRatio",
+      "upstream": [
+        "CashRatio"
+      ],
+      "raw_source": "Compustat (via CashRatio)",
+      "in_draft_appendix": true,
+      "note": "Distinct from the empire table's HighCashScrutiny (which thresholds CashScrutiny at its median). HighCash thresholds CashRatio at the top tercile.",
+      "summary_stats": null
+    },
+    "z_log_TotalSimilarity": {
+      "label": "Product-market competition (Hoberg-Phillips TNIC3 total similarity, z-scored log)",
+      "definition": "z-standardized natural log of TotalSimilarity (Hoberg-Phillips TNIC3 TSIMM — sum of text-based product-market similarity to all rivals); standardized using the Main-sample mean/SD",
+      "construction": {
+        "script": "src/f1d/variables/build_h23_competition_uncertainty_panel.py",
+        "evidence": "merge_tnic_data L344-407: reads inputs/TNIC3HHIdata/TNIC3HHIdata.txt (tab-sep) L358-362, merge on (gvkey, year) L372-374 -> TotalSimilarity; log_TotalSimilarity = ln(TotalSimilarity) L392; z_log_TotalSimilarity = (log - Main-mean)/Main-sd L399-402"
+      },
+      "panel_column_source": "h23_competition_uncertainty_panel.parquet (column z_log_TotalSimilarity)",
+      "upstream": [
+        "inputs/TNIC3HHIdata/TNIC3HHIdata.txt (Hoberg & Phillips 2016 JPE text-based network industry classification, tnic3tsimm)"
+      ],
+      "raw_source": "Hoberg-Phillips TNIC3 data",
+      "in_draft_appendix": false,
+      "flag": "discriminant-validity IV; not in appendix",
+      "summary_stats": null
+    },
+    "US_EPU_log": {
+      "label": "US economic policy uncertainty (Baker, Bloom & Davis 2016, log)",
+      "definition": "Natural log of the BBD news-based US Economic Policy Uncertainty index, matched to each call by year-month, then to call quarter",
+      "construction": {
+        "script": "src/f1d/shared/variables/macro_uncertainty.py (MacroUncertaintyBuilder)",
+        "evidence": "_load_us_epu L139-157 reads inputs/EconomicPolicyUncertaintyIndex/US/US_Policy_Uncertainty_Data.xlsx (US_EPU_FILE L51); US_EPU_log = _safe_log(US_EPU) (_safe_log L181-183: ln of positive values); matched into panel by build_h24_h24b_h25_macro_uncertainty_panel.py"
+      },
+      "panel_column_source": "h24_h24b_h25_macro panel (column US_EPU_log)",
+      "upstream": [
+        "inputs/EconomicPolicyUncertaintyIndex/US/US_Policy_Uncertainty_Data.xlsx (Baker, Bloom & Davis 2016 QJE news-based US EPU)"
+      ],
+      "raw_source": "Baker-Bloom-Davis US EPU index",
+      "in_draft_appendix": false,
+      "flag": "convergent-validity IV; not in appendix",
+      "summary_stats": null
+    },
+    "GEPU_log": {
+      "label": "Global economic policy uncertainty (Davis 2016, log)",
+      "definition": "Natural log of the Davis (2016) Global Economic Policy Uncertainty index (GEPU_current), matched by year-month then to call quarter",
+      "construction": {
+        "script": "src/f1d/shared/variables/macro_uncertainty.py (MacroUncertaintyBuilder)",
+        "evidence": "_load_gepu L160-177 reads inputs/EconomicPolicyUncertaintyIndex/Global/Global_Policy_Uncertainty_Data.xlsx (GEPU_FILE L52); GEPU_log = _safe_log(GEPU_current)"
+      },
+      "panel_column_source": "h24_h24b_h25_macro panel (column GEPU_log)",
+      "upstream": [
+        "inputs/EconomicPolicyUncertaintyIndex/Global/Global_Policy_Uncertainty_Data.xlsx (Davis 2016 NBER WP 22740 global EPU)"
+      ],
+      "raw_source": "Davis Global EPU index",
+      "in_draft_appendix": false,
+      "flag": "convergent-validity IV; not in appendix",
+      "summary_stats": null
+    },
+    "Lagged_DV": {
+      "label": "Lagged dependent variable (prior-quarter call control)",
+      "definition": "The same uncertainty DV measured on the firm's prior calendar-quarter earnings call; standing pipeline rule for the macro suites",
+      "construction": {
+        "script": "src/f1d/variables/build_h24_h24b_h25_macro_uncertainty_panel.py",
+        "evidence": "create_prior_quarter_lag(panel, UNCERTAINTY_DVS) L253; '*_lag' columns documented L18-19, L249-251, L389; the DV-side runner selects df[f'{dv}_lag'] as Lagged_DV"
+      },
+      "panel_column_source": "h24_h24b_h25_macro panel (column <DV>_lag)",
+      "upstream": [
+        "the DV itself (UncResCEO or UncPreCEO), prior-quarter call"
+      ],
+      "raw_source": "derived from the DV",
+      "in_draft_appendix": false,
+      "flag": "macro-table control; not in appendix",
+      "summary_stats": null
+    },
+    "PRisk": {
+      "label": "Firm-level political risk (Hassan et al. 2019)",
+      "definition": "Quarterly firm-level political risk exposure (share of earnings-call discussion devoted to political risk), matched to each call by (gvkey, calendar quarter), contemporaneous (no lag), per-year 1%/99% winsorized",
+      "construction": {
+        "script": "src/f1d/shared/variables/prisk_q.py (PRiskQBuilder)",
+        "evidence": "loads inputs/FirmLevelRisk/firmquarter_2022q1.csv (PRISK_FILE L37); winsorize_by_year L141; merge on (gvkey, cal_q) L144-149; source metadata 'Hassan et al. (2019) quarterly PRisk' L173"
+      },
+      "panel_column_source": "h11_prisk_uncertainty_panel.parquet (column PRisk)",
+      "upstream": [
+        "inputs/FirmLevelRisk/firmquarter_2022q1.csv (Hassan, Hollander, van Lent & Tahoun firm-level political risk dataset)"
+      ],
+      "raw_source": "Hassan et al. firm-level political risk (firmquarter_2022q1.csv)",
+      "in_draft_appendix": false,
+      "flag": "PRisk used only in the validity table; not in the appendix definitions table — decide in S3.1 whether validity-table variables get appendix lines",
+      "summary_stats": null
+    },
+    "UncQue": {
+      "label": "Analyst Q&A uncertainty (control)",
+      "definition": "Raw uncertainty-word share of the analyst question-and-answer turns (Stage-2 Analyst_QA_Uncertainty_pct), per-year 1%/99% winsorized",
+      "construction": {
+        "script": "Stage 2 textual analysis; surfaced via AnalystQAUncertaintyBuilder / LinguisticEngine",
+        "evidence": "column map _linguistic_engine.py L182: 'Analyst_QA_Uncertainty_pct' -> 'UncQue'"
+      },
+      "panel_column_source": "linguistic_variables_{year}.parquet (column Analyst_QA_Uncertainty_pct)",
+      "upstream": [
+        "uncertainty words = LM Master Dictionary 1993-2024 'Uncertainty' category (tokenize_transcripts.py L768-786)",
+        "transcripts = inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet (Capital IQ); analyst Q&A turns"
+      ],
+      "raw_source": "Capital IQ transcripts (analyst Q&A) + LM Master Dictionary 1993-2024",
+      "in_draft_appendix": false,
+      "flag": "validity-table control; not in appendix",
+      "summary_stats": null
+    },
+    "NegCall": {
+      "label": "Negative sentiment of the call (control)",
+      "definition": "Raw negative-word share of the entire call (Stage-2 Entire_All_Negative_pct), per-year 1%/99% winsorized",
+      "construction": {
+        "script": "Stage 2 textual analysis; surfaced via NegativeSentimentBuilder / LinguisticEngine",
+        "evidence": "column map _linguistic_engine.py L186: 'Entire_All_Negative_pct' -> 'NegCall'"
+      },
+      "panel_column_source": "linguistic_variables_{year}.parquet (column Entire_All_Negative_pct)",
+      "upstream": [
+        "negative words = LM Master Dictionary 1993-2024 'Negative' category (tokenize_transcripts.py L768-786)",
+        "transcripts = inputs/Earnings_Calls_Transcripts/speaker_data_{year}.parquet (Capital IQ); entire call"
+      ],
+      "raw_source": "Capital IQ transcripts (entire call) + LM Master Dictionary 1993-2024",
+      "in_draft_appendix": false,
+      "flag": "validity-table control; not in appendix",
+      "summary_stats": null
+    },
+    "FirmMat": {
+      "label": "Firm maturity (control)",
+      "definition": "Retained earnings over total assets: req / atq (Q4-annual value joined back to all quarters), atq > 0",
+      "construction": {
+        "script": "src/f1d/shared/variables/_compustat_engine.py (via FirmMaturityBuilder)",
+        "evidence": "L819-820: FirmMat = req / atq on the Q4-annual point-in-time panel (L809-815)"
+      },
+      "panel_column_source": "h11_prisk_uncertainty_panel.parquet (column FirmMat)",
+      "upstream": [
+        "inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat)"
+      ],
+      "raw_source": "Compustat (req, atq)",
+      "in_draft_appendix": false,
+      "flag": "validity-table control; not in appendix",
+      "summary_stats": null
+    },
+    "EarnVol": {
+      "label": "Earnings volatility (control)",
+      "definition": "Standard deviation of annual ROA (iby / atq) over trailing 5 fiscal years, computed on the Q4-annual panel and joined back to all quarters",
+      "construction": {
+        "script": "src/f1d/shared/variables/_compustat_engine.py",
+        "evidence": "L823-838: roa_annual = iby/atq; 5-fiscal-year rolling std via dummy fiscal-year-end date and rolling('1826D')"
+      },
+      "panel_column_source": "h11_prisk_uncertainty_panel.parquet (column EarnVol)",
+      "upstream": [
+        "inputs/comp_na_daily_all/comp_na_daily_all.parquet (Compustat)"
+      ],
+      "raw_source": "Compustat (iby, atq)",
+      "in_draft_appendix": false,
+      "flag": "validity-table control; not in appendix",
+      "summary_stats": null
+    },
+    "ScrXPre": {
+      "label": "Interaction: CashScrutiny x PreAnnounceQtr (reason-gating term)",
+      "definition": "Product of CashScrutiny (% analyst Q&A turns on cash/liquidity) and the single-quarter pre-announcement indicator",
+      "construction": {
+        "script": "scripts/gen_reason_gating_table.py",
+        "evidence": "L139: q['ScrXPre'] = q['CashScrutiny'] * q['PreAnnounceQtr']"
+      },
+      "panel_column_source": "derived in-script",
+      "upstream": [
+        "CashScrutiny",
+        "PreAnnounceQtr"
+      ],
+      "raw_source": "Capital IQ transcripts (scrutiny) x SDC (timing)",
+      "in_draft_appendix": false,
+      "flag": "interaction defined in table note + prose; not an appendix line",
+      "summary_stats": null
+    },
+    "PreAnn_cash": {
+      "label": "Pooled-model treatment: pre-announcement quarter of the firm's first cash deal",
+      "definition": "=1 if the call quarter equals the firm's first >=50%-cash deal announcement quarter minus 1, inside the pooled cash+stock model; sample keeps only quarters before the firm's first deal of EITHER type plus never-either-acquirers",
+      "construction": {
+        "script": "src/f1d/econometric/empire_cashspec_interaction.py",
+        "evidence": "build_pooled L63-75: dq_cash from first_dq(pc>=50); keep cq < min(dq_cash, dq_stock) or never-acquirer; PreAnn_cash = 1[cq == dq_cash - 1]"
+      },
+      "panel_column_source": "derived in-script",
+      "upstream": [
+        "same SDC + manifest chain as PreAnnounceQtr (reuses gen_empire_did_table.py sdc()/manifest())"
+      ],
+      "raw_source": "SDC M&A",
+      "in_draft_appendix": false,
+      "flag": "pooled-arm indicators not in appendix; covered in prose as the interaction design — decide in S3.1 rewrite",
+      "summary_stats": null
+    },
+    "PreAnn_stock": {
+      "label": "Pooled-model treatment: pre-announcement quarter of the firm's first stock deal (placebo arm)",
+      "definition": "=1 if the call quarter equals the firm's first >=50%-stock deal announcement quarter minus 1; same pooled sample as PreAnn_cash",
+      "construction": {
+        "script": "src/f1d/econometric/empire_cashspec_interaction.py",
+        "evidence": "build_pooled L63-75: dq_stock from first_dq(ps>=50); PreAnn_stock = 1[cq == dq_stock - 1]"
+      },
+      "panel_column_source": "derived in-script",
+      "upstream": [
+        "same SDC + manifest chain as PreAnnounceQtr"
+      ],
+      "raw_source": "SDC M&A",
+      "in_draft_appendix": false,
+      "flag": "see PreAnn_cash flag",
+      "summary_stats": null
+    },
+    "PRE2": {
+      "label": "Event-window indicator: two quarters before announcement (pre-trend guard)",
+      "definition": "=1 if e == -2, where e = call calendar-quarter minus the firm's first qualifying deal's announcement quarter; treated firms only",
+      "construction": {
+        "script": "src/f1d/econometric/empire_drop_test.py",
+        "evidence": "build_event L137: (treated & e == -2); event panel construction L109-141"
+      },
+      "panel_column_source": "derived in-script",
+      "upstream": [
+        "inputs/SDC/sdc-ma-merged.parquet (Date Announced, Date Effective, Date Withdrawn, Deal Status, Percentage of Cash/Stock, Acquiror 6-digit CUSIP; filter L87-91 identical to Table 1)",
+        "outputs/1.4_AssembleManifest/<latest>/master_sample_manifest.parquet (CUSIP6->gvkey)"
+      ],
+      "raw_source": "SDC M&A",
+      "in_draft_appendix": false,
+      "flag": "Event-window bins (PRE2/PRE1/GAP/POST) defined only in prose/table captions, not in the appendix definitions table — decide in S3.1 rewrite",
+      "summary_stats": null
+    },
+    "PRE1": {
+      "label": "Event-window indicator: quarter immediately before announcement (the treatment quarter)",
+      "definition": "=1 if e == -1; the same single pre-announcement quarter as PreAnnounceQtr in the run-up design, inside the 4-bin event study",
+      "construction": {
+        "script": "src/f1d/econometric/empire_drop_test.py",
+        "evidence": "build_event L138: (treated & e == -1)"
+      },
+      "panel_column_source": "derived in-script",
+      "upstream": [
+        "same SDC + manifest chain as PRE2"
+      ],
+      "raw_source": "SDC M&A",
+      "in_draft_appendix": false,
+      "flag": "see PRE2 flag",
+      "summary_stats": null
+    },
+    "GAP": {
+      "label": "Event-window indicator: announced but not yet closed (the discriminator)",
+      "definition": "=1 if e >= 0 and the deal is not yet closed (call quarter < Date Effective quarter, or no close date); post window capped at +POST_CAP quarters (4 primary, 8 robustness)",
+      "construction": {
+        "script": "src/f1d/econometric/empire_drop_test.py",
+        "evidence": "build_event L136, L140: closed = (ceq notna & cq >= ceq); GAP = (treated & e >= 0 & ~closed); cap L133"
+      },
+      "panel_column_source": "derived in-script",
+      "upstream": [
+        "same SDC + manifest chain as PRE2 (uses Date Effective)"
+      ],
+      "raw_source": "SDC M&A",
+      "in_draft_appendix": false,
+      "flag": "see PRE2 flag",
+      "summary_stats": null
+    },
+    "POST": {
+      "label": "Event-window indicator: deal completed",
+      "definition": "=1 if e >= 0 and the call quarter >= the deal's Date Effective quarter; post window capped at +POST_CAP quarters; post-withdrawal rows dropped; window truncated at a 2nd qualifying announcement",
+      "construction": {
+        "script": "src/f1d/econometric/empire_drop_test.py",
+        "evidence": "build_event L136, L139: POST = (treated & e >= 0 & closed); hygiene L126-133"
+      },
+      "panel_column_source": "derived in-script",
+      "upstream": [
+        "same SDC + manifest chain as PRE2 (uses Date Effective, Date Withdrawn)"
+      ],
+      "raw_source": "SDC M&A",
+      "in_draft_appendix": false,
+      "flag": "see PRE2 flag",
+      "summary_stats": null
+    },
+    "Leverage": {
+      "label": "Book leverage (control)",
+      "definition": "(dlcq + dlttq) / atq — interest-bearing debt over total assets; missing debt components treated as zero",
+      "construction": {
+        "script": "src/f1d/shared/variables/_compustat_engine.py",
+        "evidence": "L960: (dlcq.fillna(0) + dlttq.fillna(0)) / atq"
+      },
+      "panel_column_source": "h1_cash_holdings_panel.parquet (BookLevBuilder, src/f1d/shared/variables/book_lev.py)",
+      "upstream": [
+        "inputs/comp_na_daily_all/comp_na_daily_all.parquet"
+      ],
+      "raw_source": "Compustat (dlcq, dlttq, atq)",
+      "in_draft_appendix": true,
+      "summary_stats": {
+        "exhibit": "tab:summary_stats",
+        "source": "outputs/econometric/summary_stats/2026-06-10_152109/summary.json",
+        "panels": {
+          "A": {
+            "n": 67590,
+            "mean": 0.24207969614981936,
+            "sd": 0.23769430649334017,
+            "p25": 0.0491499903224739,
+            "p50": 0.20616290223918446,
+            "p75": 0.3684569914259899
+          },
+          "B": {
+            "n": 27622,
+            "mean": 0.2219569116772375,
+            "sd": 0.23458120706288837,
+            "p25": 0.028305100634785953,
+            "p50": 0.19185918187173642,
+            "p75": 0.33446503453847787
+          }
+        }
+      }
+    },
+    "lnAssets": {
+      "label": "Firm size (control)",
+      "definition": "ln(atq) for positive atq; NaN otherwise",
+      "construction": {
+        "script": "src/f1d/shared/variables/_compustat_engine.py",
+        "evidence": "L955: np.where(atq > 0, log(atq), NaN)"
+      },
+      "panel_column_source": "h1_cash_holdings_panel.parquet (SizeBuilder, src/f1d/shared/variables/size.py)",
+      "upstream": [
+        "inputs/comp_na_daily_all/comp_na_daily_all.parquet"
+      ],
+      "raw_source": "Compustat (atq)",
+      "in_draft_appendix": true,
+      "summary_stats": {
+        "exhibit": "tab:summary_stats",
+        "source": "outputs/econometric/summary_stats/2026-06-10_152109/summary.json",
+        "panels": {
+          "A": {
+            "n": 67590,
+            "mean": 7.582256639739452,
+            "sd": 1.7054874864183585,
+            "p25": 6.360944468615152,
+            "p50": 7.536737202066296,
+            "p75": 8.72349605048856
+          },
+          "B": {
+            "n": 27622,
+            "mean": 7.294461943081995,
+            "sd": 1.4586681233831726,
+            "p25": 6.245863026825209,
+            "p50": 7.239548003544975,
+            "p75": 8.268546237917484
+          }
+        }
+      }
+    },
+    "TobinsQ": {
+      "label": "Tobin's Q (control)",
+      "definition": "(atq - ceqq + cshoq*prccq) / atq per Bates, Kahle & Stulz (2009 JF); all three components required non-missing, atq > 0",
+      "construction": {
+        "script": "src/f1d/shared/variables/_compustat_engine.py",
+        "evidence": "L997 mktcap = cshoq*prccq; L1007-1014 formula with completeness requirement; provenance comments L29-33, L1004-1006"
+      },
+      "panel_column_source": "h1_cash_holdings_panel.parquet (TobinsQBuilder, src/f1d/shared/variables/tobins_q.py)",
+      "upstream": [
+        "inputs/comp_na_daily_all/comp_na_daily_all.parquet"
+      ],
+      "raw_source": "Compustat (atq, ceqq, cshoq, prccq)",
+      "in_draft_appendix": true,
+      "summary_stats": {
+        "exhibit": "tab:summary_stats",
+        "source": "outputs/econometric/summary_stats/2026-06-10_152109/summary.json",
+        "panels": {
+          "A": {
+            "n": 67590,
+            "mean": 2.028670354990498,
+            "sd": 1.5769767438885247,
+            "p25": 1.1486289830584377,
+            "p50": 1.5053053734588486,
+            "p75": 2.268660569033641
+          },
+          "B": {
+            "n": 27622,
+            "mean": 2.23001044503403,
+            "sd": 1.5194825352756964,
+            "p25": 1.3142817582116282,
+            "p50": 1.7407724144269359,
+            "p75": 2.595607181699728
+          }
+        }
+      }
+    },
+    "ROA": {
+      "label": "Return on assets (control)",
+      "definition": "Annualized (fiscal-Q4) income before extraordinary items (iby) over average assets, where average assets = (atq_annual + atq_annual_lag1)/2",
+      "construction": {
+        "script": "src/f1d/shared/variables/_compustat_engine.py",
+        "evidence": "L971-981: Q4-annual iby and atq via _compute_annual_q4_variable, joined back to all quarters; ROA = iby_annual / avg_assets where avg_assets > 0"
+      },
+      "panel_column_source": "h1_cash_holdings_panel.parquet (ROABuilder, src/f1d/shared/variables/roa.py)",
+      "upstream": [
+        "inputs/comp_na_daily_all/comp_na_daily_all.parquet"
+      ],
+      "raw_source": "Compustat (iby, atq)",
+      "in_draft_appendix": true,
+      "summary_stats": {
+        "exhibit": "tab:summary_stats",
+        "source": "outputs/econometric/summary_stats/2026-06-10_152109/summary.json",
+        "panels": {
+          "A": {
+            "n": 67590,
+            "mean": 0.03562136927242956,
+            "sd": 0.12956766932899133,
+            "p25": 0.009990021710552174,
+            "p50": 0.04119588522970922,
+            "p75": 0.08587008180618404
+          },
+          "B": {
+            "n": 27622,
+            "mean": 0.0538664687084787,
+            "sd": 0.11409914291756701,
+            "p25": 0.026629308642223272,
+            "p50": 0.0611974273086688,
+            "p75": 0.10370764726880422
+          }
+        }
+      }
+    },
+    "Capex": {
+      "label": "Capital expenditure intensity (control)",
+      "definition": "Full-fiscal-year capxy (Q4 value of the YTD-cumulative series) over contemporaneous annual atq, per Bates, Kahle & Stulz (2009 JF); joined back to all quarters via gvkey+fyearq",
+      "construction": {
+        "script": "src/f1d/shared/variables/_compustat_engine.py",
+        "evidence": "L1016-1023; YTD-cumulative fix documented L43-46; lagged->contemporaneous assets fix L34-35"
+      },
+      "panel_column_source": "h1_cash_holdings_panel.parquet (CapexIntensityBuilder, src/f1d/shared/variables/capex_intensity.py)",
+      "upstream": [
+        "inputs/comp_na_daily_all/comp_na_daily_all.parquet"
+      ],
+      "raw_source": "Compustat (capxy, atq, fqtr, fyearq)",
+      "in_draft_appendix": true,
+      "summary_stats": {
+        "exhibit": "tab:summary_stats",
+        "source": "outputs/econometric/summary_stats/2026-06-10_152109/summary.json",
+        "panels": {
+          "A": {
+            "n": 67590,
+            "mean": 0.0464649220680548,
+            "sd": 0.055833297629430186,
+            "p25": 0.011370765729253962,
+            "p50": 0.030512872758653754,
+            "p75": 0.06134219240533083
+          },
+          "B": {
+            "n": 27622,
+            "mean": 0.053528630839391224,
+            "sd": 0.055709204135592515,
+            "p25": 0.01986937052929949,
+            "p50": 0.03624429088391108,
+            "p75": 0.06473855546464849
+          }
+        }
+      }
+    },
+    "DivDummy": {
+      "label": "Dividend payer indicator (control)",
+      "definition": "1[annual common dividends dvy > 0], using the fiscal-Q4 value of the YTD-cumulative dvy series, joined back to all quarters",
+      "construction": {
+        "script": "src/f1d/shared/variables/_compustat_engine.py",
+        "evidence": "L1025-1030; dvpq->dvy fix documented L36-37; excluded from winsorization (binary) L1296-1300"
+      },
+      "panel_column_source": "h1_cash_holdings_panel.parquet (DividendPayerBuilder, src/f1d/shared/variables/dividend_payer.py)",
+      "upstream": [
+        "inputs/comp_na_daily_all/comp_na_daily_all.parquet"
+      ],
+      "raw_source": "Compustat (dvy, fqtr, fyearq)",
+      "in_draft_appendix": true,
+      "summary_stats": {
+        "exhibit": "tab:summary_stats",
+        "source": "outputs/econometric/summary_stats/2026-06-10_152109/summary.json",
+        "panels": {
+          "A": {
+            "n": 67590,
+            "mean": 0.5551264980026631,
+            "sd": 0.496955453821347,
+            "p25": 0.0,
+            "p50": 1.0,
+            "p75": 1.0
+          },
+          "B": {
+            "n": 27622,
+            "mean": 0.5027876330461226,
+            "sd": 0.5000012799033416,
+            "p25": 0.0,
+            "p50": 1.0,
+            "p75": 1.0
+          }
+        }
+      }
+    },
+    "sCFO": {
+      "label": "Operating cash-flow volatility (control)",
+      "definition": "Rolling 5-year (1826-day window, min 3 fiscal years) standard deviation of annual oancfy / atq_{t-1}, computed per firm on the annual panel and joined back to all quarters via gvkey+fyearq",
+      "construction": {
+        "script": "src/f1d/shared/variables/_compustat_engine.py",
+        "evidence": "_compute_ocf_volatility L324-373: ocf_ratio per fiscal year, rolling('1826D', min_periods=3).std() L355-357, m:1 join back L366-371"
+      },
+      "panel_column_source": "h1_cash_holdings_panel.parquet (OCFVolatilityBuilder, src/f1d/shared/variables/ocf_volatility.py)",
+      "upstream": [
+        "inputs/comp_na_daily_all/comp_na_daily_all.parquet"
+      ],
+      "raw_source": "Compustat (oancfy, atq)",
+      "in_draft_appendix": true,
+      "summary_stats": {
+        "exhibit": "tab:summary_stats",
+        "source": "outputs/econometric/summary_stats/2026-06-10_152109/summary.json",
+        "panels": {
+          "A": {
+            "n": 67590,
+            "mean": 0.06384638003813707,
+            "sd": 0.2865690273144439,
+            "p25": 0.01836256547310741,
+            "p50": 0.03568145330127112,
+            "p75": 0.06492766975134057
+          },
+          "B": {
+            "n": 27622,
+            "mean": 0.06624965129434755,
+            "sd": 0.25240314867690766,
+            "p25": 0.02469871578280063,
+            "p50": 0.04058195329182272,
+            "p75": 0.06735325850201812
+          }
+        }
+      }
+    }
+  }
+}

@@ -20,8 +20,26 @@ POST (completed) & -0.0195 & -0.0048 \\
 \midrule
 Drop: PRE1 $-$ GAP & \textbf{0.0428}$^{*}$ & \textbf{-0.0756}$^{*}$ \\
  & (0.0221) & (0.0405) \\
+Drop: GAP $-$ POST & 0.0253 & 0.0401 \\
+ & (0.0194) & (0.0382) \\
 Drop: PRE1 $-$ POST & \textbf{0.0681}$^{***}$ & -0.0355 \\
  & (0.0187) & (0.0358) \\
+\midrule
+\multicolumn{3}{l}{\textit{Controls}} \\
+Leverage & \textbf{-0.0372}$^{*}$ & -0.0286 \\
+ & (0.0211) & (0.0194) \\
+lnAssets & -0.0063 & -0.0041 \\
+ & (0.0080) & (0.0062) \\
+TobinsQ & -0.0034 & -0.0018 \\
+ & (0.0029) & (0.0025) \\
+ROA & \textbf{0.0534}$^{*}$ & \textbf{0.0543}$^{*}$ \\
+ & (0.0315) & (0.0293) \\
+Capex & 0.0816 & 0.1297 \\
+ & (0.0993) & (0.0987) \\
+DivDummy & -0.0065 & \textbf{-0.0132}$^{*}$ \\
+ & (0.0100) & (0.0080) \\
+sCFO & 0.0049 & -0.0008 \\
+ & (0.0084) & (0.0110) \\
 \midrule
 Firm FE / Year-Qtr FE / Controls & Yes & Yes \\
 N (firm-quarters) & 29,535 & 39,819 \\
@@ -29,6 +47,6 @@ Firms & 1,326 & 1,363 \\
 \bottomrule
 \end{tabular}
 \begin{minipage}{\linewidth}\vspace{2pt}\scriptsize
-\textit{Notes:} Two-way FE OLS (firm + calendar year-quarter), firm-clustered SE; DV = UncResCEO. Event bins around the firm's first $\geq$50\%-cash (col 1) or $\geq$50\%-stock (col 2) acquisition: PRE2/PRE1 = two / one quarter pre-announcement; GAP = announced, not yet completed; POST = completed. Baseline = $e\leq-3$ plus never-acquirers. The \textbf{stock arm is the placebo}: stock-financed acquirers carry the same pending-deal disclosure gag but no cash war-chest, so a flat stock pattern means the cash-arm run-up and collapse are cash-specific. $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$; bins one-tailed ($\beta>0$), Drop rows two-tailed. Standard errors in parentheses. (Per-DV samples differ here; the matched-universe table re-estimates both DVs on one sample. +8-quarter window in the summary JSON.)
+\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed).
 \end{minipage}
 \end{table}

@@ -77,6 +77,12 @@ def base_panel() -> pd.DataFrame:
     p["gvkey"] = p["gvkey"].astype(str).str.zfill(6)
     p["start_date"] = pd.to_datetime(p["start_date"])
     p["cq"] = p["start_date"].dt.year * 4 + (p["start_date"].dt.quarter - 1)
+    # CashRatio is sticky -> its own one-quarter within-firm lag (consecutive quarters only),
+    # used as a partial-adjustment control in the CashRatio regressions (NOT on residual DVs).
+    p = p.sort_values(["gvkey", "cq"])
+    p["CashRatio_lag"] = p.groupby("gvkey")["CashRatio"].shift(1)
+    _pcq = p.groupby("gvkey")["cq"].shift(1)
+    p.loc[_pcq != p["cq"] - 1, "CashRatio_lag"] = np.nan
     return p
 
 
@@ -122,14 +128,17 @@ def build(p: pd.DataFrame, s: pd.DataFrame, m: pd.DataFrame, mask: pd.Series) ->
     return q, treat["gvkey"].nunique()
 
 
-def run(q: pd.DataFrame, dv: str, match: str | None = None) -> dict:
+def run(q: pd.DataFrame, dv: str, match: str | None = None, add_cash_lag: bool = False) -> dict:
     # `match` restricts the sample to rows where another DV is also present, so
     # CashScrutiny is estimated on the SAME universe as UncResCEO (comparable column).
-    need = [dv, "PreAnnounceQtr"] + CTRL + ([match] if match else [])
+    # add_cash_lag -> include CashRatio's own one-quarter lag (partial-adjustment) so the
+    # PreAnnounceQtr coef on the sticky CashRatio DV tracks the CHANGE, not the level.
+    extra = ["CashRatio_lag"] if add_cash_lag else []
+    need = [dv, "PreAnnounceQtr"] + CTRL + extra + ([match] if match else [])
     d = q.replace([np.inf, -np.inf], np.nan).dropna(subset=need).copy()
     n_firms = int(d["gvkey"].nunique())
     d = d.set_index(["gvkey", "cq"])
-    f = f"{dv} ~ 1 + PreAnnounceQtr + " + " + ".join(CTRL) + " + EntityEffects + TimeEffects"
+    f = f"{dv} ~ 1 + PreAnnounceQtr + " + " + ".join(CTRL + extra) + " + EntityEffects + TimeEffects"
     mod = PanelOLS.from_formula(f, data=d, drop_absorbed=True).fit(
         cov_type="clustered", cluster_entity=True)
     par, se, pv = mod.params, mod.std_errors, mod.pvalues
@@ -137,8 +146,12 @@ def run(q: pd.DataFrame, dv: str, match: str | None = None) -> dict:
     p1 = p2 / 2 if b > 0 else 1 - p2 / 2  # one-tailed, H: PreAnnounceQtr > 0
     ctrls = {c: {"beta": float(par[c]), "se": float(se[c]), "p2": float(pv[c])}
              for c in CTRL if c in par.index}
-    return {"dv": dv, "beta": b, "se": s_, "p1": p1, "p2": p2,
-            "ctrls": ctrls, "n": int(mod.nobs), "n_firms": n_firms, "r2": float(mod.rsquared)}
+    out = {"dv": dv, "beta": b, "se": s_, "p1": p1, "p2": p2,
+           "ctrls": ctrls, "n": int(mod.nobs), "n_firms": n_firms, "r2": float(mod.rsquared)}
+    if add_cash_lag and "CashRatio_lag" in par.index:
+        out["lag"] = {"beta": float(par["CashRatio_lag"]), "se": float(se["CashRatio_lag"]),
+                      "p2": float(pv["CashRatio_lag"])}
+    return out
 
 
 def stars(p: float) -> str:
@@ -171,6 +184,9 @@ def write_tex(res: dict, counts: dict) -> None:
         "PreAnnounceQtr & "
         + " & ".join(cell(res[k]["beta"], res[k]["p1"]) for k in cols) + r" \\",
         " & " + " & ".join(f"({res[k]['se']:.4f})" for k in cols) + r" \\",
+        r"CashRatio$_{t-1}$ (partial adj.) & "
+        + " & ".join((cell(res[k]["lag"]["beta"], res[k]["lag"]["p2"]) if "lag" in res[k] else "---") for k in cols) + r" \\",
+        " & " + " & ".join((f"({res[k]['lag']['se']:.4f})" if "lag" in res[k] else "") for k in cols) + r" \\",
         r"\midrule",
     ]
     for c in CTRL:
@@ -192,7 +208,7 @@ def write_tex(res: dict, counts: dict) -> None:
         r"\vspace{2pt}\scriptsize",
         r"\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the treatment coefficient, $\beta > 0$; two-tailed for controls). ",
         r"Significant coefficients in \textbf{bold}. Standard errors (in parentheses) clustered at firm level. "
-        r"CashScrutiny (cols 3, 7) and HighCashScrutiny (cols 4, 8) are estimated on the UncResCEO call universe. HighCashScrutiny is an LPM on $\mathbf{1}$[CashScrutiny $>$ median]; the median is $0$ (89\% of calls raise no cash turns), so it flags any cash scrutiny ($\approx$11\% of calls).",
+        r"CashScrutiny (cols 3, 7) and HighCashScrutiny (cols 4, 8) are estimated on the UncResCEO call universe. HighCashScrutiny is an LPM on $\mathbf{1}$[CashScrutiny $>$ median]; the median is $0$ (89\% of calls raise no cash turns), so it flags any cash scrutiny ($\approx$11\% of calls). The CashRatio columns (1, 5) add CashRatio's own one-quarter lag (partial-adjustment for the sticky DV), so the PreAnnounceQtr coefficient there tracks the \emph{change} in cash, not its level; the other DVs take no lag.",
         r"\end{minipage}",
         r"\end{table}",
     ]
@@ -208,7 +224,7 @@ def main() -> None:
         counts[arm] = n
         for dv in DVS:
             mu = "UncResCEO" if dv in ("CashScrutiny", "HighCashScrutiny") else None   # match to UncResCEO universe
-            res[(arm, dv)] = run(q, dv, match=mu)
+            res[(arm, dv)] = run(q, dv, match=mu, add_cash_lag=(dv == "CashRatio"))
 
     ts = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     out = ROOT / "outputs" / "econometric" / "empire_building_did" / ts

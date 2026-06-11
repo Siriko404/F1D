@@ -46,11 +46,12 @@ BIN_LABEL = {"PRE2": r"PRE2 ($t{-}2$, pre-trend)",
              "POST": r"POST (completed)"}
 
 
-def run_on(d: pd.DataFrame, dv: str) -> dict:
+def run_on(d: pd.DataFrame, dv: str, add_cash_lag: bool = False) -> dict:
     n_firms = int(d["gvkey"].nunique())
     dd = d.set_index(["gvkey", "cq"])
+    extra = " + CashRatio_lag" if add_cash_lag else ""   # partial-adjustment, CashRatio DV only
     f = f"{dv} ~ 1 + " + " + ".join(BINS) + " + " + " + ".join(CTRL) \
-        + " + EntityEffects + TimeEffects"
+        + extra + " + EntityEffects + TimeEffects"
     mod = PanelOLS.from_formula(f, data=dd, drop_absorbed=True).fit(
         cov_type="clustered", cluster_entity=True)
     par, se, pv, V = mod.params, mod.std_errors, mod.pvalues, mod.cov
@@ -67,9 +68,14 @@ def run_on(d: pd.DataFrame, dv: str) -> dict:
         p2 = 2 * norm.sf(abs(t))
         return {"diff": diff, "se": se_, "t": t, "p1": p2 / 2 if diff > 0 else 1 - p2 / 2, "p2": p2}
 
-    return {"bins": {b: one(b) for b in BINS if b in par.index},
-            "pre1_gap": wald("PRE1", "GAP"), "pre1_post": wald("PRE1", "POST"),
-            "n": int(mod.nobs), "n_firms": n_firms}
+    out = {"bins": {b: one(b) for b in BINS if b in par.index},
+           "pre1_gap": wald("PRE1", "GAP"), "gap_post": wald("GAP", "POST"),
+           "pre1_post": wald("PRE1", "POST"),
+           "controls": {c: one(c) for c in CTRL if c in par.index},
+           "n": int(mod.nobs), "n_firms": n_firms}
+    if add_cash_lag and "CashRatio_lag" in par.index:
+        out["lag"] = one("CashRatio_lag")
+    return out
 
 
 def stars(p: float) -> str:
@@ -82,11 +88,14 @@ def cell(coef: float, p: float) -> str:
 
 
 def write_tex(summary_path: Path) -> None:
-    """Build the LaTeX fragment FROM the written JSON spec (+4 primary; +8 in JSON)."""
+    """Build the LaTeX fragment FROM the written JSON spec (+4 primary; +8 in JSON).
+
+    All significance is uniform two-tailed (bin coefficients + Drop rows alike)."""
     summary = json.loads(Path(summary_path).read_text(encoding="utf-8"))
     sp = summary["specs"]["post_cap_4"]
     res = sp["results"]
     dvs = ["UncResCEO", "CashRatio"]
+    pdir = "p2"                                # uniform two-tailed
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
@@ -99,16 +108,30 @@ def write_tex(summary_path: Path) -> None:
         r"\midrule",
     ]
     for b in BINS:
-        cells = " & ".join(cell(res[dv]["bins"][b]["b"], res[dv]["bins"][b]["p1"]) for dv in dvs)
+        cells = " & ".join(cell(res[dv]["bins"][b]["b"], res[dv]["bins"][b][pdir]) for dv in dvs)
         ses = " & ".join(f"({res[dv]['bins'][b]['se']:.4f})" for dv in dvs)
         lines.append(f"{BIN_LABEL[b]} & {cells} \\\\")
         lines.append(f" & {ses} \\\\")
     lines.append(r"\midrule")
-    for key, lab in (("pre1_gap", r"Drop: PRE1 $-$ GAP"), ("pre1_post", r"Drop: PRE1 $-$ POST")):
+    for key, lab in (("pre1_gap", r"Drop: PRE1 $-$ GAP"), ("gap_post", r"Drop: GAP $-$ POST"),
+                     ("pre1_post", r"Drop: PRE1 $-$ POST")):
         cells = " & ".join(cell(res[dv][key]["diff"], res[dv][key]["p2"]) for dv in dvs)
         sline = " & ".join(f"({res[dv][key]['se']:.4f})" for dv in dvs)
         lines.append(f"{lab} & {cells} \\\\")
         lines.append(f" & {sline} \\\\")
+    lines.append(r"\midrule")
+    lines.append(r"\multicolumn{3}{l}{\textit{Controls}} \\")
+    for c in CTRL:
+        cv = " & ".join((cell(res[dv]["controls"][c]["b"], res[dv]["controls"][c]["p2"])
+                         if c in res[dv].get("controls", {}) else "---") for dv in dvs)
+        cs = " & ".join((f"({res[dv]['controls'][c]['se']:.4f})"
+                        if c in res[dv].get("controls", {}) else "") for dv in dvs)
+        lines.append(f"{c} & {cv} \\\\")
+        lines.append(f" & {cs} \\\\")
+    lag_cells = " & ".join((cell(res[dv]["lag"]["b"], res[dv]["lag"]["p2"]) if "lag" in res[dv] else "---") for dv in dvs)
+    lag_ses = " & ".join((f"({res[dv]['lag']['se']:.4f})" if "lag" in res[dv] else "") for dv in dvs)
+    lines.append(r"CashRatio$_{t-1}$ (partial adj.) & " + lag_cells + r" \\")
+    lines.append(f" & {lag_ses} \\\\")
     lines += [
         r"\midrule",
         r"Firm FE / Year-Qtr FE / Controls & Yes & Yes \\",
@@ -117,17 +140,7 @@ def write_tex(summary_path: Path) -> None:
         r"\bottomrule",
         r"\end{tabular}",
         r"\begin{minipage}{\linewidth}\vspace{2pt}\scriptsize",
-        r"\textit{Notes:} Two-way FE OLS (firm + calendar year-quarter), firm-clustered SE, on the "
-        rf"\emph{{identical}} {sp['n']:,}-observation sample where both UncResCEO and CashRatio are "
-        r"present (the UncResCEO call universe). Event bins around the firm's first $\geq$50\%-cash "
-        r"acquisition: PRE2/PRE1 = two / one quarter pre-announcement; GAP = announced but not yet "
-        r"completed; POST = completed. Baseline = $e\leq-3$ plus never-acquirers. Bin coefficients: "
-        r"$^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ one-tailed; Drop rows (Wald on the bin difference): "
-        r"stars two-tailed. Standard errors in parentheses throughout. Pre-completion bin counts (PRE2/PRE1/GAP/POST): "
-        rf"{sp['pops']['PRE2']:,}/{sp['pops']['PRE1']:,}/{sp['pops']['GAP']:,}/{sp['pops']['POST']:,}. "
-        r"UncResCEO peaks at PRE1 and collapses at GAP (announcement); CashRatio stays elevated through "
-        r"GAP and falls only at POST (completion). The uncertainty tracks the disclosure state, not the "
-        r"cash balance. Robustness: +8-quarter post-window in the summary JSON.",
+        r"\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed).",
         r"\end{minipage}",
         r"\end{table}",
     ]
@@ -136,14 +149,21 @@ def write_tex(summary_path: Path) -> None:
 
 def main():
     p, s, m = edt.base_panel(), edt.sdc(), edt.manifest()
+    # CashRatio is sticky -> its own one-quarter within-firm lag (consecutive quarters only).
+    # Require it in the shared sample so BOTH DVs stay on the IDENTICAL universe (the table's
+    # whole point); only the CashRatio model uses it as a partial-adjustment regressor.
+    p = p.sort_values(["gvkey", "cq"])
+    p["CashRatio_lag"] = p.groupby("gvkey")["CashRatio"].shift(1)
+    _pcq = p.groupby("gvkey")["cq"].shift(1)
+    p.loc[_pcq != p["cq"] - 1, "CashRatio_lag"] = np.nan
     specs = {}
     for cap in (4, 8):
         edt.POST_CAP = cap
         q, n_tr = edt.build_event(p, s, m, s["pc"] >= 50)   # cash arm
-        need = ["UncResCEO", "CashRatio"] + BINS + CTRL      # ONE shared sample
+        need = ["UncResCEO", "CashRatio", "CashRatio_lag"] + BINS + CTRL   # ONE shared sample (lag required)
         d = q.replace([np.inf, -np.inf], np.nan).dropna(subset=need).copy()
         pops = {b: int(d[b].sum()) for b in BINS}
-        results = {dv: run_on(d, dv) for dv in ("UncResCEO", "CashRatio")}
+        results = {dv: run_on(d, dv, add_cash_lag=(dv == "CashRatio")) for dv in ("UncResCEO", "CashRatio")}
         specs[f"post_cap_{cap}"] = {"post_cap": cap, "n": len(d),
                                     "n_firms": int(d["gvkey"].nunique()),
                                     "pops": pops, "results": results}
@@ -155,6 +175,7 @@ def main():
                 v = r["bins"][b]
                 print(f"  {dv:10} {b:5} b={v['b']:+.5f} se={v['se']:.5f} p1={v['p1']:.3f}")
             print(f"  {dv:10} DROP PRE1-GAP={r['pre1_gap']['diff']:+.5f} t={r['pre1_gap']['t']:+.2f}"
+                  f" | GAP-POST={r['gap_post']['diff']:+.5f} t={r['gap_post']['t']:+.2f}"
                   f" | PRE1-POST={r['pre1_post']['diff']:+.5f} t={r['pre1_post']['t']:+.2f}")
 
     ts = datetime.now().strftime("%Y-%m-%d_%H%M%S")

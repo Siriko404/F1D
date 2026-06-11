@@ -1,0 +1,16 @@
+﻿{
+  "answer": "The paper titled 'Straight talkers and vague talkers: The effects of managerial style in earnings conference calls' is the source document **FWP_2017_02_v2.pdf** [1]. \n\nHere is the verbatim information quoted from its title page:\n\n\"Straight talkers and vague talkers: The effects of managerial style in\nearnings conference calls\n\nMichal Dzielinski\nStockholm University\n\nAlexander F. Wagner\nUniversity of Zurich\n\nRichard J. Zeckhauser\nHarvard Kennedy School\n2017 Revised 2021\n\nM-RCBG Faculty Working Paper Series | 2017-02\" [1]",
+  "conversation_id": "b42bb373-47a0-4909-ae49-c6a4f2eee5e2",
+  "turn_number": 1,
+  "is_follow_up": true,
+  "references": [
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "citation_number": 1,
+      "cited_text": null,
+      "start_char": 0,
+      "end_char": 1,
+      "chunk_id": "b5c0383b-f6ec-4642-80b4-9a245eeed321"
+    }
+  ]
+}

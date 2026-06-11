@@ -1,0 +1,103 @@
+{
+  "A_legal_gag": {
+    "query": "Across all sources in this notebook, is there a paper that establishes -- for public firms -- that an unannounced or pending merger or acquisition constitutes material non-public information whose selective disclosure by the firm's managers is legally prohibited (for example under insider-trading law, Regulation Fair Disclosure, or merger confidentiality)? If yes, name the specific source and quote the exact sentence(s) that establish this. If no source in this notebook establishes it, answer exactly: NONE.",
+    "result": {
+      "answer": "NONE.",
+      "conversation_id": "b42bb373-47a0-4909-ae49-c6a4f2eee5e2",
+      "turn_number": 1,
+      "is_follow_up": true,
+      "references": []
+    }
+  },
+  "B_talk_but_hedge": {
+    "query": "Across all sources in this notebook, is there a paper providing evidence that corporate managers who hold material information they are not permitted to disclose respond to analysts' questions during earnings conference calls with more vague, more hedged, less specific, or more uncertain language -- as opposed to simply declining to answer? If yes, name the specific source and quote the exact sentence(s). If no source establishes this, answer exactly: NONE.",
+    "result": {
+      "answer": "NONE.",
+      "conversation_id": "b42bb373-47a0-4909-ae49-c6a4f2eee5e2",
+      "turn_number": 1,
+      "is_follow_up": true,
+      "references": []
+    }
+  },
+  "C_direct_payment_disclosure": {
+    "query": "Across all sources in this notebook, is there a paper showing that the method of payment in an acquisition (cash versus stock/equity) is associated with a difference in the ACQUIRER's voluntary disclosure or communication behavior in the period BEFORE the deal is announced? I am asking specifically about pre-announcement disclosure behavior, not announcement-period stock returns. If yes, name the source and quote the exact sentence(s). If no source establishes this, answer exactly: NONE.",
+    "result": {
+      "answer": "Yes, there is a paper in the provided sources that establishes this. The paper **\"Manipulating Disclosure Tone: Understanding Acquiring Firms' Strategies in Stock-for-Stock Mergers and Acquisitions\"** (ssrn-4900453.pdf) shows that acquirers using stock as their method of payment strategically inflate the tone of their pre-announcement earnings press releases, whereas those using cash do not.\n\nHere are the exact sentences establishing this:\n\n\"We find that the tone of earnings press releases for stock-for-stock mergers significantly increases in the four quarters before the M&A announcement quarter to reach a peak two quarters ahead of the M&A announcement\" [1, 2]. \n\n\"In contrast, we find that the tone of earnings press releases of cash deals does not significantly change over the five quarters before the M&A announcement, which is in line with the lack of incentive to engage in tone management in these deals\" [3].\n\n\"Controlling for a series of deal and firm characteristics, as well as year and industry fixed effects, the multivariate analysis confirms that the tone of stock deals significantly increases before the M&A announcement, relative to cash deals\" [3].",
+      "conversation_id": "b42bb373-47a0-4909-ae49-c6a4f2eee5e2",
+      "turn_number": 1,
+      "is_follow_up": true,
+      "references": [
+        {
+          "source_id": "731d56ed-c42a-4280-84eb-eec23f8be9b3",
+          "citation_number": 1,
+          "cited_text": "deals (takeovers that use both cash and stock) and 1,168 cash deals. To measure the linguistic tone, we",
+          "start_char": 14097,
+          "end_char": 14201,
+          "chunk_id": "67ed6d8f-1fe0-453e-b494-396547da33f8"
+        },
+        {
+          "source_id": "731d56ed-c42a-4280-84eb-eec23f8be9b3",
+          "citation_number": 2,
+          "cited_text": "mergers significantly increases in the four quarters before the M&A announcement quarter to reach a",
+          "start_char": 14609,
+          "end_char": 14709,
+          "chunk_id": "b35f334a-193c-48dd-9c30-607ae4b183d8"
+        },
+        {
+          "source_id": "731d56ed-c42a-4280-84eb-eec23f8be9b3",
+          "citation_number": 3,
+          "cited_text": "In contrast, we find that the tone of earnings press releases of cash deals does not significantly change",
+          "start_char": 15116,
+          "end_char": 15222,
+          "chunk_id": "f8462287-2033-41e4-b836-e44c4fc49060"
+        }
+      ]
+    }
+  },
+  "C_leakage_stock_earlier": {
+    "query": "Across all sources in this notebook, is there a paper establishing that stock-financed (equity) acquisitions become publicly known or disclosed EARLIER than cash-financed acquisitions -- for instance because equity deals require registration statements (Form S-4), shareholder votes, or other regulatory filings -- so that less non-public deal information remains by the time of a pre-announcement earnings call? If yes, name the source and quote the exact sentence(s). If no source establishes this, answer exactly: NONE.",
+    "result": {
+      "answer": "NONE.",
+      "conversation_id": "b42bb373-47a0-4909-ae49-c6a4f2eee5e2",
+      "turn_number": 1,
+      "is_follow_up": true,
+      "references": [],
+      "_note": "first attempt timed out; re-run returned NONE"
+    }
+  },
+  "C_behavior_stock_manages_up": {
+    "query": "Across all sources in this notebook, is there a paper showing that acquirers paying with STOCK actively increase or manage their voluntary disclosure or communication before announcing the deal (for example to support their share price), whereas cash acquirers do not? If yes, name the source and quote the exact sentence(s). If no source establishes this, answer exactly: NONE.",
+    "result": {
+      "answer": "Yes, there is a paper establishing this. The paper **\"Manipulating Disclosure Tone: Understanding Acquiring Firms' Strategies in Stock-for-Stock Mergers and Acquisitions\"** (ssrn-4900453.pdf) shows that acquirers paying with stock actively manage their voluntary communications by inflating the narrative tone of their earnings press releases before the deal announcement, whereas cash acquirers do not.\n\nHere are the exact sentences that establish this:\n\n*   \"Based on a sample of 5,558 stock-for-stock mergers and acquisitions (M&As) between 2004 and 2020, we show that, in the year before the M&A announcement, stock bidders manipulate the narrative content of corporate disclosures by inflating the tone of earnings press releases in order to curtail the target acquisition cost.\" [1] \n*   \"We find that the tone of earnings press releases for stock-for-stock mergers significantly increases in the four quarters before the M&A announcement quarter to reach a peak two quarters ahead of the M&A announcement.\" [2]\n*   \"In contrast, we find that the tone of earnings press releases of cash deals does not significantly change over the five quarters before the M&A announcement, which is in line with the lack of incentive to engage in tone management in these deals.\" [3]\n*   \"Controlling for a series of deal and firm characteristics, as well as year and industry fixed effects, the multivariate analysis confirms that the tone of stock deals significantly increases before the M&A announcement, relative to cash deals.\" [3]",
+      "conversation_id": "b42bb373-47a0-4909-ae49-c6a4f2eee5e2",
+      "turn_number": 1,
+      "is_follow_up": true,
+      "references": [
+        {
+          "source_id": "731d56ed-c42a-4280-84eb-eec23f8be9b3",
+          "citation_number": 1,
+          "cited_text": "Manipulating Disclosure Tone: Understanding Acquiring Firms' Strategies in Stock-for-Stock Mergers and Acquisitions",
+          "start_char": 0,
+          "end_char": 116,
+          "chunk_id": "de53c1a8-3072-4b27-8d55-8fdb1ce33efe"
+        },
+        {
+          "source_id": "731d56ed-c42a-4280-84eb-eec23f8be9b3",
+          "citation_number": 2,
+          "cited_text": "mergers significantly increases in the four quarters before the M&A announcement quarter to reach a",
+          "start_char": 14609,
+          "end_char": 14709,
+          "chunk_id": "f264cc69-d076-4162-b638-55a1e73c8df8"
+        },
+        {
+          "source_id": "731d56ed-c42a-4280-84eb-eec23f8be9b3",
+          "citation_number": 3,
+          "cited_text": "In contrast, we find that the tone of earnings press releases of cash deals does not significantly change",
+          "start_char": 15116,
+          "end_char": 15222,
+          "chunk_id": "d829adb5-fdb3-425d-b837-efaebf066625"
+        }
+      ]
+    }
+  }
+}

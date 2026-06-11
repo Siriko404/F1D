@@ -1,0 +1,1023 @@
+
+===== PAGE 1 =====
+LongRangePlanning57(2024)102393
+Contents lists available at ScienceDirect
+Long Range Planning
+journal homepage: www.elsevier.com/locate/lrp
+Implications of mergers and acquisitions for information
+disclosures in earnings calls
+Roberto Ragozzinoa,*, Jeffrey J. Reuerb
+aNova School of Business & Economics, Urbanizaça˜o S. Gonçalo, Rua da Holanda, 1, 2775-405, Carcavelos, Portugal
+bUniversity of Colorado, Leeds School of Business, 995 Regent Drive, Koelbel Building, Campus Box 419, Boulder, CO, 80309, USA
+A R T I C L E I N F O A B S T R A C T
+Keywords: We examine the linkages between firms’ M&A activity and the information exchange between
+Corporate strategy executives and analysts during quarterly earnings calls. Prior M&A research has mostly focused
+Acquisitions on the considerations presented by information asymmetry between buyers and sellers them-
+M&A
+selves in M&A. However, these concerns also exist between the buying firm’s executives and
+Information asymmetry capital markets. We examine whether firms’ M&A activity results in an information exchange
+Adverse selection
+Earnings calls between executives and analysts that highlights corporate strategy as a discussion topic. Thus, we
+Corporate communication test whether there is consistency between firms’ corporate growth agendas and the information
+Executives released to the public by these firms. This question is relevant, as disclosure is central to firms’
+Analysts ability to raise capital and compete. We also investigate the degree to which these information
+exchanges affect analysts’ earnings forecast errors.
+1. Introduction
+Asymmetric information plays a central theoretical role in corporate strategy (e.g., Balakrishnan and Koza, 1993; Vanhaverbeke
+et al., 2002; Villalonga and McGahan, 2005; Higgins and Rodriguez, 2006; Schildt and Laamanen, 2006; Capron and Shen, 2007;
+Graebner, 2009; Zaheer et al., 2010; Cuypers et al., 2017; Humphrey-Jenner et al., 2017). Many corporate transactions are charac-
+terized by some level of information asymmetry, and this leads a less informed buyer to face adverse selection, or the risk of overpaying
+for assets (e.g., Akerlof, 1970; Ravenscraft and Scherer, 1987; Healy and Palepu, 1993; Healy and Palepu, 2001). It is also relatively
+well understood that the hazards associated with information asymmetry tend to be greater when the value of a transaction is sig-
+nificant to a buyer, and when the transaction is a one-off deal, rather than an ongoing relationship that will have buyers and sellers
+engage in repeat business over time (Riley, 2001). As a consequence, mergers and acquisitions (M&A) are especially prone to adverse
+selection concerns.
+M&A also happen to be a pervasive investment vehicle supporting corporate strategy: According to the specialized analytics and
+technology company Dealogic, the yearly dollar volume of worldwide activity has ranged between $2.2 and $4.1 trillion during the
+2015–2019 timeframe.1 Given the economic importance of M&A and firms’ exposure to adverse selection in these deals, academic
+studies in strategy, finance, and other fields have devoted significant attention to examining the implications of adverse selection for
+M&A deals and firm performance. The evidence brought forth by this body of work confirms the broad point that adverse selection
+* Corresponding author.
+E-mail addresses: roberto.ragozzino@novasbe.pt (R. Ragozzino), jeffrey.reuer@colorado.edu (J.J. Reuer).
+1 https://www.dealogic.com/insight/ma-highlights-full-year-2019/.
+https://doi.org/10.1016/j.lrp.2023.102393
+Received 10 May 2022; Received in revised form 28 August 2023; Accepted 13 September 2023
+Availableonline20September2023
+0024-6301/©2023ElsevierLtd.Allrightsreserved.
+
+===== PAGE 2 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+plays a role in explaining firms’ M&A strategy and performance (e.g., Fowler and Schmidt, 1989; Villalonga and McGahan, 2005;
+Moeller et al., 2007; Chemmanur et al., 2009; Officer et al., 2009; Cheng et al., 2016; Cuypers et al., 2017; Martin and Shalev, 2017;
+Yakis-Douglas et al., 2017; Borochin et al., 2019).
+Despite this fairly clear-cut conclusion, it is noteworthy that prior work has focused mostly on the asymmetric information present
+between the buying and the selling firms in M&A and the implications it presents during M&A dealmaking. This work has applied the
+theoretical models of information economics originally developed for other markets to the M&A market context, in order to understand
+the antecedents and consequences of various aspects of M&A transactions. Specifically, M&A studies have relied on seminal research
+such as Akerlof’s (1970) classic model of used car markets, Spence’s (1973) model of signaling in labor markets, and Stiglitz’s (1973)
+analysis of insurance markets (e.g., Reuer, 2009). The upshot of research on M&A is that under conditions of information asymmetry,
+deals may fall through, or alternative entry modes may be used, absent other remedies such as contractual provisions or payment
+structures to reduce the exposure of buyers to adverse selection risks (e.g., Balakrishnan and Koza, 1993; Kohers and Ang, 2000; Datar
+et al., 2001; Gilson and Schwartz, 2005; Cain et al., 2011; Reuer and Ragozzino, 2012; Macias and Moeller 2016; McCann et al., 2016).
+However, there is a separate adverse selection problem in M&A markets that has often been neglected in previous research (for an
+exception see Yakis-Douglas et al., 2017): Information asymmetry may also exist between company executives carrying out M&A and
+the very shareholders they represent. This means that even if a buyer were to address information asymmetry satisfactorily between
+itself and a seller during deal negotiations, it would still face the critical challenge of relaying its M&A strategy to shareholders. It is
+noteworthy that such third parties often do not appear in other market settings involving buyers and sellers in which the original
+models of adverse selection were based (e.g., the original models applied to used cars, labor markets, insurance, etc.). For shareholders,
+the more complex the transaction is, the higher their information-gathering costs will be, and they obtain diminishing benefits from
+trying to make sense of the firm’s deals (Veldkamp, 2006). As the information becomes costly to gather or process, shareholders can
+discount the value of the firm and firms will experience a higher cost of obtaining external resources.2 It follows that the consequences
+of information asymmetries in M&A markets might even be more far-reaching than previous M&A studies on this topic have
+considered, and the costs they entail for acquirers have been understated. This oversight may be in part due to the greater attention
+that corporate strategy scholars have given to moral hazard concerns – another implication of information asymmetry involving
+shareholders that can give rise to value destroying acquisitions (e.g., Jensen and Meckling, 1976; Dalton et al., ). Alternatively, scholars
+may have overlooked adverse selection in this context because they have implicitly assumed that capital markets are informationally
+efficient (Fama, 1970; Milgrom and Stokey, 1982).3 Regardless, for the most part research in the area of corporate strategy in general,
+as well as M&A in particular, has neglected the importance of adverse selection between company insiders and shareholders. A recent
+notable exception is the work by Benner and Zenger (2016), who have provided a conceptual discussion of the challenges managers
+face when they devise and implement complex strategies and subsequently have to relay information on these strategies to capital
+market participants.
+We wish to build on these ideas and join them with information economics research on M&A. We do so by examining whether M&A
+carries important implications for information asymmetries in capital markets and their operation. We first set out to investigate
+whether the information disclosures by company insiders to shareholders follow a pattern that is consistent with the company’s
+strategic complexity, as defined by its M&A activity in particular. To this end, we track companies’ information disclosures by using a
+comprehensive set of earnings calls transcripts spanning 12 years and over 6,000 unique companies and millions of exchanges between
+executives and analysts. In particular, we are able to isolate the corporate strategy terms spoken by company executives and analysts
+during earnings calls. Further, in view of potential endogeneity concerns, we adopt a propensity score matching technique to create
+comparable samples of M&A-active and M&A-inactive firms, as well as of firms engaged in different levels of M&A activity.
+Our results demonstrate that the M&A strategies implemented by companies affect their information exchanges with analysts, both
+in terms of questioning by analysts and the information disclosures by executives. For future research, these findings provide initial
+evidence that executives engaging in M&A are not only contending with information asymmetries directly in M&A markets with
+targets during deal-making, but also in other factor markets as well (i.e., capital markets). We therefore conclude that previous M&A
+research has understated the consequences of the inefficiencies and frictions presented by information asymmetries surrounding
+acquisition deals. In subsequent analyses, we also show that the magnitude of analysts’ earnings forecast errors increases with their
+doubts regarding a firm’s strategy and decreases with the information conveyed by executives during earnings calls. In summary, we
+offer fine-grained evidence that information disclosure is proportional to the complexity of the firm’s M&A strategy, and that richer
+disclosure by executives and more intense questioning by analysts have a direct impact on the ability of information intermediaries in
+capital markets to evaluate firms.
+As its main contribution, this study provides both conceptual arguments and empirical evidence that the strategic complexity of
+firms’ M&A strategies needs to be articulated to shareholders, in order for the latter to acquire the necessary information to evaluate
+2 Paradoxically, as noted in recent work, the more unique a firm’s corporate strategy, the more difficult it is to communicate it effectively to
+shareholders, yet it is through a unique and complex corporate strategy that economic rents are possible in the first place due to inimitability (i.e.,
+Litov et al., 2012).
+3 The definition of strong form market efficiency is that of a market in which prices reflect all public and private information. Effectively, this
+definition rules out the problem of adverse selection between company insiders and shareholders, because any deviation in price from the true value
+of the firm must be random, and not due to a recurring problem of information asymmetry between some firm stakeholders and others. Whether and
+when assumptions about different levels of market efficiency are warranted is beyond the scope of this paper, and we direct readers interested in this
+topic to the pertinent work in financial economics (e.g., Grossman and Stiglitz, 1980; Shiller, 1989).
+2
+
+===== PAGE 3 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+complex transactions by these firms. For the M&A literature, the evidence underscores the point that executives are not only called
+upon to implement M&A strategies that have the potential of conferring a competitive advantage to their firms – an arduous task in
+itself given the frequency with which acquirers fail to capture value due to information costs and other challenges – but they are also
+called upon to articulate the corporate strategy surrounding their investment decisions to the investing public. Our arguments and
+findings therefore call for future research that bridges economic transactions in certain factor markets (e.g., M&A) with information
+disclosures in others (e.g., capital markets) to account more fully for the consequences of information frictions affecting corporate
+strategy.
+2. Background theory
+The theory of information economics provides important insights into the structure and functioning of exchanges in various
+markets. The early work of Akerlof (1970) in particular helped lay the theoretical foundations to understand adverse selection, which
+is a direct consequence of asymmetric information between buyers and sellers. In a nutshell, Akerlof relied on the market for used cars
+as the context of his analysis and proposed that in a world in which buyers cannot distinguish good and bad cars, buyers either refrain
+from buying cars altogether – in which case no cars are sold and markets do not clear – or they end up with cars having a low average
+quality. Research by Spence (1973) and Stiglitz (2002) in other market contexts has further paved the way to help to understand
+phenomena that could not be fully explained by traditional neoclassical theory (Lo¨fgren et al., 2002). The applicability of information
+economics has since been proven to reach far and wide across various market contexts, including banking and credit (Stiglitz and
+Weiss, 1981) and financial markets (e.g., Grossman and Stiglitz, 1980; Myers and Majluf, 1984; Healy and Palepu, 2001), insurance
+products (Rothschild and Stiglitz, 1976), labor market contexts (Shapiro and Stiglitz, 1984), corporate social responsibility (Grewal
+et al., 2019), and impression management during CEOs’ public presentations (Whittington et al., 2016), among others.
+2.1. Information economics and M&A
+Scholarly work has applied the theory of information economics to M&A and for some time has studied its implications for the
+efficiency of these markets (for a review see Reuer, 2009). The basic idea, which mirrors the market for used cars discussed by Akerlof,
+is that sellers in M&A often hold better information on their own firm than buyers. As such, a seller has a natural incentive to inflate its
+value by presenting the firm’s resources and prospects in a favorable light, while a buyer faces due diligence costs and discounts the
+seller’s valuation given its inability to judge the target’s unobserved resources and prospects (Ravenscraft and Scherer, 1987). These
+ideas have been extensively discussed in early financial economics research, and this work has provided the theoretical basis for
+identifying ways in which buyers may cope with information asymmetry, whether through information gathering and intermediation,
+relying on signals, or using protective contractual provisions and payment structures in M&A deals (e.g., Fishman, 1989; Eckbo et al.,
+1990; Datar et al., 2001). These early ideas have been subsequently followed by substantial empirical research – including in strategy –
+which has furthered our understanding of how adverse selection affects buyers and sellers involved in M&A.
+While this research has led to considerable insights into M&A activities by firms and their performance implications, this work
+might still be understating the importance of information costs in M&A markets. This is because this research focuses on the infor-
+mation asymmetry between buyers and sellers during dealmaking, rather than the information asymmetry that can also exist between
+the buying firm and this firm’s own shareholders. To be clear, we are referring specifically to the application of information economics
+and the adverse selection problem to this context. There is in fact a sizable amount of research that has investigated how information
+asymmetry affects moral hazard and gives rise to agency problems in public corporations. It is worth drawing a quick distinction
+between the two problems: Adverse selection concerns itself with the ex-ante problems that surface when M&A buyers and sellers hold
+different information on the target company. As previously discussed, the implications of this predicament are either that buyers will
+walk away from otherwise viable transactions, or that they will risk overpaying for targets, absent appropriate remedies. In contrast,
+moral hazard focuses on the problem of hidden actions that emerge from principals (i.e., the shareholders) and agents (i.e., the ex-
+ecutives) holding diverging incentives (e.g., Jensen and Meckling, 1976). In this case, the inability of the principals to monitor agents
+may lead the latter to engage in large or diversifying acquisitions that might not be in shareholders’ interests. This problem, a problem
+of hidden action, is distinct from adverse selection, a problem of hidden information, though both concerns ultimately find their roots
+in information asymmetry between different actors and can sometimes be intertwined as a consequence (see Stiglitz, 2002 for a
+discussion).
+It remains for us to explicate why a shift in focus from information asymmetries between buyers and sellers in M&A markets to
+information asymmetries between those acquirers and their shareholders is warranted and interesting. Generally speaking, it is well
+known that capital market participants (i.e., investment bank analysts, mutual and hedge fund managers, shareholders, etc.) are called
+upon to value public firms by using the information made available by these firms’ required disclosures. While the valuation of assets
+in place may be relatively straightforward, it is an altogether different challenge to evaluate strategies that involve forward-looking
+plans (Mintzberg, 1987), complex decisions (Ghemawat, 2005; Gavetti and Rivkin, 2007) and the accumulation and deployment of
+bundles of resources and capabilities (Barney, 1986; Montgomery and Wernerfelt, 1988; Zenger et al., 2011). These points have been
+made by Litov et al. (2012), who noted that it is not only plausible that company insiders possess private information, but it is a
+requirement for their pursuit of competitive advantage (including via M&A), so that close rivals are not to be able to readily detect this
+information and be in a position to imitate the firm’s strategy.
+Company executives leverage such private information when they reach out in factor markets and set out to combine their own
+resources with those of other companies. At a minimum, M&A result in the additive combination of two previously independent
+3
+
+===== PAGE 4 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+companies, but their complexity can easily escalate when these deals involve the creation of economies of scale and scope, the
+redeployability of resources, or other idiosyncratic advantages tied to location, experience or learning. Indeed, such objectives
+represent the backbone of the value adding proposition of many M&A, and the likelihood of success of these transactions rests on the
+unique foresight held by company insiders. As noted by Angwin (2007), M&A success may simply mean life or death for organizations.
+Paradoxically, as the role of private information rises in M&A markets, so does the need for company insiders to relay their motives to
+capital market participants, in order for the latter to develop informed expectations on the value of the firm (Benner and Zenger, 2016).
+Should this information be incomplete or missing, investors would face adverse selection and its associated inefficiencies, so tensions
+can naturally arise between the firm’s pursuit of competitive advantage and its need to disclose information to capital markets to
+obtain funds on attractive terms.
+It is also worthwhile noting that a relatively new stream of research has expounded the merits of a so-called “open strategy practice”
+(Whittington et al., 2011), which includes a number of steps such as blogging, jamming, knowledge-sharing, crowdsourcing and more
+generally open communication within and across organizations and stakeholders. For example, in a recent paper Yakis-Douglas et al.
+(2017) examine information disclosure in the area of M&A and surrounding deal announcements, finding that voluntary discussions of
+individual transactions by companies tend to result in value creation for firms.
+In sum, information asymmetry between company insiders and capital markets in M&A is a compelling issue for two main reasons:
+First, at a basic level, M&A buyers themselves face challenges in assessing the value of target firms. To the extent that buyers move
+forward with a transaction, they will have ostensibly overcome these challenges satisfactorily. However, even if this is the case, the
+resolution of the information asymmetry problem separating buyers from sellers still requires buyers to be able to convey information
+on the transaction to capital markets (e.g., the value creation logic for the transaction, the deal structure, execution plans, etc.).
+Second, company insiders are also called upon to explicate their strategic vision as to how the M&A transaction will augment the
+competitiveness of their firms and support their corporate strategy. Here again, the more nuanced the foresight of insiders, the more
+likely the M&A will yield unique value, but also the more difficult the deal will be to convey to capital markets and might be imitated
+by others. These two sources of adverse selection are distinct but not mutually exclusive, and they also carry important implications for
+how firms may be able to raise capital and be competitive.
+2.2. The role of earnings calls for information delivery to capital markets
+The U.S. Securities and Exchange Commission (SEC) imposes information disclosure requirements on publicly held companies
+trading on U.S. stock exchanges. For example, firms are required by the SEC to report audited financials each quarter, and this in-
+formation plays a central role in influencing shareholders’ future expectations of companies and hence valuations. In addition to the
+mandated financial performance disclosures, capital market participants also rely on voluntary quarterly earnings conference calls.
+These conference calls provide stakeholders with opportunities to engage with firms’ corporate executives and to ask spontaneous
+questions in order to understand better the company’s strategy and performance (Lee, 2016). Accordingly, research in disciplines
+ranging from accounting to financial economics and management has sought to examine how the information disclosed during the
+calls can affect the firm and its stakeholders (e.g., Frankel et al., 1999; Bushee et al., 2004; Kimbrough, 2005; Ko¨nig et al., 2018; Pan
+et al., 2018; Harrison et al., 2019; Graf-Vlachy et al., forthcoming).
+As a few illustrations, some scholars have examined the roles of analyst coverage (Matsumoto et al., 2011) and information
+asymmetries (Bushee et al., 2018) on the content of information covered in earnings calls, while others have tied executives’ tone or
+their affective state to ensuing analysts’ stock recommendations (Mayew and Venkatachalam, 2012; Henry and Leone, 2005). There is
+a vast and growing body of work that has examined earnings calls using many different theoretical lenses across these disciplines (for a
+review, see Gao et al., 2016). Information disclosures might occur by other means, but this recent research establishes that earnings
+calls are a critical platform used by company insiders to relay information to capital market participants and, in turn, for capital market
+participants to perform due diligence as well as try to abate information asymmetries between capital providers and insiders. On this
+basis, below we specify our formal predictions for empirical analysis.
+3. Research hypotheses
+As discussed, earnings calls provide a unique opportunity for information discovery. Although earnings calls are discretionary and
+can have downsides such as a risk of information being disseminated in product markets, firms have an incentive to hold them for at
+least two broad reasons: First, not doing so would likely indicate an intent to withhold information from markets, with potentially
+adverse valuation consequences. Second, earnings calls provide executives with an opportunity to explain the drivers of their firms’
+performance, as well as to lay out their strategy and future pursuits. This purpose is beneficial to firms because it allows them to access
+capital markets, which is the main advantage of being publicly traded, but which requires transparency to providers of financial
+resources (Chemmanur and Fulghieri, 1999). It is therefore no surprise that a recent survey conducted by the National Investor Re-
+lations Institute reports that 97 percent of all public companies hold quarterly earnings calls on a regular basis (https://www.niri.org/
+).
+4. M&A as an antecedent of corporate strategy information disclosures
+Besides the general incentive to release information through earnings calls, there is also evidence that this incentive will grow
+proportionally with the complexity of the firm, for instance, based on extraordinary items to be covered by executives or details on how
+4
+
+===== PAGE 5 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+the firm will be achieving growth (e.g., Frankel et al., 1999). Specifically, single-business firms having relatively predictable per-
+formance will likely feature short and basic questions from analysts, as well as cursory responses and explanations by executives, as
+information asymmetries are likely to be relatively small, all else being equal. By contrast, more complex strategies made up of a
+multitude of corporate transactions and diverse areas of growth can lead to extended earnings calls featuring numerous and involved
+questions that enable deeper probing of specific topics.
+M&A are among the most resource-intensive strategic investments firms employ, as they require significant capital commitments,
+costly due diligence, and challenging integration processes. It is partly because of the complexity of M&A deal-making and execution
+that equity markets often respond skeptically to M&A announcements (e.g., Kaplan and Weisbach, 1992), as also corroborated by a
+recent meta-analysis showing a consistent slightly negative reaction to acquisition announcements on average (i.e., King et al., 2021).
+It follows that analysts will also want to leverage earnings calls as opportunities to obtain otherwise opaque information on the ob-
+jectives held by executives and how they will be carried out. Thus, we expect that analysts will actively inquire about these deals and
+raise broader concerns about corporate strategy to executives during calls. Likewise, based on their need to preserve liquid capital
+markets for their firms in order to obtain external financing on attractive terms, executives will have to provide pertinent information
+on their M&A, because failure to disclose this information can jeopardize their firm’s access to capital markets. As evidence of this,
+research in accounting has argued that executives use conference calls to convey private information surrounding M&A announce-
+ments, and this process results in more positive reactions by shareholders (i.e., Kimbrough and Louis, 2011). In sum, we predict a
+positive relationship between a company’s M&A activity and the amount of information exchanged on this activity during an earnings
+call:
+Hypothesis 1. Analysts in earnings calls will inquire more on the firm’s corporate strategy, the greater the firm’s M&A activity.
+Hypothesis 2. Executives in earnings calls will provide more information on the firm’s corporate strategy, the greater the firm’s
+M&A activity.
+While the above hypotheses might appear intuitive at first glance, there are many reasons why M&A activity might not translate
+into more meaningful discussions of corporate strategy and that make these hypotheses falsifiable. For example, there is an oppor-
+tunity cost in covering one topic over another in earnings calls, and inevitably priority must be given to those topics that may be
+providing shareholders with the most useful information on the firm. Additionally, executives (and analysts) may choose to discuss
+topics other than the firm’s corporate strategy to avoid transmitting information to competitors about their firm’s strategy. Likewise,
+there may also be managerial and opportunistic reasons why executives might not want to engage in discussion of corporate strategy
+(for instance, if an acquisition is brought about by agency considerations, an executive has an interest in not drawing attention to it).
+Lastly, there are many other vehicles by which firms may pursue diversification (like joint ventures, licensing, corporate venture
+capital, etc.). Thus, the use of the corporate strategy dictionary we create is not inherently limited to M&A. Finally, it is not clear that
+analysts will prioritize plumbing the depths of firms’ corporate strategies, given their immediate focus on predicting near-term
+earnings as accurately as possible.
+4.1. Consequences of corporate strategy information disclosures
+While the previous section concerned itself with the congruity of firms’ M&A strategy and the information exchange in earnings
+calls, we now turn our attention to the effects of this exchange on the adverse selection problem faced by capital market participants.
+Namely, we examine whether ceteris paribus, analysts’ earnings forecast errors in the quarter following the focal call are affected by the
+information flow during the call. Thus, the previous hypotheses established the antecedent logical links between adverse selection and
+the mechanisms available to market participants to reduce its effects (i.e., questions by analysts and disclosures by executives). In
+contrast, the ensuing section attempts to determine whether the mechanisms above facilitate reductions in information asymmetry
+using analysts’ forecast errors as an established indicator of these challenges faced by analysts (Lang and Lundholm, 1996; Coller and
+Yohn, 1997; Easterwood and Nutt, 1999; Affleck-Graves et al., 2001; Kim, 2016).
+More specifically, analysts are tasked with attending calls and raising questions on the aspects of a firm’s performance and direction
+about which they believe they are insufficiently informed. They subsequently use the newly acquired information to form an estimate
+of what the firm’s earnings will be in the quarter following the call (e.g., Bowen et al., 2002; Kimbrough, 2005; Lobo et al., 2017;
+Heinrichs et al., 2019). It is therefore reasonable to infer that, all else equal, the greater the asymmetry in information between analysts
+and executives, the more the former will question the latter. Thus, the amount of questioning on a firm’s M&A strategy should reflect
+the level of information available to analysts on this topic. Barring external and perverse dynamics,4 if few or no questions are raised,
+then analysts should hold equal information to executives, and analysts can form forecasts based on information at hand. In contrast,
+extended inquiries by analysts should indicate a wide information gap between the two, which in turn raises the stakes of adverse
+4 Some research and anecdotal evidence have noted that the ability by analysts to ask questions may be partially driven by their previous record of
+making positive recommendations on the firm issuing the earnings call (see for instance Siconolfi, 1995; Chen and Matsumoto, 2006; Mayew, 2008).
+5
+
+===== PAGE 6 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+selection.5 As such, we therefore posit:
+Hypothesis 3. The greater the amount of questioning by analysts on the firm’s corporate strategy in a given earnings calls quarter,
+the larger the analysts’ earnings forecast error in the following quarter.
+Questions by analysts reflect their concerns and information asymmetry regarding M&A within firms’ corporate strategies, while
+answers by executives should have the effect of reducing adverse selection problems for firms whose information is more difficult to
+understand (e.g., Frankel et al., 1999; Bushee et al., 2018; Rabier, 2017; Bochkay et al., 2020). Although it is likely that there will be a
+positive correlation between the questions on a firm’s M&A activity and the corresponding answers offered by executives, it is also true
+that executives have considerable discretion of providing differing levels of details on any given question as well as disclosing in-
+formation on an unprompted basis. In some cases, they may choose to talk at length on transactions’ motives and intended objectives,
+even if they are not questioned by analysts, while in others they may opt to be short and concise, even when pushed by analysts.
+Likewise, executives can also steer the conversation to one topic or another, based on their perception of what items may deserve more
+coverage, independent of whether they are asked about them directly or not.
+At the most basic level, executives are called upon to allocate the allotted time to covering several topics, of which a firm’s M&A
+agenda is but one. Thus, extensive discussions on any given items may simply not be feasible based on time limitations alone.
+Moreover, there has been considerable academic work that has examined the drivers of the quantity and quality of the information
+executives disclose during earnings calls. Two clear-cut takeaways from this research are that there is a positive relationship between
+the opacity of a firm’s performance and strategy and the amount of information conveyed by executives during calls (Frankel et al.,
+1999), as well as between the amount of information disclosed by executives in earnings calls and the reaction of market participants
+(see for instance, Kimbrough and Louis, 2011). Even still, both anecdotal and scientific evidence points to a great deal of variability in
+the information volunteered by executives, such that executives may willingly or unwillingly fail to convey all the relevant infor-
+mation, either because of their own limitations, pre-conceived prejudices, or their desire to protect the firm’s strategic purposes, as
+discussed in prior work (see for instance Francis and Philbrick, 1993; Hollander et al., 2010; Matsumoto et al., 2011; Mayew et al.,
+2013). Insofar as firms with greater M&A activity offer significantly more information on their corporate strategy, we predict that this
+information will help to reduce the effects of adverse selection affecting analysts:
+Hypothesis 4. The greater the amount of information disclosed by executives on the firm’s corporate strategy in a given earnings
+calls quarter, the smaller the analysts’ earnings forecast error in the following quarter.
+5. Methods
+5.1. Data and sample
+We draw from a number of data sources to compile the data required for our analysis. As a starting point, we use quarterly earnings
+calls transcripts made available through Seeking Alpha, which is an organization that provides investors with news, information, and
+data on a large set of public firms. In detail, the population of earnings calls available through Seeking Alpha as of the time of our data
+collection comprises over 103,000 transcripts released by 4,500 unique companies over the 2006–2017 timeframe.6 In our sample we
+only focus on firms traded either on the NYSE or Nasdaq. This screening criterion allows us to avoid smaller firms traded in minor
+exchanges or “over the counter”, which are also unlikely to be covered by Seeking Alpha. If we compare the total market capitalization
+of the firms in our sample against the total market capitalization of the firms traded on the NYSE and Nasdaq, we find that our sample
+comprises on average 70 percent of the value of these firms.7
+The transcripts we use are available to download as text files and they contain every single interaction among company executives,
+analysts and the operator. Notably, each comment by the individuals is preceded by the identifying information of the speaker, which
+allows us to isolate with precision who said what in each call. We then use Python to code each of the comments and build a database
+that uniquely identifies the company issuing the earnings call, the time of the call, the identity of the speaker and the position of the
+speaker comment in the context of the call. In all, the sample includes 7.27 million individual comments in total.
+Having identified the baseline sample of firms for which we have earnings calls’ transcripts available, we complement this dataset
+with financial information from Compustat quarterly data, and with information on earnings forecasts from I/B/E/S. In both cases, we
+use the same year and quarter as the earnings call to match all databases. The next step is to calculate the M&A activity of the firms in
+5 It is worthwhile to note that although it is possible that prolonged questioning by analysts will result in a reduction of the information gap
+separating them from executives, this is not likely after controlling for executives’ answers. Also, earnings calls have limited scope and duration, and
+a firm’s corporate strategy is but one of several topics that may need to be covered in a call. As a result, M&A will inevitably only receive a fraction
+of the total call time, and rarely do analysts manage to ask all the questions they wish, and the questions they do ask may trigger additional concerns
+about a transaction from other analysts.
+6 Later in the paper we explore the effects of removing the years surrounding the financial crisis from the analyses.
+7 Seeking Alpha chooses what firms to cover based on the preferences of its subscribers. A comparison of the average (median) size of our sampled
+firms against the population of NYSE and Nasdaq firm size reveals significant differences, with the former being about 1.5 (2.3) times larger than the
+latter. Thus, despite the comprehensive coverage of Seeking Alpha in terms of total market cap, and even though by only considering NYSE and
+Nasdaq firms we are sampling on the largest public firms in the United States, there remains a size bias, which does not affect our empirical
+approach, but might affect the generalizability of our findings.
+6
+
+===== PAGE 7 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+our sample. While M&A is an extremely pervasive tool in corporate strategy, there is a great deal of heterogeneity around whether and
+to what extent individual firms employ acquisitions. To arrive at a detailed account of just how much each individual firm imple-
+mented M&A prior to an earnings call, we draw from the Thomson One database, which is a comprehensive source that canvasses
+firms’ corporate activity over time.
+Propensity score matching and endogeneity. The goal of our analysis is to determine whether firms that engage in M&A activity
+provide useful information to investors, in order to allow the latter to be less exposed to the risk of adverse selection. We are also
+interested in determining whether analysts who participate in the calls on behalf of capital market participants, inquire about the
+corporate strategies of firms that engage in M&A. To this end, it is necessary to compare samples of firms with and without M&A
+activity (as well as compare firms with less versus substantial M&A activity, as we will discuss later). It is apparent that simply
+bifurcating the population of firms based on whether they engage in M&A creates potential problems, insofar as this sort of activity is
+financially and managerially demanding, and it is also not suited for all competitive contexts and time periods. Accordingly, such
+direct comparisons may lead to biased inferences due to unobserved heterogeneity.
+To address this concern, we first estimate models predicting the use of M&A by individual firms and create propensity scores that
+we use to match M&A active firms with their most comparable counterparts. We then build a final sample based on the following
+criteria: First, the absolute value of the difference between the propensity scores of active and inactive M&A firms has to be smaller
+than or equal to 0.1. Second, both firms have to be in the same industry8 and the earnings call has to be in the same year and quarter.
+Lastly, both firms have to have the same status as either being in the S&P 500 index or not.9 If all of these criteria are met, then the
+inactive firm is included in the sample of firms to compare against its corresponding active firms. We allow for as many as three
+matches to a given active firm in a given quarter, though our results are not sensitive to this choice of creating comparison groups. The
+final sample comprises 55,928 firm-quarters, of which roughly 26 percent are active in M&A. In subsequent analyses, we repeat the
+same matching process, but we compare only highly active versus less active firms. In this case, we exclude all firms without at least
+one M&A transaction, and we split the sample between those firms with levels of activity above or below the median level. This
+supplementary dataset features 20,990 firm-quarters, of which about 5,600 are highly active firms, and the remainder are the matched
+counterparts.
+For the estimation of the models predicting analysts’ earnings forecast errors, we begin from the two samples described above (i.e.,
+active vs. inactive firms and highly-active vs. less-active firms) and then implement additional matching procedures, as follows: We
+isolate firms that feature a corporate strategy dictionary use at or above the median (either on the analyst or the executive side,
+depending on the model specification) and then match these firms against the pool of firms with below-the-median dictionary usage,
+based on the propensity scores obtained from the estimation of a logistic regression predicting a high use of the corporate strategy
+dictionary10, as well as the same matching criteria discussed previously. In sum, we start from samples of firms that are identical in
+every respect considered, except for their use of M&A and then use propensity-score matching to compare these firms based on the use
+of the words contained in our corporate strategy dictionary.
+5.2. Variables and specifications
+Propensity scores and matching. We begin our analyses by estimating two logistic regressions predicting whether or not the focal
+firm engaged in M&A (or was heavily engaged in M&A or not), in order to match firms. To this end, we create two indicator variables
+labeled M&A active firm, which function as dependent variables in the models. The first variable takes a value of one if the firm entered
+into at least one M&A deal in the 5 years preceding the earnings call, and zero otherwise. The second, which only includes M&A-active
+firms during the same time window, separates firms with an activity level equal to or greater than the median level of activity from
+firms with an activity level lower than the median. The covariates in the propensity score models mostly overlap with the specification
+of the models used to test our predictions with one single exception. We discuss these variables in detail below.
+Main models. The second set of dependent variables are implemented in the estimation of the models for testing hypotheses 1 and
+2, in which we predict the use of corporate strategy words by both analysts and executives during earnings calls. In order to capture the
+extent to which executives and analysts engage in a conversation surrounding the M&A activity of the firm, we build a dictionary of
+words that mirrors Feldman’s (2020) list of corporate strategy keywords. These words and their variants are: ACQUI*, ALLY, ALLI-
+ANCE, ASSET SALE, CORPORATE, DIVERSIF*, DIVEST*, FIRM BOUNDAR*, M&A*, MERG*, SCALE, SCOPE, SELLOFF, SPINOFF,
+STRATEGY.11 The computation of the variables involves three steps. First, we sum up the dictionary keywords spoken by each of these
+8 We use the Fama-French 12-industry definition to distinguish the following industries: (1) Food, Tobacco, Textiles, Apparel, Leather, Toys; (2)
+Cars, TVs, Furniture, Household Appliances; (3) Machinery, Trucks, Planes, Office Furniture, Paper, Computer Printing; (4) Oil, Gas, and Coal
+Extraction and Products; (5) Chemicals and Allied Products; (6) Computers, Software, and Electronic Equipment; (7) Telephone and Television
+Transmission; (8) Utilities; (9) Wholesale, Retail, and Some Services (Laundries, Repair Shops); (10) Healthcare, Medical Equipment, and Drugs;
+(11) Finance; (12) Other – Mines, Construction, Building Materials, Transportation, Hotels, Business Services, Entertainment.
+9 We use the Compustat Index Constituencies database to determine which firms belonged in the S&P 500.
+10 Note that this approach results in the estimation of four separate regressions. The results of these regressions are not shown, but they are
+available from the authors. The covariates in the models are: (1) whether the firm belongs in the S&P500 index; (2) the total number of alliances and
+joint ventures entered into by the firm in the 5 years leading up to the call; (3) the total number of acquisitions entered into by the firm in the 5 years
+leading up to the call; (4) the firm’s financial leverage; (5) the firm’s market capitalization; (6) the firm’s profit margin; (7) industry controls.
+11 We run several robustness checks around the dictionary word list, and we discuss these analyses later in the paper.
+7
+
+===== PAGE 8 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+two classes of participants within each call transcript. Second, we divide these sums by the total words they spoke during the call.
+Lastly, we multiply these proportions by 1,000 for scaling purposes. These operations allow us to arrive at a continuous, weighted score
+that is bounded at zero on the lower end (when no instance of any of the keyword exists in the entire call), and at 1,000 on the higher
+end (in the hypothetical scenario in which every word spoken belongs in the keyword list).
+The final dependent variable aims at measuring the accuracy of analysts’ earnings forecasts. We compute this measure of analyst
+forecast errors as the percentage difference between the earnings estimate produced by analysts following the firm and the actual
+earnings announced by the latter (Collins and Hopwood, 1980; Cen et al., 2013; Harris and Wang, 2013). Specifically, using I/B/E/S
+data, we obtain the median earnings estimate for the focal quarter and compute the absolute difference between this number and the
+actual earnings. We then divide the difference by the median estimate.12
+Controls. The main theoretical variables in the models are the indicator variables that separate M&A-active firms from their
+counterparts. We have already discussed the way in which we construct these measures in the previous section of the paper. We also
+introduce several controls, and we discuss each of them here in the order they appear in the tables. Firm in the S&P 500 index is an
+indicator variable taking a value of one if the firm belonged in the S&P 500 index at the time of observation, and zero otherwise. Firms
+in the S&P 500 are subject to greater scrutiny by the investing public (Shleifer, 1986) and this may affect their corporate commu-
+nications. Number of analysts is included in our logistic models predicting the likelihood of M&A engagement and it reflects the number
+of analysts following the firm and forecasting its quarterly earnings, as provided by I/B/E/S. Firms with attractive growth prospects or
+prominence are likely to attract greater coverage by analysts.
+At the firm level, we also include Firm leverage, Firm market capitalization and Firm profit margin in all models,13 because these
+measures of the firm’s financial health might affect their likelihood to engage in M&A, the Q&A session in earnings calls, and the
+ability by analysts to forecast the firm’s earnings with accuracy in the future. We use Compustat quarterly data to compute these
+variables. We also include Firm Tobin’s Q in the logistic models, as the firm growth prospects as proxied by this ratio may also affect its
+propensity to carry out M&A deals. Tobin’s Q is approximated by dividing the firm’s market capitalization by its total assets, as
+commonly done in the literature (Chung and Pruitt, 1994).
+The models estimating analysts’ earnings forecast accuracy introduce additional covariates as follows: Corporate dictionary intensive
+is the key theoretical variable in the model, and it is computed in exactly the same way as the dependent variables used for the models
+predicting the utilization of corporate keywords during earnings calls. The control set includes the same variables previously covered,
+plus Transcript length, which is split between analysts and executives, and it consists of the number of words spoken by either class of
+participant during the focal earnings call. We expect that the accuracy of analysts forecast will be at least partially affected by the
+length of the information exchange occurring during the call, independent of the use of the corporate strategy keywords we track. Total
+M&A deals is a count variable tracking the number of deals entered into by the focal firm during the 5 years leading up to the call. We
+include this control because it is plausible that the earnings of active firms may be more difficult to predict than the earnings of less
+active or inactive firms. Lastly, we include industry fixed effects in all models. Time fixed effects were never significant in any model
+either aggregately or even individually, so we exclude them from all estimations for the sake of parsimony.
+Models. The models used for the analyses pertaining to the utilization of the corporate dictionary keywords by analysts and ex-
+ecutives are Tobit regressions. As previously noted, the dependent variables in these models are continuous and bounded at zero, as we
+scale the count of keywords by the total number of words spoken by each speaker category. Thus, standard OLS models would be
+inadequate as they may result in the inappropriate prediction of values less than zero. It should be noted that we also re-estimate the
+Tobit regressions using fractional regressions, and the interpretation and significance of the results remains unchanged. Lastly, the
+models estimated to predict the determinants of analysts’ forecast errors are standard OLS regressions with robust standard errors, as
+the dependent variable is the percent deviation of the predicted earnings from the actual earnings, in the quarter following the focal
+earnings call.
+6. Results
+The first analytical step in our analysis was to estimate a logistic regression to build the propensity scores used for matching M&A-
+active and M&A-inactive firms. Specifically, we predicted M&A activity for the broad sample of firms, as well as only for firms with at
+least one M&A transaction. The dependent variables of these models split firms’ level of M&A activities between whether they were at
+or above the median level of active firms, or below. Further, the covariates isolate firms that belonged in the S&P 500 index, the
+number of analysts present in the call, the firm’s leverage ratio, market capitalization, Tobin’s Q and profit margins, as well as industry
+fixed effects. While we do not report the results of these estimations for brevity, both models were very significant on an overall basis,
+and nearly all covariates appear to be strongly associated with the dependent variable.
+It is useful to offer a visual representation of how well the procedures we followed match firms based on their M&A activity. In
+Fig. 1a and Fig. 1b we plot the average value of the six covariates in the two models using for the estimation of the propensity scores (i.
+e., the M&A-active firms) and the matched samples across these groups. The grey area in the plots shows a range of 5 percent above or
+12 It is apparent from the way in which we operationalize this variable that we are interested in earnings forecast deviations in any direction. Thus,
+we are not predicting positive or negative differences based on the use of the corporate dictionary keywords considered, but rather greater accuracy.
+13 Leverage is computed as the total debt-to-total assets ratio. Market capitalization is the straightforward multiplication of the firm’s share value at
+the end of the quarter nearest to the earnings call by the number of its outstanding shares. Profit margin is the ratio of the firm’s net income to its
+total sales.
+8
+
+===== PAGE 9 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+below the M&A-active firms’ values. It is evident that the vast majority of matching firms are well within this 5 percent error margin.
+Thus, we are able to arrive at a closely comparable set of firms independent of their M&A activity.
+Table 1 shows basic descriptive statistics and correlations for the full matched sample.14 It is noteworthy that the use of the
+corporate dictionary keywords appears to be far more frequent for executives than for analysts, although as expected both classes of
+call participants appear to use these words concomitantly and when the firm is active in M&A (i.e., all p <0.001). While only roughly 7
+percent of the firms in our sample belong in the S&P 500 index, these firms are more active in M&A and they tend to be bigger and more
+profitable than their counterparts. Moreover, M&A activity is positively correlated with firm size, as expected.
+We now turn to the models predicting the use of the corporate dictionary keywords in earnings calls. Our first hypothesis predicted
+a higher incidence of analyst questions surrounding the firm’s corporate activity, when the firm engaged in M&A. We find strong
+support for the hypothesis, as the Active M&A firm coefficient is positive and highly significant. Similarly, when we replace the in-
+dicator variable with the count of total M&A deals entered into by the firm in the 5 years preceding the call, we find that each
+additional transaction positively affects the analysts’ questioning of the firm’s corporate strategy (i.e., both p <0.0001). The difference
+between M&A active and inactive firms amounts to a nearly 9 percent greater usage of corporate strategy terms by analysts.
+The same pattern is also observed when we examine the executives’ use of the corporate dictionary keywords: Both the dummy
+variable separating active and inactive firms, and the continuous deal count variable are positive, sizable and highly significant (i.e.,
+both p <0.0001). Paralleling the interpretation offered above, M&A active firms’ executives discuss corporate strategy 7.2 percent
+more than inactive firms. Thus, once again we find strong corroborating evidence in support of our predictions.
+Table 3 provides the model estimation results based on the sample of M&A active firms. As before, we find support for hypotheses 1
+and 2, which predict a higher use of the corporate strategy dictionary terms for M&A-active firms by both analysts and executives,
+respectively. More specifically, in all cases, M&A activity (whether discretized or in continuous form) is positively associated with the
+use of corporate keywords (i.e., β =0.86 and β =0.26 for analysts, and β =0.64 and β =0.20 for executives, all p <0.0001). In
+economic terms, firms above the median activity level in M&A are questioned about corporate strategy 8.6 percent more compared to
+the firms less engaged in acquisitions. Similarly, executives from firms above the median level in M&A discuss corporate strategy 6.4
+percent more compared to less active firms. Combined, these results offer additional evidence that the exchange and diffusion of
+information surrounding a firm’s corporate strategy is affected by the firm’s M&A activity levels, as predicted.
+The last portion of the analysis is intended to shed light on whether the information exchange on firms’ corporate strategy that
+unfolds as a function of their M&A activity is ultimately useful to outsiders. To answer this question, we estimate regressions that use
+the accuracy of analysts’ predictions of firms’ earnings in the quarter following the focal earnings call as the dependent variable. The
+key theoretical construct on the right-hand side of the model is the use of the keywords included in the corporate dictionary, in addition
+to several controls that may also explain the accuracy of analysts’ forecasts. The results appear in Table 4.
+To mirror the structure used in the previous tables, we first split the sample between M&A-active and -inactive firms, and then only
+consider active firms and split them between more versus less active (across the median level of activity). We find that more analyst
+questions on the firm’s corporate strategy lead to a larger error of the firm’s earnings when considering active firms (i.e., β =0.08, p =
+0.0009), which translates into an increase in the earnings forecast error of 8 percent in the following quarter, consistent with our
+prediction in H3. Interestingly, the error in the forecast is also magnified by the number of M&A transactions entered into by the firm,
+as shown in the models. Thus, we know that M&A activity triggers more questions from analysts just as it also leads to less precision in
+their earnings forecasts.
+The second model of the table shows that when executives discuss their corporate strategy more, the analysts forecast error in the
+following quarter is considerably smaller (i.e., β =(cid:0) 0.61, p <0.0001 and over 60 percent smaller), thereby lending support for our
+prediction in H4. In this case, the proclivity by insiders to inform investors of the rationale of their corporate strategy (as defined by
+M&A) improves the ability by analysts to forecast the firm’s future performance. Again, this finding holds even though M&A generally
+raise the complexity of the task of predicting earnings for analysts, as also shown in the model.
+The last two models in the table reveal some differences, when the sample considered is only comprised of M&A-active firms.
+Namely, while the information disclosures by executives still reduces analysts’ forecast errors (i.e., β =(cid:0) 0.10, p <0.05 and 10 percent
+smaller errors, on average), the questioning by analysts no longer increases the error (i.e., β =0.005, n.s.). It is plausible that unlike in
+the previous case (i.e., the first model with active and inactive firms), the questioning by analysts on active firms’ corporate strategy is
+not as good a proxy for how challenging their earnings forecast is going to be. This could be because the marginal benefit of the
+additional information sought by analysts is smaller for active firms, or alternatively, analysts following firms that are routinely
+engaged in M&A may be better equipped to interpret the information they receive and therefore their forecast error may be unaffected
+by their questioning (no matter how intense). The main takeaway from the table remains that the information diffusion on firms’
+corporate strategy resulting from earnings calls has a generally strong effect on the ability by analysts to forecast firm future
+performance.
+Robustness checks. Although we have sought to make sensible decisions in the design of our empirical tests, we have also had to
+make some decisions that may play a role in the estimated coefficients. Most notably, we decided to track firms’ M&A activities for a
+period of 5 years prior to the focal earnings call. It is plausible that a recency effect may be at play, such that M&A deals closer to the
+call will be more likely to be on the agenda and up for discussion than older deals within the time window. In this sense, using a
+relatively long tracking period – like we do – may weaken our results, because it may cause us to include firms that were active in M&A,
+14 As before, we can provide the table for the sample that includes only M&A active firms upon request.
+9
+
+===== PAGE 10 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+Fig. 1a. A propensity score stratification and group matching (full sample, 5 percent banding SHOWN).
+but only years prior to the call. However, this approach also offers the benefit of expanding the base sample of active firms, thereby
+providing a more robust benchmark from which to build the matched sample.
+When we change the 5-year window to 1 year, we are left with only 6,281 active firms, which are matched with 18,298 inactive
+ones. As expected, the more recent nature of the M&A activity experienced by firms results in far more intense scrutiny by analysts:
+Active firms were asked about corporate strategy 148 percent more than inactive firms (i.e., both p <0.0001). For their part, exec-
+utives of active firms discussed their corporate strategy 123 percent more than their counterparts. Turning to the analysts’ forecast
+error, we find that active firms are subject to a greater error, when they are probed on corporate strategy (i.e., 14 percent larger error
+size, p <0.0001). In contrast, the forecast error is smaller when executives discuss this topic (i.e., 44 percent smaller error size, p <
+0.0001). Similar findings – all consistent with our predictions and main results – were found for the comparison of highly- and lowly-
+active firms.15
+15 The results for the comparison of highly- and lowly-M&A active firms, along with additional ones using alternate time windows can be obtained
+from the authors on requests.
+10
+
+===== PAGE 11 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+Fig. 1b. B propensity score stratification and group matching (active firms sample, 5 percent banding SHOWN).
+Table 1
+Descriptive statistics and correlation table for FULL matched SAMPLEa.
+Variable Mean SD 1 2 3 4 5 6
+1. Total corporate words Analysts 1.82 2.29
+2. Total corporate words Executives 9.67 8.49 0.52
+3. Active M&A firm 0.26 0.44 0.16 0.22
+4. Firm in S&P 500 0.07 0.25 0.04 0.01 0.05
+5. Firm leverage 2.26 3.13 (cid:0) 0.01 0.016 0.05 0.07
+6. Firm size ($MM) 5321 11324 0.08 0.05 0.19 0.25 0.06
+7. Firm profit margin (cid:0) 0.02 0.67 0.06 0.05 0.03 0.04 0.05 0.08
+a N =55,928. The sample is obtained by estimating propensity scores (PS) for the likelihood of an M&A deal in the 5 years preceding the focal
+earning call. We match active and inactive firms by PS (i.e., within 0.10 of each other), as well as by quarter, industry and whether they belong in the
+S&P 500 index. Pearson correlations are shown for continuous variables and Spearman for dichotomous variables. All correlation coefficients are
+statistically significant at p <0.001.
+11
+
+===== PAGE 12 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+Table 2
+Tobit estimation results for matched SAMPLE (ACTIVE VS. Inactive FIRMS)a.
+Analysts’ Questions Executives’ Commentary
+Controls only Active vs. inactive firms Total M&A deals Controls only Active vs. inactive firms Total M&A deals
+Intercept (cid:0) 8.1831 (cid:0) 7.7631 (cid:0) 7.5701 (cid:0) 0.6624 (cid:0) 0.4958 (cid:0) 0.2959
+1.2446 1.2282 1.2307 0.4970 0.4879 0.4870
+<0.0001 <0.0001 <0.0001 0.1826 0.3095 0.5435
+Active M&A firm 0.8785 0.7183
+0.0324 0.0157
+<0.0001 <0.0001
+Total M&A deals 0.2838 0.2412
+0.0103 0.0050
+<0.0001 <0.0001
+Firm in the S&P 500 index (cid:0) 0.3183 (cid:0) 0.2873 (cid:0) 0.3075 (cid:0) 0.2502 (cid:0) 0.2281 (cid:0) 0.2423
+0.0601 0.0596 0.0596 0.0293 0.0288 0.0287
+<0.0001 <0.0001 <0.0001 <0.0001 <0.0001 <0.0001
+Firm leverageb (cid:0) 0.6207 (cid:0) 0.6273 (cid:0) 0.6230 (cid:0) 0.1276 (cid:0) 0.1303 (cid:0) 0.1284
+0.0718 0.0713 0.0713 0.0347 0.0341 0.0340
+<0.0001 <0.0001 <0.0001 0.0002 0.0001 0.0002
+Firm market capitalizationb 0.2194 0.1659 0.1611 0.0138 (cid:0) 0.0290 (cid:0) 0.0337
+0.0103 0.0104 0.0104 0.0049 0.0049 0.0049
+<0.0001 <0.0001 <0.0001 0.0049 <0.0001 <0.0001
+Firm profit marginb 2.9852 2.9039 2.8730 0.9397 0.9258 0.8881
+0.4015 0.3962 0.3970 0.1595 0.1566 0.1563
+<0.0001 <0.0001 <0.0001 <0.0001 <0.0001 <0.0001
+Industry fixed effects Yes Yes Yes Yes Yes Yes
+Sigma 3.1863 3.1625 3.1608 1.6268 1.5965 0.2294
+0.0129 0.0128 0.0128 0.0050 0.0049 0.0049
+<0.0001 <0.0001 <0.0001 <0.0001 <0.0001 <0.0001
+χ2 1242 1974 1998 1720 3788 3962
+<0.0001 <0.0001 <0.0001 <0.0001 <0.0001 <0.0001
+a N =55,928. The sample is obtained by matching firms active in M&A with inactive firms, using propensity score and nearest-neighbor matching
+techniques. The models are estimated using Tobit regressions. The dependent variables in the models above represent the count of words contained in
+our corporate dictionary divided by the count of total spoken words. Together, these variables account for analysts’ and executives’ engagement in the
+firms’ corporate strategy. Standard errors and p-values appear below each parameter estimate.
+b These variables were logged to remedy skewness.
+Another potential issue is the fact that our longitudinal sample includes the years surrounding the financial crisis, which may have
+created uncertainty such as to influence the content of earnings calls. An examination of the year fixed effects in our model estimations
+reveals that the years 2007–2009 were negatively associated with the coverage of corporate strategy by both analysts and executives (i.
+e., all models p <0.001). Interestingly, analysts appeared to ask more questions during this period (31 vs. 24 questions, specifically),
+although fewer questions were in fact about corporate strategy (p <0.001). We suspect that this is a direct result of the fact that
+analysts focused more on questions pertaining to the financial and operational effects of the crisis than other topics. Likewise, ex-
+ecutives also covered corporate strategy topics less, partly because they were not challenged with specific questions, presumably. What
+is somewhat surprising is that the lower coverage of corporate strategy did not stem from lower levels of M&A activity by the firms
+issuing the calls, as the average number of transactions leading up to the call was slightly higher in the financial crisis years, than after
+those years (i.e., 0.65 vs. 0.61 deals).
+Independent of the above, when we reran the models excluding the financial crisis period, none of the theoretical variables in the
+models shown in Tables 2 and 3 were affected, as they all kept their signs and significance levels (i.e., all p <0.0001). Similarly, the
+models shown in Table 4, which relate the difference between forecast and actual earnings in the quarter following the firm’s focal
+earnings call, yield similar inferences for our final hypothesis. Specifically, a higher level of corporate strategy questioning by analysts
+in a given earnings call is associated with an increase in the forecast error of 7.0 percent for all firms (p <0.0001), and of 3.2 percent
+for active firms (n.s.) in the following quarter. For their part, executives’ more extensive use of corporate strategy words meets with a
+58.4 (7.2) percent decrease in forecast error for all (active) firms (p <0.0001 and p =0.024, respectively). Thus, at least insofar as the
+relationships we are exploring, the financial crisis does not seem to play an important role in shaping the mechanisms connecting
+firms’ M&A activity and information disclosure in earnings calls.
+The next set of tests is aimed at the plausible concern that whenever executives discuss corporate strategy in earnings calls, they
+may do so either because they were directly asked about the topic, or they covered corporate strategy topics spontaneously. If the
+former scenario was the prevailing one, there might be legitimate concerns surrounding the independence of the choice of covering this
+topic by executives. However, just because an analyst may raise a question on corporate strategy, it does not follow that the executive
+will choose to cover the topic extensively, if at all. The concerns tied to opportunistic incentives and the competitive implications of
+“spilling the beans” on corporate strategy apply, and executives are certainly afforded discretion with respect to how they answer
+questions. Even still, we wished to dig into the empirical aspect of this question and went back to the data, in order to determine how
+often coverage of corporate strategy by an executive directly followed a question on the topic by an analyst. To answer this question,
+12
+
+===== PAGE 13 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+Table 3
+Tobit estimation results for matched SAMPLE (ACTIVE FIRMS only)a.
+Analysts’ Questions Executives’ Commentary
+Controls only Above/below median Total M&Adeals Controls only Above/below median Total M&A deals
+Intercept (cid:0) 3.8200 (cid:0) 2.9792 (cid:0) 3.2777 (cid:0) 3.8608 (cid:0) 3.3131 (cid:0) 3.5112
+2.1169 2.1052 2.1060 1.0748 1.0633 1.0631
+0.0711 0.1570 0.1196 0.0003 0.0018 0.0010
+Active M&A firm 0.8590 0.6401
+0.0584 0.0299
+<0.0001 <0.0001
+Total M&A deals 0.2588 0.1953
+0.0176 0.0091
+<0.0001 <0.0001
+Firm in the S&P 500 index (cid:0) 0.4126 (cid:0) 0.2817 (cid:0) 0.3205 (cid:0) 0.0817 0.0113 (cid:0) 0.0159
+0.0972 0.0971 0.0969 0.0497 0.0493 0.0493
+<0.0001 0.0037 0.0009 0.1000 0.8188 0.7476
+Firm leverageb (cid:0) 1.3219 (cid:0) 1.2679 (cid:0) 1.2591 0.3851 0.4210 0.4276
+0.1457 0.1450 0.1450 0.0741 0.0733 0.0733
+<0.0001 <.0001 <0.0001 <0.0001 <0.0001 <0.0001
+Firm market capitalizationb 0.1332 0.0352 0.0511 (cid:0) 0.0943 (cid:0) 0.1653 (cid:0) 0.1541
+0.0188 0.0198 0.0195 0.0095 0.0100 0.0098
+<0.0001 0.0754 0.0088 <0.0001 <0.0001 <0.0001
+Firm profit marginb 2.5810 2.3991 2.3954 1.9411 1.8309 1.8195
+0.6796 0.6757 0.6761 0.3451 0.3414 0.3414
+0.0003 0.0004 0.0004 <0.0001 <0.0001 <0.0001
+Industry fixed effects Yes Yes Yes Yes Yes Yes
+Sigma 3.4121 3.3938 3.3932 1.8178 1.7981 1.7979
+0.0214 0.0212 0.0212 0.0090 0.0089 0.0089
+<0.0001 <0.0001 <0.0001 <0.0001 <0.0001 <0.0001
+χ2 568 784 784 952 1406 1408
+<0.0001 <0.0001 <0.0001 <0.0001 <0.0001 <0.0001
+a N =20,990. The sample includes only firms with at least one M&A deal. We match firms at or above the median M&A activity level with firms
+below the median by propensity score and nearest-neighbor matching techniques. The models are estimated using Tobit regressions. The dependent
+variables in the models above represent the count of words contained in our corporate dictionary divided by the count of total spoken words.
+Together, these variables account for analysts’ and executives’ engagement in the firms’ corporate strategy. Standard errors and p-values appear
+below each parameter estimate.
+b These variables were logged to remedy skewness.
+we examined the individual intervention by call participants, rather than using the earnings call as the unit of analysis. Specifically, we
+found that of the 2,038,415 executive responses, 179,385 touched on corporate strategy. Of these, 52,328 did so as a direct result of an
+analyst question, while 127,057 were instances of spontaneous coverage by executives. This translates to a ratio of nearly 2.5 of the
+latter to 1 of the former, and it demonstrates that executives often choose to bring up corporate strategy without a direct question about
+the topic. Also interestingly, the average length of an executive response that covered corporate strategy was substantially longer if the
+coverage was spontaneous than otherwise (i.e., t =14.67, p <0.0001).
+Taking this supplementary analysis to the multivariate setting, and therefore returning to the individual transcript as the unit of
+analysis, we adopted two alternate measures to control for whether the use of corporate dictionary words by executives was partially
+explained by direct questioning by analysts. Namely, we first introduced an indicator variable Analyst leading question, which takes a
+value of 1 if at least once executives were asked about corporate strategy during a given earning call, and 0 otherwise. As an alter-
+native, we also introduce a continuous variable Analyst leading question amount that measures the amount of corporate strategy words
+used by analysts during the call. We then re-estimated the models shown in Tables 2 and 3 below with the addition of either control. In
+all 4 models examining executives, the key theoretical variables Active M&A firm and Total M&A deals remained positive and highly
+consistent (i.e., all p <0.0001). It is worth noting that the two controls were also positive and significant, as predicted. In sum we can
+conclude that, while being asked directly by analysts increases the incidence of the coverage of corporate strategy, the association
+between M&A activity leading up to the earnings call and the amount of executive coverage of corporate strategy remains strong
+independent of the presence or number of leading questions on the topic.
+As a final robustness check, we considered the possibility of dropping firms operating in the financial sector, as is customarily done
+in the broad strategy literature. It should be noted that we do control for industry fixed effects in the models, and that we require for
+each matching and matched observation to be in the exact same industry. These steps should significantly alleviate the potential issue
+of cross-industry heterogeneity in the use of the corporate strategy dictionary words. Even still, we think it is worth exploring whether
+excluding such firms might produce distinct results from the ones we present in the main section of the paper. This step caused a loss of
+14,044 (7,860) observations, leaving us with 41,884 (13,130) transcripts for the full (M&A active firms) sample. We find nearly
+identical results for the four models estimating the executives’ and analysts’ use of the corporate dictionary for all firms, and M&A
+active firms alike (i.e., for Tables 2 and 3 in the paper, all p <0.0001). Turning to the analyst forecast error, again the results are very
+close to the original set, with the only difference being that a high use of the corporate strategy dictionary by executives of highly active
+13
+
+===== PAGE 14 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+Table 4
+Determinants of analysts’ forecast errorsa.
+All firms (post initial matching) All active firms
+Analysts (N =105,887) Executives (N =101,084) Analysts (N =27,302) Executives (N =25,855)
+Intercept 9.6287 122.1657 7.1710 22.0113
+1.4007 1.6397 2.5900 4.3212
+<0.0001 <0.0001 0.0056 <0.0001
+Corporate dictionary intensive 0.0794 (cid:0) 0.6055 0.0045 (cid:0) 0.1016
+0.0239 0.0288 0.0453 0.0492
+0.0009 <0.0001 0.9213 0.0391
+Transcript length (analysts)b (cid:0) 0.2365 0.1807 (cid:0) 0.2077 (cid:0) 0.1397
+0.0246 0.0288 0.0422 0.0485
+<0.0001 <0.0001 <0.0001 0.0039
+Transcript length (executives)b 0.0229 (cid:0) 0.2726 0.0876 0.0782
+0.0088 0.0104 0.0145 0.0153
+0.0093 <0.0001 <0.0001 <0.0001
+Total M&A deals 0.0311 0.0437 0.0292 0.0605
+0.0087 0.0107 0.0125 0.0143
+0.0004 <0.0001 0.0199 <0.0001
+Firm in the S&P 500 index (cid:0) 0.0281 0.4673 0.2601 0.4486
+0.0526 0.0733 0.0920 0.1137
+0.5936 <0.0001 0.0047 <0.0001
+Number of analysts (cid:0) 0.0349 0.0177 (cid:0) 0.0186 (cid:0) 0.0236
+0.0022 0.0029 0.0042 0.0047
+<0.0001 <0.0001 <0.0001 <0.0001
+Firm leveragec (cid:0) 0.5572 (cid:0) 1.9878 (cid:0) 0.0267 (cid:0) 0.2839
+0.0526 0.0587 0.1091 0.1111
+<0.0001 <0.0001 0.8064 0.0106
+Firm market capitalizationc 0.0440 (cid:0) 0.3017 (cid:0) 0.1354 (cid:0) 0.1477
+0.0103 0.0132 0.0196 0.0214
+<0.0001 <0.0001 <0.0001 <0.0001
+Firm profit marginc (cid:0) 2.3799 (cid:0) 36.6869 (cid:0) 1.8225 (cid:0) 6.3735
+0.4526 0.5319 0.8343 1.3985
+<0.0001 <0.0001 0.0289 <0.0001
+Industry fixed effects Yes Yes Yes Yes
+Model F 171.66 741.53 21.46 21.02
+<0.0001 <0.0001 <0.0001 <0.0001
+a All samples are obtained by matching firms with a high use of corporate dictionary (i.e., at or above the median) with firms with a low use of the
+same (i.e., below the median), using propensity score and nearest-neighbor matching techniques. The models are estimated using OLS regressions.
+The dependent variables in the models above represent the absolute difference between the median of the analysts’ forecast of firms’ earnings and
+their actual earnings in the quarter following the focal earnings call, divided by the median of the analyst’ forecast. Standard errors and p-values
+appear below each parameter estimate.
+b The parameter estimates and corresponding standard errors are multiplied by 1,000 for legibility purposes.
+c These variables were logged to remedy skewness.
+firms (as compared to lowly active ones, as per the last column of Table 4) is still associated with a decrease in the magnitude of the
+earnings forecast error, but this value falls just short of reaching statistical significance at conventional levels (i.e., p =0.109).
+7. Discussion
+7.1. Contributions
+We advance applied information economics research by considering capital market participants and the information asymmetries
+that they and company executives contend with in M&A. Unlike in other market contexts in which the theory has been deployed (e.g.,
+used cars, hiring, etc.), M&A transactions not only involve buyers and sellers, but they also give rise to information asymmetry between
+buyers and capital market participants. The latter provide buyers with financial resources and have a vested interest in these trans-
+actions. However, capital market participants also face adverse selection, unless full information is given to them by company ex-
+ecutives entering into M&A transactions. A wealth of studies has examined the implications of information asymmetry between buyers
+and sellers in M&A, and by considering the implications of information asymmetries for acquiring firms and capital market partici-
+pants that have been neglected in previous research, we conclude that previous research has understated the implications of infor-
+mation frictions in M&A markets.
+Our empirical analysis considers whether corporate communication in earnings calls reflects a firm’s M&A activity. We also
+examine whether information disclosure reduces the effects of adverse selection otherwise borne by capital market participants. We
+build a corporate strategy dictionary and text-analyze the contents of millions of questions and answers in over 80,000 conference
+calls. We implement propensity-score matching algorithms to mitigate concerns surrounding sample selection and endogeneity,
+thereby isolating the implications of M&A activity for information disclosures to capital markets. The upshot of these analyses is that
+14
+
+===== PAGE 15 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+we find strong empirical support for our predictions. Specifically, both analysts and company executives discuss a firm’s corporate
+strategy more when the firm is involved in M&A activity in the period of time leading up to the call. In addition, the more M&A
+transactions the firm has engaged in, the more the firm’s corporate strategy becomes the subject of discussion during the call.
+Interestingly, executives often discuss corporate strategy even when not prompted to do so by analysts, yet we see far less focus on
+corporate strategy topics during the financial crisis. Lastly, the accuracy of analysts’ earnings forecasts decreases with aggressive
+questioning of the firm’s corporate strategy by analysts, and it increases with time devoted by executives to explaining the firm’s
+corporate strategy.
+7.2. Research implications and future research
+There are a number of implications and interesting follow-on research opportunities brought forth by this study. At the broadest
+theoretical level, information economics in strategy has become a central theoretical framework used to explain firms’ corporate
+strategy agendas across a broad spectrum of corporate activities, such as mergers and acquisitions, but also strategic alliances, joint
+ventures, corporate venture capital, licensing, etc. While our focus is on M&A, there are clear opportunities to explore whether the
+complexity of firms’ corporate strategy portfolios involving different transactions affect the quantity and quality of information flows
+from executives to capital market participants. This sort of investigation promises to be fruitful because the pursuit of competitive
+advantage through corporate strategy can be highly heterogeneous across firms.
+Without a doubt, a great deal of research has gone into whether and how these diverse pursuits allow firms to outperform their
+peers, by creating market power, superior access to resources and markets, preemption of entry, etc. However, we know little about the
+relationship between the complexity of a firm’s corporate strategy and the adverse selection problem affecting its stakeholders, where
+this problem is known to create a direct and consequential impact on the firm’s ability to raise capital and compete in the first place.
+This paper lays preliminary foundations for this line of research, but future work along the lines we draw would be highly informative
+and beneficial to the advancement of knowledge in this area. For instance, future research might examine other types of corporate
+deals besides M&A (e.g., foreign direct investment, technology partnerships, etc.). It would also be valuable to extend this analysis to
+explore firms based in other countries subject to different information intermediaries and institutions that can shape both their
+corporate strategies and ability to obtain financial and other resources in factor markets (e.g., Ahuja and Yayavaram, 2011). We also
+think it would be interesting to examine equity market responses to previously announced M&A transactions leading up to the earnings
+calls, as well as the method of payment used to execute these deals, in order to determine whether such factors may trigger differential
+questioning on the topic of corporate strategy.
+Remaining within the confines of M&A research, there are several promising avenues that deserve attention. First, while we
+distinguish firms based on whether or not they engage in M&A and based on how much they engage in M&A, there are opportunities to
+consider the qualitative characteristics of different M&A transactions. It is well known that M&A transactions are far from homoge-
+neous, such that some deals bring together firms from like industries, markets, corporate cultures, etc., while others involve diver-
+sification into new products, geographies and corporate cultures, instead. Our objective in this project was to begin to establish a
+connection between M&A activity and corporate communication, but a more nuanced examination of the relationship into the micro-
+features of M&A activity and their effects on information disclosures and adverse selection involving capital market participants would
+be useful. Such work could also take up agency considerations and explicitly consider other factors affecting tradeoffs in corporate
+communications (e.g., appropriation and competition concerns).
+Research in such directions would inform us on the degree to which particular types of transactions impose information costs on
+firms and capital markets, and they might also have consequences on other stakeholders and markets. Given our focus on shareholders
+and information intermediaries in capital markets, it would also be interesting to extend our analysis to consider other stakeholders
+and factor markets. For instance, research might consider how executives explain the implications of their complex M&A transactions
+to suppliers, partners, potential employees, etc. The degree to which adverse selection concerns in M&A spill over to these stakeholders
+would provide a more complete picture of the information costs of M&A and the degree to which adverse selection within M&A deals is
+subject to externalities across stakeholder groups. Even our study might therefore be understating the consequences of these infor-
+mation frictions in M&A markets.
+In exploring the heterogeneity of M&A and its consequences, there are also a number of opportunities to consider how the solutions
+firms use to address adverse selection on M&A may or may not affect capital market participants. To begin with, the negative effects of
+information asymmetry may be reduced if a seller credibly conveys an information signal to a buyer (Spence, 1973). Research in
+strategy has studied whether the presence of signals may help to lubricate corporate transactions, generally finding support for this
+hypothesis. For example, prior work has shown that signals issued when firms go public facilitate their subsequent acquisitions in M&A
+markets (Ragozzino and Reuer, 2007), or that prior alliances with prominent partners function certify the quality of entrepreneurial
+firms, which in turn lends them needed credibility (e.g., Sorenson and Stuart, 2001; Chang, 2004; Lee et al., 2011). To our knowledge,
+none of this work has examined the role of signals as a tool to reduce the effects of information asymmetry between firms and their
+stakeholders while the firm is engaging in corporate transactions such as M&A. For instance, the very same signals on a target’s re-
+sources and prospects that help firms come together in corporate transactions may also alleviate adverse selection concerns for
+shareholders and allow for the well-functioning of capital markets, in particular. Our research has indicated that information costs
+surrounding M&A might be higher than previous research has suggested, because it has not addressed the adverse selection problems
+that shareholders face. By contrast, the signals that firms rely upon when carrying out M&A and other corporate transactions might
+also be beneficial to exchanges in other factor markets (e.g., capital markets, markets for suppliers, etc.), which suggests that their
+benefits might also be understated in previous research. For example, within the context of our research, it would be interesting to
+15
+
+===== PAGE 16 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+examine whether acquisitions in which signals are issued by a target firm result in less questioning of the transaction by analysts and in
+more precise earnings forecasts, as well. Therefore, we suggest that the role of signals does not stop with facilitating a corporate deal,
+but it potentially extends into corporate communication and the workings of capital markets. We would also note that other remedies
+that a firm relies upon in alleviating adverse selection in M&A (e.g., contingent payments, contractual safeguards, etc.) might not have
+such spillover effects on information intermediaries and capital markets, however.
+Along similar lines, it would be interesting to examine whether pre-acquisition learning plays a role in corporate communication
+and information asymmetry between companies and their stakeholders. For example, if a company decided to integrate vertically and
+acquire a supplier with which it had worked for several years, then one would expect that the need to unearth information about the
+value-adding properties of this acquisition would be lower than if the acquisition involved an upstream firm with no prior relationship
+to the acquirer. Prior work has informed us of the strategic benefits of staging investments such as these, in order to reduce asymmetric
+information between buyers and sellers (Mitchell and Singh, 1992; Balakrishnan and Koza, 1993; Mody, 1993; Hagedoorn and
+Sadowski, 1999; Porrini, 2004). While such successive exchanges and sequential investment approaches might also reduce information
+costs of shareholders and other stakeholders, we know nothing of whether this sort of learning-based approach to M&A yields similar
+advantages when the relationship of interest is between company insiders and the firm’s shareholders and other stakeholders.
+Relatedly, our findings indicate that a larger number of analysts attending a conference call tends to reduce the amount of
+questioning on firms’ corporate activity. While a deep dive of the reasons for this relationship lies outside the scope of this work, a
+potentially intriguing question that stems from this result is that the quality and quantity of information disclosure issued by firms may
+depend on analyst attendance. If so, some firms may “get away” with less disclosure, which may then trigger different outcomes in
+capital markets and in the competitive environment: On the one hand, prospective shareholders and bondholders will have less in-
+formation by which to evaluate the company. On the other hand, companies will be less compelled to provide information on their
+corporate strategies to competitors. Investigating the relationships between analyst attendance, information disclosure and firm
+performance would be valuable in future research.
+8. Conclusion
+In sum, this paper offers an initial attempt to bring to the fore the problem of adverse selection in corporate strategy, not as it
+pertains to the buyers and sellers directly involved in corporate deal making, but rather in the context of acquiring firms and their own
+shareholders. Despite the maturity of the M&A literature and corporate strategy field more generally, the implications of M&A and
+information asymmetries between firms and shareholders have been neglected. This likely reflects the greater attention given to moral
+hazard concerns as well as the direct, immediate application of theoretical models from information economics that do not involve
+shareholders as third parties directly in these transactions (e.g., a single buyer and seller in a transaction for a used car, insurance
+contract, etc.). However, the follow-on consequences of M&A for shareholders can have important implications for firms’ abilities to
+raise external resources and ultimately compete in their marketplaces. Our theory and evidence therefore suggest that prior acquisition
+studies have understated the consequences of information frictions in M&A markets. Research along the lines we have suggested would
+help to connect M&A studies with other current streams of strategy research (e.g., on stakeholders, analysts, information disclosures,
+etc.), and we hope that our study encourages future research that better accounts for the implications of M&A for other factor markets.
+Author statement
+Roberto Ragozzino was the primary author of the paper, while Jeffrey Reuer was the second author. The authorship order reflects
+the amount of contribution brought forth by each author.
+Data availability
+Data will be made available on request.
+Appendix A. Supplementary data
+Supplementary data to this article can be found online at https://doi.org/10.1016/j.lrp.2023.102393.
+References
+Affleck-Graves, J., Callahan, C.M., Chipalkatti, N., 2001. Earnings predictability, information asymmetry and market liquidity. J. Account. Res. 40 (3), 561–583.
+Ahuja, G., Yayavaram, S., 2011. Explaining influence rents: the case for an institutions-based view of strategy. Organ. Sci. 22 (6), 1631–1652.
+Akerlof, G.A., 1970. The market for ’lemons’: qualitative uncertainty and the market mechanism. Q. J. Econ. 84 (3), 488–500.
+Angwin, D.N. (Ed.), 2007. Mergers and Acquisitions. Blackwell Publishing, Oxford.
+Balakrishnan, S., Koza, M.P., 1993. Information asymmetry, adverse selection, and joint ventures. J. Econ. Behav. Organ. 20 (1), 99–117.
+Barney, J.B., 1986. Strategic factor markets: expectations, luck, and business strategy. Manag. Sci. 32 (10), 1231–1241.
+Benner, M.J., Zenger, T., 2016. The lemons problem in markets for strategy. Strat. Sci. 1 (2), 71–89.
+Bochkay, K., Hales, J., Chava, S., 2020. Hyperbole or reality? Investor response to extreme language in earnings conference calls. Account. Rev. 95 (2), 31–60.
+16
+
+===== PAGE 17 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+Borochin, P., Ghosh, C., Huang, D., 2019. Target information asymmetry and takeover strategy: insights from a new perspective. Eur. Financ. Manag. 25 (1), 38–79.
+Bowen, R.M., Davis, A.K., Matsumoto, D.A., 2002. Do conference calls affect analysts’ forecasts? Account. Rev. 77 (2), 285–316.
+Bushee, B.J., Matsumoto, D., Miller, G.S., 2004. Managerial and investor responses to disclosure regulation: the case of reg FD and conference calls. Account. Rev. 79
+(3), 617–643.
+Bushee, B.J., Gow, I.D., Taylor, D.J., 2018. Linguistic complexity in firm disclosures: obfuscation or information? J. Account. Res. 56 (1), 85–121.
+Cain, M.D., Denis, D.J., Denis, D.K., 2011. Earnouts: a study of financial contracting in acquisition agreements. J. Account. Econ. 51 (1–2), 151–170.
+Capron, L., Shen, J.-C., 2007. Acquisitions of private vs. public firms: private information, target selection, and acquirer returns. Strat. Manag. J. 28 (9), 891–911.
+Cen, L., Gilles, H., Wei, K.C.J., 2013. The role of anchoring bias in the equity market: evidence from analysts’ earnings forecasts and stock returns. J. Financ. Quant.
+Anal. 48 (1), 47–76.
+Chang, S.J., 2004. Venture capital financing, strategic alliances, and the initial public offerings of Internet startups. J. Bus. Ventur. 19 (5), 721–741.
+Chemmanur, T.J., Fulghieri, P., 1999. A theory of the going-public decision. Rev. Financ. Stud. 12 (2), 249–279.
+Chemmanur, T.J., Paeglis, I., Simonyan, K., 2009. The medium of exchange in acquisitions: does the private information of both acquirer and target matter? J. Corp.
+Finance 15 (5), 523–542.
+Chen, S., Matsumoto, D.A., 2006. Favorable versus unfavorable recommendations: the impact on analyst access to management-provided information. J. Account.
+Res. 44 (4), 657–689.
+Cheng, P., Li, L., Tong, W.H.S., 2016. Target information asymmetry and acquisition price. J. Bus. Finance Account. 43 (7/8), 976–1016.
+Coller, M., Yohn, T.L., 1997. Management forecasts and information asymmetry: an examination of bid-ask spreads. J. Account. Res. 35 (2), 181–191.
+Collins, W.A., Hopwood, W.S., 1980. A multivariate analysis of annual earnings forecasts generated from quarterly forecasts of financial analysts and univariate time-
+series models. J. Account. Res. 18 (2), 390–406.
+Cuypers, I.R.P., Cuypers, Y., Martin, X., 2017. When the target may know better: effects of experience and information asymmetries on value from mergers and
+acquisitions. Strat. Manag. J. 38 (3), 609–625.
+Dalton, D. R., Hitt, M. A., Certo, S. T. & Dalton, C. M. The fundamental agency problem and its mitigation. Acad. Manag. Ann., 1: 1-64..
+Datar, S., Frankel, R., Wolfson, M., 2001. Earnouts: the effects of adverse selection and agency costs on acquisition techniques. J. Law Econ. Organ. 17 (1), 201–238.
+Easterwood, J.C., Nutt, S.R., 1999. Inefficiency in analysts’ earnings forecasts: systematic misreaction or systematic optimism? J. Finance 54 (5), 1777–1797.
+Eckbo, B.E., Giammarino, R.M., Heinkel, R.L., 1990. Asymmetric information and the medium of exchange in takeovers: theory and tests. Rev. Financ. Stud. 3 (4),
+651–675.
+Feldman, E.R., 2020. Corporate strategy: past, present, and future. Strateg.Manag.Rev. 1 (1), 179–206.
+Fishman, M.J., 1989. Preemptive bidding and the role of the medium of exchange in acquisitions. J. Finance 44 (1), 41–57.
+Fowler, K.L., Schmidt, D., 1989. Determinants of tender offer post-acquisition financial performance. Strat. Manag. J. 10 (4), 339–350.
+Francis, J., Philbrick, D., 1993. Analysts’ decisions as products of a multi-task environment. J. Account. Res. 31 (2), 216–230.
+Frankel, R., Johnson, M., Skinner, D.J., 1999. An empirical examination of conference calls as a voluntary disclosure medium. J. Account. Res. 37 (1), 133–150.
+Gao, H., Yu, T., Cannella Jr., A.A., 2016. The use of public language in strategy: a multidisciplinary review and research agenda. J. Manag. 42 (1), 21–54.
+Gavetti, G., Rivkin, J.W., 2007. On the origin of strategy: action and cognition over time. Organ. Sci. 18 (3), 420–439.
+Ghemawat, P., 2005. Strategy and the Business Landscape, second ed. Prentice Hall, Englewood Cliffs, New Jersey.
+Gilson, R.J., Schwartz, A., 2005. Understanding MACs: moral hazard in acquisitions. J. Law Econ. Organ. 21 (2), 330–358.
+Graebner, M.E., 2009. Caveat venditor: trust asymmetries in acquisitions of entrepreneurial firms. Acad. Manag. J. 52 (3), 435–472.
+Graf-Vlachy, L., Bundy, J. & Hambrick, D. C. Effects of an Advancing Tenure on CEO Cognitive Complexity. Organization Science, forthcoming..
+Grewal, J., Riedl, E.J., Serafeim, G., 2019. Market reaction to mandatory nonfinancial disclosure. Manag. Sci. 65 (7), 3061–3084.
+Grossman, S.J., Stiglitz, J.E., 1980. On the impossibility of informationally efficient markets. Am. Econ. Rev. 70 (3), 393–408.
+Hagedoorn, J., Sadowski, B., 1999. The transition from strategic technology alliances to mergers and acquisitions: an exploratory study. J. Manag. Stud. 36 (1),
+87–107.
+Harris, R.D.F., Wang, P., 2013. Model-based earnings forecasts vs. financial analysts’ earnings forecasts. Br. Account. Rev. 51 (4), 424–437.
+Harrison, J.S., Thurgood, G.R., Boivie, S., Pfarrer, M.D., 2019. Measuring CEO personality: developing, validating, and testing a linguistic tool. Strat. Manag. J. 40 (8),
+1316–1330.
+Healy, P.M., Palepu, K.G., 1993. The effect of firms’ financial disclosure strategies on stock prices. Account. Horiz. 7 (1), 1.
+Healy, P.M., Palepu, K.G., 2001. Information asymmetry, corporate disclosure, and the capital markets: a review of the empirical disclosure literature. J. Account.
+Econ. 31 (1–3), 405–440.
+Heinrichs, A., Park, J., Soltes, E.F., 2019. Who consumes firm disclosures? Evidence from earnings conference calls. Account. Rev. 94 (3), 205–231.
+Henry, E., Leone, A.J., 2005. Measuring qualitative information in capital markets research: comparison of alternative methodologies to measure disclosure tone.
+Account. Rev. 91 (1), 153–178.
+Higgins, M., Rodriguez, D., 2006. The outsourcing of R&D through acquisitions in the pharmaceutical industry. J. Financ. Econ. 80 (2), 351–383.
+Hollander, S., Pronk, M., Roelofsen, E., 2010. Does silence speak? An empirical analysis of disclosure choices during conference calls. J. Account. Res. 48 (3),
+531–563.
+Humphrey-Jenner, M., Sautner, Z., Suchard, J.-A., 2017. Cross-border mergers and acquisitions: the role of private equity firms. Strat. Manag. J. 38 (8), 1688–1700.
+Jensen, M.C., Meckling, W.H., 1976. Theory of the firm: managerial behavior, agency costs and ownership structure. J. Financ. Econ. 3 (4), 305–360.
+Kaplan, S.N., Weisbach, M.S., 1992. The success of acquisitions: evidence from divestitures. J. Finance 47 (1), 107–138.
+Kim, J.H., 2016. Market earnings expectation, measurement error in analysts’ consensus forecasts and prediction of stock returns. Account. Res. J. 31 (2), 249–266.
+Kimbrough, M.D., 2005. The effect of conference calls on analyst and market underreaction to earnings announcements. Account. Rev. 80 (1), 189–219.
+Kimbrough, M.D., Louis, H., 2011. Voluntary disclosure to influence investors reactions to merger announcements: an examination of conference calls. Account. Rev.
+86 (2), 637–667.
+King, D.R., Wang, G., Samimi, M., Cortes, A.F., 2021. A meta-analytic integration of acquisition performance prediction. J. Manag. Stud. 58 (5), 1198–1236.
+Kohers, N., Ang, J., 2000. Earnouts in mergers: agreeing to disagree and agreeing to stay. J. Bus. 73 (3), 445–476.
+Ko¨nig, A., Mammen, J., Luger, J., Fehn, A., Enders, A., 2018. Silver bullet or ricochet? CEOs’ use of metaphorical communication and infomediaries’ evaluations.
+Acad. Manag. J. 61 (4), 1196–1230.
+Lang, M.H., Lundholm, R.J., 1996. Corporate disclosure policy and analyst behavior. Account. Rev. 71 (4), 467–492.
+Lee, J., 2016. Can investors detect managers’ lack of spontaneity? Adherence to predetermined scripts during earnings conference calls. Account. Rev. 91 (1),
+229–250.
+Lee, P.M., Pollock, T.G., Jin, K., 2011. The contingent value of venture capitalist reputation for entrepreneurial firms. Strat. Organ. 9 (1), 33–69.
+Litov, L.P., Moreton, P., Zenger, T.R., 2012. Corporate strategy, analyst coverage, and the uniqueness paradox. Manag. Sci. 58 (10), 1797–1815.
+Lobo, G.J., Song, M., Stanford, M.H., 2017. The effect of analyst forecasts during earnings announcements on investor responses to reported earnings. Account. Rev.
+92 (3), 239–263.
+Lo¨fgren, K.-G., Persson, T., Weibull, J.W., 2002. Markets with asymmetric information: the contributions of george Akerlof, michael spence and joseph Stiglitz. Scand.
+J. Econ. 104 (2), 192–211.
+Macias, A., Moeller, T., 2016. Target signaling with material adverse change clauses in merger agreements. J. Empir. Finance 39 (A), 69–92.
+Martin, X., Shalev, R., 2017. Target firm-specific information and acquisition efficiency. Manag. Sci. 63 (3), 672–690.
+Matsumoto, D., Pronk, M., Roelofsen, E., 2011. What makes conference calls useful? The information content of managers’ presentations and analysts’ discussion
+sessions. Account. Rev. 86 (4), 1383–1414.
+Mayew, W.J., 2008. Evidence of management discrimination among analysts during earnings conference calls. J. Account. Res. 46 (3), 627–659.
+Mayew, W.J., Venkatachalam, M., 2012. The power of voice: managerial affective states and future firm performance. J. Finance 67 (1), 1–43.
+17
+
+===== PAGE 18 =====
+R. Ragozzino and J.J. Reuer L o n g R a n g e P l a n n i n g 5 7(2024)102393
+Mayew, W.J., Sharp, N.Y., Venkatachalam, M., 2013. Using earnings conference calls to identify analysts with superior private information. Rev. Account. Stud. 18
+(2), 386–413.
+McCann, B., Reuer, J.J., Lahiri, N., 2016. Agglomeration and the choice between acquisitions and alliances: an information economics perspective. Strat. Manag. J. 37
+(6), 1085–1106.
+Milgrom, P., Stokey, N., 1982. Information trade and common knowledge. J. Econ. Theor. 26 (1), 17–27.
+Mintzberg, H., 1987. The strategy concept I: 5 ps for strategy. Calif. Manag. Rev. 30 (1), 11–24.
+Mitchell, W., Singh, K., 1992. Incumbents’ use of pre-entry alliances before expansion into new technical subfields of an industry. J. Econ. Behav. Organ. 18 (3),
+347–372.
+Mody, A., 1993. Learning through alliances. J. Econ. Behav. Organ. 20 (2), 151–170.
+Moeller, S.B., Schlingemann, F.P., Stulz, R.M., 2007. How do diversity of opinion and information asymmetry affect acquirer returns? Rev. Financ. Stud. 20 (6),
+2047–2078.
+Montgomery, C.A., Wernerfelt, B., 1988. Diversification, Ricardian rents, and Tobin’s q. Rand J. Econ. 19 (4), 623–632.
+Myers, S.C., Majluf, N.S., 1984. Corporate financing and investment decisions when firms have information that investors do not have. J. Financ. Econ. 13 (2),
+187–221.
+National Investor Relations Institute (NIRI), 2014. Earnings Call Practices Survey. https://www.niri.org/.
+Officer, M.S., Poulsen, A.B., Stegemoller, M., 2009. Target-firm information asymmetry and acquirer returns. Rev. Finance 13 (3), 467–493.
+Pan, L., McNamara, G., Lee, J.J., Haleblian, J., Devers, C.E., 2018. Give it to us straight (most of the time): top managers’ use of concrete language and its effect on
+investor reactions. Strat. Manag. J. 39 (8), 2204–2225.
+Porrini, P., 2004. Can a previous alliance between an acquirer and a target affect acquisition performance? J. Manag. 30 (4), 545–562.
+Rabier, M.R., 2017. Acquisition motives and the distribution of acquisition performance. Strat. Manag. J. 38 (13), 2666–2681.
+Ragozzino, R., Reuer, J.J., 2007. Initial public offerings and the acquisition of entrepreneurial firms. Strat. Organ. 5 (2), 155–176.
+Ravenscraft, D.J., Scherer, F.M., 1987. Life after takeover. J. Ind. Econ. 36 (2), 147–156.
+Reuer, J.J., 2009. Organizational economics insights from acquisitions research. Adv. Strat. Manag. 26, 241–265.
+Reuer, J.J., Ragozzino, R., 2012. The choice between joint ventures and acquisitions: insights from signaling theory. Organ. Sci. 23 (4), 1175–1190.
+Riley, J.C., 2001. Silver signals: twenty-five years of screening and signaling. J. Econ. Lit. 39 (2), 432–478.
+Rothschild, M., Stiglitz, J., 1976. Equilibrium in competitive insurance markets: an essay on the economics of imperfect information. Q. J. Econ. 90 (4), 629–649.
+Schildt, H.A., Laamanen, T., 2006. Who buys whom: information environments and organization boundary spanning through acquisitions. Strat. Organ. 4 (2),
+111–133.
+Shapiro, C., Stiglitz, J., 1984. Equilibrium unemployment as a worker discipline device. Am. Econ. Rev. 74 (3), 433–444.
+Shiller, R.J., 1989. Market Volatility. MIT Press, Cambridge, MA.
+Shleifer, A., 1986. Do demand curves for stocks slope down? J. Finance 41 (3), 579–590.
+Sorenson, O., Stuart, T.E., 2001. Syndication networks and the spatial distribution of venture capital investments. Am. J. Sociol. 106 (6), 1546–1588.
+Spence, M.A., 1973. Job market signaling. Q. J. Econ. 87 (3), 355–374.
+Stiglitz, J.E., 1973. Approaches to the economics of discrimination. Am. Econ. Rev. 63 (2), 287–295.
+Stiglitz, J.E., Weiss, A., 1981. Credit rationing in markets with imperfect information. Am. Econ. Rev. 71 (3), 393–410.
+Stiglitz, J.E., 2002. Information and the change in the paradigm in economics. Am. Econ. Rev. 92 (3), 460–501.
+Vanhaverbeke, W., Duysters, G., Noorderhaven, N., 2002. External technology sourcing through alliances or acquisitions: an analysis of the application-specific
+integrated circuits industry. Organ. Sci. 13 (6), 714–733.
+Veldkamp, L., 2006. Media frenzies in the market for financial information. Am. Econ. Rev. 96 (3), 577–601.
+Villalonga, B., McGahan, A.M., 2005. The Choice among acquisitions, alliances, and divestitures. Strat. Manag. J. 26 (13), 1183–1208.
+Whittington, R., Cailluet, L., Yakis-Douglas, B., 2011. Opening strategy: evolution of a precarious profession. Br. J. Manag. 22 (3), 531–544.
+Whittington, R., Yakis-Douglas, B., Ahn, K., 2016. Cheap talk? Strategy presentations as a form of chief executive officer impression management. Strat. Manag. J. 37
+(12), 2413–2424.
+Yakis-Douglas, B., Angwin, D., Ahn, K., Meadows, M., 2017. Opening M&A strategy to investors: predictors and outcomes of transparency during organisational
+transition. Long. Range Plan. 50 (3), 411–422.
+Zaheer, A., Hernandez, E., Banerjee, S., 2010. Prior alliances with targets and acquisition performance in knowledge-intensive industries. Organ. Sci. 21 (5),
+1072–1091.
+Zenger, T.R., Felin, T., Bigelow, L., 2011. Theories of the firm-market boundary. Acad. Manag. Ann. 5 (1), 89–133.
+Dr. Ragozzino is a full Professor of Strategy and Entrepreneurship at NOVA School of Business and Economics in Lisbon, Portugal. He holds a PhD in Business Policy and
+Strategy from the Max M. Fisher College of Business, Ohio State University.
+Before joining NOVA he was an endowed chair professor at the University of Tennessee, in Knoxville, USA. His research is in the area of mergers and acquisitions and
+strategic alliances with an emphasis on how these events apply to entrepreneurial ventures.Dr. Ragozzino has published in such journals as Journal of Management,
+Journal of International Business Studies, Long Range Planning, Organization Science, Strategic Management Journal and several others.He is also a member of the
+Strategic Management Society, the Academy of Management and the Academy of International Business. He is on the editorial boards of Strategic Management Journal
+and Global Strategy Journal.Dr. Ragozzino has extensive experience teaching Strategy at all levels and he also routinely participates in executive programs in the United
+States, Mexico and across Europe.
+18

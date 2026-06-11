@@ -7,26 +7,46 @@
 \toprule
  & (1) UncResCEO & (2) CashRatio \\
 \midrule
-PRE2 ($t{-}2$, pre-trend) & 0.0105 & \textbf{0.0065}$^{*}$ \\
- & (0.0174) & (0.0041) \\
-PRE1 ($t{-}1$, pre-announce) & \textbf{0.0486}$^{***}$ & \textbf{0.0108}$^{***}$ \\
- & (0.0174) & (0.0046) \\
-GAP (announced, pre-close) & 0.0058 & \textbf{0.0120}$^{**}$ \\
- & (0.0181) & (0.0056) \\
-POST (completed) & -0.0195 & -0.0197 \\
- & (0.0127) & (0.0052) \\
+PRE2 ($t{-}2$, pre-trend) & 0.0068 & 0.0008 \\
+ & (0.0178) & (0.0024) \\
+PRE1 ($t{-}1$, pre-announce) & \textbf{0.0473}$^{***}$ & \textbf{0.0061}$^{**}$ \\
+ & (0.0178) & (0.0024) \\
+GAP (announced, pre-close) & 0.0018 & 0.0055 \\
+ & (0.0187) & (0.0034) \\
+POST (completed) & \textbf{-0.0250}$^{*}$ & \textbf{-0.0155}$^{***}$ \\
+ & (0.0130) & (0.0022) \\
 \midrule
-Drop: PRE1 $-$ GAP & \textbf{0.0428}$^{*}$ & -0.0013 \\
- & (0.0221) & (0.0049) \\
-Drop: PRE1 $-$ POST & \textbf{0.0681}$^{***}$ & \textbf{0.0305}$^{***}$ \\
- & (0.0187) & (0.0043) \\
+Drop: PRE1 $-$ GAP & \textbf{0.0455}$^{**}$ & 0.0006 \\
+ & (0.0225) & (0.0039) \\
+Drop: GAP $-$ POST & 0.0268 & \textbf{0.0210}$^{***}$ \\
+ & (0.0199) & (0.0042) \\
+Drop: PRE1 $-$ POST & \textbf{0.0723}$^{***}$ & \textbf{0.0216}$^{***}$ \\
+ & (0.0190) & (0.0031) \\
+\midrule
+\multicolumn{3}{l}{\textit{Controls}} \\
+Leverage & \textbf{-0.0415}$^{*}$ & \textbf{-0.0215}$^{***}$ \\
+ & (0.0213) & (0.0054) \\
+lnAssets & -0.0060 & \textbf{-0.0074}$^{***}$ \\
+ & (0.0084) & (0.0020) \\
+TobinsQ & -0.0045 & \textbf{0.0013}$^{**}$ \\
+ & (0.0029) & (0.0006) \\
+ROA & \textbf{0.0572}$^{*}$ & 0.0067 \\
+ & (0.0325) & (0.0061) \\
+Capex & 0.1073 & \textbf{-0.1434}$^{***}$ \\
+ & (0.1054) & (0.0141) \\
+DivDummy & -0.0099 & -0.0016 \\
+ & (0.0104) & (0.0014) \\
+sCFO & \textbf{0.0096}$^{**}$ & -0.0011 \\
+ & (0.0043) & (0.0007) \\
+CashRatio$_{t-1}$ (partial adj.) & --- & \textbf{0.7547}$^{***}$ \\
+ &  & (0.0108) \\
 \midrule
 Firm FE / Year-Qtr FE / Controls & Yes & Yes \\
-N (firm-quarters) & 29,535 & 29,535 \\
-Firms & 1,326 & 1,326 \\
+N (firm-quarters) & 28,102 & 28,102 \\
+Firms & 1,320 & 1,320 \\
 \bottomrule
 \end{tabular}
 \begin{minipage}{\linewidth}\vspace{2pt}\scriptsize
-\textit{Notes:} Two-way FE OLS (firm + calendar year-quarter), firm-clustered SE, on the \emph{identical} 29,535-observation sample where both UncResCEO and CashRatio are present (the UncResCEO call universe). Event bins around the firm's first $\geq$50\%-cash acquisition: PRE2/PRE1 = two / one quarter pre-announcement; GAP = announced but not yet completed; POST = completed. Baseline = $e\leq-3$ plus never-acquirers. Bin coefficients: $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ one-tailed; Drop rows (Wald on the bin difference): stars two-tailed. Standard errors in parentheses throughout. Pre-completion bin counts (PRE2/PRE1/GAP/POST): 389/396/378/1,535. UncResCEO peaks at PRE1 and collapses at GAP (announcement); CashRatio stays elevated through GAP and falls only at POST (completion). The uncertainty tracks the disclosure state, not the cash balance. Robustness: +8-quarter post-window in the summary JSON.
+\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed).
 \end{minipage}
 \end{table}

@@ -1,26 +1,48 @@
 \begin{table}[htbp]
 \centering
-\caption{Formal Cash-Specificity of the Pre-Announcement Uncertainty Run-Up (cash vs.\ stock acquirers, pooled)}
+\caption{Formal Cash-Specificity: Pre-Announcement Uncertainty (effect) vs.\ Cash Build-Up (proposed cause), cash vs.\ stock acquirers}
 \label{tab:empire_cashspec}
 \scriptsize
-\begin{tabular}{lcc}
+\begin{tabular}{lccc}
 \toprule
- & (1) UncResCEO & (2) CashRatio \\
+ & \multicolumn{1}{c}{EFFECT} & \multicolumn{2}{c}{PROPOSED CAUSE} \\
+\cmidrule(lr){2-2}\cmidrule(lr){3-4}
+ & (1) UncResCEO & (2) CashRatio & (3) CashRatio \\
+ & (matched) & (matched, +lag) & (full panel, +lag) \\
 \midrule
-Pre-announce qtr, Cash acquirer & \textbf{0.0459}$^{***}$ & \textbf{0.0104}$^{***}$ \\
- & (0.0185) & (0.0043) \\
-Pre-announce qtr, Stock acquirer & -0.0524 & \textbf{0.0182}$^{*}$ \\
- & (0.0436) & (0.0122) \\
+Pre-announce qtr, Cash acquirer & \textbf{0.0459}$^{**}$ & \textbf{0.0056}$^{**}$ & \textbf{0.0049}$^{***}$ \\
+ & (0.0185) & (0.0025) & (0.0019) \\
+Pre-announce qtr, Stock acquirer & -0.0524 & -0.0008 & -0.0043 \\
+ & (0.0436) & (0.0066) & (0.0051) \\
 \midrule
-Cash $-$ Stock (formal test) & \textbf{0.0983}$^{**}$ & -0.0078 \\
- & (0.0476) & (0.0131) \\
+Cash $-$ Stock (formal test) & \textbf{0.0983}$^{**}$ & 0.0064 & \textbf{0.0092}$^{*}$ \\
+ & (0.0476) & (0.0071) & (0.0055) \\
 \midrule
-Firm FE / Year-Qtr FE / Controls & Yes & Yes \\
-N (firm-quarters) & 25,600 & 25,600 \\
-Firms & 1,191 & 1,191 \\
+\multicolumn{4}{l}{\textit{Controls}} \\
+Leverage & \textbf{-0.0411}$^{*}$ & \textbf{-0.0236}$^{***}$ & \textbf{-0.0194}$^{***}$ \\
+ & (0.0230) & (0.0056) & (0.0043) \\
+lnAssets & -0.0034 & -0.0033 & \textbf{-0.0065}$^{***}$ \\
+ & (0.0092) & (0.0021) & (0.0011) \\
+TobinsQ & -0.0025 & 0.0007 & \textbf{0.0012}$^{**}$ \\
+ & (0.0031) & (0.0006) & (0.0005) \\
+ROA & 0.0556 & 0.0046 & 0.0054 \\
+ & (0.0355) & (0.0065) & (0.0046) \\
+Capex & 0.0487 & \textbf{-0.1437}$^{***}$ & \textbf{-0.1095}$^{***}$ \\
+ & (0.1065) & (0.0148) & (0.0139) \\
+DivDummy & -0.0068 & \textbf{-0.0026}$^{*}$ & -0.0015 \\
+ & (0.0109) & (0.0014) & (0.0010) \\
+sCFO & 0.0040 & -0.0008 & 0.0009 \\
+ & (0.0088) & (0.0007) & (0.0006) \\
+\quad CashRatio$_{t-1}$ (partial adj.) & --- & \textbf{0.7778}$^{***}$ & \textbf{0.7957}$^{***}$ \\
+ &  & (0.0113) & (0.0073) \\
+\midrule
+Firm FE / Year-Qtr FE / Controls & Yes & Yes & Yes \\
+UncResCEO-present restriction & Yes & Yes & \textbf{No} \\
+N (firm-quarters) & 25,600 & 24,347 & 61,876 \\
+Firms & 1,191 & 1,176 & 2,141 \\
 \bottomrule
 \end{tabular}
 \begin{minipage}{\linewidth}\vspace{2pt}\scriptsize
-\textit{Notes:} Two-way FE OLS (firm + calendar year-quarter), firm-clustered SE, with both columns estimated on the \emph{identical} UncResCEO$\,\cap\,$CashRatio sample. Both pre-announce dummies enter the SAME model; the omitted baseline is the firm's pre-deal and never-acquirer quarters. \textbf{Pre-announce qtr} = the single quarter before the firm's first $\geq$50\%-cash (resp.\ stock) acquisition. The \textbf{Cash $-$ Stock} row is the formal cash-specificity test (Wald on the coefficient difference) the side-by-side placebo never ran. $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$; the two pre-announce rows one-tailed ($\beta>0$), the Cash $-$ Stock row two-tailed. Standard errors in parentheses. For UncResCEO the cash run-up is robust and the cash$-$stock difference is significant, but that significance rides on the imprecise, theory-unpredicted negative stock estimate (small N$_{\text{stock}}$): read it as supported-but-fragile, not settled. CashRatio (col 2) is not cash-specific, as expected --- the claim concerns the uncertainty response, not cash levels.
+\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed).
 \end{minipage}
 \end{table}

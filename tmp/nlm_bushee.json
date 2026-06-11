@@ -1,0 +1,26 @@
+﻿Matched: e8dfb696-ed4... (J of Accounting Research - 2017 - BUSHEE - Linguistic
+Complexity in Firm Disclosures  Obfuscation or Information.pdf)
+{
+  "answer": "Based on the first page of the provided document, the requested publication details are quoted verbatim below (note that a full page range is not explicitly printed on the first page, only the starting page number):\n\n*   **Journal Name, Volume, Issue, and Year:** \"Journal of Accounting Research Vol. 56 No. 1 March 2018\" [1]\n*   **Full Title:** \"**Linguistic Complexity in Firm Disclosures: Obfuscation** / **or Information?**\" [1]\n*   **All Authors:** \"**B R I A N J . B U S H E E ,\u2217 I A N D . G O W**  ***,\u2020***  **A N D D A N I E L J . T A Y L O R\u2217**\" [1]\n*   **Page Range:** While a full range is not provided, the page number \"**85**\" appears at the bottom of the first page [2].",
+  "conversation_id": "b42bb373-47a0-4909-ae49-c6a4f2eee5e2",
+  "turn_number": 1,
+  "is_follow_up": true,
+  "references": [
+    {
+      "source_id": "e8dfb696-ed47-465f-bbb6-a3e253626a20",
+      "citation_number": 1,
+      "cited_text": null,
+      "start_char": 0,
+      "end_char": 1,
+      "chunk_id": "0d371a5f-750a-4817-8e69-6a70c0b5b803"
+    },
+    {
+      "source_id": "e8dfb696-ed47-465f-bbb6-a3e253626a20",
+      "citation_number": 2,
+      "cited_text": "85",
+      "start_char": 2102,
+      "end_char": 2105,
+      "chunk_id": "10c7ff47-7de1-4ab6-a3b8-0ce6141963f5"
+    }
+  ]
+}

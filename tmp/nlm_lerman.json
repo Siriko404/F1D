@@ -1,0 +1,32 @@
+﻿{
+  "answer": "The paper titled 'Earnings Conference Calls and the SEC Comment Letter Process' is the source document **EBSCO-FullText-04_29_2026.pdf** [1]. \n\nHere is the verbatim information quoted from its first page:\n\n*   **Full title and all authors:** \"**Earnings Conference Calls and the SEC Comment Letter Process Alina Lerman,a Thomas D. Steffen,b Kangkang Zhangc,***\" [1]\n*   **Journal name, article status, and page number:** \"**MANAGEMENT SCIENCE**  ***Articles in Advance, pp. 1\u201334***\" [2]\n*   **Year and publication status:** \"**Published Online in Articles in Advance:** January 30, 2026\" [3] (and \"**Copyright: \u00a9 2026 INFORMS**\" [3])",
+  "conversation_id": "b42bb373-47a0-4909-ae49-c6a4f2eee5e2",
+  "turn_number": 1,
+  "is_follow_up": true,
+  "references": [
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 1,
+      "cited_text": "Earnings Conference Calls and the SEC Comment Letter Process Alina Lerman,a Thomas D. Steffen,b Kangkang Zhangc,* a School of Business, University of Connecticut, Storrs, Connecticut 06269; b School of Management, Yale University, New Haven, Connecticut 06520; c Gies College of Business, University of Illinois Urbana-Champaign, Champaign, Illinois 61820 *Corresponding author Contact: alina.lerman@uconn.edu, https://orcid.org/0000-0002-7626-2707 (AL); thomas.steffen@yale.edu,",
+      "start_char": 0,
+      "end_char": 480,
+      "chunk_id": "f9a5c2fe-a3e4-4df9-8143-faae856e0022"
+    },
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 2,
+      "cited_text": null,
+      "start_char": 4672,
+      "end_char": 4673,
+      "chunk_id": "2f14233f-bcd1-4ca2-915d-ffc8a12be1cc"
+    },
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 3,
+      "cited_text": "Received: July 5, 2023 Revised: October 1, 2024; June 11, 2025 Accepted: July 30, 2025 Published Online in Articles in Advance: January 30, 2026",
+      "start_char": 590,
+      "end_char": 735,
+      "chunk_id": "2cc3474e-1b66-4944-a32b-ab942a141e2e"
+    }
+  ]
+}

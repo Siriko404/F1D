@@ -1,0 +1,42 @@
+[
+ {
+  "title": "Internal Control Weaknesses and Acquisition Performance",
+  "year": 2017,
+  "venue": "The Accounting Review",
+  "cited": 105,
+  "doi": "https://doi.org/10.2308/accr-51780",
+  "abstract": "ABSTRACT This study examines internal control weaknesses (ICWs) reported under Sarbanes-Oxley (SOX) Section 302 in the context of mergers and acquisitions. We predict that problems in an acquirer's internal control environment have adverse operational implications for acquisition performance. We argue that acquirers with low-quality internal information needed to select profitable acquisitions will make poorer acquisition decisions. We also argue that ICWs impede effective monitoring and are likely to hinder integration tasks that are important to acquisition profitability. We find that ICWs disclosed prior to an acquisition announcement predict significantly lower post-acquisition operating performance and abnormal stock returns. Poorer post-acquisition performance is concentrated in ICWs that are expected to impede acquisition activities (i.e., forecasting/valuation, monitoring, and integration). Our findings contribute to the literature linking ineffective internal control over financial reporting to negative operational outcomes. We also contribute to the SOX cost-benefit debate by documenting a previously unidentified benefit of ICW disclosures."
+ },
+ {
+  "title": "Expectation Management in Mergers and Acquisitions",
+  "year": 2019,
+  "venue": "Management Science",
+  "cited": 34,
+  "doi": "https://doi.org/10.1287/mnsc.2018.3227",
+  "abstract": "Takeover bidders in stock-for-stock mergers have strong incentives to increase their own premerger stock prices to lower their acquisition costs. We find that before announcements of stock mergers, bidders manage down analyst earnings forecasts prior to earnings releases. Such expectation management benefits bidders by increasing their own stock prices and saving on acquisition costs. Additionally, analysts who have close relations with stock bidders are more likely to participate in expectation management. For identification, we use an instrumental variable analysis, a pseudo-event analysis, and a propensity score-matching approach. Our paper provides evidence on expectation management as a previously underexplored opportunistic behavior by takeover bidders. This paper was accepted by Shivaram Rajgopal, accounting."
+ },
+ {
+  "title": "M&amp;A Announcements and Their Effect on Return to Shareholders: An Event Study",
+  "year": 2014,
+  "venue": "Accounting and Finance Research",
+  "cited": 24,
+  "doi": "https://doi.org/10.5430/afr.v3n2p170",
+  "abstract": "This study examines a sample of M&amp;A announcements in the Asia-Pacific region during the time period of May 2013 – September 2013 to identify the post-facto effect of M&amp;A announcements on the stock prices of the target and the bidding firms. The study has used the event study methodology where the Cumulative Average Abnormal Returns (CAAR) of the target and bidder firm’s stock prices in different event windows have been analyzed. A paired sample analysis has also been conducted by comparing the pre-announcement and post-announcement returns of the target and bidder firms’ stock prices in the event window of ±2 days. Across all the event windows, target firm’s stock price yields positive CAAR that is significantly different from zero. Unlike the target firms, bidder firms do not show statistically significant CAAR across all the event windows. The target firms depict that the post announcement returns are significantly greater than the pre-announcement returns, indicative of the immediate market reaction to the information disclosure."
+ },
+ {
+  "title": "Accrual and real-based earnings management by UK acquirers",
+  "year": 2017,
+  "venue": "Journal of Accounting & Organizational Change",
+  "cited": 18,
+  "doi": "https://doi.org/10.1108/jaoc-09-2015-0073",
+  "abstract": "Purpose This study aims to investigate the occurrence of pre-merger earnings management for a sample of 197 stock- and cash-financed UK acquirers between 1990 and 2009. It also examines the earnings management behaviour around the change in the Corporate Governance Code in 2003 based on the Higgs recommendations. Design/methodology/approach Mean and median accrual- and real-based manipulation are examined in the period before the announcement of a merger and acquisition. These are compared across stock and cash acquirers as well as before and after the implementation of the Higgs recommendations. Logistic regressions are also run to examine accrual- and real-based manipulation across stock and cash acquirers after controlling for variables that may affect the acquisition type. Findings The study found some evidence of upward pre-merger accrual-based earnings management by stock-financed acquirers, which is in line with the findings of Botsari and Meeks (2008). Furthermore, no significant changes were found in the post-Higgs period, which indicates that the recommendations put forth by Higgs may not have been successful in mitigating earnings management. The evidence also shows that cash bidders engage in pre-merger real earnings manipulation through lower discretionary expenses, possibly to enhance cash availability for the bid. Practical implications The findings in this study confirm earnings management exists around mergers and acquisitions and provide some evidence that the recommendations set out in the Higgs Report do not appear to have mitigated earnings management activities. This is of interest to regulators as well as investors and academicians. Originality/value This provides the first analysis in the UK examining the use of real-based earnings management activities by UK acquirers. It also extends prior research around corporate governance changes that occurred in the UK."
+ },
+ {
+  "title": "The Performance of the European Market for Corporate Control: Evidence from the 5th Takeover Wave",
+  "year": 2006,
+  "venue": "Data Archiving and Networked Services (DANS)",
+  "cited": 14,
+  "doi": null,
+  "abstract": "Abstract: For the 5th takeover wave, European M&amp;As were expected to create significant takeover value: the announcement reactions were strongly positive for target shareholders (more than 8%) and the bidding shareholders also expected to gain a small though significant increase in market value of 0.5%. While most of the expected takeover synergies are captured by the target firm shareholders, the combined value creation is significantly positive. However, the expected value strongly depends on the wave pattern, with optimistic expectations at the climax of the wave and a more pessimistic outlook at the decline. We establish that the characteristics of the target and bidding firms and of the bid itself have a significant impact on takeover returns. While some of our results have been documented for other markets of corporate control (e.g., US), a comparison of the UK and Continental European M&amp;A markets reveals that the corporate environment is an important factor affecting the market reaction to takeovers: (i) In case a UK firm is taken over, the abnormal returns exceed those in bids involving a Continental European target. (ii) The presence of a large shareholder in the bidding firm has a significantly positive effect on the takeover returns in the UK and a negative one in Continental Europe. (iii) Weak investor protection and low disclosure environment in Continental Europe enable bidding firms to invent takeover strategies that allow them to act opportunistically towards target firm's incumbent shareholders; more specifically, partial acquisitions and acquisitions with undisclosed terms of transaction. Keywords: takeovers, mergers and acquisitions, diversification, hostile takeovers, means of payment, cross-border JEL Code: G34"
+ }
+]

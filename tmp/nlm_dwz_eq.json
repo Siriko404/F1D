@@ -1,0 +1,25 @@
+﻿Matched: 67b17abd-1ae... (FWP_2017_02_v2.pdf)
+{
+  "answer": "Based on the provided paper, the regression of answer-segment uncertainty on manager fixed effects and the definition of Clarity are both contained together under **Equation 4**. \n\nThe sentences immediately introducing the equation are:\n> \"Our procedure for determining each CEO\u2019s clarity is as follows. First, according to Equation 4 we estimate each CEO\u2019s fixed effect in the frequency of \u201cuncertainty\u201d words in conference call answers. Then, we define CEO $i\u2019s$ clarity as the negative of the fixed effect:\" [1]\n\nVerbatim, the combined equations are presented as follows:\n> $UncAnsCEOi,t$ =  $\u03b1$ +  $\u03b3i$ \u00b7  $CEOi,t$ +  $\u03b2s$ \u00b7  $Speechsi,t$ +  $\u03b2k$ \u00b7  $FirmCharski,t$ +  $Y eart$ +  $\u03b5i,t$\n> $ClarityCEOi$ =  $\u2212\u03b3i$ (4) [1]\n\nThere is no separate numbered equation for the decomposition into Clarity; as shown above, it is explicitly defined ($ClarityCEOi$ = $\u2212\u03b3i$) within the block for **Equation 4** [1, 2].",
+  "conversation_id": "b42bb373-47a0-4909-ae49-c6a4f2eee5e2",
+  "turn_number": 1,
+  "is_follow_up": true,
+  "references": [
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "citation_number": 1,
+      "cited_text": "for firm effects. The next section develops the estimation procedure in more detail.",
+      "start_char": 40524,
+      "end_char": 40609,
+      "chunk_id": "048adce7-fa13-4d1e-92b9-89a7514b298a"
+    },
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "citation_number": 2,
+      "cited_text": "22The average EPR contains 1.22% uncertainty words.",
+      "start_char": 41267,
+      "end_char": 41319,
+      "chunk_id": "65325b2a-bab8-45f2-83b9-46b2ef326796"
+    }
+  ]
+}

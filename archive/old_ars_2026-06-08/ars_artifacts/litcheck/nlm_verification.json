@@ -1,0 +1,628 @@
+{
+  "thewissen_2024": {
+    "title": "Manipulating Disclosure Tone: Acquiring Firms' Strategies in Stock-for-Stock M&A (Thewissen, Yan, Arslan-Ayaydin & Yan, 2024; SSRN 4900453)",
+    "infos": {
+      "measure": {
+        "question": "what text-based or linguistic measures does it construct or use, and for each one, what dictionary, word list, or methodology defines it? Quote the sentence(s) that define each measure.",
+        "answer": "The provided paper constructs and uses the following text-based and linguistic measures:\n\n**1. Tone of Earnings Press Releases ($𝑇𝑜𝑛𝑒_{𝑀\\&𝐴}$)**\n*   **Dictionary/Methodology:** This measure is calculated as the relative spread between the number of positive and negative words in an earnings press release, scaled by the total number of words [1]. To classify words as positive or negative, the authors primarily rely on the **Henry (2008)** word lists [2]. They also run robustness tests using the **Loughran and McDonald (2011)** libraries [2]. *(Note: The authors also analyze positive tone and negative tone separately as standalone variables using these same word lists [3-6]).*\n*   **Defining Quotes:**\n    *   \"To measure the linguistic tone, we follow prior literature (see, e.g., Henry and Leone, 2016) and compute the spread in the number of positive and negative terms in the earnings press release from the Henry (2008) lists of words\" [7].\n    *   \"We define the tone of earnings press releases (in %) as the relative spread between the number of positive and negative words...: $𝑇𝑜𝑛𝑒𝑀\\&𝐴 = 100 \\times \\sum \\frac{𝑃𝑜𝑠𝑖𝑡𝑖𝑣𝑒𝑊𝑜𝑟𝑑𝑠_𝑞 − 𝑁𝑒𝑔𝑎𝑡𝑖𝑣𝑒𝑊𝑜𝑟𝑑𝑠_𝑞}{𝑇𝑜𝑡𝑎𝑙𝑊𝑜𝑟𝑑𝑠_𝑞}$\" [1].\n    *   \"We therefore conduct our main analyses based on the Henry (2008) wordlists\" [2].\n    *   \"The Loughran and McDonald (2011) libraries are also a popular choice in the analysis of corporate disclosures. We therefore also provide robustness tests with those libraries\" [2].\n\n**2. Abnormal Tone ($AbTone_{M\\&A}$)**\n*   **Dictionary/Methodology:** This measure isolates the unexpected, strategically manipulated portion of a firm's disclosure tone [8, 9]. It is methodologically defined as the residual component of a regression equation that estimates the \"expected tone\" after controlling for the firm's fundamentals, performance, and information environment [8, 9]. \n*   **Defining Quotes:**\n    *   \"Following Arslan-Ayaydin et al. (2016), our measure of abnormal tone $𝐴𝑏𝑇𝑜𝑛𝑒𝑀\\&𝐴$ is the difference between the tone of earnings press releases ($𝑇𝑜𝑛𝑒𝑀\\&𝐴$) and the expected tone ($𝐸𝑥𝑝𝑒𝑐𝑡𝑒𝑑𝑇𝑜𝑛𝑒𝑀\\&𝐴$)\" [8, 9].\n    *   \"By construction, the abnormal level of tone ($𝐴𝑏𝑇𝑜𝑛𝑒𝑀\\&𝐴$) is the residual component ($\\epsilon$) of Equation 7 and designed to be uncorrelated to the firm’s fundamentals, information asymmetry or environment\" [9].\n\n**3. Tone Dispersion / Average Reduced Frequency ($ARF_{M\\&A}$, $ARFPosTone_{M\\&A}$, $ARFNegTone_{M\\&A}$)**\n*   **Dictionary/Methodology:** This assesses the *structure* of the narrative—specifically how evenly positive and negative words are distributed throughout the text [10, 11]. Methodologically, the authors calculate the Average Reduced Frequency (ARF) by dividing the text into equally sized sections and counting the percentage of sections that contain at least one tone word [11]. They use the **Henry (2008)** libraries to identify the specific words for overall net tone dispersion ($ARF_{M\\&A}$), positive tone dispersion ($ARFPosTone_{M\\&A}$), and negative tone dispersion ($ARFNegTone_{M\\&A}$) [11, 12].\n*   **Defining Quotes:**\n    *   \"Following Allee et al. (2015) and Boudt and Thewissen (2019), we use the average reduced frequency ($𝐴𝑅𝐹𝑀\\&𝐴$) to measure tone dispersion\" [11].\n    *   \"The disclosure is divided into equally sized sections based on the number of tone words from the Henry (2008) libraries of positive and negative words. The number of sections containing at least one tone word is then counted and divided by the total number of sections, yielding $𝐴𝑅𝐹𝑀\\&𝐴$\" [11].\n    *   \"We follow the same procedure to measure the ARF of the positive (negative) tone, but only use the list of positive (negative) words from the Henry (2008) library\" [11, 12].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "stock-for-stock announcements, we expect 𝛿 to be positive."
+          },
+          {
+            "n": 2,
+            "cited_text": "general wordlists, e.g., DICTION) better predict the market reaction to earnings announcements, have"
+          },
+          {
+            "n": 3,
+            "cited_text": "𝑃𝑜𝑠𝑖𝑡𝑖𝑣𝑒𝑊𝑜𝑟𝑑𝑠 and 𝑁𝑒𝑔𝑎𝑡𝑖𝑣𝑒𝑊𝑜𝑟𝑑𝑠 are the numbers of positive and negative words in the earnings"
+          },
+          {
+            "n": 4,
+            "cited_text": "While Table 4 shows a significant increase in the tone just before the announcement of stock-for-stock"
+          },
+          {
+            "n": 5,
+            "cited_text": "respectively, based on a two-sided t-test. Goodness of fit is evaluated by R2 and adj. R2."
+          },
+          {
+            "n": 6,
+            "cited_text": null
+          },
+          {
+            "n": 7,
+            "cited_text": "deals (takeovers that use both cash and stock) and 1,168 cash deals. To measure the linguistic tone, we"
+          },
+          {
+            "n": 8,
+            "cited_text": "quarter t. The main independent variables include the abnormal tone (𝐴𝑏𝑇𝑜𝑛𝑒𝑀&𝐴) and the expected"
+          },
+          {
+            "n": 9,
+            "cited_text": "between the tone of earnings press releases (𝑇𝑜𝑛𝑒𝑀&𝐴) and the expected tone"
+          },
+          {
+            "n": 10,
+            "cited_text": "suggest that the market responds more favorably (adversely) when positive (negative) tone is dispersed. Based on"
+          },
+          {
+            "n": 11,
+            "cited_text": "Following Allee et al. (2015) and Boudt and Thewissen (2019), we use the average reduced frequency"
+          },
+          {
+            "n": 12,
+            "cited_text": "words from the Henry (2008) library. Equation (1) is then rerun, replacing the dependent variable with the"
+          }
+        ]
+      },
+      "language_dimension": {
+        "question": "does it characterize the disclosure language along any dimension of how confident, certain, vague, hedged, or uncertain it is? If so, how is that captured and what is it called? If the words 'residual', 'abnormal', or 'expected' appear in relation to the text measure, what exactly is being decomposed or subtracted?",
+        "answer": "Reading only the provided paper, it **does not** characterize the disclosure language along dimensions of how confident, certain, vague, hedged, or uncertain it is. The linguistic measures in this paper are strictly focused on **tone** (the relative spread of positive versus negative words, reflecting optimism) [1] and **tone dispersion** (how evenly those positive or negative words are distributed throughout the text) [2]. \n\nHowever, the paper heavily relies on the concepts of **\"abnormal\"**, **\"expected\"**, and **\"residual\"** tone to measure strategic manipulation (tone inflation). Here is exactly what is being decomposed and subtracted:\n\n**The Decomposition of Tone:**\nThe authors decompose the actual, observed tone of a firm's earnings press release ($Tone_{M\\&A}$) into two parts: a normal/expected component and an abnormal/manipulated component [3, 4].\n\n**1. Expected Tone ($ExpectedTone_{M\\&A}$)**\nThis represents the \"normal tone, i.e. the tone that is expected when the M&A announcement has no influence on the tone\" [3]. The authors calculate this by running a regression (Equation 7) to predict the tone based on the firm's actual economic fundamentals and information environment [3, 4]. The variables used to establish this expected baseline include:\n*   Firm performance (Return on Assets) and a Loss dummy [4]\n*   Stock return standard deviation ($\\sigma Ret$) [4]\n*   Book-to-market ratio (BTM) [4]\n*   Analysts’ forecast error (FE), dispersion in analysts’ forecasts ($\\sigma FE$), and the number of financial analysts (NoA) following the firm [5]\n*   Industry, year, and quarter fixed effects [5]\n\n**2. Abnormal Tone ($AbTone_{M\\&A}$) / The Residual**\nThe \"Abnormal Tone\" is precisely defined as the **residual component** ($\\epsilon$) of the Expected Tone regression equation [4]. It is computed by subtracting the predicted expected tone from the actual recorded tone:\n*   $AbTone_{M\\&A}$ = $Tone_{M\\&A}$ - $ExpectedTone_{M\\&A}$ [4]\n\n**What This Subtraction Achieves:**\nBy subtracting the tone that is justified by actual firm performance and economic variables, the resulting residual (Abnormal Tone) isolates the portion of the language that is \"uncorrelated to the firm’s fundamentals, information asymmetry or environment\" [4]. The authors use this residual to capture opportunistic \"tone inflation\"—the purely strategic exaggeration of positive language that managers use to temporarily boost their stock price prior to a stock-for-stock merger [6, 7].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "stock-for-stock announcements, we expect 𝛿 to be positive."
+          },
+          {
+            "n": 2,
+            "cited_text": "Following Allee et al. (2015) and Boudt and Thewissen (2019), we use the average reduced frequency"
+          },
+          {
+            "n": 3,
+            "cited_text": "quarter t. The main independent variables include the abnormal tone (𝐴𝑏𝑇𝑜𝑛𝑒𝑀&𝐴) and the expected"
+          },
+          {
+            "n": 4,
+            "cited_text": "between the tone of earnings press releases (𝑇𝑜𝑛𝑒𝑀&𝐴) and the expected tone"
+          },
+          {
+            "n": 5,
+            "cited_text": "analysts’ forecast error (𝐹𝐸), the dispersion in analysts’ forecasts (𝜎𝐹𝐸) and the number of financial"
+          },
+          {
+            "n": 6,
+            "cited_text": "announcement"
+          },
+          {
+            "n": 7,
+            "cited_text": "evidence that investors can see through the tone inflation in corporate disclosures and therefore"
+          }
+        ]
+      },
+      "channel": {
+        "question": "what specific disclosure documents or communications are the unit of textual analysis (for example conference-call transcripts, earnings press releases, regulatory filings, analyst Q&A, management guidance)? Are any such channels explicitly included in or excluded from the sample?",
+        "answer": "Based on the provided paper, the specific disclosure documents used as the unit of textual analysis are **quarterly earnings press releases** [1, 2]. \n\nRegarding explicit inclusions and exclusions from the textual sample:\n\n*   **Included:** The authors specifically collect Form 8-K filings from the SEC EDGAR website that contain Item Code 2.02, which identifies them as earnings releases [2].\n*   **Excluded Document Types/Channels:** The authors explicitly exclude **conference call announcements** and other \"non-earnings-related notices\" to ensure their sample strictly contains earnings press releases [3]. \n*   **Excluded by Timing:** They exclude any earnings press releases that were filed beyond the SEC-mandated four trading days [2].\n*   **Excluded by Length:** They define a minimum threshold for document length, specifically removing any press release that contains fewer than 100 words [4]. (They also review only electronic files larger than 10 kilobytes [3]).",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "construction."
+          },
+          {
+            "n": 2,
+            "cited_text": "more highly regulated documents, such as annual reports. As such, earnings press releases leave"
+          },
+          {
+            "n": 3,
+            "cited_text": "exclude those filed beyond the mandated four trading days."
+          },
+          {
+            "n": 4,
+            "cited_text": "Davis and Tama-Sweet, 2012; Davis et al., 2012; Henry, 2008; Arslan-Ayaydin et al., 2016; Loughran"
+          }
+        ]
+      },
+      "payment_type": {
+        "question": "how does it treat the method of payment in the acquisitions it studies (cash, stock, or mixed)? Which payment types are in the sample, are results reported separately by payment type, and what does it report specifically for cash-financed deals?",
+        "answer": "Based on the provided paper, the authors treat the method of payment as a key mechanism that influences managerial incentives, leading to different behaviors in corporate disclosures depending on how the deal is financed.\n\n**Payment Types in the Sample**\nThe paper defines the method of payment as being either cash, stock, or a combination of the two (referred to as \"mixed\" or \"hybrid\" deals) [1]. All three payment types are included in the study's sample of 5,558 mergers and acquisitions between 2004 and 2020. Specifically, the sample consists of:\n*   **302** stock deals\n*   **1,168** cash deals\n*   **4,088** hybrid deals [2, 3]\n\n**How Results are Reported by Payment Type**\nThe results are reported both separately by payment type and in grouped comparisons:\n*   **Separately:** In univariate analyses, the authors report the tone dynamics separately for all three groups. For example, Figure 1 and Table 3 plot and list the average and median tone metrics distinctly for \"Stock\", \"Hybrid\", and \"Cash\" deals across the quarters surrounding the announcement [4-6]. Furthermore, Panel C of Table 1 breaks down the summary statistics (firm and deal characteristics) explicitly by these three payment methods [7, 8].\n*   **Grouped (Dummy Variable):** In the primary multivariate regression analyses, the authors use a dummy variable called *StockforStock*, which equals one for purely stock-financed deals and zero for both cash and hybrid deals [9, 10]. This is done to isolate the unique effect of pure stock-for-stock financing.\n*   **Excluding Hybrids:** As a robustness check, the authors also report regression results where hybrid deals are entirely excluded, leaving a direct comparison solely between pure cash and pure stock deals [10, 11]. \n\n**Findings Specific to Cash-Financed Deals**\nCash-financed deals act largely as a baseline or control group in the study, highlighting the lack of manipulative incentives when managers do not need to boost their own stock price to afford a target. The paper reports the following specifically for cash deals:\n*   **No Tone Inflation:** Unlike stock deals, the tone of earnings press releases for cash deals does not significantly change over the five quarters leading up to the M&A announcement [12]. The median tone of cash deals remains relatively stable, ranging only between a minimum of 1.196 in Quarter -3 and 1.260 in Quarter 0 [13].\n*   **Differences in Firm Characteristics:** Compared to stock bidders, the summary statistics indicate that firms using cash tend to be more profitable (higher Return on Assets), larger in size, and more highly leveraged [14].\n*   **Differences in Deal Characteristics:** The deals pursued by cash bidders tend to be smaller on average ($1.001 billion) compared to the deals pursued by stock bidders ($1.342 billion) [15]. Additionally, cash bids are more likely to be tender offers, involve competition with other bidders, and represent diversifying deals (acquiring a target in a different industry) [14].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "(2020) find that bidders significantly manage down analyst earnings forecasts prior to merger"
+          },
+          {
+            "n": 2,
+            "cited_text": "and specifically, whether bidders in stock mergers are more likely to inflate the tone of earnings press"
+          },
+          {
+            "n": 3,
+            "cited_text": "and analyst forecasts in I/B/E/S."
+          },
+          {
+            "n": 4,
+            "cited_text": "announcement. To provide a complete description of the dynamics of tone around the M&A announcement,"
+          },
+          {
+            "n": 5,
+            "cited_text": "stronger incentives for tone management by stock-for-stock bidders than cash acquirors. This incentive"
+          },
+          {
+            "n": 6,
+            "cited_text": "This table reports the Pearson (Spearman) correlation for the dependent and independent variables above (below) the diagonal."
+          },
+          {
+            "n": 7,
+            "cited_text": null
+          },
+          {
+            "n": 8,
+            "cited_text": "Tender 0.015 0.121 0.000 0.000 0.000"
+          },
+          {
+            "n": 9,
+            "cited_text": "two-digit SIC industry and year quarter) (Gow, Ormazaba, and Taylor, 2010; Petersen, 2009), (iii) use the Huber White standard"
+          },
+          {
+            "n": 10,
+            "cited_text": "Model (2) further includes the control variables. We find that the results remain statistically significant"
+          },
+          {
+            "n": 11,
+            "cited_text": "Tender  -0.084 -0.003 0.035 -0.030 -0.163* -0.177**   (0.071) (0.092) (0.090) (0.088) (0.084) (0.083)"
+          },
+          {
+            "n": 12,
+            "cited_text": "In contrast, we find that the tone of earnings press releases of cash deals does not significantly change"
+          },
+          {
+            "n": 13,
+            "cited_text": "a tone of 1.266 in Quarter -5. This increase means that the tone of earnings press releases of stock"
+          },
+          {
+            "n": 14,
+            "cited_text": "payment. Compared to cash deals, stock deals tend to be less profitable (𝑅𝑂𝐴), smaller (𝑆𝑖𝑧𝑒), less"
+          },
+          {
+            "n": 15,
+            "cited_text": "bidders ($1.342 billion) tends to be higher than for cash bidders ($1.001 billion)."
+          }
+        ]
+      },
+      "timing": {
+        "question": "over what time window relative to the merger announcement is the disclosure measured (before, at, or after the announcement), and how does it describe the timing of the behavior it documents?",
+        "answer": "The paper measures the disclosure over a comprehensive time window spanning **five quarters before** the M&A announcement, the quarter of the announcement itself, and **four quarters after** the announcement [1]. However, to specifically capture the opportunistic behavior of the bidders, the authors primarily measure the disclosure *before* the announcement, constructing their main variable ($𝑇𝑜𝑛𝑒𝑀\\&𝐴$) as the sum of the bidder's tone across the five quarterly earnings press releases immediately preceding the M&A announcement quarter (Quarter -5 to Quarter -1) [2, 3]. \n\nRegarding the timing of the behavior it documents, the paper describes a very specific, temporary pattern of \"tone inflation\" designed to temporarily boost the bidder's stock price just before an acquisition [4-6]:\n\n*   **The Build-up:** The paper documents that stock bidders strategically manipulate their narrative disclosures specifically \"in the year before the M&A announcement\" [7]. The optimism in the tone of their earnings press releases significantly and progressively increases over the four quarters leading up to the deal [8, 9]. \n*   **The Peak:** The tone manipulation does not peak at the announcement itself. Instead, the inflated tone reaches its highest peak exactly **two quarters ahead** of the M&A announcement [9, 10]. At this peak in Quarter -2, the median tone is 15.32% higher than it was in Quarter -5 [10, 11].\n*   **The Reversal:** By the time the actual M&A announcement is made in Quarter 0, the tone inflation has already begun to subside [11, 12]. In the quarter of the announcement and the subsequent post-merger quarters (Quarters 1 through 4), the tone \"returns to its original level and no longer significantly differs from that of cash-based deals\" [9]. The authors note that bidders showcase less tone inflation after the M&A announcement simply because \"the incentives of manipulating the content of narratives are significantly smaller than before the announcement\" [13].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "and analyst forecasts in I/B/E/S."
+          },
+          {
+            "n": 2,
+            "cited_text": "sum of the tone over the five quarters preceding the quarter of the M&A announcement (e.g. the sum of"
+          },
+          {
+            "n": 3,
+            "cited_text": "The dependent variable (𝑇𝑜𝑛𝑒𝑀&𝐴) is the average of bidders’ tone for five quarters before the M&A"
+          },
+          {
+            "n": 4,
+            "cited_text": "also known to create a strong incentive for managers to manipulate earnings to positively influence the"
+          },
+          {
+            "n": 5,
+            "cited_text": "number of shares that must be issued to purchase the target firm. Prior literature shows that such a"
+          },
+          {
+            "n": 6,
+            "cited_text": "language in their earnings press releases before the M&A announcement. In doing so, managers will"
+          },
+          {
+            "n": 7,
+            "cited_text": "and Acquisitions"
+          },
+          {
+            "n": 8,
+            "cited_text": "deals (takeovers that use both cash and stock) and 1,168 cash deals. To measure the linguistic tone, we"
+          },
+          {
+            "n": 9,
+            "cited_text": "mergers significantly increases in the four quarters before the M&A announcement quarter to reach a"
+          },
+          {
+            "n": 10,
+            "cited_text": "announcement. To provide a complete description of the dynamics of tone around the M&A announcement,"
+          },
+          {
+            "n": 11,
+            "cited_text": "a tone of 1.266 in Quarter -5. This increase means that the tone of earnings press releases of stock"
+          },
+          {
+            "n": 12,
+            "cited_text": "0. Moreover, the results of t-tests and Wilcoxon tests show that, while the tone for stock deals are"
+          },
+          {
+            "n": 13,
+            "cited_text": "We find that the differences between the stock and cash bidders become statistically insignificant in the"
+          }
+        ]
+      },
+      "mechanism": {
+        "question": "what economic motive, incentive, or mechanism does it propose to explain the disclosure behavior it documents?",
+        "answer": "Based on the provided paper, the primary economic motive driving the documented disclosure behavior is the acquiring firm's desire to **reduce the target’s acquisition cost** [1-3].\n\nThe paper explains this incentive through the specific mechanical structure of stock-for-stock mergers:\n\n*   **The Exchange Ratio Mechanism:** In a stock-for-stock transaction, the acquiring firm pays for the target by issuing its own shares, using an exchange ratio negotiated between the two firms [4]. To determine this ratio, the acquiring firm typically sets a fixed dollar value for each target share, and the number of the acquirer's shares needed to meet that value is calculated based on the acquiring firm’s stock price near the agreement date [5].\n*   **The Incentive to Hype the Stock:** Because of this structure, there is a \"negative relationship between bidders’ stock price and shares issued in the transaction\" [1]. The mathematical reality is that **\"the higher the price of the acquiring firm’s stock on the agreement date, the fewer the number of shares that must be issued to purchase the target firm\"** [1, 6].\n*   **The Disclosure Strategy:** Because qualitative narrative information is known to positively influence a firm's stock price, managers are incentivized to artificially \"hype their stock\" right before the deal [7, 8]. By deliberately inflating the optimistic tone of their earnings press releases prior to the merger announcement, managers can temporarily boost their stock price, which directly lowers the effective cost of acquiring the target [2, 7, 8].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "number of shares that must be issued to purchase the target firm. Prior literature shows that such a"
+          },
+          {
+            "n": 2,
+            "cited_text": "and Torsin (2021) find that a cautious disclosure tone mitigates potential home bias-related credibility"
+          },
+          {
+            "n": 3,
+            "cited_text": "second-order effect on the stock price."
+          },
+          {
+            "n": 4,
+            "cited_text": null
+          },
+          {
+            "n": 5,
+            "cited_text": "generally obtain a significant premium above the current market price (Erickson and Wang, 1999). In"
+          },
+          {
+            "n": 6,
+            "cited_text": "Thewissen, 2016), it is essential to examine whether the use of stock as a form of payment leads managers"
+          },
+          {
+            "n": 7,
+            "cited_text": "managers tend to hype their stock by increasing discretionary and optimistic disclosure with the objective"
+          },
+          {
+            "n": 8,
+            "cited_text": "language in their earnings press releases before the M&A announcement. In doing so, managers will"
+          }
+        ]
+      },
+      "design": {
+        "question": "what is the empirical strategy and identification approach, and what comparison or control groups, if any, are used?",
+        "answer": "The primary **empirical strategy** relies on cross-sectional multivariate regressions using Newey-West standard errors to correct for heteroskedasticity and autocorrelation [1]. The authors' baseline model (Equation 1) regresses the pre-merger tone of the bidder's earnings press releases ($Tone_{M\\&A}$) on a dummy variable representing the method of payment ($StockforStock$), while controlling for a comprehensive set of firm-specific and deal-specific variables, alongside industry, year, and quarter fixed effects [1-3]. \n\n**Comparison and Control Groups:**\nThe primary variable of interest, $StockforStock$, isolates pure stock-financed acquisitions. The baseline **control group** consists of both **cash deals and hybrid deals** (acquisitions financed with a combination of cash and stock) [2]. In robustness checks, the authors entirely exclude hybrid deals to perform a direct comparison between pure stock deals (the treatment group) and pure cash deals (the strict control group) [4]. \n\n**Identification Approach:**\nBecause the decision to use stock as payment is not random and could be driven by unobserved variables (like managerial overconfidence) that also influence disclosure tone, the authors deploy **five identification strategies** to address endogeneity and establish causality [5-7]:\n\n1.  **Propensity-Score Matching (PSM):** The authors match each stock-for-stock deal (the treatment group) with a cash or hybrid deal (the control group) that has the closest propensity score based on firm-specific characteristics, ensuring the two groups are comparable across observable covariates [8-10].\n2.  **Entropy Balancing:** To resolve potential weaknesses in PSM, they use an iterative reweighting process on the control group until the mean, variance, and skewness of the control group's covariates exactly match those of the treated group [11, 12]. \n3.  **Instrumental Variable (IV) Approach:** The authors use the **percentage of institutional ownership** in the month prior to the acquisition announcement as their instrument [13]. They argue this meets the exclusion criteria because high institutional ownership reduces the likelihood of managers executing wealth-reducing stock-based deals, but it does not directly drive the linguistic tone of the earnings press releases [13-15]. \n4.  **Restricted Control Function (rCF):** Using a two-step procedure, they first model the probability of a deal using stock to extract a generalized residual. They then insert this residual into the second-stage tone regression to control for unmodeled omitted variables [16, 17]. \n5.  **Pseudo-Event Study:** As a falsification test, the authors shift the M&A announcement dates artificially forward and backward by one year (four quarters). They show that the relationship between stock deals and tone inflation disappears during these pseudo-events, proving the effect is tied strictly to the actual merger timeline [18, 19].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": null
+          },
+          {
+            "n": 2,
+            "cited_text": "two-digit SIC industry and year quarter) (Gow, Ormazaba, and Taylor, 2010; Petersen, 2009), (iii) use the Huber White standard"
+          },
+          {
+            "n": 3,
+            "cited_text": "(𝐷𝑒𝑎𝑙𝑉alue), which is the transaction’s value reported by SDC in millions of dollars. We further add"
+          },
+          {
+            "n": 4,
+            "cited_text": "Model (2) further includes the control variables. We find that the results remain statistically significant"
+          },
+          {
+            "n": 5,
+            "cited_text": "incentive for managers to engage in the inflation of tone to boost the stock price and reduce the target"
+          },
+          {
+            "n": 6,
+            "cited_text": "in tone (Moeller, Schlingemann, and Stulz, 2004; Malmendier and Tate, 2008). Given that such"
+          },
+          {
+            "n": 7,
+            "cited_text": "employ a large array of endogeneity tests to confirm the causality of our results: (i) the restricted control"
+          },
+          {
+            "n": 8,
+            "cited_text": "We first divide our sample into two subsamples based on the method of payment. We consider"
+          },
+          {
+            "n": 9,
+            "cited_text": "+ β5 × 𝜎𝑅𝑒𝑡 +β6 × 𝜎𝑅𝑂𝐴 + β7 × Leverage + β8 ·× Loss + β9 × FE + β10 × 𝜎𝐹𝐸"
+          },
+          {
+            "n": 10,
+            "cited_text": "regression consists of 604 observations (302 stock deals and 302 cash or hybrid deals). Panel A of Table"
+          },
+          {
+            "n": 11,
+            "cited_text": "significant between Quarter -3 and -2. This statistical difference is confirmed in Model (2) of Panel C."
+          },
+          {
+            "n": 12,
+            "cited_text": "addition, the nearest neighbor method ignores a subset of control observations, which can cause some"
+          },
+          {
+            "n": 13,
+            "cited_text": "correlated with 𝑆𝑡𝑜𝑐𝑘𝑓𝑜𝑟𝑆𝑡𝑜𝑐𝑘) and exclusion criteria (no direct correlation between the instrument and"
+          },
+          {
+            "n": 14,
+            "cited_text": "management compensation structure, strengthen the institutional voice on the board of directors and"
+          },
+          {
+            "n": 15,
+            "cited_text": "reasoning, Martin (1996) provide strong evidence of a negative relationship between the proportion of"
+          },
+          {
+            "n": 16,
+            "cited_text": "reduces the possibility of endogeneity generated by spurious correlations or reverse causality, leading to the"
+          },
+          {
+            "n": 17,
+            "cited_text": "variables (Heckman and Navarro-Lozano, 2004). Another feature is that the generalized residual obtain from"
+          },
+          {
+            "n": 18,
+            "cited_text": "control variable in a second step regression, where we estimate the impact of the method of payment on the"
+          },
+          {
+            "n": 19,
+            "cited_text": "pseudo- events. Model (1) and (2) present the results when we shift the M&A announcement four"
+          }
+        ]
+      },
+      "scope": {
+        "question": "what does it say about the boundaries of its contribution -- what it does not examine, does not measure, or does not claim, and what it leaves to future work?",
+        "answer": "Reading only the provided paper, the authors do not include a dedicated \"future work\" section or explicitly list avenues for further research. However, they do establish specific boundaries regarding what their study claims, measures, and examines:\n\n*   **It does not make definitive claims about target firms:** The authors attempt to examine whether the *target* firms also manipulate their disclosure tone prior to the merger, finding no significant evidence that they do [1]. However, they explicitly bound this finding by warning that defining the sample based on target firms \"significantly decreases the sample size to 37 observations, which may limit the inferences we can draw from our analysis on the target firms\" [2]. \n*   **It does not examine quantitative earnings manipulation:** The paper explicitly separates its contribution from the manipulation of \"hard financial information\" [3, 4]. The authors state that instead of \"investigating the manipulation of quantitative financial information,\" they focus exclusively on the unregulated qualitative narratives in earnings press releases to prove that tone management is an \"independent and distinct manipulation tool\" [4-6].\n*   **It does not claim to perfectly eliminate endogeneity:** Even though the authors subject their data to an \"exhaustive array\" of endogeneity tests (including propensity-score matching, entropy balancing, and instrumental variables) to establish a causal link, they do not claim these methods are flawless, explicitly acknowledging that \"no approach can perfectly rule out endogeneous relationships\" [7-10].\n*   **It does not claim a universal standard for measuring tone:** The authors measure tone using specific word lists (primarily Henry, 2008), but they acknowledge the methodological boundaries of their \"bag of words approach,\" noting that \"there currently exists no consensus in the literature regarding which word list is more appropriate for the analysis of language in contexts such as financial disclosures\" [11].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "firms, based on the same event date and tone definitions as defined above. Our results in Table 13 show"
+          },
+          {
+            "n": 2,
+            "cited_text": "announced and agreed in the same quarter, the target has limited time to manipulate its earnings"
+          },
+          {
+            "n": 3,
+            "cited_text": "benefit from higher short term returns, but suffer from long term losses (Bartov, Givoly, and Hayn, 2002;"
+          },
+          {
+            "n": 4,
+            "cited_text": "investors’ decisions is not only achieved by manipulating hard financial information, but  also the content"
+          },
+          {
+            "n": 5,
+            "cited_text": "earnings. Similar evidence is provided by Louis (2004), Higgins (2013), Gong, Louis, and Sun (2008)"
+          },
+          {
+            "n": 6,
+            "cited_text": "year. Overall, the evidence in the literature lends considerable support to the notion that investors"
+          },
+          {
+            "n": 7,
+            "cited_text": "performance, and firms with limited monitoring mechanisms in place. We also find that, although tone inflation"
+          },
+          {
+            "n": 8,
+            "cited_text": null
+          },
+          {
+            "n": 9,
+            "cited_text": "in tone (Moeller, Schlingemann, and Stulz, 2004; Malmendier and Tate, 2008). Given that such"
+          },
+          {
+            "n": 10,
+            "cited_text": "employ a large array of endogeneity tests to confirm the causality of our results: (i) the restricted control"
+          },
+          {
+            "n": 11,
+            "cited_text": "𝑃𝑜𝑠𝑖𝑡𝑖𝑣𝑒𝑊𝑜𝑟𝑑𝑠 and 𝑁𝑒𝑔𝑎𝑡𝑖𝑣𝑒𝑊𝑜𝑟𝑑𝑠 are the numbers of positive and negative words in the earnings"
+          }
+        ]
+      }
+    }
+  },
+  "ragozzino_reuer_2024": {
+    "title": "Implications of M&A for information disclosures in earnings calls (Ragozzino & Reuer, 2024; Long Range Planning)",
+    "infos": {
+      "measure": {
+        "question": "what text-based or linguistic measures does it construct or use, and for each one, what dictionary, word list, or methodology defines it? Quote the sentence(s) that define each measure.",
+        "answer": "Based on the provided paper, the authors construct two primary text-based measures to analyze earnings call transcripts:\n\n**1. Corporate Strategy Keyword Utilization / \"Corporate dictionary intensive\"**\n*   **Dictionary/Word List:** The authors construct a custom dictionary based on Feldman’s (2020) list of corporate strategy keywords [1]. The specific words and their variants include: *ACQUI\\*, ALLY, ALLI-ANCE, ASSET SALE, CORPORATE, DIVERSIF\\*, DIVEST\\*, FIRM BOUNDAR\\*, M&A\\*, MERG\\*, SCALE, SCOPE, SELLOFF, SPINOFF, STRATEGY* [1].\n*   **Methodology:** The measure is calculated separately for analysts and executives [1]. It is computed as a continuous, weighted score by counting the number of corporate strategy keywords spoken by a group, dividing that by the total number of words spoken by that group in the call, and scaling the result by 1,000 [1, 2].\n*   **Defining Quotes:** \n    *   \"In order to capture the extent to which executives and analysts engage in a conversation surrounding the M&A activity of the firm, we build a dictionary of words that mirrors Feldman’s (2020) list of corporate strategy keywords\" [1]. \n    *   \"These words and their variants are: ACQUI\\*, ALLY, ALLI-ANCE, ASSET SALE, CORPORATE, DIVERSIF\\*, DIVEST\\*, FIRM BOUNDAR\\*, M&A\\*, MERG\\*, SCALE, SCOPE, SELLOFF, SPINOFF, STRATEGY\" [1].\n    *   \"The computation of the variables involves three steps. First, we sum up the dictionary keywords spoken by each of these two classes of participants within each call transcript. Second, we divide these sums by the total words they spoke during the call. Lastly, we multiply these proportions by 1,000 for scaling purposes\" [1, 2].\n    *   \"Corporate dictionary intensive is the key theoretical variable in the model, and it is computed in exactly the same way as the dependent variables used for the models predicting the utilization of corporate keywords during earnings calls\" [3].\n\n**2. Transcript Length**\n*   **Methodology:** A straightforward word count measuring the total volume of speech for each class of participants (analysts vs. executives) during the call, used as a control variable [3].\n*   **Defining Quote:** \n    *   \"...Transcript length, which is split between analysts and executives, and it consists of the number of words spoken by either class of participant during the focal earnings call\" [3].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "Main models. The second set of dependent variables are implemented in the estimation of the models for testing hypotheses 1 and 2, in which we predict the use of corporate strategy words by both analysts and executives during earnings calls. In order to capture the extent to which executives and analysts engage in a conversation surrounding the M&A activity of the firm, we build a dictionary of words that mirrors Feldman’s (2020) list of corporate strategy keywords. These words and their variants are: ACQUI*, ALLY, ALLI-ANCE, ASSET SALE, CORPORATE, DIVERSIF*, DIVEST*, FIRM BOUNDAR*, M&A*, MERG*, SCALE, SCOPE, SELLOFF, SPINOFF, STRATEGY.11 The computation of the variables involves three steps. First, we sum up the dictionary keywords spoken by each of these"
+          },
+          {
+            "n": 2,
+            "cited_text": "R. Ragozzino and J.J. Reuer"
+          },
+          {
+            "n": 3,
+            "cited_text": "The models estimating analysts’ earnings forecast accuracy introduce additional covariates as follows: Corporate dictionary intensive is the key theoretical variable in the model, and it is computed in exactly the same way as the dependent variables used for the models predicting the utilization of corporate keywords during earnings calls. The control set includes the same variables previously covered, plus Transcript length, which is split between analysts and executives, and it consists of the number of words spoken by either class of participant during the focal earnings call. We expect that the accuracy of analysts forecast will be at least partially affected by the length of the information exchange occurring during the call, independent of the use of the corporate strategy keywords we track. Total M&A deals is a count variable tracking the number of deals entered into by the focal firm during the 5 years leading up to the call. We include this control because it is plausible that the earnings of active firms may be more difficult to predict than the earnings of less active or inactive firms. Lastly, we include industry fixed effects in all models. Time fixed effects were never significant in any model either aggregately or even individually, so we exclude them from all estimations for the sake of parsimony."
+          }
+        ]
+      },
+      "language_dimension": {
+        "question": "does it characterize the disclosure language along any dimension of how confident, certain, vague, hedged, or uncertain it is? If so, how is that captured and what is it called? If the words 'residual', 'abnormal', or 'expected' appear in relation to the text measure, what exactly is being decomposed or subtracted?",
+        "answer": "Reading only the provided paper, it **does not** characterize the disclosure language along any dimensions of how confident, certain, vague, hedged, or uncertain it is. \n\nInstead of measuring the *tone* or *certainty* of the language, the authors' textual measures are strictly focused on the **topic** and **volume** of the discussion. They track the extent to which executives and analysts discuss corporate strategy by calculating a \"corporate dictionary intensive\" score, which is simply the proportional frequency of specific corporate strategy keywords (like *MERG\\**, *ACQUI\\**, *DIVEST\\**) relative to the total words spoken [1, 2]. They also measure total \"transcript length\" as a simple word count [3].\n\nFurthermore, the words **'residual'**, **'abnormal'**, or **'expected'** do not appear in this paper in relation to any text measure. The authors do not decompose their linguistic variables into \"expected\" or \"abnormal\" components; they rely entirely on the raw, weighted scores of keyword usage without subtracting any predicted baseline [1, 2].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "Main models. The second set of dependent variables are implemented in the estimation of the models for testing hypotheses 1 and 2, in which we predict the use of corporate strategy words by both analysts and executives during earnings calls. In order to capture the extent to which executives and analysts engage in a conversation surrounding the M&A activity of the firm, we build a dictionary of words that mirrors Feldman’s (2020) list of corporate strategy keywords. These words and their variants are: ACQUI*, ALLY, ALLI-ANCE, ASSET SALE, CORPORATE, DIVERSIF*, DIVEST*, FIRM BOUNDAR*, M&A*, MERG*, SCALE, SCOPE, SELLOFF, SPINOFF, STRATEGY.11 The computation of the variables involves three steps. First, we sum up the dictionary keywords spoken by each of these"
+          },
+          {
+            "n": 2,
+            "cited_text": "R. Ragozzino and J.J. Reuer"
+          },
+          {
+            "n": 3,
+            "cited_text": "The models estimating analysts’ earnings forecast accuracy introduce additional covariates as follows: Corporate dictionary intensive is the key theoretical variable in the model, and it is computed in exactly the same way as the dependent variables used for the models predicting the utilization of corporate keywords during earnings calls. The control set includes the same variables previously covered, plus Transcript length, which is split between analysts and executives, and it consists of the number of words spoken by either class of participant during the focal earnings call. We expect that the accuracy of analysts forecast will be at least partially affected by the length of the information exchange occurring during the call, independent of the use of the corporate strategy keywords we track. Total M&A deals is a count variable tracking the number of deals entered into by the focal firm during the 5 years leading up to the call. We include this control because it is plausible that the earnings of active firms may be more difficult to predict than the earnings of less active or inactive firms. Lastly, we include industry fixed effects in all models. Time fixed effects were never significant in any model either aggregately or even individually, so we exclude them from all estimations for the sake of parsimony."
+          }
+        ]
+      },
+      "channel": {
+        "question": "what specific disclosure documents or communications are the unit of textual analysis (for example conference-call transcripts, earnings press releases, regulatory filings, analyst Q&A, management guidance)? Are any such channels explicitly included in or excluded from the sample?",
+        "answer": "Based on the provided paper, the specific disclosure documents used as the unit of textual analysis are **quarterly earnings calls transcripts** [1]. \n\nRegarding explicit inclusions and exclusions from the sample:\n\n**Included:**\n*   **Full Call Transcripts:** The analysis includes \"every single interaction among company executives, analysts and the operator\" within the call [2]. The authors explicitly coded comments to isolate what was spoken by analysts versus executives [2].\n*   **Specific Stock Exchanges:** The sample specifically includes only transcripts for public firms traded on the **NYSE** or **Nasdaq** [1]. \n\n**Excluded:**\n*   **Minor Exchanges and OTC Firms:** The authors explicitly screen out and exclude \"smaller firms traded in minor exchanges or 'over the counter'\" because these firms are unlikely to be covered by their data provider, Seeking Alpha [1].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "Hypothesis 4. The greater the amount of information disclosed by executives on the firm’s corporate strategy in a given earnings calls quarter, the smaller the analysts’ earnings forecast error in the following quarter."
+          },
+          {
+            "n": 2,
+            "cited_text": "The transcripts we use are available to download as text files and they contain every single interaction among company executives, analysts and the operator. Notably, each comment by the individuals is preceded by the identifying information of the speaker, which allows us to isolate with precision who said what in each call. We then use Python to code each of the comments and build a database that uniquely identifies the company issuing the earnings call, the time of the call, the identity of the speaker and the position of the speaker comment in the context of the call. In all, the sample includes 7.27 million individual comments in total."
+          }
+        ]
+      },
+      "payment_type": {
+        "question": "how does it treat the method of payment in the acquisitions it studies (cash, stock, or mixed)? Which payment types are in the sample, are results reported separately by payment type, and what does it report specifically for cash-financed deals?",
+        "answer": "Reading only the provided paper, the authors **do not** analyze or categorize the acquisitions in their sample by their method of payment (cash, stock, or mixed). Consequently, the paper does not report any results separated by payment type, nor does it provide any specific findings or baselines for cash-financed deals. \n\nIn fact, the authors explicitly note that examining the method of payment is outside the scope of their current study. They suggest it as a promising avenue for future investigation, stating: \"We also think it would be interesting to examine equity market responses to previously announced M&A transactions leading up to the earnings calls, as well as the **method of payment** used to execute these deals, in order to determine whether such factors may trigger differential questioning on the topic of corporate strategy\" [1].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "Without a doubt, a great deal of research has gone into whether and how these diverse pursuits allow firms to outperform their peers, by creating market power, superior access to resources and markets, preemption of entry, etc. However, we know little about the relationship between the complexity of a firm’s corporate strategy and the adverse selection problem affecting its stakeholders, where this problem is known to create a direct and consequential impact on the firm’s ability to raise capital and compete in the first place. This paper lays preliminary foundations for this line of research, but future work along the lines we draw would be highly informative and beneficial to the advancement of knowledge in this area. For instance, future research might examine other types of corporate deals besides M&A (e.g., foreign direct investment, technology partnerships, etc.). It would also be valuable to extend this analysis to explore firms based in other countries subject to different information intermediaries and institutions that can shape both their corporate strategies and ability to obtain financial and other resources in factor markets (e.g., Ahuja and Yayavaram, 2011). We also think it would be interesting to examine equity market responses to previously announced M&A transactions leading up to the earnings calls, as well as the method of payment used to execute these deals, in order to determine whether such factors may trigger differential questioning on the topic of corporate strategy."
+          }
+        ]
+      },
+      "timing": {
+        "question": "over what time window relative to the merger announcement is the disclosure measured (before, at, or after the announcement), and how does it describe the timing of the behavior it documents?",
+        "answer": "Based on the provided paper, the authors approach the timeline differently than measuring disclosure *around* a single merger announcement. Instead, they anchor their timeline on the **focal earnings call** (the disclosure) and measure the firm's M&A activity that occurred **before** that call [1]. Therefore, the disclosure is measured *after* the M&A transactions have taken place.\n\nSpecifically, the time windows and timing behavior are described as follows:\n\n*   **The Primary Time Window:** The authors primarily measure the disclosure against any M&A deals the firm entered into during the **5 years preceding** the focal earnings call [1]. They use this 5-year backward-looking window to categorize whether a firm is \"active\" or \"inactive\" in M&A, and to count the total number of past deals [1, 2].\n*   **The \"Recency Effect\" and the 1-Year Window:** The authors acknowledge that the timing of the past deals matters, noting that \"a recency effect may be at play, such that M&A deals closer to the call will be more likely to be on the agenda and up for discussion than older deals within the time window\" [3]. To test this, they shorten the measurement window to only the **1 year prior** to the earnings call [4].\n*   **Timing of the Documented Behavior:** The paper documents that past M&A activity triggers increased scrutiny and discussion of corporate strategy in current earnings calls, but this behavior is highly sensitive to how recently the acquisitions occurred. When analyzing the more recent 1-year window, the authors find that the recent M&A activity \"results in far more intense scrutiny by analysts\" compared to the 5-year window [4]. Specifically, active firms in the 1-year window were asked about corporate strategy 148% more often, and executives discussed it 123% more often, demonstrating that the information exchange is most intense in the year immediately following the M&A activity [4].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "5.2. Variables and specifications"
+          },
+          {
+            "n": 2,
+            "cited_text": "The models estimating analysts’ earnings forecast accuracy introduce additional covariates as follows: Corporate dictionary intensive is the key theoretical variable in the model, and it is computed in exactly the same way as the dependent variables used for the models predicting the utilization of corporate keywords during earnings calls. The control set includes the same variables previously covered, plus Transcript length, which is split between analysts and executives, and it consists of the number of words spoken by either class of participant during the focal earnings call. We expect that the accuracy of analysts forecast will be at least partially affected by the length of the information exchange occurring during the call, independent of the use of the corporate strategy keywords we track. Total M&A deals is a count variable tracking the number of deals entered into by the focal firm during the 5 years leading up to the call. We include this control because it is plausible that the earnings of active firms may be more difficult to predict than the earnings of less active or inactive firms. Lastly, we include industry fixed effects in all models. Time fixed effects were never significant in any model either aggregately or even individually, so we exclude them from all estimations for the sake of parsimony."
+          },
+          {
+            "n": 3,
+            "cited_text": "Robustness checks. Although we have sought to make sensible decisions in the design of our empirical tests, we have also had to make some decisions that may play a role in the estimated coefficients. Most notably, we decided to track firms’ M&A activities for a period of 5 years prior to the focal earnings call. It is plausible that a recency effect may be at play, such that M&A deals closer to the call will be more likely to be on the agenda and up for discussion than older deals within the time window. In this sense, using a relatively long tracking period – like we do – may weaken our results, because it may cause us to include firms that were active in M&A,"
+          },
+          {
+            "n": 4,
+            "cited_text": "When we change the 5-year window to 1 year, we are left with only 6,281 active firms, which are matched with 18,298 inactive ones. As expected, the more recent nature of the M&A activity experienced by firms results in far more intense scrutiny by analysts: Active firms were asked about corporate strategy 148 percent more than inactive firms (i.e., both p < 0.0001). For their part, exec-utives of active firms discussed their corporate strategy 123 percent more than their counterparts. Turning to the analysts’ forecast error, we find that active firms are subject to a greater error, when they are probed on corporate strategy (i.e., 14 percent larger error size, p < 0.0001). In contrast, the forecast error is smaller when executives discuss this topic (i.e., 44 percent smaller error size, p < 0.0001). Similar findings – all consistent with our predictions and main results – were found for the comparison of highly- and lowly- active firms.15"
+          }
+        ]
+      },
+      "mechanism": {
+        "question": "what economic motive, incentive, or mechanism does it propose to explain the disclosure behavior it documents?",
+        "answer": "Based on the provided paper, the primary economic motive driving the disclosure behavior is the firm's need to **preserve access to liquid capital markets and obtain external financing on attractive terms** [1]. \n\nThe paper explains this behavior through the mechanism of **information asymmetry and adverse selection** existing specifically between the firm's executives and its shareholders (capital markets) [2]. \n\nHere is how the paper proposes this mechanism and incentive structure works:\n\n*   **The Problem of Asymmetric Information:** While previous research focuses on the information gap between a buyer and a seller in an M&A deal, this paper highlights that a similar gap exists between the acquiring firm's executives and the investing public [2, 3]. When a firm engages in complex M&A transactions, capital market participants face high information-gathering costs to understand the strategy [2].\n*   **The Penalty for Opaqueness:** The economic threat (adverse selection) is that if this information is incomplete, \"shareholders can discount the value of the firm and firms will experience a higher cost of obtaining external resources\" [2]. \n*   **The Incentive to Disclose:** To prevent investors from discounting the firm's stock, executives are incentivized to use earnings calls to voluntarily explain their M&A agendas [1, 4]. As the authors note, \"based on their need to preserve liquid capital markets for their firms in order to obtain external financing on attractive terms, executives will have to provide pertinent information on their M&A, because failure to disclose this information can jeopardize their firm’s access to capital markets\" [1].\n*   **The Mechanism in Action:** Because M&A deals are resource-intensive and complex, they naturally raise concerns for analysts tasked with forecasting the firm's near-term earnings [1, 5]. The information gap prompts analysts to heavily question the executives about corporate strategy [6]. By responding and proactively disclosing this strategic information, executives successfully reduce the adverse selection problem, which is evidenced by a measurable reduction in the analysts' subsequent earnings forecast errors [7-9].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "M&A are among the most resource-intensive strategic investments firms employ, as they require significant capital commitments, costly due diligence, and challenging integration processes. It is partly because of the complexity of M&A deal-making and execution that equity markets often respond skeptically to M&A announcements (e.g., Kaplan and Weisbach, 1992), as also corroborated by a recent meta-analysis showing a consistent slightly negative reaction to acquisition announcements on average (i.e., King et al., 2021). It follows that analysts will also want to leverage earnings calls as opportunities to obtain otherwise opaque information on the ob-jectives held by executives and how they will be carried out. Thus, we expect that analysts will actively inquire about these deals and raise broader concerns about corporate strategy to executives during calls. Likewise, based on their need to preserve liquid capital markets for their firms in order to obtain external financing on attractive terms, executives will have to provide pertinent information on their M&A, because failure to disclose this information can jeopardize their firm’s access to capital markets. As evidence of this, research in accounting has argued that executives use conference calls to convey private information surrounding M&A announce-ments, and this process results in more positive reactions by shareholders (i.e., Kimbrough and Louis, 2011). In sum, we predict a positive relationship between a company’s M&A activity and the amount of information exchanged on this activity during an earnings call:"
+          },
+          {
+            "n": 2,
+            "cited_text": "However, there is a separate adverse selection problem in M&A markets that has often been neglected in previous research (for an exception see Yakis-Douglas et al., 2017): Information asymmetry may also exist between company executives carrying out M&A and the very shareholders they represent. This means that even if a buyer were to address information asymmetry satisfactorily between itself and a seller during deal negotiations, it would still face the critical challenge of relaying its M&A strategy to shareholders. It is noteworthy that such third parties often do not appear in other market settings involving buyers and sellers in which the original models of adverse selection were based (e.g., the original models applied to used cars, labor markets, insurance, etc.). For shareholders, the more complex the transaction is, the higher their information-gathering costs will be, and they obtain diminishing benefits from trying to make sense of the firm’s deals (Veldkamp, 2006). As the information becomes costly to gather or process, shareholders can discount the value of the firm and firms will experience a higher cost of obtaining external resources.2 It follows that the consequences of information asymmetries in M&A markets might even be more far-reaching than previous M&A studies on this topic have considered, and the costs they entail for acquirers have been understated. This oversight may be in part due to the greater attention that corporate strategy scholars have given to moral hazard concerns – another implication of information asymmetry involving shareholders that can give rise to value destroying acquisitions (e.g., Jensen and Meckling, 1976; Dalton et al., ). Alternatively, scholars may have overlooked adverse selection in this context because they have implicitly assumed that capital markets are informationally efficient (Fama, 1970; Milgrom and Stokey, 1982).3 Regardless, for the most part research in the area of corporate strategy in general, as well as M&A in particular, has neglected the importance of adverse selection between company insiders and shareholders. A recent notable exception is the work by Benner and Zenger (2016), who have provided a conceptual discussion of the challenges managers face when they devise and implement complex strategies and subsequently have to relay information on these strategies to capital market participants."
+          },
+          {
+            "n": 3,
+            "cited_text": "Despite this fairly clear-cut conclusion, it is noteworthy that prior work has focused mostly on the asymmetric information present between the buying and the selling firms in M&A and the implications it presents during M&A dealmaking. This work has applied the theoretical models of information economics originally developed for other markets to the M&A market context, in order to understand the antecedents and consequences of various aspects of M&A transactions. Specifically, M&A studies have relied on seminal research such as Akerlof’s (1970) classic model of used car markets, Spence’s (1973) model of signaling in labor markets, and Stiglitz’s (1973) analysis of insurance markets (e.g., Reuer, 2009). The upshot of research on M&A is that under conditions of information asymmetry, deals may fall through, or alternative entry modes may be used, absent other remedies such as contractual provisions or payment structures to reduce the exposure of buyers to adverse selection risks (e.g., Balakrishnan and Koza, 1993; Kohers and Ang, 2000; Datar et al., 2001; Gilson and Schwartz, 2005; Cain et al., 2011; Reuer and Ragozzino, 2012; Macias and Moeller 2016; McCann et al., 2016)."
+          },
+          {
+            "n": 4,
+            "cited_text": "3. Research hypotheses"
+          },
+          {
+            "n": 5,
+            "cited_text": "Hypothesis 1. Analysts in earnings calls will inquire more on the firm’s corporate strategy, the greater the firm’s M&A activity."
+          },
+          {
+            "n": 6,
+            "cited_text": "More specifically, analysts are tasked with attending calls and raising questions on the aspects of a firm’s performance and direction about which they believe they are insufficiently informed. They subsequently use the newly acquired information to form an estimate of what the firm’s earnings will be in the quarter following the call (e.g., Bowen et al., 2002; Kimbrough, 2005; Lobo et al., 2017; Heinrichs et al., 2019). It is therefore reasonable to infer that, all else equal, the greater the asymmetry in information between analysts and executives, the more the former will question the latter. Thus, the amount of questioning on a firm’s M&A strategy should reflect the level of information available to analysts on this topic. Barring external and perverse dynamics,4 if few or no questions are raised, then analysts should hold equal information to executives, and analysts can form forecasts based on information at hand. In contrast, extended inquiries by analysts should indicate a wide information gap between the two, which in turn raises the stakes of adverse"
+          },
+          {
+            "n": 7,
+            "cited_text": null
+          },
+          {
+            "n": 8,
+            "cited_text": "At the most basic level, executives are called upon to allocate the allotted time to covering several topics, of which a firm’s M&A agenda is but one. Thus, extensive discussions on any given items may simply not be feasible based on time limitations alone. Moreover, there has been considerable academic work that has examined the drivers of the quantity and quality of the information executives disclose during earnings calls. Two clear-cut takeaways from this research are that there is a positive relationship between the opacity of a firm’s performance and strategy and the amount of information conveyed by executives during calls (Frankel et al., 1999), as well as between the amount of information disclosed by executives in earnings calls and the reaction of market participants (see for instance, Kimbrough and Louis, 2011). Even still, both anecdotal and scientific evidence points to a great deal of variability in the information volunteered by executives, such that executives may willingly or unwillingly fail to convey all the relevant infor-mation, either because of their own limitations, pre-conceived prejudices, or their desire to protect the firm’s strategic purposes, as discussed in prior work (see for instance Francis and Philbrick, 1993; Hollander et al., 2010; Matsumoto et al., 2011; Mayew et al., 2013). Insofar as firms with greater M&A activity offer significantly more information on their corporate strategy, we predict that this information will help to reduce the effects of adverse selection affecting analysts:"
+          },
+          {
+            "n": 9,
+            "cited_text": "Hypothesis 4. The greater the amount of information disclosed by executives on the firm’s corporate strategy in a given earnings calls quarter, the smaller the analysts’ earnings forecast error in the following quarter."
+          }
+        ]
+      },
+      "design": {
+        "question": "what is the empirical strategy and identification approach, and what comparison or control groups, if any, are used?",
+        "answer": "The primary empirical strategy in this paper relies on quantitative regression analysis, specifically utilizing two different model types depending on the outcome variable:\n*   **Tobit Regressions:** Used to predict the utilization of corporate strategy keywords by analysts and executives [1]. A Tobit model is necessary here because the dependent variable (the proportion of corporate strategy words) is continuous but bounded at zero [1].\n*   **OLS Regressions:** Used to estimate the models predicting analysts’ earnings forecast accuracy, employing standard OLS regressions with robust standard errors [1]. \n\n**Identification Approach**\nBecause engaging in M&A is a costly and complex choice, directly comparing firms that do and do not engage in M&A could lead to biased inferences driven by unobserved heterogeneity [2]. To address this endogeneity concern and establish comparability, the authors use a **Propensity Score Matching (PSM) with nearest-neighbor matching techniques** [2, 3]. \n\nThe identification process works as follows:\n1.  The authors estimate logistic regressions to predict the likelihood of a firm engaging in M&A based on observable characteristics like S&P 500 inclusion, number of analysts, firm leverage, market capitalization, Tobin’s Q, and profit margin [4, 5].\n2.  They use the resulting propensity scores to match treated firms with comparable control firms. To be considered a valid match, the control firm must have a propensity score within 0.1 of the treated firm, belong to the exact same industry, have its earnings call in the same year and quarter, and share the same S&P 500 inclusion status [6].\n\n**Comparison and Control Groups**\nUsing the PSM approach, the authors construct three distinct matched samples to serve as their treatment and control groups for different stages of the analysis:\n\n1.  **Active vs. Inactive Firms (Base Models):** The primary treatment group consists of firms that entered into at least one M&A deal in the 5 years preceding the earnings call [4]. The control group consists of matched \"inactive\" firms that did not engage in any M&A during that same 5-year window [6].\n2.  **Highly Active vs. Less Active Firms (Intensity Models):** To test the effects of M&A volume, the authors drop all inactive firms and split the active firms. The treatment group consists of firms with M&A activity at or above the median level, while the control group comprises matched active firms with below-median M&A activity [4, 6].\n3.  **High vs. Low Disclosure Firms (Forecast Error Models):** When evaluating how the actual disclosures affect analysts' forecast errors, the authors re-match the samples based on dictionary use. They match a treatment group of firms exhibiting high use of the corporate strategy dictionary (at or above the median) against a control group of firms with below-median dictionary usage [7, 8].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "Models. The models used for the analyses pertaining to the utilization of the corporate dictionary keywords by analysts and ex- ecutives are Tobit regressions. As previously noted, the dependent variables in these models are continuous and bounded at zero, as we scale the count of keywords by the total number of words spoken by each speaker category. Thus, standard OLS models would be inadequate as they may result in the inappropriate prediction of values less than zero. It should be noted that we also re-estimate the Tobit regressions using fractional regressions, and the interpretation and significance of the results remains unchanged. Lastly, the models estimated to predict the determinants of analysts’ forecast errors are standard OLS regressions with robust standard errors, as the dependent variable is the percent deviation of the predicted earnings from the actual earnings, in the quarter following the focal earnings call."
+          },
+          {
+            "n": 2,
+            "cited_text": "Propensity score matching and endogeneity. The goal of our analysis is to determine whether firms that engage in M&A activity provide useful information to investors, in order to allow the latter to be less exposed to the risk of adverse selection. We are also interested in determining whether analysts who participate in the calls on behalf of capital market participants, inquire about the corporate strategies of firms that engage in M&A. To this end, it is necessary to compare samples of firms with and without M&A activity (as well as compare firms with less versus substantial M&A activity, as we will discuss later). It is apparent that simply bifurcating the population of firms based on whether they engage in M&A creates potential problems, insofar as this sort of activity is financially and managerially demanding, and it is also not suited for all competitive contexts and time periods. Accordingly, such direct comparisons may lead to biased inferences due to unobserved heterogeneity."
+          },
+          {
+            "n": 3,
+            "cited_text": "Industry fixed effects Yes Yes Yes Yes Yes Yes Sigma 3.1863 3.1625 3.1608 1.6268 1.5965 0.2294"
+          },
+          {
+            "n": 4,
+            "cited_text": "5.2. Variables and specifications"
+          },
+          {
+            "n": 5,
+            "cited_text": "6. Results"
+          },
+          {
+            "n": 6,
+            "cited_text": "To address this concern, we first estimate models predicting the use of M&A by individual firms and create propensity scores that we use to match M&A active firms with their most comparable counterparts. We then build a final sample based on the following criteria: First, the absolute value of the difference between the propensity scores of active and inactive M&A firms has to be smaller than or equal to 0.1. Second, both firms have to be in the same industry8 and the earnings call has to be in the same year and quarter. Lastly, both firms have to have the same status as either being in the S&P 500 index or not.9 If all of these criteria are met, then the inactive firm is included in the sample of firms to compare against its corresponding active firms. We allow for as many as three matches to a given active firm in a given quarter, though our results are not sensitive to this choice of creating comparison groups. The final sample comprises 55,928 firm-quarters, of which roughly 26 percent are active in M&A. In subsequent analyses, we repeat the same matching process, but we compare only highly active versus less active firms. In this case, we exclude all firms without at least one M&A transaction, and we split the sample between those firms with levels of activity above or below the median level. This supplementary dataset features 20,990 firm-quarters, of which about 5,600 are highly active firms, and the remainder are the matched counterparts."
+          },
+          {
+            "n": 7,
+            "cited_text": "For the estimation of the models predicting analysts’ earnings forecast errors, we begin from the two samples described above (i.e., active vs. inactive firms and highly-active vs. less-active firms) and then implement additional matching procedures, as follows: We isolate firms that feature a corporate strategy dictionary use at or above the median (either on the analyst or the executive side, depending on the model specification) and then match these firms against the pool of firms with below-the-median dictionary usage, based on the propensity scores obtained from the estimation of a logistic regression predicting a high use of the corporate strategy dictionary10, as well as the same matching criteria discussed previously. In sum, we start from samples of firms that are identical in every respect considered, except for their use of M&A and then use propensity-score matching to compare these firms based on the use of the words contained in our corporate strategy dictionary."
+          },
+          {
+            "n": 8,
+            "cited_text": "Firm market capitalizationc 0.0440 − 0.3017 − 0.1354 − 0.1477 0.0103 0.0132 0.0196 0.0214 <0.0001 <0.0001 <0.0001 <0.0001"
+          }
+        ]
+      },
+      "scope": {
+        "question": "what does it say about the boundaries of its contribution -- what it does not examine, does not measure, or does not claim, and what it leaves to future work?",
+        "answer": "The paper establishes several explicit boundaries regarding its scope, acknowledging limitations in its sample and theoretical focus, and outlines a robust agenda for future research to address what it does not measure or claim.\n\n**Boundaries and Limitations (What it Does Not Examine or Claim)**\n*   **Market Efficiency:** The paper relies on the concept of information asymmetry but states that examining whether and when assumptions about different levels of market efficiency are warranted is **beyond the scope of the paper**, directing readers to financial economics literature instead [1].\n*   **Generalizability of the Sample:** The authors acknowledge that their sample only includes firms traded on the NYSE and Nasdaq. While this captures the largest public firms, they explicitly state that **there remains a size bias** that \"might affect the generalizability of our findings\" to smaller or over-the-counter firms [2].\n*   **Analyst Attendance Dynamics:** The paper finds that higher analyst attendance reduces questioning on corporate activity, but notes that a **\"deep dive of the reasons for this relationship lies outside the scope of this work\"** [3].\n\n**Avenues for Future Work (What it Leaves to Future Research)**\nThe authors dedicate a specific section to future research opportunities, calling for extensions of their findings across several dimensions:\n\n*   **Other Types of Corporate Deals:** While this study focuses on M&A, the authors suggest future research should examine if the complexity of **other strategic vehicles (such as foreign direct investment, technology partnerships, joint ventures, or licensing)** similarly affects information flows from executives to capital markets [4, 5].\n*   **International Contexts:** The study leaves open how these dynamics play out globally, recommending an exploration of **firms based in other countries** where different institutions and information intermediaries might shape corporate strategy and resource acquisition [6].\n*   **Market Responses and Deal Mechanics:** The authors suggest future work should measure **equity market responses** to previously announced M&A transactions leading up to the earnings calls [6]. They also suggest looking into the **method of payment** used for the deals to see if cash versus stock triggers differential questioning by analysts [6].\n*   **Qualitative Deal Characteristics:** The study measures the volume of M&A activity but leaves the qualitative nuances to future work. It proposes analyzing whether **deals that diversify into new products, geographies, and corporate cultures** impose different information costs compared to deals within the same industry [7].\n*   **Agency and Competition Concerns:** The authors suggest explicitly considering how tradeoffs in corporate communications are affected by **agency considerations and competitive concerns**, such as the risk of rivals appropriating strategic information [7].\n*   **Broader Stakeholder Spillovers:** The current paper focuses strictly on capital market participants. Future work is encouraged to examine how executives explain complex deals to **suppliers, partners, and potential employees**, providing a more complete picture of adverse selection externalities [8].\n*   **Signals and Remedies:** The paper leaves open whether pre-deal **signals from target firms** or specific contractual remedies (like contingent payments or contractual safeguards) might spill over into capital markets to reduce analyst questioning and improve forecast precision [9, 10].\n*   **Pre-Acquisition Learning:** Future research could study whether **sequential investment approaches or prior relationships** (such as acquiring an existing supplier) reduce the subsequent need to unearth information during earnings calls [11]. \n*   **Analyst Attendance Outcomes:** Finally, the authors suggest investigating the broader relationship between **analyst attendance, the quality/quantity of information disclosure, and firm performance**, specifically exploring if some firms \"get away\" with less disclosure when fewer analysts attend [3].",
+        "references": [
+          {
+            "n": 1,
+            "cited_text": "3 The definition of strong form market efficiency is that of a market in which prices reflect all public and private information. Effectively, this definition rules out the problem of adverse selection between company insiders and shareholders, because any deviation in price from the true value of the firm must be random, and not due to a recurring problem of information asymmetry between some firm stakeholders and others. Whether and when assumptions about different levels of market efficiency are warranted is beyond the scope of this paper, and we direct readers interested in this topic to the pertinent work in financial economics (e.g., Grossman and Stiglitz, 1980; Shiller, 1989)."
+          },
+          {
+            "n": 2,
+            "cited_text": "6 Later in the paper we explore the effects of removing the years surrounding the financial crisis from the analyses.  7 Seeking Alpha chooses what firms to cover based on the preferences of its subscribers. A comparison of the average (median) size of our sampled"
+          },
+          {
+            "n": 3,
+            "cited_text": "Relatedly, our findings indicate that a larger number of analysts attending a conference call tends to reduce the amount of questioning on firms’ corporate activity. While a deep dive of the reasons for this relationship lies outside the scope of this work, a potentially intriguing question that stems from this result is that the quality and quantity of information disclosure issued by firms may depend on analyst attendance. If so, some firms may “get away” with less disclosure, which may then trigger different outcomes in capital markets and in the competitive environment: On the one hand, prospective shareholders and bondholders will have less in-formation by which to evaluate the company. On the other hand, companies will be less compelled to provide information on their corporate strategies to competitors. Investigating the relationships between analyst attendance, information disclosure and firm performance would be valuable in future research."
+          },
+          {
+            "n": 4,
+            "cited_text": "Hypothesis 1. Analysts in earnings calls will inquire more on the firm’s corporate strategy, the greater the firm’s M&A activity."
+          },
+          {
+            "n": 5,
+            "cited_text": "7.2. Research implications and future research"
+          },
+          {
+            "n": 6,
+            "cited_text": "Without a doubt, a great deal of research has gone into whether and how these diverse pursuits allow firms to outperform their peers, by creating market power, superior access to resources and markets, preemption of entry, etc. However, we know little about the relationship between the complexity of a firm’s corporate strategy and the adverse selection problem affecting its stakeholders, where this problem is known to create a direct and consequential impact on the firm’s ability to raise capital and compete in the first place. This paper lays preliminary foundations for this line of research, but future work along the lines we draw would be highly informative and beneficial to the advancement of knowledge in this area. For instance, future research might examine other types of corporate deals besides M&A (e.g., foreign direct investment, technology partnerships, etc.). It would also be valuable to extend this analysis to explore firms based in other countries subject to different information intermediaries and institutions that can shape both their corporate strategies and ability to obtain financial and other resources in factor markets (e.g., Ahuja and Yayavaram, 2011). We also think it would be interesting to examine equity market responses to previously announced M&A transactions leading up to the earnings calls, as well as the method of payment used to execute these deals, in order to determine whether such factors may trigger differential questioning on the topic of corporate strategy."
+          },
+          {
+            "n": 7,
+            "cited_text": "Remaining within the confines of M&A research, there are several promising avenues that deserve attention. First, while we distinguish firms based on whether or not they engage in M&A and based on how much they engage in M&A, there are opportunities to consider the qualitative characteristics of different M&A transactions. It is well known that M&A transactions are far from homoge-neous, such that some deals bring together firms from like industries, markets, corporate cultures, etc., while others involve diver-sification into new products, geographies and corporate cultures, instead. Our objective in this project was to begin to establish a connection between M&A activity and corporate communication, but a more nuanced examination of the relationship into the micro- features of M&A activity and their effects on information disclosures and adverse selection involving capital market participants would be useful. Such work could also take up agency considerations and explicitly consider other factors affecting tradeoffs in corporate communications (e.g., appropriation and competition concerns)."
+          },
+          {
+            "n": 8,
+            "cited_text": "Research in such directions would inform us on the degree to which particular types of transactions impose information costs on firms and capital markets, and they might also have consequences on other stakeholders and markets. Given our focus on shareholders and information intermediaries in capital markets, it would also be interesting to extend our analysis to consider other stakeholders and factor markets. For instance, research might consider how executives explain the implications of their complex M&A transactions to suppliers, partners, potential employees, etc. The degree to which adverse selection concerns in M&A spill over to these stakeholders would provide a more complete picture of the information costs of M&A and the degree to which adverse selection within M&A deals is subject to externalities across stakeholder groups. Even our study might therefore be understating the consequences of these infor-mation frictions in M&A markets."
+          },
+          {
+            "n": 9,
+            "cited_text": "In exploring the heterogeneity of M&A and its consequences, there are also a number of opportunities to consider how the solutions firms use to address adverse selection on M&A may or may not affect capital market participants. To begin with, the negative effects of information asymmetry may be reduced if a seller credibly conveys an information signal to a buyer (Spence, 1973). Research in strategy has studied whether the presence of signals may help to lubricate corporate transactions, generally finding support for this hypothesis. For example, prior work has shown that signals issued when firms go public facilitate their subsequent acquisitions in M&A markets (Ragozzino and Reuer, 2007), or that prior alliances with prominent partners function certify the quality of entrepreneurial firms, which in turn lends them needed credibility (e.g., Sorenson and Stuart, 2001; Chang, 2004; Lee et al., 2011). To our knowledge, none of this work has examined the role of signals as a tool to reduce the effects of information asymmetry between firms and their stakeholders while the firm is engaging in corporate transactions such as M&A. For instance, the very same signals on a target’s re-sources and prospects that help firms come together in corporate transactions may also alleviate adverse selection concerns for shareholders and allow for the well-functioning of capital markets, in particular. Our research has indicated that information costs surrounding M&A might be higher than previous research has suggested, because it has not addressed the adverse selection problems that shareholders face. By contrast, the signals that firms rely upon when carrying out M&A and other corporate transactions might also be beneficial to exchanges in other factor markets (e.g., capital markets, markets for suppliers, etc.), which suggests that their benefits might also be understated in previous research. For example, within the context of our research, it would be interesting to"
+          },
+          {
+            "n": 10,
+            "cited_text": "R. Ragozzino and J.J. Reuer"
+          },
+          {
+            "n": 11,
+            "cited_text": "Along similar lines, it would be interesting to examine whether pre-acquisition learning plays a role in corporate communication and information asymmetry between companies and their stakeholders. For example, if a company decided to integrate vertically and acquire a supplier with which it had worked for several years, then one would expect that the need to unearth information about the value-adding properties of this acquisition would be lower than if the acquisition involved an upstream firm with no prior relationship to the acquirer. Prior work has informed us of the strategic benefits of staging investments such as these, in order to reduce asymmetric information between buyers and sellers (Mitchell and Singh, 1992; Balakrishnan and Koza, 1993; Mody, 1993; Hagedoorn and Sadowski, 1999; Porrini, 2004). While such successive exchanges and sequential investment approaches might also reduce information costs of shareholders and other stakeholders, we know nothing of whether this sort of learning-based approach to M&A yields similar advantages when the relationship of interest is between company insiders and the firm’s shareholders and other stakeholders."
+          }
+        ]
+      }
+    }
+  }
+}

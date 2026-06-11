@@ -12,6 +12,11 @@ as the FE baseline, two-way FE (firm + cal. year-qtr), firm-clustered SE.
 
   UncResCEO ~ PreAnn_cash + PreAnn_stock + CTRL + EntityEffects + TimeEffects
 
+The CashRatio (proposed-cause) columns use CashRatio as the DV and ADD its own one-quarter
+within-firm lag (CashRatio_lag) as a partial-adjustment control (cash is sticky, rho~0.78),
+so the pre-announce coefficient tracks the CHANGE in cash, not its level. The UncResCEO
+column is a residual and takes NO lagged DV.
+
 Formal cash-specificity = Wald on (PreAnn_cash - PreAnn_stock) > 0. Reuses the locked
 module's base_panel/sdc/manifest so the inputs are identical. Read-only on inputs.
 
@@ -70,11 +75,19 @@ def build_pooled(p, s, m):
     return q, n_cash, n_stock
 
 
-def run(q, dv):
-    need = ["UncResCEO", "CashRatio", "PreAnn_cash", "PreAnn_stock"] + CTRL  # shared sample: both DVs present
+def run(q, dv, restrict_uncres=True, add_cash_lag=False):
+    # restrict_uncres=True  -> matched UncResCEO-CashRatio sample (both present)
+    # restrict_uncres=False -> full cash panel (UncResCEO not required); dv always required
+    # add_cash_lag=True     -> partial-adjustment: add CashRatio's own one-quarter within-firm
+    #                          lag so the pre-announce coef tracks the CHANGE, not the level
+    #                          (cash is sticky, lag coef ~0.78). Residual DVs must NOT use this.
+    extra = ["CashRatio_lag"] if add_cash_lag else []
+    need = [dv, "PreAnn_cash", "PreAnn_stock"] + CTRL + extra
+    if restrict_uncres and "UncResCEO" not in need:
+        need = ["UncResCEO"] + need
     d = q.replace([np.inf, -np.inf], np.nan).dropna(subset=need).copy()
     d = d.set_index(["gvkey", "cq"])
-    f = f"{dv} ~ 1 + PreAnn_cash + PreAnn_stock + " + " + ".join(CTRL) \
+    f = f"{dv} ~ 1 + PreAnn_cash + PreAnn_stock + " + " + ".join(CTRL + extra) \
         + " + EntityEffects + TimeEffects"
     mod = PanelOLS.from_formula(f, data=d, drop_absorbed=True).fit(
         cov_type="clustered", cluster_entity=True)
@@ -91,8 +104,12 @@ def run(q, dv):
     t = diff / se_
     p2 = 2 * norm.sf(abs(t))
     wald = {"diff": diff, "se": se_, "t": t, "p1": p2 / 2 if diff > 0 else 1 - p2 / 2, "p2": p2}
-    return {"cash": one(i), "stock": one(j), "wald": wald,
-            "n": int(mod.nobs), "n_firms": int(d.reset_index()["gvkey"].nunique())}
+    out = {"cash": one(i), "stock": one(j), "wald": wald,
+           "controls": {c: one(c) for c in CTRL if c in par.index},
+           "n": int(mod.nobs), "n_firms": int(d.reset_index()["gvkey"].nunique())}
+    if add_cash_lag and "CashRatio_lag" in par.index:
+        out["lag"] = one("CashRatio_lag")   # partial-adjustment coefficient (two-tailed)
+    return out
 
 
 def stars(p: float) -> str:
@@ -105,55 +122,83 @@ def cell(coef: float, p: float) -> str:
 
 
 def write_tex(summary_path: Path) -> None:
-    """Build the LaTeX fragment FROM the written JSON spec."""
+    """Build the LaTeX fragment FROM the written JSON spec.
+
+    All significance is uniform two-tailed (cash row, stock row, and the Cash-Stock
+    formal difference alike).
+
+    Three columns: (1) the EFFECT (UncResCEO, matched sample, no lag), (2) the
+    proposed CAUSE (CashRatio + its own lag) on the SAME matched sample, (3) the
+    same cause on the FULL cash panel (UncResCEO restriction dropped). The point:
+    with the partial-adjustment lag, the cash-build Cash-Stock difference stays ns
+    in the matched sample and is only marginal (p~.10) in the full panel, while the
+    uncertainty difference is clearly significant."""
     summary = json.loads(Path(summary_path).read_text(encoding="utf-8"))
     res = summary["results"]
-    dvs = ["UncResCEO", "CashRatio"]
-    # (json key, p-key, row label)
-    rows = [("cash", "p1", r"Pre-announce qtr, Cash acquirer"),
-            ("stock", "p1", r"Pre-announce qtr, Stock acquirer")]
+    pdir = "p2"                                # uniform two-tailed
+    cols = ["UncResCEO", "CashRatio_matched", "CashRatio_full"]
+    head = {"UncResCEO": r"(1) UncResCEO", "CashRatio_matched": r"(2) CashRatio",
+            "CashRatio_full": r"(3) CashRatio"}
+    sub = {"UncResCEO": r"(matched)", "CashRatio_matched": r"(matched, +lag)",
+           "CashRatio_full": r"(full panel, +lag)"}
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Formal Cash-Specificity of the Pre-Announcement Uncertainty Run-Up (cash vs.\ stock acquirers, pooled)}",
+        r"\caption{Formal Cash-Specificity: Pre-Announcement Uncertainty (effect) vs.\ Cash Build-Up (proposed cause), cash vs.\ stock acquirers}",
         r"\label{tab:empire_cashspec}",
         r"\scriptsize",
-        r"\begin{tabular}{lcc}",
+        r"\begin{tabular}{lccc}",
         r"\toprule",
-        r" & (1) UncResCEO & (2) CashRatio \\",
+        r" & \multicolumn{1}{c}{EFFECT} & \multicolumn{2}{c}{PROPOSED CAUSE} \\",
+        r"\cmidrule(lr){2-2}\cmidrule(lr){3-4}",
+        " & " + " & ".join(head[c] for c in cols) + r" \\",
+        " & " + " & ".join(sub[c] for c in cols) + r" \\",
         r"\midrule",
     ]
-    for jkey, pkey, lab in rows:
-        coefs = " & ".join(cell(res[dv][jkey]["b"], res[dv][jkey][pkey]) for dv in dvs)
-        ses = " & ".join(f"({res[dv][jkey]['se']:.4f})" for dv in dvs)
-        lines.append(f"{lab} & {coefs} \\\\")
-        lines.append(f" & {ses} \\\\")
+    # cash row: two-tailed (uniform convention)
+    lines.append(r"Pre-announce qtr, Cash acquirer & "
+                 + " & ".join(cell(res[c]["cash"]["b"], res[c]["cash"][pdir]) for c in cols) + r" \\")
+    lines.append(" & " + " & ".join(f"({res[c]['cash']['se']:.4f})" for c in cols) + r" \\")
+    # stock row: TWO-tailed (placebo arm, no directional prior)
+    lines.append(r"Pre-announce qtr, Stock acquirer & "
+                 + " & ".join(cell(res[c]["stock"]["b"], res[c]["stock"]["p2"]) for c in cols) + r" \\")
+    lines.append(" & " + " & ".join(f"({res[c]['stock']['se']:.4f})" for c in cols) + r" \\")
+
     lines.append(r"\midrule")
-    # the formal test row: cash - stock difference (two-tailed stars)
-    dcoefs = " & ".join(cell(res[dv]["wald"]["diff"], res[dv]["wald"]["p2"]) for dv in dvs)
-    dses = " & ".join(f"({res[dv]['wald']['se']:.4f})" for dv in dvs)
-    lines.append(r"Cash $-$ Stock (formal test) & " + dcoefs + r" \\")
-    lines.append(r" & " + dses + r" \\")
+    # formal difference: two-tailed
+    lines.append(r"Cash $-$ Stock (formal test) & "
+                 + " & ".join(cell(res[c]["wald"]["diff"], res[c]["wald"]["p2"]) for c in cols) + r" \\")
+    lines.append(" & " + " & ".join(f"({res[c]['wald']['se']:.4f})" for c in cols) + r" \\")
+
+    def _lag_cell(c):
+        r = res[c].get("lag")
+        return cell(r["b"], r["p2"]) if r else r"---"
+
+    def _lag_se(c):
+        r = res[c].get("lag")
+        return f"({r['se']:.4f})" if r else ""
+    lines.append(r"\midrule")
+    lines.append(r"\multicolumn{4}{l}{\textit{Controls}} \\")
+    for ct in CTRL:
+        cv = " & ".join((cell(res[c]["controls"][ct]["b"], res[c]["controls"][ct]["p2"])
+                         if ct in res[c].get("controls", {}) else "---") for c in cols)
+        cs = " & ".join((f"({res[c]['controls'][ct]['se']:.4f})"
+                        if ct in res[c].get("controls", {}) else "") for c in cols)
+        lines.append(f"{ct} & {cv} \\\\")
+        lines.append(f" & {cs} \\\\")
+    lines.append(r"\quad CashRatio$_{t-1}$ (partial adj.) & "
+                 + " & ".join(_lag_cell(c) for c in cols) + r" \\")
+    lines.append(" & " + " & ".join(_lag_se(c) for c in cols) + r" \\")
     lines += [
         r"\midrule",
-        r"Firm FE / Year-Qtr FE / Controls & Yes & Yes \\",
-        "N (firm-quarters) & " + " & ".join(f"{res[dv]['n']:,}" for dv in dvs) + r" \\",
-        "Firms & " + " & ".join(f"{res[dv]['n_firms']:,}" for dv in dvs) + r" \\",
+        r"Firm FE / Year-Qtr FE / Controls & Yes & Yes & Yes \\",
+        r"UncResCEO-present restriction & Yes & Yes & \textbf{No} \\",
+        "N (firm-quarters) & " + " & ".join(f"{res[c]['n']:,}" for c in cols) + r" \\",
+        "Firms & " + " & ".join(f"{res[c]['n_firms']:,}" for c in cols) + r" \\",
         r"\bottomrule",
         r"\end{tabular}",
         r"\begin{minipage}{\linewidth}\vspace{2pt}\scriptsize",
-        r"\textit{Notes:} Two-way FE OLS (firm + calendar year-quarter), firm-clustered SE, with both "
-        r"columns estimated on the \emph{identical} UncResCEO$\,\cap\,$CashRatio sample. Both "
-        r"pre-announce dummies enter the SAME model; the omitted baseline is the firm's pre-deal and "
-        r"never-acquirer quarters. \textbf{Pre-announce qtr} = the single quarter before the firm's "
-        r"first $\geq$50\%-cash (resp.\ stock) acquisition. The \textbf{Cash $-$ Stock} row is the formal "
-        r"cash-specificity test (Wald on the coefficient difference) the side-by-side placebo never ran. "
-        r"$^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$; the two pre-announce rows one-tailed ($\beta>0$), the "
-        r"Cash $-$ Stock row two-tailed. Standard errors in parentheses. For UncResCEO the cash run-up is "
-        r"robust and the cash$-$stock difference is significant, but that significance rides on the "
-        r"imprecise, theory-unpredicted negative stock estimate (small N$_{\text{stock}}$): read it as "
-        r"supported-but-fragile, not settled. CashRatio (col 2) is not cash-specific, as expected --- the "
-        r"claim concerns the uncertainty response, not cash levels.",
+        r"\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed).",
         r"\end{minipage}",
         r"\end{table}",
     ]
@@ -162,24 +207,32 @@ def write_tex(summary_path: Path) -> None:
 
 def main():
     p, s, m = emp.base_panel(), emp.sdc(), emp.manifest()
+    # CashRatio is sticky -> build its true one-quarter within-firm lag (consecutive quarters
+    # only) so the CashRatio regressions can control for the firm's own prior cash level
+    # (partial-adjustment). Built on the full base panel BEFORE build_pooled so it survives
+    # the merge; the residual UncResCEO column does NOT use it.
+    p = p.sort_values(["gvkey", "cq"]).copy()
+    p["CashRatio_lag"] = p.groupby("gvkey")["CashRatio"].shift(1)
+    prev_cq = p.groupby("gvkey")["cq"].shift(1)
+    p.loc[prev_cq != p["cq"] - 1, "CashRatio_lag"] = np.nan   # only consecutive-quarter lags
     q, n_cash, n_stock = build_pooled(p, s, m)
     print(f"pooled panel: PreAnn_cash obs={n_cash:,}  PreAnn_stock obs={n_stock:,}\n")
-    results = {}
-    for dv in ("UncResCEO", "CashRatio"):
-        r = run(q, dv)
-        results[dv] = r
-        print(f"=== DV={dv}  N={r['n']:,}  firms={r['n_firms']:,} ===")
+    results = {
+        "UncResCEO": run(q, "UncResCEO", restrict_uncres=True),                              # effect, matched (residual, no lag)
+        "CashRatio_matched": run(q, "CashRatio", restrict_uncres=True, add_cash_lag=True),   # cause, matched, partial-adjustment
+        "CashRatio_full": run(q, "CashRatio", restrict_uncres=False, add_cash_lag=True),     # cause, full panel, partial-adjustment
+    }
+    for key, r in results.items():
+        print(f"=== {key}  N={r['n']:,}  firms={r['n_firms']:,} ===")
         print(f"  PreAnn_cash  b={r['cash']['b']:+.5f} se={r['cash']['se']:.5f} p2={r['cash']['p2']:.3f}")
-        print(f"  PreAnn_stock b={r['stock']['b']:+.5f} se={r['stock']['se']:.5f} p2={r['stock']['p2']:.3f}")
+        print(f"  PreAnn_stock b={r['stock']['b']:+.5f} se={r['stock']['se']:.5f} p2={r['stock']['p2']:.3f} (two-tailed)")
         w = r["wald"]
-        print(f"  CASH-SPECIFICITY (cash - stock) = {w['diff']:+.5f} se={w['se']:.5f} "
-              f"t={w['t']:+.2f} p2={w['p2']:.3f}")
-        print(f"  --> {'cash > stock at p<.05 (one-tailed)' if w['p1'] < 0.05 else 'NOT separable at .05'}\n")
+        print(f"  CASH-STOCK diff = {w['diff']:+.5f} se={w['se']:.5f} t={w['t']:+.2f} p2={w['p2']:.3f}\n")
 
     ts = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     out = ROOT / "outputs" / "econometric" / SUITE / ts
     out.mkdir(parents=True, exist_ok=True)
-    summary = {"suite": SUITE, "dvs": ["UncResCEO", "CashRatio"],
+    summary = {"suite": SUITE, "dvs": ["UncResCEO", "CashRatio_matched", "CashRatio_full"],
                "pre_counts": {"cash": n_cash, "stock": n_stock},
                "controls": CTRL, "results": results, "timestamp": ts}
     summary_path = out / "summary.json"
