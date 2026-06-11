@@ -1,0 +1,10 @@
+{
+  "gate": "G1b_embed_parity",
+  "baseline_sha": "7f97a16",
+  "purpose": "prove the compiled embed docs/Thesis/_tables_from_bible.tex == regenerate-from-validated-bible",
+  "extractor": "tmp/extract_draft_tables.py",
+  "committed_embed_sha256": "6bddfc1cb335181cacc9cfa48ef34fdfc32f1eeced992ebb90311ba3969932c2",
+  "regenerated_embed_sha256": "6bddfc1cb335181cacc9cfa48ef34fdfc32f1eeced992ebb90311ba3969932c2",
+  "status": "MATCH",
+  "error": null
+}

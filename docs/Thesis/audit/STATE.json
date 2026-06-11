@@ -57,8 +57,10 @@
     "P0_freeze_baseline": {"status": "DONE", "commit": "8067c5e", "artifact": "baseline.json", "result": "tree frozen 7f97a16, index fresh, compile clean x2, 17 file hashes pinned"},
     "P1_mechanical_gates": {
       "status": "DONE",
-      "summary": "All 5 mechanical gates closed. ZERO thesis CRITICAL/MAJOR findings. Only MINOR/NIT: G4 unused 'sec:intro' label. The 2 G1 campello DRIFTs are non-thesis legacy (out of scope). Thesis numbers, derived arithmetic, cross-refs, and ledger anchors are all sound.",
+      "summary": "All gates closed (G1, G1b, G2-G5). ZERO thesis CRITICAL/MAJOR findings. Only MINOR/NIT: G4 unused 'sec:intro' label. The 2 G1 campello DRIFTs are non-thesis legacy (out of scope). Provenance chain verified END-TO-END incl. the compiled embed (G1b): code->fragments->bible->embed->prose->refs->ledger. Thesis numbers, derived arithmetic, cross-refs, and ledger anchors all sound.",
       "G1_regen_diff": {"status": "DONE", "commit": "00025e4", "artifact": "g1_regen_diff.json", "result": "8/14 in-thesis tables bible<->code MATCH; 6 suite tables user-waived; 2 campello DRIFTs are non-thesis legacy"},
+      "G1b_embed_parity": {"status": "DONE", "commit": "PENDING", "artifact": "g1b_embed_parity.json", "script": "tmp/audit_g1b_embed_parity.py",
+        "result": "MATCH. Closed the bible->embed provenance link (advisor-flagged blind spot): the thesis COMPILES \\input{_tables_from_bible} = docs/Thesis/_tables_from_bible.tex, never value-diffed upstream. Regenerated it from the validated bible via tmp/extract_draft_tables.py; sha256 == committed == baseline hash (6bddfc1c...). The displayed table cells the referee reads ARE the validated numbers. Provenance now closed end-to-end: code->fragments(G1)->bible(G1)->embed(G1b)->prose(G2/G3)->refs(G4)->ledger(G5)."},
       "G2_number_coverage": {"status": "DONE", "commit": "55f9696", "artifact": "g2_number_coverage.json", "script": "tmp/audit_g2.py",
         "result": "91 distinct digit-form prose tokens, 0 GAP (100% classified): covered=67, derived=4, note=1, structural=19. Coverage PROVEN (was unproven at baseline).",
         "machinery_changes": "verify_draft_numbers.py: wrapped runner in main() so CHECK lists import cleanly (single source of truth); +2 SE_CHECKS (cash CashRatio SE 0.0017, lag SE 0.0070) and +2 DERIVED (scrutiny CI bounds -0.027/+0.016 = -0.0056 +/- 1.96*0.0111). Still ALL CHECKS PASS. These are audit machinery, NOT thesis fixes.",
@@ -85,8 +87,8 @@
   },
 
   "current_position": {
-    "where": "P1 COMPLETE (all 5 gates G1-G5 closed, 0 thesis CRITICAL/MAJOR). At the P1->P2 boundary, awaiting user go for P2.",
-    "next": "P2 methodology audit (GitNexus; feeds dimensions D2/D3). Trace each table's estimator/SE/sample/FE claims in the prose+ledger against the actual generator+builder code via GitNexus CLI (node .gitnexus/run.cjs context|query|cypher; MCP absent). Confirm: PanelOLS two-way FE + firm-clustered SEs, one-tailed vs two-tailed inference, sample filters (>=5 calls, fin/util exclusions, >=50% cash/stock), DWZ eq-4 residual construction. Cross-check the seed findings in AUDIT_PROTOCOL.md SS7 + SS9 referee starters (Nickell bias, generated-regressor SEs, winsorization disclosure, LM dictionary release).",
+    "where": "P1 COMPLETE (G1, G1b, G2-G5 closed; 0 thesis CRITICAL/MAJOR; provenance verified end-to-end incl. embed). At the P1->P2 boundary, awaiting user go for P2.",
+    "next": "P2 methodology audit (GitNexus CLI; feeds D2/D3). Use the G5-validated ledger as a FRESH file:line index into the code (prose claim -> ledger anchor -> read code -> confirm); do not re-derive locations. Priority order (advisor 2026-06-11): (1) GENERATED-REGRESSOR, likely MAJOR, do FIRST: UncResCEO is a DWZ first-stage RESIDUAL used as the 2nd-stage DV (UncPreCEO as control); reported SEs ignore first-stage estimation error -> if undisclosed/uncorrected = referee-exploitable. Trace residual cross-module (run_h0_3 first stage -> ceo_clarity_residual.parquet -> gen_empire_did base_panel) via GitNexus query/context; check whether code OR prose acknowledges/corrects it. (2) ONE-TAILED vs TWO-TAILED consistency: Analysis-1 treatment one-tailed (beta>0), Analysis-3 'two-tailed throughout' -> stars mean different things across tables; verify code computes tails as stated and stars match. (3) Nickell bias (lagged DV + firm FE, short T), winsorization (done? disclosed?), LM '1993-2024 release' vs actual dictionary, clustering level (prose=firm; confirm code). WARNING: P1 was clean x6; 'numbers match source' (P1) and 'methodology defensible' (P2) are different axes -- a clean P1 predicts nothing about P2. Do NOT let clean-sweep momentum lower the bar on the generated-regressor question. GitNexus index at 7f97a16 is CORRECT for P2 (src/f1d + scripts unchanged since freeze); ignore the stale nag, do NOT re-index.",
     "open_questions": []
   },
 
@@ -99,7 +101,8 @@
     "5e7b2c8  audit(G3): close derived-arithmetic - 20/20 claims, 0 findings",
     "5e7f6e6  audit(G3): advisor fix - +D8/D9 cause-side diffs, forward exhaustiveness (22/22)",
     "6efea35  audit(G4): close compile/cross-ref - 0 critical, 1 minor (unused sec:intro label)",
-    "61c94f8  audit(G5): close ledger-freshness - FRESH, all anchors valid; P1 COMPLETE"
+    "61c94f8  audit(G5): close ledger-freshness - FRESH, all anchors valid; P1 COMPLETE",
+    "PENDING  audit(G1b): close bible->embed parity - MATCH (advisor-flagged blind spot)"
   ],
 
   "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters (Nickell bias, generated-regressor SEs, one-tailed inference, winsorization disclosure, LM dictionary mismatch). None addressed yet."
