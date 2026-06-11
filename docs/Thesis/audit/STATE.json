@@ -90,7 +90,7 @@
     "55f9696  audit(G2): close number-coverage - 91 tokens, 0 gap, +4 checks",
     "b76231f  audit(G2): stamp SHA into STATE.json",
     "5e7b2c8  audit(G3): close derived-arithmetic - 20/20 claims, 0 findings",
-    "PENDING  audit(G3): advisor fix - +D8/D9 cause-side diffs, forward exhaustiveness (22/22)"
+    "5e7f6e6  audit(G3): advisor fix - +D8/D9 cause-side diffs, forward exhaustiveness (22/22)"
   ],
 
   "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters (Nickell bias, generated-regressor SEs, one-tailed inference, winsorization disclosure, LM dictionary mismatch). None addressed yet."
