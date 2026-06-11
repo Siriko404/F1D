@@ -1,0 +1,127 @@
+{
+  "gate": "G1_regen_diff",
+  "baseline_sha": "7f97a16",
+  "method": "render-only from trusted summary.json (user-ratified 2026-06-11)",
+  "assumption": "summary.json = final real results; G1 proves bible<->results-render, not a fresh re-estimation",
+  "thesis_scope": {
+    "in_thesis_tables": 14,
+    "authority": "\\label{tab:...} in docs/Thesis/_tables_from_bible.tex (exhibit_registry.yaml is a superset incl. legacy non-thesis fragments)",
+    "g1_covered_match_8": ["summary_stats", "empire_building_did", "empire_drop_matched", "empire_cashspec", "reason_gating", "cash_scrutiny_validity", "cash_scrutiny_channel", "empire_drop_placebo"],
+    "suite_waived_6": {
+      "tables": ["h11_prisk_uncertainty", "h24_us_epu", "h24b_global_epu", "h23_competition_uncertainty", "h14c_ceo2_decomp", "h18_ceo2_decomp"],
+      "decision": "USER-RATIFIED accept-as-safe 2026-06-11 ('they are safe. continue'); suite_spec render path, NOT regen-diffed"
+    },
+    "out_of_scope_not_in_thesis": ["_campello_rebuild_t8 (DRIFT, legacy)", "_campello_summary_stats (DRIFT, legacy)", "_boasiako_summary_stats (MATCH)", "_disclosure_law_compact (MATCH)", "_empire_building_spec (static, no tab label)"],
+    "verdict": "8/8 in-thesis registry tables bible<->code clean; 6 suite tables user-waived; the 2 DRIFTs are non-thesis legacy fragments"
+  },
+  "counts": {
+    "DRIFT": 2,
+    "SKIP": 1,
+    "MATCH": 10
+  },
+  "results": [
+    {
+      "fragment": "docs/Draft/_campello_rebuild_t8.tex",
+      "mode": "subprocess",
+      "status": "DRIFT",
+      "source_json": "main() [scripts/campello_rebuild/gen_thesis_t8_table.py]",
+      "baseline": "0d208cba4ddd",
+      "regenerated": "9c81039ac2c4"
+    },
+    {
+      "fragment": "docs/Draft/_campello_summary_stats.tex",
+      "mode": "subprocess",
+      "status": "DRIFT",
+      "source_json": "main() [scripts/campello_rebuild/gen_summary_stats_tex.py]",
+      "baseline": "2f0d3a81bbf7",
+      "regenerated": "1ff34a6d0781"
+    },
+    {
+      "fragment": "docs/Draft/_empire_building_spec.tex",
+      "mode": "static",
+      "status": "SKIP",
+      "note": "no generator (hand-authored spec table)",
+      "baseline": "0195ded8ee09"
+    },
+    {
+      "fragment": "docs/Draft/_boasiako_summary_stats.tex",
+      "mode": "subprocess",
+      "status": "MATCH",
+      "source_json": "main() [scripts/gen_boasiako_summary_stats.py]",
+      "baseline": "65d48479c7ae",
+      "regenerated": "65d48479c7ae"
+    },
+    {
+      "fragment": "docs/Draft/_cash_scrutiny_channel.tex",
+      "mode": "render:path",
+      "status": "MATCH",
+      "source_json": "outputs\\econometric\\cash_scrutiny_channel\\2026-06-06_161848\\summary.json",
+      "baseline": "6345331c4732",
+      "regenerated": "6345331c4732"
+    },
+    {
+      "fragment": "docs/Draft/_cash_scrutiny_validity.tex",
+      "mode": "render:path",
+      "status": "MATCH",
+      "source_json": "outputs\\econometric\\cash_scrutiny_validity\\2026-06-06_161823\\summary.json",
+      "baseline": "7edfda695a42",
+      "regenerated": "7edfda695a42"
+    },
+    {
+      "fragment": "docs/Draft/_disclosure_law_compact.tex",
+      "mode": "subprocess",
+      "status": "MATCH",
+      "source_json": "main() [scripts/gen_disclosure_law_compact_table.py]",
+      "baseline": "1045ea2db74b",
+      "regenerated": "1045ea2db74b"
+    },
+    {
+      "fragment": "docs/Draft/_empire_building_did.tex",
+      "mode": "render:dict",
+      "status": "MATCH",
+      "source_json": "outputs\\econometric\\empire_building_did\\2026-06-08_175632\\summary.json",
+      "baseline": "e605b32079f8",
+      "regenerated": "e605b32079f8"
+    },
+    {
+      "fragment": "docs/Draft/_empire_cashspec.tex",
+      "mode": "render:path",
+      "status": "MATCH",
+      "source_json": "outputs\\econometric\\empire_cashspec\\2026-06-08_194552\\summary.json",
+      "baseline": "d5ae0f609285",
+      "regenerated": "d5ae0f609285"
+    },
+    {
+      "fragment": "docs/Draft/_empire_drop_matched.tex",
+      "mode": "render:path",
+      "status": "MATCH",
+      "source_json": "outputs\\econometric\\empire_drop_matched\\2026-06-08_194525\\summary.json",
+      "baseline": "1f525e520a06",
+      "regenerated": "1f525e520a06"
+    },
+    {
+      "fragment": "docs/Draft/_empire_drop_placebo.tex",
+      "mode": "render:path",
+      "status": "MATCH",
+      "source_json": "outputs\\econometric\\empire_drop_test\\2026-06-08_194533\\summary.json",
+      "baseline": "599576f0dbd2",
+      "regenerated": "599576f0dbd2"
+    },
+    {
+      "fragment": "docs/Draft/_reason_gating.tex",
+      "mode": "render:dict",
+      "status": "MATCH",
+      "source_json": "outputs\\econometric\\reason_gating\\2026-06-06_161852\\summary.json",
+      "baseline": "8a29000085e5",
+      "regenerated": "8a29000085e5"
+    },
+    {
+      "fragment": "docs/Draft/_summary_stats.tex",
+      "mode": "subprocess",
+      "status": "MATCH",
+      "source_json": "main() [scripts/gen_summary_stats_table.py]",
+      "baseline": "c4633feaa69c",
+      "regenerated": "c4633feaa69c"
+    }
+  ]
+}
