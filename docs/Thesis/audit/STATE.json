@@ -1,0 +1,86 @@
+{
+  "_purpose": "RESUME ANCHOR for the thesis referee-proofing audit. Survives /compact. The next session MUST read this file + AUDIT_PROTOCOL.md + baseline.json before doing anything. Updated after every step.",
+  "last_updated": "2026-06-11",
+  "protocol": "docs/Thesis/audit/AUDIT_PROTOCOL.md",
+  "branch": "debug/campello-did-supervisor-interrogation",
+
+  "resume_instructions": {
+    "1_read": ["docs/Thesis/audit/STATE.json (this file)", "docs/Thesis/audit/AUDIT_PROTOCOL.md", "docs/Thesis/audit/baseline.json", "docs/Thesis/audit/g1_regen_diff.json"],
+    "2_supervision": "USER SUPERVISES STEP BY STEP. Do NOT proceed past a gate without the user's go. User is mentally exhausted -> ultra-terse replies, lead with the answer, one visual, one next-step.",
+    "3_compaction_cadence": "User runs /compact after EACH step. Record everything into this STATE.json + the per-gate json BEFORE the step ends. Never rely on conversation memory surviving.",
+    "4_next_action": "Gate G2 (number-coverage). NOT started. See current_position.next."
+  },
+
+  "baseline": {
+    "frozen_sha": "7f97a16",
+    "baseline_json": "docs/Thesis/audit/baseline.json",
+    "head_now": "00025e4 (= baseline + baseline.json + G1 record; doc-only commits past 7f97a16)",
+    "note": "Audited surface is pinned at 7f97a16; later commits are audit bookkeeping only (docs)."
+  },
+
+  "key_paths": {
+    "draft": "docs/Thesis/thesis_draft.tex",
+    "bible": "docs/Draft/thesis_tables.tex",
+    "embed_in_draft": "docs/Thesis/_tables_from_bible.tex",
+    "ledger": "docs/Thesis/variable_ledger.json",
+    "registry": "config/exhibit_registry.yaml (SUPERSET; includes legacy non-thesis fragments)",
+    "machinery_dir": "tmp/ (NOT gitignored; committed at baseline)",
+    "verify_checks": "tmp/verify_draft_numbers.py (the 76 draft<->bible CHECKS + some derived arithmetic)",
+    "extract_embed": "tmp/extract_draft_tables.py (bible -> _tables_from_bible.tex, byte-exact)",
+    "nlm": "tmp/nlm.py (NotebookLM citation tool; saved auth in browser profile, NOT in repo)",
+    "g1_script": "tmp/audit_g1.py"
+  },
+
+  "environment": {
+    "gitnexus_mcp": "ABSENT this session. Use CLI: node .gitnexus/run.cjs {context|query|impact|detect-changes|cypher}. Index up-to-date at 7f97a16 (11044 symbols).",
+    "compiler": "pdflatex (MiKTeX), compile x2, embedded \\bibitem (no bibtex). Draft compiles clean: 0 undefined / 0 errors.",
+    "python": "system python (C:\\Program Files\\Python313). Has pandas/linearmodels/scipy. No project venv found.",
+    "gotchas": [
+      "tmp/ is NOT gitignored -> git add -A sweeps all machinery + scratch (already committed at baseline).",
+      "thesis_draft.pdf is TRACKED -> every pdflatex run dirties it; git checkout -- it after compiling.",
+      "subprocess capture of some generators throws a non-fatal cp1252 UnicodeDecodeError (Windows console). Does not affect the written .tex.",
+      "LF->CRLF git warnings are benign."
+    ]
+  },
+
+  "user_ratified_decisions": [
+    "52 provenance/H-doc deletions = INTENTIONAL (ages-stale, superseded by 'the angle' thesis). Committed.",
+    "Full-tree freeze for baseline (commit all as-is).",
+    "summary.json files = FINAL REAL RESULTS, healthy/trusted -> G1 is RENDER-ONLY from JSON, no re-estimation.",
+    "6 suite tables (h11/h24/h24b/h23/h14c/h18) = ACCEPT-AS-SAFE, not regen-diffed.",
+    "campello / boasiako / disclosure fragments = NOT in the thesis -> out of audit scope."
+  ],
+
+  "in_thesis_tables_14": ["summary_stats", "empire_building_did", "empire_drop_matched", "empire_cashspec", "reason_gating", "h11_prisk_uncertainty", "h24_us_epu", "h24b_global_epu", "h23_competition_uncertainty", "cash_scrutiny_validity", "cash_scrutiny_channel", "empire_drop_placebo", "h14c_ceo2_decomp", "h18_ceo2_decomp"],
+
+  "phases": {
+    "P0_freeze_baseline": {"status": "DONE", "commit": "8067c5e", "artifact": "baseline.json", "result": "tree frozen 7f97a16, index fresh, compile clean x2, 17 file hashes pinned"},
+    "P1_mechanical_gates": {
+      "status": "IN_PROGRESS",
+      "G1_regen_diff": {"status": "DONE", "commit": "00025e4", "artifact": "g1_regen_diff.json", "result": "8/14 in-thesis tables bible<->code MATCH; 6 suite tables user-waived; 2 campello DRIFTs are non-thesis legacy"},
+      "G2_number_coverage": {"status": "NOT_STARTED", "goal": "Prove EVERY numeric token in thesis_draft.tex prose is covered by a CHECK (or classified derived/structural); fail on any unclassified token. 76 CHECKS PASS today but coverage is unproven (protocol: 'Pass != coverage'). Build tmp/audit_g2.py.", "note": "verify_draft_numbers.py currently ALL PASS at baseline."},
+      "G3_derived_arithmetic": {"status": "PARTIAL", "note": "Several derived checks already PASS inside verify_draft_numbers.py (0.0461~15% SD, 0.0983~third SD, etc). G3 must enumerate ALL ratio/multiple/% prose claims and confirm each is recomputed."},
+      "G4_compile_crossref": {"status": "NOT_STARTED", "goal": "Parse .log; label<->ref matrix; cite<->bibitem matrix. Baseline compile already 0 undefined."},
+      "G5_ledger_freshness": {"status": "NOT_STARTED", "goal": "Verify every file:line anchor in variable_ledger.json still matches current code (hand-built 2026-06-10; code may have moved). Stale anchors -> re-trace in P2. Use GitNexus CLI."}
+    },
+    "P2_methodology_audit": {"status": "NOT_STARTED", "note": "GitNexus CLI; D2/D3. Index fresh at 7f97a16."},
+    "P3_citation_audit": {"status": "NOT_STARTED", "note": "NLM; D4/D5. Reuse done: thewissen, ragozzino, everhart, gokkaya, dwz-Eq4. Remaining: lm2011, hassan2020, baker2016, davis2016, hoberg2010/2016, bushee2018, lerman2026."},
+    "P4_per_unit_semantic": {"status": "NOT_STARTED"},
+    "P5_global_passes": {"status": "NOT_STARTED"},
+    "P6_closeout": {"status": "NOT_STARTED"}
+  },
+
+  "current_position": {
+    "where": "P1 gates. G1 closed. At the G1->G2 boundary, awaiting user go for G2.",
+    "next": "G2 number-coverage: build tmp/audit_g2.py to extract all numeric tokens from thesis_draft.tex prose, classify {covered-by-CHECK, derived, structural}, FAIL on any unclassified. Then extend CHECKS to 100% coverage.",
+    "open_questions": []
+  },
+
+  "commit_trail": [
+    "7f97a16  chore(thesis-audit): P0 freeze - pin ratified tree as audit baseline",
+    "8067c5e  chore(thesis-audit): P0 close - baseline.json",
+    "00025e4  audit(G1): close regen-and-diff - 8/14 clean, 6 suite waived"
+  ],
+
+  "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters (Nickell bias, generated-regressor SEs, one-tailed inference, winsorization disclosure, LM dictionary mismatch). None addressed yet."
+}
