@@ -67,7 +67,7 @@
         "result": "22/22 word-form arithmetic claims recompute from locked cells; 0 findings. Exhaustiveness = FORWARD prose->claim (every triggered+decimal sentence maps to a claim or documented allowlist; 16 flagged, 0 uncovered) PLUS backward claim->prose phrase presence (0 missing).",
         "covered": "ratios (15%/3%/half-pp/1.4%/third-SD/half-again/CI), difference relations (headline 0.0459+0.0524=0.0983; cause-side 0.0064 & 0.0092 [D8/D9, added post-advisor]; fall 0.0473-0.0018=0.0455; peak-to-post 0.0723/0.0681; cash drops 0.0006/0.0210), inequality (gap exceeds either coef), approx-equal (0.0473~0.0461, lags 0.7990~0.8013), counts (h14c=12 specs, UncRes insig in all 12), extremum (h18 UncPre max 0.0016 at 5%, UncRes all n.s.). Allowlist (non-claims): 89% proportion (G2 note-anchored), intro restatement of 0.0983 (=D7).",
         "note": "Recompute from LOCKED cells, never prose. Difference relations use tol=2e-4 (round-then-subtract: placebo stock -0.0757 vs published -0.0756 is a rounding artifact, not an error). No thesis edits."},
-      "G4_compile_crossref": {"status": "DONE", "commit": "PENDING", "artifact": "g4_compile_crossref.json", "script": "tmp/audit_g4.py",
+      "G4_compile_crossref": {"status": "DONE", "commit": "6efea35", "artifact": "g4_compile_crossref.json", "script": "tmp/audit_g4.py",
         "result": "0 CRITICAL. Compiled sources = thesis_draft.tex + _tables_from_bible.tex. ref->label 20/20 resolve (no dup, no unresolved); cite->bibitem 13/13 resolve (no dup, none uncited, none undefined); log 0 warnings / 0 undefined-control-seq. Every table label is referenced in prose; every citation has a bibitem.",
         "findings": "1 MINOR (NIT, fix-queue not error): label 'sec:intro' is never \\ref'd (intro self-ref absent). No CRITICAL/MAJOR.",
         "method_note": "Static matrix over the actual \\input'd sources (NOT the bible thesis_tables.tex, which the draft does not input) + parse of frozen thesis_draft.log. natbib embedded \\bibitem, no bibtex -> cite<->bibitem fully internal."},
@@ -94,7 +94,7 @@
     "b76231f  audit(G2): stamp SHA into STATE.json",
     "5e7b2c8  audit(G3): close derived-arithmetic - 20/20 claims, 0 findings",
     "5e7f6e6  audit(G3): advisor fix - +D8/D9 cause-side diffs, forward exhaustiveness (22/22)",
-    "PENDING  audit(G4): close compile/cross-ref - 0 critical, 1 minor (unused sec:intro label)"
+    "6efea35  audit(G4): close compile/cross-ref - 0 critical, 1 minor (unused sec:intro label)"
   ],
 
   "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters (Nickell bias, generated-regressor SEs, one-tailed inference, winsorization disclosure, LM dictionary mismatch). None addressed yet."
