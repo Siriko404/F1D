@@ -59,7 +59,7 @@
       "status": "DONE",
       "summary": "All gates closed (G1, G1b, G2-G5). ZERO thesis CRITICAL/MAJOR findings. Only MINOR/NIT: G4 unused 'sec:intro' label. The 2 G1 campello DRIFTs are non-thesis legacy (out of scope). Provenance chain verified END-TO-END incl. the compiled embed (G1b): code->fragments->bible->embed->prose->refs->ledger. Thesis numbers, derived arithmetic, cross-refs, and ledger anchors all sound.",
       "G1_regen_diff": {"status": "DONE", "commit": "00025e4", "artifact": "g1_regen_diff.json", "result": "8/14 in-thesis tables bible<->code MATCH; 6 suite tables user-waived; 2 campello DRIFTs are non-thesis legacy"},
-      "G1b_embed_parity": {"status": "DONE", "commit": "PENDING", "artifact": "g1b_embed_parity.json", "script": "tmp/audit_g1b_embed_parity.py",
+      "G1b_embed_parity": {"status": "DONE", "commit": "8b6799c", "artifact": "g1b_embed_parity.json", "script": "tmp/audit_g1b_embed_parity.py",
         "result": "MATCH. Closed the bible->embed provenance link (advisor-flagged blind spot): the thesis COMPILES \\input{_tables_from_bible} = docs/Thesis/_tables_from_bible.tex, never value-diffed upstream. Regenerated it from the validated bible via tmp/extract_draft_tables.py; sha256 == committed == baseline hash (6bddfc1c...). The displayed table cells the referee reads ARE the validated numbers. Provenance now closed end-to-end: code->fragments(G1)->bible(G1)->embed(G1b)->prose(G2/G3)->refs(G4)->ledger(G5)."},
       "G2_number_coverage": {"status": "DONE", "commit": "55f9696", "artifact": "g2_number_coverage.json", "script": "tmp/audit_g2.py",
         "result": "91 distinct digit-form prose tokens, 0 GAP (100% classified): covered=67, derived=4, note=1, structural=19. Coverage PROVEN (was unproven at baseline).",
@@ -102,7 +102,7 @@
     "5e7f6e6  audit(G3): advisor fix - +D8/D9 cause-side diffs, forward exhaustiveness (22/22)",
     "6efea35  audit(G4): close compile/cross-ref - 0 critical, 1 minor (unused sec:intro label)",
     "61c94f8  audit(G5): close ledger-freshness - FRESH, all anchors valid; P1 COMPLETE",
-    "PENDING  audit(G1b): close bible->embed parity - MATCH (advisor-flagged blind spot)"
+    "8b6799c  audit(G1b): close bible->embed parity - MATCH (advisor-flagged blind spot)"
   ],
 
   "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters (Nickell bias, generated-regressor SEs, one-tailed inference, winsorization disclosure, LM dictionary mismatch). None addressed yet."
