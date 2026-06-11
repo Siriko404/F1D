@@ -1,0 +1,51 @@
+{
+  "phase": "P2_methodology_audit",
+  "baseline_sha": "7f97a16",
+  "started": "2026-06-11",
+  "method": "Per AUDIT_PROTOCOL.md P2: prose claim -> G5-validated ledger anchor -> read current code -> verdict MATCH/DRIFT/NOT_FOUND, plus inverse sweep for undisclosed steps. No fixes. Evidence = verbatim prose line + file:line code chain.",
+  "findings": [
+    {
+      "id": "M2-01",
+      "severity": "MAJOR",
+      "status": "OPEN_awaiting_user_adjudication",
+      "dimension": ["D9_referee_anticipation", "D2_methodology_fidelity"],
+      "title": "Generated-regressor / generated-DV: first-stage estimation error is uncorrected in code and undisclosed in prose",
+      "seed_ref": "AUDIT_PROTOCOL.md sec.7b pre-flagged this exact item ('UncResCEO is a generated regressor/DV; 2nd-stage SEs ignore 1st-stage noise; DWZ precedent -- have the response ready').",
+
+      "claim_in_thesis": {
+        "construction": "thesis_draft.tex:96 -- 'Following \\citet{dwz}, we regress UncAnsCEO on CEO fixed effects, [...] and year effects --- their equation 4. [...] UncResCEO is the residual, the call-specific innovation [...].'",
+        "headline_usage_as_DV": "thesis_draft.tex:104,108 -- UncResCEO is an outcome (DV) in Analysis 1; PreAnnounceQtr coef = 0.0461 (SE 0.0172, 1%), one-tailed.",
+        "usage_as_RHS_regressor": "thesis_draft.tex:160,162 -- UncResCEO is a key independent variable in tab:h14c_ceo2_decomp (spread) and tab:h18_ceo2_decomp (CCCL); both report NULLS on the residual ('never priced'; -0.0003 n.s.).",
+        "reported_inference": "thesis_draft.tex:104,78 -- 'standard errors clustered by firm'; no mention of two-step / generated-variable adjustment."
+      },
+
+      "code_chain": {
+        "first_stage_estimation": "src/f1d/econometric/run_h0_3_ceo_clarity_extended.py:379 -- model = smf.ols(formula, data=df_reg).fit(cov_type='cluster', cov_kwds={'groups': ceo_id}). Plain OLS; formula = UncAnsCEO ~ C(ceo_id) + base linguistic + base firm controls + C(year) (CEO_Baseline model, L128-130 + L396).",
+        "residual_stored_pointvalues_only": "run_h0_3_ceo_clarity_extended.py:405 -- residuals_df['UncResCEO'] = model.resid.values ; :506 to_parquet. First-stage model.bse / cov_params are computed then DISCARDED -- never written.",
+        "loader_no_covariance": "src/f1d/shared/variables/_clarity_residual_engine.py:66 -- pd.read_parquet loads only (file_name, UncResCEO) point values. No covariance channel exists downstream by construction.",
+        "second_stage_SE": "scripts/gen_empire_did_table.py:142-143 -- PanelOLS.from_formula(dv ~ PreAnnounceQtr + CTRL + EntityEffects + TimeEffects).fit(cov_type='clustered', cluster_entity=True). UncResCEO enters as `dv`, treated as observed data; SE = plain firm-clustered. :146 one-tailed p = p2/2.",
+        "repo_wide_no_correction": "grep src/f1d/econometric for bootstrap|Murphy|Topel|two-step|Pagan|delta method|first-stage var/propagate => 0 estimation-correction hits (sole match = a data 'two-step merge' in run_h23, unrelated)."
+      },
+
+      "verdict": "DRIFT-by-omission: the stated inference ('clustered by firm') is literally TRUE of the code but INCOMPLETE -- it omits that the dependent/independent object is an estimated first-stage residual whose estimation error is not carried into the reported SEs, and the thesis never discloses this.",
+
+      "econometric_assessment": {
+        "note": "Sign of the correction is NOT signed a priori for a generated DV. Do NOT claim the SEs are 'understated'.",
+        "h14c_h18_RHS_null": "UncResCEO on RHS, coefficient under test = a NULL. Standard generated-regressor result (Pagan 1984 / Wooldridge): the variance-correction term is proportional to the coefficient under test, so under H0(coef=0) it vanishes and OLS inference is valid to first order. => the specific UncResCEO null is legitimate as reported. CAVEAT: ClarityCEO (= -CEO_FE) is ALSO a generated regressor in those tables, so only the UncResCEO null is clean, not the whole table.",
+        "analysis1_DV_headline": "UncResCEO as DV; tested coefficient is on PreAnnounceQtr (a NON-generated treatment), so the under-null shortcut does NOT apply. Validity of the naive SE hinges on Cov(PreAnnounceQtr, first-stage regressors Z). Not cleanly orthogonal: the first stage carries firm controls (stock/market returns, earnings growth, surprise) that plausibly co-move with pre-deal quarters, plus CEO-FE/firm-FE and year-effect overlap across the two stages. Therefore naive SEs are NOT guaranteed valid -- but the direction is indeterminate. Defensible statement: 'uncorrected + undisclosed -> a two-stage bootstrap is required to know whether inference moves.'"
+      },
+
+      "live_exposure": "Exactly one cell: the headline positive significant generated-DV result, Analysis 1 PreAnnounceQtr on UncResCEO = 0.0461 (SE 0.0172). t approx 2.68; one-tailed 1% critical value 2.33 -> margin is real but not large. Every other UncResCEO result in the draft is either a null (h14c/h18, channel) where the issue is benign-to-favorable, or a validity check.",
+
+      "severity_rationale": "MAJOR not CRITICAL: no reported number is proven wrong; OLS point coefficients are consistent under both DV and RHS use; this is an undisclosed inference gap a finance referee will exploit (Pagan 1984), not a computational/transcription error. Not MINOR: it touches the headline result's significance and is a predictable referee lever.",
+
+      "recommended_response_FIX_SESSION_out_of_audit_scope": [
+        "Two-stage bootstrap (resample firms; re-run first stage + second stage) to report corrected SEs for the Analysis-1 generated-DV result; confirm the 1% star survives.",
+        "One disclosure sentence in Methods/Limitations acknowledging the generated-variable inference and citing the DWZ precedent + Pagan (1984).",
+        "Optional: note in the h14c/h18 discussion that understating-vs-correcting is moot for those nulls (under-H0 validity)."
+      ],
+
+      "reproduce_check": "Re-grep the four code anchors above; re-read thesis_draft.tex:96,104,108,183-187. Finding reproduces iff (a) run_h0_3:405 still stores resid.values only, (b) gen_empire_did:142-143 still plain clustered, (c) no correction appears repo-wide, (d) prose still omits the disclosure."
+    }
+  ]
+}

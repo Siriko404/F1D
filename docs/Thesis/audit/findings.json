@@ -1,0 +1,25 @@
+{
+  "baseline_sha": "7f97a16",
+  "description": "Master finding register across all audit phases. Severity: CRITICAL/MAJOR/MINOR/NIT. Detail lives in the per-phase file under detail_ref. status: OPEN_awaiting_user_adjudication | ACCEPTED | WAIVED | FIXED.",
+  "tally": {"CRITICAL": 0, "MAJOR": 1, "MINOR": 1, "NIT": 0},
+  "findings": [
+    {
+      "id": "M2-01",
+      "phase": "P2",
+      "severity": "MAJOR",
+      "status": "OPEN_awaiting_user_adjudication",
+      "title": "Generated-regressor/DV: first-stage estimation error uncorrected (code) + undisclosed (prose)",
+      "one_line": "UncResCEO is a DWZ eq-4 OLS residual stored as point values; 2nd-stage SEs (incl. headline Analysis-1 +0.0461, 1%) ignore first-stage estimation error and the thesis never discloses it. Referee-exploitable (Pagan 1984). Live exposure = the single headline generated-DV cell; the h14c/h18 RHS nulls are benign under-H0.",
+      "detail_ref": "methodology_audit.json#M2-01"
+    },
+    {
+      "id": "G4-01",
+      "phase": "P1",
+      "severity": "MINOR",
+      "status": "OPEN_awaiting_user_adjudication",
+      "title": "Unused \\label{sec:intro} (defined, never \\ref'd)",
+      "one_line": "Cosmetic; G4 cross-ref matrix flagged one label never referenced.",
+      "detail_ref": "g4_compile_crossref.json"
+    }
+  ]
+}
