@@ -63,7 +63,10 @@
         "machinery_changes": "verify_draft_numbers.py: wrapped runner in main() so CHECK lists import cleanly (single source of truth); +2 SE_CHECKS (cash CashRatio SE 0.0017, lag SE 0.0070) and +2 DERIVED (scrutiny CI bounds -0.027/+0.016 = -0.0056 +/- 1.96*0.0111). Still ALL CHECKS PASS. These are audit machinery, NOT thesis fixes.",
         "findings": "NONE. Every prose number resolves to a source. 89% is anchored in _empire_building_did.tex table note ('89% of calls raise no cash turns') -- grep-verified, not unsupported. 0.04 = rhetorical approx of verified run-up coefs.",
         "scope_note": "Digit-form tokens only. Word-form magnitude claims (fifteen percent of a SD, half again, twelve specs) deferred to G3 by protocol design. Excluded w/ reason: preamble, thebibliography (->P3), appendix var-def tabular (definitional), Tables \\input (->G1), comments, length/width + cite/ref/label keys."},
-      "G3_derived_arithmetic": {"status": "PARTIAL", "note": "Several derived checks already PASS inside verify_draft_numbers.py (0.0461~15% SD, 0.0983~third SD, etc). G3 must enumerate ALL ratio/multiple/% prose claims and confirm each is recomputed."},
+      "G3_derived_arithmetic": {"status": "DONE", "commit": "PENDING", "artifact": "g3_derived_arithmetic.json", "script": "tmp/audit_g3.py (+ tmp/_g3_scan.py exhaustiveness scanner)",
+        "result": "20/20 word-form arithmetic claims recompute from locked cells; 0 findings. Exhaustiveness proven: trigger-scan of prose -> 69 candidate sentences, every genuine arithmetic one maps to a claim (phrase-presence asserted).",
+        "covered": "ratios (15%/3%/half-pp/1.4%/third-SD/half-again/CI), difference relations (0.0459+0.0524=0.0983 headline, 0.0473-0.0018=0.0455 fall, peak-to-post 0.0723/0.0681, cash drops 0.0006/0.0210), inequality (gap exceeds either coef), approx-equal (0.0473~0.0461, lags 0.7990~0.8013), counts (h14c=12 specs, UncRes insig in all 12), extremum (h18 UncPre max 0.0016 at 5%, UncRes all n.s.).",
+        "note": "Recompute from LOCKED cells, never prose. Difference relations use tol=2e-4 (round-then-subtract: placebo stock -0.0757 vs published -0.0756 is a rounding artifact, not an error). No thesis edits."},
       "G4_compile_crossref": {"status": "NOT_STARTED", "goal": "Parse .log; label<->ref matrix; cite<->bibitem matrix. Baseline compile already 0 undefined."},
       "G5_ledger_freshness": {"status": "NOT_STARTED", "goal": "Verify every file:line anchor in variable_ledger.json still matches current code (hand-built 2026-06-10; code may have moved). Stale anchors -> re-trace in P2. Use GitNexus CLI."}
     },
@@ -75,8 +78,8 @@
   },
 
   "current_position": {
-    "where": "P1 gates. G1 + G2 closed. At the G2->G3 boundary, awaiting user go for G3.",
-    "next": "G3 derived-arithmetic: enumerate EVERY word-form ratio/multiple/% claim in prose (fifteen percent of a SD, half again, roughly three percent, third of a SD, 89% of calls, twelve specifications, peak-to-post swing) and confirm each is recomputed from locked table cells. Some already in verify_draft_numbers DERIVED_CHECKS; G3 must prove the set is exhaustive.",
+    "where": "P1 gates. G1 + G2 + G3 closed (all clean, 0 findings). At the G3->G4 boundary, awaiting user go for G4.",
+    "next": "G4 compile & cross-ref integrity: parse docs/Thesis/thesis_draft.log; build label<->ref matrix (every \\ref resolves, every \\label used) and cite<->bibitem matrix (every \\citep/\\citet has a \\bibitem and vice-versa, incl. fragments). Baseline compile already 0 undefined refs/cites (baseline.json), so G4 makes that exhaustive + matrix-complete rather than just count==0.",
     "open_questions": []
   },
 
@@ -84,7 +87,9 @@
     "7f97a16  chore(thesis-audit): P0 freeze - pin ratified tree as audit baseline",
     "8067c5e  chore(thesis-audit): P0 close - baseline.json",
     "00025e4  audit(G1): close regen-and-diff - 8/14 clean, 6 suite waived",
-    "55f9696  audit(G2): close number-coverage - 91 tokens, 0 gap, +4 checks"
+    "55f9696  audit(G2): close number-coverage - 91 tokens, 0 gap, +4 checks",
+    "b76231f  audit(G2): stamp SHA into STATE.json",
+    "PENDING  audit(G3): close derived-arithmetic - 20/20 claims, 0 findings"
   ],
 
   "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters (Nickell bias, generated-regressor SEs, one-tailed inference, winsorization disclosure, LM dictionary mismatch). None addressed yet."

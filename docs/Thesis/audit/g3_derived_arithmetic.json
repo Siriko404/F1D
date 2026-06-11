@@ -1,0 +1,167 @@
+{
+  "gate": "G3_derived_arithmetic",
+  "baseline_sha": "7f97a16",
+  "method": "recompute every word-form ratio/multiple/difference/count/extremum claim from LOCKED cells",
+  "locked_anchors": {
+    "residual_SD": 0.3072,
+    "cash_mean": 0.1573
+  },
+  "counts": {
+    "claims": 20,
+    "pass": 20,
+    "fail": 0
+  },
+  "exhaustiveness": {
+    "method": "trigger-word scan of prose (tmp/_g3_scan.py) returned 69 candidate sentences; each genuine arithmetic sentence maps to a claim below; phrase-presence asserted here",
+    "phrases_present": true,
+    "phrases_missing": {},
+    "non_arithmetic_number_words": [
+      "three axes / three designs / three findings / three predictions / three layers / three steps / three results / three main analyses (enumeration, no numeric relation)",
+      "four times / four bins / four quarters; two-by-two, two readings, two clocks, two components (design counts, verified structurally in G2)",
+      "at least five calls / at least three Q&A turns / 50% cash-stock / six-digit CUSIP (eligibility constants, G2-structural)"
+    ]
+  },
+  "claims": [
+    {
+      "id": "R1_15pct_SD_runup",
+      "quote": "uncertainty coefficient equals fifteen percent of a standard deviation (0.3072)",
+      "kind": "ratio",
+      "pass": true,
+      "detail": "0.0461/0.3072=0.1501 ~ 0.15"
+    },
+    {
+      "id": "R2_1p4pct_sample",
+      "quote": "a quarter that makes up 1.4% of the sample",
+      "kind": "ratio",
+      "pass": true,
+      "detail": "PreAnn mean 0.0143=*100=1.43% ~ 1.4%"
+    },
+    {
+      "id": "R3_half_pp",
+      "quote": "adds half a percentage point of assets",
+      "kind": "ratio",
+      "pass": true,
+      "detail": "0.0051*100=0.51pp ~ 0.5pp"
+    },
+    {
+      "id": "R4_3pct_mean",
+      "quote": "roughly three percent of the mean cash ratio (0.1573)",
+      "kind": "ratio",
+      "pass": true,
+      "detail": "0.0051/0.1573=3.24% ~ 3%"
+    },
+    {
+      "id": "R5_15pct_SD_t1",
+      "quote": "0.0473 ... about fifteen percent of a residual standard deviation",
+      "kind": "ratio",
+      "pass": true,
+      "detail": "0.0473/0.3072=0.1540 ~ 0.15"
+    },
+    {
+      "id": "R6_half_again",
+      "quote": "peak-to-post swing (0.0723) is half again the size of that entry spike (0.0473)",
+      "kind": "ratio",
+      "pass": true,
+      "detail": "0.0723/0.0473=1.529 ~ 1.5 (half again)"
+    },
+    {
+      "id": "R7_third_SD",
+      "quote": "gap ... about a third of a residual standard deviation",
+      "kind": "ratio",
+      "pass": true,
+      "detail": "0.0983/0.3072=0.3200 ~ 0.333"
+    },
+    {
+      "id": "R8_CI_bounds",
+      "quote": "interaction's confidence interval ([-0.027, +0.016])",
+      "kind": "ratio",
+      "pass": true,
+      "detail": "-0.0056 +/- 1.96*0.0111 = [-0.027, 0.016]"
+    },
+    {
+      "id": "D1_fall_0455",
+      "quote": "a fall of 0.0455 from the pre-announcement quarter",
+      "kind": "difference",
+      "pass": true,
+      "detail": "PRE1u-GAPu=0.0455 vs Drop cell 0.0455"
+    },
+    {
+      "id": "D2_swing_0723",
+      "quote": "peak-to-post swing of 0.0723",
+      "kind": "difference",
+      "pass": true,
+      "detail": "PRE1u-POSTu=0.0723 vs Drop cell 0.0723"
+    },
+    {
+      "id": "D3_cash_drop_0006",
+      "quote": "drop 0.0006 (announce, cash)",
+      "kind": "difference",
+      "pass": true,
+      "detail": "PRE1c-GAPc=0.0006 vs Drop cell 0.0006"
+    },
+    {
+      "id": "D4_cash_drop_0210",
+      "quote": "announce-to-completion drop 0.0210",
+      "kind": "difference",
+      "pass": true,
+      "detail": "GAPc-POSTc=0.0210 vs Drop cell 0.021"
+    },
+    {
+      "id": "D5_placebo_0681",
+      "quote": "peak-to-post drop of 0.0681 (placebo cash arm)",
+      "kind": "difference",
+      "pass": true,
+      "detail": "PRE1-POST=0.0681 vs Drop cell 0.0681"
+    },
+    {
+      "id": "D6_placebo_stock_0756",
+      "quote": "pre-to-gap difference -0.0756 (placebo stock arm)",
+      "kind": "difference",
+      "pass": true,
+      "detail": "PRE1s-GAPs=-0.0757 vs Drop cell -0.0756 (round-then-subtract)"
+    },
+    {
+      "id": "D7_cashstock_0983",
+      "quote": "cash 0.0459 against -0.0524 yields a formal cash-stock difference of 0.0983",
+      "kind": "difference",
+      "pass": true,
+      "detail": "Cash-Stock=0.0983 vs formal-test cell 0.0983"
+    },
+    {
+      "id": "C1_gap_exceeds_either",
+      "quote": "the gap exceeds either coefficient",
+      "kind": "compare",
+      "pass": true,
+      "detail": "0.0983 > 0.0459 and > |-0.0524|"
+    },
+    {
+      "id": "C2_0473_vs_0461_same",
+      "quote": "0.0473 against 0.0461 there ... economically the same",
+      "kind": "compare",
+      "pass": true,
+      "detail": "|0.0473-0.0461|=0.0012; both ~15% SD"
+    },
+    {
+      "id": "C3_lags_nearly_identical",
+      "quote": "the stock arm's partial-adjustment lag, 0.8013, is nearly identical",
+      "kind": "compare",
+      "pass": true,
+      "detail": "|0.799-0.8013|=0.0023 < 0.005"
+    },
+    {
+      "id": "N1_twelve_specs",
+      "quote": "insignificant in all twelve spread specifications",
+      "kind": "count",
+      "pass": true,
+      "detail": "h14c columns=12; UncResCEO cells=12; significant=0"
+    },
+    {
+      "id": "N2_up_to_0016",
+      "quote": "weakly associated with presentation uncertainty (up to 0.0016, 5%); never the residual",
+      "kind": "extremum",
+      "pass": true,
+      "detail": "h18 UncPre significant max=0.0016; UncRes significant=0"
+    }
+  ],
+  "findings": []
+}
