@@ -121,6 +121,40 @@
       "not_overclaimed": "UncAnsCEO winsor scheme now byte-confirmed from the engine call (per-year upper-99). CRSP controls per-year 1/99 stated by winsorization.py usage docstring + build_h14:220-221; CRSPEngine source not separately re-read here, so the control levels are asserted-by-builder, not byte-verified.",
       "recommended_response_FIX_SESSION": "(1) Thesis: one sentence in the data/construction section stating the winsorization actually used -- e.g. 'Linguistic shares are winsorized per year at the 99th percentile (upper tail); CRSP/Compustat controls at the 1st/99th percentiles.' (2) Code: fix the stale 'pooled 1%/99%' docstrings to match the engine. No re-estimation.",
       "reproduce_check": "Re-read _linguistic_engine.py:331-334 + winsorization.py:79-82 (winsorize_by_year lower=0.0/upper=0.99); embed L642; thesis_draft.tex winsor grep (expect 0). Reproduces iff engine call is still per-year upper-99, the only thesis mention is the channel note, and prose stays silent."
+    },
+    {
+      "id": "M2-04",
+      "severity": "MINOR",
+      "severity_note": "Same disclosure-completeness class as M2-03; mild (refinements on an already-disclosed +4-quarter windowing scheme). Affects reproducibility of the event-study/drop/placebo tables (the steps drop rows -> change N and estimates), so MINOR not NIT. User may adjudicate to NIT.",
+      "status": "OPEN_awaiting_user_adjudication",
+      "dimension": ["D3_disclosure"],
+      "title": "Two event-study sample-construction steps (post-withdrawal row drop, 2nd-announcement truncation) disclosed only in code",
+      "finding": "The empire event-study/drop/placebo design applies two sample-construction steps that the thesis does not disclose: (1) post-withdrawal rows are dropped for withdrawn-first deals (firm state ambiguous after a dead deal); (2) each treated firm's post-announcement window is truncated at its 2nd qualifying announcement (no run-up contamination). Both are stated only in the code docstring; neither appears in the prose (L100 discloses the run-up post-drop, the +4-quarter cap, and the >=3-Q&A-turn rule, but not these two) nor on the deal-specification page that prose L100 calls 'the full eligibility criteria'.",
+      "evidence": {
+        "post_withdrawal_drop": "src/f1d/econometric/empire_drop_test.py:129-130 -- q = q[~(tr & (q['status']=='Withdrawn') & q['wq'].notna() & (q['cq']>=q['wq']))]. Docstring L17 'post-withdrawal rows dropped'.",
+        "second_announcement_truncation": "empire_drop_test.py:117-126 -- rank deals per c6 (cumcount), dq2 = 2nd-deal announce qtr, truncate post-window at dq2. Docstring L17 'each firm's post-window truncated at a 2nd qualifying announcement'.",
+        "plus4_cap_IS_disclosed": "empire_drop_test.py:42 POST_CAP=4, :132 cap; prose L100 'the event studies cap the post-announcement window at four quarters' -> disclosed (contrast: the two steps above are not).",
+        "embed_silent": "grep _tables_from_bible.tex for withdraw/truncat/second/2nd/post-window/capped => 0 relevant hits (only 'lagged DV removed' + Lagged_DV table rows). Deal-spec page (embed L49-122) covers eligibility but not these two window-hygiene steps.",
+        "prose_silent": "thesis_draft.tex:100 lists run-up post-drop + 4-qtr cap + >=3 Q&A turns; not these two."
+      },
+      "direction": "Both steps are conservative/sensible (remove ambiguous or contaminated post-window quarters); they do not manufacture the result -- they clean the comparison. The issue is reproducibility/disclosure, not validity.",
+      "recommended_response_FIX_SESSION": "Add one clause to the deal-spec page or prose L100: 'post-withdrawal quarters of withdrawn deals are dropped, and a treated firm's post-window is truncated at any second qualifying announcement.' No re-estimation.",
+      "reproduce_check": "Re-read empire_drop_test.py:117-132; grep embed + thesis_draft.tex for withdraw/truncat/second (expect 0 in thesis). Reproduces iff the two steps remain code-only."
     }
-  ]
+  ],
+  "p2_inverse_sweep": {
+    "verdict": "Per-generator processing steps swept for disclosure (E1/E2: each cites the executable line). ONE finding (M2-04 MINOR). Most steps ARE disclosed (spec page + prose L94-100).",
+    "matrix": [
+      {"step": "+4-quarter post-announcement cap", "code": "empire_drop_test.py:42,132 (POST_CAP=4)", "disclosed": "YES -- prose L100"},
+      {"step": "run-up: post-announcement quarters dropped", "code": "spec-page rule; empire_did design", "disclosed": "YES -- spec page embed L97 + prose L100"},
+      {"step": ">=50% cash/stock threshold; status completed/pending/withdrawn; first qualifying deal", "code": "empire_drop_test.py:90,117", "disclosed": "YES -- spec page embed L77-80 + prose L100"},
+      {"step": "CUSIP6 SDC->Compustat link", "code": "deal merge", "disclosed": "YES -- prose L94"},
+      {"step": ">=3 analyst Q&A turns (scrutiny tables)", "code": "scrutiny gens", "disclosed": "YES -- prose L100"},
+      {"step": "consecutive-quarter lag rule (CashRatio_lag=NaN if prior row != cq-1)", "code": "empire_drop_matched_universe.py:156-158 (+gen_empire_did equiv)", "disclosed": "NO, but NOT A FINDING -- defensible micro-construction that makes the lag MORE correct; below the granularity any referee expects disclosed."},
+      {"step": "saleq quarterly-sales fallback", "code": "src/f1d/campello/sample.py:43,173 ONLY", "disclosed": "N/A -- campello replication workstream, not an in-thesis variable (empire control set has no sales var). OUT OF SCOPE."},
+      {"step": "post-withdrawal row drop", "code": "empire_drop_test.py:129-130", "disclosed": "NO -> M2-04"},
+      {"step": "2nd-announcement post-window truncation", "code": "empire_drop_test.py:117-126", "disclosed": "NO -> M2-04"}
+    ],
+    "theme": "M2-03 (winsorization) + M2-04 (window hygiene) are one coherent theme: the thesis under-discloses several standard, conservative sample-construction steps. None threatens a result; each is a one-clause disclosure fix. Worth presenting as a single 'disclosure-completeness' cluster to the user rather than separate alarms."
+  }
 }

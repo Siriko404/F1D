@@ -1,8 +1,17 @@
 {
   "baseline_sha": "7f97a16",
   "description": "Master finding register across all audit phases. Severity: CRITICAL/MAJOR/MINOR/NIT. Detail lives in the per-phase file under detail_ref. status: OPEN_awaiting_user_adjudication | ACCEPTED | WAIVED | FIXED | WITHDRAWN.",
-  "tally": {"CRITICAL": 0, "MAJOR": 0, "MINOR": 2, "NIT": 1, "withdrawn": 1},
+  "tally": {"CRITICAL": 0, "MAJOR": 0, "MINOR": 3, "NIT": 1, "withdrawn": 1},
   "findings": [
+    {
+      "id": "M2-04",
+      "phase": "P2",
+      "severity": "MINOR",
+      "status": "OPEN_awaiting_user_adjudication",
+      "title": "Two event-study sample steps (post-withdrawal drop, 2nd-announcement truncation) disclosed only in code",
+      "one_line": "empire_drop_test.py:129-130 drops post-withdrawal rows; :117-126 truncates each treated firm's post-window at its 2nd qualifying announcement. Both are code-docstring-only -- not in prose L100 (which DOES disclose the +4 cap + run-up drop) nor the deal-spec page. Conservative steps, reproducibility gap. Same disclosure-completeness theme as M2-03. Fix = one clause.",
+      "detail_ref": "methodology_audit.json#M2-04"
+    },
     {
       "id": "M2-03",
       "phase": "P2",
