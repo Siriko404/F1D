@@ -67,7 +67,10 @@
         "result": "22/22 word-form arithmetic claims recompute from locked cells; 0 findings. Exhaustiveness = FORWARD prose->claim (every triggered+decimal sentence maps to a claim or documented allowlist; 16 flagged, 0 uncovered) PLUS backward claim->prose phrase presence (0 missing).",
         "covered": "ratios (15%/3%/half-pp/1.4%/third-SD/half-again/CI), difference relations (headline 0.0459+0.0524=0.0983; cause-side 0.0064 & 0.0092 [D8/D9, added post-advisor]; fall 0.0473-0.0018=0.0455; peak-to-post 0.0723/0.0681; cash drops 0.0006/0.0210), inequality (gap exceeds either coef), approx-equal (0.0473~0.0461, lags 0.7990~0.8013), counts (h14c=12 specs, UncRes insig in all 12), extremum (h18 UncPre max 0.0016 at 5%, UncRes all n.s.). Allowlist (non-claims): 89% proportion (G2 note-anchored), intro restatement of 0.0983 (=D7).",
         "note": "Recompute from LOCKED cells, never prose. Difference relations use tol=2e-4 (round-then-subtract: placebo stock -0.0757 vs published -0.0756 is a rounding artifact, not an error). No thesis edits."},
-      "G4_compile_crossref": {"status": "NOT_STARTED", "goal": "Parse .log; label<->ref matrix; cite<->bibitem matrix. Baseline compile already 0 undefined."},
+      "G4_compile_crossref": {"status": "DONE", "commit": "PENDING", "artifact": "g4_compile_crossref.json", "script": "tmp/audit_g4.py",
+        "result": "0 CRITICAL. Compiled sources = thesis_draft.tex + _tables_from_bible.tex. ref->label 20/20 resolve (no dup, no unresolved); cite->bibitem 13/13 resolve (no dup, none uncited, none undefined); log 0 warnings / 0 undefined-control-seq. Every table label is referenced in prose; every citation has a bibitem.",
+        "findings": "1 MINOR (NIT, fix-queue not error): label 'sec:intro' is never \\ref'd (intro self-ref absent). No CRITICAL/MAJOR.",
+        "method_note": "Static matrix over the actual \\input'd sources (NOT the bible thesis_tables.tex, which the draft does not input) + parse of frozen thesis_draft.log. natbib embedded \\bibitem, no bibtex -> cite<->bibitem fully internal."},
       "G5_ledger_freshness": {"status": "NOT_STARTED", "goal": "Verify every file:line anchor in variable_ledger.json still matches current code (hand-built 2026-06-10; code may have moved). Stale anchors -> re-trace in P2. Use GitNexus CLI."}
     },
     "P2_methodology_audit": {"status": "NOT_STARTED", "note": "GitNexus CLI; D2/D3. Index fresh at 7f97a16."},
@@ -78,8 +81,8 @@
   },
 
   "current_position": {
-    "where": "P1 gates. G1 + G2 + G3 closed (all clean, 0 findings). At the G3->G4 boundary, awaiting user go for G4.",
-    "next": "G4 compile & cross-ref integrity: parse docs/Thesis/thesis_draft.log; build label<->ref matrix (every \\ref resolves, every \\label used) and cite<->bibitem matrix (every \\citep/\\citet has a \\bibitem and vice-versa, incl. fragments). Baseline compile already 0 undefined refs/cites (baseline.json), so G4 makes that exhaustive + matrix-complete rather than just count==0.",
+    "where": "P1 gates. G1+G2+G3+G4 closed (clean; G4 has 1 cosmetic MINOR). At the G4->G5 boundary, awaiting user go for G5.",
+    "next": "G5 ledger freshness: verify every file:line evidence anchor in docs/Thesis/variable_ledger.json still matches current code (hand-built 2026-06-10; code may have moved). Stale anchors -> re-trace in P2. Use GitNexus CLI (node .gitnexus/run.cjs context|query|cypher) since MCP absent. This is the LAST P1 mechanical gate; after it, P1 closes and P2 (methodology/GitNexus) begins.",
     "open_questions": []
   },
 
@@ -90,7 +93,8 @@
     "55f9696  audit(G2): close number-coverage - 91 tokens, 0 gap, +4 checks",
     "b76231f  audit(G2): stamp SHA into STATE.json",
     "5e7b2c8  audit(G3): close derived-arithmetic - 20/20 claims, 0 findings",
-    "5e7f6e6  audit(G3): advisor fix - +D8/D9 cause-side diffs, forward exhaustiveness (22/22)"
+    "5e7f6e6  audit(G3): advisor fix - +D8/D9 cause-side diffs, forward exhaustiveness (22/22)",
+    "PENDING  audit(G4): close compile/cross-ref - 0 critical, 1 minor (unused sec:intro label)"
   ],
 
   "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters (Nickell bias, generated-regressor SEs, one-tailed inference, winsorization disclosure, LM dictionary mismatch). None addressed yet."
