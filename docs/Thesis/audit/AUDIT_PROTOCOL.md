@@ -107,3 +107,11 @@ No fixes during audit. No findings from memory. No web metadata as citation grou
 - **Established-method smell test:** if a finding implies the method's own authors *and* the standard literature mis-do inference, the burden flips to me — default to "I've misframed it," not MAJOR.
 - **Seed labels are hypotheses to falsify, not findings to confirm.** §7b *named* this "generated regressor"; I confirmed the label instead of seeking the disconfirming reading first.
 - **Advisor agreement on the same frame ≠ independent check.** The advisor also endorsed MAJOR; two models sharing a wrong frame is not corroboration. Ask the advisor to test the **precondition**, not to bless the finding.
+
+### E2 (2026-06-11) — Cite the executable line, never the comment. [M2-01, M2-03]
+
+**What happened.** Two findings in this audit mis-stated a method because I trusted a **comment/label** instead of the **executable line**:
+- **M2-01** took §7b's seed *label* ("generated regressor") as the conclusion.
+- **M2-03** took a *docstring* (`ceo_qa_uncertainty.py:4` "pooled 1%/99%") and a table *note* as the winsorization scheme. The actual call is `winsorize_by_year(_pct_cols, lower=0.0, upper=0.99)` (`_linguistic_engine.py:331`) = **per-year, upper-only, 99th pct** — a different transform. Sina caught it.
+
+**Standing rule.** Every methodology fact in a finding must cite the **executable line** — the `fit()` / `winsorize()` / `clip()` / `.quantile()` / formula call and its **literal arguments** — not a docstring, header comment, table note, or variable name that *describes* it. Comments, notes, and seed labels **drift from code and are themselves audit targets**: when a comment and the call disagree, **the call is ground truth and the comment becomes a (separate) finding** (e.g. M2-03's stale `pooled 1%/99%` docstrings). A finding whose only evidence is a comment is not yet verified.
