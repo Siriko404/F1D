@@ -89,3 +89,21 @@ ARS `academic-paper-reviewer` (7-agent EIC+R1/R2/R3+Devil's-Advocate, 0–100 ru
 ## 9. Anti-patterns
 
 No fixes during audit. No findings from memory. No web metadata as citation ground truth. No skipping advisor on "easy" units. No new CHECKS hand-typed from prose without the extraction script. No GitNexus conclusions from a stale index. No marking a coverage cell `pass` without a logged artifact.
+
+## 10. Experience addenda (lessons from live runs — read before P2+ grading)
+
+### E1 (2026-06-11) — Verify a critique's PRECONDITION before its mechanism. [M2-01 withdrawn]
+
+**What happened.** Graded M2-01 MAJOR: "UncResCEO is a DWZ eq-4 residual used as the Analysis-1 DV; second-stage clustered SEs ignore first-stage estimation error (generated-regressor, Pagan 1984); undisclosed." The code chain was verified airtight (first stage stores `model.resid.values` only, first-stage covariance discarded; loader carries no covariance; second stage = plain firm-clustered `PanelOLS`; zero correction repo-wide; prose discloses construction but not the inference). **Withdrawn in full** (commit 6cfb387) — the finding misidentified the **estimand**.
+
+**Root cause.** A named critique has three parts: **precondition + mechanism + consequence.** I verified the *mechanism* exhaustively and mistook that for the critique *binding*. I never tested the *precondition*. Pagan's generated-regressor correction binds only when the estimand is a **latent** quantity for which the variable is a noisy **proxy**. `UncResCEO` is not a proxy — it is the **operationally-defined** measure (the eq-4 residual; the deviation from the *estimated* CEO baseline + controls **is** its definition, per DWZ). The thesis's claim is about the **measure** ("the residual rises pre-announcement"), so standard clustered inference is valid — as across the entire residual-measure literature (abnormal returns, discretionary accruals). Exhaustive mechanism-verification *felt* like rigor and substituted for the one cheap, decisive check I skipped.
+
+**Standing gate (apply to every methodology finding, D2/D3/D9).** Before importing ANY named critique (Pagan/generated-X, Nickell, Murphy–Topel, weak-IV, attenuation, etc.):
+1. Write the thesis's **exact claim** and its **estimand** in one line (a property of an *observed constructed measure*, or a *latent/structural parameter*?).
+2. Write the critique's **trigger condition**.
+3. Proceed **only if** the trigger holds for *this* estimand. `mechanism-present ≠ critique-binds`. If the critique presumes a latent estimand and the claim is about a constructed measure, kill it before gathering code evidence.
+
+**Cheap heuristics that would each have caught it.**
+- **Established-method smell test:** if a finding implies the method's own authors *and* the standard literature mis-do inference, the burden flips to me — default to "I've misframed it," not MAJOR.
+- **Seed labels are hypotheses to falsify, not findings to confirm.** §7b *named* this "generated regressor"; I confirmed the label instead of seeking the disconfirming reading first.
+- **Advisor agreement on the same frame ≠ independent check.** The advisor also endorsed MAJOR; two models sharing a wrong frame is not corroboration. Ask the advisor to test the **precondition**, not to bless the finding.
