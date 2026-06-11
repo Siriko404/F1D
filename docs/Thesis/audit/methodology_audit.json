@@ -6,10 +6,18 @@
   "findings": [
     {
       "id": "M2-01",
-      "severity": "MAJOR",
-      "status": "OPEN_awaiting_user_adjudication",
+      "severity": "WITHDRAWN",
+      "status": "WITHDRAWN_not_a_finding",
+      "withdrawn": {
+        "date": "2026-06-11",
+        "caught_by": "Sina (user)",
+        "reason": "The finding misidentified the ESTIMAND. It assumed UncResCEO is a noisy proxy for a latent uncertainty shock (epsilon), so that the first-stage estimation error in the subtracted FE/controls would be 'measurement error' the 2nd-stage SE must absorb. That is wrong: UncResCEO is OPERATIONALLY DEFINED as the DWZ eq-4 residual -- the deviation from the estimated CEO baseline + controls IS the variable's definition, not error against a hidden true value (DWZ: 'UncRes represents the residuals from Equation 4 ... the potentially strategic component'). The thesis's inferential target IS this constructed measure ('the residual is elevated pre-announcement'), not a latent parameter. For a claim about an observed constructed measure, standard firm-clustered inference is valid -- exactly as the entire residual-measure empirical literature does (abnormal returns, discretionary accruals, residual dispersion, etc.). A generated-DV/regressor SE correction (Pagan 1984) binds only when the estimand is a latent quantity for which the residual is a proxy; the thesis makes no such claim. Therefore: NO defect, NO referee-exploitable gap. Fully withdrawn, not merely downgraded.",
+        "shared_miss_note": "The advisor (Opus) ALSO endorsed MAJOR. This was a shared conceptual error on the estimand, not a transcription slip -- both the auditor and the reviewer model anchored on a latent-proxy framing the thesis never uses. Lesson for remaining P2 items: before grading any 'generated variable' concern, first pin the ESTIMAND (constructed-measure claim vs latent-parameter claim); the SE-correction question is moot for the former.",
+        "retained_for_referee_prep_only": "Seed sec.7b's 'have a response ready' note may stay as referee-prep (if a referee insists on re-casting UncResCEO as a proxy for latent uncertainty, the one-paragraph answer is a two-stage bootstrap + the operational-definition point above). This is NOT a finding against the thesis and carries no severity."
+      },
+      "ORIGINAL_FINDING_BELOW_RETAINED_FOR_AUDIT_TRAIL_ONLY": true,
       "dimension": ["D9_referee_anticipation", "D2_methodology_fidelity"],
-      "title": "Generated-regressor / generated-DV: first-stage estimation error is uncorrected in code and undisclosed in prose",
+      "title": "[WITHDRAWN] Generated-regressor / generated-DV: first-stage estimation error is uncorrected in code and undisclosed in prose",
       "seed_ref": "AUDIT_PROTOCOL.md sec.7b pre-flagged this exact item ('UncResCEO is a generated regressor/DV; 2nd-stage SEs ignore 1st-stage noise; DWZ precedent -- have the response ready').",
 
       "claim_in_thesis": {
