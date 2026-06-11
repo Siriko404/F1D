@@ -125,6 +125,9 @@ DERIVED_CHECKS = [
     ("derived: 0.0723 = half again 0.0473",   lambda: 1.45 <= 0.0723 / 0.0473 <= 1.55),
     # SIII.3 (Main Analysis 3) magnitude claim
     ("derived: 0.0983 = ~third of SD 0.3072", lambda: abs(0.0983 / 0.3072 - 0.33) < 0.02),
+    # SIV.1 scrutiny CI (added by G2): interaction -0.0056 +/- 1.96*0.0111
+    ("derived: CI low -0.027 = -0.0056-1.96*0.0111",  lambda: round(-0.0056 - 1.96 * 0.0111, 3) == -0.027),
+    ("derived: CI high +0.016 = -0.0056+1.96*0.0111", lambda: round(-0.0056 + 1.96 * 0.0111, 3) == 0.016),
 ]
 
 # SE checks need the line AFTER a coefficient row; handle separately.
@@ -150,34 +153,42 @@ SE_CHECKS = [
     ("runup stock UncRes SE", "_empire_building_did.tex", r"^PreAnnounceQtr", 6, "0.0307"),
     ("chan OLS SE",           "_cash_scrutiny_channel.tex", r"^CashScrutiny(?! \()", 1, "0.0013"),
     ("gate interaction SE",   "_reason_gating.tex", r"^CashScrutiny \$\\times\$", 2, "0.0111"),
+    # added by G2 coverage gate (prose SEs that lacked a CHECK):
+    ("runup cash CashRatio SE", "_empire_building_did.tex", r"^PreAnnounceQtr",        1, "0.0017"),
+    ("runup cash lag SE",       "_empire_building_did.tex", r"^CashRatio\$_\{t-1\}\$", 1, "0.0070"),
 ]
 
-fails = 0
-for cid, f, rx, col, exp in CHECKS:
-    if exp is None:
-        continue
-    got = cell(f, rx, col)
-    ok = got == exp
+def main():
+    fails = 0
+    for cid, f, rx, col, exp in CHECKS:
+        if exp is None:
+            continue
+        got = cell(f, rx, col)
+        ok = got == exp
+        fails += (not ok)
+        print(f"{'PASS' if ok else 'FAIL'}  {cid:26s} expected={exp:>10s} got={got}")
+    for cid, f, anchor, rx, col, exp in ANCHORED_CHECKS:
+        got = cell(f, rx, col, anchor=anchor)
+        ok = got == exp
+        fails += (not ok)
+        print(f"{'PASS' if ok else 'FAIL'}  {cid:26s} expected={exp:>10s} got={got}")
+    for cid, f, rx, col, exp in SE_CHECKS:
+        got = se_after(f, rx, col)
+        ok = got == exp
+        fails += (not ok)
+        print(f"{'PASS' if ok else 'FAIL'}  {cid:26s} expected={exp:>10s} got={got}")
+    got = se_after("thesis_tables.tex", r"^UncResCEO", 1, anchor="tab:h14c_ceo2_decomp")
+    ok = got == "0.1068"
     fails += (not ok)
-    print(f"{'PASS' if ok else 'FAIL'}  {cid:26s} expected={exp:>10s} got={got}")
-for cid, f, anchor, rx, col, exp in ANCHORED_CHECKS:
-    got = cell(f, rx, col, anchor=anchor)
-    ok = got == exp
-    fails += (not ok)
-    print(f"{'PASS' if ok else 'FAIL'}  {cid:26s} expected={exp:>10s} got={got}")
-for cid, f, rx, col, exp in SE_CHECKS:
-    got = se_after(f, rx, col)
-    ok = got == exp
-    fails += (not ok)
-    print(f"{'PASS' if ok else 'FAIL'}  {cid:26s} expected={exp:>10s} got={got}")
-got = se_after("thesis_tables.tex", r"^UncResCEO", 1, anchor="tab:h14c_ceo2_decomp")
-ok = got == "0.1068"
-fails += (not ok)
-print(f"{'PASS' if ok else 'FAIL'}  {'spread UncRes SE c1':26s} expected=    0.1068 got={got}")
-for cid, test in DERIVED_CHECKS:
-    ok = test()
-    fails += (not ok)
-    print(f"{'PASS' if ok else 'FAIL'}  {cid}")
+    print(f"{'PASS' if ok else 'FAIL'}  {'spread UncRes SE c1':26s} expected=    0.1068 got={got}")
+    for cid, test in DERIVED_CHECKS:
+        ok = test()
+        fails += (not ok)
+        print(f"{'PASS' if ok else 'FAIL'}  {cid}")
 
-print(f"\n{fails} FAIL(s)" if fails else "\nALL CHECKS PASS")
-sys.exit(1 if fails else 0)
+    print(f"\n{fails} FAIL(s)" if fails else "\nALL CHECKS PASS")
+    return 1 if fails else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
