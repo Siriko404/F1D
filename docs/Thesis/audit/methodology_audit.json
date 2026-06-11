@@ -54,6 +54,31 @@
       ],
 
       "reproduce_check": "Re-grep the four code anchors above; re-read thesis_draft.tex:96,104,108,183-187. Finding reproduces iff (a) run_h0_3:405 still stores resid.values only, (b) gen_empire_did:142-143 still plain clustered, (c) no correction appears repo-wide, (d) prose still omits the disclosure."
+    },
+    {
+      "id": "M2-02",
+      "severity": "NIT",
+      "status": "OPEN_awaiting_user_adjudication",
+      "dimension": ["D2_methodology_fidelity"],
+      "title": "Tail convention is non-uniform across tables (disclosed + justified, not a defect)",
+      "finding": "One-tailed (beta>0) for directional-positive hypotheses (Analysis-1 treatment, cash_scrutiny_validity, reason_gating); two-tailed everywhere else (Analysis-2 matched, Analysis-3 cashspec+placebo, channel). Each table's note states its own tail, the code stars off the matching p, and every prose tail-claim matches. So this is disclosed-and-justified non-uniformity, NOT an inconsistency.",
+      "robustness_note": "The one-tailed HEADLINE stars also survive two-tailed, so the convention choice does not inflate reported significance: Analysis-1 residual t=0.0461/0.0172=2.68 -> two-tailed p=0.0074<0.01 (*** both tails); Analysis-1 cash t=0.0051/0.0017=3.0 -> two-tailed p=0.0027<0.01 (*** both tails).",
+      "why_only_NIT": "A referee may ask why one- vs two-tailed differs by table; the directional-prior rationale is stated for Analysis 1 (prose L104 'Because the hypothesis is directional') but not re-stated at the validity/reason-gating tables. Optional one-line global statement of the convention would pre-empt the question. No number or star is wrong."
     }
-  ]
+  ],
+  "p2_priority2_tail_consistency": {
+    "verdict": "CONSISTENT (no CRITICAL/MAJOR/MINOR). Every in-thesis table's printed stars match BOTH its own code and its own note's stated tail, and every prose tail-claim matches the code. 1 NIT (M2-02): the convention is non-uniform across tables but disclosed per-table and justified by directional priors.",
+    "method": "For each generator: locate which p (one-tailed p1 vs two-tailed p2) feeds stars() per row, read the table-note tail statement, and cross-check the prose tail-claim. Provenance chain (G1/G1b, byte-exact code->bible->embed) guarantees the rendered note == the generator note, so no separate embed re-read needed.",
+    "matrix": [
+      {"table": "tab:empire_building_did (An.1)", "code": "treatment=p1 one-tailed (gen_empire_did_table.py:185,146); lag+controls=p2 (188,194)", "note": "L209 'one-tailed for treatment beta>0; two-tailed for controls'", "prose": "L104 same", "verdict": "MATCH"},
+      {"table": "tab:cash_scrutiny_validity", "code": "cash coef=p1 one-tailed (gen_cash_scrutiny_validity_table.py:212,100); controls=p2 (240)", "note": "L260-261 'one-tailed for cash coef beta>0; two-tailed for controls'", "prose": "L147 'one-tailed'", "verdict": "MATCH"},
+      {"table": "tab:reason_gating", "code": "all terms=p1 one-tailed (gen_reason_gating_table.py:75,64)", "note": "L120 'one-tailed, beta>0'", "prose": "channel null (L86); no contradicting tail claim", "verdict": "MATCH (internally consistent)"},
+      {"table": "tab:empire_drop_matched (An.2)", "code": "p2 uniform two-tailed (empire_drop_matched_universe.py:98,118,125,131)", "note": "L143 '(two-tailed)'", "prose": "An.2 prose states no tail (L123); not contradicted", "verdict": "MATCH"},
+      {"table": "tab:empire_cashspec (An.3)", "code": "p2 uniform incl. cash/stock/wald (empire_cashspec_interaction.py:160,164,170,138)", "note": "L201 '(two-tailed)'", "prose": "L130 'two-tailed throughout'", "verdict": "MATCH"},
+      {"table": "tab:empire_drop_placebo (An.3)", "code": "p2 uniform (empire_drop_test.py:195,217,224)", "note": "L238 '(two-tailed)'", "prose": "L130 'two-tailed throughout'", "verdict": "MATCH"},
+      {"table": "tab:cash_scrutiny_channel", "code": "p2 two-tailed (gen_cash_scrutiny_channel_table.py:141,147)", "note": "L161 '(two-tailed)'", "prose": "null (L149); not contradicted", "verdict": "MATCH"}
+    ],
+    "out_of_scope": "The 6 user-ratified accept-as-safe suite tables (h11, h23, h24, h24b, h14c, h18) not re-checked here per prior ratification.",
+    "E1_gate_applied": "Estimand of THIS check = 'printed star == code-computed star at the stated tail' -- a pure fidelity question, no latent-estimand trap. Gate passes; this is D2 fidelity, not an imported textbook critique."
+  }
 }
