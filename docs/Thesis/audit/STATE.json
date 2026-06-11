@@ -56,7 +56,8 @@
   "phases": {
     "P0_freeze_baseline": {"status": "DONE", "commit": "8067c5e", "artifact": "baseline.json", "result": "tree frozen 7f97a16, index fresh, compile clean x2, 17 file hashes pinned"},
     "P1_mechanical_gates": {
-      "status": "IN_PROGRESS",
+      "status": "DONE",
+      "summary": "All 5 mechanical gates closed. ZERO thesis CRITICAL/MAJOR findings. Only MINOR/NIT: G4 unused 'sec:intro' label. The 2 G1 campello DRIFTs are non-thesis legacy (out of scope). Thesis numbers, derived arithmetic, cross-refs, and ledger anchors are all sound.",
       "G1_regen_diff": {"status": "DONE", "commit": "00025e4", "artifact": "g1_regen_diff.json", "result": "8/14 in-thesis tables bible<->code MATCH; 6 suite tables user-waived; 2 campello DRIFTs are non-thesis legacy"},
       "G2_number_coverage": {"status": "DONE", "commit": "55f9696", "artifact": "g2_number_coverage.json", "script": "tmp/audit_g2.py",
         "result": "91 distinct digit-form prose tokens, 0 GAP (100% classified): covered=67, derived=4, note=1, structural=19. Coverage PROVEN (was unproven at baseline).",
@@ -71,7 +72,10 @@
         "result": "0 CRITICAL. Compiled sources = thesis_draft.tex + _tables_from_bible.tex. ref->label 20/20 resolve (no dup, no unresolved); cite->bibitem 13/13 resolve (no dup, none uncited, none undefined); log 0 warnings / 0 undefined-control-seq. Every table label is referenced in prose; every citation has a bibitem.",
         "findings": "1 MINOR (NIT, fix-queue not error): label 'sec:intro' is never \\ref'd (intro self-ref absent). No CRITICAL/MAJOR.",
         "method_note": "Static matrix over the actual \\input'd sources (NOT the bible thesis_tables.tex, which the draft does not input) + parse of frozen thesis_draft.log. natbib embedded \\bibitem, no bibtex -> cite<->bibitem fully internal."},
-      "G5_ledger_freshness": {"status": "NOT_STARTED", "goal": "Verify every file:line anchor in variable_ledger.json still matches current code (hand-built 2026-06-10; code may have moved). Stale anchors -> re-trace in P2. Use GitNexus CLI."}
+      "G5_ledger_freshness": {"status": "DONE", "commit": "PENDING", "artifact": "g5_ledger_freshness.json", "script": "tmp/audit_g5.py",
+        "result": "VERDICT FRESH. 37 referenced .py files, 0 missing. LAYER1 git: 32 unchanged since before ledger (2026-06-10) -> anchors fresh by construction (clean tree = committed = git history, so no drift possible). LAYER2 content: 5 files changed 06-11 (empire/summary group, the +186/-89 freeze diff) -> all 12 line-anchors content-probed land IN-range -> FRESH. 0 bound violations (no anchor past EOF).",
+        "findings": "NONE. Ledger anchors all valid; no P2 re-trace needed for staleness.",
+        "note": "Caught + corrected a false-positive STALE (probe regex too strict for `p[\"stock_score\"] * 100.0`; primary-source read confirmed content at L73, in claimed L71-73). LAYER1 freshness is an inference (unchanged-file => anchor can't drift), content-probe targeted only the 5 changed files where drift was possible."}
     },
     "P2_methodology_audit": {"status": "NOT_STARTED", "note": "GitNexus CLI; D2/D3. Index fresh at 7f97a16."},
     "P3_citation_audit": {"status": "NOT_STARTED", "note": "NLM; D4/D5. Reuse done: thewissen, ragozzino, everhart, gokkaya, dwz-Eq4. Remaining: lm2011, hassan2020, baker2016, davis2016, hoberg2010/2016, bushee2018, lerman2026."},
@@ -81,8 +85,8 @@
   },
 
   "current_position": {
-    "where": "P1 gates. G1+G2+G3+G4 closed (clean; G4 has 1 cosmetic MINOR). At the G4->G5 boundary, awaiting user go for G5.",
-    "next": "G5 ledger freshness: verify every file:line evidence anchor in docs/Thesis/variable_ledger.json still matches current code (hand-built 2026-06-10; code may have moved). Stale anchors -> re-trace in P2. Use GitNexus CLI (node .gitnexus/run.cjs context|query|cypher) since MCP absent. This is the LAST P1 mechanical gate; after it, P1 closes and P2 (methodology/GitNexus) begins.",
+    "where": "P1 COMPLETE (all 5 gates G1-G5 closed, 0 thesis CRITICAL/MAJOR). At the P1->P2 boundary, awaiting user go for P2.",
+    "next": "P2 methodology audit (GitNexus; feeds dimensions D2/D3). Trace each table's estimator/SE/sample/FE claims in the prose+ledger against the actual generator+builder code via GitNexus CLI (node .gitnexus/run.cjs context|query|cypher; MCP absent). Confirm: PanelOLS two-way FE + firm-clustered SEs, one-tailed vs two-tailed inference, sample filters (>=5 calls, fin/util exclusions, >=50% cash/stock), DWZ eq-4 residual construction. Cross-check the seed findings in AUDIT_PROTOCOL.md SS7 + SS9 referee starters (Nickell bias, generated-regressor SEs, winsorization disclosure, LM dictionary release).",
     "open_questions": []
   },
 
@@ -94,7 +98,8 @@
     "b76231f  audit(G2): stamp SHA into STATE.json",
     "5e7b2c8  audit(G3): close derived-arithmetic - 20/20 claims, 0 findings",
     "5e7f6e6  audit(G3): advisor fix - +D8/D9 cause-side diffs, forward exhaustiveness (22/22)",
-    "6efea35  audit(G4): close compile/cross-ref - 0 critical, 1 minor (unused sec:intro label)"
+    "6efea35  audit(G4): close compile/cross-ref - 0 critical, 1 minor (unused sec:intro label)",
+    "PENDING  audit(G5): close ledger-freshness - FRESH, all anchors valid; P1 COMPLETE"
   ],
 
   "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters (Nickell bias, generated-regressor SEs, one-tailed inference, winsorization disclosure, LM dictionary mismatch). None addressed yet."

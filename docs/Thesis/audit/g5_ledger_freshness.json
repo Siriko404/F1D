@@ -1,0 +1,396 @@
+{
+  "gate": "G5_ledger_freshness",
+  "baseline_sha": "7f97a16",
+  "ledger_date": "2026-06-10",
+  "method": "LAYER1 git (file unchanged since before ledger -> anchors fresh by construction); LAYER2 content probe for files changed after the ledger; basename resolution; bound-check.",
+  "referenced_py_files": 37,
+  "missing_files": [],
+  "git_partition": {
+    "changed_after_ledger": [
+      [
+        "scripts/gen_empire_did_table.py",
+        "2026-06-11"
+      ],
+      [
+        "scripts/gen_summary_stats_table.py",
+        "2026-06-11"
+      ],
+      [
+        "src/f1d/econometric/empire_cashspec_interaction.py",
+        "2026-06-11"
+      ],
+      [
+        "src/f1d/econometric/empire_drop_matched_universe.py",
+        "2026-06-11"
+      ],
+      [
+        "src/f1d/econometric/empire_drop_test.py",
+        "2026-06-11"
+      ]
+    ],
+    "fresh_by_git_count": 32,
+    "fresh_by_git": [
+      [
+        "scripts/gen_cash_scrutiny_channel_table.py",
+        "2026-06-04"
+      ],
+      [
+        "scripts/gen_cash_scrutiny_validity_table.py",
+        "2026-06-04"
+      ],
+      [
+        "scripts/gen_reason_gating_table.py",
+        "2026-06-05"
+      ],
+      [
+        "src/f1d/econometric/run_h0_3_ceo_clarity_extended.py",
+        "2026-04-24"
+      ],
+      [
+        "src/f1d/econometric/run_h11_prisk_uncertainty.py",
+        "2026-04-29"
+      ],
+      [
+        "src/f1d/econometric/run_h14c_spread_bgt_level_ceo2iv_decomp.py",
+        "2026-06-04"
+      ],
+      [
+        "src/f1d/econometric/run_h18_cccl_received_ceo2iv_decomp.py",
+        "2026-04-27"
+      ],
+      [
+        "src/f1d/econometric/run_h23_competition_uncertainty.py",
+        "2026-04-29"
+      ],
+      [
+        "src/f1d/econometric/run_h24_us_epu.py",
+        "2026-04-29"
+      ],
+      [
+        "src/f1d/econometric/run_h24b_global_epu.py",
+        "2026-04-29"
+      ],
+      [
+        "src/f1d/shared/variables/_compustat_engine.py",
+        "2026-04-13"
+      ],
+      [
+        "src/f1d/shared/variables/_linguistic_engine.py",
+        "2026-04-13"
+      ],
+      [
+        "src/f1d/shared/variables/book_lev.py",
+        "2026-04-02"
+      ],
+      [
+        "src/f1d/shared/variables/capex_intensity.py",
+        "2026-04-02"
+      ],
+      [
+        "src/f1d/shared/variables/cash_holdings.py",
+        "2026-04-02"
+      ],
+      [
+        "src/f1d/shared/variables/ceo_pres_uncertainty.py",
+        "2026-04-02"
+      ],
+      [
+        "src/f1d/shared/variables/ceo_qa_uncertainty.py",
+        "2026-04-02"
+      ],
+      [
+        "src/f1d/shared/variables/dividend_payer.py",
+        "2026-04-02"
+      ],
+      [
+        "src/f1d/shared/variables/macro_uncertainty.py",
+        "2026-04-09"
+      ],
+      [
+        "src/f1d/shared/variables/ocf_volatility.py",
+        "2026-04-02"
+      ],
+      [
+        "src/f1d/shared/variables/prisk_q.py",
+        "2026-04-02"
+      ],
+      [
+        "src/f1d/shared/variables/roa.py",
+        "2026-02-26"
+      ],
+      [
+        "src/f1d/shared/variables/size.py",
+        "2026-04-02"
+      ],
+      [
+        "src/f1d/shared/variables/tobins_q.py",
+        "2026-02-19"
+      ],
+      [
+        "src/f1d/text/tokenize_transcripts.py",
+        "2026-02-27"
+      ],
+      [
+        "src/f1d/variables/build_h11_prisk_uncertainty_panel.py",
+        "2026-04-19"
+      ],
+      [
+        "src/f1d/variables/build_h14_bidask_spread_panel.py",
+        "2026-04-19"
+      ],
+      [
+        "src/f1d/variables/build_h18_cccl_received_panel.py",
+        "2026-04-19"
+      ],
+      [
+        "src/f1d/variables/build_h1_cash_holdings_panel.py",
+        "2026-04-19"
+      ],
+      [
+        "src/f1d/variables/build_h23_competition_uncertainty_panel.py",
+        "2026-04-19"
+      ],
+      [
+        "src/f1d/variables/build_h24_h24b_h25_macro_uncertainty_panel.py",
+        "2026-04-19"
+      ],
+      [
+        "tmp/_build_stock_score_cache.py",
+        "2026-06-04"
+      ]
+    ]
+  },
+  "content_probes": [
+    {
+      "file": "scripts/gen_empire_did_table.py",
+      "claimed": "L141-143",
+      "what": "two-way FE estimator",
+      "verdict": "FRESH",
+      "in_range_hits": [
+        141,
+        142
+      ],
+      "all_hits": [
+        44,
+        141,
+        142
+      ],
+      "file_lines": 245,
+      "changed_after_ledger": true
+    },
+    {
+      "file": "scripts/gen_empire_did_table.py",
+      "claimed": "L66-70",
+      "what": "merge residual parquet on file_name",
+      "verdict": "FRESH",
+      "in_range_hits": [
+        64,
+        68,
+        70,
+        71,
+        72
+      ],
+      "all_hits": [
+        64,
+        68,
+        70,
+        71,
+        72
+      ],
+      "file_lines": 245,
+      "changed_after_ledger": true
+    },
+    {
+      "file": "scripts/gen_empire_did_table.py",
+      "claimed": "L71-73",
+      "what": "CashScrutiny = stock_score*100",
+      "verdict": "FRESH",
+      "in_range_hits": [
+        73
+      ],
+      "all_hits": [
+        73
+      ],
+      "file_lines": 245,
+      "changed_after_ledger": true
+    },
+    {
+      "file": "scripts/gen_summary_stats_table.py",
+      "claimed": "L1-99999",
+      "what": "summary-stats generator present",
+      "verdict": "FRESH",
+      "in_range_hits": [
+        14,
+        18,
+        19,
+        21,
+        24,
+        41,
+        59,
+        68,
+        77,
+        95,
+        98,
+        113,
+        115,
+        116,
+        118,
+        119,
+        123,
+        124,
+        129
+      ],
+      "all_hits": [
+        14,
+        18,
+        19,
+        21,
+        24,
+        41,
+        59,
+        68,
+        77,
+        95
+      ],
+      "file_lines": 167,
+      "changed_after_ledger": true
+    },
+    {
+      "file": "src/f1d/econometric/empire_drop_matched_universe.py",
+      "claimed": "L90-147",
+      "what": "write_tex renderer",
+      "verdict": "FRESH",
+      "in_range_hits": [
+        90
+      ],
+      "all_hits": [
+        90
+      ],
+      "file_lines": 194,
+      "changed_after_ledger": true
+    },
+    {
+      "file": "src/f1d/econometric/empire_drop_matched_universe.py",
+      "claimed": "L49-56",
+      "what": "run_on estimator",
+      "verdict": "FRESH",
+      "in_range_hits": [
+        49
+      ],
+      "all_hits": [
+        49
+      ],
+      "file_lines": 194,
+      "changed_after_ledger": true
+    },
+    {
+      "file": "src/f1d/econometric/empire_drop_matched_universe.py",
+      "claimed": "L63-69",
+      "what": "wald drop-difference",
+      "verdict": "FRESH",
+      "in_range_hits": [
+        63
+      ],
+      "all_hits": [
+        63
+      ],
+      "file_lines": 194,
+      "changed_after_ledger": true
+    },
+    {
+      "file": "src/f1d/econometric/empire_drop_test.py",
+      "claimed": "L109-141",
+      "what": "build_event bins",
+      "verdict": "FRESH",
+      "in_range_hits": [
+        109
+      ],
+      "all_hits": [
+        109
+      ],
+      "file_lines": 294,
+      "changed_after_ledger": true
+    },
+    {
+      "file": "src/f1d/econometric/empire_drop_test.py",
+      "claimed": "L126-133",
+      "what": "post-window hygiene",
+      "verdict": "FRESH",
+      "in_range_hits": [
+        126,
+        129,
+        132
+      ],
+      "all_hits": [
+        17,
+        18,
+        75,
+        117,
+        119,
+        120,
+        126,
+        129,
+        132,
+        189
+      ],
+      "file_lines": 294,
+      "changed_after_ledger": true
+    },
+    {
+      "file": "src/f1d/econometric/empire_drop_test.py",
+      "claimed": "L188-242",
+      "what": "write_tex (placebo fragment)",
+      "verdict": "FRESH",
+      "in_range_hits": [
+        188
+      ],
+      "all_hits": [
+        188
+      ],
+      "file_lines": 294,
+      "changed_after_ledger": true
+    },
+    {
+      "file": "src/f1d/econometric/empire_drop_test.py",
+      "claimed": "L10-15",
+      "what": "module docstring",
+      "verdict": "FRESH",
+      "in_range_hits": [
+        8,
+        10,
+        11,
+        12
+      ],
+      "all_hits": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        8,
+        10,
+        11,
+        12,
+        20
+      ],
+      "file_lines": 294,
+      "changed_after_ledger": true
+    },
+    {
+      "file": "src/f1d/econometric/empire_cashspec_interaction.py",
+      "claimed": "L124-205",
+      "what": "write_tex renderer",
+      "verdict": "FRESH",
+      "in_range_hits": [
+        124
+      ],
+      "all_hits": [
+        124
+      ],
+      "file_lines": 246,
+      "changed_after_ledger": true
+    }
+  ],
+  "bound_violations": [],
+  "verdict": "FRESH"
+}
