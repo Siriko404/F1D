@@ -58,7 +58,7 @@
     "P1_mechanical_gates": {
       "status": "IN_PROGRESS",
       "G1_regen_diff": {"status": "DONE", "commit": "00025e4", "artifact": "g1_regen_diff.json", "result": "8/14 in-thesis tables bible<->code MATCH; 6 suite tables user-waived; 2 campello DRIFTs are non-thesis legacy"},
-      "G2_number_coverage": {"status": "DONE", "commit": "PENDING", "artifact": "g2_number_coverage.json", "script": "tmp/audit_g2.py",
+      "G2_number_coverage": {"status": "DONE", "commit": "55f9696", "artifact": "g2_number_coverage.json", "script": "tmp/audit_g2.py",
         "result": "91 distinct digit-form prose tokens, 0 GAP (100% classified): covered=67, derived=4, note=1, structural=19. Coverage PROVEN (was unproven at baseline).",
         "machinery_changes": "verify_draft_numbers.py: wrapped runner in main() so CHECK lists import cleanly (single source of truth); +2 SE_CHECKS (cash CashRatio SE 0.0017, lag SE 0.0070) and +2 DERIVED (scrutiny CI bounds -0.027/+0.016 = -0.0056 +/- 1.96*0.0111). Still ALL CHECKS PASS. These are audit machinery, NOT thesis fixes.",
         "findings": "NONE. Every prose number resolves to a source. 89% is anchored in _empire_building_did.tex table note ('89% of calls raise no cash turns') -- grep-verified, not unsupported. 0.04 = rhetorical approx of verified run-up coefs.",
@@ -84,7 +84,7 @@
     "7f97a16  chore(thesis-audit): P0 freeze - pin ratified tree as audit baseline",
     "8067c5e  chore(thesis-audit): P0 close - baseline.json",
     "00025e4  audit(G1): close regen-and-diff - 8/14 clean, 6 suite waived",
-    "PENDING  audit(G2): close number-coverage - 91 tokens, 0 gap, +4 checks"
+    "55f9696  audit(G2): close number-coverage - 91 tokens, 0 gap, +4 checks"
   ],
 
   "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters (Nickell bias, generated-regressor SEs, one-tailed inference, winsorization disclosure, LM dictionary mismatch). None addressed yet."
