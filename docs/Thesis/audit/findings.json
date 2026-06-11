@@ -1,8 +1,17 @@
 {
   "baseline_sha": "7f97a16",
   "description": "Master finding register across all audit phases. Severity: CRITICAL/MAJOR/MINOR/NIT. Detail lives in the per-phase file under detail_ref. status: OPEN_awaiting_user_adjudication | ACCEPTED | WAIVED | FIXED | WITHDRAWN.",
-  "tally": {"CRITICAL": 0, "MAJOR": 0, "MINOR": 1, "NIT": 1, "withdrawn": 1},
+  "tally": {"CRITICAL": 0, "MAJOR": 0, "MINOR": 2, "NIT": 1, "withdrawn": 1},
   "findings": [
+    {
+      "id": "M2-03",
+      "phase": "P2",
+      "severity": "MINOR",
+      "status": "OPEN_awaiting_user_adjudication",
+      "title": "Winsorization disclosed in only one peripheral table note, though it feeds the headline regressions",
+      "one_line": "Engine-level pooled-1% winsorization (build_h0_3:239-240) is applied to the core uncertainty measures + CRSP/Compustat controls feeding Analysis 1/2/3, but disclosed only in the channel-table note (UncAnsCEO) -- construction section, appendix, summary-stats, and An.1/2/3 notes are silent. Borderline MINOR/MAJOR (protocol lists 'undisclosed step' under MAJOR; graded MINOR as winsor is standard, disclosed once, results robust). Fix = one sentence.",
+      "detail_ref": "methodology_audit.json#M2-03"
+    },
     {
       "id": "M2-02",
       "phase": "P2",

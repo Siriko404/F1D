@@ -80,5 +80,44 @@
     ],
     "out_of_scope": "The 6 user-ratified accept-as-safe suite tables (h11, h23, h24, h24b, h14c, h18) not re-checked here per prior ratification.",
     "E1_gate_applied": "Estimand of THIS check = 'printed star == code-computed star at the stated tail' -- a pure fidelity question, no latent-estimand trap. Gate passes; this is D2 fidelity, not an imported textbook critique."
-  }
+  },
+  "p2_priority3": {
+    "verdict": "ONE finding (M2-03 MINOR, winsorization disclosure). Nickell = not a finding (E1). LM dictionary + clustering = MATCH.",
+    "items": {
+      "nickell_bias": {
+        "verdict": "NOT_A_FINDING (E1 gate)",
+        "reasoning": "Nickell bias afflicts the LAGGED-DV coefficient (O(1/T)) under firm FE. (a) The thesis interprets CashRatio_lag only as a partial-adjustment NUISANCE control (prose L106 'the partial-adjustment lag is 0.7990 -- cash is sticky'), not as a structural speed-of-adjustment estimand. (b) The HEADLINE uncertainty equation (UncResCEO DV) has NO lagged DV at all (R^2=0.001) -> zero Nickell exposure; only the supporting CASH equation carries CashRatio_lag. (c) The causal estimand is PreAnnounceQtr (a sparse 1.4% event indicator), weakly correlated with lagged CashRatio, so lag-coef bias does not materially propagate to it. E1: the critique binds the lag coef, which the thesis does not interpret -> no finding. Referee-anticipation note only: the draft could add one clause that the lag is an uninterpreted control and T is long (~up to 68 quarters) so any Nickell bias is negligible (seed 7b).",
+        "code": "lagged DV present only in cash-ratio equations (gen_empire_did add_cash_lag; empire_cashspec _lag_cell L171; matched L131). UncResCEO equations carry no lag."
+      },
+      "lm_dictionary": {
+        "verdict": "MATCH",
+        "evidence": "Code default = inputs/Loughran-McDonald_MasterDictionary_1993-2024.csv (tokenize_transcripts.py:172,186,1040); prose L94 + L245 'we use the 1993--2024 release'. Stated release == used release.",
+        "dwz_mismatch_note": "Referee-anticipation only (seed 7b, NOT a defect): DWZ used a 2014/297-word list; the thesis applies DWZ's METHOD with a newer LM release and does not claim dictionary-identical replication. The deviation is currently not footnoted -> user decision disclose-vs-hold, not an audit finding."
+      },
+      "clustering": {
+        "verdict": "MATCH",
+        "evidence": "All 7 in-thesis core generators fit cov_type='clustered', cluster_entity=True (firm): gen_empire_did:143, empire_drop_test:152, empire_drop_matched_universe:56, empire_cashspec_interaction:93 (+docstring L11 'firm-clustered SE'), gen_cash_scrutiny_validity:97 (+note L263 'clustered at firm level'), gen_cash_scrutiny_channel:107, gen_reason_gating:59. Prose L104 'standard errors clustered by firm' + L78 'clustering reported with each table'. No two-way clustering in the in-thesis core (h24's two-way is a ratified-safe suite table, out of scope)."
+      }
+    }
+  },
+  "findings_p2_priority3": [
+    {
+      "id": "M2-03",
+      "severity": "MINOR",
+      "severity_note": "Borderline MINOR/MAJOR -- user adjudicates. The protocol (sec.6) lists 'undisclosed step' under MAJOR, and winsorization feeds the HEADLINE regressions. Graded MINOR (not MAJOR) because: winsorization IS disclosed once (channel note), 1% is a standard hygiene step, and no result is fragile to it -> incomplete-disclosure, not a credibility threat. Deliberately NOT reflexively MAJOR (the M2-01 lesson).",
+      "status": "OPEN_awaiting_user_adjudication",
+      "dimension": ["D3_disclosure"],
+      "title": "Winsorization is applied to the headline measures + controls but disclosed in only one peripheral table note",
+      "finding": "Winsorization (pooled 1%) is applied at the engine level (CRSPEngine, LinguisticEngine) to the core uncertainty measures and the CRSP/Compustat controls feeding EVERY regression, including Analysis 1/2/3. The thesis discloses winsorization in exactly ONE place -- the cash_scrutiny_channel table note -- and only for UncAnsCEO. The construction section, the appendix variable definitions, the summary-statistics note, and the Analysis-1/2/3 table notes are all silent, even though those tables run on the winsorized variables.",
+      "evidence": {
+        "engine_level_winsor": "src/f1d/variables/build_h0_3_ceo_clarity_extended_panel.py:239-240 -- 'Winsorization now applied at engine level (CRSPEngine, LinguisticEngine) for consistency across all hypothesis suites. No panel-level winsorization needed.' (build_h14_bidask_spread_panel.py:221 corroborates: 'Compustat variables are already winsorized by their engines'.)",
+        "uncans_confirmed_1pct": "embed _tables_from_bible.tex:642 (channel note) -- 'the raw measure (UncAnsCEO, pooled-1\\% winsorized)'. The DWZ residual UncResCEO is built FROM this winsorized UncAnsCEO.",
+        "validity_table_local_winsor": "gen_cash_scrutiny_validity_table.py:79-80 winsorizes CashRatio at 1/99; its note (L260-263) does NOT mention it -- so the reported 0.7530 (prose L147) is a post-winsor coefficient with no disclosure in that table.",
+        "prose_silent": "grep thesis_draft.tex for winsor/clip/trim => 0 hits in the body, construction section (L96), and appendix variable table (L245-280). Only disclosure anywhere = the single channel note."
+      },
+      "not_overclaimed": "UncAnsCEO pooled-1% is byte-confirmed (embed L642). The exact percentile for each CRSP/Compustat control is stated by the panel-builder note as engine-level but not byte-verified here (engine source not read); the existence + systematic application of control winsorization is confirmed, the precise per-variable level is asserted by the builder note.",
+      "recommended_response_FIX_SESSION": "One sentence in the data/construction section: 'All continuous variables are winsorized at the 1st/99th percentiles (pooled).' Optionally repeat 'winsorized' in the summary-stats and Analysis-1 table notes. Trivial; no re-estimation.",
+      "reproduce_check": "Re-grep build_h0_3_ceo_clarity_extended_panel.py:239-240; embed L642; thesis_draft.tex for winsor (expect 0). Reproduces iff engine-level winsor still asserted, channel note still the sole disclosure, and prose still silent."
+    }
+  ]
 }
