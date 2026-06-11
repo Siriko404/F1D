@@ -102,8 +102,9 @@
     "5e7f6e6  audit(G3): advisor fix - +D8/D9 cause-side diffs, forward exhaustiveness (22/22)",
     "6efea35  audit(G4): close compile/cross-ref - 0 critical, 1 minor (unused sec:intro label)",
     "61c94f8  audit(G5): close ledger-freshness - FRESH, all anchors valid; P1 COMPLETE",
-    "8b6799c  audit(G1b): close bible->embed parity - MATCH (advisor-flagged blind spot)"
+    "8b6799c  audit(G1b): close bible->embed parity - MATCH (advisor-flagged blind spot)",
+    "9b5ddda  audit(P2-1): generated-regressor M2-01 MAJOR - first-stage error uncorrected+undisclosed"
   ],
 
-  "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters (Nickell bias, generated-regressor SEs, one-tailed inference, winsorization disclosure, LM dictionary mismatch). None addressed yet."
+  "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters: generated-regressor SEs ADDRESSED -> M2-01 MAJOR; STILL OPEN: Nickell bias, one-tailed-vs-two-tailed inference, winsorization disclosure, LM dictionary mismatch (P2 priorities 2-3)."
 }
