@@ -63,9 +63,9 @@
         "machinery_changes": "verify_draft_numbers.py: wrapped runner in main() so CHECK lists import cleanly (single source of truth); +2 SE_CHECKS (cash CashRatio SE 0.0017, lag SE 0.0070) and +2 DERIVED (scrutiny CI bounds -0.027/+0.016 = -0.0056 +/- 1.96*0.0111). Still ALL CHECKS PASS. These are audit machinery, NOT thesis fixes.",
         "findings": "NONE. Every prose number resolves to a source. 89% is anchored in _empire_building_did.tex table note ('89% of calls raise no cash turns') -- grep-verified, not unsupported. 0.04 = rhetorical approx of verified run-up coefs.",
         "scope_note": "Digit-form tokens only. Word-form magnitude claims (fifteen percent of a SD, half again, twelve specs) deferred to G3 by protocol design. Excluded w/ reason: preamble, thebibliography (->P3), appendix var-def tabular (definitional), Tables \\input (->G1), comments, length/width + cite/ref/label keys."},
-      "G3_derived_arithmetic": {"status": "DONE", "commit": "PENDING", "artifact": "g3_derived_arithmetic.json", "script": "tmp/audit_g3.py (+ tmp/_g3_scan.py exhaustiveness scanner)",
-        "result": "20/20 word-form arithmetic claims recompute from locked cells; 0 findings. Exhaustiveness proven: trigger-scan of prose -> 69 candidate sentences, every genuine arithmetic one maps to a claim (phrase-presence asserted).",
-        "covered": "ratios (15%/3%/half-pp/1.4%/third-SD/half-again/CI), difference relations (0.0459+0.0524=0.0983 headline, 0.0473-0.0018=0.0455 fall, peak-to-post 0.0723/0.0681, cash drops 0.0006/0.0210), inequality (gap exceeds either coef), approx-equal (0.0473~0.0461, lags 0.7990~0.8013), counts (h14c=12 specs, UncRes insig in all 12), extremum (h18 UncPre max 0.0016 at 5%, UncRes all n.s.).",
+      "G3_derived_arithmetic": {"status": "DONE", "commit": "5e7b2c8", "artifact": "g3_derived_arithmetic.json", "script": "tmp/audit_g3.py (+ tmp/_g3_scan.py exhaustiveness scanner)",
+        "result": "22/22 word-form arithmetic claims recompute from locked cells; 0 findings. Exhaustiveness = FORWARD prose->claim (every triggered+decimal sentence maps to a claim or documented allowlist; 16 flagged, 0 uncovered) PLUS backward claim->prose phrase presence (0 missing).",
+        "covered": "ratios (15%/3%/half-pp/1.4%/third-SD/half-again/CI), difference relations (headline 0.0459+0.0524=0.0983; cause-side 0.0064 & 0.0092 [D8/D9, added post-advisor]; fall 0.0473-0.0018=0.0455; peak-to-post 0.0723/0.0681; cash drops 0.0006/0.0210), inequality (gap exceeds either coef), approx-equal (0.0473~0.0461, lags 0.7990~0.8013), counts (h14c=12 specs, UncRes insig in all 12), extremum (h18 UncPre max 0.0016 at 5%, UncRes all n.s.). Allowlist (non-claims): 89% proportion (G2 note-anchored), intro restatement of 0.0983 (=D7).",
         "note": "Recompute from LOCKED cells, never prose. Difference relations use tol=2e-4 (round-then-subtract: placebo stock -0.0757 vs published -0.0756 is a rounding artifact, not an error). No thesis edits."},
       "G4_compile_crossref": {"status": "NOT_STARTED", "goal": "Parse .log; label<->ref matrix; cite<->bibitem matrix. Baseline compile already 0 undefined."},
       "G5_ledger_freshness": {"status": "NOT_STARTED", "goal": "Verify every file:line anchor in variable_ledger.json still matches current code (hand-built 2026-06-10; code may have moved). Stale anchors -> re-trace in P2. Use GitNexus CLI."}
@@ -89,7 +89,8 @@
     "00025e4  audit(G1): close regen-and-diff - 8/14 clean, 6 suite waived",
     "55f9696  audit(G2): close number-coverage - 91 tokens, 0 gap, +4 checks",
     "b76231f  audit(G2): stamp SHA into STATE.json",
-    "PENDING  audit(G3): close derived-arithmetic - 20/20 claims, 0 findings"
+    "5e7b2c8  audit(G3): close derived-arithmetic - 20/20 claims, 0 findings",
+    "PENDING  audit(G3): advisor fix - +D8/D9 cause-side diffs, forward exhaustiveness (22/22)"
   ],
 
   "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters (Nickell bias, generated-regressor SEs, one-tailed inference, winsorization disclosure, LM dictionary mismatch). None addressed yet."

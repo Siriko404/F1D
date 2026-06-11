@@ -7,19 +7,102 @@
     "cash_mean": 0.1573
   },
   "counts": {
-    "claims": 20,
-    "pass": 20,
+    "claims": 22,
+    "pass": 22,
     "fail": 0
   },
   "exhaustiveness": {
-    "method": "trigger-word scan of prose (tmp/_g3_scan.py) returned 69 candidate sentences; each genuine arithmetic sentence maps to a claim below; phrase-presence asserted here",
-    "phrases_present": true,
-    "phrases_missing": {},
-    "non_arithmetic_number_words": [
-      "three axes / three designs / three findings / three predictions / three layers / three steps / three results / three main analyses (enumeration, no numeric relation)",
-      "four times / four bins / four quarters; two-by-two, two readings, two clocks, two components (design counts, verified structurally in G2)",
-      "at least five calls / at least three Q&A turns / 50% cash-stock / six-digit CUSIP (eligibility constants, G2-structural)"
-    ]
+    "method": "FORWARD prose->claim: every prose sentence with a generic relation trigger (percent/half/third/difference/drop/fall/swing/exceeds/nearly-identical/twelve/up-to/'N% of') AND a decimal must map to a claim phrase or the documented non-arithmetic allowlist; FAIL on any uncovered sentence. PLUS backward claim->prose phrase presence.",
+    "forward_sentences_flagged": 16,
+    "forward_uncovered": [],
+    "allowlist_non_arithmetic": {
+      "89\\% of calls draw no cash scrutiny": "proportion, not a recomputation; G2-verified vs _empire_building_did.tex table note",
+      "pooled test of their difference (0.0983": "intro restatement of the cash-stock difference; the recomputation is claim D7_cashstock_0983"
+    },
+    "backward_phrases_missing": {},
+    "flagged_detail": [
+      {
+        "claim": null,
+        "allow": true,
+        "sentence": "Third, the gap between the cash and stock arms survives a formal, pooled test of their difference (0.0983, significant at the 5\\% level;"
+      },
+      {
+        "claim": "R1_15pct_SD_runup",
+        "allow": false,
+        "sentence": "The uncertainty coefficient equals fifteen percent of a standard deviation of the residual (0.3072, Table~\\ref{tab:summary_stats}, Panel B) --- for a variable from which "
+      },
+      {
+        "claim": "R3_half_pp",
+        "allow": false,
+        "sentence": "The cash coefficient says the firm adds half a percentage point of assets to its cash stock in that single quarter, roughly three percent of the mean cash ratio (0.1573, "
+      },
+      {
+        "claim": "C3_lags_nearly_identical",
+        "allow": false,
+        "sentence": "The arms are otherwise alike --- the stock arm's partial-adjustment lag, 0.8013, is nearly identical --- so what differs at $e=-1$ is the response, not the model."
+      },
+      {
+        "claim": "D1_fall_0455",
+        "allow": false,
+        "sentence": "the announced-but-unclosed coefficient is 0.0018 (n.s.), a fall of 0.0455 (5\\%) from the pre-announcement quarter, and by completion the level sits below baseline ($-0.02"
+      },
+      {
+        "claim": "D3_cash_drop_0006",
+        "allow": false,
+        "sentence": "The cash ratio moves on the transaction, not the news --- elevated at $t-1$ (0.0061, 5\\%), it does not fall when the deal is announced (drop 0.0006, n.s.) and declines on"
+      },
+      {
+        "claim": "D4_cash_drop_0210",
+        "allow": false,
+        "sentence": "announce-to-completion drop 0.0210, 1\\%)."
+      },
+      {
+        "claim": "R5_15pct_SD_t1",
+        "allow": false,
+        "sentence": "The entry spike is economically the same event as Main Analysis 1 --- 0.0473 against 0.0461 there, about fifteen percent of a residual standard deviation."
+      },
+      {
+        "claim": "R6_half_again",
+        "allow": false,
+        "sentence": "the full peak-to-post swing (0.0723) is half again the size of that entry spike, so the uncertainty raised in the gag window is entirely unwound once the information is o"
+      },
+      {
+        "claim": "D5_placebo_0681",
+        "allow": false,
+        "sentence": "It reproduces the run-up --- pre-announcement uncertainty of 0.0486 (1\\%) that collapses to 0.0058 (n.s.) once the deal is public, a peak-to-post drop of 0.0681 (1\\%) acr"
+      },
+      {
+        "claim": "D6_placebo_stock_0756",
+        "allow": false,
+        "sentence": "39,819 firm-quarters), and if anything its uncertainty moves the other way across announcement (pre-to-gap difference $-0.0756$, 10\\%)."
+      },
+      {
+        "claim": "D7_cashstock_0983",
+        "allow": false,
+        "sentence": "On the effect, the cash arm's pre-announcement coefficient of 0.0459 (5\\%) against $-0.0524$ (n.s.) for stock yields a formal cash--stock difference of 0.0983 (5\\%;"
+      },
+      {
+        "claim": "D8_cause_matched_0064",
+        "allow": false,
+        "sentence": "On the proposed cause, the cash build-up is only weakly cash-sided --- the difference is insignificant on the matched universe (0.0064, n.s.) and reaches just 0.0092 (10\\"
+      },
+      {
+        "claim": "R8_CI_bounds",
+        "allow": true,
+        "sentence": "the interaction's confidence interval ($[-0.027, +0.016]$) does not exclude effects that would matter against a run-up near 0.04, 89\\% of calls draw no cash scrutiny at a"
+      },
+      {
+        "claim": "N1_twelve_specs",
+        "allow": false,
+        "sentence": "UncResCEO is insignificant in all twelve spread specifications (baseline $-0.0594$, SE 0.1068;"
+      },
+      {
+        "claim": "N2_up_to_0016",
+        "allow": false,
+        "sentence": "Receipt of an SEC conference-call comment letter \\citep{lerman2026} is weakly associated with presentation uncertainty (up to 0.0016, 5\\%, across specifications) and neve"
+      }
+    ],
+    "ok": true
   },
   "claims": [
     {
@@ -126,6 +209,20 @@
       "kind": "difference",
       "pass": true,
       "detail": "Cash-Stock=0.0983 vs formal-test cell 0.0983"
+    },
+    {
+      "id": "D8_cause_matched_0064",
+      "quote": "the difference is insignificant on the matched universe (0.0064, n.s.)",
+      "kind": "difference",
+      "pass": true,
+      "detail": "Cash-Stock(cause,matched)=0.0064 vs cell 0.0064"
+    },
+    {
+      "id": "D9_cause_full_0092",
+      "quote": "reaches just 0.0092 (10%) on the full panel",
+      "kind": "difference",
+      "pass": true,
+      "detail": "Cash-Stock(cause,full)=0.0092 vs cell 0.0092"
     },
     {
       "id": "C1_gap_exceeds_either",

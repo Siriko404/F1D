@@ -147,6 +147,13 @@ ca, st = g(S, r"^Pre-announce qtr, Cash", 1), g(S, r"^Pre-announce qtr, Stock", 
 diff = g(S, r"^Cash \$-\$ Stock", 1)
 claim("D7_cashstock_0983", "cash 0.0459 against -0.0524 yields a formal cash-stock difference of 0.0983",
       "difference", abs((ca - st) - diff) < TOL, f"Cash-Stock={ca-st:.4f} vs formal-test cell {diff}")
+# cause-side cash-stock differences (same formal test, other two cashspec columns), prose line 136
+ca2, st2, diff2 = g(S, r"^Pre-announce qtr, Cash", 2), g(S, r"^Pre-announce qtr, Stock", 2), g(S, r"^Cash \$-\$ Stock", 2)
+claim("D8_cause_matched_0064", "the difference is insignificant on the matched universe (0.0064, n.s.)",
+      "difference", abs((ca2 - st2) - diff2) < TOL, f"Cash-Stock(cause,matched)={ca2-st2:.4f} vs cell {diff2}")
+ca3, st3, diff3 = g(S, r"^Pre-announce qtr, Cash", 3), g(S, r"^Pre-announce qtr, Stock", 3), g(S, r"^Cash \$-\$ Stock", 3)
+claim("D9_cause_full_0092", "reaches just 0.0092 (10%) on the full panel",
+      "difference", abs((ca3 - st3) - diff3) < TOL, f"Cash-Stock(cause,full)={ca3-st3:.4f} vs cell {diff3}")
 
 # --- compare / inequality / approx-equal ---
 claim("C1_gap_exceeds_either", "the gap exceeds either coefficient",
@@ -199,6 +206,8 @@ PHRASES = {
     "D5_placebo_0681": "drop of 0.0681",
     "D6_placebo_stock_0756": "difference $-0.0756$",
     "D7_cashstock_0983": "difference of 0.0983",
+    "D8_cause_matched_0064": "(0.0064, n.s.)",
+    "D9_cause_full_0092": "0.0092",
     "C1_gap_exceeds_either": "exceeds either coefficient",
     "C2_0473_vs_0461_same": "0.0473 against 0.0461",
     "C3_lags_nearly_identical": "nearly identical",
@@ -206,21 +215,39 @@ PHRASES = {
     "N2_up_to_0016": "up to 0.0016",
 }
 prose = prose_scope()
-phrase_missing = {cid: p for cid, p in PHRASES.items() if p not in prose}
 
-# rhetorical/structural number-words deliberately NOT arithmetic (recorded for audit trail)
-NON_ARITHMETIC = [
-    "three axes / three designs / three findings / three predictions / three layers / three steps / "
-    "three results / three main analyses (enumeration, no numeric relation)",
-    "four times / four bins / four quarters; two-by-two, two readings, two clocks, two components "
-    "(design counts, verified structurally in G2)",
-    "at least five calls / at least three Q&A turns / 50% cash-stock / six-digit CUSIP "
-    "(eligibility constants, G2-structural)",
-]
+# --- FORWARD coverage: prose -> claim (catches MISSED claims; the backward phrase
+#     check below catches phantom claims). A sentence carrying a generic relation
+#     trigger AND a decimal magnitude must map to a claim phrase or the documented
+#     non-arithmetic allowlist; gate FAILS on any uncovered sentence.
+flat = re.sub(r"\\times", " x ", re.sub(r"\s+", " ", prose))  # kill \times symbol noise
+sentences = re.split(r"(?<=[.;:]) ", flat)
+REL = re.compile(r"\b(percent|percentage|half|third|twice|double|fold|exceeds|"
+                 r"difference|drop|fall|swing|nearly identical|twelve)\b|up to", re.I)
+PCT_OF = re.compile(r"\d[\d.]*\\?%\s+of")
+HASDEC = re.compile(r"\d\.\d")
+# sentences adjudicated NON-arithmetic despite a trigger+number (documented, with reason)
+ALLOWLIST = {
+    "89\\% of calls draw no cash scrutiny":
+        "proportion, not a recomputation; G2-verified vs _empire_building_did.tex table note",
+    "pooled test of their difference (0.0983":
+        "intro restatement of the cash-stock difference; the recomputation is claim D7_cashstock_0983",
+}
+flagged, uncovered = [], []
+for s in sentences:
+    if (REL.search(s) or PCT_OF.search(s)) and (HASDEC.search(s) or PCT_OF.search(s)):
+        mapped = next((cid for cid, p in PHRASES.items() if p in s), None)
+        allow = next((a for a in ALLOWLIST if a in s), None)
+        rec = {"claim": mapped, "allow": bool(allow), "sentence": s.strip()[:170]}
+        flagged.append(rec)
+        if not mapped and not allow:
+            uncovered.append(rec)
+
+phrase_missing = {cid: p for cid, p in PHRASES.items() if p not in prose}
 
 passes = sum(c["pass"] for c in CLAIMS)
 fails = [c for c in CLAIMS if not c["pass"]]
-exhaustive_ok = not phrase_missing
+exhaustive_ok = (not uncovered) and (not phrase_missing)
 
 out = {
     "gate": "G3_derived_arithmetic",
@@ -229,11 +256,16 @@ out = {
     "locked_anchors": {"residual_SD": SD, "cash_mean": MEANCASH},
     "counts": {"claims": len(CLAIMS), "pass": passes, "fail": len(fails)},
     "exhaustiveness": {
-        "method": "trigger-word scan of prose (tmp/_g3_scan.py) returned 69 candidate sentences; "
-                  "each genuine arithmetic sentence maps to a claim below; phrase-presence asserted here",
-        "phrases_present": exhaustive_ok,
-        "phrases_missing": phrase_missing,
-        "non_arithmetic_number_words": NON_ARITHMETIC,
+        "method": "FORWARD prose->claim: every prose sentence with a generic relation trigger "
+                  "(percent/half/third/difference/drop/fall/swing/exceeds/nearly-identical/twelve/up-to/'N% of') "
+                  "AND a decimal must map to a claim phrase or the documented non-arithmetic allowlist; "
+                  "FAIL on any uncovered sentence. PLUS backward claim->prose phrase presence.",
+        "forward_sentences_flagged": len(flagged),
+        "forward_uncovered": uncovered,
+        "allowlist_non_arithmetic": ALLOWLIST,
+        "backward_phrases_missing": phrase_missing,
+        "flagged_detail": flagged,
+        "ok": exhaustive_ok,
     },
     "claims": CLAIMS,
     "findings": [c["id"] + ": " + c["detail"] for c in fails],
@@ -247,6 +279,10 @@ for c in CLAIMS:
     print(f"  {'PASS' if c['pass'] else 'FAIL'}  {c['id']:24s} {c['kind']:10s} {c['detail']}")
 print("=" * 72)
 print(f"  claims={len(CLAIMS)}  pass={passes}  fail={len(fails)}")
-print(f"  exhaustiveness phrases present: {exhaustive_ok}" + ("" if exhaustive_ok else f"  MISSING={phrase_missing}"))
+print(f"  exhaustiveness: forward-flagged {len(flagged)} sentences, uncovered={len(uncovered)}, "
+      f"backward-missing={len(phrase_missing)}  -> ok={exhaustive_ok}")
+if uncovered:
+    for u in uncovered:
+        print(f"    UNCOVERED: {u['sentence']}")
 print(f"  written: docs/Thesis/audit/g3_derived_arithmetic.json")
 sys.exit(1 if (fails or not exhaustive_ok) else 0)
