@@ -800,11 +800,101 @@
           "nlm_query_draft": "",
           "verification": {
             "method": "NLM",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": "Load-bearing = instrument provenance (LM misclassification fix -> finance lists incl. the uncertainty list). 'Uncertainty is informative' rides as BONUS; do NOT let the verdict hinge on it. NB LM 2011 headline is the NEGATIVE-list fix; the uncertainty result is secondary."
+            "source": {
+              "id": "105d4cef-bf78-45d2-b88f-5cc395b81298",
+              "title": "The Journal of Finance - 2011 - LOUGHRAN - When Is a Liability Not a Liability  Textual Analysis  Dictionaries  and 10‐Ks (1).pdf"
+            },
+            "query": "Reading only this paper, \"When Is a Liability Not a Liability? Textual Analysis, Dictionaries, and 10-Ks\" by Loughran and McDonald (2011, Journal of Finance): what does it conclude about whether word lists developed outside of finance misclassify words when applied to financial text, and does it construct finance-specific word lists -- including a category capturing uncertainty -- for classifying financial disclosures? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "answer": "In Loughran and McDonald (2011), the authors conclude that word lists developed for other disciplines (such as psychology and sociology) **substantially misclassify common words when applied to financial text**, which can lead to noisy measurements and spurious correlations [1-3]. Specifically, they find that nearly three-fourths of the words identified as negative by the widely used Harvard Dictionary are not actually negative in a business or financial context [1, 4]. \n\nTo address this, the authors **construct their own finance-specific word lists** to better reflect the tone in financial disclosures [1, 5]. In addition to a comprehensive list of negative financial words, they create five other specific dictionaries, **including a category specifically designed to capture uncertainty** (alongside positive, litigious, strong modal, and weak modal categories) [6-8].\n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the misclassification of outside word lists:**\n\n*   \"We show that word lists developed for other disciplines misclassify common words in financial text.\"\n    *   **Page:** 35\n    *   **Section:** ABSTRACT\n*   \"Most notably, we find that almost three-fourths (73.8%) of the negative word counts according to the Harvard list are attributable to words that are typically not negative in a financial context.\"\n    *   **Page:** 36\n    *   **Section:** Introduction (appears before Section I without a specific heading)\n*   \"Most important, we show that financial researchers should be cautious when relying on word classification schemes derived outside the domain of business usage. Applying nonbusiness word lists to accounting and finance topics can lead to a high misclassification rate and spurious correlations.\"\n    *   **Page:** 62\n    *   **Section:** V. Conclusions\n\n**On the construction of finance-specific word lists, including uncertainty:**\n\n*   \"We develop an alternative negative word list, along with five other word lists, that better reflect tone in financial text.\"\n    *   **Page:** 35\n    *   **Section:** ABSTRACT\n*   \"To expand the word classification categories, we create five additional word lists. Specifically, in addition to the negative word lists, we consider positive, uncertainty, litigious, strong modal, and weak modal word categories.\"\n    *   **Page:** 37\n    *   **Section:** Introduction (appears before Section I without a specific heading)\n*   \"We propose five other word lists: positive (Fin-Pos); uncertainty (Fin-Unc); litigious (Fin-Lit); strong modal words (MW-Strong); and weak modal words (MW-Weak).\"\n    *   **Page:** 44\n    *   **Section:** III. Textual Analysis and Word Lists\n*   \"The Fin-Unc list includes words denoting uncertainty, with emphasis on the general notion of imprecision rather than exclusively focusing on risk. The list includes 285 words, such as *approximate, contingency, depend, fluctuate, indefinite, uncertain,* and *variability*.\"\n    *   **Page:** 45\n    *   **Section:** III. Textual Analysis and Word Lists",
+            "quotes": [
+              {
+                "n": 2,
+                "cited_text": "35",
+                "start_char": 2835,
+                "end_char": 2837,
+                "chunk_id": "d8f3eaee-4e1c-4330-af64-a1884553e650"
+              },
+              {
+                "n": 3,
+                "cited_text": "Most important, we show that financial researchers should be cautious when relying on word classification schemes derived outside the domain of business usage. Applying nonbusiness word lists to accounting and fi-nance topics can lead to a high misclassification rate and spurious corre-lations. All textual analysis ultimately stands or falls by the categorization procedures.",
+                "start_char": 91750,
+                "end_char": 92128,
+                "chunk_id": "38312e4f-85af-4c27-bc60-f662a8cd92e7"
+              },
+              {
+                "n": 4,
+                "cited_text": "We make several contributions to the literature on textual analysis. Most notably, we find that almost three-fourths (73.8%) of the negative word counts according to the Harvard list are attributable to words that are typically not negative in a financial context. Words such as tax, cost, capital, board, liability, foreign, and vice are on the Harvard list. These words also appear with great frequency in the vast majority of 10-Ks, yet often do no more than name a board of directors or a company’s vice-presidents. Other words on the Harvard list, such as mine, cancer, crude (oil), tire, or capital, are more likely to identify a specific industry segment than reveal a negative financial event.",
+                "start_char": 3595,
+                "end_char": 4297,
+                "chunk_id": "63307c88-7dc5-46be-84c2-0758f7afed27"
+              },
+              {
+                "n": 5,
+                "cited_text": "We create a list of 2,337 words that typically have negative implications in a financial sense. The prevalence of polysemes in English—words that have multiple meanings—makes an absolute mapping of specific words into finan-cial sentiment impossible. We can, however, develop lists based on actual usage frequency that are most likely associated with a target construct. We use the term Fin-Neg to describe our list of negative financial words. Some of these words also appear on the H4N list, but others, such as felony, litigation, re-stated, misstatement, and unanticipated do not.",
+                "start_char": 4297,
+                "end_char": 4882,
+                "chunk_id": "225571df-4ea9-4d8b-bc21-665be861edd1"
+              },
+              {
+                "n": 6,
+                "cited_text": "To expand the word classification categories, we create five additional word lists. Specifically, in addition to the negative word lists, we consider positive, uncertainty, litigious, strong modal, and weak modal word categories.2 When we assess whether these word lists actually gauge tone, we find significant relations between our word lists and file date returns, trading volume, subse-quent return volatility, standardized unexpected earnings, and two separate samples of fraud and material weakness. We also examine whether negative tone classifications are related to future returns in terms of a trading strategy, and find no evidence of return predictability based on the competing measures.",
+                "start_char": 6985,
+                "end_char": 7686,
+                "chunk_id": "99774135-4b5d-4198-8e64-26561467433a"
+              },
+              {
+                "n": 7,
+                "cited_text": "erm s and C",
+                "start_char": 29891,
+                "end_char": 29903,
+                "chunk_id": "3c043fdf-6190-44f1-ae75-7f43ceb50592"
+              },
+              {
+                "n": 8,
+                "cited_text": "The Fin-Unc list includes words denoting uncertainty, with emphasis on the general notion of imprecision rather than exclusively focusing on risk. The list includes 285 words, such as approximate, contingency, depend, fluctuate, indefinite, uncertain, and variability.",
+                "start_char": 34566,
+                "end_char": 34835,
+                "chunk_id": "09ab3ae3-49ea-44d9-a36b-74385936a287"
+              }
+            ],
+            "located": [
+              {
+                "quote": "We show that word lists developed for other disciplines misclassify common words in financial text.",
+                "page": "35",
+                "section": "ABSTRACT"
+              },
+              {
+                "quote": "Most notably, we find that almost three-fourths (73.8%) of the negative word counts according to the Harvard list are attributable to words that are typically not negative in a financial context.",
+                "page": "36",
+                "section": "Introduction (appears before Section I without a specific heading)"
+              },
+              {
+                "quote": "Most important, we show that financial researchers should be cautious when relying on word classification schemes derived outside the domain of business usage. Applying nonbusiness word lists to accounting and finance topics can lead to a high misclassification rate and spurious correlations.",
+                "page": "62",
+                "section": "V. Conclusions"
+              },
+              {
+                "quote": "We develop an alternative negative word list, along with five other word lists, that better reflect tone in financial text.",
+                "page": "35",
+                "section": "ABSTRACT"
+              },
+              {
+                "quote": "To expand the word classification categories, we create five additional word lists. Specifically, in addition to the negative word lists, we consider positive, uncertainty, litigious, strong modal, and weak modal word categories.",
+                "page": "37",
+                "section": "Introduction (appears before Section I without a specific heading)"
+              },
+              {
+                "quote": "We propose five other word lists: positive (Fin-Pos); uncertainty (Fin-Unc); litigious (Fin-Lit); strong modal words (MW-Strong); and weak modal words (MW-Weak).",
+                "page": "44",
+                "section": "III. Textual Analysis and Word Lists"
+              },
+              {
+                "quote": "The Fin-Unc list includes words denoting uncertainty, with emphasis on the general notion of imprecision rather than exclusively focusing on risk. The list includes 285 words, such as *approximate, contingency, depend, fluctuate, indefinite, uncertain,* and *variability*.",
+                "page": "45",
+                "section": "III. Textual Analysis and Word Lists"
+              }
+            ],
+            "verdict": "PENDING"
           }
         }
       ],
