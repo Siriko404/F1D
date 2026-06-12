@@ -1,4 +1,5 @@
 {
+  "_SUPERSEDED": "TOMBSTONE 2026-06-11: superseded by thesis_propositions.json (unified P2-P5 substance audit, total-partition: every draft sentence -> >=1 verifiable-proposition row). These 61 records are being re-confirmed and folded into that file in-place as each block is re-read. Kept for reference during the fold; git history preserves it.",
   "description": "P3 citation audit — referenced-claim ledger. DETECTION ONLY: identify every claim that needs external validation (direct cite, named author, semantic-literature) PLUS uncited-but-checkable premises. No interpretation of meaning, no NLM-query planning. Recorded block-by-block as the draft is read, never in bulk. User trims by tag.",
   "baseline_sha": "7f97a16",
   "source_file": "docs/Thesis/thesis_draft.tex",
