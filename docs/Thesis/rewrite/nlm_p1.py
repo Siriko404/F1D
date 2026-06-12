@@ -170,15 +170,84 @@ def finalize():
     print("  verdicts P1.1/P1.2 = SUPPORTED; committed")
 
 
+# --- Legal legs P1.3/P1.4 (uploaded to NLM 2026-06-12): query in-channel like papers.
+#     (prop_id, part_id, candidate title-substrings, paper named in query, atomic question)
+LEGAL = [
+    ("P1.3", "basic-materiality",
+     ["485224", "usrep485", "levinson", "basic inc"],
+     "the U.S. Supreme Court opinion in Basic Inc. v. Levinson, 485 U.S. 224 (1988)",
+     "on what conditions, if any, does the Court conclude that information about preliminary or "
+     "pending merger negotiations can be material to investors before a definitive agreement is "
+     "reached, and what test or standard governs that materiality determination?"),
+    ("P1.4", "basic-silence-duty",
+     ["485224", "usrep485", "levinson", "basic inc"],
+     "the U.S. Supreme Court opinion in Basic Inc. v. Levinson, 485 U.S. 224 (1988)",
+     "what does the opinion say about whether a company has a duty to disclose information, about "
+     "whether silence is or is not misleading, and about liability for making statements that are "
+     "untrue or misleading?"),
+    ("P1.4", "rule-10b5-halftruth",
+     ["10b-5", "10b5", "sec240-10b-5", "240.10b-5"],
+     'Rule 10b-5 (17 C.F.R. 240.10b-5), "Employment of manipulative and deceptive devices"',
+     "what conduct does this rule prohibit regarding untrue statements of material fact, and "
+     "regarding omitting a material fact necessary to make statements not misleading, in connection "
+     "with the purchase or sale of a security?"),
+]
+
+
+def source_id_multi(candidates):
+    out = run([EXE, "source", "list", "-n", NOTEBOOK, "--json"], 120).stdout or ""
+    i = out.find("{")
+    if i < 0:
+        sys.exit("ERROR: could not list notebook sources.")
+    srcs = json.loads(out[i:])["sources"]
+    for c in candidates:
+        for s in srcs:
+            if c.lower() in s["title"].lower():
+                return s["id"], s["title"]
+    sys.exit(f"ERROR: no notebook source matches any of {candidates} -- check the uploaded title.")
+
+
+def legal():
+    ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
+    props = {p["prop_id"]: p for p in ledger["paragraphs"]["P1"]["propositions"]}
+    seen = set()
+    for prop_id, part_id, cands, label, question in LEGAL:
+        if prop_id not in seen:                       # fresh clean block per legal prop
+            props[prop_id]["verification"] = {"method": "NLM", "type": "legal-primary",
+                                              "parts": [], "verdict": "PENDING"}
+            seen.add(prop_id)
+        sid, title = source_id_multi(cands)
+        print(f"{prop_id}/{part_id}: querying NLM -> {title}", flush=True)
+        query, j = ask(sid, label, question)
+        answer = j.get("answer", "")
+        quotes = [{"n": x.get("citation_number"), "cited_text": x.get("cited_text"),
+                   "start_char": x.get("start_char"), "end_char": x.get("end_char"),
+                   "chunk_id": x.get("chunk_id")}
+                  for x in j.get("references", []) if x.get("cited_text")]
+        located = [{"quote": m.group(1).strip(), "page": m.group(2).strip(),
+                    "section": m.group(3).strip()} for m in LOC.finditer(answer)]
+        props[prop_id]["verification"]["parts"].append({
+            "part": part_id, "source": {"id": sid, "title": title},
+            "query": query, "answer": answer, "quotes": quotes, "located": located,
+        })
+        LEDGER.write_text(json.dumps(ledger, indent=2, ensure_ascii=False), encoding="utf-8")
+        commit(f"verify(2.1/P1): {prop_id} legal part '{part_id}' -> ledger ({len(quotes)} quotes, {len(located)} located)")
+        print(f"  {len(quotes)} verbatim quotes, {len(located)} located; committed")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--finalize", action="store_true",
                     help="pin the Dye decisive-span page+section and record verdicts")
+    ap.add_argument("--legal", action="store_true",
+                    help="query the uploaded legal sources (Basic v. Levinson, Rule 10b-5) for P1.3/P1.4")
     args = ap.parse_args()
     if not EXE:
         sys.exit("ERROR: `notebooklm` CLI not found on PATH. Run `notebooklm login` first.")
     if args.finalize:
         finalize()
+    elif args.legal:
+        legal()
     else:
         run_content()
 

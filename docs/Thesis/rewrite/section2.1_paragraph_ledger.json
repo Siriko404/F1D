@@ -431,12 +431,105 @@
           },
           "fetch_target": "Official Supreme Court opinion text (context-mode fetch). Confirm the probability/magnitude materiality holding for merger negotiations verbatim.",
           "verification": {
-            "method": "legal-text",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": "Scope to acquirer in prose."
+            "method": "NLM",
+            "type": "legal-primary",
+            "parts": [
+              {
+                "part": "basic-materiality",
+                "source": {
+                  "id": "98028735-470d-40b3-ae45-bbca761271f9",
+                  "title": "service-ll-usrep-usrep485-usrep485224-usrep485224.pdf"
+                },
+                "query": "Reading only this paper, the U.S. Supreme Court opinion in Basic Inc. v. Levinson, 485 U.S. 224 (1988): on what conditions, if any, does the Court conclude that information about preliminary or pending merger negotiations can be material to investors before a definitive agreement is reached, and what test or standard governs that materiality determination? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+                "answer": "In *Basic Inc. v. Levinson*, the Supreme Court concludes that information about preliminary or pending merger negotiations can be material before a definitive agreement is reached. The Court expressly rejects the bright-line \"agreement-in-principle\" test, which had incorrectly held that preliminary merger discussions are immaterial as a matter of law until the would-be merger partners reach an agreement on price and structure [1-3]. \n\nInstead, the Court establishes that materiality is governed by the standard previously set forth in *TSC Industries, Inc. v. Northway, Inc.* [1, 4]. Under this standard, a fact is material if there is a **substantial likelihood that its disclosure would be considered significant by a reasonable investor and viewed as significantly altering the \"total mix\" of information available** [4, 5]. \n\nBecause merger negotiations are inherently contingent and speculative, the Court determines that this standard must be applied using a probability/magnitude test [6]. Specifically, **materiality will depend on balancing the indicated probability that the merger will be consummated against the anticipated magnitude or significance of the merger to the company** [6, 7]. \n\nTherefore, the conditions under which preliminary negotiations become material **depend entirely on the specific facts of each case, rather than any single event or bright-line rule** [7, 8]. To assess the *probability* of the merger occurring, a factfinder must evaluate \"indicia of interest\" at the highest corporate levels (such as board resolutions or actual negotiations), and to assess the *magnitude*, the factfinder must consider factors like the size of the corporate entities and the potential premium over market value [8]. \n\nHere are the specific sentences quoted from the paper that support this conclusion, along with their exact printed page numbers and section headings:\n\n*   \"We now expressly adopt the TSC Industries standard of materiality for the § 10(b) and Rule 10b-5 context.\"\n    *   **Page:** 232\n    *   **Section:** II\n\n*   \"Under such circumstances, materiality 'will depend at any given time upon a balancing of both the indicated probability that the event will occur and the anticipated magnitude of the event in light of the totality of the company activity.'\"\n    *   **Page:** 238\n    *   **Section:** III C\n\n*   \"Whether merger discussions in any particular case are material therefore depends on the facts.\"\n    *   **Page:** 239\n    *   **Section:** III C\n\n*   \"Materiality in the merger context depends on the probability that the transaction will be consummated, and its significance to the issuer of the securities.\"\n    *   **Page:** 250\n    *   **Section:** V\n\n*   \"Materiality depends on the facts and thus is to be determined on a case-by-case basis.\"\n    *   **Page:** 250\n    *   **Section:** V",
+                "quotes": [
+                  {
+                    "n": 1,
+                    "cited_text": "Held: 1. The standard set forth in TSC Industries, Inc. v. Northway, Inc.,",
+                    "start_char": 2170,
+                    "end_char": 2245,
+                    "chunk_id": "5f8d2027-f664-433f-b4c3-889741ba519e"
+                  },
+                  {
+                    "n": 2,
+                    "cited_text": "BASIC INC. v. LEVINSON",
+                    "start_char": 20727,
+                    "end_char": 20750,
+                    "chunk_id": "5aa19718-a7d3-45f2-addf-7960d0ce0926"
+                  },
+                  {
+                    "n": 3,
+                    "cited_text": "OCTOBER TERM, 1987",
+                    "start_char": 22912,
+                    "end_char": 22931,
+                    "chunk_id": "87ac591e-5ce4-4575-b67b-bc1f9785bc5b"
+                  },
+                  {
+                    "n": 4,
+                    "cited_text": "ITSC Industries arose under § 14(a), as amended, of the 1934 Act, 15 U. S. C. § 78n(a), and Rule 14a-9, 17 CFR § 240.14a-9 (1975).",
+                    "start_char": 18253,
+                    "end_char": 18383,
+                    "chunk_id": "f7565637-7dd2-411d-a371-f28b4cd08735"
+                  },
+                  {
+                    "n": 5,
+                    "cited_text": "\"in connection with the purchase or sale of any security.\"",
+                    "start_char": 16159,
+                    "end_char": 16217,
+                    "chunk_id": "7cb038c3-2f84-41f7-86b4-f585900a8c22"
+                  },
+                  {
+                    "n": 6,
+                    "cited_text": "OCTOBER TERM, 1987",
+                    "start_char": 31567,
+                    "end_char": 31586,
+                    "chunk_id": "4faa2ebd-1a27-4519-8b58-fc13a1809194"
+                  },
+                  {
+                    "n": 7,
+                    "cited_text": "OCTOBER TERM, 1987",
+                    "start_char": 58922,
+                    "end_char": 58941,
+                    "chunk_id": "128f31c9-5722-46c7-b8ff-6b52942adabf"
+                  },
+                  {
+                    "n": 8,
+                    "cited_text": "BASIC INC. v. LEVINSON",
+                    "start_char": 33595,
+                    "end_char": 33618,
+                    "chunk_id": "9abf8348-1383-40ca-9dbc-022069ee1b92"
+                  }
+                ],
+                "located": [
+                  {
+                    "quote": "at the highest corporate levels (such as board resolutions or actual negotiations), and to assess the *magnitude*, the factfinder must consider factors like the size of the corporate entities and the potential premium over market value [8]. \n\nHere are the specific sentences quoted from the paper that support this conclusion, along with their exact printed page numbers and section headings:\n\n*",
+                    "page": "232",
+                    "section": "II"
+                  },
+                  {
+                    "quote": "Under such circumstances, materiality 'will depend at any given time upon a balancing of both the indicated probability that the event will occur and the anticipated magnitude of the event in light of the totality of the company activity.'",
+                    "page": "238",
+                    "section": "III C"
+                  },
+                  {
+                    "quote": "Whether merger discussions in any particular case are material therefore depends on the facts.",
+                    "page": "239",
+                    "section": "III C"
+                  },
+                  {
+                    "quote": "Materiality in the merger context depends on the probability that the transaction will be consummated, and its significance to the issuer of the securities.",
+                    "page": "250",
+                    "section": "V"
+                  },
+                  {
+                    "quote": "Materiality depends on the facts and thus is to be determined on a case-by-case basis.",
+                    "page": "250",
+                    "section": "V"
+                  }
+                ]
+              }
+            ],
+            "verdict": "PENDING"
           }
         },
         {
