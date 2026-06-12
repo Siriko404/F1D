@@ -911,11 +911,11 @@
       ],
       "prose_gate": {
         "rule": "all SUPPORTED before prose",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
       "final_prose": "",
-      "prose_status": "BLOCKED"
+      "prose_status": "READY"
     },
     "P3": {
       "order": 3,
