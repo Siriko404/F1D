@@ -306,90 +306,71 @@
           "nlm_query_draft": "Reading only this paper, what does it conclude about the conditions under which a manager withholds information rather than disclosing it, and what role the possibility that the manager is uninformed plays?",
           "verification": {
             "method": "NLM",
-            "evidence": [
+            "source": {
+              "id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+              "title": "Dye-DisclosureNonproprietaryInformation-1985.pdf"
+            },
+            "query": "Reading only this paper, \"Disclosure of Nonproprietary Information\" by Dye (1985, Journal of Accounting Research): what determines whether a manager discloses or withholds the information it may have, and what role does the possibility that the manager is uninformed play in sustaining non-disclosure? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "answer": "In Dye (1985), a manager's decision to disclose or withhold nonproprietary information is determined by two main factors: **whether the market is uncertain about the manager actually possessing the information**, and **whether the disclosure would adversely affect the manager's compensation contract** [1-3]. \n\nThe possibility that a manager might simply be uninformed plays a crucial role in sustaining non-disclosure because it allows the manager to suppress bad news [4, 5]. Because a manager cannot credibly prove that they have not received information, investors observing silence cannot tell whether the manager is intentionally hiding bad news or genuinely has nothing to report [4]. Consequently, **the market cannot assume the absolute worst when a manager is silent, allowing the manager to rationally withhold unfavorable information** [4, 6, 7]. Due to this uncertainty, a policy of complete, full disclosure is never an equilibrium [8]. Furthermore, if investors *do* know the manager possesses information, **the manager may withhold it because early disclosure would override the firm's stock price, thereby destroying the informational value of the stock price that is otherwise useful for evaluating the manager in their compensation contract** [3].\n\nHere are the specific sentences quoted from the paper that support this conclusion, along with their exact page numbers and section headings:\n\n*   \"A legitimate explanation for the nondisclosure of management's non-proprietary information arises from the fact that investors are often unsure whether the manager has any such information-or, more generally, are uncertain about the kind of information held by management.\" [1]\n    *   **Page:** 126\n    *   **Section:** 2. Amended Disclosure Principle\n\n*   \"If he announces nothing, the investors cannot discern whether he has received information but chosen not to release it or whether he has not received information.\" [4]\n    *   **Page:** 127\n    *   **Section:** 3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown\n\n*   \"The economically interesting conclusion of Theorem 1 is that no policy of full disclosure is an equilibrium when investors may be unaware that managers have received any private information, given that (as assumed above) managers cannot make credible announcements that they have not received information.\" [8]\n    *   **Page:** 129\n    *   **Section:** 3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown\n\n*   \"According to Theorem 1, the manager may suppress the release of bad news because investors are unaware that the manager has any news.\" [5]\n    *   **Page:** 129\n    *   **Section:** 3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown\n\n*   \"The conjunction of these three conditions implies that the release of the information held by the manager must alter his compensation (with positive probability).\" [2]\n    *   **Page:** 130\n    *   **Section:** 4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information\n\n*   \"If the manager discloses the firm's output prior to the time this information (held by investors) is received, then the price of the firm will be determined by this announcement and will reveal little about the information held by investors.\" [3]\n    *   **Page:** 137\n    *   **Section:** 4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information\n\n*   \"In short, the manager's release of information destroys other information, and this is the reason that the early release is undesirable.\" [3]\n    *   **Page:** 137\n    *   **Section:** 4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information",
+            "quotes": [
               {
                 "n": 1,
                 "cited_text": "A third possible explanation for a manager's nondisclosure of nonpro- prietary information is that its release would be costly either directly or  indirectly. However, this too is not an acceptable explanation since, by",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
                 "start_char": 10263,
                 "end_char": 10484,
-                "chunk_id": "07db6e83-5c33-4e38-9654-51183c557ca5",
-                "page": null,
-                "section": null
+                "chunk_id": "cc0b0aaa-f475-40ae-bcca-066914d227cc"
               },
               {
                 "n": 2,
-                "cited_text": "I proceed with a brief sketch of the model, and then I provide the detail  needed for a formal analysis.",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
-                "start_char": 24385,
-                "end_char": 24491,
-                "chunk_id": "ea0bcfec-01b9-402f-aad1-ab5e53bd0dc4",
-                "page": null,
-                "section": null
+                "cited_text": "only if it is above the unconditional mean A.  Unfortunately, models such as this do not explain the nondisclosure",
+                "start_char": 22656,
+                "end_char": 22772,
+                "chunk_id": "dcc8cb16-c173-4171-8599-73650a8a8bc7"
               },
               {
                 "n": 3,
                 "cited_text": "This content downloaded from \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000137.122.66.49 on Fri, 12 Jun 2026 19:26:22 UTC\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
                 "start_char": 43107,
                 "end_char": 43209,
-                "chunk_id": "37feceb4-010b-4220-9c72-4e10f92ff67b",
-                "page": null,
-                "section": null
+                "chunk_id": "7bf1888d-ddfc-44db-a8d1-8273091d8efa"
               },
               {
                 "n": 4,
                 "cited_text": "A firm is in operation for several periods and investors are risk-neutral.  The expected present value of the firm is assumed to be beyond the  control of the manager (so moral hazard problems do not arise here).  With probability (1 - p), which is exogenous, the manager receives  updated information superior to the information held by any other  investor regarding the expected present value of the firm. The uncondi-",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
                 "start_char": 14711,
                 "end_char": 15132,
-                "chunk_id": "0a267a75-f461-4923-9d3e-a1f0fb9ce836",
-                "page": null,
-                "section": null
+                "chunk_id": "5e4f24a1-de4a-4cf2-931c-a73e037b1716"
               },
               {
                 "n": 5,
-                "cited_text": "4Alternatively, suppose that the manager can respond credibly to the question-\"Have  you received any information this period?\"-but there is a positive probability q (because",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
-                "start_char": 15846,
-                "end_char": 16022,
-                "chunk_id": "89b081c3-f59b-4493-934a-66b5baa7f380",
-                "page": null,
-                "section": null
+                "cited_text": "An example may clarify Theorem 1. Suppose x is uniformly distributed  on [0, b]. The set D is of the form [0, x] for some x satisfying:",
+                "start_char": 20601,
+                "end_char": 20738,
+                "chunk_id": "acbe9924-a69a-4b67-a025-dceb5685f8ea"
               },
               {
                 "n": 6,
-                "cited_text": "equals f F(i) di > 0. Both sides of (2) are continuous in x, so there  exists some x E (0, x) satisfying (2), which establishes the existence of a  nondegenerate equilibrium disclosure policy. To complete the proof, note  that a policy of complete disclosure corresponds to x = 0, which (as was  noted above) does not satisfy (2), and is hence not an equilibrium.",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
-                "start_char": 19925,
-                "end_char": 20290,
-                "chunk_id": "e361aae0-6319-4ee5-90cb-dac2e7d4081f",
-                "page": null,
-                "section": null
+                "cited_text": "the market value of their shares. Since the market value of the firm  before and after each management disclosure is publicly observable, in  principle, shareholders could design incentive contracts which encourage  managers to suppress information unfavorable to the firm's value and  release information which increases the price of the firm. But if investors  know that a manager has information which has not been released, they  correctly will infer that the current market price of the firm overstates  the firm's values, based on the (unfavorable) information withheld by  the manager. Accordingly, investors will revise downward their demands  for the firm's shares, and the price of the firm will fall precipitously until",
+                "start_char": 4088,
+                "end_char": 4820,
+                "chunk_id": "8048e38d-e5a8-4de4-b304-459eda3f7864"
               },
               {
                 "n": 7,
-                "cited_text": "D = IxIpu + (1 -p)E[lI E D] 2 x4.  In words, D is the set of realizations of x for which the period-one price  of the firm in the event of no disclosure, pg + (1 - p) E[i I i E D] exceeds  the price of the firm x if disclosure were to occur. Notice that D is defined  in terms of itself. Whether D is well defined-whether an equilibrium  disclosure policy exists-depends upon assumptions underlying the dis- tribution of i. The following theorem provides one set of conditions  sufficient to ensure the existence of an equilibrium disclosure policy.",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
-                "start_char": 16912,
-                "end_char": 17463,
-                "chunk_id": "7488bb76-e15e-4dbd-83ed-1d3baa805af3",
-                "page": null,
-                "section": null
+                "cited_text": "the manager releases the information. In effect, the manager is encour- aged to disclose the information to distinguish it from the worst infor- mation he could possibly have. Managers disclose all of their nonpro- prietary information, good and bad, to prevent the price of their firms'  securities from plummeting. Of course, in practice, security prices do not  cascade downward when a manager fails to disclose nonproprietary  information.",
+                "start_char": 4820,
+                "end_char": 5265,
+                "chunk_id": "cb5ab96e-8428-471f-8ed8-7a8b0bab4245"
+              },
+              {
+                "n": 8,
+                "cited_text": "equals f F(i) di > 0. Both sides of (2) are continuous in x, so there  exists some x E (0, x) satisfying (2), which establishes the existence of a  nondegenerate equilibrium disclosure policy. To complete the proof, note  that a policy of complete disclosure corresponds to x = 0, which (as was  noted above) does not satisfy (2), and is hence not an equilibrium.",
+                "start_char": 19925,
+                "end_char": 20290,
+                "chunk_id": "48b387f2-239b-4eda-a71f-8ff1a0acf028"
               }
             ],
-            "answer_nonevidence": "In Dye (1985), a manager's decision to disclose or withhold nonproprietary information is determined by two main factors: **whether the market is uncertain about the manager actually possessing information**, and **whether the disclosure would adversely affect the manager's compensation contract** by overriding the informational value of the firm's stock price [1-3]. \n\nThe possibility that a manager is uninformed plays a crucial role in sustaining non-disclosure because it allows the manager to suppress bad news without the market assuming the absolute worst [4-6]. Since managers cannot credibly prove they have *not* received information, investors observing silence cannot tell whether the manager is hiding bad news or genuinely has nothing to report [4]. Consequently, managers will rationally withhold information that is below the market's expected value, meaning a policy of complete disclosure is never an equilibrium [5-7].\n\nHere are the specific sentences quoted from the paper that support this conclusion, along with their exact page numbers and section headings:\n\n**On the determinants of disclosure and the role of the manager being uninformed:**\n\n*   \"A legitimate explanation for the nondisclosure of management's non-proprietary information arises from the fact that investors are often unsure whether the manager has any such information-or, more generally, are uncertain about the kind of information held by management.\"\n    *   **Page:** 126\n    *   **Section:** 2. Amended Disclosure Principle\n\n*   \"If he announces nothing, the investors cannot discern whether he has received information but chosen not to release it or whether he has not received information.\"\n    *   **Page:** 127\n    *   **Section:** 3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown\n\n*   \"The economically interesting conclusion of Theorem 1 is that no policy of full disclosure is an equilibrium when investors may be unaware that managers have received any private information, given that (as assumed above) managers cannot make credible announcements that they have not received information.\"\n    *   **Page:** 129\n    *   **Section:** 3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown\n\n*   \"According to Theorem 1, the manager may suppress the release of bad news because investors are unaware that the manager has any news.\"\n    *   **Page:** 129\n    *   **Section:** 3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown\n\n**On the determinants of disclosure regarding compensation contracts:**\n\n*   \"The conjunction of these three conditions implies that the release of the information held by the manager must alter his compensation (with positive probability).\"\n    *   **Page:** 130\n    *   **Section:** 4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information\n\n*   \"If the manager discloses the firm's output prior to the time this information (held by investors) is received, then the price of the firm will be determined by this announcement and will reveal little about the information held by investors.\"\n    *   **Page:** 137\n    *   **Section:** 4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information\n\n*   \"In short, the manager's release of information destroys other information, and this is the reason that the early release is undesirable.\"\n    *   **Page:** 137\n    *   **Section:** 4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": "",
-            "query_used": "Reading only this paper, \"Disclosure of Nonproprietary Information\" by Dye (1985, Journal of Accounting Research): what determines whether a manager discloses or withholds the information it may have, and what role does the possibility that the manager is uninformed play in sustaining non-disclosure? Additionally, for each sentence you quote in support of your answer, report the exact page number printed in the paper and the section (its heading or number) in which that sentence appears.",
-            "source_scoped": {
-              "key": "dye1985",
-              "id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
-              "title": "Dye-DisclosureNonproprietaryInformation-1985.pdf"
-            },
-            "source_matched_preamble": "",
-            "located_evidence": [
+            "located": [
               {
                 "quote": "A legitimate explanation for the nondisclosure of management's non-proprietary information arises from the fact that investors are often unsure whether the manager has any such information-or, more generally, are uncertain about the kind of information held by management.",
                 "page": "126",
@@ -425,7 +406,8 @@
                 "page": "137",
                 "section": "4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information"
               }
-            ]
+            ],
+            "verdict": "PENDING"
           }
         },
         {
