@@ -103,7 +103,16 @@
     "6efea35  audit(G4): close compile/cross-ref - 0 critical, 1 minor (unused sec:intro label)",
     "61c94f8  audit(G5): close ledger-freshness - FRESH, all anchors valid; P1 COMPLETE",
     "8b6799c  audit(G1b): close bible->embed parity - MATCH (advisor-flagged blind spot)",
-    "9b5ddda  audit(P2-1): generated-regressor M2-01 MAJOR - first-stage error uncorrected+undisclosed"
+    "9b5ddda  audit(P2-1): generated-regressor M2-01 MAJOR - first-stage error uncorrected+undisclosed",
+    "582a76f  audit(P2-1): stamp 9b5ddda into STATE trail; mark generated-regressor seed addressed",
+    "6cfb387  audit(P2-1): WITHDRAW M2-01 - finding misidentified the estimand (not a defect)",
+    "6dd3dc0  audit(protocol): add experience addendum E1 - verify a critique's precondition before its mechanism",
+    "dc4eb6c  audit(P2-2): tail consistency CONSISTENT across all 7 core tables; 1 NIT (M2-02)",
+    "b0ce2b1  audit(P2-3): winsorization disclosure M2-03 MINOR; Nickell not-a-finding; LM dict + clustering MATCH",
+    "7ba050e  audit(P2-3): correct M2-03 winsorization form - per-year UPPER-ONLY 99% (verified from engine code)",
+    "893491a  audit(protocol): add experience addendum E2 - cite the executable line, never the comment",
+    "626b141  audit(P2-sweep): inverse-sweep done - M2-04 MINOR (event-study window hygiene); P2 COMPLETE",
+    "(next)   audit(P2): refresh STATE commit_trail (was stale since 9b5ddda) - this commit"
   ],
 
   "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters: generated-regressor SEs EVALUATED -> WITHDRAWN (not a thesis flaw; estimand is the constructed measure, not a latent shock); STILL OPEN: Nickell bias, one-tailed-vs-two-tailed inference, winsorization disclosure, LM dictionary mismatch (P2 priorities 2-3)."
