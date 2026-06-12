@@ -13,18 +13,34 @@
       "5. Draft final_prose to the thin-claim ceiling; show user (RULE 2).",
       "6. On approval: prose_status = COMMITTED; write into thesis_draft.tex 2.1; advance current_paragraph."
     ],
-    "prose_status_enum": ["BLOCKED", "READY", "DRAFTED", "APPROVED", "COMMITTED"],
-    "verdict_enum": ["PENDING", "SUPPORTED", "OVERCLAIM", "UNSUPPORTED", "INCONCLUSIVE_MANUAL"],
-    "prop_type_enum": ["external-NLM", "legal-primary", "definitional", "framing-nonverifiable", "internal-table"]
+    "prose_status_enum": [
+      "BLOCKED",
+      "READY",
+      "DRAFTED",
+      "APPROVED",
+      "COMMITTED"
+    ],
+    "verdict_enum": [
+      "PENDING",
+      "SUPPORTED",
+      "OVERCLAIM",
+      "UNSUPPORTED",
+      "INCONCLUSIVE_MANUAL"
+    ],
+    "prop_type_enum": [
+      "external-NLM",
+      "legal-primary",
+      "definitional",
+      "framing-nonverifiable",
+      "internal-table"
+    ]
   },
-
   "subsection": "2.1",
   "title": "Conceptual Framework + Main Literature Review (fused)",
   "status": "in_progress",
   "current_paragraph": "P1",
   "created": "2026-06-12",
   "revised": "2026-06-12 -- restructured into the deterministic proposition ledger; P1 legal leg corrected (Reg FD dropped -> Basic v. Levinson + Rule 10b-5).",
-
   "_governing": {
     "hard_rules": [
       "ONE PARAGRAPH AT A TIME. Do not batch.",
@@ -37,15 +53,23 @@
     ],
     "claim_ceiling": "ONE signal, TWO dimensions: anticipatory (timing) x cash-concentrated (cash not stock). Both supported. WHAT solid; WHY (mechanism: compliance-constrained vs strategic silence) OPEN. Correlational, no identification. The formal cash-stock test (0.0983**, two-tailed p=.039) is VALID at 5% -- keep cash CENTRAL, do NOT demote it. (claim_findings_ledger.json)",
     "nlm_rules_E3_E6": {
-      "E3_five": ["1 self-contained ('Reading only this paper, ...')", "2 name the paper / single-source scope", "3 non-leading exploratory ('what does it say about X?', NEVER 'confirm X')", "4 clear-state before each ask", "5 incremental JSON; verbatim cited_text is the ONLY admissible evidence"],
-      "E4_absolute": ["NLM is sole paper authority -- never read a PDF", "ATOMIC -- one checkable proposition per query"],
+      "E3_five": [
+        "1 self-contained ('Reading only this paper, ...')",
+        "2 name the paper / single-source scope",
+        "3 non-leading exploratory ('what does it say about X?', NEVER 'confirm X')",
+        "4 clear-state before each ask",
+        "5 incremental JSON; verbatim cited_text is the ONLY admissible evidence"
+      ],
+      "E4_absolute": [
+        "NLM is sole paper authority -- never read a PDF",
+        "ATOMIC -- one checkable proposition per query"
+      ],
       "E5": "every query lives in a committed script; paper title is the anchor.",
       "E6_naming": "name the paper (exact title + authors + year); confirm every cited source_id is the SAME single paper.",
       "fan_rule": "verify each DISTINCT paper-fact ONCE; fan the verdict across all instances.",
       "notebook_id": "63e3b970-7976-47bc-8291-37ce7ac9bf74"
     }
   },
-
   "_plan": {
     "section_job": "2.1 = the main, COMPLETE literature review AND the conceptual framework, fused. Situates the paper in every body of work it draws on AND derives the two dimensions. 2.2-2.5 carry only their own instrumental cites.",
     "spine": "P1 bind + P2 readable -> P3 anticipatory uncertainty trace -> P4 located in the call-varying residual; P5 cash design-contrast -> concentration + two clocks. P6 novelty, P7 scope frame it. Conclusion: an anticipatory x cash-concentrated component of CEO Q&A uncertainty, in the call-varying residual, tracking the deal's disclosure state -- a PATTERN, not a mechanism. Yields H1/H1a/H1b.",
@@ -60,33 +84,112 @@
       "P1_legal_accuracy_2026_06_12": "Reg FD REJECTED as the disclosure-constraint cite (it governs SELECTIVE disclosure; a public-call disclosure SATISFIES it -> not a gag). Correct framing: deal is MATERIAL (Basic) + nonpublic; firm may stay silent but may not MISLEAD once it speaks (Basic facts = false denials -> liability; Rule 10b-5 half-truth). This bridges to P3 deflection AND keeps can't-speak/won't-speak OPEN for P7. Scope materiality to the ACQUIRER."
     }
   },
-
   "papers": {
-    "verrecchia1983": {"ref": "Verrecchia, R. (1983). Discretionary disclosure. Journal of Accounting and Economics 5:179-194.", "doi": "10.1016/0165-4101(83)90011-3", "uploaded": true, "nlm_source_id": null, "para": "P1"},
-    "dye1985": {"ref": "Dye, R. (1985). Disclosure of nonproprietary information. Journal of Accounting Research 23(1):123-145.", "doi": "10.2307/2490910", "uploaded": true, "nlm_source_id": null, "para": "P1"},
-    "lm2011": {"ref": "Loughran, T. & McDonald, B. (2011). When is a liability not a liability? Journal of Finance 66(1):35-65.", "doi": "10.1111/j.1540-6261.2010.01625.x", "uploaded": true, "nlm_source_id": null, "para": "P2"},
-    "hollander2010": {"ref": "Hollander, S., Pronk, M. & Roelofsen, E. (2010). Does silence speak? Journal of Accounting Research 48(3):531-563.", "doi": "10.1111/j.1475-679X.2010.00365.x", "uploaded": true, "nlm_source_id": null, "para": "P3"},
-    "bertrand_schoar2003": {"ref": "Bertrand, M. & Schoar, A. (2003). Managing with style. Quarterly Journal of Economics 118(4):1169-1208.", "doi": "10.1162/003355303322552775", "uploaded": true, "nlm_source_id": null, "para": "P4"},
-    "harford1999": {"ref": "Harford, J. (1999). Corporate cash reserves and acquisitions. Journal of Finance 54(6):1969-1997.", "doi": "10.1111/0022-1082.00179", "uploaded": true, "nlm_source_id": null, "para": "P5"},
-    "bushee2018": {"ref": "Bushee, B., Gow, I. & Taylor, D. (2018). Linguistic complexity in firm disclosures. Journal of Accounting Research 56(1):85-121.", "in_notebook": true, "nlm_source_id": null, "para": "P2"},
-    "dwz2021": {"ref": "Dzielinski, Wagner & Zeckhauser (2021). [in notebook as 'dwz']", "in_notebook": true, "nlm_source_id": null, "para": "P4/2.3"},
-    "thewissen2024": {"in_notebook": true, "para": "P6"},
-    "ragozzino2024": {"in_notebook": true, "para": "P6"},
-    "everhart2025": {"in_notebook": true, "para": "P6"},
-    "gokkaya2025": {"in_notebook": true, "para": "P6"},
-    "support_not_uploaded": ["Matsumoto, Pronk & Roelofsen (2011)", "Mayew & Venkatachalam (2012)", "Bates, Kahle & Stulz (2009)", "Opler et al. (1999)", "Keown & Pinkerton (1981)"]
+    "verrecchia1983": {
+      "ref": "Verrecchia, R. (1983). Discretionary disclosure. Journal of Accounting and Economics 5:179-194.",
+      "doi": "10.1016/0165-4101(83)90011-3",
+      "uploaded": true,
+      "nlm_source_id": "b919b243-8399-4230-8bbc-c352fffb47d7",
+      "para": "P1",
+      "nlm_source_title": "1-s2.0-0165410183900113-main.pdf"
+    },
+    "dye1985": {
+      "ref": "Dye, R. (1985). Disclosure of nonproprietary information. Journal of Accounting Research 23(1):123-145.",
+      "doi": "10.2307/2490910",
+      "uploaded": true,
+      "nlm_source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+      "para": "P1",
+      "nlm_source_title": "Dye-DisclosureNonproprietaryInformation-1985.pdf"
+    },
+    "lm2011": {
+      "ref": "Loughran, T. & McDonald, B. (2011). When is a liability not a liability? Journal of Finance 66(1):35-65.",
+      "doi": "10.1111/j.1540-6261.2010.01625.x",
+      "uploaded": true,
+      "nlm_source_id": "105d4cef-bf78-45d2-b88f-5cc395b81298",
+      "para": "P2",
+      "nlm_source_title": "The Journal of Finance - 2011 - LOUGHRAN - When Is a Liability Not a Liability  Textual Analysis  Dictionaries  and 10‐Ks (1).pdf"
+    },
+    "hollander2010": {
+      "ref": "Hollander, S., Pronk, M. & Roelofsen, E. (2010). Does silence speak? Journal of Accounting Research 48(3):531-563.",
+      "doi": "10.1111/j.1475-679X.2010.00365.x",
+      "uploaded": true,
+      "nlm_source_id": "62b15593-80b6-4fbe-a304-c74553ded616",
+      "para": "P3",
+      "nlm_source_title": "J of Accounting Research - 2010 - HOLLANDER - Does Silence Speak  An Empirical Analysis of Disclosure Choices During (1).pdf"
+    },
+    "bertrand_schoar2003": {
+      "ref": "Bertrand, M. & Schoar, A. (2003). Managing with style. Quarterly Journal of Economics 118(4):1169-1208.",
+      "doi": "10.1162/003355303322552775",
+      "uploaded": true,
+      "nlm_source_id": "506c2524-8e66-4910-a1c1-8ce30b6d1f2b",
+      "para": "P4",
+      "nlm_source_title": "118-4-1169.pdf"
+    },
+    "harford1999": {
+      "ref": "Harford, J. (1999). Corporate cash reserves and acquisitions. Journal of Finance 54(6):1969-1997.",
+      "doi": "10.1111/0022-1082.00179",
+      "uploaded": true,
+      "nlm_source_id": "b643f847-f1ba-4dc0-871e-8f951caeacbc",
+      "para": "P5",
+      "nlm_source_title": "The Journal of Finance - 2002 - Harford - Corporate Cash Reserves and Acquisitions.pdf"
+    },
+    "bushee2018": {
+      "ref": "Bushee, B., Gow, I. & Taylor, D. (2018). Linguistic complexity in firm disclosures. Journal of Accounting Research 56(1):85-121.",
+      "in_notebook": true,
+      "nlm_source_id": "e8dfb696-ed47-465f-bbb6-a3e253626a20",
+      "para": "P2",
+      "nlm_source_title": "J of Accounting Research - 2017 - BUSHEE - Linguistic Complexity in Firm Disclosures  Obfuscation or Information.pdf"
+    },
+    "dwz2021": {
+      "ref": "Dzielinski, Wagner & Zeckhauser (2021). [in notebook as 'dwz']",
+      "in_notebook": true,
+      "nlm_source_id": null,
+      "para": "P4/2.3"
+    },
+    "thewissen2024": {
+      "in_notebook": true,
+      "para": "P6",
+      "nlm_source_id": "731d56ed-c42a-4280-84eb-eec23f8be9b3",
+      "nlm_source_title": "ssrn-4900453.pdf"
+    },
+    "ragozzino2024": {
+      "in_notebook": true,
+      "para": "P6",
+      "nlm_source_id": "f84c6cd2-59a1-4879-a053-b798687fd03c",
+      "nlm_source_title": "1-s2.0-S0024630123001000-main.pdf"
+    },
+    "everhart2025": {
+      "in_notebook": true,
+      "para": "P6"
+    },
+    "gokkaya2025": {
+      "in_notebook": true,
+      "para": "P6"
+    },
+    "support_not_uploaded": [
+      "Matsumoto, Pronk & Roelofsen (2011)",
+      "Mayew & Venkatachalam (2012)",
+      "Bates, Kahle & Stulz (2009)",
+      "Opler et al. (1999)",
+      "Keown & Pinkerton (1981)"
+    ]
   },
-
   "legal_sources": {
     "basic_v_levinson": {
       "ref": "Basic Inc. v. Levinson, 485 U.S. 224 (1988).",
-      "carries": ["materiality of preliminary merger negotiations (probability x magnitude)", "'silence, absent a duty to disclose, is not misleading under Rule 10b-5'", "false denials of merger talks ARE actionable (the case's facts)"],
+      "carries": [
+        "materiality of preliminary merger negotiations (probability x magnitude)",
+        "'silence, absent a duty to disclose, is not misleading under Rule 10b-5'",
+        "false denials of merger talks ARE actionable (the case's facts)"
+      ],
       "verify_via": "official opinion text (context-mode fetch; e.g. supremecourt.gov / govinfo). Confirm exact holding + the silence quote before it enters the draft.",
       "scope_caveat": "Basic concerned the TARGET; materiality runs to the issuer whose investors are at issue. We study ACQUIRERS -> scope to deals material to the acquirer."
     },
     "rule_10b5": {
       "ref": "Rule 10b-5, 17 C.F.R. §240.10b-5.",
-      "carries": ["statutory hook for the half-truth duty: it is unlawful to make an untrue statement OR omit a material fact necessary to make statements made not misleading"],
+      "carries": [
+        "statutory hook for the half-truth duty: it is unlawful to make an untrue statement OR omit a material fact necessary to make statements made not misleading"
+      ],
       "verify_via": "official eCFR text (context-mode fetch). Confirm the omission/half-truth language verbatim."
     },
     "reg_fd_REJECTED": {
@@ -95,7 +198,6 @@
       "reason": "Reg FD prohibits SELECTIVE disclosure (tell one analyst -> must tell all). A disclosure on a PUBLIC earnings call SATISFIES Reg FD; it is not a gag. Reg FD cannot support 'the CEO is barred from disclosing on the call'. (advisor 2026-06-12)"
     }
   },
-
   "paragraphs": {
     "P1": {
       "order": 1,
@@ -115,43 +217,90 @@
           "statement": "An informed manager may rationally choose NOT to disclose private information when disclosure is costly -- there is a threshold below which the informed manager withholds.",
           "role_in_paragraph": "Establishes withholding as a rational, modeled equilibrium (not mere non-compliance) -> licenses reading a withholding state as economically meaningful.",
           "type": "external-NLM",
-          "source": {"key": "verrecchia1983", "ref": "Verrecchia (1983), JAE 5:179-194", "nlm_source_id": null},
+          "source": {
+            "key": "verrecchia1983",
+            "ref": "Verrecchia (1983), JAE 5:179-194",
+            "nlm_source_id": null
+          },
           "nlm_query_draft": "Reading only this paper, under what conditions does it conclude a manager who possesses private information will choose not to disclose it?",
-          "verification": {"method": "NLM", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": ""}
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": ""
+          }
         },
         {
           "prop_id": "P1.2",
           "statement": "Non-disclosure can persist in equilibrium because outside investors cannot always distinguish a manager who is uninformed from one who is informed but withholding.",
           "role_in_paragraph": "Second, distinct theoretical foundation of withholding (the unraveling failure) -> silence is not self-revealing; a withholding state can be sustained and is informative.",
           "type": "external-NLM",
-          "source": {"key": "dye1985", "ref": "Dye (1985), JAR 23(1):123-145", "nlm_source_id": null},
+          "source": {
+            "key": "dye1985",
+            "ref": "Dye (1985), JAR 23(1):123-145",
+            "nlm_source_id": null
+          },
           "nlm_query_draft": "Reading only this paper, what does it conclude about the conditions under which a manager withholds information rather than disclosing it, and what role the possibility that the manager is uninformed plays?",
-          "verification": {"method": "NLM", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": ""}
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": ""
+          }
         },
         {
           "prop_id": "P1.3",
           "statement": "Information about preliminary/pending merger negotiations can be material to investors before a definitive agreement exists; materiality turns on a probability-times-magnitude assessment, not a bright line.",
           "role_in_paragraph": "Establishes that the pending (undisclosed) deal is MATERIAL -> combined with 'nonpublic' (definitional) it is MNPI. Anchors the disclosure-state premise in law.",
           "type": "legal-primary",
-          "source": {"key": "basic_v_levinson", "ref": "Basic Inc. v. Levinson, 485 U.S. 224 (1988)", "nlm_source_id": null},
+          "source": {
+            "key": "basic_v_levinson",
+            "ref": "Basic Inc. v. Levinson, 485 U.S. 224 (1988)",
+            "nlm_source_id": null
+          },
           "fetch_target": "Official Supreme Court opinion text (context-mode fetch). Confirm the probability/magnitude materiality holding for merger negotiations verbatim.",
-          "verification": {"method": "legal-text", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": "Scope to acquirer in prose."}
+          "verification": {
+            "method": "legal-text",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": "Scope to acquirer in prose."
+          }
         },
         {
           "prop_id": "P1.4",
           "statement": "A firm has no general affirmative duty to disclose confidential merger negotiations (silence is permitted), but once it speaks it may not mislead -- an untrue or half-true statement is unlawful. So denial is not a lawful option, leaving deflection.",
           "role_in_paragraph": "Completes the BIND: explains why the CEO cannot simply deny and move on. The deflection->hedging CONSEQUENCE is developed in P3 (handoff).",
           "type": "legal-primary",
-          "source": {"key": "basic_v_levinson + rule_10b5", "ref": "Basic Inc. v. Levinson, 485 U.S. 224 (1988) ('silence, absent a duty to disclose, is not misleading'); Rule 10b-5, 17 C.F.R. §240.10b-5", "nlm_source_id": null},
+          "source": {
+            "key": "basic_v_levinson + rule_10b5",
+            "ref": "Basic Inc. v. Levinson, 485 U.S. 224 (1988) ('silence, absent a duty to disclose, is not misleading'); Rule 10b-5, 17 C.F.R. §240.10b-5",
+            "nlm_source_id": null
+          },
           "fetch_target": "Basic opinion (the silence quote + that false denials were actionable) + 17 C.F.R. §240.10b-5 text (the omission/half-truth clause). context-mode fetch.",
-          "verification": {"method": "legal-text", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": "This is the SEAM to P3; keep the linguistic consequence out of P1."}
+          "verification": {
+            "method": "legal-text",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": "This is the SEAM to P3; keep the linguistic consequence out of P1."
+          }
         }
       ],
-      "prose_gate": {"rule": "all 4 propositions SUPPORTED before prose", "all_supported": false, "unlocked": false},
+      "prose_gate": {
+        "rule": "all 4 propositions SUPPORTED before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
       "final_prose": "",
       "prose_status": "BLOCKED"
     },
-
     "P2": {
       "order": 2,
       "lit_body": "earnings calls as a disclosure venue + textual analysis of call language",
@@ -161,15 +310,75 @@
       "thin_claim": "Adopt-and-extend; no claim prior measures captured uncertainty.",
       "guardrails": [],
       "propositions": [
-        {"prop_id": "P2.1", "statement": "The unscripted Q&A portion of conference calls is less managed/scripted than prepared remarks and carries incremental information.", "role_in_paragraph": "Licenses reading Q&A language as a signal.", "type": "external-NLM", "source": {"key": "hollander2010 (or upload matsumoto2011)", "ref": "candidate: Hollander/Pronk/Roelofsen (2010) or Matsumoto/Pronk/Roelofsen (2011)", "nlm_source_id": null}, "nlm_query_draft": "", "verification": {"method": "NLM", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": "decide source at P2 time"}},
-        {"prop_id": "P2.2", "statement": "Word-classification dictionaries built for financial text measure tone/uncertainty, and these linguistic features are informative.", "role_in_paragraph": "Licenses the dictionary method for the uncertainty read.", "type": "external-NLM", "source": {"key": "lm2011", "ref": "Loughran & McDonald (2011)", "nlm_source_id": null}, "nlm_query_draft": "", "verification": {"method": "NLM", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": ""}},
-        {"prop_id": "P2.3", "statement": "Linguistic features of disclosure (e.g., complexity/readability) carry information beyond the numbers.", "role_in_paragraph": "Reinforces call-language informativeness.", "type": "external-NLM", "source": {"key": "bushee2018", "ref": "Bushee, Gow & Taylor (2018)", "nlm_source_id": null}, "nlm_query_draft": "", "verification": {"method": "NLM", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": ""}}
+        {
+          "prop_id": "P2.1",
+          "statement": "The unscripted Q&A portion of conference calls is less managed/scripted than prepared remarks and carries incremental information.",
+          "role_in_paragraph": "Licenses reading Q&A language as a signal.",
+          "type": "external-NLM",
+          "source": {
+            "key": "hollander2010 (or upload matsumoto2011)",
+            "ref": "candidate: Hollander/Pronk/Roelofsen (2010) or Matsumoto/Pronk/Roelofsen (2011)",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "",
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": "decide source at P2 time"
+          }
+        },
+        {
+          "prop_id": "P2.2",
+          "statement": "Word-classification dictionaries built for financial text measure tone/uncertainty, and these linguistic features are informative.",
+          "role_in_paragraph": "Licenses the dictionary method for the uncertainty read.",
+          "type": "external-NLM",
+          "source": {
+            "key": "lm2011",
+            "ref": "Loughran & McDonald (2011)",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "",
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": ""
+          }
+        },
+        {
+          "prop_id": "P2.3",
+          "statement": "Linguistic features of disclosure (e.g., complexity/readability) carry information beyond the numbers.",
+          "role_in_paragraph": "Reinforces call-language informativeness.",
+          "type": "external-NLM",
+          "source": {
+            "key": "bushee2018",
+            "ref": "Bushee, Gow & Taylor (2018)",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "",
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": ""
+          }
+        }
       ],
-      "prose_gate": {"rule": "all SUPPORTED before prose", "all_supported": false, "unlocked": false},
+      "prose_gate": {
+        "rule": "all SUPPORTED before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
       "final_prose": "",
       "prose_status": "BLOCKED"
     },
-
     "P3": {
       "order": 3,
       "lit_body": "the mechanism -> ANTICIPATORY dimension (incl. strategic silence)",
@@ -177,15 +386,39 @@
       "serves": "Derives the ANTICIPATORY dimension (timing -> H1, H1b); justifies reading uncertainty WORDS not silence.",
       "boundary": "Conceptual signal only; the residual measure is 2.3.",
       "thin_claim": "A pattern keyed to the disclosure state -- no causal claim about CEO intent.",
-      "guardrails": ["ADVISOR_FIX_sign: earn the DIRECTION (UP). A gagged CEO could go more guarded -> measure DOWN. Affirmative reason for UP: live Q&A, analysts follow up, sustained clean deflection is hard -> hedging leaks. H1 one-tailed."],
-      "propositions": [
-        {"prop_id": "P3.1", "statement": "Managers make strategic disclosure/silence choices during conference calls, and non-answers / silence are themselves informative to the market.", "role_in_paragraph": "Grounds the deflection mechanism in the call-silence literature.", "type": "external-NLM", "source": {"key": "hollander2010", "ref": "Hollander, Pronk & Roelofsen (2010), 'Does silence speak?'", "nlm_source_id": null}, "nlm_query_draft": "", "verification": {"method": "NLM", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": ""}}
+      "guardrails": [
+        "ADVISOR_FIX_sign: earn the DIRECTION (UP). A gagged CEO could go more guarded -> measure DOWN. Affirmative reason for UP: live Q&A, analysts follow up, sustained clean deflection is hard -> hedging leaks. H1 one-tailed."
       ],
-      "prose_gate": {"rule": "all SUPPORTED before prose", "all_supported": false, "unlocked": false},
+      "propositions": [
+        {
+          "prop_id": "P3.1",
+          "statement": "Managers make strategic disclosure/silence choices during conference calls, and non-answers / silence are themselves informative to the market.",
+          "role_in_paragraph": "Grounds the deflection mechanism in the call-silence literature.",
+          "type": "external-NLM",
+          "source": {
+            "key": "hollander2010",
+            "ref": "Hollander, Pronk & Roelofsen (2010), 'Does silence speak?'",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "",
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": ""
+          }
+        }
+      ],
+      "prose_gate": {
+        "rule": "all SUPPORTED before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
       "final_prose": "",
       "prose_status": "BLOCKED"
     },
-
     "P4": {
       "order": 4,
       "lit_body": "managerial style / manager fixed effects -> why the signal is the call-varying component",
@@ -193,15 +426,39 @@
       "serves": "Reviews managerial-style literature; makes the conceptual case the signal must be the call-varying component (what 2.3's residual operationalizes).",
       "boundary": "CONCEPTUAL only -- do NOT write eq-4 or list first-stage regressors (2.3).",
       "thin_claim": "States the locating logic; construction + caveats (generated regressand, UncPre) are 2.3.",
-      "guardrails": ["ADVISOR_FIX_necessity: NECESSARY-condition only -- the signal MUST be in the residual. Do NOT drift to 'the residual IS the deal signal'; the P5 placebo + timing design isolate it."],
-      "propositions": [
-        {"prop_id": "P4.1", "statement": "Managers have persistent, individual styles that load as manager fixed effects in firm policies/outcomes -- a measurable, durable manager-specific component.", "role_in_paragraph": "Grounds 'persistent style must be netted out'.", "type": "external-NLM", "source": {"key": "bertrand_schoar2003", "ref": "Bertrand & Schoar (2003), 'Managing with style'", "nlm_source_id": null}, "nlm_query_draft": "", "verification": {"method": "NLM", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": ""}}
+      "guardrails": [
+        "ADVISOR_FIX_necessity: NECESSARY-condition only -- the signal MUST be in the residual. Do NOT drift to 'the residual IS the deal signal'; the P5 placebo + timing design isolate it."
       ],
-      "prose_gate": {"rule": "all SUPPORTED before prose", "all_supported": false, "unlocked": false},
+      "propositions": [
+        {
+          "prop_id": "P4.1",
+          "statement": "Managers have persistent, individual styles that load as manager fixed effects in firm policies/outcomes -- a measurable, durable manager-specific component.",
+          "role_in_paragraph": "Grounds 'persistent style must be netted out'.",
+          "type": "external-NLM",
+          "source": {
+            "key": "bertrand_schoar2003",
+            "ref": "Bertrand & Schoar (2003), 'Managing with style'",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "",
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": ""
+          }
+        }
+      ],
+      "prose_gate": {
+        "rule": "all SUPPORTED before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
       "final_prose": "",
       "prose_status": "BLOCKED"
     },
-
     "P5": {
       "order": 5,
       "lit_body": "corporate cash holdings + cash-for-acquisitions -> CASH-CONCENTRATED dimension",
@@ -209,16 +466,59 @@
       "serves": "Reviews cash-holdings literature; sets up CASH as a DESIGN CONTRAST (-> H1a) + the stock placebo (-> MA3); frames differential-timing CONTRAST (-> H1b), cash-persistence leg labeled mechanical.",
       "boundary": "Do NOT assert 'cash sharpens the bind / visible cash invites the question' -- that IS the scrutiny channel 4.1 rules out. DESIGN CONTRAST only. Concentration, NOT strict specificity. Keep cash CENTRAL.",
       "thin_claim": "A where-it-appears CONTRAST; the why stays open; the cash-persistence leg is mechanical.",
-      "guardrails": ["ADVISOR_FIX_contrast (A2): stock = same setting minus visible cash. Mechanism OPEN (P7)."],
-      "propositions": [
-        {"prop_id": "P5.1", "statement": "Firms accumulate cash reserves ahead of acquisitions, and cash-rich firms are more acquisitive -- a cash purchase reflects an accumulated balance-sheet position.", "role_in_paragraph": "Grounds the 'visible accumulated cash position' that distinguishes cash from stock deals.", "type": "external-NLM", "source": {"key": "harford1999", "ref": "Harford (1999), 'Corporate cash reserves and acquisitions'", "nlm_source_id": null}, "nlm_query_draft": "", "verification": {"method": "NLM", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": ""}},
-        {"prop_id": "P5.2", "statement": "Corporate cash holdings are large, observable, and a focus of investor/analyst attention.", "role_in_paragraph": "Optional reinforcement of cash visibility; use only if needed.", "type": "external-NLM", "source": {"key": "bates2009/opler1999", "ref": "Bates, Kahle & Stulz (2009); Opler et al. (1999) -- NOT uploaded", "nlm_source_id": null}, "nlm_query_draft": "", "verification": {"method": "NLM", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": "drop unless P5 needs it"}}
+      "guardrails": [
+        "ADVISOR_FIX_contrast (A2): stock = same setting minus visible cash. Mechanism OPEN (P7)."
       ],
-      "prose_gate": {"rule": "required props SUPPORTED before prose", "all_supported": false, "unlocked": false},
+      "propositions": [
+        {
+          "prop_id": "P5.1",
+          "statement": "Firms accumulate cash reserves ahead of acquisitions, and cash-rich firms are more acquisitive -- a cash purchase reflects an accumulated balance-sheet position.",
+          "role_in_paragraph": "Grounds the 'visible accumulated cash position' that distinguishes cash from stock deals.",
+          "type": "external-NLM",
+          "source": {
+            "key": "harford1999",
+            "ref": "Harford (1999), 'Corporate cash reserves and acquisitions'",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "",
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": ""
+          }
+        },
+        {
+          "prop_id": "P5.2",
+          "statement": "Corporate cash holdings are large, observable, and a focus of investor/analyst attention.",
+          "role_in_paragraph": "Optional reinforcement of cash visibility; use only if needed.",
+          "type": "external-NLM",
+          "source": {
+            "key": "bates2009/opler1999",
+            "ref": "Bates, Kahle & Stulz (2009); Opler et al. (1999) -- NOT uploaded",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "",
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": "drop unless P5 needs it"
+          }
+        }
+      ],
+      "prose_gate": {
+        "rule": "required props SUPPORTED before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
       "final_prose": "",
       "prose_status": "BLOCKED"
     },
-
     "P6": {
       "order": 6,
       "lit_body": "the nearest work: M&A-disclosure language + pre-announcement leakage (the gap / 2x2)",
@@ -226,19 +526,119 @@
       "serves": "Comprehensive positioning / 2x2 + the gap; the contribution's foundation.",
       "boundary": "Do NOT restate the intro 2x2 verbatim; develop it. Per-hypothesis contrast stays in 2.2. No new results.",
       "thin_claim": "'We read what unmanaged language discloses' is a framing/positioning claim, not a tested mechanism.",
-      "guardrails": ["ADVISOR_FIX_novelty: the GAP claim ('no prior work reads this') is NOT NLM-verifiable -> 'to our knowledge', full stop. Only PER-PAPER claims run through NLM."],
-      "propositions": [
-        {"prop_id": "P6.1", "statement": "Thewissen et al. (2024) study tone management in earnings press releases before stock-for-stock acquisitions.", "role_in_paragraph": "Nearest-work cell: managed tone, stock deals, press releases.", "type": "external-NLM", "source": {"key": "thewissen2024", "ref": "thewissen2024 (in notebook)", "nlm_source_id": null}, "nlm_query_draft": "", "verification": {"method": "NLM", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": "re-confirm atomically"}},
-        {"prop_id": "P6.2", "statement": "Ragozzino & Reuer (2024) study strategy-vocabulary volume on calls around deal activity.", "role_in_paragraph": "Nearest-work cell: managed strategy vocabulary on calls.", "type": "external-NLM", "source": {"key": "ragozzino2024", "ref": "ragozzino2024 (in notebook)", "nlm_source_id": null}, "nlm_query_draft": "", "verification": {"method": "NLM", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": "re-confirm atomically"}},
-        {"prop_id": "P6.3", "statement": "Everhart et al. (2025) examine M&A/acquirer guidance; Gokkaya et al. (2025) examine information in disclosed acquisition plans.", "role_in_paragraph": "Adjacent cells: guidance + disclosed-plan information.", "type": "external-NLM", "source": {"key": "everhart2025;gokkaya2025", "ref": "everhart2025; gokkaya2025 (in notebook)", "nlm_source_id": null}, "nlm_query_draft": "", "verification": {"method": "NLM", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": "SCAR: do each separately, atomically"}},
-        {"prop_id": "P6.4", "statement": "Pre-announcement information leakage shows up on the price side before M&A announcements.", "role_in_paragraph": "Distinguishes our LANGUAGE signal from the known PRICE run-up.", "type": "external-NLM", "source": {"key": "keown_pinkerton1981", "ref": "Keown & Pinkerton (1981) -- NOT uploaded", "nlm_source_id": null}, "nlm_query_draft": "", "verification": {"method": "NLM", "evidence": [], "answer_nonevidence": "", "verdict": "PENDING", "verified_date": null, "note": "upload if used"}},
-        {"prop_id": "P6.5", "statement": "To our knowledge, no prior work reads unmanaged uncertainty language before cash deals in the anticipatory window.", "role_in_paragraph": "The gap / contribution.", "type": "framing-nonverifiable", "source": {"key": "n/a", "ref": "cannot prove a negative", "nlm_source_id": null}, "nlm_query_draft": "", "verification": {"method": "n/a", "evidence": [], "answer_nonevidence": "", "verdict": "INCONCLUSIVE_MANUAL", "verified_date": null, "note": "'to our knowledge' only; NOT verifiable"}}
+      "guardrails": [
+        "ADVISOR_FIX_novelty: the GAP claim ('no prior work reads this') is NOT NLM-verifiable -> 'to our knowledge', full stop. Only PER-PAPER claims run through NLM."
       ],
-      "prose_gate": {"rule": "per-paper props SUPPORTED; gap prop stays 'to our knowledge'", "all_supported": false, "unlocked": false},
+      "propositions": [
+        {
+          "prop_id": "P6.1",
+          "statement": "Thewissen et al. (2024) study tone management in earnings press releases before stock-for-stock acquisitions.",
+          "role_in_paragraph": "Nearest-work cell: managed tone, stock deals, press releases.",
+          "type": "external-NLM",
+          "source": {
+            "key": "thewissen2024",
+            "ref": "thewissen2024 (in notebook)",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "",
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": "re-confirm atomically"
+          }
+        },
+        {
+          "prop_id": "P6.2",
+          "statement": "Ragozzino & Reuer (2024) study strategy-vocabulary volume on calls around deal activity.",
+          "role_in_paragraph": "Nearest-work cell: managed strategy vocabulary on calls.",
+          "type": "external-NLM",
+          "source": {
+            "key": "ragozzino2024",
+            "ref": "ragozzino2024 (in notebook)",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "",
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": "re-confirm atomically"
+          }
+        },
+        {
+          "prop_id": "P6.3",
+          "statement": "Everhart et al. (2025) examine M&A/acquirer guidance; Gokkaya et al. (2025) examine information in disclosed acquisition plans.",
+          "role_in_paragraph": "Adjacent cells: guidance + disclosed-plan information.",
+          "type": "external-NLM",
+          "source": {
+            "key": "everhart2025;gokkaya2025",
+            "ref": "everhart2025; gokkaya2025 (in notebook)",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "",
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": "SCAR: do each separately, atomically"
+          }
+        },
+        {
+          "prop_id": "P6.4",
+          "statement": "Pre-announcement information leakage shows up on the price side before M&A announcements.",
+          "role_in_paragraph": "Distinguishes our LANGUAGE signal from the known PRICE run-up.",
+          "type": "external-NLM",
+          "source": {
+            "key": "keown_pinkerton1981",
+            "ref": "Keown & Pinkerton (1981) -- NOT uploaded",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "",
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": "upload if used"
+          }
+        },
+        {
+          "prop_id": "P6.5",
+          "statement": "To our knowledge, no prior work reads unmanaged uncertainty language before cash deals in the anticipatory window.",
+          "role_in_paragraph": "The gap / contribution.",
+          "type": "framing-nonverifiable",
+          "source": {
+            "key": "n/a",
+            "ref": "cannot prove a negative",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "",
+          "verification": {
+            "method": "n/a",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "INCONCLUSIVE_MANUAL",
+            "verified_date": null,
+            "note": "'to our knowledge' only; NOT verifiable"
+          }
+        }
+      ],
+      "prose_gate": {
+        "rule": "per-paper props SUPPORTED; gap prop stays 'to our knowledge'",
+        "all_supported": false,
+        "unlocked": false
+      },
       "final_prose": "",
       "prose_status": "BLOCKED"
     },
-
     "P7": {
       "order": 7,
       "lit_body": "scope + the two readings (bounded close)",
@@ -248,11 +648,79 @@
       "thin_claim": "Observational equivalence + no-identification stated plainly. Guarantees the review does not inflate the claim.",
       "guardrails": [],
       "propositions": [],
-      "prose_gate": {"rule": "no external props; gate trivially open once P1-P6 done", "all_supported": true, "unlocked": false},
+      "prose_gate": {
+        "rule": "no external props; gate trivially open once P1-P6 done",
+        "all_supported": true,
+        "unlocked": false
+      },
       "final_prose": "",
       "prose_status": "BLOCKED"
     }
   },
-
-  "next_action": "P1 propositions LOCKED in deterministic schema (Reg FD corrected out). NEXT: user ratifies the P1 proposition set; then VERIFY P1 -- (a) NLM atomized queries for P1.1 (Verrecchia) + P1.2 (Dye) via a NEW committed script (copy tmp/nlm.py CLI pattern, do NOT run it as-is); (b) legal-text fetch for P1.3 (Basic materiality) + P1.4 (Basic silence/half-truth + Rule 10b-5) via context-mode fetch. Record verbatim. When all 4 SUPPORTED -> draft P1, show user (RULE 2), then write into thesis_draft.tex. ONE PARAGRAPH AT A TIME."
+  "next_action": "P1 propositions LOCKED in deterministic schema (Reg FD corrected out). NEXT: user ratifies the P1 proposition set; then VERIFY P1 -- (a) NLM atomized queries for P1.1 (Verrecchia) + P1.2 (Dye) via a NEW committed script (copy tmp/nlm.py CLI pattern, do NOT run it as-is); (b) legal-text fetch for P1.3 (Basic materiality) + P1.4 (Basic silence/half-truth + Rule 10b-5) via context-mode fetch. Record verbatim. When all 4 SUPPORTED -> draft P1, show user (RULE 2), then write into thesis_draft.tex. ONE PARAGRAPH AT A TIME.",
+  "resolved_sources": {
+    "verrecchia1983": {
+      "status": "OK",
+      "match": "0165410183900113",
+      "source_id": "b919b243-8399-4230-8bbc-c352fffb47d7",
+      "source_title": "1-s2.0-0165410183900113-main.pdf",
+      "created_at": "2026-06-12T15:32:19"
+    },
+    "dye1985": {
+      "status": "OK",
+      "match": "dye-disclosurenonproprietary",
+      "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+      "source_title": "Dye-DisclosureNonproprietaryInformation-1985.pdf",
+      "created_at": "2026-06-12T15:32:19"
+    },
+    "lm2011": {
+      "status": "OK",
+      "match": "loughran",
+      "source_id": "105d4cef-bf78-45d2-b88f-5cc395b81298",
+      "source_title": "The Journal of Finance - 2011 - LOUGHRAN - When Is a Liability Not a Liability  Textual Analysis  Dictionaries  and 10‐Ks (1).pdf",
+      "created_at": "2026-06-12T15:32:19"
+    },
+    "hollander2010": {
+      "status": "OK",
+      "match": "hollander - does silence",
+      "source_id": "62b15593-80b6-4fbe-a304-c74553ded616",
+      "source_title": "J of Accounting Research - 2010 - HOLLANDER - Does Silence Speak  An Empirical Analysis of Disclosure Choices During (1).pdf",
+      "created_at": "2026-06-12T15:32:19"
+    },
+    "bushee2018": {
+      "status": "OK",
+      "match": "bushee - linguistic complexity",
+      "source_id": "e8dfb696-ed47-465f-bbb6-a3e253626a20",
+      "source_title": "J of Accounting Research - 2017 - BUSHEE - Linguistic Complexity in Firm Disclosures  Obfuscation or Information.pdf",
+      "created_at": "2026-04-09T17:03:56"
+    },
+    "bertrand_schoar2003": {
+      "status": "AMBIGUOUS_NEWEST",
+      "match": "118-4-1169",
+      "source_id": "506c2524-8e66-4910-a1c1-8ce30b6d1f2b",
+      "source_title": "118-4-1169.pdf",
+      "created_at": "2026-06-12T15:32:19"
+    },
+    "harford1999": {
+      "status": "OK",
+      "match": "harford - corporate cash reserves",
+      "source_id": "b643f847-f1ba-4dc0-871e-8f951caeacbc",
+      "source_title": "The Journal of Finance - 2002 - Harford - Corporate Cash Reserves and Acquisitions.pdf",
+      "created_at": "2026-06-12T15:32:19"
+    },
+    "thewissen2024": {
+      "status": "OK",
+      "match": "4900453",
+      "source_id": "731d56ed-c42a-4280-84eb-eec23f8be9b3",
+      "source_title": "ssrn-4900453.pdf",
+      "created_at": "2026-06-06T21:37:23"
+    },
+    "ragozzino2024": {
+      "status": "OK",
+      "match": "s0024630123001000",
+      "source_id": "f84c6cd2-59a1-4879-a053-b798687fd03c",
+      "source_title": "1-s2.0-S0024630123001000-main.pdf",
+      "created_at": "2026-06-06T21:37:03"
+    }
+  }
 }
