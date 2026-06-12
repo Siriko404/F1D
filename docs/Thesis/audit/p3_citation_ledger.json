@@ -1,0 +1,254 @@
+{
+  "description": "P3 citation audit — referenced-claim ledger. DETECTION ONLY: identify every claim that needs external validation (direct cite, named author, semantic-literature) PLUS uncited-but-checkable premises. No interpretation of meaning, no NLM-query planning. Recorded block-by-block as the draft is read, never in bulk. User trims by tag.",
+  "baseline_sha": "7f97a16",
+  "source_file": "docs/Thesis/thesis_draft.tex",
+  "per_sentence_rule": "Every sentence is exactly one of: (a) own result/framing -> SKIP; (b) tied to a source -> RECORD; (c) uncited-but-checkable premise -> RECORD. Recording (b)+(c) is what prevents missed claims.",
+  "RED_FLAG_MANDATE": "Capture EVERY external reference that lacks a citation -- uncited factual/legal premise, uncited prior-work claim, AND uncited data source/vendor/archive. These are red flags to address later; NEVER skip them. (user directive, 2026-06-11)",
+  "METHODOLOGY_MANDATE": "Record EVERY methodology / design / estimator choice and anything suspicious, even when uncited and textbook-standard. Do NOT pass on anything suspicious. check_route=method-review (a scrutiny queue, separate from citation verification). (user directive, 2026-06-11)",
+  "BRIGHT_LINE": "RECORD, NEVER JUDGE-OUT. If a span is consistent / standard / a cross-ref / a restatement, still record it with a tag + note -- never silently dispose of it in prose. The user trims later. (avoids the override cycle)",
+  "reference_form_legend": {
+    "direct-cite": "\\cite/\\citep/\\citet token present -> check_route nlm",
+    "named-no-cite": "author name(s) given, no cite token -> check_route nlm",
+    "semantic-lit": "attribution to a body of work, no name/cite on the span itself -> check_route nlm",
+    "metadata": "bib-page detail (year / venue / closeness ranking) -> check_route bib, not NLM content",
+    "uncited-premise": "checkable factual/legal/method claim with NO source cited -> check_route missing-citation; NOT NLM-verifiable (no paper to check against)",
+    "uncited-source": "external data source / vendor / archive named with NO citation -> check_route missing-citation; red flag for 'cite your source'",
+    "methodology": "a method / design / estimator choice (usually own design, uncited) recorded for later scrutiny -> check_route method-review; includes any suspicious self-claim"
+  },
+  "blocks_total": 17,
+  "blocks_done": ["abstract", "introduction", "§2.1 conceptual-framework", "§2.2 hypothesis-development (0 claims: all own predictions)", "§2.3 estimation-main-variable", "§2.4 methodology-empirical-design", "§2.5 specification-key-constructs (completes §2)"],
+  "claims": [
+    {
+      "id": "A-1", "block": "abstract", "file_line": "thesis_draft.tex:27",
+      "verbatim_thesis_span": "Using the Dzielinski--Wagner--Zeckhauser decomposition to isolate the call-varying residual of Q\\&A uncertainty",
+      "reference_form": "named-no-cite", "check_route": "nlm", "mapped_bibkey": "dwz"
+    },
+    {
+      "id": "I-0a", "block": "introduction", "file_line": "thesis_draft.tex:36",
+      "verbatim_thesis_span": "While the deal is pending it is material nonpublic information, so securities law forbids discussing it",
+      "reference_form": "uncited-premise", "check_route": "missing-citation", "mapped_bibkey": null
+    },
+    {
+      "id": "I-0b", "block": "introduction", "file_line": "thesis_draft.tex:36",
+      "verbatim_thesis_span": "the call, however, is a standing obligation that cannot be skipped",
+      "reference_form": "uncited-premise", "check_route": "missing-citation", "mapped_bibkey": null
+    },
+    {
+      "id": "I-0c", "block": "introduction", "file_line": "thesis_draft.tex:36",
+      "verbatim_thesis_span": "much of it --- the question-and-answer session --- is unscripted",
+      "reference_form": "uncited-premise", "check_route": "missing-citation", "mapped_bibkey": null
+    },
+    {
+      "id": "I-1", "block": "introduction", "file_line": "thesis_draft.tex:38",
+      "verbatim_thesis_span": "A growing literature already studies corporate disclosure around acquisitions, though along dimensions other than this one",
+      "reference_form": "semantic-lit", "check_route": "nlm",
+      "mapped_bibkey": ["thewissen2024", "ragozzino2024", "everhart2025", "gokkaya2025"]
+    },
+    {
+      "id": "I-2", "block": "introduction", "file_line": "thesis_draft.tex:38",
+      "verbatim_thesis_span": "bidders manage the tone of their earnings press releases ahead of stock-for-stock deals \\citep{thewissen2024}",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "thewissen2024"
+    },
+    {
+      "id": "I-3", "block": "introduction", "file_line": "thesis_draft.tex:38",
+      "verbatim_thesis_span": "the volume of corporate-strategy vocabulary on conference calls rises with deal activity \\citep{ragozzino2024}",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "ragozzino2024"
+    },
+    {
+      "id": "I-4", "block": "introduction", "file_line": "thesis_draft.tex:38",
+      "verbatim_thesis_span": "recent work examines the precision of management's guidance around transactions \\citep{everhart2025}",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "everhart2025"
+    },
+    {
+      "id": "I-5", "block": "introduction", "file_line": "thesis_draft.tex:38",
+      "verbatim_thesis_span": "markets react to acquisition plans once those plans are disclosed \\citep{gokkaya2025}",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "gokkaya2025"
+    },
+    {
+      "id": "I-6", "block": "introduction", "file_line": "thesis_draft.tex:38",
+      "verbatim_thesis_span": "What this work has not measured, to our knowledge, is uncertainty",
+      "reference_form": "semantic-lit", "check_route": "nlm",
+      "mapped_bibkey": ["thewissen2024", "ragozzino2024", "everhart2025", "gokkaya2025"],
+      "note": "negative claim: none of the four measured uncertainty"
+    },
+    {
+      "id": "I-7", "block": "introduction", "file_line": "thesis_draft.tex:40",
+      "verbatim_thesis_span": "The two papers closest to ours both appeared in 2024",
+      "reference_form": "metadata", "check_route": "bib",
+      "mapped_bibkey": "AMBIGUOUS_two_2024_papers",
+      "note": "which two is not stated; 2024-dated candidates = thewissen2024 / ragozzino2024 / gokkaya2025(WP 2024-04)"
+    },
+    {
+      "id": "I-8", "block": "introduction", "file_line": "thesis_draft.tex:44",
+      "verbatim_thesis_span": "The measure of unscripted uncertainty follows the decomposition of \\citet{dwz}: we regress the CEO's question-and-answer uncertainty on the executive's own fixed effect and on the call's circumstances and keep the residual",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "dwz"
+    },
+    {
+      "id": "I-9", "block": "introduction", "file_line": "thesis_draft.tex:40",
+      "verbatim_thesis_span": "the measurement needed to capture it has only recently become tractable",
+      "reference_form": "uncited-premise", "check_route": "missing-citation", "mapped_bibkey": null
+    },
+    {
+      "id": "I-10", "block": "introduction", "file_line": "thesis_draft.tex:44",
+      "verbatim_thesis_span": "linking the Capital IQ transcript archive --- parsed so that the CEO's unscripted answers are kept separate from the scripted presentation",
+      "reference_form": "uncited-source", "check_route": "missing-citation", "mapped_bibkey": null,
+      "note": "Capital IQ named as transcript data source, no citation"
+    },
+    {
+      "id": "I-11", "block": "introduction", "file_line": "thesis_draft.tex:44",
+      "verbatim_thesis_span": "acquisition records from SDC that date each deal's announcement and completion and record whether it was paid in cash or in stock",
+      "reference_form": "uncited-source", "check_route": "missing-citation", "mapped_bibkey": null,
+      "note": "SDC named as deal data source, no citation"
+    },
+    {
+      "id": "I-13", "block": "introduction", "file_line": "thesis_draft.tex:40",
+      "verbatim_thesis_span": "the lens that reads deal information out of corporate language is being assembled as we write",
+      "reference_form": "semantic-lit", "check_route": "bib", "mapped_bibkey": null,
+      "note": "field-maturity / recency framing; ties to I-7; checkable via the corpus's publication dates, not one paper's content"
+    },
+    {
+      "id": "I-14", "block": "introduction", "file_line": "thesis_draft.tex:40",
+      "verbatim_thesis_span": "its uncertainty dimension is still missing",
+      "reference_form": "semantic-lit", "check_route": "nlm",
+      "mapped_bibkey": ["thewissen2024", "ragozzino2024", "everhart2025", "gokkaya2025"],
+      "note": "restatement of the I-6 gap at L40 (record-every-instance rule)"
+    },
+    {
+      "id": "I-12", "block": "introduction", "file_line": "thesis_draft.tex:44",
+      "verbatim_thesis_span": "Three designs then put the prediction to work: a within-firm comparison of a cash acquirer's pre-announcement quarter with its own ordinary quarters, an event study that follows the residual against the firm's cash across the stages of the deal's life --- before announcement, announced but not yet closed, and completed --- and a pooled test of whether the pre-announcement rise is larger for cash deals than for stock",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "intro statement of the three designs (canonical version = §2.4 MD-1/3/4). Consistency check: intro says 'event study'; §2.4 says 'matched-universe event study'."
+    },
+    {
+      "id": "CF-1", "block": "§2.1 conceptual-framework", "file_line": "thesis_draft.tex:54",
+      "verbatim_thesis_span": "the deal is material nonpublic information: the CEO may not discuss it, yet must keep hosting quarterly calls and answering unscripted questions",
+      "reference_form": "uncited-premise", "check_route": "missing-citation", "mapped_bibkey": null,
+      "note": "MNPI + call-obligation premise restated here (recurs from I-0a/I-0b)"
+    },
+    {
+      "id": "CF-2", "block": "§2.1 conceptual-framework", "file_line": "thesis_draft.tex:58",
+      "verbatim_thesis_span": "\\citet{thewissen2024} show stock-financed bidders inflate the tone of earnings press releases before announcement",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "thewissen2024",
+      "note": "verb 'inflate' is stronger than intro I-2 'manage' -- verify which the paper supports"
+    },
+    {
+      "id": "CF-3", "block": "§2.1 conceptual-framework", "file_line": "thesis_draft.tex:58",
+      "verbatim_thesis_span": "\\citet{ragozzino2024} count strategy vocabulary on calls around deals",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "ragozzino2024"
+    },
+    {
+      "id": "CF-4", "block": "§2.1 conceptual-framework", "file_line": "thesis_draft.tex:54",
+      "verbatim_thesis_span": "a measure built on the share of uncertainty words reads this imprecision more cleanly than the silence, and reads the bind conservatively",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "measurement-design choice: uncertainty-word-SHARE measure (Loughran--McDonald-style word list). lm2011 is in the bibliography but NOT cited here -- possible missing attribution; verify."
+    },
+    {
+      "id": "EM-1", "block": "§2.3 estimation-main-variable", "file_line": "thesis_draft.tex:74",
+      "verbatim_thesis_span": "UncResCEO, is the call-level residual of the Dzielinski--Wagner--Zeckhauser decomposition of CEO question-and-answer uncertainty: the component that remains after removing the CEO's persistent style (their equation 4)",
+      "reference_form": "named-no-cite", "check_route": "nlm", "mapped_bibkey": "dwz",
+      "note": "specific claim about DWZ eq 4: residual = what remains after removing the CEO's persistent style"
+    },
+    {
+      "id": "EM-2", "block": "§2.3 estimation-main-variable", "file_line": "thesis_draft.tex:74",
+      "verbatim_thesis_span": "UncPreCEO, the raw uncertainty-word share of the prepared presentation, serves as the within-call control --- exactly its role in their equation 4",
+      "reference_form": "named-no-cite", "check_route": "nlm", "mapped_bibkey": "dwz",
+      "note": "specific claim about DWZ eq 4: UncPre (prepared-presentation share) is a regressor/control in eq 4"
+    },
+    {
+      "id": "MD-1", "block": "§2.4 methodology-empirical-design", "file_line": "thesis_draft.tex:78",
+      "verbatim_thesis_span": "in a two-way fixed-effects panel, we ask whether a cash acquirer's residual Q\\&A uncertainty is higher in the quarter immediately preceding its announcement than in its own other quarters, with never-acquirers as the fixed-effects baseline --- a pre-window mean shift, not a pre/post difference-in-differences",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "run-up estimator. SUSPICIOUS: (a) never-acquirer FE baseline choice is questionable; (b) text says 'not a pre/post DiD' yet the table is tab:empire_building_did -- naming/labeling mismatch. Intro L44 previews this design."
+    },
+    {
+      "id": "MD-2", "block": "§2.4 methodology-empirical-design", "file_line": "thesis_draft.tex:78",
+      "verbatim_thesis_span": "The stock arm repeats the design for stock-financed acquirers, whose deals impose the same disclosure constraint without the visible cash footprint",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "placebo-arm design; review whether the stock arm is a valid placebo / adequately powered."
+    },
+    {
+      "id": "MD-3", "block": "§2.4 methodology-empirical-design", "file_line": "thesis_draft.tex:78",
+      "verbatim_thesis_span": "The timing test is a disclosure-window event study on a matched universe: quarters are classified by the deal's life --- pre-announcement, the announced-but-pending gap, post-completion --- and the path of residual uncertainty is read against the path of the cash ratio over the same windows",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "matched-universe event study; review matching procedure + window classification. Cf. P2 finding M2-04 (event-window sample steps disclosed only in code). Intro L44 previews."
+    },
+    {
+      "id": "MD-4", "block": "§2.4 methodology-empirical-design", "file_line": "thesis_draft.tex:78",
+      "verbatim_thesis_span": "Cash-specificity is tested formally: a pooled model interacts the pre-announcement indicator with the financing form and tests the cash--stock difference directly (Wald; Table~\\ref{tab:empire_cashspec})",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "pooled interaction + Wald cash-specificity test. Intro L44 previews."
+    },
+    {
+      "id": "MD-5", "block": "§2.4 methodology-empirical-design", "file_line": "thesis_draft.tex:78",
+      "verbatim_thesis_span": "Fixed effects, clustering, and sample filters are reported with each table.",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "SUSPICIOUS self-disclosure claim. Claim covers FE / clustering / SAMPLE FILTERS. M2-04 (post-withdrawal drop, 2nd-announcement truncation) ARE sample filters -> genuine contradiction of this sentence. M2-03 (winsorization) is a transformation, not a filter/FE/clustering -> a SEPARATE disclosure gap, not a contradiction of this sentence. Do not lump."
+    },
+    {
+      "id": "KC-0", "block": "§2.5 specification-key-constructs", "file_line": "thesis_draft.tex:82",
+      "verbatim_thesis_span": "We ask two things of the residual: that it move with real uncertainty, and that it not be an artifact of analyst scrutiny",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "UMBRELLA construct-validity strategy (two asks); decomposes into convergent (KC-7), discriminant (KC-8), and analyst-scrutiny rule-out (KC-9). Recorded per bright-line even though redundant with its parts."
+    },
+    {
+      "id": "KC-1", "block": "§2.5 specification-key-constructs", "file_line": "thesis_draft.tex:84",
+      "verbatim_thesis_span": "Firm-level political risk \\citep{hassan2020}",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "hassan2020",
+      "note": "citation claim = hassan2020 provides a firm-level political risk measure. The 'loads positively on the residual' part is an OWN result (P2), not routed here."
+    },
+    {
+      "id": "KC-2", "block": "§2.5 specification-key-constructs", "file_line": "thesis_draft.tex:84",
+      "verbatim_thesis_span": "aggregate policy uncertainty \\citep{baker2016,davis2016}",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "baker2016",
+      "note": "citation claim = baker2016 provides an aggregate economic policy uncertainty index (US EPU). Loading = own result."
+    },
+    {
+      "id": "KC-3", "block": "§2.5 specification-key-constructs", "file_line": "thesis_draft.tex:84",
+      "verbatim_thesis_span": "aggregate policy uncertainty \\citep{baker2016,davis2016}",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "davis2016",
+      "note": "citation claim = davis2016 provides an aggregate policy uncertainty index (GLOBAL EPU). Co-cited with baker2016 under one 'aggregate policy uncertainty' label; verify davis2016 = global EPU. Loading = own result."
+    },
+    {
+      "id": "KC-4", "block": "§2.5 specification-key-constructs", "file_line": "thesis_draft.tex:84",
+      "verbatim_thesis_span": "product-market competition \\citep{hoberg2010,hoberg2016}",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "hoberg2010",
+      "note": "citation claim = hoberg2010 provides a product-market competition measure (product market synergies/competition in M&A). 'Loads on presentation not residual' = own result."
+    },
+    {
+      "id": "KC-5", "block": "§2.5 specification-key-constructs", "file_line": "thesis_draft.tex:84",
+      "verbatim_thesis_span": "product-market competition \\citep{hoberg2010,hoberg2016}",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "hoberg2016",
+      "note": "citation claim = hoberg2016 provides a product-market competition measure (text-based network industries / TNIC). Co-cited with hoberg2010. Loading = own result."
+    },
+    {
+      "id": "KC-6", "block": "§2.5 specification-key-constructs", "file_line": "thesis_draft.tex:84",
+      "verbatim_thesis_span": "the same forces that move established uncertainty measures move this one",
+      "reference_form": "semantic-lit", "check_route": "nlm", "mapped_bibkey": null,
+      "note": "generic reference to 'established uncertainty measures'; instantiated by hassan2020/baker2016/davis2016 but phrased more broadly. Recorded per bright-line."
+    },
+    {
+      "id": "KC-7", "block": "§2.5 specification-key-constructs", "file_line": "thesis_draft.tex:84",
+      "verbatim_thesis_span": "The first is convergent validity.",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "convergent-validity design: external uncertainty constructs should load positively on the residual. Text self-notes a limitation: co-movement alone does not show distinctness (motivates the discriminant test)."
+    },
+    {
+      "id": "KC-8", "block": "§2.5 specification-key-constructs", "file_line": "thesis_draft.tex:84",
+      "verbatim_thesis_span": "The decisive evidence is discriminant: product-market competition \\citep{hoberg2010,hoberg2016} loads on the presentation and not on the residual",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "discriminant-validity design: a persistent industry condition should surface in the script, not the call-varying residual."
+    },
+    {
+      "id": "KC-9", "block": "§2.5 specification-key-constructs", "file_line": "thesis_draft.tex:86",
+      "verbatim_thesis_span": "Section~\\ref{sec:additional} tests it in three steps --- analysts do scrutinize cash (Table~\\ref{tab:cash_scrutiny_validity}); scrutiny alone does not move the residual (Table~\\ref{tab:cash_scrutiny_channel}); and the operative test, interacting scrutiny with the pre-announcement window, leaves the run-up intact (Table~\\ref{tab:reason_gating})",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "analyst-scrutiny rule-out, three-step design. Step results are own results; the design itself is recorded for scrutiny."
+    },
+    {
+      "id": "KC-10", "block": "§2.5 specification-key-constructs", "file_line": "thesis_draft.tex:86",
+      "verbatim_thesis_span": "We read this as a failure to find paired with a within-model dissociation, not a powered equivalence test",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "honest self-limitation: the rule-out is a failure-to-reject + dissociation, NOT a powered equivalence test. Recorded for method-review (advisor-flagged)."
+    }
+  ]
+}
