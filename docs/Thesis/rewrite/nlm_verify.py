@@ -129,6 +129,15 @@ def commit(paths, message):
         print(f"  git commit: {message}")
 
 
+def make_evidence(refs):
+    """Verbatim cited_text + its EXACT in-source location (char span + chunk)."""
+    return [{"n": x.get("citation_number"), "cited_text": x.get("cited_text"),
+             "source_id": x.get("source_id"),
+             "start_char": x.get("start_char"), "end_char": x.get("end_char"),
+             "chunk_id": x.get("chunk_id")}
+            for x in refs if x.get("cited_text")]
+
+
 def load(path, default):
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
 
@@ -249,9 +258,7 @@ def run_paragraph(pid, dry=False):
         res = ask(src["source_id"], label, question)
         j = res.get("raw_json", {})
         refs = j.get("references", []) if j else []
-        evidence = [{"n": x.get("citation_number"), "cited_text": x.get("cited_text"),
-                     "source_id": x.get("source_id")}
-                    for x in refs if x.get("cited_text")]
+        evidence = make_evidence(refs)
         v = prop.setdefault("verification", {})
         v["method"] = "NLM"
         v["query_used"] = res.get("query")
@@ -271,13 +278,41 @@ def run_paragraph(pid, dry=False):
     print(f"\n[{pid}] done. Adjudicate verdicts on the verbatim cited_text, then write prose.")
 
 
+def rebuild_from_raw():
+    """Re-derive ledger evidence (incl. char-offsets + chunk_id) from saved raw. No NLM calls."""
+    led = load(LEDGER, {})
+    raw = load(RAW, {})
+    n = 0
+    for para in led["paragraphs"].values():
+        for prop in para["propositions"]:
+            r = raw.get(prop["prop_id"], {})
+            j = r.get("raw_json", {})
+            refs = j.get("references", []) if isinstance(j, dict) else []
+            if not refs:
+                continue
+            v = prop.setdefault("verification", {})
+            v["evidence"] = make_evidence(refs)
+            v["query_used"] = r.get("query", v.get("query_used"))
+            v["source_matched_preamble"] = r.get("preamble", v.get("source_matched_preamble", ""))
+            v["answer_nonevidence"] = j.get("answer", v.get("answer_nonevidence", ""))
+            n += 1
+            print(f"  rebuilt {prop['prop_id']}: {len(v['evidence'])} quote(s) with offsets")
+    save_ledger(led)
+    commit([LEDGER, Path(__file__)], "verify(2.1): rebuild ledger evidence from raw (add char-offsets + chunk_id)")
+    print(f"Rebuilt {n} proposition(s) from raw.")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--resolve", action="store_true", help="map papers->sources, record ids, commit")
     ap.add_argument("--paragraph", help="run a paragraph's NLM props, e.g. P1")
     ap.add_argument("--dry", action="store_true", help="print queries, do not call NLM")
     ap.add_argument("--baseline", action="store_true", help="commit current ledger+script state only")
+    ap.add_argument("--rebuild-from-raw", action="store_true", help="re-derive ledger evidence (offsets+chunk) from raw; no NLM calls")
     args = ap.parse_args()
+    if args.rebuild_from_raw:
+        rebuild_from_raw()
+        return
     if not EXE:
         sys.exit("ERROR: `notebooklm` CLI not found on PATH. Run `notebooklm login` first.")
     if args.baseline:

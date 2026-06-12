@@ -256,77 +256,122 @@
               {
                 "n": 1,
                 "cited_text": "A third possible explanation for a manager's nondisclosure of nonpro- prietary information is that its release would be costly either directly or  indirectly. However, this too is not an acceptable explanation since, by",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 10263,
+                "end_char": 10484,
+                "chunk_id": "6b15b806-83d3-4221-a10d-6e902098f424"
               },
               {
                 "n": 2,
                 "cited_text": "only if it is above the unconditional mean A.  Unfortunately, models such as this do not explain the nondisclosure",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 22656,
+                "end_char": 22772,
+                "chunk_id": "df060163-904b-41d5-a2bb-5e8c9c80dafc"
               },
               {
                 "n": 3,
                 "cited_text": "In the preceding sections, I considered three reasons for management's  failure to disclose their nonproprietary information. The first one is  based on the condition that investors' knowledge of management's in- formation is incomplete, in which case managers may successfully sup- press bad information. The second reason follows from the observation",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 58897,
+                "end_char": 59251,
+                "chunk_id": "928cd432-dd35-4e36-ac43-dc2efa94943b"
               },
               {
                 "n": 4,
                 "cited_text": "123",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 3261,
+                "end_char": 3266,
+                "chunk_id": "9b263c54-f8f6-409c-84b4-64dc3178afa3"
               },
               {
                 "n": 5,
                 "cited_text": "the market value of their shares. Since the market value of the firm  before and after each management disclosure is publicly observable, in  principle, shareholders could design incentive contracts which encourage  managers to suppress information unfavorable to the firm's value and  release information which increases the price of the firm. But if investors  know that a manager has information which has not been released, they  correctly will infer that the current market price of the firm overstates  the firm's values, based on the (unfavorable) information withheld by  the manager. Accordingly, investors will revise downward their demands  for the firm's shares, and the price of the firm will fall precipitously until",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 4088,
+                "end_char": 4820,
+                "chunk_id": "f9bdb47a-0ca8-4486-a591-d3543f45865d"
               },
               {
                 "n": 6,
                 "cited_text": "4Alternatively, suppose that the manager can respond credibly to the question-\"Have  you received any information this period?\"-but there is a positive probability q (because",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 15846,
+                "end_char": 16022,
+                "chunk_id": "154412bb-7d97-4d6d-be9d-a70f851dcc7d"
               },
               {
                 "n": 7,
                 "cited_text": "D = IxIpu + (1 -p)E[lI E D] 2 x4.  In words, D is the set of realizations of x for which the period-one price  of the firm in the event of no disclosure, pg + (1 - p) E[i I i E D] exceeds  the price of the firm x if disclosure were to occur. Notice that D is defined  in terms of itself. Whether D is well defined-whether an equilibrium  disclosure policy exists-depends upon assumptions underlying the dis- tribution of i. The following theorem provides one set of conditions  sufficient to ensure the existence of an equilibrium disclosure policy.",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 16912,
+                "end_char": 17463,
+                "chunk_id": "e7c9bd01-16d7-4594-87ec-8f6000f3967f"
               },
               {
                 "n": 8,
                 "cited_text": "equals f F(i) di > 0. Both sides of (2) are continuous in x, so there  exists some x E (0, x) satisfying (2), which establishes the existence of a  nondegenerate equilibrium disclosure policy. To complete the proof, note  that a policy of complete disclosure corresponds to x = 0, which (as was  noted above) does not satisfy (2), and is hence not an equilibrium.",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 19925,
+                "end_char": 20290,
+                "chunk_id": "8296d41d-d543-4f1d-b742-7aa354b6bc49"
               },
               {
                 "n": 9,
                 "cited_text": "An example may clarify Theorem 1. Suppose x is uniformly distributed  on [0, b]. The set D is of the form [0, x] for some x satisfying:",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 20601,
+                "end_char": 20738,
+                "chunk_id": "5d6d6c6d-6a60-4aa8-b917-8505d625fb84"
               },
               {
                 "n": 10,
                 "cited_text": "output's value becomes public knowledge, the trajectory of prices of the  firm becomes completely determined from the time of the announcement  to the end of the period by the value of his announcement. If that  information is not disclosed publicly, the firm's price at any time will be  determined by the information investors have about the likely values of  output up to that time. This information may contain imperfect estimates  of the manager's actions. Including the price of the firm (which has this  information impounded into it) in the manager's contract therefore may  be desirable for contracting purposes. Now on to the formal model.",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 24913,
+                "end_char": 25564,
+                "chunk_id": "b4fe0ec8-160f-4b2f-b428-d857df7e5104"
               },
               {
                 "n": 11,
                 "cited_text": "(x, zi,..., zn) with respect to a, and that x is never sufficient for (x,  Z1 ... ., zn) with respect to a. This formulation does not require different  investors to have statistically independent information.",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 26814,
+                "end_char": 27025,
+                "chunk_id": "d165231c-60c1-4a3d-bf99-84d45495716d"
               },
               {
                 "n": 12,
                 "cited_text": "This content downloaded from \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000137.122.66.49 on Fri, 12 Jun 2026 19:26:22 UTC\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 43107,
+                "end_char": 43209,
+                "chunk_id": "83e34d6c-0047-4ebc-8ed1-0ed629115802"
               },
               {
                 "n": 13,
                 "cited_text": "alternatively as \"Pt, is sufficient for (z1, ... , z) with respect to earnings.\"  If, instead, the manager discloses his information y prior to t1, then Pt,  is sufficient for z1, ... , zn, and y with respect to earnings. Thus, with the  announcement, the price at t1 contains additional information about  earnings. But it does not follow that, by having the manager disclose his  information, the price will contain more information about the manager's  action than it would without disclosure. This is because the firm's price  aggregates information about the firm's net income, which is not neces- sarily equivalent to aggregating information about the manager's action,  as Theorem 3 demonstrates. This is similar, but not equivalent, to  Gjesdal's [1981] observation that rankings of information systems differ  when considered in terms of their ability to aid in controlling an agent  (stewardship value) or selecting an action (decision value). Here, infor- mation which is useful for forecasting net income may be detrimental for  contracting purposes, and vice versa, so policies which encourage unse- lective management disclosure of private information may produce su- perior forecasts of the firm's earnings, but inferior measures of the  manager's actions.",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 44472,
+                "end_char": 45745,
+                "chunk_id": "1d6a76a1-421c-4a23-874d-7b6d1f3eacd1"
               },
               {
                 "n": 14,
                 "cited_text": "Section 4 is devoted to an illustration of another class of disclosure  theories. There, I establish that it may be to the mutual benefit of both  managers and shareholders not to have managers disclose information  which investors know they have and which does not affect the firm's  earnings (exclusive of management compensation). Under such condi- tions, the only situation in which a disclosure problem can arise is in a  principal-agent context where the manager's contract depends on the  value of the firm. I show that, in some cases, the manager's release of his  private information may adversely affect the contractual relationship  between the shareholders and managers of a firm. The model in section  4 highlights the distinction between information which is useful for  forecasting purposes and information which is useful for contracting  purposes. Related distinctions may be found in Gjesdal [1981]. The model  also establishes that, even though writing contracts with a manager over  the price of the firm may be desirable when investors' information is  impounded in the firm's price (as suggested by Diamond and Verrecchia  [1982]), such contracts may be subverted when the manager makes  disclosures which affect the firm's price. In section 5, the relationship  between disclosure theories and the revelation principle is discussed.  Finally, section 6 provides conclusions.",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 7632,
+                "end_char": 9031,
+                "chunk_id": "8c70da2e-ac8f-4282-b517-9ebc6c055e68"
               },
               {
                 "n": 15,
                 "cited_text": "Suppose the owners wish the manager to take action a2. Then, it is  clear that for a fully revealing rational expectations equilibrium the  optimal contract will induce the manager to disclose his signal only if y",
-                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4"
+                "source_id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+                "start_char": 48646,
+                "end_char": 48861,
+                "chunk_id": "1a47cb66-7ec0-4e23-a2ca-40d316d8583f"
               }
             ],
             "answer_nonevidence": "In Dye (1985), the decision of whether a manager discloses or withholds nonproprietary information is primarily determined by two theoretical frameworks: **the market's uncertainty regarding whether the manager has actually received information**, and **the potential for disclosure to disrupt principal-agent compensation contracts** [1-3].\n\n**The Role of the Manager Being Uninformed**\nThe possibility that a manager might simply be uninformed plays a critical role in sustaining the non-disclosure of bad news. Under the standard \"disclosure principle,\" if the market knows a manager has information, the manager is forced to disclose it to prevent investors from assuming the worst and driving the stock price down [4, 5]. However, this principle fails when investors are unsure if the manager actually has any news [1].\n\nBecause a manager **cannot credibly prove that they have not received new information**, investors observing silence cannot distinguish between a manager who is hiding bad news and a manager who genuinely has nothing to report [6]. Consequently, the market price of the firm in the event of no disclosure becomes a weighted average of the firm's unconditional expected value (if the manager is uninformed) and the expected value of the suppressed bad news [7]. \n\nThis dynamic allows the manager to **rationally withhold any information whose actual value falls below this blended \"no-disclosure\" market price** [7]. As long as there is a probability that the manager is uninformed, they can hide bad news behind that possibility, meaning **a policy of complete, full disclosure is never an equilibrium** [8, 9]. \n\n**Contracting and Principal-Agent Determinants**\nIf investors *already know* that the manager possesses information, the decision to withhold it is determined by how its release would impact the manager's compensation contract [2]. \n\nIn a firm where ownership and management are separated, a manager's unobservable effort is partly evaluated using the firm's market price, which aggregates the private information and forecasts of various investors [10, 11]. If the manager discloses their private information early, that announcement dominates and completely determines the trajectory of the firm's stock price [10]. Doing so effectively **destroys the other information contained in the market price that is useful for contracting purposes** (i.e., information that helps owners accurately gauge the manager's effort) [12, 13]. \n\nTherefore, in this scenario, **managers withhold information because doing so preserves the informational value of the stock price for their compensation contracts** [12, 14]. Selective or complete non-disclosure can actually be mutually beneficial to both shareholders and managers, as unselective disclosure might produce better earnings forecasts but inferior measures of the manager's actual performance [13, 15].",
