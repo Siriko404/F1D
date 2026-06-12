@@ -152,8 +152,8 @@ def make_evidence(refs):
 #         **Section:** 1. Introduction
 _LOC_RE = re.compile(
     r'"([^"]{20,}?)"'                       # a quoted sentence (>=20 chars)
-    r'[\s\S]{0,120}?\*\*Page:\*\*\s*([^\n*]+?)\s*'
-    r'[\s\S]{0,60}?\*\*Section:\*\*\s*([^\n]+)')
+    r'[\s\S]{0,120}?\*\*Page:\*\*[ \t]*([^\n]+?)[ \t]*\n'      # page = rest of its line
+    r'[\s\S]{0,60}?\*\*Section:\*\*[ \t]*([^\n]+)')            # section = rest of its line
 
 
 def _norm(s):
