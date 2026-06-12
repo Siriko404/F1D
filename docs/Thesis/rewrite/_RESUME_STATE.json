@@ -2,7 +2,7 @@
   "_READ_FIRST": "Post-compaction resume index for the thesis Section 2 rewrite. Read THIS, then the files_of_record, before doing anything.",
   "updated": "2026-06-12",
   "mission": "Rewrite thesis Section 2 (Conceptual Framework and Empirical Strategy) paragraph-by-paragraph to a thin, referee-proof, COMPLETE claim. The AUDIT of the old draft is DONE; we are now REWRITING. Currently in 2.1 -- the main literature review -- 7 paragraphs.",
-  "where_we_are": "2.1 paragraph plan locked + logic chain advisor-validated. 6 core anchor papers UPLOADED to the NLM notebook (2026-06-12). Next: verify + draft P1.",
+  "where_we_are": "P1 COMPLETE (2026-06-12): 4 props verified via NLM -- Verrecchia, Dye + legal Basic v. Levinson & Rule 10b-5 (uploaded) -- ALL SUPPORTED with verbatim cited_text + page + section in the ledger; P1 prose APPROVED + stored in P1.final_prose; bib basic1988 + rule10b5 added to thesis_draft.tex (L202, L238). §2.1 BODY insertion DEFERRED until P2-P7 drafted (old L54-58 prose still holds the forbidden scrutiny framing; piecemeal replace = Frankenstein). NEXT: draft P2.",
 
   "hard_rules": [
     "BEFORE ANY NLM WORK: read docs/Thesis/rewrite/NLM_QUERY_GUIDE.md. The NLM script writes answers to the ledger + git commits; never ad-hoc, never hand-edit NLM data, never read a PDF/fulltext.",
@@ -31,7 +31,7 @@
   },
 
   "section_2_1_paragraphs": {
-    "P1": "disclosure-state premise (deal=MNPI, CEO gagged yet must host the call) -- anchors Verrecchia 1983, Dye 1985. MNPI = cite-or-background (ask user).",
+    "P1": "DONE -- prose APPROVED in ledger.final_prose. Disclosure-state premise: deal material (Basic v. Levinson 485 U.S. 224, p.238 III-C) + nonpublic = MNPI; no duty to disclose but may not mislead (Basic p.239 fn17 / Rule 10b-5(b) p.79); withholding is informative (Verrecchia 1983 p.192; Dye 1985 p.129). NB: 'must host the call' was DROPPED -- calls are voluntary (advisor); the bind = firm CHOOSES to face questions, then can't reveal/deny.",
     "P2": "earnings call as venue; call language is informative + readable -- lm2011, bushee2018 (Matsumoto/Mayew optional, NOT uploaded).",
     "P3": "mechanism -> ANTICIPATORY dimension -- Hollander 2010. MUST EARN THE SIGN (up not down; live Q&A, deflection leaks). H1 one-tailed.",
     "P4": "managerial style -> signal must be the CALL-VARYING part -- Bertrand-Schoar 2003. NECESSARY not sufficient; don't say 'residual IS the signal'.",
@@ -49,5 +49,5 @@
     "Harford (1999)": "10.1111/0022-1082.00179 (P5)"
   },
 
-  "NEXT_ACTION": "Write a NEW committed ATOMIZED query script for 2.1-P1 -- do NOT run tmp/nlm.py as-is (it hardcodes thewissen/ragozzino as SOURCES and writes nlm_verification.json); copy its CLI PATTERN only. E5: NAME each paper (Verrecchia 1983, Dye 1985), one proposition per ask, non-leading, clear-before-ask; record verbatim cited_text to docs/Thesis/rewrite/nlm_2.1_results.json. Resolve the MNPI cite-vs-background question with the user. Draft P1 ONLY; show for approval (RULE 2). Then P2. ONE PARAGRAPH AT A TIME."
+  "NEXT_ACTION": "Draft P2 (earnings call as venue + call-language informativeness). Read NLM_QUERY_GUIDE.md first. Use docs/Thesis/rewrite/nlm_p1.py as the TEMPLATE -- add P2 props to its query plan (P2.1 unscripted-Q&A carries incremental info; P2.2 LM dictionary measures tone/uncertainty; P2.3 Bushee linguistic complexity is informative), resolve sources, query -> ledger -> commit, run the substring-audit + pin decisive spans, adjudicate verdicts, then draft P2 prose and show for approval (RULE 2). ONE PARAGRAPH AT A TIME. Body insertion of ALL §2.1 paragraphs happens AFTER P2-P7 are drafted (avoid Frankenstein with old L54-58 prose)."
 }

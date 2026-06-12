@@ -680,11 +680,11 @@
       ],
       "prose_gate": {
         "rule": "all 4 propositions SUPPORTED before prose",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "A firm that has privately committed to an acquisition but not yet announced it occupies a distinct \\emph{disclosure state} rather than a distinct balance-sheet state. A pending acquisition that is material to the acquirer constitutes material nonpublic information: information about preliminary merger negotiations can be material well before any definitive agreement, with materiality determined by balancing the probability that the transaction is consummated against its magnitude to the firm \\citep{basic1988}. Securities law imposes no general duty to disclose such confidential negotiations, so silence is permitted; but once a firm speaks it may not mislead, since an untrue or half-true statement is unlawful \\citep{rule10b5, basic1988}. The quarterly earnings call is a recurring event that managers nonetheless hold and analysts expect, so the executive routinely faces live questioning while unable to address the one material development and unable to deny it. Disclosure theory tells us such a withholding state is not informationally empty: an informed manager may rationally withhold private information when disclosure is costly, sustaining a threshold below which information is withheld \\citep{verrecchia1983}, and non-disclosure persists in equilibrium precisely because outside investors cannot distinguish a manager who is uninformed from one who is informed but silent \\citep{dye1985}. This withholding bind---material information held back while the firm keeps fielding questions---is the organizing primitive of our analysis, which we read in descriptive, correlational terms throughout.",
+      "prose_status": "APPROVED"
     },
     "P2": {
       "order": 2,
