@@ -1,0 +1,23 @@
+{
+  "question": "In the paper titled “Straight talkers and vague talkers: The effects of managerial style in earnings conference calls” by Dzielinski, Wagner, and Zeckhauser (2021), what is the dependent variable of their equation (4)? Quote the sentence that introduces equation (4).",
+  "answer": "Based on the paper \"Straight talkers and vague talkers: The effects of managerial style in earnings conference calls\" by Dzielinski, Wagner, and Zeckhauser (2021), here are the answers to your questions:\n\n**Dependent Variable of Equation (4):**\nThe dependent variable in equation (4) is **$UncAnsCEOi,t$**, which represents the frequency of \"uncertainty\" words in a CEO's answers to analyst questions during a conference call [1, 2]. \n\n**Sentence Introducing Equation (4):**\nThe equation is introduced by the following sentences: \n> \"First, according to Equation 4 we estimate each CEO’s fixed effect in the frequency of “uncertainty” words in conference call answers. Then, we define CEO $i$’s clarity as the negative of the fixed effect:\" [1]\n\n**Location:** \nSection 4.4 CEO clarity - estimation, Page 17 [1, 3].",
+  "cited_source_ids": {
+    "67b17abd-1aed-49dc-938c-ec12775df1ee": 3
+  },
+  "expected_only": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+  "VERDICT": "PASS scope-by-name (DWZ only)",
+  "references": [
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "cited_text": "for firm effects. The next section develops the estimation procedure in more detail."
+    },
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "cited_text": "z = F (Corr1) − F (Corr2)√"
+    },
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "cited_text": "22The average EPR contains 1.22% uncertainty words."
+    }
+  ]
+}

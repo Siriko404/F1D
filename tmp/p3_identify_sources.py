@@ -72,12 +72,12 @@ def identify(title: str) -> dict:
     except Exception as e:
         return {"query": q, "error": f"json parse: {e}", "raw": out[i:i + 400]}
     # Collect cited source_ids in citation order; the most-cited is the match.
-    cites = [(x.get("source_id"), x.get("cited_text", "")) for x in j.get("references", [])
+    cites = [(x.get("source_id"), x.get("cited_text") or "") for x in j.get("references", [])
              if x.get("source_id")]
     counts = Counter(sid for sid, _ in cites)
     matches = []
     for sid, _n in counts.most_common():
-        snippet = next((t for s, t in cites if s == sid), "")
+        snippet = next((t for s, t in cites if s == sid), "") or ""
         matches.append({"source_id": sid, "n_cites": _n, "cited_text": snippet[:200]})
     locked = matches[0]["source_id"] if len(matches) == 1 else None  # unambiguous only
     return {"query": q, "answer": j.get("answer", "")[:500], "matches": matches,
