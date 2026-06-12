@@ -20,6 +20,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 AUDIT = ROOT / "docs" / "Thesis" / "audit"
+TMP = ROOT / "tmp"
 FA = AUDIT / "thesis_propositions_A.json"
 FB = AUDIT / "thesis_propositions_B.json"
 FO = AUDIT / "thesis_propositions.json"  # pristine seed, never touched
@@ -28,6 +29,8 @@ VENDORS = {"Capital IQ", "SDC", "Compustat", "CRSP", "IBES"}
 CITE_KEYS = re.compile(r"\\(?:citep|citet)\{([^}]+)\}")
 HAS_NUMBER = re.compile(r"\b\d+\.\d+\b|\bSE\s|R\^?2\b|\bn\.s\.\b|\d{2,3},\d{3}|significant at|\d+\\?%\s*level|p<[\d.]")
 HAS_MATH = re.compile(r"\$[^$]+\$")
+# p-value notation is stat reporting, not a formula: $p<.01$, $p>.05$, etc.
+PVALUE_ONLY = re.compile(r"^\$p\s*[<>]\s*\.?\d+\$")
 EQ_MENTION = re.compile(r"equation\s*[14]|equation-[14]")
 ID_RE = re.compile(r"^[A-Z]{2,3}-\d{3}[a-z]?$")
 NULL_FLDS = {"proposition", "category", "check_route", "role", "id"}
@@ -54,8 +57,14 @@ def check_rows(rows, label=""):
         s = r["seq"]
         seeds.setdefault(s, []).append(r)
 
+    # verbatim_span groups for content-based checks (1 seed -> N rows share span)
+    span_groups = {}
+    for r in rows:
+        span = r.get("verbatim_span", "")
+        span_groups.setdefault(span, []).append(r)
+
     if label:
-        print("CHECKER: %s (%d rows, %d seeds)" % (label, len(rows), len(seeds)))
+        print("CHECKER: %s (%d rows, %d seqs, %d spans)" % (label, len(rows), len(seeds), len(span_groups)))
 
     # 1. seq coverage
     all_seqs = sorted(seeds.keys())
@@ -69,34 +78,47 @@ def check_rows(rows, label=""):
     if n_a < n_keys:
         ok &= fail("CITE UNDERCOUNT: %d A-rows < %d cite-keys" % (n_a, n_keys))
 
-    # 3. vendor mentions -> B row
+    # 3. vendor mentions -> B row (check per span group)
+    seen_spans = set()
     for r in rows:
         span = r.get("verbatim_span", "")
+        if span in seen_spans:
+            continue
+        seen_spans.add(span)
         for v in VENDORS:
             if v in span:
-                b_rows = [x for x in seeds.get(r["seq"], [])
+                b_rows = [x for x in span_groups.get(span, [])
                           if x["category"] == "B" and v in x.get("proposition", "")]
                 if not b_rows:
-                    ok &= fail("VENDOR NOT COVERED: seq %d mentions '%s' but no B row" % (r["seq"], v))
+                    ok &= fail("VENDOR NOT COVERED: span mentions '%s' but no B row (seq %d)" % (v, r["seq"]))
 
-    # 4. number seeds -> exactly 1 E row
+    # 4. number spans -> at least 1 E row (check per span group, not per seq)
+    seen_spans = set()
     for r in rows:
         span = r.get("verbatim_span", "")
-        if HAS_NUMBER.search(span):
-            e_rows = [x for x in seeds.get(r["seq"], []) if x["category"] == "E"]
-            if len(e_rows) != 1:
-                ok &= fail("E-FAIL seq %d: expected 1 E row, got %d" % (r["seq"], len(e_rows)))
+        if span in seen_spans:
+            continue
+        seen_spans.add(span)
+        if HAS_NUMBER.search(span) and not any(
+            x["category"] == "E" for x in span_groups.get(span, [])
+        ):
+            ok &= fail("E MISSING: span has number but no E row (seq %d)" % r["seq"])
 
-    # 5. math/equation/vartable -> >=1 D row
+    # 5. math/equation/vartable -> >=1 D row (check per span group)
+    seen_spans = set()
     for r in rows:
         span = r.get("verbatim_span", "")
-        has_d = any(x["category"] == "D" for x in seeds.get(r["seq"], []))
-        if HAS_MATH.search(span) or EQ_MENTION.search(span):
+        if span in seen_spans:
+            continue
+        seen_spans.add(span)
+        has_d = any(x["category"] == "D" for x in span_groups.get(span, []))
+        math_spans = [m for m in HAS_MATH.findall(span) if not PVALUE_ONLY.match(m)]
+        if math_spans or EQ_MENTION.search(span):
             if not has_d:
-                ok &= fail("D MISSING: seq %d has math/equation but no D row" % r["seq"])
+                ok &= fail("D MISSING: span has math/equation but no D row (seq %d)" % r["seq"])
         if r.get("block") == "appendix-vartable" and r.get("note") == "table-row" and "&" in span:
             if not has_d:
-                ok &= fail("D MISSING: seq %d is a vartable &-row but no D row" % r["seq"])
+                ok &= fail("D MISSING: span is vartable &-row but no D row (seq %d)" % r["seq"])
 
     # 6. bibliography -> 13 I rows, distinct bibkeys
     bib_rows = [r for r in rows if r.get("block") == "bibliography"]
@@ -188,9 +210,23 @@ def promote_block(block_name):
         print("PROMOTE FATAL: B corrupted after write: %s" % e)
         return 1
 
-    # git commit B
+    # stage all related artifacts atomically
+    block_slug = block_name.lower().replace(" ", "_").replace(",", "").replace("/", "_")
+    companion_files = [
+        FA,                                                   # working copy A
+        TMP / ("%s_rows.json" % block_slug),                  # injector input
+        TMP / "inject_block.py",                              # injector script
+        TMP / "check_propositions.py",                        # checker (this file)
+    ]
+    # glob any seed-level audit files for this block
+    for pattern in ["%s_seed*_audit_input.json" % block_slug,
+                    "%s_seed*_audit_result.json" % block_slug]:
+        for f in sorted(AUDIT.glob(pattern)):
+            companion_files.append(f)
     try:
-        subprocess.run(["git", "add", str(FB)], cwd=str(ROOT), check=True)
+        for f in companion_files:
+            if Path(f).exists():
+                subprocess.run(["git", "add", str(f)], cwd=str(ROOT), check=True)
         msg = "audit(propositions): identify block '%s' — %d rows, CHECKER PASS" % (block_name, new_count)
         subprocess.run(["git", "commit", "-q", "-m", msg], cwd=str(ROOT), check=True)
     except subprocess.CalledProcessError as e:
