@@ -115,3 +115,17 @@ No fixes during audit. No findings from memory. No web metadata as citation grou
 - **M2-03** took a *docstring* (`ceo_qa_uncertainty.py:4` "pooled 1%/99%") and a table *note* as the winsorization scheme. The actual call is `winsorize_by_year(_pct_cols, lower=0.0, upper=0.99)` (`_linguistic_engine.py:331`) = **per-year, upper-only, 99th pct** — a different transform. Sina caught it.
 
 **Standing rule.** Every methodology fact in a finding must cite the **executable line** — the `fit()` / `winsorize()` / `clip()` / `.quantile()` / formula call and its **literal arguments** — not a docstring, header comment, table note, or variable name that *describes* it. Comments, notes, and seed labels **drift from code and are themselves audit targets**: when a comment and the call disagree, **the call is ground truth and the comment becomes a (separate) finding** (e.g. M2-03's stale `pooled 1%/99%` docstrings). A finding whose only evidence is a comment is not yet verified.
+
+### E3 (2026-06-11) — NLM citation-query discipline (5 rules; Sina-set, smoke-test verified). [P3]
+
+**What it is.** The five operating rules for every NotebookLM query in P3 (D4/D5). They are already wired into `tmp/nlm.py`; this addendum makes them binding and explains the failure each one prevents. Smoke-tested 2026-06-11 (post-auth-renewal): `clear` → single-source `-s` → `--json` ask on Thewissen returned a scoped answer with verbatim `cited_text` + char offsets. All five live.
+
+| # | Rule | `nlm.py` mechanism | Failure it prevents |
+|---|------|--------------------|---------------------|
+| 1 | **Self-contained question** — each query stands alone; no "as above", no carry-over from a prior turn | `PREFIX = "Reading only this paper, "` + one question per call | NLM answering from conversation context instead of the source → unverifiable attribution |
+| 2 | **Name the paper / single-source scope** — every question targets ONE named paper's source id | `ask -s <source_id>` | cross-paper mixing — NLM pulls a quote from the wrong document in the notebook |
+| 3 | **Non-leading / exploratory phrasing** — ask open ("what does it say about X?"), never "confirm that X" | question wording in `INFOS` | confirmation bias — a leading prompt manufactures agreement; the audit must elicit, not suggest |
+| 4 | **Clear before each ask** — reset conversation state between questions | `cli(["clear"])` before every `ask` | residual context bias bleeding from the previous question into the next answer |
+| 5 | **Incremental JSON, verbatim** — write structured output (answer + `cited_text` quotes) to disk after every item | `--json` + `OUT.write_text(...)` after each task | (a) lost work on quota/interrupt; (b) attribution from a paraphrase instead of a verbatim quote — only the quoted `cited_text` is admissible evidence |
+
+**Standing rule.** No P3 attribution verdict (SUPPORTED / OVERCLAIM / UNSUPPORTED) without all five satisfied. The verdict's evidence is the verbatim `cited_text` from the scoped JSON, never NLM's prose `answer` alone (the answer can drift; the quoted span is ground truth — same principle as E2 for code). Web metadata remains inadmissible as citation ground truth (the everhart incident, §9).
