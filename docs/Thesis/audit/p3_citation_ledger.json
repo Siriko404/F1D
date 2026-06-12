@@ -6,6 +6,7 @@
   "RED_FLAG_MANDATE": "Capture EVERY external reference that lacks a citation -- uncited factual/legal premise, uncited prior-work claim, AND uncited data source/vendor/archive. These are red flags to address later; NEVER skip them. (user directive, 2026-06-11)",
   "METHODOLOGY_MANDATE": "Record EVERY methodology / design / estimator choice and anything suspicious, even when uncited and textbook-standard. Do NOT pass on anything suspicious. check_route=method-review (a scrutiny queue, separate from citation verification). (user directive, 2026-06-11)",
   "BRIGHT_LINE": "RECORD, NEVER JUDGE-OUT. If a span is consistent / standard / a cross-ref / a restatement, still record it with a tag + note -- never silently dispose of it in prose. The user trims later. (avoids the override cycle)",
+  "NLM_STAGE_NOTE": "Some paper-facts are recorded at MANY locations (esp. DWZ eq-4 / eq-1: A-1, I-8, EM-1, EM-2, DS-9, DS-10, + appendix DWZ row). At the NLM verification stage, verify each DISTINCT paper-fact ONCE and fan the verdict across all its instances -- do NOT fire one NLM query per instance (protects quota).",
   "reference_form_legend": {
     "direct-cite": "\\cite/\\citep/\\citet token present -> check_route nlm",
     "named-no-cite": "author name(s) given, no cite token -> check_route nlm",
@@ -266,7 +267,7 @@
       "id": "DS-3", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:94",
       "verbatim_thesis_span": "Uncertainty language is measured with the ``uncertainty'' category of the Loughran--McDonald Master Dictionary \\citep{lm2011}; we use the 1993--2024 release",
       "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "lm2011",
-      "note": "construct = LM 'uncertainty' word category. lm2011 IS cited here -> resolves CF-4 ('in bib but uncited at L54'); the measure is attributed at L94, not L54. Detail: 1993-2024 release used for a 2002-2018 sample."
+      "note": "construct = LM 'uncertainty' word category (verify lm2011 provides an 'uncertainty' word list). NEUTRAL CROSS-REF (not a verdict): lm2011 IS cited at L94; CF-4 separately flags that L54 names the word-share measure with no cite -- USER decides whether L54 needs its own cite. Detail: 1993-2024 release used for a 2002-2018 sample."
     },
     {
       "id": "DS-4", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:94",
@@ -320,7 +321,19 @@
       "id": "DS-12", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:100",
       "verbatim_thesis_span": "The third layer is design-specific: the run-up test drops a treated firm's post-announcement quarters, the event studies cap the post-announcement window at four quarters, and the scrutiny validity and channel tests require at least three analyst Q\\&A turns per call",
       "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
-      "note": "third sample layer (design-specific filters). Layers 1-2 = call panel (exclude financial+utility; exclude CEOs <5 calls) and deal universe (>=50% cash/stock arms; first qualifying deal). SUSPICIOUS: P2 M2-04 flagged post-WITHDRAWAL drop + 2nd-announcement truncation as code-only; they do NOT appear in this span -> ties to MD-5 'reported with each table'."
+      "note": "third sample layer (design-specific filters). Layers 1-2 recorded separately (DS-13, DS-14). SUSPICIOUS: P2 M2-04 flagged post-WITHDRAWAL drop + 2nd-announcement truncation as code-only; they do NOT appear in this span -> ties to MD-5 'reported with each table'."
+    },
+    {
+      "id": "DS-13", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:100",
+      "verbatim_thesis_span": "The base layer is the call panel: every Capital IQ call of a US public firm between 2002 and 2018 that can be matched to Compustat, excluding financial and utility firms throughout and excluding CEOs with fewer than five calls in the sample, for whom no style can be estimated and hence no residual is defined",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "sample layer 1 (call panel). Consequential, referee-sensitive filters: EXCLUDE financial + utility firms throughout; EXCLUDE CEOs with <5 calls (no estimable style -> no residual)."
+    },
+    {
+      "id": "DS-14", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:100",
+      "verbatim_thesis_span": "The second layer is the deal universe: an SDC acquisition qualifies if it is announced by a US public acquirer between 2002 and 2018, its status is completed, pending, or withdrawn, and its payment composition is known; deals at least 50\\% cash-financed define the cash arm and deals at least 50\\% stock-financed the stock placebo arm, with each firm's first qualifying deal setting its event clock",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "sample layer 2 (deal universe). Consequential thresholds: >=50% cash -> cash arm, >=50% stock -> stock arm; FIRST qualifying deal sets the event clock (recurs DS-11/MD-1). Referee-sensitive."
     },
     {
       "id": "RU-1", "block": "§3.2 main1-runup", "file_line": "thesis_draft.tex:104",
