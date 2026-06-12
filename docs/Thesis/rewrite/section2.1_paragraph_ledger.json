@@ -290,7 +290,8 @@
                 "section": "5. Conclusion"
               }
             ],
-            "verdict": "PENDING"
+            "verdict": "SUPPORTED",
+            "verdict_note": "Verbatim spans n=5/n=6/n=8: an informed manager withholds below a threshold when a proprietary (disclosure) cost exists (p.182 §1; p.190 §4; p.192 §5)."
           }
         },
         {
@@ -407,7 +408,15 @@
                 "section": "4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information"
               }
             ],
-            "verdict": "PENDING"
+            "verdict": "SUPPORTED",
+            "span_pin": {
+              "phrase": "a policy of complete disclosure corresponds to x = 0, which (as was noted above) does not satisfy (2), and is hence not an equilibrium",
+              "page": "129 [1, 2]",
+              "section": "3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown (specifically within the subsection 3.1.1. Proof.) [1-3]",
+              "query": "Reading only this paper, \"Disclosure of Nonproprietary Information\" by Dye (1985, Journal of Accounting Research): on what page (the page number printed in the paper) and in which section does this exact sentence appear? Report **Page:** and **Section:**. Sentence: \"a policy of complete disclosure corresponds to x = 0, which (as was noted above) does not satisfy (2), and is hence not an equilibrium\"",
+              "answer": "**Page:** 129 [1, 2]\n\n**Section:** 3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown (specifically within the subsection 3.1.1. Proof.) [1-3]"
+            },
+            "verdict_note": "Verbatim span n=8 ('a policy of complete disclosure ... is hence not an equilibrium') + n=4 (manager informed only with prob (1-p)): non-disclosure is sustained because investors cannot tell an uninformed manager from one withholding."
           }
         },
         {
