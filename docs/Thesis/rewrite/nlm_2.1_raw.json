@@ -1,0 +1,11 @@
+{
+  "P1.1": {
+    "query": "Reading only this paper, \"Discretionary Disclosure\" by Verrecchia (1983, Journal of Accounting and Economics): under what conditions, if any, does it conclude that a manager who possesses private information will choose not to disclose that information?",
+    "preamble": "",
+    "raw_json": {
+      "error": true,
+      "code": "ERROR",
+      "message": "Chat request timed out: "
+    }
+  }
+}
