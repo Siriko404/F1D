@@ -33,6 +33,7 @@ Usage:
 """
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -136,13 +137,48 @@ def commit(paths, message):
 
 def make_evidence(refs):
     """Verbatim cited_text + its EXACT in-source location (char span + chunk).
-    page/section are filled at adjudication from the NLM answer (which the
-    LOCATOR clause forces NLM to report) -- never derived ad-hoc from a PDF."""
+    page/section get filled by attach_locations() from the NLM answer the LOCATOR
+    clause forces -- by the SCRIPT, into the ledger -- never ad-hoc from a PDF."""
     return [{"n": x.get("citation_number"), "cited_text": x.get("cited_text"),
              "source_id": x.get("source_id"),
              "start_char": x.get("start_char"), "end_char": x.get("end_char"),
              "chunk_id": x.get("chunk_id"), "page": None, "section": None}
             for x in refs if x.get("cited_text")]
+
+
+# NLM answers, under the LOCATOR clause, list supporting quotes as:
+#     "quoted sentence ..." [N]
+#         **Page:** 182
+#         **Section:** 1. Introduction
+_LOC_RE = re.compile(
+    r'"([^"]{20,}?)"'                       # a quoted sentence (>=20 chars)
+    r'[\s\S]{0,120}?\*\*Page:\*\*\s*([^\n*]+?)\s*'
+    r'[\s\S]{0,60}?\*\*Section:\*\*\s*([^\n]+)')
+
+
+def _norm(s):
+    return re.sub(r"\s+", " ", (s or "")).strip().lower()
+
+
+def parse_locations(answer):
+    """Extract (quote, page, section) triples NLM reported in its answer."""
+    return [{"quote": m.group(1).strip(), "page": m.group(2).strip(),
+             "section": m.group(3).strip()} for m in _LOC_RE.finditer(answer or "")]
+
+
+def attach_locations(v, answer):
+    """SCRIPT fills the ledger's page/section: store the located quotes, and
+    backfill each structured evidence span's page/section where an answer-quote
+    is a verbatim substring of its cited_text (double-confirmation)."""
+    locs = parse_locations(answer)
+    v["located_evidence"] = locs
+    for loc in locs:
+        key = _norm(loc["quote"])[:50]
+        for ev in v.get("evidence", []):
+            if key and key in _norm(ev.get("cited_text")):
+                ev["page"], ev["section"] = loc["page"], loc["section"]
+                break
+    return locs
 
 
 def load(path, default):
@@ -273,6 +309,7 @@ def run_paragraph(pid, dry=False, force=False):
         v["source_matched_preamble"] = res.get("preamble", "")
         v["evidence"] = evidence
         v["answer_nonevidence"] = (j.get("answer", "") if j else res.get("error", ""))
+        locs = attach_locations(v, j.get("answer", "") if j else "")
         # verdict left as-is (PENDING) -- human adjudicates on the verbatim cited_text.
         raw[ppid] = res
         save_ledger(led)
@@ -280,7 +317,7 @@ def run_paragraph(pid, dry=False, force=False):
         n_ev = len(evidence)
         commit([LEDGER, RAW, Path(__file__)],
                f"verify(2.1): {ppid} evidence captured ({n_ev} quotes) from {paper_key}")
-        print(f"         -> {n_ev} verbatim quote(s) captured"
+        print(f"         -> {n_ev} verbatim span(s); {len(locs)} located quote(s) (page+section)"
               + ("" if n_ev else "  [!] no cited_text -- review answer_nonevidence"))
     print(f"\n[{pid}] done. Adjudicate verdicts on the verbatim cited_text, then write prose.")
 
@@ -302,8 +339,9 @@ def rebuild_from_raw():
             v["query_used"] = r.get("query", v.get("query_used"))
             v["source_matched_preamble"] = r.get("preamble", v.get("source_matched_preamble", ""))
             v["answer_nonevidence"] = j.get("answer", v.get("answer_nonevidence", ""))
+            locs = attach_locations(v, j.get("answer", ""))
             n += 1
-            print(f"  rebuilt {prop['prop_id']}: {len(v['evidence'])} quote(s) with offsets")
+            print(f"  rebuilt {prop['prop_id']}: {len(v['evidence'])} span(s), {len(locs)} located quote(s) (page+section)")
     save_ledger(led)
     commit([LEDGER, Path(__file__)], "verify(2.1): rebuild ledger evidence from raw (add char-offsets + chunk_id)")
     print(f"Rebuilt {n} proposition(s) from raw.")

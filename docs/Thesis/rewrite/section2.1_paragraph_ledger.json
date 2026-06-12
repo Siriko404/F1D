@@ -253,8 +253,8 @@
                 "start_char": 10000,
                 "end_char": 11107,
                 "chunk_id": "c9251faf-da03-46cf-8726-885edc1a0dfb",
-                "page": null,
-                "section": null
+                "page": "1",
+                "section": "1. Introduction"
               },
               {
                 "n": 4,
@@ -263,8 +263,8 @@
                 "start_char": 26891,
                 "end_char": 27933,
                 "chunk_id": "86c9b10a-a9a4-4ba9-b25f-413ea51ddd7e",
-                "page": null,
-                "section": null
+                "page": "1",
+                "section": "4. The existence of a discretionary disclosure equilibrium"
               },
               {
                 "n": 6,
@@ -273,8 +273,8 @@
                 "start_char": 32510,
                 "end_char": 33152,
                 "chunk_id": "f6faf0ff-7c86-4830-b477-b3a20a8f066d",
-                "page": null,
-                "section": null
+                "page": "1",
+                "section": "5. Conclusion"
               }
             ],
             "answer_nonevidence": "In Verrecchia (1983), a manager who possesses private information will choose not to disclose it when there is a positive disclosure-related cost (termed a \"proprietary cost\") and the value of the information falls below a specific \"threshold level of disclosure\" [1, 2]. Under these conditions, the manager will rationally withhold the information if it is either outright \"bad news\" or if it is \"good news\" that is not favorable enough to justify paying the proprietary cost to reveal it [3]. \n\nHere are the specific sentences quoted from the paper that support this conclusion, along with their exact page numbers and section headings:\n\n*   \"If a proprietary cost exists and information is withheld, traders are unsure whether it was withheld because: (i) the information represents 'bad news', or (ii) the information represents 'good news', but not sufficiently good news to warrant incurring the proprietary cost.\" [3] \n    *   **Page:** 182\n    *   **Section:** 1. Introduction\n\n*   \"An intuitive explanation of the Theorem is that when a proprietary cost exists, a manager maximizes the price of a risky asset by disclosing what he observes only when the realization y=y is sufficiently high to overcome the cost associated with its disclosure.\" [4]\n    *   **Page:** 190\n    *   **Section:** 4. The existence of a discretionary disclosure equilibrium\n\n*   \"An equilibrium threshold level of disclosure is a point below which a manager’s motivation to withhold information is consistent with traders’ conjecture as to how to interpret that action.\" [5]\n    *   **Page:** 192\n    *   **Section:** 5. Conclusion\n\n*   \"This result relies on the existence of a cost associated with the disclosure of information.\" [6]\n    *   **Page:** 192\n    *   **Section:** 5. Conclusion",
@@ -287,7 +287,29 @@
               "id": "b919b243-8399-4230-8bbc-c352fffb47d7",
               "title": "1-s2.0-0165410183900113-main.pdf"
             },
-            "source_matched_preamble": ""
+            "source_matched_preamble": "",
+            "located_evidence": [
+              {
+                "quote": "If a proprietary cost exists and information is withheld, traders are unsure whether it was withheld because: (i) the information represents 'bad news', or (ii) the information represents 'good news', but not sufficiently good news to warrant incurring the proprietary cost.",
+                "page": "1",
+                "section": "1. Introduction"
+              },
+              {
+                "quote": "An intuitive explanation of the Theorem is that when a proprietary cost exists, a manager maximizes the price of a risky asset by disclosing what he observes only when the realization y=y is sufficiently high to overcome the cost associated with its disclosure.",
+                "page": "1",
+                "section": "4. The existence of a discretionary disclosure equilibrium"
+              },
+              {
+                "quote": "An equilibrium threshold level of disclosure is a point below which a manager’s motivation to withhold information is consistent with traders’ conjecture as to how to interpret that action.",
+                "page": "1",
+                "section": "5. Conclusion"
+              },
+              {
+                "quote": "This result relies on the existence of a cost associated with the disclosure of information.",
+                "page": "1",
+                "section": "5. Conclusion"
+              }
+            ]
           }
         },
         {
@@ -385,7 +407,44 @@
               "id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
               "title": "Dye-DisclosureNonproprietaryInformation-1985.pdf"
             },
-            "source_matched_preamble": ""
+            "source_matched_preamble": "",
+            "located_evidence": [
+              {
+                "quote": "A legitimate explanation for the nondisclosure of management's non-proprietary information arises from the fact that investors are often unsure whether the manager has any such information-or, more generally, are uncertain about the kind of information held by management.",
+                "page": "1",
+                "section": "2. Amended Disclosure Principle"
+              },
+              {
+                "quote": "If he announces nothing, the investors cannot discern whether he has received information but chosen not to release it or whether he has not received information.",
+                "page": "1",
+                "section": "3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown"
+              },
+              {
+                "quote": "The economically interesting conclusion of Theorem 1 is that no policy of full disclosure is an equilibrium when investors may be unaware that managers have received any private information, given that (as assumed above) managers cannot make credible announcements that they have not received information.",
+                "page": "1",
+                "section": "3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown"
+              },
+              {
+                "quote": "According to Theorem 1, the manager may suppress the release of bad news because investors are unaware that the manager has any news.",
+                "page": "1",
+                "section": "3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown"
+              },
+              {
+                "quote": "The conjunction of these three conditions implies that the release of the information held by the manager must alter his compensation (with positive probability).",
+                "page": "1",
+                "section": "4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information"
+              },
+              {
+                "quote": "If the manager discloses the firm's output prior to the time this information (held by investors) is received, then the price of the firm will be determined by this announcement and will reveal little about the information held by investors.",
+                "page": "1",
+                "section": "4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information"
+              },
+              {
+                "quote": "In short, the manager's release of information destroys other information, and this is the reason that the early release is undesirable.",
+                "page": "1",
+                "section": "4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information"
+              }
+            ]
           }
         },
         {
