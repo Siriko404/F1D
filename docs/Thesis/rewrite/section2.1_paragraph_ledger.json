@@ -617,6 +617,41 @@
                     "section": "III B"
                   }
                 ]
+              },
+              {
+                "part": "rule-10b5-halftruth",
+                "source": {
+                  "id": "b19a6e99-b9f2-4e0a-b1b0-83089f568569",
+                  "title": "CFR-2014-title17-vol4-sec240-10b-5.pdf"
+                },
+                "query": "Reading only this paper, Rule 10b-5 (17 C.F.R. 240.10b-5), \"Employment of manipulative and deceptive devices\": what conduct does this rule prohibit regarding untrue statements of material fact, and regarding omitting a material fact necessary to make statements not misleading, in connection with the purchase or sale of a security? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+                "answer": "Based on Rule 10b-5, the rule prohibits any person from making an untrue statement of a material fact, or omitting a material fact that is necessary to prevent their statements from being misleading, if done directly or indirectly using any means of interstate commerce, the mails, or any facility of a national securities exchange in connection with buying or selling a security [1, 2]. \n\nHere are the specific excerpts from the paper that support this conclusion, along with their exact printed page numbers and section headings (note that the rule is formatted as one continuous sentence with subsections across two pages):\n\n*   \"It shall be unlawful for any person, directly or indirectly, by the use of any means or instrumentality of interstate commerce, or of the mails or of any fa-cility of any national securities ex-change,\"\n    *   **Page:** 79\n    *   **Section:** § 240.10b–5 Employment of manipulative and deceptive devices.\n\n*   \"(b) To make any untrue statement of a material fact or to omit to state a material fact necessary in order to make the statements made, in the light of the circumstances under which they were made, not misleading, or\"\n    *   **Page:** 79\n    *   **Section:** § 240.10b–5 Employment of manipulative and deceptive devices.\n\n*   \"in connection with the purchase or sale of any security.\"\n    *   **Page:** 80\n    *   **Section:** § 240.10b–5 Employment of manipulative and deceptive devices.",
+                "quotes": [
+                  {
+                    "n": 1,
+                    "cited_text": "It shall be unlawful for any person, directly or indirectly, by the use of any means or instrumentality of interstate commerce, or of the mails or of any fa-cility of any national securities ex-change,",
+                    "start_char": 3498,
+                    "end_char": 3700,
+                    "chunk_id": "f0c58b05-aad6-4ca7-bf95-118b443a954c"
+                  }
+                ],
+                "located": [
+                  {
+                    "quote": "It shall be unlawful for any person, directly or indirectly, by the use of any means or instrumentality of interstate commerce, or of the mails or of any fa-cility of any national securities ex-change,",
+                    "page": "79",
+                    "section": "§ 240.10b–5 Employment of manipulative and deceptive devices."
+                  },
+                  {
+                    "quote": "(b) To make any untrue statement of a material fact or to omit to state a material fact necessary in order to make the statements made, in the light of the circumstances under which they were made, not misleading, or",
+                    "page": "79",
+                    "section": "§ 240.10b–5 Employment of manipulative and deceptive devices."
+                  },
+                  {
+                    "quote": "in connection with the purchase or sale of any security.",
+                    "page": "80",
+                    "section": "§ 240.10b–5 Employment of manipulative and deceptive devices."
+                  }
+                ]
               }
             ],
             "verdict": "PENDING"
