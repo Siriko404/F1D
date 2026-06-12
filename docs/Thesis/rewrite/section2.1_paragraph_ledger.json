@@ -784,7 +784,17 @@
                 "section": "VI. CONCLUSION"
               }
             ],
-            "verdict": "PENDING"
+            "verdict": "SUPPORTED",
+            "span_pins": [
+              {
+                "phrase": "We find that both presentations and discussions are incrementally informative, but that discussion periods have greater information content than presentations.",
+                "page": "1411",
+                "section": "VI. CONCLUSION [1, 2]",
+                "query": "Reading only this paper, \"What Makes Conference Calls Useful? The Information Content of Managers' Presentations and Analysts' Discussion Sessions\" by Matsumoto, Pronk and Roelofsen (2011, The Accounting Review): on what page (the page number printed in the paper) and in which section does this exact sentence appear? Report **Page:** and **Section:**. Sentence: \"We find that both presentations and discussions are incrementally informative, but that discussion periods have greater information content than presentations.\"",
+                "answer": "**Page:** 1411\n\n**Section:** VI. CONCLUSION [1, 2]"
+              }
+            ],
+            "verdict_note": "Matsumoto, Pronk & Roelofsen (2011): the analysts' discussion (Q&A) segment carries information content incremental to the managers' presentation, and is MORE informative than the presentation. Verbatim fragment n6 ('...in the case of the discussion, over information released...') + the decisive conclusion sentence round-trip pinned (span_pin, p.1411 VI. Conclusion); empirical result at p.1396 IV."
           }
         },
         {
@@ -894,7 +904,8 @@
                 "section": "III. Textual Analysis and Word Lists"
               }
             ],
-            "verdict": "PENDING"
+            "verdict": "SUPPORTED",
+            "verdict_note": "Loughran & McDonald (2011): word lists from other disciplines misclassify financial text -- 73.8% of Harvard 'negative' words are not negative in finance (verbatim span n4, p.36) and 'high misclassification rate and spurious correlations' (verbatim span n3, p.62 V. Conclusions); LM build finance-specific lists INCLUDING uncertainty (verbatim span n6, p.37), and the Fin-Unc uncertainty list = 285 words (verbatim span n8, p.45 III. Textual Analysis and Word Lists). Instrument provenance bulletproof; 'uncertainty is informative' rides as bonus per design (verdict does not hinge on it). Decisive spans are themselves verbatim -- no pin needed."
           }
         }
       ],

@@ -157,15 +157,39 @@ def run_content():
 # --- finalize: POPULATED AFTER reviewing captured spans (substring-audit). For each
 #     decisive answer-only quote, one targeted page-pin call; then record the
 #     human-adjudicated verdicts. Filled once run_content output is seen.
-PINS = []        # (prop_id, [candidates], paper label, decisive verbatim sentence)
-VERDICTS = {}    # prop_id -> (verdict, note)
+# (prop_id, fixed source_id or None, [candidates] or None, paper label, decisive verbatim sentence)
+PINS = [
+    ("P2.1", "a1dacc9f-2bee-46ba-9261-496fd687c8e6", None,
+     '"What Makes Conference Calls Useful? The Information Content of Managers\' '
+     'Presentations and Analysts\' Discussion Sessions" by Matsumoto, Pronk and '
+     'Roelofsen (2011, The Accounting Review)',
+     "We find that both presentations and discussions are incrementally informative, but "
+     "that discussion periods have greater information content than presentations."),
+]
+VERDICTS = {
+    "P2.1": ("SUPPORTED",
+             "Matsumoto, Pronk & Roelofsen (2011): the analysts' discussion (Q&A) segment "
+             "carries information content incremental to the managers' presentation, and is "
+             "MORE informative than the presentation. Verbatim fragment n6 ('...in the case of "
+             "the discussion, over information released...') + the decisive conclusion sentence "
+             "round-trip pinned (span_pin, p.1411 VI. Conclusion); empirical result at p.1396 IV."),
+    "P2.2": ("SUPPORTED",
+             "Loughran & McDonald (2011): word lists from other disciplines misclassify "
+             "financial text -- 73.8% of Harvard 'negative' words are not negative in finance "
+             "(verbatim span n4, p.36) and 'high misclassification rate and spurious correlations' "
+             "(verbatim span n3, p.62 V. Conclusions); LM build finance-specific lists INCLUDING "
+             "uncertainty (verbatim span n6, p.37), and the Fin-Unc uncertainty list = 285 words "
+             "(verbatim span n8, p.45 III. Textual Analysis and Word Lists). Instrument provenance "
+             "bulletproof; 'uncertainty is informative' rides as bonus per design (verdict does not "
+             "hinge on it). Decisive spans are themselves verbatim -- no pin needed."),
+}
 
 
 def finalize():
     ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
     props = {p["prop_id"]: p for p in ledger["paragraphs"][PARA]["propositions"]}
-    for prop_id, cands, label, phrase in PINS:
-        sid, title = source_id_multi(cands)
+    for prop_id, fixed_id, cands, label, phrase in PINS:
+        sid, title = source_by_id(fixed_id) if fixed_id else source_id_multi(cands)
         q = (f"{PREFIX}{label}: on what page (the page number printed in the paper) and in which "
              f'section does this exact sentence appear? Report **Page:** and **Section:**. '
              f'Sentence: "{phrase}"')
@@ -189,11 +213,36 @@ def finalize():
     print("  verdicts recorded; committed")
 
 
+def audit():
+    """Substring-audit: is each located (answer) quote contained in a verbatim cited_text
+    span? Prints per-prop match-rate so a decisive answer-only quote is pinned, not trusted.
+    NB: this located<-span rate UNDERSTATES strength when a verbatim span is itself decisive
+    (then no located round-trip is needed -- read the spans directly)."""
+    ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
+    for p in ledger["paragraphs"][PARA]["propositions"]:
+        v = p.get("verification", {})
+        spans = [q.get("cited_text") or "" for q in v.get("quotes", [])]
+        loc = v.get("located", [])
+        hits = 0
+        print(f"\n{p['prop_id']}: {len(spans)} verbatim spans, {len(loc)} located")
+        for L in loc:
+            q = L.get("quote", "")
+            m = any(q in s for s in spans)
+            hits += int(m)
+            print(f"  {'OK  ' if m else 'MISS'} p.{L.get('page')}  {q[:72]!r}")
+        print(f"  -> {hits}/{len(loc)} located quotes lie inside a verbatim span")
+
+
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--audit", action="store_true",
+                    help="substring-audit: located (answer) quotes vs verbatim cited_text spans")
     ap.add_argument("--finalize", action="store_true",
                     help="pin decisive answer-only spans and record adjudicated verdicts")
     args = ap.parse_args()
+    if args.audit:
+        audit()
+        return
     if not EXE:
         sys.exit("ERROR: `notebooklm` CLI not found on PATH. Run `notebooklm login` first.")
     if args.finalize:
