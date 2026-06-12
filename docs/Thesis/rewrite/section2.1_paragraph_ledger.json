@@ -689,23 +689,25 @@
     "P2": {
       "order": 2,
       "lit_body": "earnings calls as a disclosure venue + textual analysis of call language",
-      "intent": "The earnings call is where the bind becomes legible: a recurring, semi-spontaneous event whose unscripted Q&A is far less managed than prepared remarks, and a large literature shows call LANGUAGE carries information beyond the numbers. Reading it quantitatively -- word-classification dictionaries, the presentation/Q&A split -- is an established method this paper adopts and extends to a dimension prior work has not read: uncertainty.",
+      "intent": "The earnings call is where the bind becomes legible: a recurring, semi-spontaneous event whose unscripted Q&A is far less managed than prepared remarks, and a large literature shows call LANGUAGE carries information beyond the numbers. Reading it quantitatively -- finance-specific word-classification dictionaries, on the presentation/Q&A split -- is an established method this paper ADOPTS. P2 makes NO novelty claim: prior work already measures uncertainty language (hassan2020, DWZ, baker2016/davis2016); our novelty is the anticipatory x cash-concentrated, residualized, disclosure-state-tracking APPLICATION, which is P6's to state.",
       "serves": "Situates the measurement venue + call-textual-analysis literature; establishes unscripted call language is informative; names the presentation/Q&A split the design rests on.",
       "boundary": "Do not construct the residual (2.3). Venue + reading-method + informativeness only.",
-      "thin_claim": "Adopt-and-extend; no claim prior measures captured uncertainty.",
+      "thin_claim": "Adopt established methods ONLY. Make NO novelty claim here: prior work (hassan2020 -- cited in 2.5 as the convergent-validity benchmark our residual loads ON -- plus DWZ, baker2016/davis2016) DOES measure uncertainty language. 'First to measure uncertainty' would contradict 2.5 and is the everhart/gokkaya scar. Novelty = the anticipatory x cash-concentrated residualized application, stated narrowly in P6 ('to our knowledge').",
       "guardrails": [
-        "DROPPED P2.3 (Bushee, Gow & Taylor 2018 'linguistic complexity'): complexity is Bushee's OWN construct and a RIVAL measure, NOT uncertainty. We measure linguistic UNCERTAINTY (the LM uncertainty word-list). Citing a complexity paper to license an uncertainty read is a construct mismatch and invites the 'why not complexity' referee attack. (user, 2026-06-12)"
+        "DROPPED P2.3 (Bushee, Gow & Taylor 2018 'linguistic complexity'): complexity is Bushee's OWN construct and a RIVAL measure, NOT uncertainty. We measure linguistic UNCERTAINTY (the LM uncertainty word-list). Citing a complexity paper to license an uncertainty read is a construct mismatch and invites the 'why not complexity' referee attack. (user, 2026-06-12)",
+        "NO NOVELTY CLAIM in P2 (advisor 2026-06-12): prior work measures uncertainty language -- hassan2020 is cited in 2.5 as the convergent benchmark our residual loads ON; also DWZ, baker2016/davis2016. 'Prior work hasn't read uncertainty' is FALSE and self-contradicts 2.5. Novelty -> P6 only, scoped to the anticipatory x cash-concentrated residualized application."
       ],
       "propositions": [
         {
           "prop_id": "P2.1",
-          "statement": "The unscripted Q&A portion of conference calls is less managed/scripted than prepared remarks and carries incremental information.",
-          "role_in_paragraph": "Licenses reading Q&A language as a signal.",
+          "statement": "The analyst-discussion (Q&A) session of a conference call carries incremental information content beyond the managers' prepared presentation. (The 'less scripted than prepared remarks' point is DEFINITIONAL background, not the queried claim.)",
+          "role_in_paragraph": "Licenses reading the Q&A as the informative, less-managed unit AND establishes the presentation/Q&A split the whole design rests on.",
           "type": "external-NLM",
           "source": {
-            "key": "hollander2010 (or upload matsumoto2011)",
-            "ref": "candidate: Hollander/Pronk/Roelofsen (2010) or Matsumoto/Pronk/Roelofsen (2011)",
-            "nlm_source_id": null
+            "key": "matsumoto2011",
+            "ref": "Matsumoto, Pronk & Roelofsen (2011), 'What Makes Conference Calls Useful? The Information Content of Managers' Presentations and Analysts' Discussion Sessions', The Accounting Review",
+            "nlm_source_id": null,
+            "upload_status": "NOT YET UPLOADED -- must be in the NLM notebook before the query step"
           },
           "nlm_query_draft": "",
           "verification": {
@@ -714,17 +716,17 @@
             "answer_nonevidence": "",
             "verdict": "PENDING",
             "verified_date": null,
-            "note": "decide source at P2 time"
+            "note": "Source LOCKED = Matsumoto 2011 (advisor + user). NEEDS UPLOAD before query. Atomized: query ONLY 'does the analyst-discussion (Q&A) session carry incremental information content beyond the presentation?' -- the 'less scripted' part is definitional, not queried. Matsumoto also carries the presentation/Q&A-split-as-analytical-unit point the design rests on."
           }
         },
         {
           "prop_id": "P2.2",
-          "statement": "Word-classification dictionaries built for financial text measure tone/uncertainty, and these linguistic features are informative.",
-          "role_in_paragraph": "Licenses the dictionary method for the uncertainty read.",
+          "statement": "Off-the-shelf word lists (e.g. the Harvard dictionary) misclassify financial text; Loughran & McDonald build finance-specific word lists -- including the uncertainty list this paper's measure uses -- to classify tone/uncertainty in financial disclosures.",
+          "role_in_paragraph": "Establishes the provenance + validity of the LM finance-specific uncertainty word-list the measure is built on (the load-bearing claim). Any 'uncertainty is informative' evidence rides as BONUS.",
           "type": "external-NLM",
           "source": {
             "key": "lm2011",
-            "ref": "Loughran & McDonald (2011)",
+            "ref": "Loughran & McDonald (2011), 'When Is a Liability Not a Liability? Textual Analysis, Dictionaries, and 10-Ks', Journal of Finance 66(1):35-65",
             "nlm_source_id": null
           },
           "nlm_query_draft": "",
@@ -734,7 +736,7 @@
             "answer_nonevidence": "",
             "verdict": "PENDING",
             "verified_date": null,
-            "note": ""
+            "note": "Load-bearing = instrument provenance (LM misclassification fix -> finance lists incl. the uncertainty list). 'Uncertainty is informative' rides as BONUS; do NOT let the verdict hinge on it. NB LM 2011 headline is the NEGATIVE-list fix; the uncertainty result is secondary."
           }
         }
       ],
