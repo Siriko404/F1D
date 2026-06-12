@@ -544,12 +544,82 @@
           },
           "fetch_target": "Basic opinion (the silence quote + that false denials were actionable) + 17 C.F.R. §240.10b-5 text (the omission/half-truth clause). context-mode fetch.",
           "verification": {
-            "method": "legal-text",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": "This is the SEAM to P3; keep the linguistic consequence out of P1."
+            "method": "NLM",
+            "type": "legal-primary",
+            "parts": [
+              {
+                "part": "basic-silence-duty",
+                "source": {
+                  "id": "98028735-470d-40b3-ae45-bbca761271f9",
+                  "title": "service-ll-usrep-usrep485-usrep485224-usrep485224.pdf"
+                },
+                "query": "Reading only this paper, the U.S. Supreme Court opinion in Basic Inc. v. Levinson, 485 U.S. 224 (1988): what does the opinion say about whether a company has a duty to disclose information, about whether silence is or is not misleading, and about liability for making statements that are untrue or misleading? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+                "answer": "In *Basic Inc. v. Levinson*, the Supreme Court clarifies that a company does not inherently have a general duty to disclose all corporate developments, and that **silence is not misleading as long as no specific duty to disclose exists** [1, 2]. Furthermore, the Court notes that a company issuing a \"no comment\" statement is generally treating that statement as the functional equivalent of remaining silent [2]. \n\nRegarding liability for untrue or misleading statements, the Court explains that while a company may not have a duty to speak, **if it voluntarily chooses to release a statement, that statement cannot be so incomplete that it misleads the public** [1]. Under Rule 10b-5, it is unlawful to make an untrue statement of a material fact or to omit a material fact that would make the statement misleading [3]. Crucially, however, the Court emphasizes the standard of *materiality* for establishing liability [4]. **It is not sufficient for a plaintiff to merely prove that a statement was false or incomplete; the plaintiff must prove that the misrepresented or omitted fact was material (i.e., significant to a reasonable investor)** [4].\n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the duty to disclose and whether silence is misleading:**\n\n*   \"Silence, absent a duty to disclose, is not misleading under Rule 10b-5.\" [2]\n    *   **Page:** 239 (footnote 17)\n    *   **Section:** III C\n\n*   \"'No comment' statements are generally the functional equivalent of silence.\" [2]\n    *   **Page:** 239 (footnote 17)\n    *   **Section:** III C\n\n*   The Court of Appeals reasoned \"that while petitioners were under no general duty to disclose their discussions with Combustion, any statement the company voluntarily released could not be 'so incomplete as to mislead.'\" [1]\n    *   **Page:** 229\n    *   **Section:** I\n\n**On liability for untrue or misleading statements:**\n\n*   \"It shall be unlawful for any person... To make any untrue statement of a material fact or to omit to state a material fact necessary in order to make the statements made, in the light of the circumstances under which they were made, not misleading...\" [3]\n    *   **Page:** 230-231 (footnote 6)\n    *   **Section:** II\n\n*   \"This approach, however, fails to recognize that, in order to prevail on a Rule 10b-5 claim, a plaintiff must show that the statements were misleading as to a material fact.\" [4]\n    *   **Page:** 238\n    *   **Section:** III B\n\n*   \"It is not enough that a statement is false or incomplete, if the misrepresented fact is otherwise insignificant.\" [4]\n    *   **Page:** 238\n    *   **Section:** III B",
+                "quotes": [
+                  {
+                    "n": 1,
+                    "cited_text": "BASIC INC. v. LEVINSON",
+                    "start_char": 12053,
+                    "end_char": 12076,
+                    "chunk_id": "4a3140ee-77bc-4a7f-8561-478bce362f3c"
+                  },
+                  {
+                    "n": 2,
+                    "cited_text": "'6The SEC in the present case endorses the highly fact-dependent",
+                    "start_char": 34582,
+                    "end_char": 34647,
+                    "chunk_id": "6e10c5d6-ff71-40f6-9145-c91e8f314050"
+                  },
+                  {
+                    "n": 3,
+                    "cited_text": "Pursuant to its authority under § 10(b) of the 1934 Act, 15 U. S. C. § 78j, the Securities and Exchange Commission pro-mulgated Rule 10b-5.6 Judicial interpretation and applica-",
+                    "start_char": 15520,
+                    "end_char": 15697,
+                    "chunk_id": "fcd2f9e7-a467-40b2-b5c4-c1af4950b22e"
+                  },
+                  {
+                    "n": 4,
+                    "cited_text": "OCTOBER TERM, 1987",
+                    "start_char": 31567,
+                    "end_char": 31586,
+                    "chunk_id": "bc0950e6-cbf5-4aec-975b-b9c068d8e3da"
+                  }
+                ],
+                "located": [
+                  {
+                    "quote": "statement is generally treating that statement as the functional equivalent of remaining silent [2]. \n\nRegarding liability for untrue or misleading statements, the Court explains that while a company may not have a duty to speak, **if it voluntarily chooses to release a statement, that statement cannot be so incomplete that it misleads the public** [1]. Under Rule 10b-5, it is unlawful to make an untrue statement of a material fact or to omit a material fact that would make the statement misleading [3]. Crucially, however, the Court emphasizes the standard of *materiality* for establishing liability [4]. **It is not sufficient for a plaintiff to merely prove that a statement was false or incomplete; the plaintiff must prove that the misrepresented or omitted fact was material (i.e., significant to a reasonable investor)** [4].\n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the duty to disclose and whether silence is misleading:**\n\n*",
+                    "page": "239 (footnote 17)",
+                    "section": "III C"
+                  },
+                  {
+                    "quote": "'No comment' statements are generally the functional equivalent of silence.",
+                    "page": "239 (footnote 17)",
+                    "section": "III C"
+                  },
+                  {
+                    "quote": "that while petitioners were under no general duty to disclose their discussions with Combustion, any statement the company voluntarily released could not be 'so incomplete as to mislead.'",
+                    "page": "229",
+                    "section": "I"
+                  },
+                  {
+                    "quote": "It shall be unlawful for any person... To make any untrue statement of a material fact or to omit to state a material fact necessary in order to make the statements made, in the light of the circumstances under which they were made, not misleading...",
+                    "page": "230-231 (footnote 6)",
+                    "section": "II"
+                  },
+                  {
+                    "quote": "This approach, however, fails to recognize that, in order to prevail on a Rule 10b-5 claim, a plaintiff must show that the statements were misleading as to a material fact.",
+                    "page": "238",
+                    "section": "III B"
+                  },
+                  {
+                    "quote": "It is not enough that a statement is false or incomplete, if the misrepresented fact is otherwise insignificant.",
+                    "page": "238",
+                    "section": "III B"
+                  }
+                ]
+              }
+            ],
+            "verdict": "PENDING"
           }
         }
       ],
