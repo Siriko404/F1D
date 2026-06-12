@@ -25,6 +25,7 @@
     "the_draft": "docs/Thesis/thesis_draft.tex -- 2.1 is near L52-58 NOW, but LINE ANCHORS DRIFT once P1 is written: locate 2.1 by the \\subsection{Conceptual Framework} heading, NOT the line number.",
     "the_findings": "docs/Thesis/_tables_from_bible.tex -- byte-exact regression tables (the evidence; read coefficients here, never from memory).",
     "nlm_query_guide": "docs/Thesis/rewrite/NLM_QUERY_GUIDE.md -- READ FIRST before ANY NLM verification. All hard-won rules (one-script query->ledger->commit; title-not-id; cited_text-only; page+section via ask + substring-router + 1 pin call; legal->upload-to-NLM) + ledger shape + script pattern.",
+    "paragraph_workflow": "docs/Thesis/rewrite/paragraph_workflow.json -- the deterministic 14-step per-paragraph checklist. FOLLOW IT for every paragraph.",
     "nlm_script": "docs/Thesis/rewrite/nlm_p1.py -- WORKING P1 NLM verifier (query->ledger->commit; --finalize pins page+section + records verdicts). Pattern to copy for P2-P7.",
     "nlm_tool_legacy": "tmp/nlm.py -- OLD pattern only (COMPOUND infos; hardcodes sources). Do NOT run. Superseded by nlm_p1.py.",
     "nlm_rules_source": "docs/Thesis/_archive/audit_20260612/AUDIT_PROTOCOL.md (E3-E6) + .../p3_citation_ledger.json (NLM_STAGE_NOTE)."

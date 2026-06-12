@@ -1,0 +1,89 @@
+{
+  "process": "Per-paragraph verify-then-write pipeline. Repeat for each paragraph (P1..Pn) of each subsection.",
+  "steps": [
+    {
+      "n": 1,
+      "do": "Plan the paragraph: state its intent/serves/boundary/thin-claim/guardrails, then decompose into ATOMIC, checkable propositions; map each to ONE source; tag type (external-NLM | legal-primary | definitional | framing-nonverifiable). Write the paragraph block into the subsection ledger.",
+      "gate": null,
+      "commit": true
+    },
+    {
+      "n": 2,
+      "do": "Show the proposition set to the user and ratify it.",
+      "gate": "USER approves the propositions before any NLM call.",
+      "commit": false
+    },
+    {
+      "n": 3,
+      "do": "Ensure every source is in the NLM notebook; upload anything missing (incl. legal sources). The script resolves each source_id by a durable title-substring at runtime (never an eyeballed ID).",
+      "gate": "Every source resolves OK (script reports found/missing).",
+      "commit": true
+    },
+    {
+      "n": 4,
+      "do": "Run the one durable script: for each external-NLM prop -> clear -> ask -n NB -s <id> --json with (PREFIX + named paper + atomic non-leading question + page/section LOCATOR) -> write answer + quotes[cited_text,offset,chunk] + located[quote,page,section] DIRECTLY to the ledger -> git commit. Skip props already holding quotes (resumable).",
+      "gate": null,
+      "commit": true
+    },
+    {
+      "n": 5,
+      "do": "Substring-audit: test each located (answer) quote for membership in a verbatim cited_text span. Match-rate = verbatim-confidence.",
+      "gate": "100% matched -> skip step 6. <100% -> step 6.",
+      "commit": false
+    },
+    {
+      "n": 6,
+      "do": "Pin: for each unmatched decisive quote, ONE targeted call feeding the exact verbatim sentence -> get its page+section -> write span_pin to the ledger -> git commit.",
+      "gate": null,
+      "commit": true
+    },
+    {
+      "n": 7,
+      "do": "Adjudicate verdicts on the verbatim spans (SUPPORTED | OVERCLAIM | UNSUPPORTED | INCONCLUSIVE_MANUAL); verdict note names the supporting spans; the script records the verdict and commits.",
+      "gate": "ALL props SUPPORTED -> prose gate opens. Any not SUPPORTED -> re-query / re-scope / drop the prop / flag the user.",
+      "commit": true
+    },
+    {
+      "n": 8,
+      "do": "Draft the paragraph to the thin-claim ceiling, honoring its guardrails and boundary (no reaching into other paragraphs' turf); cite the verified sources.",
+      "gate": null,
+      "commit": false
+    },
+    {
+      "n": 9,
+      "do": "Accuracy-pass every UNCITED connective/institutional/legal claim in the draft -- verify it or cut it (the verify gate covers only cited props).",
+      "gate": null,
+      "commit": false
+    },
+    {
+      "n": 10,
+      "do": "Advisor check: accuracy, thin-claim, no-overclaim, cross-paragraph redundancy. Fix every flagged defect.",
+      "gate": "Advisor defects fixed before showing the user.",
+      "commit": false
+    },
+    {
+      "n": 11,
+      "do": "Show the drafted paragraph to the user.",
+      "gate": "USER approves the paragraph (RULE 2).",
+      "commit": false
+    },
+    {
+      "n": 12,
+      "do": "Record the approved prose into ledger.final_prose; set prose_status APPROVED and prose_gate unlocked; add any new bib entries (verified facts only); git commit.",
+      "gate": null,
+      "commit": true
+    },
+    {
+      "n": 13,
+      "do": "Update _RESUME_STATE.json (this paragraph done -> next); validate JSON; git commit.",
+      "gate": null,
+      "commit": true
+    },
+    {
+      "n": 14,
+      "do": "SUBSECTION-LEVEL (only after all its paragraphs are approved): insert the paragraphs into the .tex body in order, replacing the old prose wholesale (never piecemeal); compile twice; fix cite/compile issues; git commit.",
+      "gate": "All paragraphs of the subsection APPROVED.",
+      "commit": true
+    }
+  ]
+}
