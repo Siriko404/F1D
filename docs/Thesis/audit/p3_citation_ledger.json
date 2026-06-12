@@ -16,7 +16,7 @@
     "methodology": "a method / design / estimator choice (usually own design, uncited) recorded for later scrutiny -> check_route method-review; includes any suspicious self-claim"
   },
   "blocks_total": 17,
-  "blocks_done": ["abstract", "introduction", "§2.1 conceptual-framework", "§2.2 hypothesis-development (0 claims: all own predictions)", "§2.3 estimation-main-variable", "§2.4 methodology-empirical-design", "§2.5 specification-key-constructs (completes §2)"],
+  "blocks_done": ["abstract", "introduction", "§2.1 conceptual-framework", "§2.2 hypothesis-development (0 claims: all own predictions)", "§2.3 estimation-main-variable", "§2.4 methodology-empirical-design", "§2.5 specification-key-constructs (completes §2)", "§3.1 data-sample-variable-construction", "§3.2 main1-runup", "§3.3 main2-differential-timing", "§3.4 main3-cash-specificity (completes §3)"],
   "claims": [
     {
       "id": "A-1", "block": "abstract", "file_line": "thesis_draft.tex:27",
@@ -249,6 +249,120 @@
       "verbatim_thesis_span": "We read this as a failure to find paired with a within-model dissociation, not a powered equivalence test",
       "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
       "note": "honest self-limitation: the rule-out is a failure-to-reject + dissociation, NOT a powered equivalence test. Recorded for method-review (advisor-flagged)."
+    },
+    {
+      "id": "DS-1", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:92",
+      "verbatim_thesis_span": "The textual core is the Capital IQ earnings-call transcript archive, covering the calls of US public firms from 2002 to 2018",
+      "reference_form": "uncited-source", "check_route": "missing-citation", "mapped_bibkey": null,
+      "note": "Capital IQ data source, uncited (recurs from I-10)."
+    },
+    {
+      "id": "DS-2", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:92",
+      "verbatim_thesis_span": "Each transcript is parsed at the level of the individual speaking turn: every turn carries the speaker's role --- the CEO, other executives, or the questioning analysts --- and a segment marker separating the prepared presentation from the question-and-answer session",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "own transcript-parsing method (speaker-role tagging + presentation/Q&A segment split). Foundational to every measure; review parse accuracy."
+    },
+    {
+      "id": "DS-3", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:94",
+      "verbatim_thesis_span": "Uncertainty language is measured with the ``uncertainty'' category of the Loughran--McDonald Master Dictionary \\citep{lm2011}; we use the 1993--2024 release",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "lm2011",
+      "note": "construct = LM 'uncertainty' word category. lm2011 IS cited here -> resolves CF-4 ('in bib but uncited at L54'); the measure is attributed at L94, not L54. Detail: 1993-2024 release used for a 2002-2018 sample."
+    },
+    {
+      "id": "DS-4", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:94",
+      "verbatim_thesis_span": "Firm fundamentals come from quarterly Compustat North America files, matched to each call as the most recent fiscal quarter ending on or before the call date",
+      "reference_form": "uncited-source", "check_route": "missing-citation", "mapped_bibkey": null,
+      "note": "Compustat data source, uncited; also a matching rule (most-recent fiscal quarter <= call date)."
+    },
+    {
+      "id": "DS-5", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:94",
+      "verbatim_thesis_span": "daily CRSP data and IBES earnings records supply the stock-return, market-return, and earnings-surprise controls",
+      "reference_form": "uncited-source", "check_route": "missing-citation", "mapped_bibkey": null,
+      "note": "CRSP data source, uncited (co-named with IBES in DS-6)."
+    },
+    {
+      "id": "DS-6", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:94",
+      "verbatim_thesis_span": "IBES earnings records supply the stock-return, market-return, and earnings-surprise controls",
+      "reference_form": "uncited-source", "check_route": "missing-citation", "mapped_bibkey": null,
+      "note": "IBES data source, uncited."
+    },
+    {
+      "id": "DS-7", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:94",
+      "verbatim_thesis_span": "Acquisition records come from SDC: for every deal we observe the announcement date, the completion or withdrawal date, and the payment composition that classifies it as cash- or stock-financed",
+      "reference_form": "uncited-source", "check_route": "missing-citation", "mapped_bibkey": null,
+      "note": "SDC data source, uncited (recurs from I-11)."
+    },
+    {
+      "id": "DS-8", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:94",
+      "verbatim_thesis_span": "the two are linked through the acquirer's six-digit CUSIP via the CRSP--Compustat link table",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "record-linkage method (6-digit CUSIP via CRSP-Compustat link table); review match rate / false-link risk."
+    },
+    {
+      "id": "DS-9", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:96",
+      "verbatim_thesis_span": "Following \\citet{dwz}, we regress UncAnsCEO on CEO fixed effects, the call's other speech characteristics (the presentation share UncPreCEO, analyst-question uncertainty, and negative tone), firm controls (stock and market returns, earnings growth, and the earnings surprise), and year effects --- their equation 4",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "dwz",
+      "note": "CANONICAL DWZ eq-4 spec with the FULL regressor list -- highest-value DWZ check (verify the regressor set matches DWZ eq 4). Same sentence: 'its negative is the clarity measure' => Clarity = -CEO-FE (DWZ construct), also to verify."
+    },
+    {
+      "id": "DS-10", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:96",
+      "verbatim_thesis_span": "UncPreCEO, the raw uncertainty-word share of the prepared presentation (their equation 1), is retained as the prepared-remarks measure",
+      "reference_form": "direct-cite", "check_route": "nlm", "mapped_bibkey": "dwz",
+      "note": "claim that DWZ equation 1 defines UncPre (prepared-presentation uncertainty share)."
+    },
+    {
+      "id": "DS-11", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:98",
+      "verbatim_thesis_span": "PreAnnounceQtr equals one in the single quarter immediately before the firm's first qualifying deal announcement ($e=-1$) and zero otherwise; never-acquirers serve as the fixed-effects baseline. CashRatio is cash and equivalents over total assets. CashScrutiny is the share of a call's analyst question turns containing at least one cash-level or liquidity term from a locked lexicon reproduced in the tables section; HighCashScrutiny flags any such scrutiny",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "own variable construction. Review: PreAnnounceQtr is single-quarter (e=-1) only; never-acquirer FE baseline recurs (MD-1); CashScrutiny rests on a 'locked lexicon' (own cash/liquidity word list) -> verify lexicon. Remaining controls deferred to Appendix."
+    },
+    {
+      "id": "DS-12", "block": "§3.1 data-sample-variable-construction", "file_line": "thesis_draft.tex:100",
+      "verbatim_thesis_span": "The third layer is design-specific: the run-up test drops a treated firm's post-announcement quarters, the event studies cap the post-announcement window at four quarters, and the scrutiny validity and channel tests require at least three analyst Q\\&A turns per call",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "third sample layer (design-specific filters). Layers 1-2 = call panel (exclude financial+utility; exclude CEOs <5 calls) and deal universe (>=50% cash/stock arms; first qualifying deal). SUSPICIOUS: P2 M2-04 flagged post-WITHDRAWAL drop + 2nd-announcement truncation as code-only; they do NOT appear in this span -> ties to MD-5 'reported with each table'."
+    },
+    {
+      "id": "RU-1", "block": "§3.2 main1-runup", "file_line": "thesis_draft.tex:104",
+      "verbatim_thesis_span": "We estimate $Y_{i,t} = \\beta\\,\\mathrm{PreAnnounceQtr}_{i,t} + \\boldsymbol{\\gamma}'\\mathbf{X}_{i,t} + \\alpha_i + \\tau_t + \\varepsilon_{i,t}$ by two-way fixed-effects OLS --- firm and calendar year-quarter effects, standard errors clustered by firm ... Because the hypothesis is directional, the treatment coefficient is tested one-tailed ($\\beta>0$); controls are two-tailed",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "run-up estimating equation (explicit) + 2WFE OLS, firm + year-quarter FE, cluster by firm. ONE-TAILED treatment test (ties to P2 M2-02 NIT tail convention). Post-announcement quarters dropped (recurs MD-1/DS-12)."
+    },
+    {
+      "id": "RU-2", "block": "§3.2 main1-runup", "file_line": "thesis_draft.tex:106",
+      "verbatim_thesis_span": "The cash-ratio equation behaves like a standard cash regression before the treatment enters: more levered, larger, and capital-intensive firms hold less cash, growth opportunities raise it",
+      "reference_form": "uncited-premise", "check_route": "missing-citation", "mapped_bibkey": null,
+      "note": "RED FLAG: references the determinants-of-cash literature ('a standard cash regression') with NO citation; stylized signs (leverage-, size-, capex-, growth+) asserted as established. No matching bibkey -> needs a citation."
+    },
+    {
+      "id": "RU-3", "block": "§3.2 main1-runup", "file_line": "thesis_draft.tex:112",
+      "verbatim_thesis_span": "A side-by-side reading is not yet a formal test of the difference; Main Analysis 3 supplies that",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "honest self-limitation: the cash-vs-stock side-by-side is not a formal difference test (deferred to Main Analysis 3). Companion to KC-10."
+    },
+    {
+      "id": "DT-1", "block": "§3.3 main2-differential-timing", "file_line": "thesis_draft.tex:117",
+      "verbatim_thesis_span": "Main Analysis 2 replaces the single pre-announcement indicator with an event-time decomposition ... each treated quarter falls into one of four bins relative to the firm's first deal: two quarters out ($t-2$), the pre-announcement quarter ($t-1$), the announced-but-unclosed window, and the post-completion window. The specification is otherwise that of Main Analysis 1, and with no ordering imposed across bins every coefficient is two-tailed",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "event-time decomposition: 4 bins (t-2, t-1, announced-unclosed, post-completion) on the MATCHED universe (N=28,102/1,320), two-tailed. Recurs MD-3 (matched event study; cf M2-04 matching/window hygiene). t-2 bin functions as a pre-trend/placebo check ('not the tail of a pre-existing trend')."
+    },
+    {
+      "id": "DT-2", "block": "§3.3 main2-differential-timing", "file_line": "thesis_draft.tex:125",
+      "verbatim_thesis_span": "A side-by-side reading of cash against stock is still not a formal test of their difference; Main Analysis 3 supplies it",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "honest self-limitation restated here (recurs RU-3); side-by-side cash-vs-stock is not a formal difference test."
+    },
+    {
+      "id": "CS-1", "block": "§3.4 main3-cash-specificity", "file_line": "thesis_draft.tex:130",
+      "verbatim_thesis_span": "in two steps. The first reruns the event study of Main Analysis 2 side by side on the stock placebo arm (Table~\\ref{tab:empire_drop_placebo}); the second pools the two arms in a single interacted model that formally tests the cash--stock difference, for the effect (pre-announcement uncertainty) and for its proposed cause (the cash build-up) alike (Table~\\ref{tab:empire_cashspec}). Both tables are two-tailed throughout",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "cash-specificity design (recurs MD-4 pooled interaction). Two steps: (1) placebo event study on stock arm; (2) pooled interacted model testing the cash-stock difference for BOTH the effect (uncertainty) and the cause (cash build-up), two-tailed."
+    },
+    {
+      "id": "CS-2", "block": "§3.4 main3-cash-specificity", "file_line": "thesis_draft.tex:138",
+      "verbatim_thesis_span": "We therefore read the result as supported but fragile --- concentration, not strict specificity --- and our wording stays with ``concentrated.''",
+      "reference_form": "methodology", "check_route": "method-review", "mapped_bibkey": null,
+      "note": "honest self-limitation: cash-specificity is 'supported but fragile' -- only one formal 5% test (effect); the cause's cash-specificity is marginal/full-panel-only. Wording deliberately 'concentrated' not 'specific'. Companion to KC-10/RU-3/DT-2."
     }
   ]
 }
