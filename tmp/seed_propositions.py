@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-"""Seed thesis_propositions.json with ordered SENTENCE seeds from the draft prose.
+"""Seed thesis_propositions.json with ordered SEEDS covering the WHOLE thesis.
 
-MECHANICAL ONLY: cuts prose lines into sentences and pre-fills
+MECHANICAL ONLY: it cuts the source into ordered units and pre-fills
 {seq, block, file_line, verbatim_span}. It NEVER decides what is a claim --
-all judgment fields (proposition/category/route/verdict) are left null for the
-manual block-by-block pass. Coverage guarantee: every body-prose line in range
-emits >=1 seed, so no line can be silently skipped.
+all judgment fields stay null for the manual, rule-driven proposition pass.
 
-Range: start of file up to \\begin{thebibliography}. The bibliography (bibitems)
-and the appendix variable-table are STRUCTURED (not prose) and are seeded by hand
-during judgment -- this script stops at the bibliography and reports the stop line.
+Three phases, in document order, so nothing is skipped:
+  1. PROSE  (front matter + body, up to the bibliography): title/author/date
+     captured whole; body prose sentence-split (verbatim preserved exactly).
+  2. BIB    (\\begin..\\end{thebibliography}): one seed per \\bibitem citation.
+  3. APPENDIX (after the bibliography): \\noindent prose sentence-split; every
+     '\\\\'-terminated tabular row = one seed (variable definition / group header).
+
+The Tables section (\\input{_tables_from_bible}) is a pointer seed only -- the
+hundreds of table cells live in thesis_tables.tex and were verified in P2.
 
 Run:  python tmp/seed_propositions.py
 """
@@ -23,19 +27,19 @@ DRAFT = ROOT / "docs" / "Thesis" / "thesis_draft.tex"
 OUT = ROOT / "docs" / "Thesis" / "audit" / "thesis_propositions.json"
 
 SKIP = re.compile(
-    r"^\s*(%|\\documentclass|\\usepackage|\\pagestyle|\\title|\\author|\\date|"
-    r"\\thanks|\\section|\\subsection|\\label|\\begin|\\end|\\input|\\maketitle|"
-    r"\\vspace|\\centering|\\par|\\noindent\\textbf\{Keywords|"
-    r"\\noindent\\textbf\{JEL|\}|\\\[|\\\])"
+    r"^\s*(%|\\appendix|\\documentclass|\\usepackage|\\pagestyle|\\thanks|\\section|"
+    r"\\subsection|\\label|\\begin|\\end|\\input|\\maketitle|\\vspace|"
+    r"\\centering|\\small|\\par|\\toprule|\\midrule|\\bottomrule|\\clearpage|"
+    r"\\noindent\\textbf\{Keywords|\\noindent\\textbf\{JEL|\}|\\\[|\\\])"
 )
 SEC = re.compile(r"^\s*\\section\*?\{([^}]*)\}")
 SUB = re.compile(r"^\s*\\subsection\*?\{([^}]*)\}")
+TAD = re.compile(r"^\s*\\(title|author|date)\b")
+BIBITEM = re.compile(r"^\s*\\bibitem(?:\[[^\]]*\])?\{([^}]+)\}")
 
 
 def split_sentences(text):
-    """Guarded sentence split that PRESERVES verbatim exactly: mask protected
-    spans (math, cites, decimals/dotted numbers, abbreviations) with null-byte
-    tokens, split on sentence boundaries, then restore the originals."""
+    """Guarded sentence split preserving verbatim exactly."""
     store = {}
 
     def mask(pat, s):
@@ -45,14 +49,13 @@ def split_sentences(text):
             return k
         return re.sub(pat, repl, s)
 
-    s = mask(r"\$[^$]*\$", text)                                      # inline math
-    s = mask(r"\\(?:citep|citet|cite|ref|eqref|label)\{[^}]*\}", s)     # cite/ref
+    s = mask(r"\$[^$]*\$", text)
+    s = mask(r"\\(?:citep|citet|cite|ref|eqref|label)\{[^}]*\}", s)
     s = mask(r"\b(?:U\.S\.|U\.K\.|e\.g\.|i\.e\.|vs\.|etc\.|et\s+al\.|"
              r"al\.|Inc\.|No\.|Ph\.D\.|Dr\.|Fig\.|Eq\.|cf\.|approx\.|Prof\.)", s)
-    s = mask(r"\d+(?:\.\d+)+", s)                                     # decimals/dotted
+    s = mask(r"\d+(?:\.\d+)+", s)
 
     parts = re.split(r"(?<=[.?!])\s+(?=[A-Z\\`(])", s)
-
     out = []
     for p in parts:
         for k, v in store.items():
@@ -66,15 +69,32 @@ def split_sentences(text):
 def main():
     j = json.loads(OUT.read_text(encoding="utf-8"))
     lines = DRAFT.read_text(encoding="utf-8").splitlines()
+    n = len(lines)
 
+    bib_start = next(i for i, l in enumerate(lines, 1) if "\\begin{thebibliography}" in l)
+    bib_end = next(i for i, l in enumerate(lines, 1) if "\\end{thebibliography}" in l)
+
+    seeds = []
+    seq = [0]
+
+    def add(block, lineno, span, note=None):
+        seq[0] += 1
+        seeds.append({
+            "seq": seq[0], "id": None, "block": block,
+            "file_line": "thesis_draft.tex:%d" % lineno, "verbatim_span": span,
+            "proposition": None, "category": None, "role": None,
+            "check_route": None, "mapped_bibkey": None, "p2_ref": None,
+            "depends_on": [], "verdict": None, "evidence": None, "note": note,
+        })
+
+    # ---- Phase 1: prose (front matter + body), lines 1 .. bib_start-1 ----
     section = subsection = ""
-    seeds, seq = [], 0
-    stop_line = None
-
-    for i, raw in enumerate(lines, start=1):
-        if "\\begin{thebibliography}" in raw:
-            stop_line = i
-            break
+    for i in range(1, bib_start):
+        raw = lines[i - 1]
+        m = TAD.match(raw)
+        if m:
+            add("front-matter", i, raw.strip(), "title-block:%s" % m.group(1))
+            continue
         m = SEC.match(raw)
         if m:
             section, subsection = m.group(1), ""
@@ -87,22 +107,51 @@ def main():
             continue
         block = subsection or section or "front-matter"
         for sent in split_sentences(raw):
-            seq += 1
-            seeds.append({
-                "seq": seq, "id": None, "block": block,
-                "file_line": "thesis_draft.tex:%d" % i, "verbatim_span": sent,
-                "proposition": None, "category": None, "role": None,
-                "check_route": None, "mapped_bibkey": None, "p2_ref": None,
-                "depends_on": [], "verdict": None, "evidence": None, "note": None,
-            })
+            add(block, i, sent)
+
+    # ---- Phase 2: bibliography, lines bib_start+1 .. bib_end-1 ----
+    key = None
+    for i in range(bib_start + 1, bib_end):
+        raw = lines[i - 1]
+        m = BIBITEM.match(raw)
+        if m:
+            key = m.group(1)
+            continue
+        if not raw.strip():
+            continue
+        add("bibliography", i, raw.strip(), "bibitem:%s" % key)
+
+    # ---- Phase 3: appendix, lines bib_end+1 .. end ----
+    appsec = ""
+    for i in range(bib_end + 1, n + 1):
+        raw = lines[i - 1]
+        if "\\end{document}" in raw:
+            break
+        if "\\input{" in raw:
+            add("tables", i, raw.strip(),
+                "POINTER: table cells live in thesis_tables.tex, verified in P2")
+            continue
+        m = SEC.match(raw)
+        if m:
+            appsec = m.group(1)
+            continue
+        stripped = raw.rstrip()
+        if stripped.endswith(r"\\"):
+            row = stripped[:-2].rstrip()
+            if row.strip():
+                add("appendix-vartable", i, row, "table-row")
+            continue
+        if not raw.strip() or SKIP.match(raw):
+            continue
+        for sent in split_sentences(raw):
+            add("appendix-prose", i, sent)
 
     j["claims"] = seeds
     OUT.write_text(json.dumps(j, indent=2, ensure_ascii=False), encoding="utf-8")
 
     sys.stdout.reconfigure(encoding="utf-8")
-    print("seeds=%d  stopped_at_bibliography_line=%s" % (len(seeds), stop_line))
-    blocks = {}
-    order = []
+    print("seeds=%d  bib=[%d,%d]  total_lines=%d" % (len(seeds), bib_start, bib_end, n))
+    blocks, order = {}, []
     for s in seeds:
         if s["block"] not in blocks:
             order.append(s["block"])
