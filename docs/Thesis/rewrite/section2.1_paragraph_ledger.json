@@ -705,9 +705,10 @@
           "type": "external-NLM",
           "source": {
             "key": "matsumoto2011",
-            "ref": "Matsumoto, Pronk & Roelofsen (2011), 'What Makes Conference Calls Useful? The Information Content of Managers' Presentations and Analysts' Discussion Sessions', The Accounting Review",
-            "nlm_source_id": null,
-            "upload_status": "NOT YET UPLOADED -- must be in the NLM notebook before the query step"
+            "ref": "Matsumoto, Pronk & Roelofsen (2011), 'What Makes Conference Calls Useful? The Information Content of Managers' Presentations and Analysts' Discussion Sessions', The Accounting Review 86(4):1383-1414",
+            "doi": "10.2308/accr-10034",
+            "nlm_source_id": "a1dacc9f-2bee-46ba-9261-496fd687c8e6",
+            "upload_status": "UPLOADED + NLM-identity-VERIFIED 2026-06-12 (notebook title 'EBSCO-FullText-06_12_2026.pdf', newest of 2 duplicate copies)"
           },
           "nlm_query_draft": "",
           "verification": {
@@ -914,8 +915,8 @@
         "all_supported": true,
         "unlocked": true
       },
-      "final_prose": "",
-      "prose_status": "READY"
+      "final_prose": "The venue in which this bind becomes observable is the quarterly earnings conference call, which pairs a scripted managerial presentation with an unscripted question-and-answer session in which analysts question management directly. The two segments are not equally revealing: both are incrementally informative relative to the accompanying press release, but the discussion carries greater information content than the presentation \\citep{matsumoto2011}---making the unscripted exchange, which managers cannot fully prepare in advance, the natural place to observe a constrained executive under questioning. That language can be read quantitatively: because general-purpose word lists misclassify financial text---nearly three-quarters of the Harvard dictionary's negative-word counts are attributable to words that are typically not negative in a financial context---\\citet{lm2011} construct dictionaries specific to financial disclosure, among them an uncertainty list of 285 words organized around imprecision rather than risk. We adopt this established apparatus---the presentation/Q\\&A split and the finance-specific dictionary, including its uncertainty list---to read the language of the call.",
+      "prose_status": "APPROVED"
     },
     "P3": {
       "order": 3,
