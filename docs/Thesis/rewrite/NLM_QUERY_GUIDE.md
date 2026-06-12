@@ -85,6 +85,7 @@ verification = {
 - NEVER trust answer-prose as verbatim — only structured cited_text.
 - NEVER re-run content queries (quota).
 - NEVER stop-and-poll every micro-step — deliver the result.
+- NEVER ship an UNCITED connective claim unchecked. The verify gate covers only the **cited** propositions; the institutional/legal glue sentences between them slip past verify-first. (Scar: "the firm **must host** the call" — false, calls are voluntary; the advisor caught it, the gate did not.) After drafting, run a separate accuracy pass on every uncited claim — verify it or cut it.
 
 ## 12. SCRIPT SKELETON (the proven pattern — copy from `nlm_p1.py`)
 ```python
