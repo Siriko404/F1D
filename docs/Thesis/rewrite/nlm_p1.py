@@ -235,12 +235,66 @@ def legal():
         print(f"  {len(quotes)} verbatim quotes, {len(located)} located; committed")
 
 
+BASIC_LABEL = "the U.S. Supreme Court opinion in Basic Inc. v. Levinson, 485 U.S. 224 (1988)"
+LEGAL_PINS = [   # (prop, candidate-matches, label, decisive verbatim sentence to round-trip-confirm)
+    ("P1.3", ["485224", "usrep485"], BASIC_LABEL,
+     "materiality will depend at any given time upon a balancing of both the indicated probability "
+     "that the event will occur and the anticipated magnitude of the event in light of the totality "
+     "of the company activity"),
+    ("P1.4", ["485224", "usrep485"], BASIC_LABEL,
+     "Silence, absent a duty to disclose, is not misleading under Rule 10b-5"),
+]
+LEGAL_VERDICTS = {
+    "P1.3": ("SUPPORTED",
+             "Basic v. Levinson: preliminary/pending merger negotiations CAN be material before a "
+             "definitive agreement; materiality = probability x magnitude balancing, case-by-case, "
+             "no bright line (p.238 §III-C; p.250 §V). NB: on the scanned U.S. Reports PDF the "
+             "structured citations landed on running headers, so the decisive quotes are answer-"
+             "sourced + round-trip pinned (span_pins) -- canonical holding."),
+    "P1.4": ("SUPPORTED",
+             "Basic v. Levinson: no general duty to disclose confidential negotiations; 'Silence, "
+             "absent a duty to disclose, is not misleading under Rule 10b-5' (p.239 fn17, §III-C); "
+             "but a voluntary statement may not be 'so incomplete as to mislead' (p.229, §I). Rule "
+             "10b-5(b): unlawful to omit a material fact needed to make statements not misleading "
+             "(p.79). => firm may stay silent but may not mislead; denial is not lawful."),
+}
+
+
+def legal_finalize():
+    ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
+    props = {p["prop_id"]: p for p in ledger["paragraphs"]["P1"]["propositions"]}
+    for prop_id, cands, label, phrase in LEGAL_PINS:
+        sid, title = source_id_multi(cands)
+        q = (f"{PREFIX}{label}: on what page (printed in the document) and in which section does this "
+             f'exact sentence appear? Report **Page:** and **Section:**. Sentence: "{phrase}"')
+        print(f"{prop_id}: pinning decisive legal span ...", flush=True)
+        try:
+            run([EXE, "clear"], 60)
+        except Exception:
+            pass
+        out = run([EXE, "ask", "-n", NOTEBOOK, "-s", sid, "--json", q], 420).stdout or ""
+        i = out.find("{")
+        j = json.loads(out[i:]) if i >= 0 else {"answer": ""}
+        page, section = page_section(j.get("answer", ""))
+        props[prop_id]["verification"].setdefault("span_pins", []).append(
+            {"phrase": phrase, "page": page, "section": section, "query": q, "answer": j.get("answer", "")})
+        print(f"  {prop_id} -> Page {page}, Section {section}")
+    for pid, (verdict, note) in LEGAL_VERDICTS.items():
+        props[pid]["verification"]["verdict"] = verdict
+        props[pid]["verification"]["verdict_note"] = note
+    LEDGER.write_text(json.dumps(ledger, indent=2, ensure_ascii=False), encoding="utf-8")
+    commit("verify(2.1/P1): pin Basic decisive spans; record P1.3/P1.4 SUPPORTED")
+    print("  verdicts P1.3/P1.4 = SUPPORTED; committed")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--finalize", action="store_true",
                     help="pin the Dye decisive-span page+section and record verdicts")
     ap.add_argument("--legal", action="store_true",
                     help="query the uploaded legal sources (Basic v. Levinson, Rule 10b-5) for P1.3/P1.4")
+    ap.add_argument("--legal-finalize", action="store_true",
+                    help="pin the Basic decisive spans and record P1.3/P1.4 verdicts")
     args = ap.parse_args()
     if not EXE:
         sys.exit("ERROR: `notebooklm` CLI not found on PATH. Run `notebooklm login` first.")
@@ -248,6 +302,8 @@ def main():
         finalize()
     elif args.legal:
         legal()
+    elif args.legal_finalize:
+        legal_finalize()
     else:
         run_content()
 

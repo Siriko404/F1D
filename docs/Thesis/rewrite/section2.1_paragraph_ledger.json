@@ -529,7 +529,17 @@
                 ]
               }
             ],
-            "verdict": "PENDING"
+            "verdict": "SUPPORTED",
+            "span_pins": [
+              {
+                "phrase": "materiality will depend at any given time upon a balancing of both the indicated probability that the event will occur and the anticipated magnitude of the event in light of the totality of the company activity",
+                "page": "238",
+                "section": "III C [1].",
+                "query": "Reading only this paper, the U.S. Supreme Court opinion in Basic Inc. v. Levinson, 485 U.S. 224 (1988): on what page (printed in the document) and in which section does this exact sentence appear? Report **Page:** and **Section:**. Sentence: \"materiality will depend at any given time upon a balancing of both the indicated probability that the event will occur and the anticipated magnitude of the event in light of the totality of the company activity\"",
+                "answer": "**Page:** 238\n\n**Section:** III C [1]."
+              }
+            ],
+            "verdict_note": "Basic v. Levinson: preliminary/pending merger negotiations CAN be material before a definitive agreement; materiality = probability x magnitude balancing, case-by-case, no bright line (p.238 §III-C; p.250 §V). NB: on the scanned U.S. Reports PDF the structured citations landed on running headers, so the decisive quotes are answer-sourced + round-trip pinned (span_pins) -- canonical holding."
           }
         },
         {
@@ -654,7 +664,17 @@
                 ]
               }
             ],
-            "verdict": "PENDING"
+            "verdict": "SUPPORTED",
+            "span_pins": [
+              {
+                "phrase": "Silence, absent a duty to disclose, is not misleading under Rule 10b-5",
+                "page": "239 (footnote 17)",
+                "section": "III C [1].",
+                "query": "Reading only this paper, the U.S. Supreme Court opinion in Basic Inc. v. Levinson, 485 U.S. 224 (1988): on what page (printed in the document) and in which section does this exact sentence appear? Report **Page:** and **Section:**. Sentence: \"Silence, absent a duty to disclose, is not misleading under Rule 10b-5\"",
+                "answer": "**Page:** 239 (footnote 17)\n\n**Section:** III C [1]."
+              }
+            ],
+            "verdict_note": "Basic v. Levinson: no general duty to disclose confidential negotiations; 'Silence, absent a duty to disclose, is not misleading under Rule 10b-5' (p.239 fn17, §III-C); but a voluntary statement may not be 'so incomplete as to mislead' (p.229, §I). Rule 10b-5(b): unlawful to omit a material fact needed to make statements not misleading (p.79). => firm may stay silent but may not mislead; denial is not lawful."
           }
         }
       ],
