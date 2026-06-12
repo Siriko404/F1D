@@ -50,6 +50,11 @@ RAW = HERE / "nlm_2.1_raw.json"
 NOTEBOOK = "63e3b970-7976-47bc-8291-37ce7ac9bf74"
 EXE = shutil.which("notebooklm")
 PREFIX = "Reading only this paper, "
+# Locator request -- keeps page/section sourcing INSIDE the NLM channel (no ad-hoc,
+# no PDF/fulltext reading). Section is the cross-check against NLM's flaky page index.
+LOCATOR = (" Additionally, for each sentence you quote in support of your answer, "
+           "report the exact page number printed in the paper and the section "
+           "(its heading or number) in which that sentence appears.")
 
 # --- paper registry -----------------------------------------------------------
 # key -> {"label": how the QUERY names the paper (title + authors + year + venue),
@@ -130,11 +135,13 @@ def commit(paths, message):
 
 
 def make_evidence(refs):
-    """Verbatim cited_text + its EXACT in-source location (char span + chunk)."""
+    """Verbatim cited_text + its EXACT in-source location (char span + chunk).
+    page/section are filled at adjudication from the NLM answer (which the
+    LOCATOR clause forces NLM to report) -- never derived ad-hoc from a PDF."""
     return [{"n": x.get("citation_number"), "cited_text": x.get("cited_text"),
              "source_id": x.get("source_id"),
              "start_char": x.get("start_char"), "end_char": x.get("end_char"),
-             "chunk_id": x.get("chunk_id")}
+             "chunk_id": x.get("chunk_id"), "page": None, "section": None}
             for x in refs if x.get("cited_text")]
 
 
@@ -198,7 +205,7 @@ def ask(source_id, paper_label, question):
         cli(["clear"], timeout=60)
     except Exception:
         pass
-    full_q = f"{PREFIX}{paper_label}: {question}"
+    full_q = f"{PREFIX}{paper_label}: {question}{LOCATOR}"
     try:
         r = cli(["ask", "-n", NOTEBOOK, "-s", source_id, "--json", full_q], timeout=420)
     except subprocess.TimeoutExpired:
@@ -217,7 +224,7 @@ def ask(source_id, paper_label, question):
     return {"query": full_q, "preamble": preamble, "raw_json": j}
 
 
-def run_paragraph(pid, dry=False):
+def run_paragraph(pid, dry=False, force=False):
     led = load(LEDGER, {})
     reg = led.get("resolved_sources")
     if not reg:
@@ -238,8 +245,8 @@ def run_paragraph(pid, dry=False):
             print(f"  SKIP   {ppid}: type={prop.get('type')}")
             continue
         ev = prop.get("verification", {}).get("evidence")
-        if ev:
-            print(f"  DONE   {ppid}: evidence already present -- skipped (resumable).")
+        if ev and not force:
+            print(f"  DONE   {ppid}: evidence already present -- skipped (resumable; --force to redo).")
             continue
         if ppid not in QUERIES:
             print(f"  TODO   {ppid}: no query authored yet -- skipped.")
@@ -250,7 +257,7 @@ def run_paragraph(pid, dry=False):
             print(f"  BLOCK  {ppid}: source '{paper_key}' MISSING in notebook -- cannot verify.")
             continue
         label = PAPERS[paper_key]["label"]
-        full_q = f"{PREFIX}{label}: {question}"
+        full_q = f"{PREFIX}{label}: {question}{LOCATOR}"
         if dry:
             print(f"  DRY    {ppid} [{paper_key}]\n         {full_q}")
             continue
@@ -309,6 +316,7 @@ def main():
     ap.add_argument("--dry", action="store_true", help="print queries, do not call NLM")
     ap.add_argument("--baseline", action="store_true", help="commit current ledger+script state only")
     ap.add_argument("--rebuild-from-raw", action="store_true", help="re-derive ledger evidence (offsets+chunk) from raw; no NLM calls")
+    ap.add_argument("--force", action="store_true", help="re-run NLM props even if evidence already exists")
     args = ap.parse_args()
     if args.rebuild_from_raw:
         rebuild_from_raw()
@@ -321,7 +329,7 @@ def main():
     if args.resolve:
         resolve()
     if args.paragraph:
-        run_paragraph(args.paragraph, dry=args.dry)
+        run_paragraph(args.paragraph, dry=args.dry, force=args.force)
     if not (args.resolve or args.paragraph):
         ap.print_help()
 
