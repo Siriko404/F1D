@@ -693,7 +693,9 @@
       "serves": "Situates the measurement venue + call-textual-analysis literature; establishes unscripted call language is informative; names the presentation/Q&A split the design rests on.",
       "boundary": "Do not construct the residual (2.3). Venue + reading-method + informativeness only.",
       "thin_claim": "Adopt-and-extend; no claim prior measures captured uncertainty.",
-      "guardrails": [],
+      "guardrails": [
+        "DROPPED P2.3 (Bushee, Gow & Taylor 2018 'linguistic complexity'): complexity is Bushee's OWN construct and a RIVAL measure, NOT uncertainty. We measure linguistic UNCERTAINTY (the LM uncertainty word-list). Citing a complexity paper to license an uncertainty read is a construct mismatch and invites the 'why not complexity' referee attack. (user, 2026-06-12)"
+      ],
       "propositions": [
         {
           "prop_id": "P2.1",
@@ -723,26 +725,6 @@
           "source": {
             "key": "lm2011",
             "ref": "Loughran & McDonald (2011)",
-            "nlm_source_id": null
-          },
-          "nlm_query_draft": "",
-          "verification": {
-            "method": "NLM",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": ""
-          }
-        },
-        {
-          "prop_id": "P2.3",
-          "statement": "Linguistic features of disclosure (e.g., complexity/readability) carry information beyond the numbers.",
-          "role_in_paragraph": "Reinforces call-language informativeness.",
-          "type": "external-NLM",
-          "source": {
-            "key": "bushee2018",
-            "ref": "Bushee, Gow & Taylor (2018)",
             "nlm_source_id": null
           },
           "nlm_query_draft": "",
