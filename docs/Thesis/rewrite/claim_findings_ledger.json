@@ -1,0 +1,189 @@
+{
+  "_meta": {
+    "title": "Claim <-> Findings Referee-Proofing Ledger",
+    "created": "2026-06-12",
+    "purpose": "Audit every load-bearing thesis claim against its ACTUAL regression finding; set the thinnest referee-proof version of each. This ledger sets the claim ceiling the prose rewrite (starting at 2.1) is allowed to motivate.",
+    "governing_rule": "Claim <= what the findings fully + referee-proof support. Where they do not, claim shrinks to the thinnest defensible version. Priority = complete, cohesive, coherent across all prose AND findings -- NOT impressive.",
+    "evidence_source": "docs/Thesis/_tables_from_bible.tex (byte-exact copies from the bible); read in full 2026-06-12. All coefficients below are verbatim from that file.",
+    "draft_source": "docs/Thesis/thesis_draft.tex",
+    "numbers_are_locked": "Coefficients are NOT changed here. Prose claims may be thinned. Risks that live in the estimation itself (one-tailed, clustering, generated regressand) are flagged as RERUN-class for user decision -- not fixable by prose.",
+    "significance_legend": "* p<.10, ** p<.05, *** p<.01; n.s. = not significant",
+    "_advisor_correction_2026_06_12": "Advisor double-check INVERTED the C6 call: 'survives a formal test' is ACCURATE (tab:empire_cashspec is two-tailed, diff p=.039 at 5%), NOT an overclaim; the side-by-side replacement first proposed is the Gelman-Stern fallacy (referee bait). C6, the retracted-overclaim block, and the thin-claim ceiling are corrected accordingly. The 'timing vs cash' framing was a FALSE FORK -- RESOLVED 2026-06-12: BOTH dimensions (anticipatory x cash-concentrated), both in title L18, both supported."
+  },
+
+  "claims_ranked_strong_to_fragile": [
+    {
+      "rank": 1,
+      "id": "C1_timing_roundtrip",
+      "hypothesis": "H1b",
+      "claim": "Residual Q&A uncertainty resolves at announcement; the acquirer's cash persists to completion -- uncertainty on the information clock, cash on the transaction clock.",
+      "table": "tab:empire_drop_matched",
+      "finding": {
+        "tails": "two-tailed",
+        "N_firmqtrs": 28102, "firms": 1320,
+        "UncResCEO": {"PRE2": "0.0068 n.s.", "PRE1": "0.0473***", "GAP": "0.0018 n.s.", "POST": "-0.0250*", "PRE1_minus_POST": "0.0723***", "PRE1_minus_GAP": "0.0455**"},
+        "CashRatio": {"PRE1": "0.0061**", "GAP": "persists", "POST": "-0.0155***", "GAP_minus_POST": "0.0210***"}
+      },
+      "referee_proof": "STRONGEST -- clean, two-tailed, claim rests on a contrast of two paths not a single coefficient",
+      "risks": ["'cash persists to completion' is partly mechanical (cash physically leaves at closing)", "POST uncertainty overshoots below baseline (-0.0250*) -- do not over-read"],
+      "thinnest_claim": "Keep as-is. This is the most referee-proof result and should CARRY the paper. Frame as the round-trip contrast; do not over-read the negative POST."
+    },
+    {
+      "rank": 2,
+      "id": "C2_runup_exists",
+      "hypothesis": "H1",
+      "claim": "Residual Q&A uncertainty is elevated in the pre-announcement quarter of cash acquirers, relative to their own other quarters.",
+      "table": "tab:empire_building_did",
+      "finding": {
+        "cash_UncResCEO": "0.0461*** (SE 0.0172, t=2.68)",
+        "two_tailed_check": "p=.0074 -- SURVIVES two-tailed at <.01",
+        "cash_CashRatio": "0.0051*** (SE 0.0017)",
+        "stock_UncResCEO": "-0.0429 (SE 0.0307) n.s.",
+        "stock_CashRatio": "-0.0036 n.s.",
+        "R2_residual_eq": 0.001,
+        "N": {"cash_residual": "27,622 / 1,248 firms", "cash_cashratio": "67,590 / 2,232 firms", "stock_residual": "39,377 / 1,338 firms"},
+        "tails_in_table": "one-tailed (but survives two-tailed)"
+      },
+      "referee_proof": "SOLID",
+      "risks": ["generated regressand (UncRes is a first-stage residual used as outcome)", "selection: CEO >=5-call filter -> larger/more-covered firms", "single PreAnnounceQtr indicator", "one-tailed in table (survives two-tailed)"],
+      "thinnest_claim": "'Elevated for cash acquirers, not detectable for stock acquirers' (side-by-side). Keep correlational/within-firm framing. Strong second pillar."
+    },
+    {
+      "rank": 3,
+      "id": "C3_discriminant_validity",
+      "hypothesis": "validity (discriminant)",
+      "claim": "A persistent industry condition surfaces in the scripted presentation, not in the call-varying residual.",
+      "table": "tab:h23_competition_uncertainty",
+      "finding": {
+        "competition_to_UncRes": "0.0008 n.s. (ind FE) / 0.0023 n.s. (firm FE)",
+        "competition_to_UncPre": "0.0304*** / 0.0302***",
+        "N": "12,728 / 18,492"
+      },
+      "referee_proof": "CLEAN -- the single cleanest validity result",
+      "risks": ["UncPreCEO -> UncResCEO is significant in THIS table (0.0111** / 0.0230**), even though UncPre is a first-stage control in eq-4 -> evidence for the UncPre over-control/contamination concern (different, smaller sample so orthogonality is not mechanical here)"],
+      "thinnest_claim": "Lead the validity story with this. Keep."
+    },
+    {
+      "rank": 4,
+      "id": "C4_scrutiny_ruleout",
+      "hypothesis": "alternative rule-out",
+      "claim": "The run-up is not an artifact of analysts asking harder cash questions.",
+      "tables": ["tab:reason_gating", "tab:cash_scrutiny_validity", "tab:cash_scrutiny_channel"],
+      "finding": {
+        "gating_PreAnnounceQtr": "0.0413*** (col1) / 0.0439** (col2)",
+        "gating_CashScrutiny": "0.0000 / 0.0001 n.s.",
+        "gating_interaction": "-0.0056 (SE 0.0111) n.s.",
+        "validity_CashRatio_to_Scrutiny": "0.7530*** / 0.8519*** (one-tailed) -- measure is real",
+        "channel_Scrutiny_to_UncRes": "-0.0000 n.s. (OLS), -0.0003 n.s. (logit)",
+        "confound_is_real": "HighCashScrutiny itself RISES pre-announce: 0.0408** (tab:empire_building_did col 4)"
+      },
+      "referee_proof": "NULL ONLY -- underpowered; interaction CI [-0.027,+0.016]; 89% of calls draw no cash scrutiny",
+      "risks": ["absence-of-evidence, not equivalence", "the confound (scrutiny rises pre-announce) is genuine; only the gating interaction kills it, and it is underpowered"],
+      "thinnest_claim": "Keep EXACTLY as hedged: 'does not account for THIS run-up; not that scrutiny never matters.' Do NOT strengthen."
+    },
+    {
+      "rank": 5,
+      "id": "C5_convergent_validity",
+      "hypothesis": "validity (convergent)",
+      "claim": "The residual moves with established uncertainty measures (political risk, policy uncertainty).",
+      "tables": ["tab:h11_prisk_uncertainty", "tab:h24_us_epu", "tab:h24b_global_epu"],
+      "finding": {
+        "PRisk_to_UncRes": "0.0001*** (SE 0.0000) -- magnitude trivial; R2=0.003",
+        "US_EPU_to_UncRes": "0.0124** (ind) / 0.0123* (firm) -- one-tailed; firm-FE only marginal",
+        "GEPU_to_UncRes": "0.0181** / 0.0187** (one-tailed)",
+        "tails": "one-tailed for IVs"
+      },
+      "referee_proof": "WEAK -- one-tailed; PRisk economically trivial; US-EPU marginal and would likely go n.s. two-tailed",
+      "risks": ["one-tailed inflates these", "PRisk coefficient 0.0001 is statistically there but economically nothing vs UncRes SD 0.3072"],
+      "thinnest_claim": "'Consistent with' established measures, NOT 'establishes/moves with.' Drop PRisk emphasis. Lean on the discriminant result (C3), not the convergent one."
+    },
+    {
+      "rank": 6,
+      "id": "C6_cash_specificity_formal",
+      "hypothesis": "H1a",
+      "claim": "The cash-stock difference in the run-up survives a formal test (cash-specificity).",
+      "tables": ["tab:empire_cashspec", "tab:empire_drop_placebo"],
+      "finding": {
+        "EFFECT_cash": "0.0459** (SE 0.0185)",
+        "EFFECT_stock": "-0.0524 (SE 0.0436) n.s.",
+        "EFFECT_diff": "0.0983** (SE 0.0476) -> z=2.06, p=.039",
+        "CAUSE_diff_matched": "0.0064 (SE 0.0071) n.s. -- the cash build-up itself is NOT cash-specific",
+        "CAUSE_diff_full": "0.0092* (SE 0.0055)",
+        "placebo_cash_PRE1": "0.0486***",
+        "placebo_stock_PRE1": "-0.0404 n.s.; stock moves OPPOSITE (PRE1-GAP -0.0756*)"
+      },
+      "referee_proof": "VALID at 5% (two-tailed). CORRECTED 2026-06-12 (advisor) -- I had this backwards.",
+      "risks": ["the EFFECT test is sound: cashspec table is TWO-TAILED (note L274), diff 0.0983 SE 0.0476 -> p=.039, significant at 5%; 'survives a formal test' is ACCURATE, not an overclaim", "real fragility is the imprecise stock arm (-0.0524 n.s., SE 0.0436); body already discloses 'supportive rather than definitive' (L46) -- keep that hedge", "the proposed CAUSE leg fails (0.0064 n.s. matched) -> the war-chest mechanism is NOT established; keep mechanism OPEN", "DO NOT replace the formal test with the side-by-side 'sig for cash / n.s. for stock' -- that is the Gelman-Stern fallacy (difference between sig and not-sig is not itself sig) and INCREASES referee exposure"],
+      "thinnest_claim": "KEEP the formal interacted test as the cash-specificity claim (valid at 5%, two-tailed). Disclose its fragility (imprecise stock arm) as the body already does. SEPARATE the EFFECT (cash-specific, p=.039 -- claim it) from the CAUSE (cash build-up NOT cash-specific, 0.0064 n.s. -- mechanism stays open). Rerun that matters: two-way clustering (firm x quarter, as EPU tables already use) could STRENGTHEN it."
+    },
+    {
+      "rank": 7,
+      "id": "C7_presentation_two_audiences",
+      "hypothesis": "presentation contrast",
+      "claim": "Scripted presentation carries the priced/regulated signal; the residual does not -- two components, two audiences.",
+      "tables": ["tab:h14c_ceo2_decomp", "tab:h18_ceo2_decomp"],
+      "finding": {
+        "spread_UncPre": "0.1664** (baseline) / 0.3496*** (FE) -> FADES to 0.0108 n.s. / 0.1644* with full controls",
+        "spread_UncRes": "n.s. in all 12 specs (baseline -0.0594, SE 0.1068)",
+        "SEC_UncPre": "up to 0.0016** / 0.0014*",
+        "SEC_UncRes": "-0.0003 / -0.0004 n.s. throughout"
+      },
+      "referee_proof": "TEXTURE -- weak/fading",
+      "risks": ["UncPre spread effect fades to n.s. once full controls enter", "SEC effects tiny"],
+      "thinnest_claim": "Keep minimal ('texture, not pillars') OR drop to additional-analysis-only. Already self-labeled as not load-bearing."
+    }
+  ],
+
+  "RETRACTED_overclaim_call": {
+    "status": "RETRACTED 2026-06-12 (advisor) -- this was my error, not an overclaim.",
+    "claim_I_wrongly_flagged": "abstract L27 'The cash-stock difference survives a formal test'",
+    "why_it_is_actually_fine": "tab:empire_cashspec is TWO-TAILED (note L274); diff 0.0983 SE 0.0476 -> p=.039, significant at 5%. The statement accurately describes a test that survived ('survives' rightly connotes 'barely').",
+    "my_proposed_fix_was_worse": "Replacing it with 'significant for cash, n.s. for stock' is the Gelman-Stern fallacy -- the exact move a referee attacks. It would have INCREASED referee exposure.",
+    "no_egregious_single_overclaim_remains": "Prior register work (correlational / concentration-not-specificity / supportive-not-definitive) already calibrated the headlines. Genuine soft spots = C5 convergent validity (one-tailed) and the open mechanism -- already disclosed or being thinned."
+  },
+
+  "cross_cutting_rerun_class_risks": [
+    {
+      "id": "R1_one_tailed",
+      "risk": "One-tailed tests on focal coefficients (run-up, convergent validity, scrutiny, presentation).",
+      "impact": "Does NOT bite the load-bearing results: C2 run-up SURVIVES two-tailed (p=.007); C1 timing and C6 cashspec are ALREADY two-tailed. Mainly bites C5 convergent validity (US-EPU firm-FE 0.0123* -> n.s. two-tailed) -- being demoted anyway.",
+      "class": "RERUN-lite (relabel stars from existing t-stats; no re-estimation)",
+      "recommendation": "Move focal tests to two-tailed for honesty; load-bearing claims unaffected."
+    },
+    {
+      "id": "R2_clustering",
+      "risk": "Inconsistent clustering: run-up / cashspec / h11 / h23 firm-only; h24 / h24b two-way (firm, calendar quarter).",
+      "class": "RERUN",
+      "recommendation": "Standardize to two-way (firm x quarter). NOTE: applying it to tab:empire_cashspec could STRENGTHEN C6 cash-specificity (makes option (a) more solid)."
+    },
+    {
+      "id": "R3_generated_regressand",
+      "risk": "UncResCEO is a first-stage residual used as the dependent variable in every downstream regression; no two-step SE correction (Pagan 1984) anywhere.",
+      "class": "RERUN or formally argue",
+      "recommendation": "Either bootstrap the two-step SEs, or state the argument for why inference is unaffected. Must be addressed in 2.3."
+    }
+  ],
+
+  "thin_claim_ceiling": {
+    "statement": "A within-firm, correlational pattern: residual CEO Q&A uncertainty is elevated in the pre-announcement quarter of cash acquirers (not detectable for stock), resolves at announcement, while the acquirer's cash persists to completion -- read as call language tracking the deal's disclosure state. NO tested mechanism, NO identification. Cash-specificity of the EFFECT IS claimable (C6 valid at 5%); cash-specificity of the CAUSE is NOT (mechanism stays open).",
+    "register_that_stands": "correlational / no-identification / supportive-not-definitive / mechanism-open. This part is decided.",
+    "demoted": "C5 convergent validity -> 'consistent with'; C7 presentation -> texture or drop.",
+    "RESOLVED_both_2026_06_12": {
+      "decision": "BOTH -- the fork was a FALSE dichotomy (user). The claim is ONE signal with TWO dimensions: ANTICIPATORY (timing: appears pre-announcement, gone at announcement -- C1) AND CASH-CONCENTRATED (cash vs stock -- C2 + C6). Not rivals; the two coordinates of the same signal.",
+      "both_in_the_title": "Title L18 'Cash Got Your Tongue? CEO Language Uncertainty Around Undisclosed Cash Acquisitions' = cash (Cash Acquisitions) + timing (Around Undisclosed). Abstract L27 already says 'an anticipatory, cash-deal-concentrated component.'",
+      "both_supported": "Timing (C1) strongest; cash run-up (C2) solid; formal cash-specificity (C6) valid at 5%.",
+      "hedge_that_STAYS": "'Both supported' does NOT drop the calibrated hedges on the cash leg: concentration-not-strict-specificity, supportive-not-definitive (imprecise stock arm), mechanism/cause OPEN (cause leg 0.0064 n.s.)."
+    }
+  },
+
+  "ripple_decision_resolved": {
+    "decision": "BOUND 2.1 theory (do NOT cascade into bigger claims).",
+    "rationale": "Findings support a thin descriptive pattern + a disclosure-state READING, not a tested mechanism.",
+    "implications": [
+      "2.1 develops disclosure-state framing only enough to MOTIVATE the descriptive question; never claims a TESTED mechanism (the cause leg fails -> mechanism stays open).",
+      "Intro / abstract / 5 align to the thin claim (coherence in the THINNING direction).",
+      "Abstract 'survives a formal test' STANDS (valid 5% two-tailed) -- do NOT remove.",
+      "Keep correlational / no-identification / concentration-not-specificity register."
+    ]
+  }
+}
