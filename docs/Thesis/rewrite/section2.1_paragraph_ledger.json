@@ -712,11 +712,79 @@
           "nlm_query_draft": "",
           "verification": {
             "method": "NLM",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": "Source LOCKED = Matsumoto 2011 (advisor + user). NEEDS UPLOAD before query. Atomized: query ONLY 'does the analyst-discussion (Q&A) session carry incremental information content beyond the presentation?' -- the 'less scripted' part is definitional, not queried. Matsumoto also carries the presentation/Q&A-split-as-analytical-unit point the design rests on."
+            "source": {
+              "id": "a1dacc9f-2bee-46ba-9261-496fd687c8e6",
+              "title": "EBSCO-FullText-06_12_2026.pdf"
+            },
+            "query": "Reading only this paper, \"What Makes Conference Calls Useful? The Information Content of Managers' Presentations and Analysts' Discussion Sessions\" by Matsumoto, Pronk and Roelofsen (2011, The Accounting Review): does it reach a conclusion about whether the analysts' discussion (question-and-answer) portion of a conference call carries information content beyond the managers' presentation portion, and which of the two portions it finds more informative? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "answer": "The paper concludes that the analysts' discussion (question-and-answer) portion of a conference call does indeed carry information content beyond the managers' presentation portion [1]. Furthermore, the study determines that the analysts' discussion portion is relatively **more informative** than the managers' presentation [2-5]. \n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the discussion portion carrying incremental information beyond the presentation:**\n*   \"More importantly, the intercepts in both equations are positive and statistically significant, indicating that both the presentation and discussion segments have incremental information content over the accompanying press release and, in the case of the discussion, over information released during the presentation.\" [1, 6]\n    *   **Page:** 1396\n    *   **Section:** IV. EMPIRICAL DESIGN AND RESULTS (Subsection: Information Content of Presentation and Discussion Sessions)\n\n**On the discussion portion being more informative than the presentation:**\n*   \"However, we find statistically greater abnormal absolute returns during the discussion portion of the call relative to the presentation, suggesting that the discussion portion is relatively more informative.\" [3]\n    *   **Page:** 1384\n    *   **Section:** I. INTRODUCTION\n*   \"More importantly, the intercept is negative and statistically significant, consistent with the discussion segment of the call having greater information content than the presentation.\" [4]\n    *   **Page:** 1396\n    *   **Section:** IV. EMPIRICAL DESIGN AND RESULTS (Subsection: Information Content of Presentation and Discussion Sessions)\n*   \"We find that both presentations and discussions are incrementally informative, but that discussion periods have greater information content than presentations.\" [5]\n    *   **Page:** 1411\n    *   **Section:** VI. CONCLUSION",
+            "quotes": [
+              {
+                "n": 1,
+                "cited_text": "presents the results for the returns during the presentation (discussion). Consistent with our",
+                "start_char": 52348,
+                "end_char": 52443,
+                "chunk_id": "5614d1f5-75eb-4ea4-a97d-bf6cc8dcb01e"
+              },
+              {
+                "n": 2,
+                "cited_text": "release. Using a sample of more than 10,000 conference-call transcripts, we examine",
+                "start_char": 578,
+                "end_char": 662,
+                "chunk_id": "24f9eae4-c543-4dff-812c-530503bc1676"
+              },
+              {
+                "n": 3,
+                "cited_text": "We first examine the incremental information content of each segment of the call and find that",
+                "start_char": 5890,
+                "end_char": 5985,
+                "chunk_id": "d6406fad-5a93-47b7-95a7-e25404927115"
+              },
+              {
+                "n": 4,
+                "cited_text": "analysis are presented in Table 3, Panel B. The coefficient on jRETDAYB4j is negative and",
+                "start_char": 53374,
+                "end_char": 53464,
+                "chunk_id": "ad053497-37aa-4374-bdf8-c8cb1b82cf96"
+              },
+              {
+                "n": 5,
+                "cited_text": "VI. CONCLUSION",
+                "start_char": 108666,
+                "end_char": 108681,
+                "chunk_id": "a309a03a-26ff-485c-921a-949338000b7f"
+              },
+              {
+                "n": 6,
+                "cited_text": "over the accompanying press release and, in the case of the discussion, over information released",
+                "start_char": 52848,
+                "end_char": 52946,
+                "chunk_id": "e997a5d8-164a-4b63-aff7-8e09a4a81901"
+              }
+            ],
+            "located": [
+              {
+                "quote": "More importantly, the intercepts in both equations are positive and statistically significant, indicating that both the presentation and discussion segments have incremental information content over the accompanying press release and, in the case of the discussion, over information released during the presentation.",
+                "page": "1396",
+                "section": "IV. EMPIRICAL DESIGN AND RESULTS (Subsection: Information Content of Presentation and Discussion Sessions)"
+              },
+              {
+                "quote": "However, we find statistically greater abnormal absolute returns during the discussion portion of the call relative to the presentation, suggesting that the discussion portion is relatively more informative.",
+                "page": "1384",
+                "section": "I. INTRODUCTION"
+              },
+              {
+                "quote": "More importantly, the intercept is negative and statistically significant, consistent with the discussion segment of the call having greater information content than the presentation.",
+                "page": "1396",
+                "section": "IV. EMPIRICAL DESIGN AND RESULTS (Subsection: Information Content of Presentation and Discussion Sessions)"
+              },
+              {
+                "quote": "We find that both presentations and discussions are incrementally informative, but that discussion periods have greater information content than presentations.",
+                "page": "1411",
+                "section": "VI. CONCLUSION"
+              }
+            ],
+            "verdict": "PENDING"
           }
         },
         {
