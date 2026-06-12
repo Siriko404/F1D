@@ -83,18 +83,19 @@ INFERENCE_CONNECTIVES = [
     "so ", "therefore", "thus", " hence ", "because",
     "licenses the reading", "implies", "is the trace predicted",
     "is the differential-timing prediction", "we read it as",
-    "we read this as", "this is the", "follows the",
-    "so that", "which is what makes",
+    "we read this as", "so that", "which is what makes",
 ]
 
-# §1G. CAVEAT MARKERS
+# §1G. CAVEAT MARKERS — each is a regex requiring word boundaries
 CAVEAT_MARKERS = [
-    "not a", "not yet", "claim no", "no identification", "correlational",
-    "failure to find", "fragile", "supported but", "limit", "limitation",
-    "does not exclude", "not proof of absence", "not a powered",
-    "not itself a test", "deliberately hedged", "at one remove",
-    "cannot", "leaves", "not a headline", "not pillars",
+    r"\bnot a\b", r"\bnot yet\b", r"\bclaim no\b", r"\bno identification\b",
+    r"\bcorrelational\b", r"\bfailure to find\b", r"\bfragile\b",
+    r"\bsupported but\b", r"\blimit(?:ation|s)?\b", r"\bdoes not exclude\b",
+    r"\bnot proof of absence\b", r"\bnot a powered\b",
+    r"\bnot itself a test\b", r"\bdeliberately hedged\b", r"\bat one remove\b",
+    r"\bcannot\b", r"\bleaves\b", r"\bnot a headline\b", r"\bnot pillars\b",
 ]
+CAVEAT_RE = re.compile("|".join(CAVEAT_MARKERS), re.IGNORECASE)
 
 # §1H. NUMBER PATTERNS
 NUMBER_PAT = re.compile(
@@ -213,11 +214,22 @@ def find_numbers(span):
     return nums
 
 
+# patterns that indicate a genuine formula (not stat notation like $p<.01$)
+FORMULA_BODY = re.compile(r"[=+*/]|\\[a-zA-Z]+")
+
+
 def find_formulas(span):
-    """Return list of distinct formula/equation items in span (T6)."""
+    """Return list of distinct formula/equation items in span (T6).
+    Excludes single-stat inline notation like $p<.01$, $e=-1$, $t-2$."""
     items = []
     for m in MATH_PAT.finditer(span):
-        items.append(m.group())
+        body = m.group()
+        # skip if it's just stat notation without formula content:
+        # $p<.01$, $e=-1$, $t-2$, $N$, $n.s.$, $\%$, etc.
+        inner = body[1:-1]  # strip $$
+        if not FORMULA_BODY.search(inner):
+            continue
+        items.append(body)
     for m in EQ_PAT.finditer(span):
         items.append(m.group())
     return items
@@ -452,8 +464,8 @@ def apply_rules(seed):
         triggers_fired.add("T9")
         emitted.append(emit_F(span, "T9 inference"))
 
-    # T10: caveat markers
-    if any_match(span, CAVEAT_MARKERS):
+    # T10: caveat markers (word-boundary regex)
+    if CAVEAT_RE.search(span):
         triggers_fired.add("T10")
         emitted.append(emit_H(span, "T10 caveat"))
 
