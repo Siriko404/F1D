@@ -114,7 +114,8 @@
     "626b141  audit(P2-sweep): inverse-sweep done - M2-04 MINOR (event-study window hygiene); P2 COMPLETE",
     "c4e38dc  audit(P2): refresh STATE commit_trail (was stale since 9b5ddda)",
     "6dfcb92  docs(audit): E3 addendum - NLM citation-query discipline (5 rules) + smoke-test verified",
-    "(next)   docs(audit): E4 addendum - NLM is SOLE paper-side authority (never read papers direct) + atomic queries - this commit"
+    "82ccb53  docs(audit): E4 addendum - NLM is SOLE paper-side authority (never read papers direct) + atomic queries",
+    "(next)   audit(P3): E5 (scripted queries + title anchor) + p3_identify_sources.py title-anchored source-id mapping - this commit"
   ],
 
   "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters: generated-regressor SEs EVALUATED -> WITHDRAWN (not a thesis flaw; estimand is the constructed measure, not a latent shock); STILL OPEN: Nickell bias, one-tailed-vs-two-tailed inference, winsorization disclosure, LM dictionary mismatch (P2 priorities 2-3)."
