@@ -116,7 +116,8 @@
     "6dfcb92  docs(audit): E3 addendum - NLM citation-query discipline (5 rules) + smoke-test verified",
     "82ccb53  docs(audit): E4 addendum - NLM is SOLE paper-side authority (never read papers direct) + atomic queries",
     "4c3aea2  audit(P3): E5 (scripted queries + title anchor) + p3_identify_sources.py title-anchored source-id mapping",
-    "(next)   audit(P3): E6 - scope-by-NAME proven (DWZ named-query cites only DWZ); id-mapping retired; lm2011+hoberg2010 flagged not-in-notebook - this commit"
+    "e51ce51  audit(P3): E6 - scope-by-NAME proven (DWZ named-query cites only DWZ); id-mapping retired; lm2011+hoberg2010 flagged not-in-notebook",
+    "(next)   audit(P3): E7 + S0 extractor - total-partition+reassembly (314 lines->314 units, no-drop PROVEN); fight-test killed eyeball method; ~32 candidate claim units - this commit"
   ],
 
   "seed_findings_pending": "AUDIT_PROTOCOL.md SS7 (adjudicate first): h1_2 note Eq.5->Eq.4; thewissen2024 year/SSRN; Lerman 2024 vs 2026 code/bibitem; D9 referee starters: generated-regressor SEs EVALUATED -> WITHDRAWN (not a thesis flaw; estimand is the constructed measure, not a latent shock); STILL OPEN: Nickell bias, one-tailed-vs-two-tailed inference, winsorization disclosure, LM dictionary mismatch (P2 priorities 2-3)."
