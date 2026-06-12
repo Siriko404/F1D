@@ -225,77 +225,57 @@
           "nlm_query_draft": "Reading only this paper, under what conditions does it conclude a manager who possesses private information will choose not to disclose it?",
           "verification": {
             "method": "NLM",
-            "evidence": [
+            "source": {
+              "id": "b919b243-8399-4230-8bbc-c352fffb47d7",
+              "title": "1-s2.0-0165410183900113-main.pdf"
+            },
+            "query": "Reading only this paper, \"Discretionary Disclosure\" by Verrecchia (1983, Journal of Accounting and Economics): under what conditions, if any, does it conclude that a manager who possesses private information will choose not to disclose that information? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "answer": "In Verrecchia (1983), a manager who possesses private information will choose not to disclose it when two primary conditions are met: there is a positive disclosure-related cost (termed a **\"proprietary cost\"**), and the value of the information observed falls below a specific **\"threshold level of disclosure\"** [1, 2]. This proprietary cost can include both the physical cost of dissemination and the strategic cost of revealing sensitive data that could be used against the firm by competitors or labor unions [1, 3]. Because of this cost, the market cannot conclude that silence unambiguously signals the worst possible news [4]. Instead, the manager will rationally withhold information if it is either outright \"bad news,\" or if it is \"good news\" that is not favorable enough to justify paying the proprietary cost to reveal it [5]. \n\nHere are the specific sentences quoted from the paper that support this conclusion, along with their exact page numbers and section headings:\n\n*   \"If a proprietary cost exists and information is withheld, traders are unsure whether it was withheld because: (i) the information represents ‘bad news’, or (ii) the information represents ‘good news’, but not sufficiently good news to warrant incurring the proprietary cost.\" [5]\n    *   **Page:** 182\n    *   **Section:** 1. Introduction\n\n*   \"An intuitive explanation of the Theorem is that when a proprietary cost exists, a manager maximizes the price of a risky asset by disclosing what he observes only when the realization y\"= y is sufficiently high to overcome the cost associated with its disclosure.\" [6] \n    *   **Page:** 190\n    *   **Section:** 4. The existence of a discretionary disclosure equilibrium\n\n*   \"An equilibrium threshold level of disclosure is a point below which a manager’s motivation to withhold information is consistent with traders’ conjecture as to how to interpret that action.\" [7]\n    *   **Page:** 192\n    *   **Section:** 5. Conclusion\n\n*   \"This result relies on the existence of a cost associated with the disclosure of information.\" [8]\n    *   **Page:** 192\n    *   **Section:** 5. Conclusion",
+            "quotes": [
               {
                 "n": 1,
                 "cited_text": "My model reconciles the empirical evidence with existing economic theory in the following way. In the model proposed here, the manager may either disclose or withhold information, which is a signal about the true liquidating value of the asset he manages. However, if he reports what he observes, the value of the asset is reduced by some cost, which I interpret as the cost associated with disclosing information. Typically, one thinks of the disclosure- related cost as solely the cost of preparing and disseminating information for traders’ inspection. I prefer to regard this cost more broadly so as to also include the cost associated with disclosing information which may be proprietary in nature, and therefore potentially damaging: to emphasize this, henceforth I refer to the disclosure-related cost as a proprietary cost. In my model, I assume the proprietary cost is constant, independent of what signal the manager discloses. It seems apparent that there would be a proprietary cost associated with releasing information which is unfavorable to a firm (e.g., a bank would be tempted to ask for repayment of its loan). However, the release of a variety of accounting statistics about a firm (e.g., sales, net",
-                "source_id": "b919b243-8399-4230-8bbc-c352fffb47d7",
                 "start_char": 7488,
                 "end_char": 8708,
-                "chunk_id": "8b973c5a-44f5-4e59-852a-837c84deff5f",
-                "page": null,
-                "section": null
+                "chunk_id": "de1e2926-d277-47b8-8b67-fcbcc68f0113"
               },
               {
                 "n": 2,
                 "cited_text": "Notice, in particular, the absence of any costs when the information is withheld.",
-                "source_id": "b919b243-8399-4230-8bbc-c352fffb47d7",
                 "start_char": 19756,
                 "end_char": 19838,
-                "chunk_id": "d7a05209-b8a8-4737-a381-bf302cd960a7",
-                "page": null,
-                "section": null
+                "chunk_id": "be99d099-8943-4355-82d2-860a59c2e845"
               },
               {
-                "n": 3,
+                "n": 5,
                 "cited_text": "The existence of a proprietary cost has the following significance. If a proprietary cost exists and information is withheld, traders are unsure whether it was withheld because: (i) the information represents ‘bad news’, or (ii) the information represents ‘good news’, but not sufficiently good news to warrant incurring the proprietary cost. In effect, a proprietary cost introduces noise into the model by extending the range of possible interpretations of withheld information to include news which is actually favorable. Traders’ inability to interpret withheld information as unambiguously ‘bad news’ is sufficient to support a threshold level of disclosure whereby for certain observations a manager is motivated to withhold information. In addition to establishing the existence of an equilibrium threshold level of disclosure, the critical nature of the proprietary cost is further demonstrated by showing that my analysis is consistent with that of Grossman-Milgrom as the proprietary cost goes to zero: that is, in the absence of a proprietary cost, a manager follows a policy of full disclosure.",
-                "source_id": "b919b243-8399-4230-8bbc-c352fffb47d7",
                 "start_char": 10000,
                 "end_char": 11107,
-                "chunk_id": "c9251faf-da03-46cf-8726-885edc1a0dfb",
-                "page": "182",
-                "section": "1. Introduction"
-              },
-              {
-                "n": 4,
-                "cited_text": "An intuitive explanation of the Theorem is that when a proprietary cost exists, a manager maximizes the price of a risky asset by disclosing what he observes only when the realization y\"= y is sufficiently high to overcome the cost associated with its disclosure. Therefore, if the information is withheld, traders are unsure whether it was withheld because: (i) the realization j? = y is low, or (ii) the realization is high but not sufficiently high to justify the proprietary cost. Consequently, the withholding of information does not necessarily lead to inferences which are so manifestly negative that a manager always discloses what he observes. In particular, there exists a threshold level where a manager’s decision to withhold information is sustained by traders’ uncertainty as to whether the correct inference is that the news is ‘bad’ or ‘not quite good enough’ to justify disclosure. In the Grossman-Milgrom discussion, traders infer that the news is unambiguously ‘bad’, which forces the manager to disclose what he observes.",
-                "source_id": "b919b243-8399-4230-8bbc-c352fffb47d7",
-                "start_char": 26891,
-                "end_char": 27933,
-                "chunk_id": "86c9b10a-a9a4-4ba9-b25f-413ea51ddd7e",
-                "page": "190",
-                "section": "4. The existence of a discretionary disclosure equilibrium"
+                "chunk_id": "154a05d2-6f7d-4e33-a6b1-916a2474f0b4"
               },
               {
                 "n": 6,
+                "cited_text": "An intuitive explanation of the Theorem is that when a proprietary cost exists, a manager maximizes the price of a risky asset by disclosing what he observes only when the realization y\"= y is sufficiently high to overcome the cost associated with its disclosure. Therefore, if the information is withheld, traders are unsure whether it was withheld because: (i) the realization j? = y is low, or (ii) the realization is high but not sufficiently high to justify the proprietary cost. Consequently, the withholding of information does not necessarily lead to inferences which are so manifestly negative that a manager always discloses what he observes. In particular, there exists a threshold level where a manager’s decision to withhold information is sustained by traders’ uncertainty as to whether the correct inference is that the news is ‘bad’ or ‘not quite good enough’ to justify disclosure. In the Grossman-Milgrom discussion, traders infer that the news is unambiguously ‘bad’, which forces the manager to disclose what he observes.",
+                "start_char": 26891,
+                "end_char": 27933,
+                "chunk_id": "4823b9f7-e74b-47b3-a61e-d030df23d201"
+              },
+              {
+                "n": 8,
                 "cited_text": "This result relies on the existence of a cost associated with the disclosure of information. For example, it was shown that the threshold level of disclosure increases as the proprietary cost increases. It also relies on a variety of facile, mathematical assumptions: a constant-level proprietary cost, the asset-pricing formulation, and the multivariate normality assumptions. However, the intuition underlying the withholding of information in the presence of disclosure-related costs (and rational expectations) is sufficiently robust to suggest that these (purely mathematical) assumptions can be relaxed without jeopardizing the result.",
-                "source_id": "b919b243-8399-4230-8bbc-c352fffb47d7",
                 "start_char": 32510,
                 "end_char": 33152,
-                "chunk_id": "f6faf0ff-7c86-4830-b477-b3a20a8f066d",
-                "page": "192",
-                "section": "5. Conclusion"
+                "chunk_id": "9a2d31a8-bfb0-4e85-83a0-5fa99ee102fe"
               }
             ],
-            "answer_nonevidence": "In Verrecchia (1983), a manager who possesses private information will choose not to disclose it when there is a positive disclosure-related cost (termed a \"proprietary cost\") and the value of the information falls below a specific \"threshold level of disclosure\" [1, 2]. Under these conditions, the manager will rationally withhold the information if it is either outright \"bad news\" or if it is \"good news\" that is not favorable enough to justify paying the proprietary cost to reveal it [3]. \n\nHere are the specific sentences quoted from the paper that support this conclusion, along with their exact page numbers and section headings:\n\n*   \"If a proprietary cost exists and information is withheld, traders are unsure whether it was withheld because: (i) the information represents 'bad news', or (ii) the information represents 'good news', but not sufficiently good news to warrant incurring the proprietary cost.\" [3] \n    *   **Page:** 182\n    *   **Section:** 1. Introduction\n\n*   \"An intuitive explanation of the Theorem is that when a proprietary cost exists, a manager maximizes the price of a risky asset by disclosing what he observes only when the realization y=y is sufficiently high to overcome the cost associated with its disclosure.\" [4]\n    *   **Page:** 190\n    *   **Section:** 4. The existence of a discretionary disclosure equilibrium\n\n*   \"An equilibrium threshold level of disclosure is a point below which a manager’s motivation to withhold information is consistent with traders’ conjecture as to how to interpret that action.\" [5]\n    *   **Page:** 192\n    *   **Section:** 5. Conclusion\n\n*   \"This result relies on the existence of a cost associated with the disclosure of information.\" [6]\n    *   **Page:** 192\n    *   **Section:** 5. Conclusion",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": "",
-            "query_used": "Reading only this paper, \"Discretionary Disclosure\" by Verrecchia (1983, Journal of Accounting and Economics): under what conditions, if any, does it conclude that a manager who possesses private information will choose not to disclose that information? Additionally, for each sentence you quote in support of your answer, report the exact page number printed in the paper and the section (its heading or number) in which that sentence appears.",
-            "source_scoped": {
-              "key": "verrecchia1983",
-              "id": "b919b243-8399-4230-8bbc-c352fffb47d7",
-              "title": "1-s2.0-0165410183900113-main.pdf"
-            },
-            "source_matched_preamble": "",
-            "located_evidence": [
+            "located": [
               {
-                "quote": "If a proprietary cost exists and information is withheld, traders are unsure whether it was withheld because: (i) the information represents 'bad news', or (ii) the information represents 'good news', but not sufficiently good news to warrant incurring the proprietary cost.",
+                "quote": "If a proprietary cost exists and information is withheld, traders are unsure whether it was withheld because: (i) the information represents ‘bad news’, or (ii) the information represents ‘good news’, but not sufficiently good news to warrant incurring the proprietary cost.",
                 "page": "182",
                 "section": "1. Introduction"
               },
               {
-                "quote": "An intuitive explanation of the Theorem is that when a proprietary cost exists, a manager maximizes the price of a risky asset by disclosing what he observes only when the realization y=y is sufficiently high to overcome the cost associated with its disclosure.",
+                "quote": "An intuitive explanation of the Theorem is that when a proprietary cost exists, a manager maximizes the price of a risky asset by disclosing what he observes only when the realization y",
                 "page": "190",
                 "section": "4. The existence of a discretionary disclosure equilibrium"
               },
@@ -309,7 +289,8 @@
                 "page": "192",
                 "section": "5. Conclusion"
               }
-            ]
+            ],
+            "verdict": "PENDING"
           }
         },
         {
