@@ -55,7 +55,8 @@ def split_sentences(text):
              r"al\.|Inc\.|No\.|Ph\.D\.|Dr\.|Fig\.|Eq\.|cf\.|approx\.|Prof\.)", s)
     s = mask(r"\d+(?:\.\d+)+", s)
 
-    parts = re.split(r"(?<=[.?!])\s+(?=[A-Z\\`(])", s)
+    # \x00 in lookahead: a masked token (cite/math/number) can START a sentence
+    parts = re.split(r"(?<=[.?!])\s+(?=[A-Z\\`(\x00])", s)
     out = []
     for p in parts:
         for k, v in store.items():

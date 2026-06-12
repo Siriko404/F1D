@@ -68,14 +68,14 @@ def main():
         print("       src :", src)
         print("       seed:", recon)
 
-    # garbage: bare LaTeX-command seeds in PROSE blocks only
+    # garbage: seeds that are NOTHING BUT a LaTeX command (no prose at all),
+    # in prose blocks. A sentence STARTING with \citet{...} is legitimate.
     prose_garbage = [s["seq"] for s in seeds
                      if s["block"] not in ("appendix-vartable", "bibliography",
                                            "tables", "front-matter")
-                     and re.match(r"^\\[a-zA-Z]+(\{|\b)", s["verbatim_span"])
-                     and "\\textbf{Abstract" not in s["verbatim_span"]
-                     and "\\textbf{H" not in s["verbatim_span"]
-                     and "\\noindent" not in s["verbatim_span"]]
+                     and re.fullmatch(
+                         r"\\[a-zA-Z]+(\[[^\]]*\])?(\{[^{}]*\})*\s*",
+                         s["verbatim_span"])]
     print("prose command-only seeds:", prose_garbage if prose_garbage else "NONE")
 
     print("\n--- front-matter seeds ---")

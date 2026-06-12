@@ -813,7 +813,7 @@
       "id": null,
       "block": "Conceptual Framework",
       "file_line": "thesis_draft.tex:58",
-      "verbatim_span": "This positions us in a two-by-two with the nearest work. \\citet{thewissen2024} show stock-financed bidders inflate the tone of earnings press releases before announcement: managed language, prepared documents, a financing with a price incentive.",
+      "verbatim_span": "This positions us in a two-by-two with the nearest work.",
       "proposition": null,
       "category": null,
       "role": null,
@@ -830,7 +830,7 @@
       "id": null,
       "block": "Conceptual Framework",
       "file_line": "thesis_draft.tex:58",
-      "verbatim_span": "We examine the opposite cell --- cash deals and unscripted Q\\&A --- and the trace we seek is uncertainty, not tone. \\citet{ragozzino2024} count strategy vocabulary on calls around deals; we measure how language is said, not what is said.",
+      "verbatim_span": "\\citet{thewissen2024} show stock-financed bidders inflate the tone of earnings press releases before announcement: managed language, prepared documents, a financing with a price incentive.",
       "proposition": null,
       "category": null,
       "role": null,
@@ -847,7 +847,7 @@
       "id": null,
       "block": "Conceptual Framework",
       "file_line": "thesis_draft.tex:58",
-      "verbatim_span": "Two readings of our prediction --- compliance-constrained disclosure and deliberate strategic silence --- are observationally equivalent in our data; we do not separate them, and the framework does not require it.",
+      "verbatim_span": "We examine the opposite cell --- cash deals and unscripted Q\\&A --- and the trace we seek is uncertainty, not tone.",
       "proposition": null,
       "category": null,
       "role": null,
@@ -861,6 +861,40 @@
     },
     {
       "seq": 47,
+      "id": null,
+      "block": "Conceptual Framework",
+      "file_line": "thesis_draft.tex:58",
+      "verbatim_span": "\\citet{ragozzino2024} count strategy vocabulary on calls around deals; we measure how language is said, not what is said.",
+      "proposition": null,
+      "category": null,
+      "role": null,
+      "check_route": null,
+      "mapped_bibkey": null,
+      "p2_ref": null,
+      "depends_on": [],
+      "verdict": null,
+      "evidence": null,
+      "note": null
+    },
+    {
+      "seq": 48,
+      "id": null,
+      "block": "Conceptual Framework",
+      "file_line": "thesis_draft.tex:58",
+      "verbatim_span": "Two readings of our prediction --- compliance-constrained disclosure and deliberate strategic silence --- are observationally equivalent in our data; we do not separate them, and the framework does not require it.",
+      "proposition": null,
+      "category": null,
+      "role": null,
+      "check_route": null,
+      "mapped_bibkey": null,
+      "p2_ref": null,
+      "depends_on": [],
+      "verdict": null,
+      "evidence": null,
+      "note": null
+    },
+    {
+      "seq": 49,
       "id": null,
       "block": "Hypothesis Development",
       "file_line": "thesis_draft.tex:62",
@@ -877,7 +911,7 @@
       "note": null
     },
     {
-      "seq": 48,
+      "seq": 50,
       "id": null,
       "block": "Hypothesis Development",
       "file_line": "thesis_draft.tex:64",
@@ -894,7 +928,7 @@
       "note": null
     },
     {
-      "seq": 49,
+      "seq": 51,
       "id": null,
       "block": "Hypothesis Development",
       "file_line": "thesis_draft.tex:66",
@@ -911,7 +945,7 @@
       "note": null
     },
     {
-      "seq": 50,
+      "seq": 52,
       "id": null,
       "block": "Hypothesis Development",
       "file_line": "thesis_draft.tex:68",
@@ -928,7 +962,7 @@
       "note": null
     },
     {
-      "seq": 51,
+      "seq": 53,
       "id": null,
       "block": "Hypothesis Development",
       "file_line": "thesis_draft.tex:70",
@@ -945,7 +979,7 @@
       "note": null
     },
     {
-      "seq": 52,
+      "seq": 54,
       "id": null,
       "block": "Estimation of the Main Variable",
       "file_line": "thesis_draft.tex:74",
@@ -962,7 +996,7 @@
       "note": null
     },
     {
-      "seq": 53,
+      "seq": 55,
       "id": null,
       "block": "Estimation of the Main Variable",
       "file_line": "thesis_draft.tex:74",
@@ -979,7 +1013,7 @@
       "note": null
     },
     {
-      "seq": 54,
+      "seq": 56,
       "id": null,
       "block": "Estimation of the Main Variable",
       "file_line": "thesis_draft.tex:74",
@@ -996,7 +1030,7 @@
       "note": null
     },
     {
-      "seq": 55,
+      "seq": 57,
       "id": null,
       "block": "Estimation of the Main Variable",
       "file_line": "thesis_draft.tex:74",
@@ -1013,7 +1047,7 @@
       "note": null
     },
     {
-      "seq": 56,
+      "seq": 58,
       "id": null,
       "block": "Methodology and Empirical Design",
       "file_line": "thesis_draft.tex:78",
@@ -1030,7 +1064,7 @@
       "note": null
     },
     {
-      "seq": 57,
+      "seq": 59,
       "id": null,
       "block": "Methodology and Empirical Design",
       "file_line": "thesis_draft.tex:78",
@@ -1047,7 +1081,7 @@
       "note": null
     },
     {
-      "seq": 58,
+      "seq": 60,
       "id": null,
       "block": "Methodology and Empirical Design",
       "file_line": "thesis_draft.tex:78",
@@ -1064,7 +1098,7 @@
       "note": null
     },
     {
-      "seq": 59,
+      "seq": 61,
       "id": null,
       "block": "Methodology and Empirical Design",
       "file_line": "thesis_draft.tex:78",
@@ -1081,7 +1115,7 @@
       "note": null
     },
     {
-      "seq": 60,
+      "seq": 62,
       "id": null,
       "block": "Methodology and Empirical Design",
       "file_line": "thesis_draft.tex:78",
@@ -1098,7 +1132,7 @@
       "note": null
     },
     {
-      "seq": 61,
+      "seq": 63,
       "id": null,
       "block": "Methodology and Empirical Design",
       "file_line": "thesis_draft.tex:78",
@@ -1115,7 +1149,7 @@
       "note": null
     },
     {
-      "seq": 62,
+      "seq": 64,
       "id": null,
       "block": "Specification and Measurement of Key Constructs",
       "file_line": "thesis_draft.tex:82",
@@ -1132,7 +1166,7 @@
       "note": null
     },
     {
-      "seq": 63,
+      "seq": 65,
       "id": null,
       "block": "Specification and Measurement of Key Constructs",
       "file_line": "thesis_draft.tex:84",
@@ -1149,7 +1183,7 @@
       "note": null
     },
     {
-      "seq": 64,
+      "seq": 66,
       "id": null,
       "block": "Specification and Measurement of Key Constructs",
       "file_line": "thesis_draft.tex:84",
@@ -1166,7 +1200,7 @@
       "note": null
     },
     {
-      "seq": 65,
+      "seq": 67,
       "id": null,
       "block": "Specification and Measurement of Key Constructs",
       "file_line": "thesis_draft.tex:84",
@@ -1183,7 +1217,7 @@
       "note": null
     },
     {
-      "seq": 66,
+      "seq": 68,
       "id": null,
       "block": "Specification and Measurement of Key Constructs",
       "file_line": "thesis_draft.tex:84",
@@ -1200,7 +1234,7 @@
       "note": null
     },
     {
-      "seq": 67,
+      "seq": 69,
       "id": null,
       "block": "Specification and Measurement of Key Constructs",
       "file_line": "thesis_draft.tex:84",
@@ -1217,7 +1251,7 @@
       "note": null
     },
     {
-      "seq": 68,
+      "seq": 70,
       "id": null,
       "block": "Specification and Measurement of Key Constructs",
       "file_line": "thesis_draft.tex:86",
@@ -1234,7 +1268,7 @@
       "note": null
     },
     {
-      "seq": 69,
+      "seq": 71,
       "id": null,
       "block": "Specification and Measurement of Key Constructs",
       "file_line": "thesis_draft.tex:86",
@@ -1251,7 +1285,7 @@
       "note": null
     },
     {
-      "seq": 70,
+      "seq": 72,
       "id": null,
       "block": "Specification and Measurement of Key Constructs",
       "file_line": "thesis_draft.tex:86",
@@ -1268,7 +1302,7 @@
       "note": null
     },
     {
-      "seq": 71,
+      "seq": 73,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:92",
@@ -1285,7 +1319,7 @@
       "note": null
     },
     {
-      "seq": 72,
+      "seq": 74,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:92",
@@ -1302,7 +1336,7 @@
       "note": null
     },
     {
-      "seq": 73,
+      "seq": 75,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:92",
@@ -1319,7 +1353,7 @@
       "note": null
     },
     {
-      "seq": 74,
+      "seq": 76,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:94",
@@ -1336,7 +1370,7 @@
       "note": null
     },
     {
-      "seq": 75,
+      "seq": 77,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:94",
@@ -1353,7 +1387,7 @@
       "note": null
     },
     {
-      "seq": 76,
+      "seq": 78,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:94",
@@ -1370,7 +1404,7 @@
       "note": null
     },
     {
-      "seq": 77,
+      "seq": 79,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:94",
@@ -1387,7 +1421,7 @@
       "note": null
     },
     {
-      "seq": 78,
+      "seq": 80,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:96",
@@ -1404,7 +1438,7 @@
       "note": null
     },
     {
-      "seq": 79,
+      "seq": 81,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:96",
@@ -1421,7 +1455,7 @@
       "note": null
     },
     {
-      "seq": 80,
+      "seq": 82,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:96",
@@ -1438,7 +1472,7 @@
       "note": null
     },
     {
-      "seq": 81,
+      "seq": 83,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:96",
@@ -1455,7 +1489,7 @@
       "note": null
     },
     {
-      "seq": 82,
+      "seq": 84,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:96",
@@ -1472,7 +1506,7 @@
       "note": null
     },
     {
-      "seq": 83,
+      "seq": 85,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:98",
@@ -1489,7 +1523,7 @@
       "note": null
     },
     {
-      "seq": 84,
+      "seq": 86,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:98",
@@ -1506,7 +1540,7 @@
       "note": null
     },
     {
-      "seq": 85,
+      "seq": 87,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:98",
@@ -1523,7 +1557,7 @@
       "note": null
     },
     {
-      "seq": 86,
+      "seq": 88,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:98",
@@ -1540,7 +1574,7 @@
       "note": null
     },
     {
-      "seq": 87,
+      "seq": 89,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:100",
@@ -1557,7 +1591,7 @@
       "note": null
     },
     {
-      "seq": 88,
+      "seq": 90,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:100",
@@ -1574,7 +1608,7 @@
       "note": null
     },
     {
-      "seq": 89,
+      "seq": 91,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:100",
@@ -1591,7 +1625,7 @@
       "note": null
     },
     {
-      "seq": 90,
+      "seq": 92,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:100",
@@ -1608,7 +1642,7 @@
       "note": null
     },
     {
-      "seq": 91,
+      "seq": 93,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:100",
@@ -1625,7 +1659,7 @@
       "note": null
     },
     {
-      "seq": 92,
+      "seq": 94,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:100",
@@ -1642,7 +1676,7 @@
       "note": null
     },
     {
-      "seq": 93,
+      "seq": 95,
       "id": null,
       "block": "Data, Sample, and Variable Construction",
       "file_line": "thesis_draft.tex:100",
@@ -1659,7 +1693,7 @@
       "note": null
     },
     {
-      "seq": 94,
+      "seq": 96,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:104",
@@ -1676,7 +1710,7 @@
       "note": null
     },
     {
-      "seq": 95,
+      "seq": 97,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:104",
@@ -1693,7 +1727,7 @@
       "note": null
     },
     {
-      "seq": 96,
+      "seq": 98,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:104",
@@ -1710,7 +1744,7 @@
       "note": null
     },
     {
-      "seq": 97,
+      "seq": 99,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:104",
@@ -1727,7 +1761,7 @@
       "note": null
     },
     {
-      "seq": 98,
+      "seq": 100,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:106",
@@ -1744,7 +1778,7 @@
       "note": null
     },
     {
-      "seq": 99,
+      "seq": 101,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:106",
@@ -1761,7 +1795,7 @@
       "note": null
     },
     {
-      "seq": 100,
+      "seq": 102,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:108",
@@ -1778,7 +1812,7 @@
       "note": null
     },
     {
-      "seq": 101,
+      "seq": 103,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:108",
@@ -1795,7 +1829,7 @@
       "note": null
     },
     {
-      "seq": 102,
+      "seq": 104,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:108",
@@ -1812,7 +1846,7 @@
       "note": null
     },
     {
-      "seq": 103,
+      "seq": 105,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:108",
@@ -1829,7 +1863,7 @@
       "note": null
     },
     {
-      "seq": 104,
+      "seq": 106,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:110",
@@ -1846,7 +1880,7 @@
       "note": null
     },
     {
-      "seq": 105,
+      "seq": 107,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:110",
@@ -1863,7 +1897,7 @@
       "note": null
     },
     {
-      "seq": 106,
+      "seq": 108,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:110",
@@ -1880,7 +1914,7 @@
       "note": null
     },
     {
-      "seq": 107,
+      "seq": 109,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:110",
@@ -1897,7 +1931,7 @@
       "note": null
     },
     {
-      "seq": 108,
+      "seq": 110,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:112",
@@ -1914,7 +1948,7 @@
       "note": null
     },
     {
-      "seq": 109,
+      "seq": 111,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:112",
@@ -1931,7 +1965,7 @@
       "note": null
     },
     {
-      "seq": 110,
+      "seq": 112,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:112",
@@ -1948,7 +1982,7 @@
       "note": null
     },
     {
-      "seq": 111,
+      "seq": 113,
       "id": null,
       "block": "Main Analysis 1: The Pre-Announcement Run-Up",
       "file_line": "thesis_draft.tex:112",
@@ -1965,7 +1999,7 @@
       "note": null
     },
     {
-      "seq": 112,
+      "seq": 114,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:117",
@@ -1982,7 +2016,7 @@
       "note": null
     },
     {
-      "seq": 113,
+      "seq": 115,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:117",
@@ -1999,7 +2033,7 @@
       "note": null
     },
     {
-      "seq": 114,
+      "seq": 116,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:117",
@@ -2016,7 +2050,7 @@
       "note": null
     },
     {
-      "seq": 115,
+      "seq": 117,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:119",
@@ -2033,7 +2067,7 @@
       "note": null
     },
     {
-      "seq": 116,
+      "seq": 118,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:119",
@@ -2050,7 +2084,7 @@
       "note": null
     },
     {
-      "seq": 117,
+      "seq": 119,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:119",
@@ -2067,7 +2101,7 @@
       "note": null
     },
     {
-      "seq": 118,
+      "seq": 120,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:121",
@@ -2084,7 +2118,7 @@
       "note": null
     },
     {
-      "seq": 119,
+      "seq": 121,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:121",
@@ -2101,7 +2135,7 @@
       "note": null
     },
     {
-      "seq": 120,
+      "seq": 122,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:121",
@@ -2118,7 +2152,7 @@
       "note": null
     },
     {
-      "seq": 121,
+      "seq": 123,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:123",
@@ -2135,7 +2169,7 @@
       "note": null
     },
     {
-      "seq": 122,
+      "seq": 124,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:123",
@@ -2152,7 +2186,7 @@
       "note": null
     },
     {
-      "seq": 123,
+      "seq": 125,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:125",
@@ -2169,7 +2203,7 @@
       "note": null
     },
     {
-      "seq": 124,
+      "seq": 126,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:125",
@@ -2186,7 +2220,7 @@
       "note": null
     },
     {
-      "seq": 125,
+      "seq": 127,
       "id": null,
       "block": "Main Analysis 2: Differential Timing Around the Announcement",
       "file_line": "thesis_draft.tex:125",
@@ -2203,7 +2237,7 @@
       "note": null
     },
     {
-      "seq": 126,
+      "seq": 128,
       "id": null,
       "block": "Main Analysis 3: Cash-Specificity",
       "file_line": "thesis_draft.tex:130",
@@ -2220,7 +2254,7 @@
       "note": null
     },
     {
-      "seq": 127,
+      "seq": 129,
       "id": null,
       "block": "Main Analysis 3: Cash-Specificity",
       "file_line": "thesis_draft.tex:130",
@@ -2237,7 +2271,7 @@
       "note": null
     },
     {
-      "seq": 128,
+      "seq": 130,
       "id": null,
       "block": "Main Analysis 3: Cash-Specificity",
       "file_line": "thesis_draft.tex:130",
@@ -2254,7 +2288,7 @@
       "note": null
     },
     {
-      "seq": 129,
+      "seq": 131,
       "id": null,
       "block": "Main Analysis 3: Cash-Specificity",
       "file_line": "thesis_draft.tex:132",
@@ -2271,7 +2305,7 @@
       "note": null
     },
     {
-      "seq": 130,
+      "seq": 132,
       "id": null,
       "block": "Main Analysis 3: Cash-Specificity",
       "file_line": "thesis_draft.tex:132",
@@ -2288,7 +2322,7 @@
       "note": null
     },
     {
-      "seq": 131,
+      "seq": 133,
       "id": null,
       "block": "Main Analysis 3: Cash-Specificity",
       "file_line": "thesis_draft.tex:134",
@@ -2305,7 +2339,7 @@
       "note": null
     },
     {
-      "seq": 132,
+      "seq": 134,
       "id": null,
       "block": "Main Analysis 3: Cash-Specificity",
       "file_line": "thesis_draft.tex:134",
@@ -2322,7 +2356,7 @@
       "note": null
     },
     {
-      "seq": 133,
+      "seq": 135,
       "id": null,
       "block": "Main Analysis 3: Cash-Specificity",
       "file_line": "thesis_draft.tex:136",
@@ -2339,7 +2373,7 @@
       "note": null
     },
     {
-      "seq": 134,
+      "seq": 136,
       "id": null,
       "block": "Main Analysis 3: Cash-Specificity",
       "file_line": "thesis_draft.tex:136",
@@ -2356,7 +2390,7 @@
       "note": null
     },
     {
-      "seq": 135,
+      "seq": 137,
       "id": null,
       "block": "Main Analysis 3: Cash-Specificity",
       "file_line": "thesis_draft.tex:136",
@@ -2373,7 +2407,7 @@
       "note": null
     },
     {
-      "seq": 136,
+      "seq": 138,
       "id": null,
       "block": "Main Analysis 3: Cash-Specificity",
       "file_line": "thesis_draft.tex:138",
@@ -2390,7 +2424,7 @@
       "note": null
     },
     {
-      "seq": 137,
+      "seq": 139,
       "id": null,
       "block": "Main Analysis 3: Cash-Specificity",
       "file_line": "thesis_draft.tex:138",
@@ -2407,7 +2441,7 @@
       "note": null
     },
     {
-      "seq": 138,
+      "seq": 140,
       "id": null,
       "block": "Ruling Out Analyst Scrutiny",
       "file_line": "thesis_draft.tex:145",
@@ -2424,7 +2458,7 @@
       "note": null
     },
     {
-      "seq": 139,
+      "seq": 141,
       "id": null,
       "block": "Ruling Out Analyst Scrutiny",
       "file_line": "thesis_draft.tex:145",
@@ -2441,7 +2475,7 @@
       "note": null
     },
     {
-      "seq": 140,
+      "seq": 142,
       "id": null,
       "block": "Ruling Out Analyst Scrutiny",
       "file_line": "thesis_draft.tex:147",
@@ -2458,7 +2492,7 @@
       "note": null
     },
     {
-      "seq": 141,
+      "seq": 143,
       "id": null,
       "block": "Ruling Out Analyst Scrutiny",
       "file_line": "thesis_draft.tex:147",
@@ -2475,7 +2509,7 @@
       "note": null
     },
     {
-      "seq": 142,
+      "seq": 144,
       "id": null,
       "block": "Ruling Out Analyst Scrutiny",
       "file_line": "thesis_draft.tex:147",
@@ -2492,7 +2526,7 @@
       "note": null
     },
     {
-      "seq": 143,
+      "seq": 145,
       "id": null,
       "block": "Ruling Out Analyst Scrutiny",
       "file_line": "thesis_draft.tex:149",
@@ -2509,7 +2543,7 @@
       "note": null
     },
     {
-      "seq": 144,
+      "seq": 146,
       "id": null,
       "block": "Ruling Out Analyst Scrutiny",
       "file_line": "thesis_draft.tex:149",
@@ -2526,7 +2560,7 @@
       "note": null
     },
     {
-      "seq": 145,
+      "seq": 147,
       "id": null,
       "block": "Ruling Out Analyst Scrutiny",
       "file_line": "thesis_draft.tex:151",
@@ -2543,7 +2577,7 @@
       "note": null
     },
     {
-      "seq": 146,
+      "seq": 148,
       "id": null,
       "block": "Ruling Out Analyst Scrutiny",
       "file_line": "thesis_draft.tex:151",
@@ -2560,7 +2594,7 @@
       "note": null
     },
     {
-      "seq": 147,
+      "seq": 149,
       "id": null,
       "block": "Ruling Out Analyst Scrutiny",
       "file_line": "thesis_draft.tex:151",
@@ -2577,7 +2611,7 @@
       "note": null
     },
     {
-      "seq": 148,
+      "seq": 150,
       "id": null,
       "block": "Ruling Out Analyst Scrutiny",
       "file_line": "thesis_draft.tex:153",
@@ -2594,7 +2628,7 @@
       "note": null
     },
     {
-      "seq": 149,
+      "seq": 151,
       "id": null,
       "block": "Ruling Out Analyst Scrutiny",
       "file_line": "thesis_draft.tex:153",
@@ -2611,7 +2645,7 @@
       "note": null
     },
     {
-      "seq": 150,
+      "seq": 152,
       "id": null,
       "block": "Ruling Out Analyst Scrutiny",
       "file_line": "thesis_draft.tex:153",
@@ -2628,7 +2662,7 @@
       "note": null
     },
     {
-      "seq": 151,
+      "seq": 153,
       "id": null,
       "block": "The Presentation-Side Contrast",
       "file_line": "thesis_draft.tex:158",
@@ -2645,7 +2679,7 @@
       "note": null
     },
     {
-      "seq": 152,
+      "seq": 154,
       "id": null,
       "block": "The Presentation-Side Contrast",
       "file_line": "thesis_draft.tex:158",
@@ -2662,7 +2696,7 @@
       "note": null
     },
     {
-      "seq": 153,
+      "seq": 155,
       "id": null,
       "block": "The Presentation-Side Contrast",
       "file_line": "thesis_draft.tex:160",
@@ -2679,7 +2713,7 @@
       "note": null
     },
     {
-      "seq": 154,
+      "seq": 156,
       "id": null,
       "block": "The Presentation-Side Contrast",
       "file_line": "thesis_draft.tex:160",
@@ -2696,7 +2730,7 @@
       "note": null
     },
     {
-      "seq": 155,
+      "seq": 157,
       "id": null,
       "block": "The Presentation-Side Contrast",
       "file_line": "thesis_draft.tex:160",
@@ -2713,7 +2747,7 @@
       "note": null
     },
     {
-      "seq": 156,
+      "seq": 158,
       "id": null,
       "block": "The Presentation-Side Contrast",
       "file_line": "thesis_draft.tex:162",
@@ -2730,7 +2764,7 @@
       "note": null
     },
     {
-      "seq": 157,
+      "seq": 159,
       "id": null,
       "block": "The Presentation-Side Contrast",
       "file_line": "thesis_draft.tex:162",
@@ -2747,7 +2781,7 @@
       "note": null
     },
     {
-      "seq": 158,
+      "seq": 160,
       "id": null,
       "block": "The Presentation-Side Contrast",
       "file_line": "thesis_draft.tex:164",
@@ -2764,7 +2798,7 @@
       "note": null
     },
     {
-      "seq": 159,
+      "seq": 161,
       "id": null,
       "block": "The Presentation-Side Contrast",
       "file_line": "thesis_draft.tex:166",
@@ -2781,7 +2815,7 @@
       "note": null
     },
     {
-      "seq": 160,
+      "seq": 162,
       "id": null,
       "block": "Summary of Findings",
       "file_line": "thesis_draft.tex:173",
@@ -2798,7 +2832,7 @@
       "note": null
     },
     {
-      "seq": 161,
+      "seq": 163,
       "id": null,
       "block": "Summary of Findings",
       "file_line": "thesis_draft.tex:173",
@@ -2815,7 +2849,7 @@
       "note": null
     },
     {
-      "seq": 162,
+      "seq": 164,
       "id": null,
       "block": "Summary of Findings",
       "file_line": "thesis_draft.tex:173",
@@ -2832,7 +2866,7 @@
       "note": null
     },
     {
-      "seq": 163,
+      "seq": 165,
       "id": null,
       "block": "Summary of Findings",
       "file_line": "thesis_draft.tex:173",
@@ -2849,7 +2883,7 @@
       "note": null
     },
     {
-      "seq": 164,
+      "seq": 166,
       "id": null,
       "block": "Summary of Findings",
       "file_line": "thesis_draft.tex:175",
@@ -2866,7 +2900,7 @@
       "note": null
     },
     {
-      "seq": 165,
+      "seq": 167,
       "id": null,
       "block": "Summary of Findings",
       "file_line": "thesis_draft.tex:175",
@@ -2883,7 +2917,7 @@
       "note": null
     },
     {
-      "seq": 166,
+      "seq": 168,
       "id": null,
       "block": "Summary of Findings",
       "file_line": "thesis_draft.tex:175",
@@ -2900,7 +2934,7 @@
       "note": null
     },
     {
-      "seq": 167,
+      "seq": 169,
       "id": null,
       "block": "Contributions",
       "file_line": "thesis_draft.tex:179",
@@ -2917,7 +2951,7 @@
       "note": null
     },
     {
-      "seq": 168,
+      "seq": 170,
       "id": null,
       "block": "Contributions",
       "file_line": "thesis_draft.tex:179",
@@ -2934,7 +2968,7 @@
       "note": null
     },
     {
-      "seq": 169,
+      "seq": 171,
       "id": null,
       "block": "Contributions",
       "file_line": "thesis_draft.tex:179",
@@ -2951,7 +2985,7 @@
       "note": null
     },
     {
-      "seq": 170,
+      "seq": 172,
       "id": null,
       "block": "Contributions",
       "file_line": "thesis_draft.tex:179",
@@ -2968,7 +3002,7 @@
       "note": null
     },
     {
-      "seq": 171,
+      "seq": 173,
       "id": null,
       "block": "Contributions",
       "file_line": "thesis_draft.tex:181",
@@ -2985,7 +3019,7 @@
       "note": null
     },
     {
-      "seq": 172,
+      "seq": 174,
       "id": null,
       "block": "Contributions",
       "file_line": "thesis_draft.tex:181",
@@ -3002,7 +3036,7 @@
       "note": null
     },
     {
-      "seq": 173,
+      "seq": 175,
       "id": null,
       "block": "Contributions",
       "file_line": "thesis_draft.tex:181",
@@ -3019,7 +3053,7 @@
       "note": null
     },
     {
-      "seq": 174,
+      "seq": 176,
       "id": null,
       "block": "Limitations",
       "file_line": "thesis_draft.tex:185",
@@ -3036,7 +3070,7 @@
       "note": null
     },
     {
-      "seq": 175,
+      "seq": 177,
       "id": null,
       "block": "Limitations",
       "file_line": "thesis_draft.tex:185",
@@ -3053,7 +3087,7 @@
       "note": null
     },
     {
-      "seq": 176,
+      "seq": 178,
       "id": null,
       "block": "Limitations",
       "file_line": "thesis_draft.tex:185",
@@ -3070,7 +3104,7 @@
       "note": null
     },
     {
-      "seq": 177,
+      "seq": 179,
       "id": null,
       "block": "Limitations",
       "file_line": "thesis_draft.tex:185",
@@ -3087,7 +3121,7 @@
       "note": null
     },
     {
-      "seq": 178,
+      "seq": 180,
       "id": null,
       "block": "Limitations",
       "file_line": "thesis_draft.tex:187",
@@ -3104,7 +3138,7 @@
       "note": null
     },
     {
-      "seq": 179,
+      "seq": 181,
       "id": null,
       "block": "Limitations",
       "file_line": "thesis_draft.tex:187",
@@ -3121,7 +3155,7 @@
       "note": null
     },
     {
-      "seq": 180,
+      "seq": 182,
       "id": null,
       "block": "Limitations",
       "file_line": "thesis_draft.tex:187",
@@ -3138,7 +3172,7 @@
       "note": null
     },
     {
-      "seq": 181,
+      "seq": 183,
       "id": null,
       "block": "Limitations",
       "file_line": "thesis_draft.tex:187",
@@ -3155,7 +3189,7 @@
       "note": null
     },
     {
-      "seq": 182,
+      "seq": 184,
       "id": null,
       "block": "Directions for Future Research",
       "file_line": "thesis_draft.tex:191",
@@ -3172,7 +3206,7 @@
       "note": null
     },
     {
-      "seq": 183,
+      "seq": 185,
       "id": null,
       "block": "Directions for Future Research",
       "file_line": "thesis_draft.tex:191",
@@ -3189,7 +3223,7 @@
       "note": null
     },
     {
-      "seq": 184,
+      "seq": 186,
       "id": null,
       "block": "Directions for Future Research",
       "file_line": "thesis_draft.tex:191",
@@ -3206,7 +3240,7 @@
       "note": null
     },
     {
-      "seq": 185,
+      "seq": 187,
       "id": null,
       "block": "Directions for Future Research",
       "file_line": "thesis_draft.tex:193",
@@ -3223,7 +3257,7 @@
       "note": null
     },
     {
-      "seq": 186,
+      "seq": 188,
       "id": null,
       "block": "Directions for Future Research",
       "file_line": "thesis_draft.tex:193",
@@ -3240,7 +3274,7 @@
       "note": null
     },
     {
-      "seq": 187,
+      "seq": 189,
       "id": null,
       "block": "Directions for Future Research",
       "file_line": "thesis_draft.tex:193",
@@ -3257,7 +3291,7 @@
       "note": null
     },
     {
-      "seq": 188,
+      "seq": 190,
       "id": null,
       "block": "Directions for Future Research",
       "file_line": "thesis_draft.tex:193",
@@ -3274,7 +3308,7 @@
       "note": null
     },
     {
-      "seq": 189,
+      "seq": 191,
       "id": null,
       "block": "bibliography",
       "file_line": "thesis_draft.tex:200",
@@ -3291,7 +3325,7 @@
       "note": "bibitem:baker2016"
     },
     {
-      "seq": 190,
+      "seq": 192,
       "id": null,
       "block": "bibliography",
       "file_line": "thesis_draft.tex:203",
@@ -3308,7 +3342,7 @@
       "note": "bibitem:bushee2018"
     },
     {
-      "seq": 191,
+      "seq": 193,
       "id": null,
       "block": "bibliography",
       "file_line": "thesis_draft.tex:206",
@@ -3325,7 +3359,7 @@
       "note": "bibitem:davis2016"
     },
     {
-      "seq": 192,
+      "seq": 194,
       "id": null,
       "block": "bibliography",
       "file_line": "thesis_draft.tex:209",
@@ -3342,7 +3376,7 @@
       "note": "bibitem:dwz"
     },
     {
-      "seq": 193,
+      "seq": 195,
       "id": null,
       "block": "bibliography",
       "file_line": "thesis_draft.tex:212",
@@ -3359,7 +3393,7 @@
       "note": "bibitem:everhart2025"
     },
     {
-      "seq": 194,
+      "seq": 196,
       "id": null,
       "block": "bibliography",
       "file_line": "thesis_draft.tex:215",
@@ -3376,7 +3410,7 @@
       "note": "bibitem:gokkaya2025"
     },
     {
-      "seq": 195,
+      "seq": 197,
       "id": null,
       "block": "bibliography",
       "file_line": "thesis_draft.tex:218",
@@ -3393,7 +3427,7 @@
       "note": "bibitem:hassan2020"
     },
     {
-      "seq": 196,
+      "seq": 198,
       "id": null,
       "block": "bibliography",
       "file_line": "thesis_draft.tex:221",
@@ -3410,7 +3444,7 @@
       "note": "bibitem:hoberg2010"
     },
     {
-      "seq": 197,
+      "seq": 199,
       "id": null,
       "block": "bibliography",
       "file_line": "thesis_draft.tex:224",
@@ -3427,7 +3461,7 @@
       "note": "bibitem:hoberg2016"
     },
     {
-      "seq": 198,
+      "seq": 200,
       "id": null,
       "block": "bibliography",
       "file_line": "thesis_draft.tex:227",
@@ -3444,7 +3478,7 @@
       "note": "bibitem:lerman2026"
     },
     {
-      "seq": 199,
+      "seq": 201,
       "id": null,
       "block": "bibliography",
       "file_line": "thesis_draft.tex:230",
@@ -3461,7 +3495,7 @@
       "note": "bibitem:lm2011"
     },
     {
-      "seq": 200,
+      "seq": 202,
       "id": null,
       "block": "bibliography",
       "file_line": "thesis_draft.tex:233",
@@ -3478,7 +3512,7 @@
       "note": "bibitem:ragozzino2024"
     },
     {
-      "seq": 201,
+      "seq": 203,
       "id": null,
       "block": "bibliography",
       "file_line": "thesis_draft.tex:236",
@@ -3495,7 +3529,7 @@
       "note": "bibitem:thewissen2024"
     },
     {
-      "seq": 202,
+      "seq": 204,
       "id": null,
       "block": "appendix-prose",
       "file_line": "thesis_draft.tex:245",
@@ -3512,7 +3546,7 @@
       "note": null
     },
     {
-      "seq": 203,
+      "seq": 205,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:252",
@@ -3529,7 +3563,7 @@
       "note": "table-row"
     },
     {
-      "seq": 204,
+      "seq": 206,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:254",
@@ -3546,7 +3580,7 @@
       "note": "table-row"
     },
     {
-      "seq": 205,
+      "seq": 207,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:255",
@@ -3563,7 +3597,7 @@
       "note": "table-row"
     },
     {
-      "seq": 206,
+      "seq": 208,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:256",
@@ -3580,7 +3614,7 @@
       "note": "table-row"
     },
     {
-      "seq": 207,
+      "seq": 209,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:257",
@@ -3597,7 +3631,7 @@
       "note": "table-row"
     },
     {
-      "seq": 208,
+      "seq": 210,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:258",
@@ -3614,7 +3648,7 @@
       "note": "table-row"
     },
     {
-      "seq": 209,
+      "seq": 211,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:259",
@@ -3631,7 +3665,7 @@
       "note": "table-row"
     },
     {
-      "seq": 210,
+      "seq": 212,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:260",
@@ -3648,7 +3682,7 @@
       "note": "table-row"
     },
     {
-      "seq": 211,
+      "seq": 213,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:261",
@@ -3665,7 +3699,7 @@
       "note": "table-row"
     },
     {
-      "seq": 212,
+      "seq": 214,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:262",
@@ -3682,7 +3716,7 @@
       "note": "table-row"
     },
     {
-      "seq": 213,
+      "seq": 215,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:263",
@@ -3699,7 +3733,7 @@
       "note": "table-row"
     },
     {
-      "seq": 214,
+      "seq": 216,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:264",
@@ -3716,7 +3750,7 @@
       "note": "table-row"
     },
     {
-      "seq": 215,
+      "seq": 217,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:265",
@@ -3733,7 +3767,7 @@
       "note": "table-row"
     },
     {
-      "seq": 216,
+      "seq": 218,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:266",
@@ -3750,7 +3784,7 @@
       "note": "table-row"
     },
     {
-      "seq": 217,
+      "seq": 219,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:268",
@@ -3767,7 +3801,7 @@
       "note": "table-row"
     },
     {
-      "seq": 218,
+      "seq": 220,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:269",
@@ -3784,7 +3818,7 @@
       "note": "table-row"
     },
     {
-      "seq": 219,
+      "seq": 221,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:270",
@@ -3801,7 +3835,7 @@
       "note": "table-row"
     },
     {
-      "seq": 220,
+      "seq": 222,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:271",
@@ -3818,7 +3852,7 @@
       "note": "table-row"
     },
     {
-      "seq": 221,
+      "seq": 223,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:273",
@@ -3835,7 +3869,7 @@
       "note": "table-row"
     },
     {
-      "seq": 222,
+      "seq": 224,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:274",
@@ -3852,7 +3886,7 @@
       "note": "table-row"
     },
     {
-      "seq": 223,
+      "seq": 225,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:275",
@@ -3869,7 +3903,7 @@
       "note": "table-row"
     },
     {
-      "seq": 224,
+      "seq": 226,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:276",
@@ -3886,7 +3920,7 @@
       "note": "table-row"
     },
     {
-      "seq": 225,
+      "seq": 227,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:277",
@@ -3903,7 +3937,7 @@
       "note": "table-row"
     },
     {
-      "seq": 226,
+      "seq": 228,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:278",
@@ -3920,7 +3954,7 @@
       "note": "table-row"
     },
     {
-      "seq": 227,
+      "seq": 229,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:280",
@@ -3937,7 +3971,7 @@
       "note": "table-row"
     },
     {
-      "seq": 228,
+      "seq": 230,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:281",
@@ -3954,7 +3988,7 @@
       "note": "table-row"
     },
     {
-      "seq": 229,
+      "seq": 231,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:282",
@@ -3971,7 +4005,7 @@
       "note": "table-row"
     },
     {
-      "seq": 230,
+      "seq": 232,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:283",
@@ -3988,7 +4022,7 @@
       "note": "table-row"
     },
     {
-      "seq": 231,
+      "seq": 233,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:284",
@@ -4005,7 +4039,7 @@
       "note": "table-row"
     },
     {
-      "seq": 232,
+      "seq": 234,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:286",
@@ -4022,7 +4056,7 @@
       "note": "table-row"
     },
     {
-      "seq": 233,
+      "seq": 235,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:287",
@@ -4039,7 +4073,7 @@
       "note": "table-row"
     },
     {
-      "seq": 234,
+      "seq": 236,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:288",
@@ -4056,7 +4090,7 @@
       "note": "table-row"
     },
     {
-      "seq": 235,
+      "seq": 237,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:289",
@@ -4073,7 +4107,7 @@
       "note": "table-row"
     },
     {
-      "seq": 236,
+      "seq": 238,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:291",
@@ -4090,7 +4124,7 @@
       "note": "table-row"
     },
     {
-      "seq": 237,
+      "seq": 239,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:292",
@@ -4107,7 +4141,7 @@
       "note": "table-row"
     },
     {
-      "seq": 238,
+      "seq": 240,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:293",
@@ -4124,7 +4158,7 @@
       "note": "table-row"
     },
     {
-      "seq": 239,
+      "seq": 241,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:294",
@@ -4141,7 +4175,7 @@
       "note": "table-row"
     },
     {
-      "seq": 240,
+      "seq": 242,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:295",
@@ -4158,7 +4192,7 @@
       "note": "table-row"
     },
     {
-      "seq": 241,
+      "seq": 243,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:296",
@@ -4175,7 +4209,7 @@
       "note": "table-row"
     },
     {
-      "seq": 242,
+      "seq": 244,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:297",
@@ -4192,7 +4226,7 @@
       "note": "table-row"
     },
     {
-      "seq": 243,
+      "seq": 245,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:298",
@@ -4209,7 +4243,7 @@
       "note": "table-row"
     },
     {
-      "seq": 244,
+      "seq": 246,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:299",
@@ -4226,7 +4260,7 @@
       "note": "table-row"
     },
     {
-      "seq": 245,
+      "seq": 247,
       "id": null,
       "block": "appendix-vartable",
       "file_line": "thesis_draft.tex:300",
@@ -4243,7 +4277,7 @@
       "note": "table-row"
     },
     {
-      "seq": 246,
+      "seq": 248,
       "id": null,
       "block": "appendix-prose",
       "file_line": "thesis_draft.tex:305",
@@ -4260,7 +4294,7 @@
       "note": null
     },
     {
-      "seq": 247,
+      "seq": 249,
       "id": null,
       "block": "tables",
       "file_line": "thesis_draft.tex:311",
