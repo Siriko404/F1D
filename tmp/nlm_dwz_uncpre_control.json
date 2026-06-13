@@ -1,0 +1,41 @@
+{
+  "source": {
+    "id": "5f348ced-c548-45f5-b61a-817163bb49eb",
+    "title": "Dzielinski et al. - Straight talkers and vague talkers The effects of managerial style in earnings conference calls.pdf"
+  },
+  "query": "Reading only this paper, the paper \"Straight Talkers\" by Dzielinski, Wagner, and Zeckhauser: In the regression (their Equation 4) that decomposes the CEO's answer-level uncertainty-word use (UncAnsCEO) into a CEO fixed effect and a residual (which they denote UncRes), the authors include among the control variables the uncertainty of the CEO's own PREPARED PRESENTATION remarks (UncPreCEO), alongside other speech controls. What reason do the authors give for including these speech controls -- in particular presentation uncertainty UncPreCEO -- in this decomposition, and what do they say the resulting residual UncRes represents (what it nets out / isolates)? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+  "answer": "Based on the paper by Dzielinski, Wagner, and Zeckhauser, the authors include the CEO's presentation uncertainty (`UncPreCEO`) to **control for unobservable firm-specific factors, such as the firm's overarching culture, and the current business conditions affecting the firm at the time of the call.** Because the presentation part of the call is scripted and vetted, it primarily reflects the firm's baseline uncertainty rather than the CEO's personal style. By controlling for it, the authors can filter out these time-varying effects to isolate the CEO's personal, unscripted communication style in the Q&A session. \n\nAdditionally, they include other speech controls, such as the analysts' uncertainty language (`UncQue`), **to account for the fact that a CEO's word choice in an answer is likely influenced by how the preceding question was worded.**\n\nRegarding the residual `UncRes`, the authors state that it represents the **time-varying, \"residual uncertainty\" in a CEO's answers that cannot be explained by the CEO's persistent personal style, the firm's culture, or other firm-level and linguistic controls.** It nets out these persistent and observable characteristics to isolate specific fluctuations in uncertainty language during a given call. \n\nHere are the specific sentences quoted from the paper that support these explanations, along with their exact printed page numbers and section headings:\n\n**On the reasons for including `UncPreCEO` and other speech controls:**\n*   \"Comparing the two parts of the call, we can filter out the effects of time-varying uncertainty, which affects both parts. It also allows us to separate CEO style, which we expect to show mostly in the Q&A, from the firm’s culture, which we expect to dominate in the presentation part.\"\n    *   **Page:** 3\n    *   **Section:** 1 Introduction\n*   \"...(2) the CEO’s own frequency of uncertainty words during the presentation (to control for unobservable firm-level factors that influence clarity at the time of the call)...\"\n    *   **Page:** 3\n    *   **Section:** 1 Introduction\n*   \"Drawing on insights from the previous section, this variable encompasses the CEO’s use of uncertainty words that can be attributed to the firm’s culture and the current business conditions.\"\n    *   **Page:** 17\n    *   **Section:** 4.4 CEO clarity - estimation\n*   \"Further, to account for the fact that the language of an answer may depend on the wording of the question, we include $UncQue$ the frequency of uncertainty words used by analysts participating in the call.\"\n    *   **Page:** 17\n    *   **Section:** 4.4 CEO clarity - estimation\n\n**On what the residual `UncRes` represents:**\n*   \"The error terms, $εi,t,$ which we denote UncRes, can be interpreted as residual uncertainty that is not explained by any of the control variables included in the regression.\"\n    *   **Page:** 18\n    *   **Section:** 4.4 CEO clarity - estimation\n*   \"By contrast, residual use of uncertainty words - that is, the component of the overall frequency of uncertainty words in CEO’s answers during each call that is not explained by items (1) to (3) above - explains little of the market reaction.\"\n    *   **Page:** 3-4 (The sentence begins on page 3 and finishes on page 4)\n    *   **Section:** 1 Introduction",
+  "quotes": [],
+  "located": [
+    {
+      "quote": "Comparing the two parts of the call, we can filter out the effects of time-varying uncertainty, which affects both parts. It also allows us to separate CEO style, which we expect to show mostly in the Q&A, from the firm’s culture, which we expect to dominate in the presentation part.",
+      "page": "3",
+      "section": "1 Introduction"
+    },
+    {
+      "quote": "...(2) the CEO’s own frequency of uncertainty words during the presentation (to control for unobservable firm-level factors that influence clarity at the time of the call)...",
+      "page": "3",
+      "section": "1 Introduction"
+    },
+    {
+      "quote": "Drawing on insights from the previous section, this variable encompasses the CEO’s use of uncertainty words that can be attributed to the firm’s culture and the current business conditions.",
+      "page": "17",
+      "section": "4.4 CEO clarity - estimation"
+    },
+    {
+      "quote": "Further, to account for the fact that the language of an answer may depend on the wording of the question, we include $UncQue$ the frequency of uncertainty words used by analysts participating in the call.",
+      "page": "17",
+      "section": "4.4 CEO clarity - estimation"
+    },
+    {
+      "quote": "The error terms, $εi,t,$ which we denote UncRes, can be interpreted as residual uncertainty that is not explained by any of the control variables included in the regression.",
+      "page": "18",
+      "section": "4.4 CEO clarity - estimation"
+    },
+    {
+      "quote": "By contrast, residual use of uncertainty words - that is, the component of the overall frequency of uncertainty words in CEO’s answers during each call that is not explained by items (1) to (3) above - explains little of the market reaction.",
+      "page": "3-4 (The sentence begins on page 3 and finishes on page 4)",
+      "section": "1 Introduction"
+    }
+  ]
+}
