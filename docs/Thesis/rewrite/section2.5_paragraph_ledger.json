@@ -1,0 +1,123 @@
+{
+  "_schema": {
+    "name": "Deterministic per-subsection paragraph + proposition verification ledger (2.5)",
+    "cloned_from": "section2.1_paragraph_ledger.json schema",
+    "gate_rule": "final_prose EMPTY + prose_status=BLOCKED until every proposition is SUPPORTED (external-NLM), confirmed-CALLBACK, bible-verbatim (our own regression numbers), or explicitly INTERNAL/FRAMING.",
+    "prop_types": ["external-NLM (validity benchmark papers -- NOT yet verified, deferred to write-time)", "bible-verbatim (our regression result; claim_findings_ledger)", "verified-code", "callback-verified", "internal", "framing-nonverifiable"],
+    "status": "PHASE-3 PLANNED. NOT ratified, NOT prose-written. NLM verification of the validity papers gated behind ratification."
+  },
+  "subsection": "2.5",
+  "title": "Specification and Measurement of Key Constructs",
+  "role": "the validity gate",
+  "status": "planning",
+  "created": "2026-06-13",
+  "_governing": {
+    "hard_rules": [
+      "ONE PARAGRAPH AT A TIME when verifying/writing. Do not batch.",
+      "Numbers bible-verbatim only (claim_findings_ledger / _tables_from_bible.tex).",
+      "Validity benchmark papers were DATA-SOURCED in the original draft, NOT NLM-verified in 2.1 -> 'in bib' != 'verified'; flag for write-time NLM verification.",
+      "Keep the calibrated hedges VERBATIM: C5 = 'consistent with'; C4 = 'does not account for THIS run-up, not that scrutiny never matters'.",
+      "NLM is SOLE authority for papers; ignore mempalace auto-recall."
+    ],
+    "coherence_rules_in_force": "RULE-COH-5 (scrutiny construct here is the definitional counterpart to the 2.2 P5 hypothesis; rule-out != mechanism), RULE-COH-8 (CashScrutiny = cash-question VOLUME, distinct from UncQue word-uncertainty -- confirmed in code, gen_empire_did_table.py:73). Boundary: scrutiny RESULTS -> 4.1; presentation-contrast RESULTS -> 4.2 (do not preview)."
+  },
+  "_plan": {
+    "section_job": "Validate the construct (convergent + discriminant) and pre-empt the scrutiny confound -- earn trust the residual measures what's claimed BEFORE results.",
+    "spine": "P1 two demands -> P2 convergent ('consistent with', hedged) -> P3 discriminant (decisive; lead) -> P4 scrutiny rule-out pre-registration -> P5 define remaining key constructs.",
+    "serves": "Construct credibility; pre-registers the 4.1 scrutiny rule-out; defines key non-main constructs.",
+    "boundary": "Validity + scrutiny construct + key non-main constructs. MAIN var -> 2.3. Scrutiny RESULTS -> 4.1. Presentation-contrast RESULTS -> 4.2. Controls -> Appendix.",
+    "thin_claim": "Convergent = 'consistent with' (weak, disclosed); discriminant = decisive but partly expected by construction (acknowledge); scrutiny = 'doesn't account for THIS run-up,' not 'never matters.'",
+    "division_of_labor": "Mostly NEW -- validity is work 2.1 does not do. Presentation/Q&A split = CALLBACK P2. Scrutiny construct = definitional counterpart to the 2.2 P5 hypothesis.",
+    "validity_papers_status": "hassan2020 (PRisk), baker2016/davis2016 (EPU), hoberg2010/hoberg2016 (competition) -- in the bib but NOT NLM-verified in 2.1; engaged here as benchmark claims -> VERIFY at write-time (NLM upload/query), flagged like pagan/opler. Our regression NUMBERS are bible-verbatim (claim ledger C3/C4/C5)."
+  },
+  "papers": {
+    "hassan2020": {"status": "NEW for verification -- in bib (data-sourced), NOT NLM-verified. Role: political-risk benchmark (convergent). Verify at write-time."},
+    "baker2016": {"status": "NEW for verification -- in bib, NOT verified. Role: economic policy uncertainty (EPU) benchmark (convergent). Verify at write-time."},
+    "davis2016": {"status": "NEW for verification -- in bib, NOT verified. Role: EPU benchmark (convergent). Verify at write-time."},
+    "hoberg2010": {"status": "NEW for verification -- in bib, NOT verified. Role: product-market competition/fluidity (discriminant). Verify at write-time."},
+    "hoberg2016": {"status": "NEW for verification -- in bib, NOT verified. Role: product-market competition/fluidity (discriminant). Verify at write-time."}
+  },
+  "paragraphs": {
+    "P1": {
+      "order": 1,
+      "lit_body": "the two validity demands",
+      "intent": "State the two demands the residual must meet before results are trusted: it must move with real uncertainty (convergent) and not be a scrutiny artifact (discriminant + rule-out).",
+      "serves": "Frames the validity gate; sets up P2-P4.",
+      "boundary": "Validity framing only; results -> 4.1/4.2.",
+      "thin_claim": "Validity is asserted as an empirical question answered here, not assumed.",
+      "guardrails": ["No results preview (4.1 scrutiny, 4.2 presentation).", "The residual under test is the 2.3 UncResCEO (callback 2.3)."],
+      "propositions": [
+        {"prop_id": "P1.1", "statement": "The residual UncResCEO must satisfy two demands to be a credible measure: (a) convergent -- it moves with established uncertainty constructs; (b) discriminant -- it does not merely capture a confound such as analyst scrutiny.", "role_in_paragraph": "The validity frame.", "type": "framing-nonverifiable", "relation_to_2_1": "NEW", "anchor_2_1": [], "verification_plan": "Framing; forward from 2.3 P4.2 (validity = empirical question). Write-time pass.", "status": "PLANNED"}
+      ],
+      "prose_gate": {"rule": "all propositions confirmed/cleared before prose", "all_supported": false, "unlocked": false},
+      "final_prose": "",
+      "prose_status": "BLOCKED"
+    },
+    "P2": {
+      "order": 2,
+      "lit_body": "convergent validity (political risk + policy uncertainty)",
+      "intent": "Show the residual is 'consistent with' established uncertainty measures -- honestly hedged (one-tailed; PRisk economically trivial; US-EPU marginal).",
+      "serves": "Convergent leg (the WEAKER leg -- demoted).",
+      "boundary": "Convergent only; lead the validity story with discriminant (P3).",
+      "thin_claim": "'Consistent with', NEVER 'establishes/moves with'; do not oversell (C5 weak).",
+      "guardrails": ["Keep 'consistent with' VERBATIM (C5).", "Numbers bible-verbatim.", "hassan2020/baker2016/davis2016 = NEW cites -> VERIFY at write-time (not now)."],
+      "propositions": [
+        {"prop_id": "P2.1", "statement": "The residual is positively associated with political risk (PRisk) and economic policy uncertainty (US-EPU, global EPU): PRisk->UncRes 0.0001*** (economically trivial, R2~0.003); US-EPU->UncRes 0.0124**/0.0123* (one-tailed; firm-FE marginal); GEPU->UncRes 0.0181**/0.0187** (one-tailed).", "role_in_paragraph": "The convergent evidence.", "type": "bible-verbatim", "relation_to_2_1": "NEW", "anchor_2_1": [], "source": {"key": "claim_findings_ledger", "ref": "C5 (bible-verbatim)"}, "verification_plan": "Numbers bible-verbatim. Benchmark papers (hassan2020, baker2016, davis2016) NOT yet verified -> what each measures = VERIFY at write-time.", "status": "PLANNED"},
+        {"prop_id": "P2.2", "statement": "This is reported as 'consistent with' established measures, not as establishing the construct: the tests are one-tailed, the PRisk magnitude is economically trivial, and US-EPU is marginal (likely n.s. two-tailed). The convergent leg is supportive but weak.", "role_in_paragraph": "The hedge (C5).", "type": "framing-nonverifiable", "relation_to_2_1": "NEW", "anchor_2_1": [], "source": {"key": "claim_findings_ledger", "ref": "C5 thinnest_claim"}, "verification_plan": "Hedge VERBATIM from C5. Write-time pass.", "status": "PLANNED"}
+      ],
+      "prose_gate": {"rule": "all propositions confirmed/cleared before prose", "all_supported": false, "unlocked": false},
+      "final_prose": "",
+      "prose_status": "BLOCKED"
+    },
+    "P3": {
+      "order": 3,
+      "lit_body": "discriminant validity (product-market competition)",
+      "intent": "Lead with the decisive validity result: a persistent industry condition (product-market competition) surfaces in the scripted presentation, NOT in the call-varying residual.",
+      "serves": "Discriminant leg (the CLEAN, lead result -- C3).",
+      "boundary": "Discriminant only; do not preview the 4.2 presentation-contrast results.",
+      "thin_claim": "Decisive, but acknowledge it is partly expected by construction (UncPre is an eq-4 control) -- do not over-claim full independence.",
+      "guardrails": ["Numbers bible-verbatim (C3).", "hoberg2010/hoberg2016 = NEW cites -> VERIFY at write-time.", "CONSTRUCTION SUBTLETY (advisor to adjudicate): competition loading on the presentation (UncPre) not the residual is consistent with -- and partly expected from -- UncPre being an eq-4 control; competition itself is NOT an eq-4 control, so the result is not purely mechanical, but frame it as supportive, not as wholly independent confirmation.", "RULE-COH boundary: this is VALIDITY (presentation vs residual locus), distinct from the 4.2 two-audiences RESULT."],
+      "propositions": [
+        {"prop_id": "P3.1", "statement": "Product-market competition loads on the scripted presentation uncertainty (UncPre) but not on the call-varying residual (UncRes): competition->UncPre 0.0304***/0.0302***; competition->UncRes 0.0008 n.s. (industry FE)/0.0023 n.s. (firm FE). N 12,728/18,492.", "role_in_paragraph": "The decisive discriminant result.", "type": "bible-verbatim", "relation_to_2_1": "NEW", "anchor_2_1": [], "source": {"key": "claim_findings_ledger", "ref": "C3 (bible-verbatim, tab:h23_competition_uncertainty)"}, "verification_plan": "Numbers bible-verbatim. hoberg2010/2016 (what competition/fluidity measures) = VERIFY at write-time.", "status": "PLANNED"},
+        {"prop_id": "P3.2", "statement": "This is the cleanest validity evidence and leads the validity story: a persistent industry trait surfaces where persistent content lives (the prepared presentation), not in the call-level residual that the design uses.", "role_in_paragraph": "The interpretation (lead).", "type": "framing-nonverifiable", "relation_to_2_1": "NEW", "anchor_2_1": [], "verification_plan": "Framing; C3 = cleanest. Write-time pass.", "status": "PLANNED"},
+        {"prop_id": "P3.3", "statement": "Acknowledge the construction subtlety: because UncPre is itself a control in the eq-4 first stage, any variation operating through presentation uncertainty is partialled out of the residual by construction; competition is not itself an eq-4 control, so the discriminant result is not purely mechanical, but it is partly expected and is presented as supportive rather than as fully independent confirmation.", "role_in_paragraph": "Honest construction caveat (advisor flag).", "type": "internal", "relation_to_2_1": "NEW", "anchor_2_1": [], "source": {"note": "UncPre is an eq-4 control (run_h0_3:369); claim ledger C3 risk notes UncPre->UncRes 0.0111**/0.0230** in a different/smaller sample so orthogonality is not purely mechanical."}, "verification_plan": "Internal reasoning; ADVISOR to adjudicate whether to keep, soften, or strengthen. No NLM.", "status": "PLANNED"}
+      ],
+      "prose_gate": {"rule": "all propositions confirmed/cleared before prose", "all_supported": false, "unlocked": false},
+      "final_prose": "",
+      "prose_status": "BLOCKED"
+    },
+    "P4": {
+      "order": 4,
+      "lit_body": "pre-register the analyst-scrutiny rule-out (forward to 4.1)",
+      "intent": "Define the scrutiny constructs and pre-register the three-step rule-out logic, framed as 'doesn't account for THIS run-up.'",
+      "serves": "The definitional counterpart to the 2.2 P5 hypothesis; routes the test to 4.1.",
+      "boundary": "Construct + pre-registration only; the RESULTS are 4.1.",
+      "thin_claim": "Keep EXACTLY as hedged: 'does not account for THIS run-up; not that scrutiny never matters' (C4, NULL-only, underpowered).",
+      "guardrails": ["RULE-COH-8: CashScrutiny = % of analyst Q&A turns on cash/liquidity (VOLUME), distinct from UncQue word-uncertainty (confirmed gen_empire_did_table.py:73).", "RULE-COH-5: rule-out != mechanism; this is a confound check, not one of P7's two readings.", "Keep C4 hedge VERBATIM; the confound IS real (HighCashScrutiny rises pre-announce) -- only the gating interaction kills it, and it is underpowered.", "Results -> 4.1 (do not state them as established here beyond pre-registration)."],
+      "propositions": [
+        {"prop_id": "P4.1", "statement": "Define CashScrutiny = the share (%) of analyst Q&A turns devoted to cash/liquidity, and HighCashScrutiny = 1[CashScrutiny > median] (median = 0; ~11% of calls draw any cash scrutiny) -- a VOLUME/topic measure of analyst attention, distinct from the uncertainty wording of questions (UncQue).", "role_in_paragraph": "The scrutiny construct definition.", "type": "verified-code", "relation_to_2_1": "NEW", "anchor_2_1": [], "source": {"file": "scripts/gen_empire_did_table.py", "line": "73-76 (CashScrutiny = stock_score*100; HighCashScrutiny)"}, "verification_plan": "Definition transcribed from code (RULE-COH-8 grounded). No NLM.", "status": "PLANNED"},
+        {"prop_id": "P4.2", "statement": "Pre-register the three-step rule-out (executed in 4.1): (i) the measure is valid -- CashRatio predicts CashScrutiny (0.7530***/0.8519***); (ii) the channel is absent -- CashScrutiny->UncRes is null (~ -0.0000 n.s.); (iii) scrutiny does not gate the run-up -- the PreAnnounceQtr x scrutiny interaction is null (-0.0056 n.s.).", "role_in_paragraph": "The pre-registered logic.", "type": "bible-verbatim", "relation_to_2_1": "NEW", "anchor_2_1": [], "source": {"key": "claim_findings_ledger", "ref": "C4 (bible-verbatim)"}, "verification_plan": "Numbers bible-verbatim; framed as pre-registration (results live in 4.1). No NLM.", "status": "PLANNED"},
+        {"prop_id": "P4.3", "statement": "The conclusion is hedged exactly: the rule-out shows analyst scrutiny does not account for THIS pre-announcement run-up -- NOT that scrutiny never matters. The confound is genuine (HighCashScrutiny itself rises pre-announcement, 0.0408**); only the gating interaction rules it out, and that test is underpowered (absence of evidence, not equivalence).", "role_in_paragraph": "The calibrated hedge (C4).", "type": "framing-nonverifiable", "relation_to_2_1": "CALLBACK", "anchor_2_1": ["P7"], "source": {"key": "claim_findings_ledger", "ref": "C4 thinnest_claim"}, "verification_plan": "Hedge VERBATIM from C4; RULE-COH-5 (rule-out != mechanism). Write-time pass.", "status": "PLANNED"}
+      ],
+      "prose_gate": {"rule": "all propositions confirmed/cleared before prose", "all_supported": false, "unlocked": false},
+      "final_prose": "",
+      "prose_status": "BLOCKED"
+    },
+    "P5": {
+      "order": 5,
+      "lit_body": "define remaining key constructs",
+      "intent": "Define the remaining key non-main constructs used in the designs: CashRatio, PreAnnounceQtr, CashScrutiny (with controls routed to the Appendix).",
+      "serves": "Closes the construct inventory; keeps definitions out of 2.3 (main var) and the Appendix (controls).",
+      "boundary": "Key non-main constructs only; MAIN var (UncRes) -> 2.3; controls -> Appendix.",
+      "thin_claim": "Definitions only; no new claims.",
+      "guardrails": ["Definitions transcribed from code/bible; no memory.", "PreAnnounceQtr already defined in 2.2 P1.2 + 2.4 P1.2 -> reference, do not redefine inconsistently.", "CashScrutiny already defined in P4.1 -> reference."],
+      "propositions": [
+        {"prop_id": "P5.1", "statement": "Define the key non-main constructs: CashRatio (the firm's cash-to-assets position); PreAnnounceQtr = 1[e=-1] (cross-reference 2.2/2.4); CashScrutiny / HighCashScrutiny (cross-reference P4.1). Remaining controls (Leverage, lnAssets, TobinsQ, ROA, Capex, DivDummy, sCFO, and the eq-4 controls) are catalogued in the Appendix.", "role_in_paragraph": "The construct inventory.", "type": "verified-code", "relation_to_2_1": "NEW", "anchor_2_1": [], "source": {"note": "CashRatio + CTRL: h1_cash_holdings panel / gen_empire_did_table.py:39,47,63-64. PreAnnounceQtr: :48,127. CashScrutiny: :73."}, "verification_plan": "Definitions transcribed from code/panel. Cross-references kept consistent with 2.2/2.4. No NLM.", "status": "PLANNED"}
+      ],
+      "prose_gate": {"rule": "all propositions confirmed/cleared before prose", "all_supported": false, "unlocked": false},
+      "final_prose": "",
+      "prose_status": "BLOCKED"
+    }
+  },
+  "next_action": "2.5 paragraph-level plan DRAFTED (PHASE-3). Advisor-check SEAMS next: (vs 2.2 P5) scrutiny construct = the hypothesis's counterpart, RULE-COH-5/8 consistent; (vs 2.3) the residual under test is the 2.3 DV; the P3.3 construction subtlety (UncPre-control -> discriminant partly expected) -- ADJUDICATE; (vs claims ledger) C3/C4/C5 numbers bible-verbatim + hedges verbatim; (vs code) CashScrutiny volume def. Then resolve. THIS IS THE LAST SUBSECTION -> after advisor-clean, STOP the loop + PushNotification + hand to user for ratification. Do NOT drift into NLM verification or prose."
+}
