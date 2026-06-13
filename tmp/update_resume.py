@@ -22,10 +22,10 @@ d["where_we_are"] = (
 
 d["validity_yardsticks_VERIFIED_2026_06_13"] = {
  "_note": "NLM content-discovery (unscoped clear+ask naming the paper; source found by CONTENT, not filename). Evidence + verbatim spans in tmp/nlm_validity_definitions.json. These 4 are NO LONGER in the write-time 'owed' list.",
- "hoberg2016 (TNIC competition)": "source 688176.pdf (dc4cd3f0). LOCKED. Def n2 (sum of pairwise similarities, given year), p.1446 sec V.B 'Competition and Reported Peers'. TIME-VARYING: spans n4/n6/n7. Direction (higher sim=more competition) answer-sourced only (not load-bearing).",
+ "hoberg2016 (TNIC competition)": "source 688176.pdf (dc4cd3f0). LOCKED. Def n2 (sum of pairwise similarities, given year), p.1446 sec V.B 'Competition and Reported Peers'. TIME-VARYING: spans n4/n6/n7 -- VERBATIM n7 (THE span the reframe rides on): 'Because firms update their 10-Ks, the network is time varying.'; n4: 'allowing us to build classifications that change over time'. Direction (higher sim=more competition) answer-sourced only (not load-bearing).",
  "hassan2020 (PRisk)": "source qjz021 (1).pdf (eb9f6df7). LOCKED. PRisk = weighted share of a firm's QUARTERLY earnings call devoted to political risk; capped 99th pct, standardized (spans n2/n3/n5). Risk/uncertainty proxy, firm-quarter.",
  "baker2016 (US-EPU)": "source qjw024.pdf (ebca6160). LOCKED. EPU = newspaper-frequency index (trio: economy+uncertainty+policy terms), MONTHLY, US + 11 countries (spans n2/n3). Uncertainty proxy, macro.",
- "davis2016 (GEPU)": "source w22740.pdf (45de8338). PROVISIONAL (guide sec9): identity self-confirmed + n3 lead-in span; full def ('GDP-weighted avg of national EPU for 16 countries') is ANSWER-located, not a clean span. Weakest 'consistent with' benchmark -- OK provisional."
+ "davis2016 (GEPU)": "source w22740.pdf (45de8338). PROVISIONAL (guide sec9): identity self-confirmed + n3 lead-in span; full def ('GDP-weighted avg of national EPU for 16 countries') is ANSWER-located, not a clean span. Weakest 'consistent with' benchmark. DISPOSITION (user+advisor): provisional is ACCEPTABLE for this benchmark -> FOLD AS-IS into 2.5, do NOT re-query; it does NOT block the 2.5 fold."
 }
 
 d["PENDING_EDITS_unapplied"] = {
