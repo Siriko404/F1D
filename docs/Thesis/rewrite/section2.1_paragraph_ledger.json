@@ -1571,11 +1571,70 @@
           "nlm_query_draft": "what does it study regarding the volume or use of strategy-related vocabulary on earnings conference calls around firms' acquisition or deal activity?",
           "verification": {
             "method": "NLM",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": "re-confirm atomically"
+            "source": {
+              "id": "f84c6cd2-59a1-4879-a053-b798687fd03c",
+              "title": "1-s2.0-S0024630123001000-main.pdf"
+            },
+            "query": "Reading only this paper, the paper by Ragozzino and Reuer (2024) on strategy vocabulary in conference calls around deal activity (this single notebook source, S0024630123001000): what does it study regarding the volume or use of strategy-related vocabulary on earnings conference calls around firms' acquisition or deal activity? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "answer": "In Ragozzino and Reuer (2024), the authors study whether a firm's M&A activity leads to an increased exchange of information regarding corporate strategy between executives and analysts during quarterly earnings calls. To measure this, they construct a \"corporate strategy dictionary\" comprising strategy-related vocabulary (such as \"merger,\" \"acquisition,\" \"alliance,\" \"scale,\" \"scope,\" and \"strategy\") and text-analyze transcripts to track the volume of these words used by both parties. \n\nThe study concludes that **the volume of strategy-related vocabulary used in earnings calls significantly increases when a firm is involved in M&A activity**. The authors find that both the analysts asking questions and the executives providing answers use corporate strategy words more frequently when the firm has recently engaged in M&A. Furthermore, **the use of this vocabulary is positively correlated with the sheer volume of M&A transactions**; the more deals a firm has entered into, the more heavily its corporate strategy is discussed during the call. Specifically, the authors find that analysts use strategy terms nearly 9% more, and executives use them 7.2% more, in calls held by M&A-active firms compared to inactive firms. \n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On what the paper studies:**\n*   \"We examine whether firms’ M&A activity results in an information exchange between executives and analysts that highlights corporate strategy as a discussion topic.\" [1]\n    *   **Page:** 1\n    *   **Section:** ABSTRACT\n\n**On the findings regarding the volume and use of strategy vocabulary:**\n*   \"Specifically, both analysts and company executives discuss a firm’s corporate strategy more when the firm is involved in M&A activity in the period of time leading up to the call.\" [2]\n    *   **Page:** 12\n    *   **Section:** 7.1. Contributions\n\n*   \"In addition, the more M&A transactions the firm has engaged in, the more the firm’s corporate strategy becomes the subject of discussion during the call.\" [2]\n    *   **Page:** 12\n    *   **Section:** 7.1. Contributions\n\n*   \"The difference between M&A active and inactive firms amounts to a nearly 9 percent greater usage of corporate strategy terms by analysts.\" [3]\n    *   **Page:** 9\n    *   **Section:** 6. Results\n\n*   \"Paralleling the interpretation offered above, M&A active firms’ executives discuss corporate strategy 7.2 percent more than inactive firms.\" [4]\n    *   **Page:** 9\n    *   **Section:** 6. Results",
+            "quotes": [
+              {
+                "n": 1,
+                "cited_text": "Keywords: Corporate strategy Acquisitions M&A Information asymmetry Adverse selection Earnings calls Corporate communication Executives Analysts",
+                "start_char": 524,
+                "end_char": 669,
+                "chunk_id": "5bdd860c-f5e1-42cf-9386-8081d812c160"
+              },
+              {
+                "n": 2,
+                "cited_text": "b The parameter estimates and corresponding standard errors are multiplied by 1,000 for legibility purposes. c These variables were logged to remedy skewness.",
+                "start_char": 79789,
+                "end_char": 79948,
+                "chunk_id": "8bf8f1e0-89f1-44c5-bb9a-b0484fa2f9b9"
+              },
+              {
+                "n": 3,
+                "cited_text": "We now turn to the models predicting the use of the corporate dictionary keywords in earnings calls. Our first hypothesis predicted a higher incidence of analyst questions surrounding the firm’s corporate activity, when the firm engaged in M&A. We find strong support for the hypothesis, as the Active M&A firm coefficient is positive and highly significant. Similarly, when we replace the in- dicator variable with the count of total M&A deals entered into by the firm in the 5 years preceding the call, we find that each additional transaction positively affects the analysts’ questioning of the firm’s corporate strategy (i.e., both p < 0.0001). The difference between M&A active and inactive firms amounts to a nearly 9 percent greater usage of corporate strategy terms by analysts.",
+                "start_char": 54487,
+                "end_char": 55273,
+                "chunk_id": "e0455236-fd0e-48e8-9c7f-d5a14907cc1d"
+              },
+              {
+                "n": 4,
+                "cited_text": "The same pattern is also observed when we examine the executives’ use of the corporate dictionary keywords: Both the dummy variable separating active and inactive firms, and the continuous deal count variable are positive, sizable and highly significant (i.e., both p < 0.0001). Paralleling the interpretation offered above, M&A active firms’ executives discuss corporate strategy 7.2 percent more than inactive firms. Thus, once again we find strong corroborating evidence in support of our predictions.",
+                "start_char": 55273,
+                "end_char": 55778,
+                "chunk_id": "da2d30b8-e2d7-45d1-92c7-117d337cb6a7"
+              }
+            ],
+            "located": [
+              {
+                "quote": "We examine whether firms’ M&A activity results in an information exchange between executives and analysts that highlights corporate strategy as a discussion topic.",
+                "page": "1",
+                "section": "ABSTRACT"
+              },
+              {
+                "quote": "Specifically, both analysts and company executives discuss a firm’s corporate strategy more when the firm is involved in M&A activity in the period of time leading up to the call.",
+                "page": "12",
+                "section": "7.1. Contributions"
+              },
+              {
+                "quote": "In addition, the more M&A transactions the firm has engaged in, the more the firm’s corporate strategy becomes the subject of discussion during the call.",
+                "page": "12",
+                "section": "7.1. Contributions"
+              },
+              {
+                "quote": "The difference between M&A active and inactive firms amounts to a nearly 9 percent greater usage of corporate strategy terms by analysts.",
+                "page": "9",
+                "section": "6. Results"
+              },
+              {
+                "quote": "Paralleling the interpretation offered above, M&A active firms’ executives discuss corporate strategy 7.2 percent more than inactive firms.",
+                "page": "9",
+                "section": "6. Results"
+              }
+            ],
+            "verdict": "PENDING"
           }
         },
         {
