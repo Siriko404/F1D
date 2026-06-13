@@ -78,9 +78,18 @@ def main():
         raise SystemExit("ABORT: 2.1 anchors out of order")
     new_tex = tex[:i] + "\n" + body + tex[j:]
 
-    # append missing bibitems before \end{thebibliography}
-    b = new_tex.index(END_BIB)
-    new_tex = new_tex[:b] + BIBS + new_tex[b:]
+    # append ONLY bibitems whose key is not already defined (idempotent re-runs;
+    # blindly appending BIBS every run duplicates entries -> duplicate \bibitem keys).
+    key_re = re.compile(r"\\bibitem(?:\[[^\]]*\])?\{([^}]*)\}")
+    existing_keys = set(key_re.findall(new_tex))
+    entries = re.split(r"\n(?=\\bibitem)", BIBS.strip())
+    to_add = [e.strip() for e in entries if key_re.search(e).group(1) not in existing_keys]
+    if to_add:
+        add_str = "\n\n".join(to_add) + "\n\n"
+        b = new_tex.index(END_BIB)
+        new_tex = new_tex[:b] + add_str + new_tex[b:]
+    print("bibitems appended: %d %s" % (
+        len(to_add), [key_re.search(e).group(1) for e in to_add]))
 
     # guard: every citation key in the new 2.1 must resolve to a bibitem
     used = {k.strip() for g in re.findall(r"\\cite[tp]\{([^}]*)\}", body) for k in g.split(",")}
