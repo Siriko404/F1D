@@ -141,6 +141,42 @@ def run_queries():
           "any 'NONE' / multi-source = absent or ambiguous -> escalate.")
 
 
+def davis_followup():
+    """Davis GEPU returned no source in the unscoped pass. There IS a 'w22740' file in the
+    notebook; CONFIRM by CONTENT whether it is Davis (2016) -- never assume from the name.
+    One scoped call: ask the source to state its own identity AND define GEPU. If it self-
+    reports Davis + returns GEPU spans -> uploaded, gap closed. Else -> not uploaded."""
+    hits = [s for s in nc._sources() if "w22740" in (s.get("title") or "").lower()]
+    if not hits:
+        print("NO 'w22740' file in the notebook. Davis (2016) NBER WP 22740 not uploaded under that name.")
+        return
+    sid, title = hits[0]["id"], hits[0]["title"]
+    print(f"candidate file = {title} ({sid[:8]}); confirming identity + GEPU def by content ...", flush=True)
+    q = ("First state ONLY this source's exact title, authors, series, and year. Then explain how "
+         "the Global Economic Policy Uncertainty (GEPU) index is defined and constructed and what "
+         "it measures.")
+    query, j = nc.ask(sid, "this source", q)
+    answer = j.get("answer", "")
+    quotes = [{"n": x.get("citation_number"), "source_id": x.get("source_id"),
+               "cited_text": x.get("cited_text"), "start_char": x.get("start_char"),
+               "end_char": x.get("end_char"), "chunk_id": x.get("chunk_id")}
+              for x in j.get("references", []) if x.get("cited_text")]
+    located = [{"quote": m.group(1).strip(), "page": m.group(2).strip(),
+                "section": m.group(3).strip()} for m in nc.LOC.finditer(answer)]
+    data = _load()
+    data["captures"].setdefault("davis2016", {})["scoped_w22740"] = {
+        "candidate_file": title, "source_id": sid, "query": query,
+        "answer": answer, "quotes": quotes, "located": located}
+    _save(data)
+    _commit(f"verify(2.5/def): davis scoped to w22740 candidate ({len(quotes)} spans)")
+    print(f"\nIDENTITY + DEF ANSWER:\n{answer[:700]}")
+    print(f"\n{len(quotes)} verbatim spans:")
+    for x in quotes:
+        ct = (x.get("cited_text") or "").strip()
+        if ct:
+            print(f"  [n{x.get('n')}] {ct[:170]}")
+
+
 def show():
     data = _load()
     for key, caps in data.get("captures", {}).items():
@@ -159,9 +195,14 @@ def show():
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--show", action="store_true")
+    ap.add_argument("--davis", action="store_true")
     a = ap.parse_args()
     if a.show:
         show()
+    elif a.davis:
+        if not nc.EXE:
+            raise SystemExit("notebooklm CLI not found on PATH; run `notebooklm login` first.")
+        davis_followup()
     else:
         if not nc.EXE:
             raise SystemExit("notebooklm CLI not found on PATH; run `notebooklm login` first.")
