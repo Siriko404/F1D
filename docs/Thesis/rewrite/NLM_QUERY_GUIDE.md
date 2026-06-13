@@ -7,7 +7,7 @@ Caveman lite. These rules paid in blood. Follow exactly. Skip one → redo every
 
 ## 0. CORE PRINCIPLE
 ONE durable, committed script does it ALL: **resolve source id → query NLM → write answer DIRECTLY into the JSON ledger → `git commit`.** One pass.
-- NEVER ad-hoc bash/python one-liners to gather or parse NLM data. Script only. (One free exception: a bare `source list` to eyeball what's uploaded — that's not content, spends no quota.)
+- NEVER ad-hoc bash/python to gather or parse NLM answer/content data. Script only. (Listing source titles to pick a candidate match-token is fine — that's string-finding; but a title NEVER establishes identity — §4. Eyeballing titles to *decide which paper a file is* is the exact move that caused the scar.)
 - NEVER hand-edit the ledger with NLM data. The script writes it + commits it.
 - NEVER read a PDF or `source fulltext` to get content/pages. OUT OF CHANNEL. NLM is the SOLE paper authority.
 - NEVER infer a paper's identity from its filename. Identity comes from NLM (§4), not from you.
@@ -91,6 +91,8 @@ Only when the source **self-reports the expected title/author/year** do you (a) 
 - Script captures evidence. YOU adjudicate the verdict on the verbatim spans. Script may RECORD the verdict you supply (+commit), never decide it.
 - Enum: `PENDING / SUPPORTED / OVERCLAIM / UNSUPPORTED / INCONCLUSIVE_MANUAL`.
 - Verdict note must NAME the supporting spans (e.g. "verbatim span n=5/n=8: …").
+- **GATING vs NON-GATING**: a prop can be verified NOW but belong to a LATER section's prose. Tag it NON-GATING and do NOT draft it into the current paragraph. (Scar: DWZ price-null P4.3 — captured for §2.3/§3, verdict says "Do NOT draft into P4".)
+- **Provisional (not evidence-locked)**: if the basis is answer-only / fragments (no clean `cited_text` span), the verdict is SUPPORTED-but-provisional — re-verify with a clean span (`--requery`, §13) before it is drafted into its home section.
 
 ## 10. LEGAL / NON-PAPER SOURCES
 - "Verify ONLY thru NLM" applies to them too. UPLOAD the legal source (case opinion, CFR rule) to the notebook, query via NLM like a paper. NEVER verify via web/legal-text out of channel.
