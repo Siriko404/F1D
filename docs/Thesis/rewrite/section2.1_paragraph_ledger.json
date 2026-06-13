@@ -1377,11 +1377,9 @@
       "created_at": "2026-04-09T17:03:56"
     },
     "bertrand_schoar2003": {
-      "status": "AMBIGUOUS_NEWEST",
-      "match": "118-4-1169",
+      "status": "OK",
       "source_id": "506c2524-8e66-4910-a1c1-8ce30b6d1f2b",
-      "source_title": "118-4-1169.pdf",
-      "created_at": "2026-06-12T15:32:19"
+      "source_title": "118-4-1169.pdf"
     },
     "harford1999": {
       "status": "OK",
@@ -1401,6 +1399,11 @@
       "source_id": "f84c6cd2-59a1-4879-a053-b798687fd03c",
       "source_title": "1-s2.0-S0024630123001000-main.pdf",
       "created_at": "2026-06-06T21:37:03"
+    },
+    "dwz2021": {
+      "status": "OK",
+      "source_id": "5f348ced-c548-45f5-b61a-817163bb49eb",
+      "source_title": "Dzielinski et al. - Straight talkers and vague talkers The effects of managerial style in earnings conference calls.pdf"
     }
   }
 }
