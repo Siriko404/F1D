@@ -21,8 +21,21 @@ PROPS = [
      "such silence or non-answers are informative to investors?"),
 ]
 
-PINS = []        # (prop_id, paper_key, paper_label, decisive_verbatim_sentence) -- fill after --audit
-VERDICTS = {}    # prop_id: (verdict, note) -- fill after reviewing captured spans
+PINS = [
+    ("P3.1", "hollander2010",
+     '"Does Silence Speak? An Empirical Analysis of Disclosure Choices During Conference '
+     'Calls" by Hollander, Pronk and Roelofsen (2010, Journal of Accounting Research)',
+     "the results of our study suggest that silence speaks"),
+]
+VERDICTS = {
+    "P3.1": ("SUPPORTED",
+             "Hollander, Pronk & Roelofsen (2010): managers strategically manage call disclosure "
+             "-- they decline/withhold requested information in ~6 of 10 calls (verbatim span n2: "
+             "'managers withhold information from the public in approximately 6 out of 10 calls, "
+             "with an average of two unanswered queries per call') -- and such silence is "
+             "informative ('silence speaks', span_pin). PREMISE ONLY: the UP sign of our measure "
+             "is H1 (one-tailed, tested), never from Hollander."),
+}
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()

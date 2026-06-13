@@ -999,7 +999,17 @@
                 "section": "7. Conclusion"
               }
             ],
-            "verdict": "PENDING"
+            "verdict": "SUPPORTED",
+            "span_pins": [
+              {
+                "phrase": "the results of our study suggest that silence speaks",
+                "page": "559",
+                "section": "7. Conclusion",
+                "query": "Reading only this paper, \"Does Silence Speak? An Empirical Analysis of Disclosure Choices During Conference Calls\" by Hollander, Pronk and Roelofsen (2010, Journal of Accounting Research): on what page (the page number printed in the paper) and in which section does this exact sentence appear? Report **Page:** and **Section:**. Sentence: \"the results of our study suggest that silence speaks\"",
+                "answer": "**Page:** 559\n\n**Section:** 7. Conclusion"
+              }
+            ],
+            "verdict_note": "Hollander, Pronk & Roelofsen (2010): managers strategically manage call disclosure -- they decline/withhold requested information in ~6 of 10 calls (verbatim span n2: 'managers withhold information from the public in approximately 6 out of 10 calls, with an average of two unanswered queries per call') -- and such silence is informative ('silence speaks', span_pin). PREMISE ONLY: the UP sign of our measure is H1 (one-tailed, tested), never from Hollander."
           }
         }
       ],

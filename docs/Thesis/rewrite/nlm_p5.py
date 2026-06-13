@@ -19,7 +19,17 @@ PROPS = [
 ]
 
 PINS = []
-VERDICTS = {}
+VERDICTS = {
+    "P5.1": ("SUPPORTED",
+             "Harford (1999): firms with cash reserves accumulated above a baseline model "
+             "('cash-rich') are more likely to make acquisitions -- verbatim spans n2 ('cash-rich "
+             "firms are more likely to make acquisitions'), n3 (cash-rich = reserves above the "
+             "model's predictions), n4 ('Cash-richness predicts that a firm will become a bidder'); "
+             "located p.1995. DRAFTING CAVEAT: Harford finds this accumulation is free-cash-flow "
+             "STOCKPILING, NOT deliberate saving to fund planned value-increasing deals -> P5 must "
+             "claim only that an accumulated cash position EXISTS (the war chest), never that firms "
+             "deliberately save to fund acquisitions."),
+}
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()

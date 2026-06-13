@@ -31,8 +31,31 @@ PROPS = [
      "before the public announcement of a merger (a pre-announcement price run-up)?"),
 ]
 
-PINS = []
-VERDICTS = {}
+PINS = [
+    ("P6.1", "thewissen2024",
+     'the working paper by Thewissen and coauthors (2024) on managerial tone around '
+     'acquisitions (this single notebook source, ssrn-4900453)',
+     "15% in the year preceding the M&A announcement"),
+]
+VERDICTS = {
+    "P6.1": ("SUPPORTED",
+             "Thewissen et al. (2024): stock bidders strategically inflate the tone of earnings "
+             "press releases before stock-for-stock M&A -- verbatim spans n2 (stock as the form of "
+             "payment), n3 (shares issued to purchase the target), n6 (press-release tone increases "
+             "by 15% in the year preceding the M&A announcement, span_pin). Nearest-work cell: "
+             "managed tone, stock deals, press releases."),
+    "P6.2": ("SUPPORTED",
+             "Ragozzino & Reuer (2024): strategy-vocabulary volume on earnings calls rises with "
+             "M&A activity -- verbatim spans n3 (analysts use ~9% more corporate-strategy terms at "
+             "M&A-active firms, p<0.0001) + n4 (executives discuss strategy 7.2% more); located "
+             "p.9. Nearest-work cell: managed strategy vocabulary on calls."),
+    "P6.3": ("SUPPORTED",
+             "Keown & Pinkerton (1981): abnormal pre-announcement price run-up -- verbatim span n3 "
+             "('approximately half of the market reaction occurs before the first public "
+             "announcement date', p.866). Cited for the PRICE-RUN-UP FACT only; the insider-trading "
+             "mechanism is NOT cited (advisor). Splits our LANGUAGE signal from the known PRICE "
+             "signal."),
+}
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()

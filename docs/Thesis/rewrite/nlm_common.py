@@ -275,7 +275,28 @@ def audit(para):
         print(f"  -> {hits}/{len(loc)} located quotes lie inside a verbatim span")
 
 
+def show(para):
+    """Print each prop's NLM answer (context only) + full verbatim cited_text spans,
+    for human verdict adjudication. E3.5: ONLY the spans are admissible evidence."""
+    ledger = _ledger()
+    for p in ledger["paragraphs"][para]["propositions"]:
+        v = p.get("verification", {})
+        if not (v.get("quotes") or v.get("answer")):
+            continue
+        print(f"\n===== {p['prop_id']} =====")
+        print(f"ANSWER (NON-evidence): {(v.get('answer') or '')[:700]}")
+        print("VERBATIM SPANS (admissible):")
+        for q in v.get("quotes", []):
+            ct = (q.get("cited_text") or "").strip()
+            if ct:
+                print(f"  [n{q.get('n')}] {ct}")
+
+
 if __name__ == "__main__":
-    # Self-test: resolve every registered paper, print the map, exit on any problem.
-    require(list(SOURCES.keys()))
-    print("\nAll registered sources resolved cleanly.")
+    import sys
+    if len(sys.argv) >= 3 and sys.argv[1] == "show":
+        show(sys.argv[2])
+    else:
+        # Self-test: resolve every registered paper, print the map, exit on any problem.
+        require(list(SOURCES.keys()))
+        print("\nAll registered sources resolved cleanly.")
