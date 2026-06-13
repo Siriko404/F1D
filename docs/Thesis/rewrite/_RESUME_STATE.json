@@ -1,6 +1,6 @@
 {
   "_READ_FIRST": "Post-compaction resume index for the thesis Section 2 rewrite. Read THIS, then the files_of_record, before doing anything.",
-  "updated": "2026-06-13 (ALL decided edits APPLIED across 2.2/2.3/2.5; advisor cross-coherence clean; plans FINAL, ratification-ready)",
+  "updated": "2026-06-13 (ratification ceremony IN PROGRESS: 2.2 + 2.3 RATIFIED; 2.4/2.5 pending)",
   "mission": "Rewrite thesis Section 2 (Conceptual Framework and Empirical Strategy) paragraph-by-paragraph to a thin, referee-proof, COMPLETE claim. The AUDIT of the old draft is DONE; we are now REWRITING. Currently in 2.1 -- the main literature review -- 7 paragraphs.",
   "where_we_are": "[2026-06-13] 2.1 COMPLETE (in thesis_draft.tex). 2.2/2.3/2.4/2.5 PLAN LEDGERS NOW FINAL + ADVISOR-CROSS-CHECKED -- every decided edit APPLIED this session (not merely planned). Yardstick defs NLM-verified (hassan2020/baker2016/hoberg2016 LOCKED, davis2016 provisional). The 2.5 'persistent industry trait' error was reframed to CONTENT-LOCATION (rests on disclosable-in-advance, NOT on time-variation -- those do separate jobs); 2.2/2.3 wording fixes applied (involuntary/thewissen/keown; FirmChars cut + suggestive retone). Ratification-ready. NOTHING in prose yet (prose BLOCKED, gated behind ratification).",
   "hard_rules": [
@@ -46,7 +46,7 @@
     "Bertrand & Schoar (2003)": "10.1162/003355303322552775 (P4)",
     "Harford (1999)": "10.1111/0022-1082.00179 (P5)"
   },
-  "NEXT_ACTION": "===CURRENT (2026-06-13): ALL FOUR §2 PLAN LEDGERS FINAL + ADVISOR-CROSS-CHECKED.=== 2.1 COMPLETE. 2.2/2.3/2.4/2.5 plans now FINAL -- every decided edit APPLIED (see EDITS_APPLIED_2026_06_13). STEP NEXT = USER RATIFICATION of all four ledgers (2.2-2.5) per the ratification ceremony (atomic per-section AskUserQuestion: 'Approve as written' / 'Amend'). THEN (post-ratification, ONE PARAGRAPH AT A TIME, order 2.2->2.5, per paragraph_workflow.json): verify props -> draft prose -> accuracy-pass uncited claims -> advisor -> show user -> record final_prose + unlock prose_gate. WRITE-TIME FLAGS in PENDING_EDITS_unapplied.WRITE_TIME_FLAGS (F2/F5/F1-leak/owed-NLM/bible-cross-check/R2). DISCIPLINE: no prose before ratification; transfer to ledgers PROGRAMMATICALLY.",
+  "NEXT_ACTION": "===RATIFICATION IN PROGRESS (2026-06-13): 2.2 + 2.3 RATIFIED; 2.4 NEXT, then 2.5.=== Re-present 2.4 (Methodology) for approve/amend, then 2.5 (Specification/validity). Stamp EACH at approval (programmatic + commit), not batched. AFTER all four ratified -> prose ONE PARAGRAPH AT A TIME (order 2.2->2.5, per paragraph_workflow.json): verify props -> draft -> accuracy-pass -> advisor -> show user -> record final_prose + unlock prose_gate. WRITE-TIME FLAGS (PENDING_EDITS_unapplied.WRITE_TIME_FLAGS): F2 hoberg2010/fluidity, F5 Hassan year, F1-leak varledger L188, the PROVISIONAL DWZ-isolation cite in 2.3 P2.5 (answer-only -> verbatim or fall back to hedge), owed NLM cites (pagan/opler/bates/petersen/cameron), bible cross-check C3/C4/C5, R2. DISCIPLINE: no prose before full ratification; transfer to ledgers PROGRAMMATICALLY.",
   "validity_yardsticks_VERIFIED_2026_06_13": {
     "_note": "NLM content-discovery (unscoped clear+ask naming the paper; source found by CONTENT, not filename). Evidence + verbatim spans in tmp/nlm_validity_definitions.json. These 4 are NO LONGER in the write-time 'owed' list.",
     "hoberg2016 (TNIC competition)": "source 688176.pdf (dc4cd3f0). LOCKED. Def n2 (sum of pairwise similarities, given year), p.1446 sec V.B 'Competition and Reported Peers'. TIME-VARYING: spans n4/n6/n7 -- VERBATIM n7 (THE span the reframe rides on): 'Because firms update their 10-Ks, the network is time varying.'; n4: 'allowing us to build classifications that change over time'. Direction (higher sim=more competition) answer-sourced only (not load-bearing).",
@@ -82,5 +82,12 @@
     "2.5": "F1 content-location reframe (killed 'persistent'); folded the 4 NLM-verified yardstick defs (papers + P2/P3 plans); F3 time-varying strengthening (P3.3); F4 convergent identification basis (P2); foregrounded CashScrutiny (P4). Advisor #3: time-variation SEPARATED from content-location (P3.2/intent/guardrail) -- no fusion.",
     "2.4": "No edits -- already advisor-clean (P5.5 selection disclosure; P1.3 within-firm).",
     "advisor_cross_coherence": "CLEAN: keown cut safe (2.1 P6 prose carries language-vs-price, L1731/L1798); time-variation/content-location de-fused; trio->pair; C3->2.3 P3.1 and R3->2.3 P4.1 still homed (FirmChars/keown are not C/R items)."
+  },
+  "ratification_progress_2026_06_13": {
+    "_note": "Stamp each subsection at its approval, NOT batched (advisor) -- a compaction can land mid-ceremony.",
+    "2.2": "RATIFIED",
+    "2.3": "RATIFIED -- incl. the UncPre over-control P3 CUT -> folded positive into P2.5 (DWZ isolation, 'would' not 'must', conservative floor, gated provisional cite); P4 generated-regressand -> P3.",
+    "2.4": "PENDING (ceremony interrupted at its ratify question; re-present next).",
+    "2.5": "PENDING."
   }
 }
