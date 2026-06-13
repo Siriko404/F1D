@@ -1841,10 +1841,10 @@
       "prose_gate": {
         "rule": "no external props; gate trivially open once P1-P6 done",
         "all_supported": true,
-        "unlocked": false
+        "unlocked": true
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "Two readings of this prediction are observationally equivalent, and the framework does not require us to choose between them. Under the first---compliance-constrained disclosure---the executive is unable to confirm the pending deal and barred from denying it, is left to answer around it, and uncertainty rises as a by-product of the bind. Under the second---strategic silence---the reticence is deliberate: the executive chooses to stay vague about a development that is not yet public. Both would produce the same observable signature: elevated uncertainty language in the Q\\&A while the deal is undisclosed, resolving at announcement. Our design cannot distinguish them, and we do not try. What we characterize is therefore a correlational pattern keyed to the disclosure state---an anticipatory, cash-concentrated component of CEO uncertainty language that tracks a deal's passage from private to public---and not a mechanism. We identify no causal channel, establish no intent, and read the relationship descriptively throughout. It is in this deliberately bounded register that the empirical strategy of the following sections puts the pattern to the test.",
+      "prose_status": "DRAFTED"
     }
   },
   "next_action": "P1 propositions LOCKED in deterministic schema (Reg FD corrected out). NEXT: user ratifies the P1 proposition set; then VERIFY P1 -- (a) NLM atomized queries for P1.1 (Verrecchia) + P1.2 (Dye) via a NEW committed script (copy tmp/nlm.py CLI pattern, do NOT run it as-is); (b) legal-text fetch for P1.3 (Basic materiality) + P1.4 (Basic silence/half-truth + Rule 10b-5) via context-mode fetch. Record verbatim. When all 4 SUPPORTED -> draft P1, show user (RULE 2), then write into thesis_draft.tex. ONE PARAGRAPH AT A TIME.",
