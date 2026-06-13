@@ -229,6 +229,33 @@
           "section": "4.4 CEO clarity - estimation"
         }
       ]
+    },
+    "Q3_eq4_controls": {
+      "query": "Reading only this paper, the paper \"Straight Talkers\" by Dzielinski, Wagner, and Zeckhauser: In the CEO-clarity estimation -- Equation (4), which regresses CEO answer-language uncertainty on a CEO fixed effect plus control vectors -- the controls are written as two groups: speech / linguistic-marker controls and firm-characteristic controls. Enumerate exactly which individual variables make up each group on the right-hand side of that regression, listing every control variable by name as the paper defines it. For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+      "answer": "Based on the Dzielinski, Wagner, and Zeckhauser paper, the control variables on the right-hand side of the CEO-clarity estimation (Equation 4) are divided into speech/linguistic-marker controls and firm-characteristic controls. Here are the exact variables that make up each group, as defined in the text.\n\n**1. Speech / Linguistic-Marker Controls ($Speechs$)**\nThe paper identifies three linguistic variables used as controls in the estimation:\n*   **$UncPreCEO$**: The frequency of uncertainty words used by the CEO in the presentation.\n*   **$UncQue$**: The frequency of uncertainty words used by analysts.\n*   **$NegCall$**: The ratio of negative words to total words on the call.\n\n*Supporting Quotes:*\n*   \"In Column (1) of Table 3, we include $UncPreCEO$, the frequency of uncertainty words in the respective CEO’s presentation.\"\n    *   **Page:** 17\n    *   **Section:** 4.4 CEO clarity - estimation\n*   \"Further, to account for the fact that the language of an answer may depend on the wording of the question, we include $UncQue$ the frequency of uncertainty words used by analysts participating in the call.\"\n    *   **Page:** 17\n    *   **Section:** 4.4 CEO clarity - estimation\n*   \"We also add $NegCall$, the ratio of negative words to total words, based on the Loughran and McDonald (2011) list of negative words.\"\n    *   **Page:** 18\n    *   **Section:** 4.4 CEO clarity - estimation\n\n**2. Firm-Characteristic Controls ($FirmCharsk$)**\nThe paper explicitly defines the matrix of firm characteristics as being composed of four distinct variables (which correspond to $SurpDec$, EPS growth, $StockRet$, and $MarketRet$ in Table 3):\n*   **$SurpDec$**: The earnings surprise decile.\n*   **EPS growth**: EPS growth from the same quarter the previous year.\n*   **Stock returns**: Stock returns over the previous quarter.\n*   **Market returns**: Market returns over the previous quarter.\n\n*Supporting Quote:*\n*   \"The matrix $FirmCharsk$ is composed of the following variables: the earnings surprise decile, $SurpDec$, EPS growth from same quarter the previous year, as well as the stock and market returns over the previous quarter.\"\n    *   **Page:** 18\n    *   **Section:** 4.4 CEO clarity - estimation",
+      "quotes": [],
+      "located": [
+        {
+          "quote": "In Column (1) of Table 3, we include $UncPreCEO$, the frequency of uncertainty words in the respective CEO’s presentation.",
+          "page": "17",
+          "section": "4.4 CEO clarity - estimation"
+        },
+        {
+          "quote": "Further, to account for the fact that the language of an answer may depend on the wording of the question, we include $UncQue$ the frequency of uncertainty words used by analysts participating in the call.",
+          "page": "17",
+          "section": "4.4 CEO clarity - estimation"
+        },
+        {
+          "quote": "We also add $NegCall$, the ratio of negative words to total words, based on the Loughran and McDonald (2011) list of negative words.",
+          "page": "18",
+          "section": "4.4 CEO clarity - estimation"
+        },
+        {
+          "quote": "The matrix $FirmCharsk$ is composed of the following variables: the earnings surprise decile, $SurpDec$, EPS growth from same quarter the previous year, as well as the stock and market returns over the previous quarter.",
+          "page": "18",
+          "section": "4.4 CEO clarity - estimation"
+        }
+      ]
     }
   },
   "source": {

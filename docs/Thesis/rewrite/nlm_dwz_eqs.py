@@ -37,6 +37,12 @@ QUERIES = [
      "into a persistent manager-specific component and a time-varying residual? Reproduce "
      "that equation exactly, list all of its right-hand-side variables, and state precisely "
      "how the manager-specific component and the residual component are each defined from it."),
+    ("Q3_eq4_controls",
+     "In the CEO-clarity estimation -- Equation (4), which regresses CEO answer-language "
+     "uncertainty on a CEO fixed effect plus control vectors -- the controls are written as "
+     "two groups: speech / linguistic-marker controls and firm-characteristic controls. "
+     "Enumerate exactly which individual variables make up each group on the right-hand side "
+     "of that regression, listing every control variable by name as the paper defines it."),
 ]
 
 
