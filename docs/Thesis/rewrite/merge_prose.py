@@ -10,9 +10,10 @@ stays byte-identical. Three guards make it safe:
   3. parse + structural diff-guard -- reparses the result and asserts the ONLY changed
      JSON paths are the four intended ones, and the stored prose == the draft byte-for-byte.
 
-  python merge_prose.py P3            # validate + write ledger
+  python merge_prose.py P3            # validate + write ledger (empty-slot only)
   python merge_prose.py P3 --commit   # + git-commit the ledger
   python merge_prose.py P3 --dry      # validate only, write nothing
+  python merge_prose.py P3 --update   # re-transfer over EXISTING prose (keeps diff-guard)
 """
 import json
 import subprocess
@@ -52,6 +53,7 @@ def main():
     para = sys.argv[1]
     commit = "--commit" in sys.argv
     dry = "--dry" in sys.argv
+    update = "--update" in sys.argv  # re-transfer over an already-filled final_prose
 
     raw = LEDGER.read_text(encoding="utf-8")
     before = json.loads(raw)
@@ -72,10 +74,16 @@ def main():
     tail = raw[j:] if j is not None else ""
 
     enc = json.dumps(prose, ensure_ascii=False)  # exact JSON string literal
-    body = replace_once(body, '"final_prose": ""', '"final_prose": ' + enc)  # empty-slot guard
-    body = replace_once(body, '"prose_status": "BLOCKED"', '"prose_status": "%s"' % status)
-    body = replace_once(body, '"all_supported": false', '"all_supported": true', required=False)
-    body = replace_once(body, '"unlocked": false', '"unlocked": true', required=False)
+    if update:
+        old_enc = json.dumps(before["paragraphs"][para]["final_prose"], ensure_ascii=False)
+        if old_enc == '""':
+            raise SystemExit("ABORT: %s final_prose is empty -- use normal transfer, not --update" % para)
+        body = replace_once(body, '"final_prose": ' + old_enc, '"final_prose": ' + enc)
+    else:
+        body = replace_once(body, '"final_prose": ""', '"final_prose": ' + enc)  # empty-slot guard
+        body = replace_once(body, '"prose_status": "BLOCKED"', '"prose_status": "%s"' % status)
+        body = replace_once(body, '"all_supported": false', '"all_supported": true', required=False)
+        body = replace_once(body, '"unlocked": false', '"unlocked": true', required=False)
 
     new = head + body + tail
     after = json.loads(new)  # must still be valid JSON
