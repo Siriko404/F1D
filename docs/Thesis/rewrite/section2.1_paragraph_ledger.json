@@ -1015,11 +1015,11 @@
       ],
       "prose_gate": {
         "rule": "all SUPPORTED before prose",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "Within this venue the bind has an observable consequence. Because the pending acquisition is material and nonpublic, the executive can neither address the analysts' questions that bear on it nor deny that anything is afoot, so a direct answer is unavailable. Such non-answers are common, and they are not informationally empty: in roughly six of ten calls managers withhold requested information, leaving questions unanswered, and, in the words of that literature, silence speaks \\citep{hollander2010}. The earnings call, however, is a sustained, live exchange in which analysts follow up, so a clean refusal is difficult to maintain across repeated, pointed questions. Non-disclosure therefore need not surface as outright silence; it can surface in the words themselves, as answers that grow hedged, qualified, and non-committal---as elevated uncertainty language in the unscripted Q\\&A. We read this language, rather than the incidence of silence, because the constraint binds while the executive keeps speaking. The resulting pattern is keyed to the disclosure state: the bind predicts that uncertainty language is elevated while the acquisition remains undisclosed and recedes once announcement makes it public---a directional prediction we test rather than assume. This anticipatory timing---present before the announcement, absent after---is the first of the two dimensions we develop.",
+      "prose_status": "DRAFTED"
     },
     "P4": {
       "order": 4,
