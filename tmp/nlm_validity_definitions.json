@@ -39,6 +39,96 @@
           }
         ],
         "discovered_sources": []
+      },
+      "Q2_frequency": {
+        "query": "Reading only this paper, the paper \"Text-based network industries and endogenous product differentiation\" by Hoberg and Phillips (2016, Journal of Political Economy): At what unit of observation and how often is each firm's total-similarity value computed, and does that value change from year to year for a given firm or remain fixed over time? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+        "answer": "Based on Hoberg and Phillips (2016), the total-similarity value is computed at the **firm-year** level (i.e., for each individual firm in a given year) [1-3]. Because publicly traded firms are required to file 10-K reports annually, the underlying product vocabularies and the resulting network similarity matrices are updated every year [4, 5]. Consequently, a firm's total-similarity value does not remain fixed; it **changes from year to year** as the firm updates its product descriptions and as the broader product space and competitive environment evolve [4-6]. \n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the unit of observation and how often the value is computed:**\n\n*   \"Total similarity is a global measure and is the sum of the pairwise similarities between the given firm and all other firms in our sample in the given year.\" [2]\n    *   **Page:** 1446\n    *   **Section:** V. External Validation (Subsection B. Competition and Reported Peers)\n\n**On whether the value changes from year to year or remains fixed:**\n\n*   \"What makes our analysis possible is that publicly traded firms must file a 10-K in each year, allowing us to build classifications that change over time.\" [4, 7]\n    *   **Page:** 1425\n    *   **Section:** I. Introduction\n\n*   \"Because firms update their 10-Ks annually, Mt is time varying.\" [5]\n    *   **Page:** 1432\n    *   **Section:** II. Objective and Methodology: From Words to Industry Classifications (Subsection B. Capturing Relatedness between Firms)\n\n*   \"Both firms and entire industries can move in the product space over time as technologies and product tastes evolve.\" [6]\n    *   **Page:** 1433\n    *   **Section:** III. Industry Classification Methods and Firm 10-Ks",
+        "quotes": [
+          {
+            "n": 1,
+            "source_id": "dc4cd3f0-2042-4871-ade6-f59a709ac1f9",
+            "cited_text": "for each industry-year observation, by first computing the average charac-teristic among all firms in the given industry in the given year. Industry-weighted variation of a given characteristic is then the standard devia-tion of these industry characteristics across all industry-year observations in our sample. We note that this calculation is feasible only for industry classifications that satisfy the industry transitivity property, as intransi-tive industries are firm specific and observations exist at the firm-year level. Panel A of table 3 displays the results of the firm-weighted calcula-",
+            "start_char": 57857,
+            "end_char": 58457,
+            "chunk_id": "b43f42ef-da2a-49bb-b54e-14477f44b644"
+          },
+          {
+            "n": 2,
+            "source_id": "dc4cd3f0-2042-4871-ade6-f59a709ac1f9",
+            "cited_text": "Table 4 displays the results of logit regressions in which the dependent variable is the high competition dummy. Standard errors are adjusted for clustering at the firm level. Our primary independent variables are measures of the total similarity surrounding each firm. Total similarity is a global measure and is the sum of the pairwise similarities between the given firm and all other firms in our sample in the given year. We pre-dict that a manager of a firm with higher total similarity will be more likely to disclose discussions noting higher levels of competition in his or her firm’s Management’s Discussion and Analysis section of its 10-K. We also decompose total similarity into respective components based",
+            "start_char": 62965,
+            "end_char": 63685,
+            "chunk_id": "1ca5cbb8-82be-4081-aabe-eff880d07a63"
+          },
+          {
+            "n": 3,
+            "source_id": "dc4cd3f0-2042-4871-ade6-f59a709ac1f9",
+            "cited_text": "changes in industry memberships and industry locations is critical to testing Sutton’s theory, which is primarily about trying to solidify indus-try boundaries and prevent entry across industry boundaries. Fixed in-dustry classifications lack this flexibility because their industry locations are fixed over time, and memberships rarely change. Table 6 displays the results.We consider text-based network industry re-",
+            "start_char": 87933,
+            "end_char": 88350,
+            "chunk_id": "4496829a-a192-4012-9ff5-90a2195eb10f"
+          },
+          {
+            "n": 4,
+            "source_id": "dc4cd3f0-2042-4871-ade6-f59a709ac1f9",
+            "cited_text": "file a 10-K in each year, allowing us to build classifications that change over time. Using this time-varying feature, we examine how firms react to changes within and around their product markets over time.3 For ex-ample, we assess the extent to which firms adjust product offerings fol-lowing large industry shocks. Although numerous studies use industry classifications as control variables, only a few studies examine the classi-fication schemes themselves, and these do not consider the possibility of industry classifications that change materially over time.4",
+            "start_char": 6428,
+            "end_char": 6995,
+            "chunk_id": "b759c733-6ecf-4c4e-b89f-c21abbbc5d0d"
+          },
+          {
+            "n": 5,
+            "source_id": "dc4cd3f0-2042-4871-ade6-f59a709ac1f9",
+            "cited_text": "tries, we use the vectors Vi and Vj for a pair of firms i and j to calculate the product cosine similarity or the firm pairwise similarity score as follows:",
+            "start_char": 23471,
+            "end_char": 23628,
+            "chunk_id": "00c40ed9-73b5-4a07-b667-35fd464c7567"
+          },
+          {
+            "n": 6,
+            "source_id": "dc4cd3f0-2042-4871-ade6-f59a709ac1f9",
+            "cited_text": "erties. We refer to this class of industries as “text-based network industry classifications.” Both firms and entire industries canmove in the product space over time as technologies and product tastes evolve. New firms can appear in the sample, and each firm can have its own distinct set of com-petitors. Finally, these industries are sufficiently rich to permit within- and across-industry similarities to be computed.",
+            "start_char": 27550,
+            "end_char": 27971,
+            "chunk_id": "f80cd19e-1bea-4745-b7c0-26089fa7d853"
+          },
+          {
+            "n": 7,
+            "source_id": "dc4cd3f0-2042-4871-ade6-f59a709ac1f9",
+            "cited_text": "ilar each firm is to every other firm by calculating firm-by-firm pairwise word similarity scores using the 10-K product words. We thus reduce high-dimensional word vectors to a simple matrix of firm pairwise similarity scores. Using these pairwise similarity scores, we then group firms into in-dustries. Our general industry classification can then be represented as an unrestricted network of firms. Because firms update their 10-Ks, the network is time varying. In this network, a firm’s competitors are analo-gous to a Facebook circle of friends, where each firm can have its own dis-tinct set of competitors. Because each firm pair has a continuous degree of relatedness, the analogy is that some pairs are close friends and some pairs are more distant acquaintances. What makes our analysis possible is that publicly traded firms must",
+            "start_char": 5586,
+            "end_char": 6428,
+            "chunk_id": "c5f27d78-df12-4308-b318-543962ee1891"
+          }
+        ],
+        "located": [
+          {
+            "quote": "Total similarity is a global measure and is the sum of the pairwise similarities between the given firm and all other firms in our sample in the given year.",
+            "page": "1446",
+            "section": "V. External Validation (Subsection B. Competition and Reported Peers)"
+          },
+          {
+            "quote": "What makes our analysis possible is that publicly traded firms must file a 10-K in each year, allowing us to build classifications that change over time.",
+            "page": "1425",
+            "section": "I. Introduction"
+          },
+          {
+            "quote": "Because firms update their 10-Ks annually, Mt is time varying.",
+            "page": "1432",
+            "section": "II. Objective and Methodology: From Words to Industry Classifications (Subsection B. Capturing Relatedness between Firms)"
+          },
+          {
+            "quote": "Both firms and entire industries can move in the product space over time as technologies and product tastes evolve.",
+            "page": "1433",
+            "section": "III. Industry Classification Methods and Firm 10-Ks"
+          }
+        ],
+        "discovered_sources": [
+          {
+            "source_id": "dc4cd3f0-2042-4871-ade6-f59a709ac1f9",
+            "title": "688176.pdf"
+          }
+        ]
       }
     }
   }
