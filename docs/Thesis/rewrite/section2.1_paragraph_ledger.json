@@ -1821,11 +1821,11 @@
       ],
       "prose_gate": {
         "rule": "P6.1 + P6.2 + P6.3 SUPPORTED before prose; gap P6.4 stays 'to our knowledge'",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "This paper's nearest neighbors read deal-related language along dimensions other than ours. \\citet{thewissen2024} show that acquirers manage the tone of their earnings press releases: stock bidders inflate disclosure tone by about 15 percent in the year before a stock-for-stock announcement, lifting their share price to reduce the cost of the shares they must issue. \\citet{ragozzino2024} find a parallel pattern in the spoken record---on the earnings calls of firms active in M\\&A, the volume of corporate-strategy vocabulary rises, with analysts using such terms nearly 9 percent more, and executives 7.2 percent more, than at inactive firms. Both study language that is deliberately deployed or topic-driven, and both concern tone or subject matter rather than expressed uncertainty. A separate literature documents that prices often move ahead of a deal: \\citet{keown1981} find that roughly half of the market's reaction to a merger occurs before its first public announcement. That anticipatory signal, however, lives in prices, not in language. The cell these literatures leave empty is the one this paper occupies: uncertainty language in the unscripted Q\\&A, in the anticipatory window before the deal is public, read for what it may reveal about a deal the firm is withholding rather than as language crafted to move the market. To our knowledge, no prior work reads this; we offer it as a positioning claim about where the contribution sits, not as a tested mechanism.",
+      "prose_status": "DRAFTED"
     },
     "P7": {
       "order": 7,
