@@ -1123,11 +1123,122 @@
           "nlm_query_draft": "what does it conclude about decomposing managers' uncertainty or clarity language in earnings conference calls into a persistent manager-specific component and a separate time-varying (call-level) component?",
           "verification": {
             "method": "NLM",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": ""
+            "source": {
+              "id": "5f348ced-c548-45f5-b61a-817163bb49eb",
+              "title": "Dzielinski et al. - Straight talkers and vague talkers The effects of managerial style in earnings conference calls.pdf"
+            },
+            "query": "Reading only this paper, \"Straight Talkers and Vague Talkers: The Effects of Managerial Style in Earnings Conference Calls\" by Dzielinski, Wagner and Zeckhauser (working paper): what does it conclude about decomposing managers' uncertainty or clarity language in earnings conference calls into a persistent manager-specific component (such as a CEO fixed effect) and a separate time-varying, call-level component? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "answer": "The paper concludes that **decomposing managers' use of uncertainty language into a persistent manager-specific component (CEO fixed effect) and a time-varying, call-level component (residual uncertainty) is crucial because these two components have entirely different drivers and market impacts**. \n\nSpecifically, the authors conclude that **the persistent manager-specific component—which they operationalize as \"CEO clarity\"—is an idiosyncratic personal \"style\" characteristic that is fundamentally distinct from the firm's culture, industry, size, or underlying business uncertainty**. \n\nFurthermore, the paper concludes that **market participants respond strongly to this persistent style component, but they do not respond to the time-varying residual component**. Analysts and investors react much more strongly to earnings news (and especially the \"soft\" information within it) when it is conveyed by a consistently clear-talking CEO, whereas the quarter-specific, uncharacteristic fluctuations in a CEO's uncertainty language (the residual) explain almost none of the market's stock price or volume response.\n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On decomposing language into a persistent style and a time-varying residual:**\n*   \"We operationalize CEOs’ clarity as the stable “style” component in the use of uncertainty words - the component that is not motivated by business uncertainty.\" [1, 2]\n    *   **Page:** 2\n    *   **Section:** 1 Introduction\n\n*   \"Our analysis is the first to explicitly decompose an important feature of CEO communication into two components: personal style and the potentially strategic component (the residual), and then to separately examine their impacts.\" [3]\n    *   **Page:** 6\n    *   **Section:** 1 Introduction\n\n**On the persistent manager-specific component being a distinct personal characteristic:**\n*   \"These results confirm that the clarity of CEOs’ communication is a personal characteristic, and is distinct from the types of firms they run.\" [4]\n    *   **Page:** 3\n    *   **Section:** 1 Introduction\n\n*   \"In short, CEO clarity represents a distinct and personal 'style' in communication.\" [5]\n    *   **Page:** 23\n    *   **Section:** 4.6 Summary of results so far\n\n**On the differing market impacts of the persistent style versus the time-varying residual:**\n*   \"By contrast, residual use of uncertainty words - that is, the component of the overall frequency of uncertainty words in CEO’s answers during each call that is not explained by items (1) to (3) above - explains little of the market reaction.\" [6, 7]\n    *   **Page:** 4\n    *   **Section:** 1 Introduction\n\n*   \"By contrast, neither UncPreCEO nor UncResCEO is significantly associated with stock price or volume responses.\" [8, 9]\n    *   **Page:** 26\n    *   **Section:** 5.2 Results\n\n*   \"Thus, the price response to information discussed on the call is primarily a function of ClarityCEO (which may also govern managerial communication in other settings), rather than the quarter-specific uncertainty.\" [10]\n    *   **Page:** 30\n    *   **Section:** 5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?",
+            "quotes": [
+              {
+                "n": 1,
+                "cited_text": "These are cautious words that qualify any message conveyed.2 Frequent use of such words",
+                "start_char": 6530,
+                "end_char": 6618,
+                "chunk_id": "417e6ea0-408b-4be4-a162-f315e03bb3ab"
+              },
+              {
+                "n": 2,
+                "cited_text": "is, in fact, complex and confusing. In light of these considerations, we operationalize CEOs’",
+                "start_char": 7082,
+                "end_char": 7176,
+                "chunk_id": "74fbeb0a-d8f5-47fd-8d0a-c0d15326daac"
+              },
+              {
+                "n": 3,
+                "cited_text": "conveyed, such as Lee (2016), sidestep this issue by including manager fixed effects in their",
+                "start_char": 17491,
+                "end_char": 17585,
+                "chunk_id": "0602dd13-2200-49c6-89a0-ce070d0b35ed"
+              },
+              {
+                "n": 4,
+                "cited_text": "by firm-level uncertainty; neither does it differ systematically across industries, firm size,",
+                "start_char": 10190,
+                "end_char": 10285,
+                "chunk_id": "8791cddb-32c3-4cd5-9217-7449be98fb5c"
+              },
+              {
+                "n": 5,
+                "cited_text": "variables. In unreported tests we verify that all our results remain significant when controlling",
+                "start_char": 52651,
+                "end_char": 52749,
+                "chunk_id": "c362f8b1-f144-4be7-944d-82747f3e41cb"
+              },
+              {
+                "n": 6,
+                "cited_text": "Next, we show that CEO clarity matters for the market - investors and analysts respond",
+                "start_char": 10695,
+                "end_char": 10782,
+                "chunk_id": "601aac34-e157-4512-b37a-b56e547e2e86"
+              },
+              {
+                "n": 7,
+                "cited_text": "4",
+                "start_char": 11223,
+                "end_char": 11224,
+                "chunk_id": "78a27280-bbdd-41b0-bcca-40160402654d"
+              },
+              {
+                "n": 8,
+                "cited_text": "26",
+                "start_char": 63178,
+                "end_char": 63180,
+                "chunk_id": "980323be-42c1-46fb-8cb7-7cb11e295aa9"
+              },
+              {
+                "n": 9,
+                "cited_text": "firms with more intangible assets (which are presumably harder to value than tangible assets)",
+                "start_char": 63681,
+                "end_char": 63775,
+                "chunk_id": "4e25399e-8554-4096-8212-e0f77b7ad1cf"
+              },
+              {
+                "n": 10,
+                "cited_text": "Importantly, these results obtain independently of the interaction between analyst",
+                "start_char": 68951,
+                "end_char": 69034,
+                "chunk_id": "89af579a-e95d-4b22-a28d-d9605ae17a03"
+              }
+            ],
+            "located": [
+              {
+                "quote": "We operationalize CEOs’ clarity as the stable “style” component in the use of uncertainty words - the component that is not motivated by business uncertainty.",
+                "page": "2",
+                "section": "1 Introduction"
+              },
+              {
+                "quote": "Our analysis is the first to explicitly decompose an important feature of CEO communication into two components: personal style and the potentially strategic component (the residual), and then to separately examine their impacts.",
+                "page": "6",
+                "section": "1 Introduction"
+              },
+              {
+                "quote": "These results confirm that the clarity of CEOs’ communication is a personal characteristic, and is distinct from the types of firms they run.",
+                "page": "3",
+                "section": "1 Introduction"
+              },
+              {
+                "quote": "In short, CEO clarity represents a distinct and personal 'style' in communication.",
+                "page": "23",
+                "section": "4.6 Summary of results so far"
+              },
+              {
+                "quote": "By contrast, residual use of uncertainty words - that is, the component of the overall frequency of uncertainty words in CEO’s answers during each call that is not explained by items (1) to (3) above - explains little of the market reaction.",
+                "page": "4",
+                "section": "1 Introduction"
+              },
+              {
+                "quote": "By contrast, neither UncPreCEO nor UncResCEO is significantly associated with stock price or volume responses.",
+                "page": "26",
+                "section": "5.2 Results"
+              },
+              {
+                "quote": "Thus, the price response to information discussed on the call is primarily a function of ClarityCEO (which may also govern managerial communication in other settings), rather than the quarter-specific uncertainty.",
+                "page": "30",
+                "section": "5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?"
+              }
+            ],
+            "verdict": "PENDING"
           }
         },
         {
