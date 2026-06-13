@@ -1,0 +1,86 @@
+{
+  "_meta": {
+    "title": "Section 2 subsection-level plan (2.2-2.5) -- PHASE 1: purpose + proposition chain only",
+    "purpose": "Plan the EXACT purpose + ordered proposition chain of each remaining subsection BEFORE any NLM query (user order: subsection purpose+chain first -> NLM -> paragraph-level). Paragraph-atomic propositions are NOT here yet (PHASE 3). On ratification, each block seeds its own section2.X_paragraph_ledger.json, schema cloned from 2.1.",
+    "created": "2026-06-13",
+    "grounding": "Every purpose + chain link traces to section2_roadmap.md (per-subsection mandate) and/or claim_findings_ledger.json (C1-C7, thin_claim_ceiling). NO invented content. Citations are CANDIDATES carried from the roadmap -- all verification-gated at write-time.",
+    "status_legend": "PLANNED = drafted, not yet ratified/verified. equation_gated = chain link needs a primary-source equation transcribed (NLM / bible) before its paragraph prose can be written.",
+    "governing": "Thin-claim ceiling (claim_findings_ledger.thin_claim_ceiling) binds every link. 'Do not batch' still governs the later verify+write loop (one paragraph at a time); this PHASE-1 batch is planning skeleton only."
+  },
+
+  "2.2": {
+    "title": "Hypothesis Development",
+    "role": "the empirical (per-hypothesis) literature review",
+    "purpose": "Convert the 2.1 framework into formal, falsifiable, empirically-grounded predictions about WHERE/WHEN the signal appears -- never WHY. Each hypothesis states a prediction (direction + where/when), the mechanism-to-prediction logic, and the prior empirical finding that makes it non-obvious.",
+    "serves": "Falsifiable claims with stakes; the bridge to the designs (2.4 maps each design to a hypothesis).",
+    "boundary": "Predictions only; do NOT define the measure (2.3) or estimator (2.4); never assert a cause.",
+    "thin_claim": "H1a = concentration, not strict specificity; no hypothesis asserts a cause; the scrutiny alternative is a real competing hypothesis, not a strawman.",
+    "subsection_prop_chain": [
+      {"id": "SC2.2.1", "claim": "The 2.1 framework's two dimensions (anticipatory x cash-concentrated) yield testable predictions about where/when the language signal appears, not why.", "source_candidates": ["internal: 2.1 framework"], "grounding": "roadmap 2.2 Must-do 1", "equation_gated": false, "status": "PLANNED"},
+      {"id": "SC2.2.2", "claim": "H1 (anticipatory run-up): residual Q&A uncertainty is elevated in the pre-announcement quarter of cash acquirers, relative to their own other quarters.", "source_candidates": ["thewissen2024"], "grounding": "roadmap 2.2 Must-do 2; claim C2 (cash 0.0461***, survives two-tailed p=.0074). Contrast vs thewissen2024 managed tone before stock deals -> we predict the opposite register: unmanaged uncertainty before cash deals.", "equation_gated": false, "status": "PLANNED"},
+      {"id": "SC2.2.3", "claim": "H1a (cash-concentration): the run-up is stronger for cash than for stock acquirers -- framed as concentration, not strict specificity.", "source_candidates": ["harford1999"], "grounding": "roadmap 2.2 Must-do 3; claim C6 (EFFECT_diff 0.0983**, z=2.06, p=.039, valid at 5% two-tailed; stock arm imprecise -> supportive not definitive). Ground vs Harford cash-acquisitiveness.", "equation_gated": false, "status": "PLANNED"},
+      {"id": "SC2.2.4", "claim": "H1b (differential timing): uncertainty resolves at announcement (information clock); the acquirer's cash persists to completion (transaction clock).", "source_candidates": ["keown1981"], "grounding": "roadmap 2.2 Must-do 4; claim C1 (strongest: PRE1 0.0473***, POST -0.0250*, PRE1-POST 0.0723***; cash GAP persists, POST -0.0155***). Distinguish from price run-up/leakage (Keown-Pinkerton): we track LANGUAGE, not price.", "equation_gated": false, "status": "PLANNED"},
+      {"id": "SC2.2.5", "claim": "The competing analyst-scrutiny reading (analysts ask harder cash questions) is a real alternative hypothesis -- stated formally here as the prediction 4.1 tests and rules out.", "source_candidates": ["matsumoto2011"], "grounding": "roadmap 2.2 Must-do 5; claim C4 (scrutiny rule-out: gating interaction -0.0056 n.s.). Gives the 4.1 rule-out a home; frame as competing hypothesis not strawman.", "equation_gated": false, "status": "PLANNED"}
+    ],
+    "estimands_to_define": "PreAnnounceQtr = 1[e=-1]. Define precisely; no equations.",
+    "paragraph_map_provisional": "~5 paragraphs: P1 funnel(SC2.2.1) | P2 H1(SC2.2.2) | P3 H1a(SC2.2.3) | P4 H1b(SC2.2.4) | P5 scrutiny-hypothesis(SC2.2.5).",
+    "nlm_needs": "Verify (at write-time, per paragraph): thewissen2024 managed-tone-before-stock-deals; harford1999 cash-acquisitiveness; keown1981 price run-up before announcement; matsumoto2011 Q&A information content. No equations."
+  },
+
+  "2.3": {
+    "title": "Estimation of the Main Variable",
+    "role": "the measurement heart",
+    "purpose": "Define and JUSTIFY the dependent variable UncResCEO (the DWZ residual): what it is, why it must be a residual, and the two honest threats to it.",
+    "serves": "Makes the core construct credible + reproducible; the DV every design uses.",
+    "boundary": "Defines the MAIN var only (UncResCEO + inputs UncAnsCEO / UncPreCEO / CEO-FE / ClarityCEO). Other constructs -> 2.5/3.1. Construction MECHANICS (tokenize, match) -> 3.1.",
+    "thin_claim": "Disclose generated-regressand + UncPre honestly; validity is an empirical question answered in 2.5, not assumed.",
+    "subsection_prop_chain": [
+      {"id": "SC2.3.1", "claim": "DWZ eq-4 defines the residual: UncAnsCEO_ic = a + CEO-FE_i + X_ic*g + e_ic; UncResCEO = e-hat_ic. Define every first-stage regressor.", "source_candidates": ["dwz"], "grounding": "roadmap 2.3 Must-do 1; eq from DWZ paper (primary-source).", "equation_gated": true, "status": "PLANNED"},
+      {"id": "SC2.3.2", "claim": "Why the residual: an anticipatory, deal-tracking signal must appear/disappear within a CEO's tenure -> it can only live in the call-varying residual, not the persistent manager-specific style (CEO FE).", "source_candidates": ["bertrand_schoar2003", "dwz"], "grounding": "roadmap 2.3 Must-do 2 (load-bearing); Bertrand&Schoar manager FE / style.", "equation_gated": false, "status": "PLANNED"},
+      {"id": "SC2.3.3", "claim": "Own the UncPre over-control issue: UncPreCEO is a first-stage control, yet prepared-remarks uncertainty carries signal (4.2) and UncPre->UncRes = 0.0111**/0.0230** is significant (tab:h23). Reconcile (prepared remarks vetted in advance -> no live-Q&A shock) and/or robustness to dropping UncPre and/or disclose as limitation.", "source_candidates": [], "grounding": "roadmap 2.3 Must-do 3 (advisor mandate); claim C3 risk.", "equation_gated": false, "status": "PLANNED"},
+      {"id": "SC2.3.4", "claim": "Own the generated-regressand issue: UncResCEO is a first-stage residual used as the downstream DV; state why inference holds or flag the two-step-SE concern.", "source_candidates": ["pagan1984"], "grounding": "roadmap 2.3 Must-do 4; cross-cutting risk R3 (Pagan 1984).", "equation_gated": false, "status": "PLANNED"},
+      {"id": "SC2.3.5", "claim": "Justify the primitive: the LM 'uncertainty' dictionary (1993-2024), word-share, and the CEO Q&A vs presentation split. eq-1 = raw UncPre share.", "source_candidates": ["lm2011"], "grounding": "roadmap 2.3 Must-do 5; lm2011 already verified in 2.1.", "equation_gated": true, "status": "PLANNED"}
+    ],
+    "equations_needed": ["DWZ eq-4 (residual generator)", "eq-1 (raw UncPre share)"],
+    "paragraph_map_provisional": "~5 paragraphs: P1 eq-4+regressors(SC2.3.1) | P2 why-residual(SC2.3.2) | P3 UncPre-overcontrol(SC2.3.3) | P4 generated-regressand(SC2.3.4) | P5 LM-primitive+eq-1(SC2.3.5).",
+    "nlm_needs": "TRANSCRIBE from primary source BEFORE paragraph prose: DWZ eq-4 + its regressor list; DWZ/LM eq-1 raw share. VERIFY: bertrand_schoar2003 manager-style/FE; pagan1984 generated-regressor inference. dwz, lm2011, bertrand_schoar2003 already uploaded."
+  },
+
+  "2.4": {
+    "title": "Methodology and Empirical Design",
+    "role": "the design spine",
+    "purpose": "Lay out the three estimating equations and the (descriptive) identification logic: how each prediction hits the data and what must hold.",
+    "serves": "Exactly how each prediction maps to a test + the assumptions behind each estimand.",
+    "boundary": "Estimators + identification only. Variable DEFINITIONS -> 2.3/2.5/Appendix. Data/sample-build -> 3.1. No results preview.",
+    "thin_claim": "Descriptive estimand, NO identification; honest about the never-acquirer baseline, first-deal contamination, and inference choices.",
+    "subsection_prop_chain": [
+      {"id": "SC2.4.1", "claim": "Main estimating equation: Y_it = b*PreAnnounceQtr_it + g'X_it + a_i + t_t + e_it; b is the estimand per (outcome Y, treated set).", "source_candidates": [], "grounding": "roadmap 2.4 Must-do 1; eq from bible spec / src/f1d/econometric (primary-source).", "equation_gated": true, "status": "PLANNED"},
+      {"id": "SC2.4.2", "claim": "Event-study spec (MA2): replace PreAnnounceQtr with four event-time bins (PRE2, PRE1, GAP, POST).", "source_candidates": [], "grounding": "roadmap 2.4 Must-do 2; maps to claim C1 timing round-trip.", "equation_gated": true, "status": "PLANNED"},
+      {"id": "SC2.4.3", "claim": "Pooled interacted spec (MA3): PreAnn_cash + PreAnn_stock + the formal cash-minus-stock linear-restriction (Wald) test.", "source_candidates": [], "grounding": "roadmap 2.4 Must-do 3; maps to claim C6 cash-specificity (the formal test).", "equation_gated": true, "status": "PLANNED"},
+      {"id": "SC2.4.4", "claim": "Each design's estimand + descriptive identifying assumptions: within-firm; never-acquirers as FE baseline; post-quarters dropped (b = pre-window mean shift); PRE2 pre-trend as validity device; NO parallel-trends causal claim. Map design->hypothesis (run-up->H1, timing->H1b, pooled->H1a).", "source_candidates": [], "grounding": "roadmap 2.4 Must-do 4; thin_claim_ceiling (no identification).", "equation_gated": false, "status": "PLANNED"},
+      {"id": "SC2.4.5", "claim": "Own the homeless items: deal-timing endogeneity + first-deal-only-sets-the-clock contamination; inference (firm vs two-way firm x quarter clustering; one->two-tailed; multiple testing); functional form (levels, share-not-count, cash-equation partial-adjustment lag). Disclose / justify / flag-for-rerun.", "source_candidates": ["opler1999", "bates2009", "petersen2009", "cameron2011"], "grounding": "roadmap 2.4 Must-do 5; cross-cutting risks R1 (one-tailed), R2 (clustering); cash regression determinants.", "equation_gated": false, "status": "PLANNED"}
+    ],
+    "equations_needed": ["main estimating eq (PreAnnounceQtr)", "event-study spec (4 bins)", "pooled interacted spec + cash-minus-stock Wald"],
+    "paragraph_map_provisional": "~5 paragraphs: P1 main-eq(SC2.4.1) | P2 event-study(SC2.4.2) | P3 pooled-interacted(SC2.4.3) | P4 estimands+assumptions(SC2.4.4) | P5 homeless-items/inference(SC2.4.5).",
+    "nlm_needs": "TRANSCRIBE from primary source (bible spec pages + src/f1d/econometric/*) BEFORE prose: the three estimating equations. VERIFY: opler1999 + bates2009 (cash determinants for the cash regression); petersen2009 + cameron2011 (panel SE / two-way clustering). These cash/SE papers may need UPLOAD to NLM."
+  },
+
+  "2.5": {
+    "title": "Specification and Measurement of Key Constructs",
+    "role": "the validity gate",
+    "purpose": "Validate the construct (convergent + discriminant) and pre-empt the scrutiny confound -- earn trust the residual measures what's claimed BEFORE results.",
+    "serves": "Construct credibility; pre-registers the 4.1 scrutiny rule-out; defines remaining key constructs.",
+    "boundary": "Validity + scrutiny construct + key non-main constructs. MAIN var -> 2.3. Scrutiny RESULTS -> 4.1. Controls -> Appendix.",
+    "thin_claim": "Convergent = 'consistent with' (weak, disclosed); discriminant = decisive; scrutiny = 'doesn't account for THIS run-up,' not 'never matters.'",
+    "subsection_prop_chain": [
+      {"id": "SC2.5.1", "claim": "Two demands on the residual: it must (a) move with real uncertainty (convergent), and (b) not be a scrutiny artifact (discriminant + rule-out).", "source_candidates": [], "grounding": "roadmap 2.5 Must-do 1.", "equation_gated": false, "status": "PLANNED"},
+      {"id": "SC2.5.2", "claim": "Convergent validity: the residual loads on political risk (hassan2020) and policy uncertainty (baker2016/davis2016) -- 'consistent with', honestly hedged (one-tailed; PRisk economically trivial; US-EPU marginal).", "source_candidates": ["hassan2020", "baker2016", "davis2016"], "grounding": "roadmap 2.5 Must-do 2; claim C5 (WEAK -- demote, do not oversell).", "equation_gated": false, "status": "PLANNED"},
+      {"id": "SC2.5.3", "claim": "Discriminant validity (decisive): product-market competition (hoberg2010/hoberg2016) loads on the presentation, NOT the residual (0.0304*** vs 0.0008 n.s.). Lead with this.", "source_candidates": ["hoberg2010", "hoberg2016"], "grounding": "roadmap 2.5 Must-do 3; claim C3 (CLEAN -- the single cleanest validity result).", "equation_gated": false, "status": "PLANNED"},
+      {"id": "SC2.5.4", "claim": "Pre-register the scrutiny rule-out (4.1 forward-ref): define CashScrutiny / HighCashScrutiny + the three-step logic; frame as 'doesn't account for THIS run-up.'", "source_candidates": [], "grounding": "roadmap 2.5 Must-do 4; claim C4 (NULL only -- keep exactly as hedged).", "equation_gated": false, "status": "PLANNED"},
+      {"id": "SC2.5.5", "claim": "Define remaining KEY constructs (CashRatio, PreAnnounceQtr, CashScrutiny); controls -> Appendix.", "source_candidates": [], "grounding": "roadmap 2.5 Must-do 5.", "equation_gated": false, "status": "PLANNED"}
+    ],
+    "equations_needed": ["validity regression form (light; logic is the focus)"],
+    "paragraph_map_provisional": "~5 paragraphs: P1 two-demands(SC2.5.1) | P2 convergent(SC2.5.2) | P3 discriminant(SC2.5.3) | P4 scrutiny-rule-out(SC2.5.4) | P5 key-constructs(SC2.5.5).",
+    "nlm_needs": "VERIFY (engage, not merely data-source): hassan2020 political risk; baker2016/davis2016 policy uncertainty; hoberg2010/hoberg2016 product-market competition. All already cited in the draft; confirm what each supports. Numbers are from claim_findings_ledger (bible-verbatim), not re-derived."
+  }
+}
