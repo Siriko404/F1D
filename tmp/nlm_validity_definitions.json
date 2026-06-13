@@ -367,6 +367,36 @@
           }
         ]
       }
+    },
+    "davis2016": {
+      "Q1_def": {
+        "query": "Reading only this paper, the paper \"An index of global economic policy uncertainty\" by Davis (2016, NBER Working Paper 22740): How is the Global Economic Policy Uncertainty index defined and constructed, and what does it measure? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+        "answer": "Based on the paper \"An index of global economic policy uncertainty\" by Davis (2016), the Global Economic Policy Uncertainty (GEPU) index is defined and constructed as a GDP-weighted average of 16 national Economic Policy Uncertainty (EPU) indices. Each national index is constructed by measuring the relative frequency of newspaper articles within that country containing specific terms related to the economy, policy, and uncertainty. To build the global index, the author normalizes each national index to a mean of 100 (for the 1997–2015 period), uses a regression-based method to impute any missing data for certain countries, and then calculates the GDP-weighted average of these 16 national values.\n\nRegarding what it measures, the GEPU index is designed to capture uncertainty regarding who will make economic policy decisions, what specific policy actions will be taken and when, and the economic consequences of those actions or inactions—including uncertainties stemming from \"non-economic\" policy matters like military conflicts. \n\nHere are the specific sentences quoted from the paper that support these conclusions, along with the sections where they appear *(note: exact page numbers are not printed in the provided text for this working paper)*:\n\n**On how the GEPU index is defined and constructed:**\n*   \"The GEPU Index is a GDP-weighted average of national EPU indices for 16 countries that account for two-thirds of global output.\"\n    *   **Page:** Unnumbered\n    *   **Section:** I. Introduction\n*   \"Each national EPU index reflects the relative frequency of own-country newspaper articles that contain a trio of terms pertaining to the economy, uncertainty and policy-related matters.\"\n    *   **Page:** Unnumbered \n    *   **Section:** I. Introduction\n*   \"To construct a Global Economic Policy Uncertainty (GEPU) Index, I proceed as follows: First, I re-normalize each national EPU index to a mean of 100 from 1997 (or first year) to 2015. Second, I impute missing values for Australia, India, the Netherlands and Spain using a regression-based method... Third, I compute the GEPU Index value for each month as the GDP-weighted average of the 16 national EPU index values, using GDP data...\"\n    *   **Page:** Unnumbered\n    *   **Section:** III. An Index of Global Economic Policy Uncertainty\n\n**On what the GEPU index measures:**\n*   \"The aim of our newspaper-based measures is to capture uncertainty about who will make economic policy decisions, what economic policy actions will be undertaken and when, and the economic effects of policy actions (or inaction) – including uncertainties related to the economic ramifications of “non-economic” policy matters, e.g., military actions.\"\n    *   **Page:** Unnumbered\n    *   **Section:** I. Introduction",
+        "quotes": [],
+        "located": [
+          {
+            "quote": "The GEPU Index is a GDP-weighted average of national EPU indices for 16 countries that account for two-thirds of global output.",
+            "page": "Unnumbered",
+            "section": "I. Introduction"
+          },
+          {
+            "quote": "Each national EPU index reflects the relative frequency of own-country newspaper articles that contain a trio of terms pertaining to the economy, uncertainty and policy-related matters.",
+            "page": "Unnumbered",
+            "section": "I. Introduction"
+          },
+          {
+            "quote": "To construct a Global Economic Policy Uncertainty (GEPU) Index, I proceed as follows: First, I re-normalize each national EPU index to a mean of 100 from 1997 (or first year) to 2015. Second, I impute missing values for Australia, India, the Netherlands and Spain using a regression-based method... Third, I compute the GEPU Index value for each month as the GDP-weighted average of the 16 national EPU index values, using GDP data...",
+            "page": "Unnumbered",
+            "section": "III. An Index of Global Economic Policy Uncertainty"
+          },
+          {
+            "quote": "The aim of our newspaper-based measures is to capture uncertainty about who will make economic policy decisions, what economic policy actions will be undertaken and when, and the economic effects of policy actions (or inaction) – including uncertainties related to the economic ramifications of “non-economic” policy matters, e.g., military actions.",
+            "page": "Unnumbered",
+            "section": "I. Introduction"
+          }
+        ],
+        "discovered_sources": []
+      }
     }
   }
 }
