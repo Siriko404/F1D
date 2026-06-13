@@ -926,20 +926,21 @@
       "boundary": "Conceptual signal only; the residual measure is 2.3.",
       "thin_claim": "A pattern keyed to the disclosure state -- no causal claim about CEO intent.",
       "guardrails": [
-        "ADVISOR_FIX_sign: earn the DIRECTION (UP). A gagged CEO could go more guarded -> measure DOWN. Affirmative reason for UP: live Q&A, analysts follow up, sustained clean deflection is hard -> hedging leaks. H1 one-tailed."
+        "ADVISOR_FIX_sign: earn the DIRECTION (UP). A gagged CEO could go more guarded -> measure DOWN. Affirmative reason for UP: live Q&A, analysts follow up, sustained clean deflection is hard -> hedging leaks. H1 one-tailed.",
+        "PREMISE-ONLY (advisor 2026-06-12): Hollander is cited ONLY for the premise -- managers strategically manage call disclosure AND non-answers/silence are informative. The UP sign is H1 (one-tailed, tested in results), NEVER cited; citing the sign would BE P6's novelty (self-contradiction). 'Silence speaks' cuts toward DOWN (stay silent -> fewer words) -- frame as: the bind REMOVES the clean-silence option (sustained live Q&A) so non-disclosure leaks as hedging in WORDS."
       ],
       "propositions": [
         {
           "prop_id": "P3.1",
           "statement": "Managers make strategic disclosure/silence choices during conference calls, and non-answers / silence are themselves informative to the market.",
-          "role_in_paragraph": "Grounds the deflection mechanism in the call-silence literature.",
+          "role_in_paragraph": "Grounds the deflection mechanism in the call-silence literature (PREMISE ONLY -- the UP sign is H1, never cited).",
           "type": "external-NLM",
           "source": {
             "key": "hollander2010",
-            "ref": "Hollander, Pronk & Roelofsen (2010), 'Does silence speak?'",
+            "ref": "Hollander, Pronk & Roelofsen (2010), 'Does Silence Speak? An Empirical Analysis of Disclosure Choices During Conference Calls', JAR 48(3):531-563",
             "nlm_source_id": null
           },
-          "nlm_query_draft": "",
+          "nlm_query_draft": "what does it conclude about whether managers strategically manage their disclosures during conference calls -- including choosing not to answer questions -- and whether such silence or non-answers are informative to investors?",
           "verification": {
             "method": "NLM",
             "evidence": [],
@@ -961,25 +962,27 @@
     "P4": {
       "order": 4,
       "lit_body": "managerial style / manager fixed effects -> why the signal is the call-varying component",
-      "intent": "Call-language uncertainty is partly a CEO's persistent style: managers differ durably in how they speak, and style is a fixed trait, not an anticipatory signal. An anticipatory, deal-tracking component must appear and disappear within one executive's tenure -> it can only live in the call-VARYING part, once persistent style is netted out. This is why the paper works with a within-CEO, call-level component.",
-      "serves": "Reviews managerial-style literature; makes the conceptual case the signal must be the call-varying component (what 2.3's residual operationalizes).",
-      "boundary": "CONCEPTUAL only -- do NOT write eq-4 or list first-stage regressors (2.3).",
+      "intent": "Call-language uncertainty is partly a CEO's persistent style: managers differ durably in how they speak (a fixed trait), not an anticipatory signal. So an anticipatory, deal-tracking component must appear and disappear within one executive's tenure -> it can only live in the call-VARYING part, once persistent style is netted out. The persistent/time-varying decomposition this paper FOLLOWS is DWZ's; that managers carry persistent fixed-effect components at all is established in the PUBLISHED Bertrand & Schoar. P4 makes a CONDITIONAL-LOCATION claim only: IF an anticipatory signal exists, it must sit in the call-varying part.",
+      "serves": "Reviews managerial-style literature; makes the conceptual case the signal must be the call-varying component (what 2.3's residual operationalizes). Cites B-S (premise: persistent components are real) + DWZ (the decomposition method).",
+      "boundary": "CONCEPTUAL only -- do NOT write eq-4 or list first-stage regressors (2.3). Do NOT draft DWZ's price-null here (it lives in 2.3 + 3).",
       "thin_claim": "States the locating logic; construction + caveats (generated regressand, UncPre) are 2.3.",
       "guardrails": [
-        "ADVISOR_FIX_necessity: NECESSARY-condition only -- the signal MUST be in the residual. Do NOT drift to 'the residual IS the deal signal'; the P5 placebo + timing design isolate it."
+        "ADVISOR_FIX_necessity: NECESSARY-condition only -- the signal MUST be in the residual. Do NOT drift to 'the residual IS the deal signal'; the P5 placebo + timing design isolate it.",
+        "ADVISOR_FIX_attribution (2026-06-12): cite DWZ STRICTLY for 'the persistent/time-varying decomposition exists, done by DWZ'. The location logic (signal must be in the residual) is THE THESIS'S OWN -- attribute it to nobody. NEVER phrase it so DWZ appears to endorse the residual as signal-bearing: DWZ found the residual carries NO market/price signal. That null is NOT P4's -- it lives in 2.3 (defensive: why we still expect signal in our conditioned cash setting) + 3 (the cash-positive contrast).",
+        "B-S anchors the PREMISE only (persistent components are real, in firm POLICIES) -- NOT the language decomposition (DWZ's) and NOT any signal claim. DWZ is a WORKING paper; B-S (published) carries the premise so the argument does not rest on unpublished work."
       ],
       "propositions": [
         {
           "prop_id": "P4.1",
           "statement": "Managers have persistent, individual styles that load as manager fixed effects in firm policies/outcomes -- a measurable, durable manager-specific component.",
-          "role_in_paragraph": "Grounds 'persistent style must be netted out'.",
+          "role_in_paragraph": "PUBLISHED anchor: persistent manager components are real. Premise only -- NOT the language method (DWZ), NOT a residual-is-signal claim.",
           "type": "external-NLM",
           "source": {
             "key": "bertrand_schoar2003",
-            "ref": "Bertrand & Schoar (2003), 'Managing with style'",
+            "ref": "Bertrand & Schoar (2003), 'Managing with style', QJE 118(4):1169-1208",
             "nlm_source_id": null
           },
-          "nlm_query_draft": "",
+          "nlm_query_draft": "what does it conclude about whether individual managers have persistent, distinct styles that systematically affect the firm policies and outcomes they manage (manager fixed effects)?",
           "verification": {
             "method": "NLM",
             "evidence": [],
@@ -988,10 +991,50 @@
             "verified_date": null,
             "note": ""
           }
+        },
+        {
+          "prop_id": "P4.2",
+          "statement": "Managers' uncertainty/clarity language in earnings conference calls decomposes into a persistent manager-specific component (a CEO fixed effect) and a time-varying, call-level residual; DWZ construct exactly this decomposition.",
+          "role_in_paragraph": "GATING. The decomposition method this paper follows -> the call-varying residual is where an anticipatory signal must live. Cite DWZ ONLY for the decomposition's existence, NEVER for the residual carrying signal.",
+          "type": "external-NLM",
+          "source": {
+            "key": "dwz2021",
+            "ref": "Dzielinski, Wagner & Zeckhauser, 'Straight Talkers and Vague Talkers' (working paper)",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "what does it conclude about decomposing managers' uncertainty or clarity language in earnings conference calls into a persistent manager-specific component and a separate time-varying (call-level) component?",
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": ""
+          }
+        },
+        {
+          "prop_id": "P4.3",
+          "statement": "DWZ find that the time-varying (residual) component of call uncertainty is largely unrelated to market/stock-price reactions -- it explains little for prices.",
+          "role_in_paragraph": "NON-GATING record. Captured now (source open) for 2.3 (defensive) + 3 (the cash-positive CONTRAST to DWZ's price-null). Do NOT draft this into P4.",
+          "type": "external-NLM",
+          "source": {
+            "key": "dwz2021",
+            "ref": "Dzielinski, Wagner & Zeckhauser, 'Straight Talkers and Vague Talkers' (working paper)",
+            "nlm_source_id": null
+          },
+          "nlm_query_draft": "what does it conclude about whether the time-varying (residual) component of call uncertainty is related to stock-market or price reactions?",
+          "verification": {
+            "method": "NLM",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "PENDING",
+            "verified_date": null,
+            "note": "NON-GATING for P4; for 2.3/3 use only."
+          }
         }
       ],
       "prose_gate": {
-        "rule": "all SUPPORTED before prose",
+        "rule": "P4.1 + P4.2 SUPPORTED before prose (P4.3 is a non-gating record for 2.3/3)",
         "all_supported": false,
         "unlocked": false
       },
@@ -1006,7 +1049,8 @@
       "boundary": "Do NOT assert 'cash sharpens the bind / visible cash invites the question' -- that IS the scrutiny channel 4.1 rules out. DESIGN CONTRAST only. Concentration, NOT strict specificity. Keep cash CENTRAL.",
       "thin_claim": "A where-it-appears CONTRAST; the why stays open; the cash-persistence leg is mechanical.",
       "guardrails": [
-        "ADVISOR_FIX_contrast (A2): stock = same setting minus visible cash. Mechanism OPEN (P7)."
+        "ADVISOR_FIX_contrast (A2): stock = same setting minus visible cash. Mechanism OPEN (P7).",
+        "DROPPED P5.2 (Bates 2009 / Opler 1999): 'analysts watch cash' is one step from the FORBIDDEN scrutiny channel (visible cash -> analysts probe -> CEO hedges) that 4.1 rules out -- dropped on the GUARDRAIL, not availability (Bates IS in the notebook). Harford alone carries the accumulated-cash-position claim; do NOT re-add to 'strengthen' P5. (advisor 2026-06-12)"
       ],
       "propositions": [
         {
@@ -1019,7 +1063,7 @@
             "ref": "Harford (1999), 'Corporate cash reserves and acquisitions'",
             "nlm_source_id": null
           },
-          "nlm_query_draft": "",
+          "nlm_query_draft": "what does it conclude about whether firms accumulate cash reserves prior to making acquisitions, and whether cash-rich firms are more likely to attempt acquisitions?",
           "verification": {
             "method": "NLM",
             "evidence": [],
@@ -1028,30 +1072,10 @@
             "verified_date": null,
             "note": ""
           }
-        },
-        {
-          "prop_id": "P5.2",
-          "statement": "Corporate cash holdings are large, observable, and a focus of investor/analyst attention.",
-          "role_in_paragraph": "Optional reinforcement of cash visibility; use only if needed.",
-          "type": "external-NLM",
-          "source": {
-            "key": "bates2009/opler1999",
-            "ref": "Bates, Kahle & Stulz (2009); Opler et al. (1999) -- NOT uploaded",
-            "nlm_source_id": null
-          },
-          "nlm_query_draft": "",
-          "verification": {
-            "method": "NLM",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": "drop unless P5 needs it"
-          }
         }
       ],
       "prose_gate": {
-        "rule": "required props SUPPORTED before prose",
+        "rule": "P5.1 SUPPORTED before prose",
         "all_supported": false,
         "unlocked": false
       },
@@ -1066,20 +1090,22 @@
       "boundary": "Do NOT restate the intro 2x2 verbatim; develop it. Per-hypothesis contrast stays in 2.2. No new results.",
       "thin_claim": "'We read what unmanaged language discloses' is a framing/positioning claim, not a tested mechanism.",
       "guardrails": [
-        "ADVISOR_FIX_novelty: the GAP claim ('no prior work reads this') is NOT NLM-verifiable -> 'to our knowledge', full stop. Only PER-PAPER claims run through NLM."
+        "ADVISOR_FIX_novelty: the GAP claim ('no prior work reads this') is NOT NLM-verifiable -> 'to our knowledge', full stop. Only PER-PAPER claims run through NLM.",
+        "THINNED (advisor 2026-06-12): kept Thewissen + Ragozzino (load-bearing deal-language neighbors). DROPPED Everhart/Gokkaya (guidance / disclosed-plans) -- self-foreclosed by the anticipatory PRE-disclosure framing (the deal is NOT yet disclosed -> not guidance, not a disclosed plan) AND sources unresolved. Discriminator: forecloses no LIVE distinct objection + hard-to-resolve = clean cut.",
+        "KEOWN (P6.3): cite for the FACT only -- abnormal pre-announcement stock-price run-up exists -> our LANGUAGE signal differs from the known PRICE signal. Do NOT cite its insider-trading MECHANISM (insider trading is neither the compliance nor the strategic-silence reading -> would muddy P7). (advisor 2026-06-12)"
       ],
       "propositions": [
         {
           "prop_id": "P6.1",
           "statement": "Thewissen et al. (2024) study tone management in earnings press releases before stock-for-stock acquisitions.",
-          "role_in_paragraph": "Nearest-work cell: managed tone, stock deals, press releases.",
+          "role_in_paragraph": "Nearest-work cell: managed tone, stock deals, press releases. Forecloses 'isn't this just managed deal tone?'",
           "type": "external-NLM",
           "source": {
             "key": "thewissen2024",
-            "ref": "thewissen2024 (in notebook)",
+            "ref": "thewissen2024 (in notebook, ssrn-4900453)",
             "nlm_source_id": null
           },
-          "nlm_query_draft": "",
+          "nlm_query_draft": "what does it study regarding firms' management of tone or language in earnings press releases around stock-for-stock acquisitions, and what does it find?",
           "verification": {
             "method": "NLM",
             "evidence": [],
@@ -1092,14 +1118,14 @@
         {
           "prop_id": "P6.2",
           "statement": "Ragozzino & Reuer (2024) study strategy-vocabulary volume on calls around deal activity.",
-          "role_in_paragraph": "Nearest-work cell: managed strategy vocabulary on calls.",
+          "role_in_paragraph": "Nearest-work cell: managed strategy vocabulary on calls. Forecloses 'isn't this just deal-strategy talk on calls?'",
           "type": "external-NLM",
           "source": {
             "key": "ragozzino2024",
-            "ref": "ragozzino2024 (in notebook)",
+            "ref": "ragozzino2024 (in notebook, S0024630123001000)",
             "nlm_source_id": null
           },
-          "nlm_query_draft": "",
+          "nlm_query_draft": "what does it study regarding the volume or use of strategy-related vocabulary on earnings conference calls around firms' acquisition or deal activity?",
           "verification": {
             "method": "NLM",
             "evidence": [],
@@ -1111,46 +1137,26 @@
         },
         {
           "prop_id": "P6.3",
-          "statement": "Everhart et al. (2025) examine M&A/acquirer guidance; Gokkaya et al. (2025) examine information in disclosed acquisition plans.",
-          "role_in_paragraph": "Adjacent cells: guidance + disclosed-plan information.",
+          "statement": "Abnormal stock-price run-up occurs before public M&A announcements -- pre-announcement leakage is documented on the PRICE side.",
+          "role_in_paragraph": "Forecloses THE live confound: 'isn't this just the known pre-announcement price run-up?' Splits our LANGUAGE signal from the PRICE signal. Cite for the run-up FACT ONLY -- NOT the insider-trading mechanism (advisor).",
           "type": "external-NLM",
           "source": {
-            "key": "everhart2025;gokkaya2025",
-            "ref": "everhart2025; gokkaya2025 (in notebook)",
+            "key": "keown1981",
+            "ref": "Keown & Pinkerton (1981), 'Merger Announcements and Insider Trading Activity', JF 36(4):855-869 (uploaded 2026-06-12)",
             "nlm_source_id": null
           },
-          "nlm_query_draft": "",
+          "nlm_query_draft": "what does it conclude about whether abnormal stock-price movements or returns occur before the public announcement of a merger (a pre-announcement price run-up)?",
           "verification": {
             "method": "NLM",
             "evidence": [],
             "answer_nonevidence": "",
             "verdict": "PENDING",
             "verified_date": null,
-            "note": "SCAR: do each separately, atomically"
+            "note": "cite the run-up FACT only, not the insider-trading mechanism"
           }
         },
         {
           "prop_id": "P6.4",
-          "statement": "Pre-announcement information leakage shows up on the price side before M&A announcements.",
-          "role_in_paragraph": "Distinguishes our LANGUAGE signal from the known PRICE run-up.",
-          "type": "external-NLM",
-          "source": {
-            "key": "keown_pinkerton1981",
-            "ref": "Keown & Pinkerton (1981) -- NOT uploaded",
-            "nlm_source_id": null
-          },
-          "nlm_query_draft": "",
-          "verification": {
-            "method": "NLM",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": "upload if used"
-          }
-        },
-        {
-          "prop_id": "P6.5",
           "statement": "To our knowledge, no prior work reads unmanaged uncertainty language before cash deals in the anticipatory window.",
           "role_in_paragraph": "The gap / contribution.",
           "type": "framing-nonverifiable",
@@ -1171,7 +1177,7 @@
         }
       ],
       "prose_gate": {
-        "rule": "per-paper props SUPPORTED; gap prop stays 'to our knowledge'",
+        "rule": "P6.1 + P6.2 + P6.3 SUPPORTED before prose; gap P6.4 stays 'to our knowledge'",
         "all_supported": false,
         "unlocked": false
       },
@@ -1185,7 +1191,9 @@
       "serves": "Sets the honest, bounded scope; closes the framework; hands the descriptive register to 2.2.",
       "boundary": "No new literature; no mechanism claim. The bounded-theory anchor for the whole section.",
       "thin_claim": "Observational equivalence + no-identification stated plainly. Guarantees the review does not inflate the claim.",
-      "guardrails": [],
+      "guardrails": [
+        "P7 has NO external props; its prose is ALL connective claims -> the step-10 accuracy pass IS the whole paragraph (not a skip). Two readings (compliance-constrained vs strategic silence) observationally equivalent; no identification; pattern not mechanism. (advisor 2026-06-12)"
+      ],
       "propositions": [],
       "prose_gate": {
         "rule": "no external props; gate trivially open once P1-P6 done",
