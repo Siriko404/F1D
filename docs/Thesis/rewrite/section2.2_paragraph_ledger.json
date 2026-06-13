@@ -1,0 +1,129 @@
+{
+  "_schema": {
+    "name": "Deterministic per-subsection paragraph + proposition verification ledger (2.2)",
+    "cloned_from": "section2.1_paragraph_ledger.json schema",
+    "shape": "paragraphs keyed P1..Pn; each has plan fields (intent/serves/boundary/thin_claim/guardrails) + propositions[] + prose_gate + final_prose + prose_status.",
+    "gate_rule": "final_prose stays EMPTY and prose_status=BLOCKED until every proposition is SUPPORTED (external-NLM/legal), confirmed-CALLBACK (already SUPPORTED in 2.1), or explicitly DEFINITIONAL/INTERNAL/FRAMING (write-time accuracy pass).",
+    "prop_types": ["external-NLM", "callback-verified (already SUPPORTED in 2.1; no new query)", "internal-hypothesis (a prediction we TEST, not a claim we cite)", "definitional", "framing-nonverifiable"],
+    "status": "PHASE-3 PLANNED (paragraph purposes + atomic prop chains). NOT ratified, NOT prose-written. Ratification deferred to end (all subsections)."
+  },
+  "subsection": "2.2",
+  "title": "Hypothesis Development",
+  "role": "the empirical (per-hypothesis) literature review",
+  "status": "planning",
+  "created": "2026-06-13",
+  "_governing": {
+    "hard_rules": [
+      "ONE PARAGRAPH AT A TIME when verifying/writing. Do not batch.",
+      "RULE 1 verify-first: no prose until every proposition is verified/confirmed + recorded.",
+      "RULE 2 show-first: show each drafted paragraph before it enters thesis_draft.tex.",
+      "NLM is SOLE authority for papers; numbers never typed from memory; author names never expanded from memory.",
+      "Ignore mempalace auto-recall (unverified)."
+    ],
+    "coherence_rules_in_force": "RULE-COH-1..8 from tmp/section2_subsection_plan.json. Most-load-bearing here: COH-1 (no re-review of 2.1 papers -> callbacks), COH-2 (predicts a PATTERN, never a cause), COH-5 (scrutiny = confound, not a P7 reading; rule-out != mechanism), COH-6 (forward-ref the residual to 2.3), COH-8 (scrutiny VOLUME != UncQue word-uncertainty)."
+  },
+  "_plan": {
+    "section_job": "Convert the 2.1 framework into formal, falsifiable predictions about WHERE/WHEN the language signal appears -- never WHY. Each hypothesis: a prediction (direction + where/when) + the prior empirical contrast that makes it non-obvious, leaning on contrasts 2.1 already set up.",
+    "spine": "P1 funnel -> P2 H1 (anticipatory run-up) -> P3 H1a (cash-concentration) -> P4 H1b (differential timing/two clocks) -> P5 scrutiny competing-hypothesis (the rival 4.1 rules out).",
+    "serves": "Falsifiable claims with stakes; the bridge to the 2.4 designs (which map each design to a hypothesis).",
+    "boundary": "Predictions only. Do NOT define the measure (2.3) or estimator (2.4); never assert a cause.",
+    "thin_claim": "H1a = concentration not strict specificity; no hypothesis asserts a cause; the scrutiny alternative is a real competing hypothesis, not a strawman.",
+    "division_of_labor": "2.1 DEVELOPED both dimensions (P3 anticipatory, P5 cash + two clocks) and the contrasts (P6 thewissen/keown; P2 matsumoto). 2.2 ADDS only: formal falsifiable hypotheses + the scrutiny competing-hypothesis. It does NOT re-review any 2.1 paper.",
+    "estimands_to_define": "PreAnnounceQtr = 1[e = -1] (e = call quarter - first-deal announce quarter). Define precisely; no equations here."
+  },
+  "papers": {
+    "thewissen2024": {"callback": true, "verified_in": "2.1 P6", "nlm_source_id": "731d56ed-c42a-4280-84eb-eec23f8be9b3", "nlm_source_title": "ssrn-4900453.pdf", "verified_fact": "stock bidders inflate disclosure tone ~15% in the year before a stock-for-stock announcement (deliberate tone management)."},
+    "harford1999": {"callback": true, "verified_in": "2.1 P5", "ref": "Harford, J. (1999). Corporate cash reserves and acquisitions. Journal of Finance 54(6):1969-1997.", "nlm_source_id": "b643f847-f1ba-4dc0-871e-8f951caeacbc", "verified_fact": "firms accumulate cash above a normal-holdings baseline; cash-rich firms are more likely to acquire (by-product of retained FCF, NOT saving-to-fund)."},
+    "keown1981": {"callback": true, "verified_in": "2.1 P6", "nlm_source_id": "6dc00775-74d4-43e7-8af8-60376e877533", "verified_fact": "roughly half the market's reaction to a merger occurs before its first public announcement -- but in PRICES, not language."},
+    "matsumoto2011": {"callback": true, "verified_in": "2.1 P2", "nlm_source_id": "a1dacc9f-2bee-46ba-9261-496fd687c8e6", "verified_fact": "the Q&A/discussion carries information content beyond the presentation (analyst questioning is informative)."}
+  },
+  "paragraphs": {
+    "P1": {
+      "order": 1,
+      "lit_body": "none new -- funnel from the 2.1 framework",
+      "intent": "Bridge from 2.1's two developed dimensions to formal, falsifiable predictions about where/when the language signal appears (not why). State the empirical anchor and the descriptive register.",
+      "serves": "Sets up H1/H1a/H1b (P2-P4) and the scrutiny rival (P5); declares the predictions are tested in 2.4.",
+      "boundary": "No measure (2.3), no estimator/equation (2.4); no cause.",
+      "thin_claim": "We predict a PATTERN (where/when), read descriptively (callback P7).",
+      "guardrails": ["RULE-COH-2: pattern not cause.", "RULE-COH-6: 'residual' is named here but DEFINED in 2.3 -> light forward-pointer only."],
+      "propositions": [
+        {"prop_id": "P1.1", "statement": "The 2.1 framework's two dimensions (anticipatory timing x cash-concentration) yield testable predictions about WHERE and WHEN a CEO Q&A language signal appears, not why.", "role_in_paragraph": "Funnel premise.", "type": "internal-hypothesis", "relation_to_2_1": "FORMALIZES", "anchor_2_1": ["P3", "P5", "P7"], "verification_plan": "Internal/derived from 2.1; no external cite. Write-time accuracy pass only.", "status": "PLANNED"},
+        {"prop_id": "P1.2", "statement": "Define PreAnnounceQtr = 1[e = -1], the call quarter immediately before the firm's first >=50%-cash acquisition announcement (e = call quarter - announce quarter).", "role_in_paragraph": "The empirical timing anchor used by every hypothesis.", "type": "definitional", "relation_to_2_1": "NEW", "anchor_2_1": [], "verification_plan": "Definitional; matches the design in gen_empire_did_table.py (e==-1). No NLM.", "status": "PLANNED"},
+        {"prop_id": "P1.3", "statement": "The predictions are stated as falsifiable hypotheses (H1, H1a, H1b) and tested by the 2.4 designs, read in descriptive/correlational terms.", "role_in_paragraph": "Sets register + forward-link to 2.4.", "type": "framing-nonverifiable", "relation_to_2_1": "FORMALIZES", "anchor_2_1": ["P7"], "verification_plan": "Framing; callback to P7 register. Write-time accuracy pass.", "status": "PLANNED"}
+      ],
+      "prose_gate": {"rule": "all propositions confirmed/cleared before prose", "all_supported": false, "unlocked": false},
+      "final_prose": "",
+      "prose_status": "BLOCKED"
+    },
+    "P2": {
+      "order": 2,
+      "lit_body": "contrast vs thewissen2024 (CALLBACK P6)",
+      "intent": "State H1 (the anticipatory run-up) and ground its non-obviousness against thewissen's deliberate tone-management finding (opposite register).",
+      "serves": "The first and central falsifiable prediction; maps to the 2.4 main run-up design + claim C2.",
+      "boundary": "Direction + where/when only; no measure definition; no cause.",
+      "thin_claim": "Predicts elevation, correlational, within-firm; cash arm (stock = placebo handled in P3).",
+      "guardrails": ["RULE-COH-1: thewissen is a CALLBACK (P6) -> reference the contrast, do not re-review.", "RULE-COH-6: 'residual Q&A uncertainty' forward-refs 2.3."],
+      "propositions": [
+        {"prop_id": "P2.1", "statement": "H1: residual CEO Q&A uncertainty (UncResCEO) is elevated in the pre-announcement quarter of cash acquirers, relative to their own other quarters.", "role_in_paragraph": "The hypothesis statement (directional prediction).", "type": "internal-hypothesis", "relation_to_2_1": "FORMALIZES", "anchor_2_1": ["P3"], "verification_plan": "Prediction we TEST (claim C2 is the result, not a cite). No NLM. Forward-ref residual to 2.3.", "status": "PLANNED"},
+        {"prop_id": "P2.2", "statement": "Prior work shows stock bidders deliberately inflate disclosure tone (~15%) before stock-for-stock deals; H1 predicts the opposite register -- unmanaged uncertainty, before cash deals.", "role_in_paragraph": "Grounds H1's non-obviousness via contrast.", "type": "callback-verified", "relation_to_2_1": "CALLBACK", "anchor_2_1": ["P6"], "source": {"key": "thewissen2024", "nlm_source_id": "731d56ed-c42a-4280-84eb-eec23f8be9b3"}, "verification_plan": "CALLBACK -- the ~15% tone fact is already SUPPORTED in 2.1 P6. No new query; reference only.", "status": "PLANNED"},
+        {"prop_id": "P2.3", "statement": "H1 is non-obvious because the literature documents deliberate, strategic tone management, whereas H1 predicts involuntary uncertainty surfacing under the disclosure bind.", "role_in_paragraph": "States the stakes / why H1 is not mechanical.", "type": "framing-nonverifiable", "relation_to_2_1": "CALLBACK", "anchor_2_1": ["P3", "P6"], "verification_plan": "Framing; rests on P2.1+P2.2. Write-time accuracy pass.", "status": "PLANNED"}
+      ],
+      "prose_gate": {"rule": "all propositions confirmed/cleared before prose", "all_supported": false, "unlocked": false},
+      "final_prose": "",
+      "prose_status": "BLOCKED"
+    },
+    "P3": {
+      "order": 3,
+      "lit_body": "cash-vs-stock placebo (CALLBACK P5 / harford1999)",
+      "intent": "State H1a (the run-up concentrates in cash deals vs stock) as a formal differential prediction; keep it concentration not strict specificity; EFFECT not CAUSE.",
+      "serves": "Maps to the 2.4 pooled interacted design + claim C6 (the formal cash-specificity test).",
+      "boundary": "Differential direction only; no cause; no measure/estimator.",
+      "thin_claim": "Concentration, not strict specificity; supportive-not-definitive (imprecise stock arm); mechanism open.",
+      "guardrails": ["RULE-COH-1: harford + placebo logic = CALLBACK P5.", "EFFECT-not-CAUSE: H1a is about the run-up concentrating in cash, NOT that the cash build-up itself is cash-specific (C6 cause leg 0.0064 n.s.)."],
+      "propositions": [
+        {"prop_id": "P3.1", "statement": "H1a: the pre-announcement uncertainty run-up is stronger for cash acquirers than for stock acquirers.", "role_in_paragraph": "The differential hypothesis statement.", "type": "internal-hypothesis", "relation_to_2_1": "FORMALIZES", "anchor_2_1": ["P5"], "verification_plan": "Prediction we TEST (claim C6). No NLM.", "status": "PLANNED"},
+        {"prop_id": "P3.2", "statement": "Cash bids draw on an accumulated cash position while stock exchanges need not, making the stock deal a placebo: the same disclosure bind, minus the cash commitment.", "role_in_paragraph": "Grounds why cash vs stock is the right contrast.", "type": "callback-verified", "relation_to_2_1": "CALLBACK", "anchor_2_1": ["P5"], "source": {"key": "harford1999", "nlm_source_id": "b643f847-f1ba-4dc0-871e-8f951caeacbc"}, "verification_plan": "CALLBACK -- harford + placebo logic already SUPPORTED/developed in 2.1 P5. No new query.", "status": "PLANNED"},
+        {"prop_id": "P3.3", "statement": "H1a concerns the EFFECT (the run-up concentrating in cash deals), framed as concentration not strict specificity; it does NOT claim the cash build-up itself is cash-specific, and asserts no cause.", "role_in_paragraph": "Thin-claim guard.", "type": "framing-nonverifiable", "relation_to_2_1": "CALLBACK", "anchor_2_1": ["P5", "P7"], "verification_plan": "Framing; callback to P5 ('why they differ left open') + P7 (no mechanism). Write-time pass.", "status": "PLANNED"}
+      ],
+      "prose_gate": {"rule": "all propositions confirmed/cleared before prose", "all_supported": false, "unlocked": false},
+      "final_prose": "",
+      "prose_status": "BLOCKED"
+    },
+    "P4": {
+      "order": 4,
+      "lit_body": "two clocks; distinguish from price run-up (CALLBACK P6 / keown1981)",
+      "intent": "State H1b (differential timing): uncertainty resolves at announcement (information clock), cash persists to completion (transaction clock); distinguish from price leakage (we track language, not price).",
+      "serves": "Maps to the 2.4 event-study design + claim C1 (the strongest, two-tailed result).",
+      "boundary": "Timing prediction only; no cause; no estimator.",
+      "thin_claim": "Round-trip contrast; do NOT over-read the negative POST overshoot.",
+      "guardrails": ["RULE-COH-1: keown + two-clock concept = CALLBACK (P6/P5); formalize into an event-time test, do not re-explain.", "C1 caution: do NOT over-read POST (-0.0250*) as a finding."],
+      "propositions": [
+        {"prop_id": "P4.1", "statement": "H1b: residual Q&A uncertainty resolves at announcement (elevated pre, gone post), while the acquirer's cash persists until the deal is paid at completion -- the two run on different clocks.", "role_in_paragraph": "The differential-timing hypothesis statement.", "type": "internal-hypothesis", "relation_to_2_1": "FORMALIZES", "anchor_2_1": ["P5"], "verification_plan": "Prediction we TEST (claim C1). No NLM.", "status": "PLANNED"},
+        {"prop_id": "P4.2", "statement": "Prices are known to move ahead of deals (roughly half the reaction precedes announcement), but that anticipatory signal lives in prices; H1b tracks LANGUAGE, a distinct channel.", "role_in_paragraph": "Distinguishes the contribution from price run-up/leakage.", "type": "callback-verified", "relation_to_2_1": "CALLBACK", "anchor_2_1": ["P6"], "source": {"key": "keown1981", "nlm_source_id": "6dc00775-74d4-43e7-8af8-60376e877533"}, "verification_plan": "CALLBACK -- keown 'half before announcement, in prices' already SUPPORTED in 2.1 P6. No new query.", "status": "PLANNED"},
+        {"prop_id": "P4.3", "statement": "The cash-persistence leg is partly mechanical (cash physically leaves at closing); and the post-announcement uncertainty undershoot is not to be over-read.", "role_in_paragraph": "Thin-claim guard on H1b.", "type": "framing-nonverifiable", "relation_to_2_1": "NEW", "anchor_2_1": [], "verification_plan": "Framing; from claim_findings_ledger C1 risks. Write-time pass.", "status": "PLANNED"}
+      ],
+      "prose_gate": {"rule": "all propositions confirmed/cleared before prose", "all_supported": false, "unlocked": false},
+      "final_prose": "",
+      "prose_status": "BLOCKED"
+    },
+    "P5": {
+      "order": 5,
+      "lit_body": "the competing analyst-scrutiny hypothesis (NEW; matsumoto2011 CALLBACK P2)",
+      "intent": "State the competing analyst-scrutiny reading formally as the rival 4.1 tests and rules out -- positioned as a confound, not a P7 reading, and not a mechanism claim.",
+      "serves": "Gives the 4.1 rule-out a home; pairs with the 2.5.4 scrutiny construct.",
+      "boundary": "State the rival hypothesis only; the construct definition lives in 2.5, the test/results in 4.1; NOT a 4th estimating equation in 2.4.",
+      "thin_claim": "Real competing hypothesis (not a strawman); ruling it out does NOT establish our mechanism.",
+      "guardrails": ["RULE-COH-5: scrutiny is a CONFOUND, distinct from P7's two equivalent readings; rule-out != mechanism.", "RULE-COH-8: scrutiny (CashScrutiny = cash-question VOLUME) is distinct from UncQue (question-language uncertainty, already an eq-4 control)."],
+      "propositions": [
+        {"prop_id": "P5.1", "statement": "Competing hypothesis (analyst scrutiny): the pre-announcement uncertainty rise reflects analysts asking more or harder cash-related questions, mechanically eliciting hedged answers, rather than the disclosure bind.", "role_in_paragraph": "States the rival to be ruled out.", "type": "internal-hypothesis", "relation_to_2_1": "NEW", "anchor_2_1": [], "verification_plan": "A rival prediction we TEST in 4.1 (claim C4). No NLM.", "status": "PLANNED"},
+        {"prop_id": "P5.2", "statement": "This scrutiny channel is a confound the 4.1 design tests and rules out; it is distinct from the two observationally-equivalent readings of 2.1 (compliance-constrained vs strategic silence), and ruling it out does not establish a mechanism.", "role_in_paragraph": "Positions the rival correctly (register).", "type": "framing-nonverifiable", "relation_to_2_1": "CALLBACK", "anchor_2_1": ["P7"], "verification_plan": "Framing; RULE-COH-5. Write-time pass.", "status": "PLANNED"},
+        {"prop_id": "P5.3", "statement": "Cash scrutiny (the volume/topic of cash questions) is distinct from analyst-question uncertainty language (UncQue), which the residual already nets out by construction; so the rule-out targets the question-volume path and is non-redundant.", "role_in_paragraph": "Reconciles the rival with the eq-4 control set.", "type": "framing-nonverifiable", "relation_to_2_1": "NEW", "anchor_2_1": [], "verification_plan": "Framing; RULE-COH-8; rests on the NLM-verified eq-4 control set (tmp/nlm_dwz_equations.json). Confirm CashScrutiny is a volume measure at write-time (gen_empire_did_table.py: CashScrutiny = % analyst Q&A turns on cash).", "status": "PLANNED"},
+        {"prop_id": "P5.4", "statement": "Analyst questioning is a genuine, informative force on calls, which is what makes the scrutiny channel a credible rival rather than a strawman.", "role_in_paragraph": "Establishes the rival's plausibility.", "type": "callback-verified", "relation_to_2_1": "CALLBACK", "anchor_2_1": ["P2"], "source": {"key": "matsumoto2011", "nlm_source_id": "a1dacc9f-2bee-46ba-9261-496fd687c8e6"}, "verification_plan": "CALLBACK -- matsumoto Q&A information content already SUPPORTED in 2.1 P2. No new query.", "status": "PLANNED"}
+      ],
+      "prose_gate": {"rule": "all propositions confirmed/cleared before prose", "all_supported": false, "unlocked": false},
+      "final_prose": "",
+      "prose_status": "BLOCKED"
+    }
+  },
+  "next_action": "2.2 paragraph-level plan DRAFTED (PHASE-3). Review for coherence; then (per workflow) advisor-check the proposition set, confirm the 4 callbacks are the SUPPORTED 2.1 spans (no new NLM expected), and -- only when the user reaches ratification -- proceed to verify/draft one paragraph at a time. Next subsection to plan: 2.3."
+}
