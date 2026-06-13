@@ -72,16 +72,33 @@ VERDICTS = {
              "cash-positive result CONTRASTS with; do NOT draft it into P4."),
 }
 
+# Targeted re-query (advisor): ONE DWZ call seeking CLEAN spans for the decomposition +
+# residual + price-null, which first chunked into fragments. (attach-prop, key, label, question)
+REQUERY = ("P4.2", "dwz2021",
+           '"Straight Talkers and Vague Talkers: The Effects of Managerial Style in Earnings '
+           'Conference Calls" by Dzielinski, Wagner and Zeckhauser (working paper)',
+           "Quote verbatim, exactly as printed, the sentence(s) where the paper: (a) states that "
+           "it decomposes managers' uncertainty or clarity language into a persistent "
+           "manager-specific component and a separate time-varying residual component; and (b) "
+           "reports whether that time-varying residual component is or is not significantly "
+           "related to stock-price or stock-market reactions. Reproduce each sentence exactly.")
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--identity", action="store_true")
     ap.add_argument("--audit", action="store_true")
     ap.add_argument("--finalize", action="store_true")
+    ap.add_argument("--requery", action="store_true")
+    ap.add_argument("--verdicts", action="store_true")
     a = ap.parse_args()
     if a.audit:
         C.audit(PARA)
     elif a.identity:
         C.identity(sorted({pk for _, pk, _, _ in PROPS}))
+    elif a.requery:
+        C.requery(PARA, *REQUERY)
+    elif a.verdicts:
+        C.record_verdicts(PARA, VERDICTS)
     elif a.finalize:
         C.finalize(PARA, PINS, VERDICTS)
     else:

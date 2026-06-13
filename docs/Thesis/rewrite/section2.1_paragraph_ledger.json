@@ -1268,7 +1268,43 @@
                 "answer": "**Page:** 6\n\n**Section:** 1 Introduction"
               }
             ],
-            "verdict_note": "DWZ 'Straight Talkers and Vague Talkers' (working paper): CEO uncertainty/clarity language decomposes into a persistent manager-specific component ('CEO clarity', a CEO fixed effect, distinct from firm-level uncertainty / industry / size -- verbatim fragments n2/n3/n4) and a time-varying call-level residual; decisive decomposition sentence span_pinned ('the first to explicitly decompose'). Cited ONLY for the decomposition's existence -- the residual-is-where-the-signal-must-live logic is OURS, never attributed to DWZ."
+            "verdict_note": "DWZ 'Straight Talkers and Vague Talkers' (working paper): CEO uncertainty/clarity language decomposes into a persistent manager-specific component ('CEO clarity', a CEO fixed effect, distinct from firm-level uncertainty / industry / size -- verbatim fragments n2/n3/n4) and a time-varying call-level residual; decisive decomposition sentence span_pinned ('the first to explicitly decompose'). Cited ONLY for the decomposition's existence -- the residual-is-where-the-signal-must-live logic is OURS, never attributed to DWZ.",
+            "requery": [
+              {
+                "query": "Reading only this paper, \"Straight Talkers and Vague Talkers: The Effects of Managerial Style in Earnings Conference Calls\" by Dzielinski, Wagner and Zeckhauser (working paper): Quote verbatim, exactly as printed, the sentence(s) where the paper: (a) states that it decomposes managers' uncertainty or clarity language into a persistent manager-specific component and a separate time-varying residual component; and (b) reports whether that time-varying residual component is or is not significantly related to stock-price or stock-market reactions. Reproduce each sentence exactly. For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+                "answer": "Here are the verbatim sentences from the paper exactly as printed that address your queries:\n\n**(a) Decomposing managers' language into a persistent manager-specific component and a separate time-varying residual component:**\n\n*   \"Our analysis is the first to explicitly decompose an important feature of CEO communication into two components: personal style and the potentially strategic component (the residual), and then to separately examine their impacts.\" [1]\n    *   **Page:** 6\n    *   **Section:** 1 Introduction\n\n**(b) Whether the time-varying residual component is significantly related to stock-price or stock-market reactions:**\n\n*   \"By contrast, residual use of uncertainty words - that is, the component of the overall frequency of uncertainty words in CEO’s answers during each call that is not explained by items (1) to (3) above - explains little of the market reaction.\" [2, 3]\n    *   **Page:** 3-4 (The sentence begins on page 3 and finishes on page 4)\n    *   **Section:** 1 Introduction\n\n*   \"By contrast, neither UncPreCEO nor UncResCEO is significantly associated with stock price or volume responses.\" [4]\n    *   **Page:** 26\n    *   **Section:** 5.2 Results",
+                "quotes": [
+                  {
+                    "n": 1,
+                    "cited_text": "conveyed, such as Lee (2016), sidestep this issue by including manager fixed effects in their",
+                    "start_char": 17491,
+                    "end_char": 17585,
+                    "chunk_id": "5c25ebf5-1e51-44da-936c-b8c8b9369cf2"
+                  },
+                  {
+                    "n": 2,
+                    "cited_text": "Next, we show that CEO clarity matters for the market - investors and analysts respond",
+                    "start_char": 10695,
+                    "end_char": 10782,
+                    "chunk_id": "c179d808-f648-4d12-a3fc-a51446699edd"
+                  },
+                  {
+                    "n": 3,
+                    "cited_text": "4",
+                    "start_char": 11223,
+                    "end_char": 11224,
+                    "chunk_id": "db395a1a-afed-4980-8cbf-d067d3b55f5d"
+                  },
+                  {
+                    "n": 4,
+                    "cited_text": "firms with more intangible assets (which are presumably harder to value than tangible assets)",
+                    "start_char": 63681,
+                    "end_char": 63775,
+                    "chunk_id": "44529561-e2ff-47f4-a955-87248b3f9b11"
+                  }
+                ]
+              }
+            ]
           }
         },
         {

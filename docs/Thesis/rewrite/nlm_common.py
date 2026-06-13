@@ -232,6 +232,10 @@ def finalize(para, pins, verdicts):
     ledger = _ledger()
     props = {p["prop_id"]: p for p in ledger["paragraphs"][para]["propositions"]}
     for prop_id, pkey, label, phrase in pins:
+        existing = {sp.get("phrase") for sp in props[prop_id]["verification"].get("span_pins", [])}
+        if phrase in existing:
+            print(f"{prop_id}: pin already recorded -- skip (idempotent)")
+            continue
         sid, _ = resolved[pkey]
         q = (f"{PREFIX}{label}: on what page (the page number printed in the paper) and in which "
              f'section does this exact sentence appear? Report **Page:** and **Section:**. '
@@ -257,6 +261,43 @@ def finalize(para, pins, verdicts):
     print("  verdicts recorded; committed")
 
 
+def requery(para, prop_id, paper_key, paper_label, question):
+    """Targeted RE-query of ONE source to attempt a CLEAN verbatim cited_text span for a
+    specific claim, when the first capture chunked into fragments. Prints the answer + any
+    new spans; appends them to the prop's verification['requery'] (never overwrites the
+    original capture). One attempt -- if still no clean span, fix the verdict NOTE instead."""
+    sid, title = require([paper_key])[paper_key]
+    print(f"requery {prop_id} -> {title[:55]}", flush=True)
+    q, j = ask(sid, paper_label, question)
+    quotes = [{"n": x.get("citation_number"), "cited_text": x.get("cited_text"),
+               "start_char": x.get("start_char"), "end_char": x.get("end_char"),
+               "chunk_id": x.get("chunk_id")}
+              for x in j.get("references", []) if x.get("cited_text")]
+    print(f"ANSWER: {(j.get('answer') or '')[:600]}")
+    print("NEW VERBATIM SPANS:")
+    for qq in quotes:
+        print(f"  [n{qq['n']}] {qq['cited_text']}")
+    ledger = _ledger()
+    props = {p["prop_id"]: p for p in ledger["paragraphs"][para]["propositions"]}
+    props[prop_id]["verification"].setdefault("requery", []).append(
+        {"query": q, "answer": j.get("answer", ""), "quotes": quotes})
+    _save(ledger)
+    commit(f"verify(2.1/{para}): requery {prop_id} for a clean verbatim span")
+    return quotes
+
+
+def record_verdicts(para, verdicts):
+    """Record/refresh human-adjudicated verdicts + notes only (no pins, no NLM call)."""
+    ledger = _ledger()
+    props = {p["prop_id"]: p for p in ledger["paragraphs"][para]["propositions"]}
+    for pid, (verdict, note) in verdicts.items():
+        props[pid]["verification"]["verdict"] = verdict
+        props[pid]["verification"]["verdict_note"] = note
+    _save(ledger)
+    commit(f"verify(2.1/{para}): refresh verdict notes (no re-pin)")
+    print("  verdict notes refreshed; committed")
+
+
 def audit(para):
     """Substring-audit: is each located (answer) quote inside a verbatim cited_text span?
     Match-rate = verbatim-confidence. <100% on a decisive quote -> pin it."""
@@ -276,20 +317,30 @@ def audit(para):
 
 
 def show(para):
-    """Print each prop's NLM answer (context only) + full verbatim cited_text spans,
-    for human verdict adjudication. E3.5: ONLY the spans are admissible evidence."""
+    """Print each prop's verdict, NLM answer (context), verbatim cited_text spans,
+    located answer-quotes (page/section), and span_pins WITH their pin-answers -- the
+    full evidence record for verdict review. E3.5: ONLY cited_text spans are admissible;
+    a span_pin's page is answer-sourced (NOT an independent verbatim guarantee)."""
     ledger = _ledger()
     for p in ledger["paragraphs"][para]["propositions"]:
         v = p.get("verification", {})
-        if not (v.get("quotes") or v.get("answer")):
+        if not (v.get("quotes") or v.get("answer") or v.get("span_pins")):
             continue
-        print(f"\n===== {p['prop_id']} =====")
-        print(f"ANSWER (NON-evidence): {(v.get('answer') or '')[:700]}")
-        print("VERBATIM SPANS (admissible):")
+        print(f"\n===== {p['prop_id']}  [verdict: {v.get('verdict')}] =====")
+        print(f"ANSWER (NON-evidence): {(v.get('answer') or '')[:600]}")
+        print("VERBATIM SPANS (admissible cited_text):")
         for q in v.get("quotes", []):
             ct = (q.get("cited_text") or "").strip()
             if ct:
                 print(f"  [n{q.get('n')}] {ct}")
+        loc = v.get("located", [])
+        if loc:
+            print("LOCATED (answer-quote -> page):")
+            for L in loc:
+                print(f"  p.{L.get('page')} | {(L.get('quote') or '')[:100]}")
+        for sp in v.get("span_pins", []):
+            print(f"PIN phrase={sp.get('phrase')!r} -> page={sp.get('page')} sec={sp.get('section')}")
+            print(f"  PIN-ANSWER: {(sp.get('answer') or '')[:280]}")
 
 
 if __name__ == "__main__":
