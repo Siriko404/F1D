@@ -1650,11 +1650,63 @@
           "nlm_query_draft": "what does it conclude about whether abnormal stock-price movements or returns occur before the public announcement of a merger (a pre-announcement price run-up)?",
           "verification": {
             "method": "NLM",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": "cite the run-up FACT only, not the insider-trading mechanism"
+            "source": {
+              "id": "6dc00775-74d4-43e7-8af8-60376e877533",
+              "title": "The Journal of Finance - September 1981 - KEOWN - Merger Announcements and Insider Trading Activity  An Empirical.pdf"
+            },
+            "query": "Reading only this paper, \"Merger Announcements and Insider Trading Activity: An Empirical Investigation\" by Keown and Pinkerton (1981, Journal of Finance): what does it conclude about whether abnormal stock-price movements or returns occur before the public announcement of a merger (a pre-announcement price run-up)? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "answer": "Based on Keown and Pinkerton (1981), the paper concludes that **abnormal stock-price movements and positive excess returns do indeed occur prior to the first public announcement of a merger**. \n\nThe authors attribute this pre-announcement price run-up to the widespread leakage of inside information and illegal insider trading. They find that the abnormal price buildup begins roughly a month (25 trading days) before the announcement date, and that **approximately half of the total market reaction to the merger takes place before the planned takeover is ever publicly announced**. \n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n*   \"This paper provides evidence of excess returns earned by investors in acquired firms prior to the first public announcement of planned mergers.\" [1]\n    *   **Page:** 855\n    *   **Section:** ABSTRACT\n\n*   \"Specifically, leakage of inside information is a pervasive problem occurring at a significant level up to 12 trading days prior to the first public announcement of a proposed merger.\" [1]\n    *   **Page:** 855\n    *   **Section:** ABSTRACT\n\n*   \"The CA t becomes positive 25 trading days prior to the announcement date and approximately half of the total increase in CARt occurs prior to the announcement date.\" [2]\n    *   **Page:** 860\n    *   **Section:** III. Empirical Results\n\n*   \"As previously mentioned, approximately half of the market reaction occurs before the first public announcement date.\" [3]\n    *   **Page:** 866\n    *   **Section:** III. Empirical Results\n\n*   \"This study has shown that the market reaction to intended mergers begins to occur before the first public announcement of the intended merger.\" [4]\n    *   **Page:** 866\n    *   **Section:** IV. Summary",
+            "quotes": [
+              {
+                "n": 2,
+                "cited_text": "10 -0.144 1.151 27.042 46",
+                "start_char": 16227,
+                "end_char": 16253,
+                "chunk_id": "3ef67199-2270-4ca0-b021-ba159c742be8"
+              },
+              {
+                "n": 3,
+                "cited_text": "The market does appear to adjust immediately to the first public announcement of the planned takeover. As previously mentioned, approximately half of the market reaction occurs before the first public announcement date. Most of the remaining market reaction occurs on the announcement date with an additional smaller reaction amounting to approximately 5 percent of the buildup in the CARt occurring the following day. The apparent lag in adjustment to the public announcement is no doubt due to the fact that some public announcements are made after the market closes.",
+                "start_char": 23655,
+                "end_char": 24225,
+                "chunk_id": "c9c2c9fe-0be2-4d04-9616-da4b43bfc375"
+              },
+              {
+                "n": 4,
+                "cited_text": "IV. Summary",
+                "start_char": 25392,
+                "end_char": 25404,
+                "chunk_id": "b05ed4ae-ad4c-476c-a0ec-5ac0efe8ecf1"
+              }
+            ],
+            "located": [
+              {
+                "quote": "This paper provides evidence of excess returns earned by investors in acquired firms prior to the first public announcement of planned mergers.",
+                "page": "855",
+                "section": "ABSTRACT"
+              },
+              {
+                "quote": "Specifically, leakage of inside information is a pervasive problem occurring at a significant level up to 12 trading days prior to the first public announcement of a proposed merger.",
+                "page": "855",
+                "section": "ABSTRACT"
+              },
+              {
+                "quote": "The CA t becomes positive 25 trading days prior to the announcement date and approximately half of the total increase in CARt occurs prior to the announcement date.",
+                "page": "860",
+                "section": "III. Empirical Results"
+              },
+              {
+                "quote": "As previously mentioned, approximately half of the market reaction occurs before the first public announcement date.",
+                "page": "866",
+                "section": "III. Empirical Results"
+              },
+              {
+                "quote": "This study has shown that the market reaction to intended mergers begins to occur before the first public announcement of the intended merger.",
+                "page": "866",
+                "section": "IV. Summary"
+              }
+            ],
+            "verdict": "PENDING"
           }
         },
         {
