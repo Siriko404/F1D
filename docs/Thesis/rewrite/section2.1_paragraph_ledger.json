@@ -1118,11 +1118,96 @@
           "nlm_query_draft": "what does it conclude about whether firms accumulate cash reserves prior to making acquisitions, and whether cash-rich firms are more likely to attempt acquisitions?",
           "verification": {
             "method": "NLM",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": ""
+            "source": {
+              "id": "b643f847-f1ba-4dc0-871e-8f951caeacbc",
+              "title": "The Journal of Finance - 2002 - Harford - Corporate Cash Reserves and Acquisitions.pdf"
+            },
+            "query": "Reading only this paper, \"Corporate Cash Reserves and Acquisitions\" by Harford (1999, Journal of Finance): what does it conclude about whether firms accumulate cash reserves prior to making acquisitions, and whether cash-rich firms are more likely to attempt acquisitions? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "answer": "Based on Harford (1999), the paper concludes that firms do accumulate large cash reserves prior to making acquisitions, and that these \"cash-rich\" firms are significantly more likely to attempt acquisitions than other firms [1, 2]. \n\nHowever, the paper finds that this prior cash accumulation is typically not a deliberate savings strategy designed to fund planned, value-increasing acquisitions [3, 4]. Instead, firms build up excess cash over time by stockpiling their free cash flow rather than paying it out to shareholders [5-7]. Once this cash reserve becomes large enough, it insulates managers from external market monitoring and provides them with ample discretion, leading them to ultimately spend the stockpiled cash on value-decreasing acquisitions [2, 5, 6].\n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On whether firms accumulate cash prior to making acquisitions:**\n*   \"Since excessive cash reserves are essentially stockpiled free cash f low, this agency cost of free cash f low should be severe in cash-rich firms.\"\n    *   **Page:** 1969\n    *   **Section:** (Introduction — appears before Section I without a specific heading) [5]\n*   \"Firms often build up much more cash than they need to meet expected financing requirements.\"\n    *   **Page:** 1995\n    *   **Section:** IV. Conclusions [7]\n*   \"To test whether cash stockpiles are invested poorly, I study the acquisition behavior of cash-rich firms.\"\n    *   **Page:** 1995\n    *   **Section:** IV. Conclusions [2]\n\n**On whether cash-rich firms are more likely to attempt acquisitions:**\n*   \"Cash-rich firms are more likely than other firms to attempt acquisitions.\"\n    *   **Page:** 1969\n    *   **Section:** ABSTRACT [1]\n*   \"As predicted by the free cash f low hypothesis, the probability of being a bidder increases with cash-richness.\"\n    *   **Page:** 1977\n    *   **Section:** II.A.2. Cash-Richness and the Likelihood of a Bid [8]\n*   \"I find that cash-rich firms are more likely to make acquisitions.\"\n    *   **Page:** 1995\n    *   **Section:** IV. Conclusions [2]",
+            "quotes": [
+              {
+                "n": 2,
+                "cited_text": "To test whether cash stockpiles are invested poorly, I study the acquisition behavior of cash-rich firms. I find that cash-rich firms are more likely to make acquisitions. Further, there is some evidence that cash-rich firms with greater likelihood of agency problems, as evidenced by low managerial stock ownership, account for the acquisition activity. Consistent with the free cash f low hypothesis, these acquisitions by cash-rich firms are value decreasing, as ref lected in the negative stock price reaction to the announcement and the subsequent poor operating performance of the combined firm.",
+                "start_char": 86004,
+                "end_char": 86606,
+                "chunk_id": "062ae08d-dc26-4a28-af49-72755828acff"
+              },
+              {
+                "n": 3,
+                "cited_text": "I begin with a brief discussion and examination of how corporations use cash. Drawing on inventory management and buffer-stock theories of cash management, a baseline model of normal cash reserves is developed. A re-duced form of the model is estimated using data from U.S. corporations for the period 1950 to 1994. I use the model to identify cash-rich firms—firms that have accumulated cash reserves above the predictions of the model.",
+                "start_char": 4522,
+                "end_char": 4960,
+                "chunk_id": "6b24a8c0-1a20-4a89-bfde-d22146cc0067"
+              },
+              {
+                "n": 4,
+                "cited_text": "I find that the behavior of cash-rich firms is consistent with the predictions of the free cash f low hypothesis. This conclusion is based on several pieces of evidence. Cash-richness predicts that a firm will become a bidder, even con-trolling for stock price performance and sales growth. Further, the abnormal stock price reaction to acquisition bid announcements by cash-rich bidders is negative and decreasing in the amount of excess cash held by the bidder. I ex-amine the characteristics of cash-rich bids to explain this result, and find that the proportion of cash-rich firms undertaking diversifying acquisitions is sig-nificantly higher than the proportion of cash-poor firms doing so. The targets of cash-rich firms are also significantly less likely to attract other bidders. Con-sistent with this, the operating performance of the bidder0target combination in successful cash-rich bids declines significantly following the bid—consistent",
+                "start_char": 5422,
+                "end_char": 6374,
+                "chunk_id": "3b54cb7d-121f-45b7-bc27-5f0dc95b4205"
+              },
+              {
+                "n": 5,
+                "cited_text": "1 See, for example, Miller and Orr ~1966, 1968!, Vogel and Maddala ~1967!, and Frenkel and Jovanovic ~1980!. However, a contemporaneous paper on corporate liquidity is Opler et al. ~1999!.",
+                "start_char": 2551,
+                "end_char": 2740,
+                "chunk_id": "f38cf2ee-91bc-4b8b-afda-20d779a2551a"
+              },
+              {
+                "n": 6,
+                "cited_text": "A. Theory and Hypotheses",
+                "start_char": 8127,
+                "end_char": 8152,
+                "chunk_id": "69a40711-a7c3-4585-ad49-23b2dd2a1b44"
+              },
+              {
+                "n": 7,
+                "cited_text": "The two tests in this section yield mixed results. The market appears to take a dim view of cash stockpiling by corporations, supporting all of the earlier results on the poor acquisitions these firms tend to make. However, cash-rich firms are not more likely to be targeted in control contests. Pre-liminary evidence indicates that this may be due to the defensive value of cash reserves. More analysis of the role of cash in corporate control contests is clearly needed.",
+                "start_char": 84959,
+                "end_char": 85432,
+                "chunk_id": "069a1952-804a-4f39-81fb-47b5469b01c6"
+              },
+              {
+                "n": 8,
+                "cited_text": "A.2. Cash-Richness and the Likelihood of a Bid",
+                "start_char": 29328,
+                "end_char": 29375,
+                "chunk_id": "5a3bf3ee-fe75-4bcb-9bd5-2f5db21e8f5c"
+              }
+            ],
+            "located": [
+              {
+                "quote": "Since excessive cash reserves are essentially stockpiled free cash f low, this agency cost of free cash f low should be severe in cash-rich firms.",
+                "page": "1969",
+                "section": "(Introduction — appears before Section I without a specific heading) [5]"
+              },
+              {
+                "quote": "Firms often build up much more cash than they need to meet expected financing requirements.",
+                "page": "1995",
+                "section": "IV. Conclusions [7]"
+              },
+              {
+                "quote": "To test whether cash stockpiles are invested poorly, I study the acquisition behavior of cash-rich firms.",
+                "page": "1995",
+                "section": "IV. Conclusions [2]"
+              },
+              {
+                "quote": "Cash-rich firms are more likely than other firms to attempt acquisitions.",
+                "page": "1969",
+                "section": "ABSTRACT [1]"
+              },
+              {
+                "quote": "As predicted by the free cash f low hypothesis, the probability of being a bidder increases with cash-richness.",
+                "page": "1977",
+                "section": "II.A.2. Cash-Richness and the Likelihood of a Bid [8]"
+              },
+              {
+                "quote": "I find that cash-rich firms are more likely to make acquisitions.",
+                "page": "1995",
+                "section": "IV. Conclusions [2]"
+              }
+            ],
+            "verdict": "PENDING"
           }
         }
       ],
