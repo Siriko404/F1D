@@ -1254,11 +1254,53 @@
           "nlm_query_draft": "what does it conclude about whether the time-varying (residual) component of call uncertainty is related to stock-market or price reactions?",
           "verification": {
             "method": "NLM",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": "NON-GATING for P4; for 2.3/3 use only."
+            "source": {
+              "id": "5f348ced-c548-45f5-b61a-817163bb49eb",
+              "title": "Dzielinski et al. - Straight talkers and vague talkers The effects of managerial style in earnings conference calls.pdf"
+            },
+            "query": "Reading only this paper, \"Straight Talkers and Vague Talkers: The Effects of Managerial Style in Earnings Conference Calls\" by Dzielinski, Wagner and Zeckhauser (working paper): what does it conclude about whether the time-varying (residual) component of call uncertainty -- as distinct from the persistent manager component -- is related to stock-market or stock-price reactions? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "answer": "The paper concludes that the time-varying (residual) component of a CEO's uncertainty language—which captures quarter-specific fluctuations not explained by the manager's persistent style or firm characteristics—is **not significantly related to stock-market or stock-price reactions** [1, 2]. Instead, the market's response to earnings information is primarily driven by the CEO's persistent, personal communication style (their overall \"clarity\") rather than these call-specific residual variations [3]. \n\nHere are the specific sentences quoted from the paper that support this conclusion, along with their exact printed page numbers and section headings:\n\n*   \"By contrast, residual use of uncertainty words - that is, the component of the overall frequency of uncertainty words in CEO’s answers during each call that is not explained by items (1) to (3) above - explains little of the market reaction.\"\n    *   **Page:** 4\n    *   **Section:** 1 Introduction\n\n*   \"By contrast, neither UncPreCEO nor UncResCEO is significantly associated with stock price or volume responses.\"\n    *   **Page:** 26\n    *   **Section:** 5.2 Results\n\n*   \"There is no corresponding effect for the interactions with UncPreCEO and UncResCEO. Thus, the price response to information discussed on the call is primarily a function of ClarityCEO (which may also govern managerial communication in other settings), rather than the quarter-specific uncertainty.\"\n    *   **Page:** 29\n    *   **Section:** 5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?",
+            "quotes": [
+              {
+                "n": 1,
+                "cited_text": "Next, we show that CEO clarity matters for the market - investors and analysts respond",
+                "start_char": 10695,
+                "end_char": 10782,
+                "chunk_id": "f3507094-ede5-42c3-b8dd-6754581fc8d9"
+              },
+              {
+                "n": 2,
+                "cited_text": "26",
+                "start_char": 63178,
+                "end_char": 63180,
+                "chunk_id": "43f4e414-6d8c-43ae-bcb0-74f817c808f6"
+              },
+              {
+                "n": 3,
+                "cited_text": "Importantly, these results obtain independently of the interaction between analyst",
+                "start_char": 68951,
+                "end_char": 69034,
+                "chunk_id": "747aa20e-e1c0-4d42-8c28-1fcd37df7653"
+              }
+            ],
+            "located": [
+              {
+                "quote": "By contrast, residual use of uncertainty words - that is, the component of the overall frequency of uncertainty words in CEO’s answers during each call that is not explained by items (1) to (3) above - explains little of the market reaction.",
+                "page": "4",
+                "section": "1 Introduction"
+              },
+              {
+                "quote": "By contrast, neither UncPreCEO nor UncResCEO is significantly associated with stock price or volume responses.",
+                "page": "26",
+                "section": "5.2 Results"
+              },
+              {
+                "quote": "There is no corresponding effect for the interactions with UncPreCEO and UncResCEO. Thus, the price response to information discussed on the call is primarily a function of ClarityCEO (which may also govern managerial communication in other settings), rather than the quarter-specific uncertainty.",
+                "page": "29",
+                "section": "5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?"
+              }
+            ],
+            "verdict": "PENDING"
           }
         }
       ],
