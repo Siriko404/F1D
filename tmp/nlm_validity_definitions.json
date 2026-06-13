@@ -25,6 +25,15 @@
         "located": [],
         "discovered_sources": []
       }
+    },
+    "baker2016": {
+      "Q1_def": {
+        "query": "Reading only this paper, the paper \"Measuring economic policy uncertainty\" by Baker, Bloom, and Davis (2016, The Quarterly Journal of Economics): How is the Economic Policy Uncertainty index defined and constructed, what does it measure, and at what frequency and geographic level is it reported? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+        "answer": "",
+        "quotes": [],
+        "located": [],
+        "discovered_sources": []
+      }
     }
   }
 }
