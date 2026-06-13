@@ -234,6 +234,139 @@
           }
         ]
       }
+    },
+    "baker2016": {
+      "Q1_def": {
+        "query": "Reading only this paper, the paper \"Measuring economic policy uncertainty\" by Baker, Bloom, and Davis (2016, The Quarterly Journal of Economics): How is the Economic Policy Uncertainty index defined and constructed, what does it measure, and at what frequency and geographic level is it reported? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+        "answer": "In Baker, Bloom, and Davis (2016), the Economic Policy Uncertainty (EPU) index is defined and constructed based on the frequency of newspaper articles that contain specific terms related to the economy, policy, and uncertainty. Specifically, the authors construct the index by counting the number of articles that contain at least one term from a designated trio of categories (economy, uncertainty, and policy). \n\nRegarding what it measures, the index is designed to serve as a proxy for fluctuations in policy-related economic uncertainty. Specifically, the authors state that it captures uncertainty regarding who will make economic policy decisions, what actions will be taken, when they will happen, and what their economic ramifications will be.\n\nRegarding frequency and geographic level, the primary EPU index is reported at a **monthly** frequency, along with a high-frequency **daily** alternative. Geographically, it is constructed at the **national** level for the United States and 11 other major economies, and the authors note that their methodology also makes it feasible to construct the index at a **regional or state** level.\n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On how the index is defined and constructed:**\n*   \"We develop a new index of economic policy uncertainty (EPU) based on newspaper coverage frequency.\" [1]\n    *   **Page:** 1593\n    *   **Section:** Abstract (unnumbered)\n*   \"Our index reflects the frequency of articles in 10 leading U.S. newspapers that con-tain the following trio of terms: ‘‘economic’’ or ‘‘economy’’; ‘‘uncer-tain’’ or ‘‘uncertainty’’; and one or more of ‘‘Congress,’’ ‘‘deficit,’’ ‘‘Federal Reserve,’’ ‘‘legislation,’’ ‘‘regulation,’’ or ‘‘White House.’’\" [2]\n    *   **Page:** 1594\n    *   **Section:** I. Introduction\n*   \"In other words, to meet our criteria, an article must contain terms in all three cat-egories pertaining to uncertainty, the economy, and policy.\" [3]\n    *   **Page:** 1598\n    *   **Section:** II.A. U.S. Economic Policy Uncertainty Indexes from 1985\n\n**On what the index measures:**\n*   \"Several types of evidence—including human readings of 12,000 newspaper articles—indicate that our index proxies for move-ments in policy-related economic uncertainty.\" [1]\n    *   **Page:** 1593\n    *   **Section:** Abstract (unnumbered)\n*   \"We aim to capture un-certainty about who will make economic policy decisions, what economic policy actions will be undertaken and when, and the economic effects of policy actions (or inaction)—including uncer-tainties related to the economic ramifications of ‘‘noneconomic’’ policy matters, for example, military actions.\" [4]\n    *   **Page:** 1597\n    *   **Section:** II. Measuring EPU\n\n**On the frequency and geographic level at which it is reported:**\n*   \"Our data are available at monthly and daily frequencies at http://www. policyuncertainty.com and are carried by Bloomberg, Haver, FRED, and Reuters.\" [5]\n    *   **Page:** 1594\n    *   **Section:** I. Introduction (Footnote 2)\n*   \"Hence, we focus on our 10-paper monthly EPU index, but the daily index provides a useful high-frequency alternative.\" [6]\n    *   **Page:** 1600\n    *   **Section:** II.A. U.S. Economic Policy Uncertainty Indexes from 1985\n*   \"Using similar methods, we construct EPU indexes for 11 other countries, including all G10 economies.\" [7]\n    *   **Page:** 1594\n    *   **Section:** I. Introduction\n*   \"For large countries like the United States, it is feasible to construct useful newspaper-based indexes at a daily frequency and by region.\" [8, 9]\n    *   **Page:** 1615-1616\n    *   **Section:** III.D. Summary",
+        "quotes": [
+          {
+            "n": 1,
+            "source_id": "ebca6160-16e8-49dc-8fd5-9026daa9013e",
+            "cited_text": "THE",
+            "start_char": 0,
+            "end_char": 4,
+            "chunk_id": "a4f2b4eb-78bb-4251-8aa5-0c631da6012b"
+          },
+          {
+            "n": 2,
+            "source_id": "ebca6160-16e8-49dc-8fd5-9026daa9013e",
+            "cited_text": "To investigate the role of policy uncertainty we first develop an index of economic policy uncertainty (EPU) for the United States and examine its evolution since 1985.2 Our index reflects the frequency of articles in 10 leading U.S. newspapers that con-tain the following trio of terms: ‘‘economic’’ or ‘‘economy’’; ‘‘uncer-tain’’ or ‘‘uncertainty’’; and one or more of ‘‘Congress,’’ ‘‘deficit,’’ ‘‘Federal Reserve,’’ ‘‘legislation,’’ ‘‘regulation,’’ or ‘‘White House.’’ The index spikes near tight presidential elections, Gulf Wars I and II, the 9/11 attacks, the 2011 debt ceiling dispute, and other major battles over fiscal policy. We extend our newspaper-based ap-proach to measuring policy uncertainty along three dimensions: back in time, across countries, and to specific policy categories.",
+            "start_char": 3105,
+            "end_char": 3905,
+            "chunk_id": "d69367e1-ed98-4355-8ca6-06b155e9b379"
+          },
+          {
+            "n": 3,
+            "source_id": "ebca6160-16e8-49dc-8fd5-9026daa9013e",
+            "cited_text": "Our modern monthly EPU index for the United States relies on 10 leading newspapers: USA Today, Miami Herald, Chicago Tribune, Washington Post, Los Angeles Times, Boston Globe, San Francisco Chronicle, Dallas Morning News, New York Times, and Wall Street Journal. We search the digital archives of each paper from January 1985 to obtain a monthly count of articles that contain the following trio of terms: ‘‘uncertainty’’ or ‘‘uncer-tain’’; ‘‘economic’’ or ‘‘economy’’; and one of the following policy terms: ‘‘Congress,’’ ‘‘deficit,’’ ‘‘Federal Reserve,’’ ‘‘legislation,’’ ‘‘regulation,’’ or ‘‘White House’’ (including variants like ‘‘uncertainties,’’ ‘‘regulatory,’’ or ‘‘the Fed’’). In other words, to meet our criteria, an article must contain terms in all three cat-egories pertaining to uncertainty, the economy, and policy. We use our audit study to select the policy terms, as explained in Section III.A.",
+            "start_char": 15932,
+            "end_char": 16845,
+            "chunk_id": "bc51d6de-c7fb-4559-a99e-f352a2ce8ddb"
+          },
+          {
+            "n": 4,
+            "source_id": "ebca6160-16e8-49dc-8fd5-9026daa9013e",
+            "cited_text": "Section II describes the data we use to construct our policy uncertainty indexes. Section III evaluates our EPU measures in several ways and develops additional evidence about movements in policy-related uncertainty over time. Section IV investigates how firm-level outcomes covary with policy uncertainty and the dynamic responses of aggregate outcomes to policy uncertainty innovations. Section V concludes and offers some thoughts about directions for future research.",
+            "start_char": 14037,
+            "end_char": 14509,
+            "chunk_id": "5ecb0ff9-c44a-405b-853e-f17a3f281c66"
+          },
+          {
+            "n": 5,
+            "source_id": "ebca6160-16e8-49dc-8fd5-9026daa9013e",
+            "cited_text": "! The Author(s) 2016. Published by Oxford University Press, on behalf of President and Fellows of Harvard College. All rights reserved. For Permissions, please email: journals.permissions@oup.com The Quarterly Journal of Economics (2016), 1593–1636. doi:10.1093/qje/qjw024.",
+            "start_char": 2351,
+            "end_char": 2625,
+            "chunk_id": "fcf7af42-c9b0-4380-825e-f94536489aaf"
+          },
+          {
+            "n": 6,
+            "source_id": "ebca6160-16e8-49dc-8fd5-9026daa9013e",
+            "cited_text": "FIGURE I",
+            "start_char": 19335,
+            "end_char": 19344,
+            "chunk_id": "bafc7a82-6c4c-4a0d-9670-b595a49c0ebf"
+          },
+          {
+            "n": 7,
+            "source_id": "ebca6160-16e8-49dc-8fd5-9026daa9013e",
+            "cited_text": "To push back to 1900, we rely on archives for six major U.S. newspapers published throughout the past century. This long-span EPU index highlights pre–World War II political de-velopments and shocks like the Gold Standard Act of 1900, the outbreak of World War I, the Versailles conference in 1919, and a sustained surge in policy uncertainty from late 1931 when President Herbert Hoover, and then President Franklin Roosevelt, introduced a rash of major new policies. The index also shows an upward drift since the 1960s, perhaps due to rising political polarization or the growing economic role for gov-ernment (Baker et al. 2014).Using similar methods, we construct EPU indexes for 11 other countries, including all G10 economies. These indexes are particularly helpful in countries with fewer alternative uncertainty measures. We develop category-specific",
+            "start_char": 3905,
+            "end_char": 4765,
+            "chunk_id": "f40bfc5b-433d-45c7-8d10-b3570b183a0b"
+          },
+          {
+            "n": 8,
+            "source_id": "ebca6160-16e8-49dc-8fd5-9026daa9013e",
+            "cited_text": "III.D. Summary",
+            "start_char": 52511,
+            "end_char": 52526,
+            "chunk_id": "fc630f2e-00d4-42b2-bb0f-2b3dc343b527"
+          },
+          {
+            "n": 9,
+            "source_id": "ebca6160-16e8-49dc-8fd5-9026daa9013e",
+            "cited_text": "QUARTERLY JOURNAL OF ECONOMICS1616",
+            "start_char": 53985,
+            "end_char": 54019,
+            "chunk_id": "25247ff6-836f-4213-9f22-c891cce03adc"
+          }
+        ],
+        "located": [
+          {
+            "quote": "We develop a new index of economic policy uncertainty (EPU) based on newspaper coverage frequency.",
+            "page": "1593",
+            "section": "Abstract (unnumbered)"
+          },
+          {
+            "quote": "Our index reflects the frequency of articles in 10 leading U.S. newspapers that con-tain the following trio of terms: ‘‘economic’’ or ‘‘economy’’; ‘‘uncer-tain’’ or ‘‘uncertainty’’; and one or more of ‘‘Congress,’’ ‘‘deficit,’’ ‘‘Federal Reserve,’’ ‘‘legislation,’’ ‘‘regulation,’’ or ‘‘White House.’’",
+            "page": "1594",
+            "section": "I. Introduction"
+          },
+          {
+            "quote": "In other words, to meet our criteria, an article must contain terms in all three cat-egories pertaining to uncertainty, the economy, and policy.",
+            "page": "1598",
+            "section": "II.A. U.S. Economic Policy Uncertainty Indexes from 1985"
+          },
+          {
+            "quote": "Several types of evidence—including human readings of 12,000 newspaper articles—indicate that our index proxies for move-ments in policy-related economic uncertainty.",
+            "page": "1593",
+            "section": "Abstract (unnumbered)"
+          },
+          {
+            "quote": "We aim to capture un-certainty about who will make economic policy decisions, what economic policy actions will be undertaken and when, and the economic effects of policy actions (or inaction)—including uncer-tainties related to the economic ramifications of ‘‘noneconomic’’ policy matters, for example, military actions.",
+            "page": "1597",
+            "section": "II. Measuring EPU"
+          },
+          {
+            "quote": "Our data are available at monthly and daily frequencies at http://www. policyuncertainty.com and are carried by Bloomberg, Haver, FRED, and Reuters.",
+            "page": "1594",
+            "section": "I. Introduction (Footnote 2)"
+          },
+          {
+            "quote": "Hence, we focus on our 10-paper monthly EPU index, but the daily index provides a useful high-frequency alternative.",
+            "page": "1600",
+            "section": "II.A. U.S. Economic Policy Uncertainty Indexes from 1985"
+          },
+          {
+            "quote": "Using similar methods, we construct EPU indexes for 11 other countries, including all G10 economies.",
+            "page": "1594",
+            "section": "I. Introduction"
+          },
+          {
+            "quote": "For large countries like the United States, it is feasible to construct useful newspaper-based indexes at a daily frequency and by region.",
+            "page": "1615-1616",
+            "section": "III.D. Summary"
+          }
+        ],
+        "discovered_sources": [
+          {
+            "source_id": "ebca6160-16e8-49dc-8fd5-9026daa9013e",
+            "title": "qjw024.pdf"
+          }
+        ]
+      }
     }
   }
 }
