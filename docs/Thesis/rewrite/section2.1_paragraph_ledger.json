@@ -1464,11 +1464,98 @@
           "nlm_query_draft": "what does it study regarding firms' management of tone or language in earnings press releases around stock-for-stock acquisitions, and what does it find?",
           "verification": {
             "method": "NLM",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": "re-confirm atomically"
+            "source": {
+              "id": "731d56ed-c42a-4280-84eb-eec23f8be9b3",
+              "title": "ssrn-4900453.pdf"
+            },
+            "query": "Reading only this paper, the working paper by Thewissen and coauthors (2024) on managerial tone around acquisitions (this single notebook source, ssrn-4900453): what does it study regarding firms' management of tone or language in earnings press releases around stock-for-stock acquisitions, and what does it find? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "answer": "In Thewissen et al. (2024), the authors study whether acquiring firms in stock-for-stock mergers strategically manipulate the qualitative narrative content of their earnings press releases before the merger announcement. Because a higher bidder stock price reduces the number of shares that must be issued to buy a target, the authors investigate whether bidders intentionally use overly optimistic language (tone inflation) to temporarily boost their stock price and lower the acquisition cost [1-4]. \n\nThe paper finds that **stock bidders do indeed significantly inflate the tone of their earnings press releases in the year leading up to the M&A announcement, increasing it by about 15%** [5]. This tone inflation is not uniform; it is **more pronounced for larger deals, for firms with weaker past performance, and for firms lacking strong monitoring mechanisms** [6, 7]. \n\nFurthermore, the authors find that this strategy is initially successful but ultimately detrimental in the long run. **Tone inflation effectively boosts the bidder's stock price in the pre-merger period, saving the average stock bidder an estimated $21.8 million in acquisition costs** [7]. However, investors eventually see through the manipulation, meaning that **the short-term stock price boost is reversed, exposing the stock bidder to lower, unfavorable long-term stock returns after the merger is completed** [7, 8].\n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the focus of the study:**\n*   \"In this paper, we therefore extent prior research and propose that, in order to increase their stock price and reduce the acquisition cost of the target, bidders in stock-for-stock mergers inflate the tone of corporate disclosures.\"\n    *   **Page:** 3\n    *   **Section:** 1. Introduction\n\n**On the finding that stock bidders inflate disclosure tone:**\n*   \"Based on a sample of 5,558 M&A deals between 2004 and 2020, we find evidence that stock bidders are more likely than cash or hybrid bidders to engage in tone management and that the tone of earnings press releases significantly increases by 15% in the year preceding the M&A announcement.\"\n    *   **Page:** 37\n    *   **Section:** 6. Conclusion\n\n**On the specific firm and deal characteristics that worsen tone inflation:**\n*   \"We provide further insights on the underlying mechanisms by revealing more pronounced effects of stock-for-stock deals on tone inflation for (i) larger M&A deals, (ii) firms with lower past performance and (iii) firms with less control mechanisms.\"\n    *   **Page:** 38\n    *   **Section:** 6. Conclusion\n\n**On the economic benefits and long-term costs of this strategy:**\n*   \"We further find that increasing the tone of earnings press releases is associated with an increase in stock prices in the pre-merger period. In fact, this tone inflation leads to savings in acquisition costs by $21.777 million, on average.\"\n    *   **Page:** 38\n    *   **Section:** 6. Conclusion\n*   \"However, in the long-term, we document that stock bidders suffer from lower stock returns, which is in line with prior evidence that firms that manipulate earnings to beat expectations are still able to benefit from higher stock returns, but also larger long-term losses.\"\n    *   **Page:** 38\n    *   **Section:** 6. Conclusion",
+            "quotes": [
+              {
+                "n": 1,
+                "cited_text": "variables were retrieved from the WRDS platform. Mergers and acquisition data were obtained from the",
+                "start_char": 6631,
+                "end_char": 6732,
+                "chunk_id": "09a8bc62-f731-4f89-afa7-8b22bad7111c"
+              },
+              {
+                "n": 2,
+                "cited_text": "Thewissen, 2016), it is essential to examine whether the use of stock as a form of payment leads managers",
+                "start_char": 7701,
+                "end_char": 7807,
+                "chunk_id": "b3e0ef04-578b-418e-805c-aa1a833f6d80"
+              },
+              {
+                "n": 3,
+                "cited_text": "number of shares that must be issued to purchase the target firm. Prior literature shows that such a",
+                "start_char": 8285,
+                "end_char": 8386,
+                "chunk_id": "2ceeae2b-7d0a-4e7d-a8fe-465b5f8b76b6"
+              },
+              {
+                "n": 4,
+                "cited_text": "and Torsin (2021) find that a cautious disclosure tone mitigates potential home bias-related credibility",
+                "start_char": 10368,
+                "end_char": 10473,
+                "chunk_id": "65882d50-8155-42e3-b79f-b7c663d28eaf"
+              },
+              {
+                "n": 5,
+                "cited_text": "second-order effect on the stock price.",
+                "start_char": 93720,
+                "end_char": 93761,
+                "chunk_id": "c91f8bca-0573-483e-b786-58bbf09a227b"
+              },
+              {
+                "n": 6,
+                "cited_text": "releases significantly increases by 15% in the year preceding the M&A announcement. This result cannot",
+                "start_char": 94295,
+                "end_char": 94398,
+                "chunk_id": "c2adf3b3-69ca-4b39-8315-e100c641c21a"
+              },
+              {
+                "n": 7,
+                "cited_text": "(ii) firms with lower past performance and (iii) firms with less control mechanisms. We further find that",
+                "start_char": 94832,
+                "end_char": 94938,
+                "chunk_id": "69e49d74-aa91-42bc-8c75-e8a1721aa3f6"
+              },
+              {
+                "n": 8,
+                "cited_text": "able to benefit from higher stock returns, but also larger long-term losses. Overall, our paper therefore",
+                "start_char": 95352,
+                "end_char": 95458,
+                "chunk_id": "5716e803-2e1d-46a2-8433-b1282f1c6981"
+              }
+            ],
+            "located": [
+              {
+                "quote": "In this paper, we therefore extent prior research and propose that, in order to increase their stock price and reduce the acquisition cost of the target, bidders in stock-for-stock mergers inflate the tone of corporate disclosures.",
+                "page": "3",
+                "section": "1. Introduction"
+              },
+              {
+                "quote": "Based on a sample of 5,558 M&A deals between 2004 and 2020, we find evidence that stock bidders are more likely than cash or hybrid bidders to engage in tone management and that the tone of earnings press releases significantly increases by 15% in the year preceding the M&A announcement.",
+                "page": "37",
+                "section": "6. Conclusion"
+              },
+              {
+                "quote": "We provide further insights on the underlying mechanisms by revealing more pronounced effects of stock-for-stock deals on tone inflation for (i) larger M&A deals, (ii) firms with lower past performance and (iii) firms with less control mechanisms.",
+                "page": "38",
+                "section": "6. Conclusion"
+              },
+              {
+                "quote": "We further find that increasing the tone of earnings press releases is associated with an increase in stock prices in the pre-merger period. In fact, this tone inflation leads to savings in acquisition costs by $21.777 million, on average.",
+                "page": "38",
+                "section": "6. Conclusion"
+              },
+              {
+                "quote": "However, in the long-term, we document that stock bidders suffer from lower stock returns, which is in line with prior evidence that firms that manipulate earnings to beat expectations are still able to benefit from higher stock returns, but also larger long-term losses.",
+                "page": "38",
+                "section": "6. Conclusion"
+              }
+            ],
+            "verdict": "PENDING"
           }
         },
         {
