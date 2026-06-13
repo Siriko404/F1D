@@ -943,11 +943,63 @@
           "nlm_query_draft": "what does it conclude about whether managers strategically manage their disclosures during conference calls -- including choosing not to answer questions -- and whether such silence or non-answers are informative to investors?",
           "verification": {
             "method": "NLM",
-            "evidence": [],
-            "answer_nonevidence": "",
-            "verdict": "PENDING",
-            "verified_date": null,
-            "note": ""
+            "source": {
+              "id": "62b15593-80b6-4fbe-a304-c74553ded616",
+              "title": "J of Accounting Research - 2010 - HOLLANDER - Does Silence Speak  An Empirical Analysis of Disclosure Choices During (1).pdf"
+            },
+            "query": "Reading only this paper, \"Does Silence Speak? An Empirical Analysis of Disclosure Choices During Conference Calls\" by Hollander, Pronk and Roelofsen (2010, Journal of Accounting Research): what does it conclude about whether managers strategically manage their disclosures during conference calls -- including choosing not to answer questions -- and whether such silence or non-answers are informative to investors? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "answer": "In Hollander, Pronk, and Roelofsen (2010), the authors conclude that managers do indeed strategically manage their disclosures by regularly withholding information during conference calls, specifically by choosing not to answer certain questions posed by participants [1, 2]. The study reveals that this form of incomplete disclosure is quite common, occurring in approximately 60% of the calls analyzed [2]. \n\nRegarding how investors process this behavior, the study concludes that such silence or non-answers are highly informative to the market [1, 3]. The authors find strong evidence that investors interpret a manager's refusal or failure to answer a question negatively [1, 3]. In other words, call participants and investors actively price-protect themselves when information is withheld, demonstrating that they equate \"no news\" directly with \"bad news\" [1, 4]. \n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On managers choosing not to answer questions:**\n\n*   \"Our evidence suggests that managers regularly leave participants on the conference call in the dark by not answering their questions.\" [1]\n    *   **Page:** 531\n    *   **Section:** ABSTRACT\n\n*   \"We find that managers withhold information from the public in approximately 6 out of 10 calls, with an average of two unanswered queries per call, a frequency greater than is often assumed.\" [2]\n    *   **Page:** 534\n    *   **Section:** 1. Introduction\n\n**On whether this silence is informative to investors:**\n\n*   \"Finally, we document strong support for the assumption maintained in the literature that investors interpret silence negatively. That is, investors seem to interpret no news as bad news.\" [1]\n    *   **Page:** 531\n    *   **Section:** ABSTRACT\n\n*   \"After controlling for potential drift or momentum effects, we find strong support for the assumption maintained in the literature that investors interpret 'silence' negatively.\" [3]\n    *   **Page:** 556\n    *   **Section:** 6.2 MULTIVARIATE ANALYSIS\n\n*   \"In short, the results of our study suggest that silence speaks.\" [4]\n    *   **Page:** 559\n    *   **Section:** 7. Conclusion",
+            "quotes": [
+              {
+                "n": 2,
+                "cited_text": "We manually reviewed call transcripts for a large sample of randomly selected earnings-related calls held by publicly listed U.S. firms between January 1 and December 31, 2004 to uncover whether managers withhold requested information. More specifically, we determine whether or not each request for information made during the call is granted. If at least one request is not granted, we mark this call as containing incomplete dis-closure. We find that managers withhold information from the public in approximately 6 out of 10 calls, with an average of two unanswered queries per call, a frequency greater than is often assumed. The replies vary from a direct “No, we do not want to provide that information” to more subtle responses that nevertheless indicate that the demand for information will not be met. Moreover, most unanswered questions concern the given com-pany’s financials (especially sales and margins), which comports with sell-side financial analysts’ primary task of producing earnings forecasts for the stocks they follow as part of their investment recommendations (Schipper [1991]).",
+                "start_char": 11562,
+                "end_char": 12667,
+                "chunk_id": "f37ea965-4746-4038-8a54-ebae7cb9db30"
+              },
+              {
+                "n": 3,
+                "cited_text": "iley.com /term",
+                "start_char": 85456,
+                "end_char": 85471,
+                "chunk_id": "3c9fa4e3-bfcf-44bc-87ea-c26227e30490"
+              },
+              {
+                "n": 4,
+                "cited_text": ".2010.00365.x by U niversity O",
+                "start_char": 95897,
+                "end_char": 95928,
+                "chunk_id": "c96562b2-321e-4ef4-be3b-15489559e46b"
+              }
+            ],
+            "located": [
+              {
+                "quote": "Our evidence suggests that managers regularly leave participants on the conference call in the dark by not answering their questions.",
+                "page": "531",
+                "section": "ABSTRACT"
+              },
+              {
+                "quote": "We find that managers withhold information from the public in approximately 6 out of 10 calls, with an average of two unanswered queries per call, a frequency greater than is often assumed.",
+                "page": "534",
+                "section": "1. Introduction"
+              },
+              {
+                "quote": "Finally, we document strong support for the assumption maintained in the literature that investors interpret silence negatively. That is, investors seem to interpret no news as bad news.",
+                "page": "531",
+                "section": "ABSTRACT"
+              },
+              {
+                "quote": "After controlling for potential drift or momentum effects, we find strong support for the assumption maintained in the literature that investors interpret 'silence' negatively.",
+                "page": "556",
+                "section": "6.2 MULTIVARIATE ANALYSIS"
+              },
+              {
+                "quote": "In short, the results of our study suggest that silence speaks.",
+                "page": "559",
+                "section": "7. Conclusion"
+              }
+            ],
+            "verdict": "PENDING"
           }
         }
       ],
