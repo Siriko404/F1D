@@ -30,11 +30,11 @@
   },
   "_plan": {
     "section_job": "Define and JUSTIFY the dependent variable UncResCEO (the DWZ residual): the raw measure, the eq-4 decomposition, why the residual, and the honest threats to it.",
-    "spine": "P1 measure (LM share, UncAns eq-2) -> P2 decomposition (eq-4 -> UncRes; why residual; operationalizes P4) -> P3 control-set note (UncPre over-control; residual net of UncQue/NegCall) -> P4 generated-regressand.",
+    "spine": "P1 measure (LM share, UncAns eq-2) -> P2 decomposition (eq-4 -> UncRes; why residual; net of UncPre/UncQue/NegCall -> DWZ's isolation of the unscripted, call-specific component) -> P3 generated-regressand.",
     "serves": "Makes the core construct credible + reproducible; the DV every 2.4 design uses.",
     "boundary": "MAIN var only (UncRes + inputs UncAns / UncPre / CEO-FE / ClarityCEO). Other constructs -> 2.5/3.1. Construction MECHANICS (tokenize, match) -> 3.1. ClarityCEO is named as the OTHER eq-4 output (persistent style) but NOT developed (its use is 2.5/4.2).",
-    "thin_claim": "Disclose the generated-regressand and the UncPre-control tension HONESTLY but in a SUGGESTIVE register (never scrutinizing -- we adopt DWZ's spec): frame UncPre as a property of repurposing DWZ's residual for an anticipatory question; note the residual is net of UncQue/NegCall; validity is an empirical question answered in 2.5.",
-    "division_of_labor": "2.1 P4 located the signal in the call-varying residual (conceptually, no equation) and deferred isolation to 'the design that follows'. 2.3 ADDS: the formal eq-4 + regressors, and the two honest threats (UncPre over-control, generated-regressand). It does NOT re-argue the locating logic (COH-4).",
+    "thin_claim": "Present the residual POSITIVELY as DWZ's isolation of the unscripted component ('would' not 'must'; conservative floor if leakage); own the generated-regressand suggestively; validity is an empirical question answered in 2.5.",
+    "division_of_labor": "2.1 P4 located the signal in the call-varying residual (conceptually, no equation). 2.3 ADDS: the formal eq-4 + regressors, the residual's POSITIVE framing as DWZ's isolation of the unscripted call-specific component (net of UncPre/UncQue/NegCall), and the generated-regressand caveat. It does NOT re-argue the locating logic (COH-4).",
     "equations_used": "eq-2 (UncAns raw share, the DV's primitive + eq-4 LHS); eq-4 (decomposition -> UncRes, ClarityCEO=-gamma). eq-1 (UncPre) + eq-3 (UncQue) are the same share form used as eq-4 controls. Source: tmp/nlm_dwz_equations.json (NLM-verified 2026-06-13)."
   },
   "papers": {
@@ -202,6 +202,21 @@
           },
           "verification_plan": "Rests on the verified Eq(5) (UncRes is an RHS predictor). Framing; novelty scoped per P6. No new query.",
           "status": "PLANNED"
+        },
+        {
+          "prop_id": "P2.5",
+          "statement": "Following DWZ, UncResCEO is the answer-uncertainty NET OF the scripted presentation (UncPreCEO), isolating the unscripted, call-specific component where the anticipation of an undisclosed deal WOULD surface; if any of that anticipation also leaks into the scripted, vetted remarks, the residual UNDERSTATES it (a conservative floor). By the same construction the residual is also net of analyst-question uncertainty (UncQue) and call negativity (NegCall), which grounds the scrutiny/tone reconciliation in 2.2 P5.3 and 2.5.",
+          "role_in_paragraph": "Owns the UncPre residualization POSITIVELY (DWZ's isolation design, suggestive) + the conservative floor + the RULE-COH-8 net-of-UncQue/NegCall grounding -- absorbed here after the old P3 threat-paragraph was cut (user 'cut it' + DWZ evidence).",
+          "type": "framing-nonverifiable",
+          "relation_to_2_1": "FORMALIZES",
+          "anchor_2_1": [
+            "P4"
+          ],
+          "source": {
+            "key": "dwz",
+            "evidence": "tmp/nlm_dwz_uncpre_control.json -- DWZ rationale: presentation = scripted firm-baseline (culture + current conditions); residual isolates the unscripted component."
+          },
+          "verification_plan": "Roadmap Must-do #3 (OWN UncPre, do NOT leave it hanging) satisfied in ONE positive sentence, SUGGESTIVE register -- NO threat-paragraph. WORDING (advisor): 'would' NOT 'must' -- the signal is not EXCLUSIVELY in the residual (DWZ say UncPre absorbs 'current business conditions' / 'time-varying uncertainty affecting both parts'); KEEP the conservative-floor clause. GATE (advisor): the positive 'following DWZ' attribution is ANSWER-ONLY/PROVISIONAL (tmp/nlm_dwz_uncpre_control.json has NO cited_text span) -> if the write-time verbatim span does NOT materialize, FALL BACK to the bare hedge ('the residual nets out the scripted part') WITHOUT the DWZ design-attribution. RULE-COH-8 grounding preserved here. No NLM now."
         }
       ],
       "prose_gate": {
@@ -214,59 +229,6 @@
     },
     "P3": {
       "order": 3,
-      "lit_body": "control-set note: UncPre over-control (C3); residual net of UncQue/NegCall",
-      "intent": "Own the UncPre over-control tension HONESTLY but SUGGESTIVELY (not scrutinizing): it is a property of repurposing DWZ's residual for an anticipatory question. Note the residual is already net of UncQue/NegCall.",
-      "serves": "Referee-proofs the DV; grounds the 2.2/2.5 scrutiny reconciliation (residual net of UncQue/NegCall).",
-      "boundary": "Threats to the control set only; the validity tests (convergent/discriminant) are 2.5.",
-      "thin_claim": "Suggestive, not scrutinizing: surface the UncPre-control tension as a repurposing property, NEVER as 'DWZ over-controlled'; note the residual is net of UncQue/NegCall.",
-      "guardrails": [
-        "Numbers bible-verbatim only (claim_findings_ledger C3).",
-        "RULE-COH-8: state the residual is net of UncQue + NegCall (grounds 2.2 P5.3 / 2.5.4).",
-        "No cause.",
-        "TONE = suggestive, NOT scrutinizing: frame UncPre as a property of REPURPOSING DWZ's residual for an anticipatory question, never 'DWZ over-controlled'.",
-        "FirmChars 'bad-control' CUT 2026-06-13 (user): we ADOPT DWZ's spec -> do not label its controls 'bad'; the drop-FirmChars rerun, if run, is a robustness column, not a 2.3 threat."
-      ],
-      "propositions": [
-        {
-          "prop_id": "P3.1",
-          "statement": "UncPreCEO is an eq-4 control, yet prepared-remarks uncertainty itself carries signal (shown in 4.2) and the UncPre->UncRes association is significant (0.0111**/0.0230**, tab:h23). This is a property of REPURPOSING DWZ's residual for an anticipatory question: prepared remarks are drafted and vetted in advance, so the residual deliberately isolates the live-Q&A shock. We note robustness to dropping UncPre and/or disclose it -- suggestively, not as a critique of DWZ's adopted spec.",
-          "role_in_paragraph": "First control-set threat.",
-          "type": "internal",
-          "relation_to_2_1": "NEW",
-          "anchor_2_1": [],
-          "source": {
-            "key": "claim_findings_ledger",
-            "ref": "C3 risk (bible-verbatim)"
-          },
-          "verification_plan": "Numbers bible-verbatim (claim ledger C3). Reconciliation = write-time, SUGGESTIVE register (repurposing property, not 'DWZ over-controlled'). UncPre in-eq-4 confirmed from the NLM-verified control set (Q3).",
-          "status": "PLANNED"
-        },
-        {
-          "prop_id": "P3.2",
-          "statement": "By construction the residual is net of analyst-question uncertainty (UncQue) and call negativity (NegCall), so it mechanically pre-empts part of the analyst-scrutiny and tone confounds.",
-          "role_in_paragraph": "Grounds the 2.2 P5.3 / 2.5.4 scrutiny reconciliation (RULE-COH-8).",
-          "type": "framing-nonverifiable",
-          "relation_to_2_1": "NEW",
-          "anchor_2_1": [],
-          "source": {
-            "key": "dwz",
-            "eq": "eq-4 controls",
-            "evidence": "tmp/nlm_dwz_equations.json"
-          },
-          "verification_plan": "Rests on the NLM-verified eq-4 control set. Framing; cross-links 2.2/2.5. No new query.",
-          "status": "PLANNED"
-        }
-      ],
-      "prose_gate": {
-        "rule": "all propositions confirmed/cleared before prose",
-        "all_supported": false,
-        "unlocked": false
-      },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
-    },
-    "P4": {
-      "order": 4,
       "lit_body": "generated-regressand (R3; pagan1984 NEW, deferred)",
       "intent": "Note the generated-regressand property SUGGESTIVELY: UncResCEO is a first-stage residual used as the downstream DV -- a standard two-step setting (DWZ themselves use UncRes as a regressor), not a flaw unique to this paper.",
       "serves": "Closes the honest-threats pair (UncPre over-control + generated-regressand); hands validity to 2.5.",
@@ -278,7 +240,7 @@
       ],
       "propositions": [
         {
-          "prop_id": "P4.1",
+          "prop_id": "P3.1",
           "statement": "UncResCEO is a generated regressand -- a first-stage residual used as the downstream dependent variable -- a standard two-step setting (DWZ themselves use UncRes as a regressor in their Eq(5)), so conventional standard errors may be understated without a two-step correction. We note this property and either argue inference is unaffected or flag the two-step-SE concern (and the bootstrap remedy) -- suggestively, not as a critique.",
           "role_in_paragraph": "The inference threat.",
           "type": "internal",
@@ -292,7 +254,7 @@
           "status": "PLANNED"
         },
         {
-          "prop_id": "P4.2",
+          "prop_id": "P3.2",
           "statement": "The residual's validity -- that it captures real uncertainty and is not a scrutiny artifact -- is treated as an empirical question answered in 2.5, not assumed here.",
           "role_in_paragraph": "Forward-hands validity to 2.5.",
           "type": "framing-nonverifiable",
@@ -311,5 +273,5 @@
       "prose_status": "BLOCKED"
     }
   },
-  "next_action": "2.3 QUEUED EDITS APPLIED 2026-06-13 (de-queued per user 'revise planning to 100% complete'): P3.2 FirmChars bad-control CUT (we adopt DWZ's spec; don't scrutinize) + P3.3->P3.2 renumber; P3.1 UncPre + P4.1 generated-regressand RETONED suggestive (repurposing property / standard two-step, NOT a DWZ critique). Plan now FINAL for every 2.3 paragraph. Status PLANNED, prose BLOCKED, NOT ratified. 2.3 ADVISOR-CLEAN (2026-06-13): seam cross-checks 1-4 clean (RULE-COH-7, Catch-1 gloss, COH-8 grounding, C3 numbers, eq-2/eq-4 match). Resolved 2 catches: P3.2 FirmChars sign is INDETERMINATE (killed 'conservative/lower-bound'; drop-FirmChars rerun gates it); P2.2 attribution = DWZ's SPEC re-estimated on our sample (not published residuals). Status PLANNED, prose BLOCKED, NOT ratified. Original seam plan kept below for the record. Advisor-check SEAMS (done): (vs 2.1 P4) RULE-COH-7 + Catch-1 gloss; (vs 2.2) the residual 2.2 forward-refs is defined here + COH-8 net-of-UncQue grounded; (vs claims ledger) C3/R3 numbers bible-verbatim; (vs DWZ extraction) eq-2/eq-4 match. Then resolve + move to 2.4. Seams to carry to 2.4: eq-4 has Year FE while 2.4 designs add cal-year-qtr FE (layered time controls); first-stage estimated globally then stage-2 uses subsets (generated-regressand). NLM verification (pagan1984) gated behind ratification."
+  "next_action": "2.3 P3 (UncPre over-control THREAT-paragraph) CUT 2026-06-13 (user 'cut it' + DWZ evidence + advisor): folded into P2.5 as ONE POSITIVE sentence (DWZ's isolation design; 'would' not 'must'; conservative floor) carrying the RULE-COH-8 net-of-UncQue/NegCall grounding; P4 generated-regressand renumbered -> P3; 2.4/2.5 cross-refs ('2.3 P4'->'2.3 P3') fixed in the same edit. GATE: the positive DWZ attribution is provisional (answer-only) -> write-time verbatim span or fall back to the bare hedge. Plan now FINAL for every 2.3 paragraph; RE-RATIFY. Status PLANNED, prose BLOCKED. 2.3 QUEUED EDITS APPLIED 2026-06-13 (de-queued per user 'revise planning to 100% complete'): P3.2 FirmChars bad-control CUT (we adopt DWZ's spec; don't scrutinize) + P3.3->P3.2 renumber; P3.1 UncPre + P4.1 generated-regressand RETONED suggestive (repurposing property / standard two-step, NOT a DWZ critique). Plan now FINAL for every 2.3 paragraph. Status PLANNED, prose BLOCKED, NOT ratified. 2.3 ADVISOR-CLEAN (2026-06-13): seam cross-checks 1-4 clean (RULE-COH-7, Catch-1 gloss, COH-8 grounding, C3 numbers, eq-2/eq-4 match). Resolved 2 catches: P3.2 FirmChars sign is INDETERMINATE (killed 'conservative/lower-bound'; drop-FirmChars rerun gates it); P2.2 attribution = DWZ's SPEC re-estimated on our sample (not published residuals). Status PLANNED, prose BLOCKED, NOT ratified. Original seam plan kept below for the record. Advisor-check SEAMS (done): (vs 2.1 P4) RULE-COH-7 + Catch-1 gloss; (vs 2.2) the residual 2.2 forward-refs is defined here + COH-8 net-of-UncQue grounded; (vs claims ledger) C3/R3 numbers bible-verbatim; (vs DWZ extraction) eq-2/eq-4 match. Then resolve + move to 2.4. Seams to carry to 2.4: eq-4 has Year FE while 2.4 designs add cal-year-qtr FE (layered time controls); first-stage estimated globally then stage-2 uses subsets (generated-regressand). NLM verification (pagan1984) gated behind ratification."
 }

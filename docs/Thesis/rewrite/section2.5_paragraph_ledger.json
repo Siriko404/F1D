@@ -75,7 +75,7 @@
           "type": "framing-nonverifiable",
           "relation_to_2_1": "NEW",
           "anchor_2_1": [],
-          "verification_plan": "Framing; forward from 2.3 P4.2 (validity = empirical question). Write-time pass.",
+          "verification_plan": "Framing; forward from 2.3 P3.2 (validity = empirical question). Write-time pass.",
           "status": "PLANNED"
         }
       ],
