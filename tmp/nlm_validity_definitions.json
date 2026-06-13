@@ -4,43 +4,40 @@
     "hoberg2016": {
       "Q1_def": {
         "query": "Reading only this paper, the paper \"Text-based network industries and endogenous product differentiation\" by Hoberg and Phillips (2016, Journal of Political Economy): How is the text-based total product-market similarity measure (the sum of pairwise product-market similarities between a firm and other firms, from the Text-Based Network Industry Classification) defined and constructed from firms' product descriptions, and what does a higher value indicate about a firm's competitive environment? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
-        "answer": "",
+        "answer": "In Hoberg and Phillips (2016), the text-based total product-market similarity measure is constructed by representing each firm's product vocabulary as a mathematical vector. The authors extract unique nouns and proper nouns from the business description sections of firms' 10-K filings to form a binary vector (indicating the presence or absence of specific words for each firm), which is then normalized. Pairwise similarity between any two firms is computed as the cosine similarity (dot product) of these vectors. The **total similarity** measure is then defined simply as the sum of all these pairwise similarities between a given firm and all other firms in the sample for that year. \n\nRegarding what this measure indicates, the paper concludes that a higher value of total similarity signifies a **highly competitive environment where the firm faces greater competitive threats from a dense network of rivals**. The authors confirm this by demonstrating that managers of firms with higher total similarity are significantly more likely to explicitly cite \"high competition\" or competitive pressures in the Management's Discussion and Analysis section of their 10-Ks. \n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the definition and construction of the similarity measure:**\n\n*   \"Our primary building block is the set of unique words that firms use to describe their products in their business description sections from 10-K annual filings on the SEC Edgar website from 1996 to 2008.\"\n    *   **Page:** 1429\n    *   **Section:** II. Objective and Methodology: From Words to Industry Classifications (Subsection B. Capturing Relatedness between Firms)\n*   \"A given firm i’s vocabulary can then be represented by a W-vector Pi, with each element being populated by the number 1 if firm i uses the given word and 0 if it does not. We then normalize each vector to have unit length...\"\n    *   **Page:** 1430\n    *   **Section:** II. Objective and Methodology: From Words to Industry Classifications (Subsection B. Capturing Relatedness between Firms)\n*   \"Total similarity is a global measure and is the sum of the pairwise similarities between the given firm and all other firms in our sample in the given year.\"\n    *   **Page:** 1446\n    *   **Section:** V. External Validation (Subsection B. Competition and Reported Peers)\n\n**On what a higher value indicates about the firm's competitive environment:**\n\n*   \"We predict that a manager of a firm with higher total similarity will be more likely to disclose discussions noting higher levels of competition in his or her firm’s Management’s Discussion and Analysis section of its 10-K.\"\n    *   **Page:** 1446\n    *   **Section:** V. External Validation (Subsection B. Competition and Reported Peers)\n*   \"Row 1 shows that firms with higher global total similarity are far more likely to discuss competitive pressures in their management’s discussion. This result suggests that information in the text-based network classification is informative regarding the presence of firms that managers themselves perceive to actually be rivals.\"\n    *   **Page:** 1448\n    *   **Section:** V. External Validation (Subsection B. Competition and Reported Peers)\n*   \"We conclude that the 2001 shock resulted in an increase in total similarity, indicating increased competition.\"\n    *   **Page:** 1453\n    *   **Section:** VI. Capturing Industry Change",
         "quotes": [],
-        "located": [],
-        "discovered_sources": []
-      },
-      "Q2_frequency": {
-        "query": "Reading only this paper, the paper \"Text-based network industries and endogenous product differentiation\" by Hoberg and Phillips (2016, Journal of Political Economy): At what unit of observation and how often is each firm's total-similarity value computed, and does that value change from year to year for a given firm or remain fixed over time? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
-        "answer": "",
-        "quotes": [],
-        "located": [],
-        "discovered_sources": []
-      }
-    },
-    "hassan2020": {
-      "Q1_def": {
-        "query": "Reading only this paper, the paper \"Firm-level political risk: Measurement and effects\" by Hassan, Hollander, van Lent, and Tahoun (2020, The Quarterly Journal of Economics): How is the firm-level political risk measure (PRisk) defined and constructed, what does it quantify about a firm, and at what unit and frequency is it computed? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
-        "answer": "",
-        "quotes": [],
-        "located": [],
-        "discovered_sources": []
-      }
-    },
-    "baker2016": {
-      "Q1_def": {
-        "query": "Reading only this paper, the paper \"Measuring economic policy uncertainty\" by Baker, Bloom, and Davis (2016, The Quarterly Journal of Economics): How is the Economic Policy Uncertainty index defined and constructed, what does it measure, and at what frequency and geographic level is it reported? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
-        "answer": "",
-        "quotes": [],
-        "located": [],
-        "discovered_sources": []
-      }
-    },
-    "davis2016": {
-      "Q1_def": {
-        "query": "Reading only this paper, the paper \"An index of global economic policy uncertainty\" by Davis (2016, NBER Working Paper 22740): How is the Global Economic Policy Uncertainty index defined and constructed, and what does it measure? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
-        "answer": "",
-        "quotes": [],
-        "located": [],
+        "located": [
+          {
+            "quote": "Our primary building block is the set of unique words that firms use to describe their products in their business description sections from 10-K annual filings on the SEC Edgar website from 1996 to 2008.",
+            "page": "1429",
+            "section": "II. Objective and Methodology: From Words to Industry Classifications (Subsection B. Capturing Relatedness between Firms)"
+          },
+          {
+            "quote": "A given firm i’s vocabulary can then be represented by a W-vector Pi, with each element being populated by the number 1 if firm i uses the given word and 0 if it does not. We then normalize each vector to have unit length...",
+            "page": "1430",
+            "section": "II. Objective and Methodology: From Words to Industry Classifications (Subsection B. Capturing Relatedness between Firms)"
+          },
+          {
+            "quote": "Total similarity is a global measure and is the sum of the pairwise similarities between the given firm and all other firms in our sample in the given year.",
+            "page": "1446",
+            "section": "V. External Validation (Subsection B. Competition and Reported Peers)"
+          },
+          {
+            "quote": "We predict that a manager of a firm with higher total similarity will be more likely to disclose discussions noting higher levels of competition in his or her firm’s Management’s Discussion and Analysis section of its 10-K.",
+            "page": "1446",
+            "section": "V. External Validation (Subsection B. Competition and Reported Peers)"
+          },
+          {
+            "quote": "Row 1 shows that firms with higher global total similarity are far more likely to discuss competitive pressures in their management’s discussion. This result suggests that information in the text-based network classification is informative regarding the presence of firms that managers themselves perceive to actually be rivals.",
+            "page": "1448",
+            "section": "V. External Validation (Subsection B. Competition and Reported Peers)"
+          },
+          {
+            "quote": "We conclude that the 2001 shock resulted in an increase in total similarity, indicating increased competition.",
+            "page": "1453",
+            "section": "VI. Capturing Industry Change"
+          }
+        ],
         "discovered_sources": []
       }
     }
