@@ -185,6 +185,50 @@
           "section": "6 Clear talk and firm value"
         }
       ]
+    },
+    "Q2_decomposition": {
+      "query": "Reading only this paper, the paper \"Straight Talkers\" by Dzielinski, Wagner, and Zeckhauser: What regression equation is used to separate a CEO's answer-language uncertainty into a persistent manager-specific component and a time-varying residual? Reproduce that equation exactly, list all of its right-hand-side variables, and state precisely how the manager-specific component and the residual component are each defined from it. For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+      "answer": "Based on the Dzielinski, Wagner, and Zeckhauser working paper, the regression equation used to separate a CEO's answer-language uncertainty into a persistent manager-specific component and a time-varying residual is Equation (4) [1].\n\nHere is the exact equation as printed in the paper:\n**$UncAnsCEOi,t$ = $α$ + $γi$ · $CEOi,t$ + $βs$ · $Speechsi,t$ + $βk$ · $FirmCharski,t$ + $Y eart$ + $εi,t$**\n**$ClarityCEOi$ = $−γi$ (4)** [1]\n\nThe right-hand-side variables in this equation are:\n*   **$α$**: The intercept [1].\n*   **$γi$ · $CEOi,t$**: Manager-specific indicators, \"where $CEOi,t$ is an indicator variable equal to one if manager $i$ is CEO in quarter $t$ and 0 otherwise\" [2]. \n*   **$βs$ · $Speechsi,t$**: Control variables for linguistic markers in the calls [1].\n*   **$βk$ · $FirmCharski,t$**: Control variables for a range of time-varying firm characteristics [1].\n*   **$Y eart$**: Year-fixed effects [1].\n*   **$εi,t$**: The error term or residual [1].\n\n**Definitions of the Manager-Specific and Residual Components:**\n\n1.  **Manager-Specific Component ($ClarityCEOi$):** The manager-specific component is defined from the fixed effects estimated for each CEO, which the authors invert to create a measure of clarity [2]. \n    *   \"The systematic component of each CEO is captured by the $γ1,...,NCEO$ coefficients on the indicator variables...\" \n        *   **Page:** 18\n        *   **Section:** 4.4 CEO clarity - estimation\n    *   \"Then, we define CEO $i$’s clarity as the negative of the fixed effect:\" \n        *   **Page:** 17\n        *   **Section:** 4.4 CEO clarity - estimation\n\n2.  **Time-Varying Residual Component ($UncRes$):** The residual component is defined directly as the regression's error term, representing the fluctuations in a CEO's uncertainty language during a specific call that cannot be explained by their persistent style or the other controls [2, 3].\n    *   \"The error terms, $εi,t$, which we denote UncRes, can be interpreted as residual uncertainty that is not explained by any of the control variables included in the regression.\"\n        *   **Page:** 18\n        *   **Section:** 4.4 CEO clarity - estimation",
+      "quotes": [
+        {
+          "n": 1,
+          "cited_text": "for firm effects. The next section develops the estimation procedure in more detail.",
+          "start_char": 40524,
+          "end_char": 40609,
+          "chunk_id": "f14b039e-4c7c-400d-9115-a0c42db5d4fa"
+        },
+        {
+          "n": 2,
+          "cited_text": "22The average EPR contains 1.22% uncertainty words.",
+          "start_char": 41267,
+          "end_char": 41319,
+          "chunk_id": "784e1ecb-40ef-49c2-aafb-fe693226bf66"
+        },
+        {
+          "n": 3,
+          "cited_text": "which we denote UncRes, can be interpreted as residual uncertainty that is not explained",
+          "start_char": 41775,
+          "end_char": 41864,
+          "chunk_id": "e467e9e0-96f0-4c0d-9981-beea57a48f0b"
+        }
+      ],
+      "located": [
+        {
+          "quote": "The systematic component of each CEO is captured by the $γ1,...,NCEO$ coefficients on the indicator variables...",
+          "page": "18",
+          "section": "4.4 CEO clarity - estimation"
+        },
+        {
+          "quote": "Then, we define CEO $i$’s clarity as the negative of the fixed effect:",
+          "page": "17",
+          "section": "4.4 CEO clarity - estimation"
+        },
+        {
+          "quote": "The error terms, $εi,t$, which we denote UncRes, can be interpreted as residual uncertainty that is not explained by any of the control variables included in the regression.",
+          "page": "18",
+          "section": "4.4 CEO clarity - estimation"
+        }
+      ]
     }
   },
   "source": {
