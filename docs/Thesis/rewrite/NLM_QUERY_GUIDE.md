@@ -17,7 +17,8 @@ ONE durable, committed script does it ALL: **resolve source id → query NLM →
 notebooklm source list -n <NB> --json        # sources: {id, title, created_at}. titles = opaque filenames.
 notebooklm clear                              # best-effort ONLY — does NOT reliably reset conversation
 notebooklm ask -n <NB> -s <SOURCE_ID> --json "<query>"   # -s = scope to one source (content extraction)
-notebooklm ask -n <NB> --new --json "<query>"            # NO -s = search ALL sources -> DISCOVER id by content (§3a)
+notebooklm clear; notebooklm ask -n <NB> --json "<query>"   # NO -s = search ALL sources -> DISCOVER by content (§3a)
+                                              #   (this build has NO --new flag; `clear` first = best-effort isolation)
 notebooklm login                              # interactive (browser). AUTH EXPIRES — when source list returns
                                               #   {"error": "...Authentication expired..."}, the USER must run it.
 ```
@@ -25,7 +26,7 @@ notebooklm login                              # interactive (browser). AUTH EXPI
 - NB (this project) = `63e3b970-7976-47bc-8291-37ce7ac9bf74`.
 - Retry the ask ONCE on timeout/error (NLM chat times out sometimes).
 - Windows: `sys.stdout.reconfigure(encoding="utf-8", errors="replace")` — titles carry U+2010.
-- **ISOLATION**: `clear` is a LIE — same `conversation_id` + `is_follow_up:true` persist across asks AND sessions, so prior Q&A bleeds. REAL isolation = **`--new`** (CONFIRMED in `ask --help`: "Use --new to start fresh" — mints a new conversation) + naming the paper in every query. Use `--new` on EVERY ask. `-s` adds single-source scope ON TOP; **omit `-s` to search ALL sources** — that is how you discover an id by content (§3a).
+- **ISOLATION**: `--new` is NOT a real option in this CLI build — the `ask --help` *prose* says "Use --new to start fresh" but the options list omits it and passing it errors (`No such option: --new`, rc=2, VERIFIED 2026-06-13). **Do not trust help prose; test a flag before relying on it.** So isolation = `clear` (best-effort ONLY — `conversation_id`/`is_follow_up` can still bleed across asks) + naming the paper self-contained in EVERY query. For discovery, **omit `-s` to search ALL sources** (§3a); add `-s` to scope to one source for extraction.
 
 ## 2. ADDRESSING PAPERS — the human key
 - Address the paper IN THE QUERY by **TITLE + AUTHOR + YEAR (+ journal/series)**. Human key = title/author/year, **NEVER the NLM id, NEVER the filename.**
@@ -37,7 +38,7 @@ notebooklm login                              # interactive (browser). AUTH EXPI
 
 ### 3a. DISCOVER the id by CONTENT — the unbiased default (when you have NO known-good token)
 If you don't have a token you KNOW belongs to the paper (i.e. the filename is an opaque publisher code), do **NOT** pick candidate substrings off the filenames — that is filename-bias one level up: it can miss the paper entirely or check the wrong file. Make **NLM discover it by content**:
-- Run an **unscoped** ask (NO `-s`, with `--new`) that NAMES the paper by title+author+year (from the bib) and asks a paper-specific question.
+- Run an **unscoped** ask (NO `-s`; `clear` first for best-effort isolation) that NAMES the paper by title+author+year (from the bib) and asks a paper-specific question.
 - NLM searches ALL sources; `references[].source_id` = the source that actually CONTAINS that paper = the id, found by content, zero filename bias.
 - VERIFY: references should cohere to ONE source_id and its `cited_text` should be the paper's own content. >1 distinct source_id or off-topic spans ⇒ ambiguous → tighten the query and/or identity-confirm (§4). No relevant source ⇒ the paper is **NOT in the notebook** → tell the user to upload it.
 - One unscoped query both DISCOVERS the id and CAPTURES content. Scope follow-ups with `-s <discovered id>`.
@@ -175,7 +176,8 @@ Add the paper to `C.SOURCES` first (§3), run the `nlm_common.py` self-test, the
 
 ## 17. NEVER (the scars)
 - NEVER infer a paper's identity from its filename / DOI suffix / accession number. Ask NLM (§4).
-- NEVER pick a source token by guessing from an opaque filename — DISCOVER the id by content (unscoped `--new` query naming the paper, §3a).
+- NEVER pick a source token by guessing from an opaque filename — DISCOVER the id by content (unscoped query naming the paper, §3a).
+- NEVER trust a CLI flag because the `--help` PROSE mentions it — verify it's in the OPTIONS list and test it (scar: `--new` looked confirmed in the description, errored `No such option`).
 - NEVER spend a content query on an unresolved, ambiguous, or identity-unconfirmed source. Fail closed.
 - NEVER ad-hoc data gathering/parsing outside the script (a bare `source list` to look is the only exception).
 - NEVER `source fulltext`/PDF to derive pages or content.

@@ -8,7 +8,8 @@ under OPAQUE publisher-code filenames; we do NOT touch the filenames. For each p
 run an UNSCOPED ask (NO -s, with --new) that NAMES the paper by title+author+year (from
 our bib) and asks its definition question. NLM searches ALL sources; references[].source_id
 = the source that actually CONTAINS the paper = the id, discovered by content, zero
-filename bias. The same query also captures the definition spans.
+filename bias. The same query also captures the definition spans. (`clear` before each ask =
+best-effort isolation; this CLI build has NO --new flag.)
 
 Evidence -> tmp/nlm_validity_definitions.json (planning; folds into the 2.5 ledger later).
 Resumable; one commit per query; ONLY references[].cited_text are admissible verbatim.
@@ -90,11 +91,16 @@ def _id_titles():
 
 
 def ask_discover(label, question):
-    """UNSCOPED (no -s) + --new ask that NAMES the paper. NLM searches all sources;
-    references reveal which source_id holds it. Retries once on timeout/error."""
+    """UNSCOPED (no -s) ask that NAMES the paper; NLM searches all sources and references
+    reveal which source_id holds it. `clear` first = best-effort isolation (this build has
+    NO --new flag -- it errors). Retries once on timeout/error."""
     q = f"{nc.PREFIX}{label}: {question}{nc.LOCATOR}"
     for _ in (1, 2):
-        out = nc.run([nc.EXE, "ask", "-n", nc.NOTEBOOK, "--new", "--json", q], 420).stdout or ""
+        try:
+            nc.run([nc.EXE, "clear"], 60)
+        except Exception:
+            pass
+        out = nc.run([nc.EXE, "ask", "-n", nc.NOTEBOOK, "--json", q], 420).stdout or ""
         i = out.find("{")
         if i >= 0:
             j = json.loads(out[i:])
