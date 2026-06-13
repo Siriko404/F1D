@@ -67,6 +67,22 @@ QUERIES = {
     ],
 }
 
+# Scoped requeries for a CLEAN cited_text span where the unscoped pass left only answer-prose.
+# Tokens here are CONTENT-CONFIRMED (the unscoped/--davis pass proved which file each paper is),
+# so resolving by title-substring is now safe (identity already established by content).
+# (key, confirmed title-token, tag, question phrased to pull verbatim sentences)
+REQUERIES = [
+    ("hoberg2016", "688176", "Q3_def_direction",
+     "Quote verbatim, exactly as printed, the sentence(s) where the paper defines its total "
+     "similarity measure (a firm's total product-market similarity) and states what a HIGHER "
+     "value of it indicates about the firm's product market or competition. Reproduce each "
+     "sentence exactly."),
+    ("davis2016", "w22740", "Q2_def_clean",
+     "Quote verbatim, exactly as printed, the sentence(s) where the paper defines how the Global "
+     "Economic Policy Uncertainty (GEPU) index is constructed (for example as a GDP-weighted "
+     "average of national EPU indices). Reproduce each sentence exactly."),
+]
+
 
 def _load():
     if OUT.exists():
@@ -177,6 +193,38 @@ def davis_followup():
             print(f"  [n{x.get('n')}] {ct[:170]}")
 
 
+def requery():
+    """One scoped call per REQUERIES item -> a clean verbatim span. Appends under a new tag;
+    never overwrites the unscoped capture. Resumable."""
+    data = _load()
+    for key, token, tag, question in REQUERIES:
+        hits = [s for s in nc._sources() if token.lower() in (s.get("title") or "").lower()]
+        if len(hits) != 1:
+            print(f"{key}: {len(hits)} matches for '{token}' -- skip"); continue
+        sid, title = hits[0]["id"], hits[0]["title"]
+        data["captures"].setdefault(key, {})
+        if data["captures"][key].get(tag):
+            print(f"{key}/{tag}: already captured -- skip"); continue
+        print(f"{key}/{tag}: scoped requery -> {title}", flush=True)
+        query, j = nc.ask(sid, LABELS[key], question)         # scoped -s sid + names paper + LOCATOR
+        answer = j.get("answer", "")
+        quotes = [{"n": x.get("citation_number"), "source_id": x.get("source_id"),
+                   "cited_text": x.get("cited_text"), "start_char": x.get("start_char"),
+                   "end_char": x.get("end_char"), "chunk_id": x.get("chunk_id")}
+                  for x in j.get("references", []) if x.get("cited_text")]
+        located = [{"quote": m.group(1).strip(), "page": m.group(2).strip(),
+                    "section": m.group(3).strip()} for m in nc.LOC.finditer(answer)]
+        data["captures"][key][tag] = {"source": {"id": sid, "title": title}, "query": query,
+                                      "answer": answer, "quotes": quotes, "located": located}
+        _save(data)
+        _commit(f"verify(2.5/def): {key} {tag} scoped requery ({len(quotes)} spans)")
+        print(f"  {len(quotes)} verbatim spans:")
+        for x in quotes:
+            ct = (x.get("cited_text") or "").strip()
+            if ct:
+                print(f"    [n{x.get('n')}] {ct[:170]}")
+
+
 def show():
     data = _load()
     for key, caps in data.get("captures", {}).items():
@@ -196,9 +244,14 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--show", action="store_true")
     ap.add_argument("--davis", action="store_true")
+    ap.add_argument("--requery", action="store_true")
     a = ap.parse_args()
     if a.show:
         show()
+    elif a.requery:
+        if not nc.EXE:
+            raise SystemExit("notebooklm CLI not found on PATH; run `notebooklm login` first.")
+        requery()
     elif a.davis:
         if not nc.EXE:
             raise SystemExit("notebooklm CLI not found on PATH; run `notebooklm login` first.")

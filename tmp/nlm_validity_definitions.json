@@ -129,6 +129,32 @@
             "title": "688176.pdf"
           }
         ]
+      },
+      "Q3_def_direction": {
+        "source": {
+          "id": "dc4cd3f0-2042-4871-ade6-f59a709ac1f9",
+          "title": "688176.pdf"
+        },
+        "query": "Reading only this paper, the paper \"Text-based network industries and endogenous product differentiation\" by Hoberg and Phillips (2016, Journal of Political Economy): Quote verbatim, exactly as printed, the sentence(s) where the paper defines its total similarity measure (a firm's total product-market similarity) and states what a HIGHER value of it indicates about the firm's product market or competition. Reproduce each sentence exactly. For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+        "answer": "Based on the provided paper, here are the verbatim sentences exactly as printed that define the \"total similarity\" measure and state what a higher value of it indicates, along with their exact page numbers and section headings:\n\n**On the definition of the total similarity measure:**\n*   \"Total similarity is a global measure and is the sum of the pairwise similarities between the given firm and all other firms in our sample in the given year.\"\n    *   **Page:** 1446\n    *   **Section:** V. External Validation (Subsection B. Competition and Reported Peers)\n\n**On what a higher value of total similarity indicates about the firm's product market or competition:**\n*   \"We predict that a manager of a firm with higher total similarity will be more likely to disclose discussions noting higher levels of competition in his or her firm’s Management’s Discussion and Analysis section of its 10-K.\"\n    *   **Page:** 1446\n    *   **Section:** V. External Validation (Subsection B. Competition and Reported Peers)\n\n*   \"Row 1 shows that firms with higher global total similarity are far more likely to discuss competitive pressures in their management’s discussion.\"\n    *   **Page:** 1448\n    *   **Section:** V. External Validation (Subsection B. Competition and Reported Peers)",
+        "quotes": [],
+        "located": [
+          {
+            "quote": "Total similarity is a global measure and is the sum of the pairwise similarities between the given firm and all other firms in our sample in the given year.",
+            "page": "1446",
+            "section": "V. External Validation (Subsection B. Competition and Reported Peers)"
+          },
+          {
+            "quote": "We predict that a manager of a firm with higher total similarity will be more likely to disclose discussions noting higher levels of competition in his or her firm’s Management’s Discussion and Analysis section of its 10-K.",
+            "page": "1446",
+            "section": "V. External Validation (Subsection B. Competition and Reported Peers)"
+          },
+          {
+            "quote": "Row 1 shows that firms with higher global total similarity are far more likely to discuss competitive pressures in their management’s discussion.",
+            "page": "1448",
+            "section": "V. External Validation (Subsection B. Competition and Reported Peers)"
+          }
+        ]
       }
     },
     "hassan2020": {
