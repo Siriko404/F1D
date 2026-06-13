@@ -8,6 +8,13 @@
         "quotes": [],
         "located": [],
         "discovered_sources": []
+      },
+      "Q2_frequency": {
+        "query": "Reading only this paper, the paper \"Text-based network industries and endogenous product differentiation\" by Hoberg and Phillips (2016, Journal of Political Economy): At what unit of observation and how often is each firm's total-similarity value computed, and does that value change from year to year for a given firm or remain fixed over time? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+        "answer": "",
+        "quotes": [],
+        "located": [],
+        "discovered_sources": []
       }
     }
   }
