@@ -500,6 +500,80 @@
             "section": "I. Introduction"
           }
         ]
+      },
+      "Q2_def_clean": {
+        "source": {
+          "id": "45de8338-9ec0-4e82-a5c7-01bdf3f7161a",
+          "title": "w22740.pdf"
+        },
+        "query": "Reading only this paper, the paper \"An index of global economic policy uncertainty\" by Davis (2016, NBER Working Paper 22740): Quote verbatim, exactly as printed, the sentence(s) where the paper defines how the Global Economic Policy Uncertainty (GEPU) index is constructed (for example as a GDP-weighted average of national EPU indices). Reproduce each sentence exactly. For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+        "answer": "Based on the provided working paper by Davis (2016), here are the verbatim sentences exactly as printed that define how the Global Economic Policy Uncertainty (GEPU) index is constructed, along with their section headings. *(Note: Exact page numbers are not printed in the provided text for this working paper, so they are listed as unnumbered).*\n\n**On the general definition of the index's construction:**\n*   \"The GEPU Index is a GDP-weighted average of national EPU indices for 16 countries that account for two-thirds of global output.\" [1, 2]\n    *   **Page:** Unnumbered\n    *   **Section:** ABSTRACT (This exact sentence also appears in **Section: I. Introduction**)\n\n**On the specific step-by-step methodology used to construct the index:**\n*   \"To construct a Global Economic Policy Uncertainty (GEPU) Index, I proceed as follows: First, I re-normalize each national EPU index to a mean of 100 from 1997 (or first year) to 2015.\" [3]\n    *   **Page:** Unnumbered\n    *   **Section:** III. An Index of Global Economic Policy Uncertainty\n*   \"Second, I impute missing values for Australia, India, the Netherlands and Spain using a regression-based method.10\" [3]\n    *   **Page:** Unnumbered\n    *   **Section:** III. An Index of Global Economic Policy Uncertainty\n*   \"This step yields a balanced panel of monthly EPU index values for 16 countries from January 1997 to August 2016.\" [3]\n    *   **Page:** Unnumbered\n    *   **Section:** III. An Index of Global Economic Policy Uncertainty\n*   \"Third, I compute the GEPU Index value for each month as the GDP-weighted average of the 16 national EPU index values, using GDP data from the IMF’s World Economic Outlook Database.\" [3, 4]\n    *   **Page:** Unnumbered\n    *   **Section:** III. An Index of Global Economic Policy Uncertainty\n\n**From the Figure 1 Notes defining the calculation:**\n*   \"Global EPU calculated as the GDP-weighted average of monthly EPU index values for the US, Canada, Brazil, UK, Ireland, Germany, Spain, France, Netherlands, Italy, Russia, India, China, South Korea, Japan, and Australia using GDP data from the IMF’s World Economic Outlook Database.\" [5]\n    *   **Page:** Unnumbered\n    *   **Section:** Notes to Figure 1",
+        "quotes": [
+          {
+            "n": 1,
+            "source_id": "45de8338-9ec0-4e82-a5c7-01bdf3f7161a",
+            "cited_text": "ABSTRACT",
+            "start_char": 1180,
+            "end_char": 1189,
+            "chunk_id": "a6aed3f5-d921-463e-a1ea-98a9664b2ede"
+          },
+          {
+            "n": 2,
+            "source_id": "45de8338-9ec0-4e82-a5c7-01bdf3f7161a",
+            "cited_text": "landscape and raising policy uncertainty? Can policy uncertainty measures sharpen our",
+            "start_char": 9371,
+            "end_char": 9457,
+            "chunk_id": "1669526f-0b29-452d-9fb9-fceb75d19afe"
+          },
+          {
+            "n": 3,
+            "source_id": "45de8338-9ec0-4e82-a5c7-01bdf3f7161a",
+            "cited_text": "To construct a Global Economic Policy Uncertainty (GEPU) Index, I proceed as follows:",
+            "start_char": 16634,
+            "end_char": 16720,
+            "chunk_id": "c82f0b01-5a8b-437d-876b-e73b524b0e9d"
+          },
+          {
+            "n": 4,
+            "source_id": "45de8338-9ec0-4e82-a5c7-01bdf3f7161a",
+            "cited_text": "from the IMF’s World Economic Outlook Database.",
+            "start_char": 17179,
+            "end_char": 17227,
+            "chunk_id": "98545f46-edb1-41a6-9cce-da9ccb1d48c1"
+          }
+        ],
+        "located": [
+          {
+            "quote": "The GEPU Index is a GDP-weighted average of national EPU indices for 16 countries that account for two-thirds of global output.",
+            "page": "Unnumbered",
+            "section": "ABSTRACT (This exact sentence also appears in **Section: I. Introduction**)"
+          },
+          {
+            "quote": "To construct a Global Economic Policy Uncertainty (GEPU) Index, I proceed as follows: First, I re-normalize each national EPU index to a mean of 100 from 1997 (or first year) to 2015.",
+            "page": "Unnumbered",
+            "section": "III. An Index of Global Economic Policy Uncertainty"
+          },
+          {
+            "quote": "Second, I impute missing values for Australia, India, the Netherlands and Spain using a regression-based method.10",
+            "page": "Unnumbered",
+            "section": "III. An Index of Global Economic Policy Uncertainty"
+          },
+          {
+            "quote": "This step yields a balanced panel of monthly EPU index values for 16 countries from January 1997 to August 2016.",
+            "page": "Unnumbered",
+            "section": "III. An Index of Global Economic Policy Uncertainty"
+          },
+          {
+            "quote": "Third, I compute the GEPU Index value for each month as the GDP-weighted average of the 16 national EPU index values, using GDP data from the IMF’s World Economic Outlook Database.",
+            "page": "Unnumbered",
+            "section": "III. An Index of Global Economic Policy Uncertainty"
+          },
+          {
+            "quote": "Global EPU calculated as the GDP-weighted average of monthly EPU index values for the US, Canada, Brazil, UK, Ireland, Germany, Spain, France, Netherlands, Italy, Russia, India, China, South Korea, Japan, and Australia using GDP data from the IMF’s World Economic Outlook Database.",
+            "page": "Unnumbered",
+            "section": "Notes to Figure 1"
+          }
+        ]
       }
     }
   }
