@@ -1509,11 +1509,11 @@
       ],
       "prose_gate": {
         "rule": "P5.1 SUPPORTED before prose",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "A second dimension concerns not the timing of the signal but the deals in which it should concentrate. Cash and stock acquisitions share the identical disclosure setting---both are material, both are withheld---yet differ in one design-relevant respect: a cash purchase draws on an accumulated cash position, whereas a stock exchange need not. \\citet{harford1999} documents the underlying fact: firms accumulate cash reserves above a baseline model of normal holdings, and cash-rich firms are more likely to make acquisitions. That accumulation is a by-product of retained free cash flow rather than saving toward a particular deal, so we take from it only that a cash bid draws on a pre-existing cash position---not that firms stockpile in order to fund planned acquisitions. This makes the stock deal a natural placebo: the same withholding bind, minus the cash commitment. A signal that concentrates in cash deals rather than stock deals is therefore informative on its own terms, even though why the two should differ is a question we leave open. The two dimensions also run on different clocks: the anticipatory signal tracks the undisclosed information and resolves once the deal is announced, while the cash commitment serves the purchase itself and---mechanically---persists until it is paid at completion. The contrast is one of timing: the uncertainty is resolved by the announcement, the cash is not.",
+      "prose_status": "DRAFTED"
     },
     "P6": {
       "order": 6,
