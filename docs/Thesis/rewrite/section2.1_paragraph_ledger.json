@@ -1117,7 +1117,17 @@
                 "section": "VII. CONCLUSION"
               }
             ],
-            "verdict": "PENDING"
+            "verdict": "SUPPORTED",
+            "span_pins": [
+              {
+                "phrase": "a manager's residual in his last job and his residual in his first job",
+                "page": "1186",
+                "section": "IV.C. Robustness of Results",
+                "query": "Reading only this paper, \"Managing with Style: The Effect of Managers on Firm Policies\" by Bertrand and Schoar (2003, Quarterly Journal of Economics): on what page (the page number printed in the paper) and in which section does this exact sentence appear? Report **Page:** and **Section:**. Sentence: \"a manager's residual in his last job and his residual in his first job\"",
+                "answer": "**Page:** 1186\n\n**Section:** IV.C. Robustness of Results"
+              }
+            ],
+            "verdict_note": "Bertrand & Schoar (2003): managers carry persistent fixed-effect styles across the firm policies they manage -- verbatim span n4 (a manager's residual in his last job vs his first job is positive and statistically significant for ALL policy variables, t-stats 4-16) + n2 (the investment / financial / organizational policy variables). PREMISE ONLY (persistent components are real, in POLICIES); NOT the language decomposition (DWZ's), NOT a residual-is-signal claim."
           }
         },
         {
@@ -1248,7 +1258,17 @@
                 "section": "5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?"
               }
             ],
-            "verdict": "PENDING"
+            "verdict": "SUPPORTED",
+            "span_pins": [
+              {
+                "phrase": "the first to explicitly decompose",
+                "page": "6",
+                "section": "1 Introduction",
+                "query": "Reading only this paper, \"Straight Talkers and Vague Talkers: The Effects of Managerial Style in Earnings Conference Calls\" by Dzielinski, Wagner and Zeckhauser (working paper): on what page (the page number printed in the paper) and in which section does this exact sentence appear? Report **Page:** and **Section:**. Sentence: \"the first to explicitly decompose\"",
+                "answer": "**Page:** 6\n\n**Section:** 1 Introduction"
+              }
+            ],
+            "verdict_note": "DWZ 'Straight Talkers and Vague Talkers' (working paper): CEO uncertainty/clarity language decomposes into a persistent manager-specific component ('CEO clarity', a CEO fixed effect, distinct from firm-level uncertainty / industry / size -- verbatim fragments n2/n3/n4) and a time-varying call-level residual; decisive decomposition sentence span_pinned ('the first to explicitly decompose'). Cited ONLY for the decomposition's existence -- the residual-is-where-the-signal-must-live logic is OURS, never attributed to DWZ."
           }
         },
         {
@@ -1310,7 +1330,17 @@
                 "section": "5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?"
               }
             ],
-            "verdict": "PENDING"
+            "verdict": "SUPPORTED",
+            "span_pins": [
+              {
+                "phrase": "neither UncPreCEO nor UncResCEO is significantly",
+                "page": "26",
+                "section": "5.2 Results",
+                "query": "Reading only this paper, \"Straight Talkers and Vague Talkers: The Effects of Managerial Style in Earnings Conference Calls\" by Dzielinski, Wagner and Zeckhauser (working paper): on what page (the page number printed in the paper) and in which section does this exact sentence appear? Report **Page:** and **Section:**. Sentence: \"neither UncPreCEO nor UncResCEO is significantly\"",
+                "answer": "**Page:** 26\n\n**Section:** 5.2 Results"
+              }
+            ],
+            "verdict_note": "NON-GATING record (for 2.3 defensive + 3 contrast). DWZ: the time-varying residual component is NOT significantly related to price reactions -- span_pin 'neither UncPreCEO nor UncResCEO is significantly [associated]' (p.26). This is the null our cash-positive result CONTRASTS with; do NOT draft it into P4."
           }
         }
       ],
