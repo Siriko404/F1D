@@ -16,6 +16,15 @@
         "located": [],
         "discovered_sources": []
       }
+    },
+    "hassan2020": {
+      "Q1_def": {
+        "query": "Reading only this paper, the paper \"Firm-level political risk: Measurement and effects\" by Hassan, Hollander, van Lent, and Tahoun (2020, The Quarterly Journal of Economics): How is the firm-level political risk measure (PRisk) defined and constructed, what does it quantify about a firm, and at what unit and frequency is it computed? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+        "answer": "",
+        "quotes": [],
+        "located": [],
+        "discovered_sources": []
+      }
     }
   }
 }
