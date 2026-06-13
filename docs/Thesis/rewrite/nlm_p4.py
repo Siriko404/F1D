@@ -58,18 +58,27 @@ VERDICTS = {
              "PREMISE ONLY (persistent components are real, in POLICIES); NOT the language "
              "decomposition (DWZ's), NOT a residual-is-signal claim."),
     "P4.2": ("SUPPORTED",
-             "DWZ 'Straight Talkers and Vague Talkers' (working paper): CEO uncertainty/clarity "
-             "language decomposes into a persistent manager-specific component ('CEO clarity', a "
-             "CEO fixed effect, distinct from firm-level uncertainty / industry / size -- verbatim "
-             "fragments n2/n3/n4) and a time-varying call-level residual; decisive decomposition "
-             "sentence span_pinned ('the first to explicitly decompose'). Cited ONLY for the "
-             "decomposition's existence -- the residual-is-where-the-signal-must-live logic is "
-             "OURS, never attributed to DWZ."),
+             "DWZ 'Straight Talkers and Vague Talkers' (working paper): the persistent/time-varying "
+             "decomposition this paper follows. EVIDENCE BASIS -- DWZ's PDF chunks badly, so NO "
+             "single clean cited_text span carries the full decomposition; the basis is CONVERGENT: "
+             "(1) the decisive sentence is reproduced VERBATIM and IDENTICALLY across TWO "
+             "independent NLM queries + round-trip pinned -- 'Our analysis is the first to "
+             "explicitly decompose an important feature of CEO communication into two components: "
+             "personal style and the potentially strategic component (the residual), and then to "
+             "separately examine their impacts' (p.6 sec 1; see verification.requery); (2) verbatim "
+             "cited_text FRAGMENTS n2 ('...we operationalize CEOs' [clarity]') + n4 ('neither does "
+             "it differ systematically across industries, firm size') back the persistent "
+             "(manager-specific) half. Cited ONLY for the decomposition's EXISTENCE; the "
+             "residual-is-where-the-signal-must-live logic is OURS, never DWZ's. NB: DWZ themselves "
+             "call the residual 'the potentially strategic component'."),
     "P4.3": ("SUPPORTED",
-             "NON-GATING record (for 2.3 defensive + 3 contrast). DWZ: the time-varying residual "
-             "component is NOT significantly related to price reactions -- span_pin 'neither "
-             "UncPreCEO nor UncResCEO is significantly [associated]' (p.26). This is the null our "
-             "cash-positive result CONTRASTS with; do NOT draft it into P4."),
+             "NON-GATING record (for 2.3 defensive + 3 contrast). EVIDENCE BASIS is ANSWER-LEVEL "
+             "ONLY -- NO clean cited_text span (DWZ chunks badly; the structured spans are "
+             "fragments/off-claim). DWZ report the time-varying residual is NOT significantly "
+             "related to price reactions: answer-reproduced 'By contrast, neither UncPreCEO nor "
+             "UncResCEO is significantly associated with stock price or volume [reactions]' "
+             "(located p.26 + p.29; span_pin p.26 sec 5.2). NOT 'evidence-locked' -- re-verify with "
+             "a clean span when 3 drafts the cash-positive CONTRAST. Do NOT draft into P4."),
 }
 
 # Targeted re-query (advisor): ONE DWZ call seeking CLEAN spans for the decomposition +
