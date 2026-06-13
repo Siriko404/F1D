@@ -1,0 +1,194 @@
+{
+  "paper": "the paper \"Straight Talkers\" by Dzielinski, Wagner, and Zeckhauser",
+  "source_key": "dwz2021",
+  "captures": {
+    "Q1_enumerate": {
+      "query": "Reading only this paper, the paper \"Straight Talkers\" by Dzielinski, Wagner, and Zeckhauser: List every numbered equation that appears anywhere in this paper. For each one, reproduce the equation exactly as printed and then define every variable, coefficient, and subscript it contains. For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+      "answer": "Based on the provided paper, here are all the numbered equations exactly as they are printed, along with definitions for their variables, coefficients, and subscripts, and the supporting quotes with their corresponding page numbers and sections.\n\n### **Equation (1)**\n> $UncPreCEO$ =  $UnctWordsPreCEO$ / $WordsPreCEO$ (1)\n\n**Definitions:**\n*   **$UncPreCEO$**: The fraction of uncertainty words among all the words spoken by the CEO during the presentation.\n*   **$UnctWordsPreCEO$**: The count of uncertainty words spoken by the CEO during the presentation.\n*   **$WordsPreCEO$**: The total count of words spoken by the CEO during the presentation.\n\n**Supporting Quotes:**\n*   \"We calculate the fraction of uncertainty words among all the words spoken by the CEO, during the presentation and then when answering questions from analysts:\" [1] \n    *   **Page:** 14\n    *   **Section:** 4.2 Uncertainty words\n\n\n### **Equation (2)**\n> $UncAnsCEO$ =  $UnctWordsAnsCEO$ / $WordsAnsCEO$ (2)\n\n**Definitions:**\n*   **$UncAnsCEO$**: The fraction of uncertainty words among all the words spoken by the CEO when answering questions from analysts.\n*   **$UnctWordsAnsCEO$**: The count of uncertainty words spoken by the CEO when answering questions.\n*   **$WordsAnsCEO$**: The total count of words spoken by the CEO when answering questions.\n\n**Supporting Quotes:**\n*   \"We calculate the fraction of uncertainty words among all the words spoken by the CEO, during the presentation and then when answering questions from analysts:\" [1] \n    *   **Page:** 14\n    *   **Section:** 4.2 Uncertainty words\n\n\n### **Equation (3)**\n> $UncQue$ =  $UnctWordsQue$ / $WordsQue$ (3)\n\n**Definitions:**\n*   **$UncQue$**: The fraction of uncertainty words in the questions asked by analysts.\n*   **$UnctWordsQue$**: The count of uncertainty words used in the analysts' questions.\n*   **$WordsQue$**: The total count of words used in the analysts' questions.\n\n**Supporting Quotes:**\n*   \"We also calculate the fraction of uncertainty words in analyst questions:\" [1] \n    *   **Page:** 14\n    *   **Section:** 4.2 Uncertainty words\n\n\n### **Equation (4)**\n> $UncAnsCEOi,t$ =  $α$ +  $γi$ ·  $CEOi,t$ +  $βs$ ·  $Speechsi,t$ +  $βk$ ·  $FirmCharski,t$ +  $Yeart$ +  $εi,t$\n> $ClarityCEOi$ =  $−γi$ (4)\n\n**Definitions:**\n*   **$i$**: Subscript indexing the individual manager (CEO).\n*   **$t$**: Subscript indexing the specific quarter.\n*   **$s, k$**: Subscripts indexing the specific speech and firm characteristic control variables.\n*   **$UncAnsCEOi,t$**: The frequency of uncertainty words used in conference call answers by CEO $i$ in quarter $t$.\n*   **$α$**: The intercept of the regression model.\n*   **$γi$**: The coefficient capturing the systematic component (or fixed effect) specific to CEO $i$.\n*   **$CEOi,t$**: An indicator variable that equals 1 if manager $i$ is the CEO in quarter $t$, and 0 otherwise.\n*   **$βs, βk$**: Regression coefficients for the respective control variables.\n*   **$Speechsi,t$**: Control variables for linguistic markers within the calls.\n*   **$FirmCharski,t$**: A matrix of time-varying firm characteristics.\n*   **$Yeart$**: Year-fixed effects to control for time-related business conditions.\n*   **$εi,t$** (also denoted as **$UncRes$**): The error term representing the residual uncertainty not explained by the model's controls.\n*   **$ClarityCEOi$**: The clarity measure of CEO $i$, calculated as the negative of their fixed effect.\n\n**Supporting Quotes:**\n*   \"First, according to Equation 4 we estimate each CEO’s fixed effect in the frequency of 'uncertainty' words in conference call answers.\" [2] \n    *   **Page:** 17\n    *   **Section:** 4.4 CEO clarity - estimation\n*   \"Then, we define CEO $i’s$ clarity as the negative of the fixed effect:\" [2] \n    *   **Page:** 17\n    *   **Section:** 4.4 CEO clarity - estimation\n*   \"where $CEOi,t$ is an indicator variable equal to one if manager $i$ is CEO in quarter $t$ and 0 otherwise.\" [3] \n    *   **Page:** 18\n    *   **Section:** 4.4 CEO clarity - estimation\n*   \"The systematic component of each CEO is captured by the $γ1,...,NCEO$ coefficients on the indicator variables...\" [3] \n    *   **Page:** 18\n    *   **Section:** 4.4 CEO clarity - estimation\n*   \"The error terms, $εi,t,$ which we denote UncRes, can be interpreted as residual uncertainty that is not explained by any of the control variables included in the regression.\" [3, 4]\n    *   **Page:** 18\n    *   **Section:** 4.4 CEO clarity - estimation\n\n\n### **Equation (5)**\n> $EarnRespi,t$ =  $α$ +  $β1$ ·  $ClarityCEOi$ +  $β2$ ·  $UncResCEOi,t$ +  $β3$ ·  $SurpDecAbsi,t+$\n> +  $β4$ ·  $∆NegCall$ +  $βk$ ·  $Controlski,t$ +  $Indi$ +  $Yeart$ +  $εi,t$ (5)\n\n**Definitions:**\n*   **$i, t$**: Subscripts indexing the individual CEO $i$ and quarter $t$.\n*   **$k$**: Subscript indexing the specific control variables.\n*   **$EarnRespi,t$**: The initial response of the market to the conference call of CEO $i$ in quarter $t$.\n*   **$α, β1, β2, β3, β4, βk$**: Regression coefficients.\n*   **$ClarityCEOi$**: The calculated clarity measure of CEO $i$.\n*   **$UncResCEOi,t$**: The residual use of uncertainty words by CEO $i$ in quarter $t$.\n*   **$SurpDecAbsi,t$**: The absolute value of the earnings surprise decile.\n*   **$∆NegCall$**: Unexpected negativity, acting as soft information, measured as the change in the frequency of negative words relative to the prior call.\n*   **$Controlski,t$**: The range of control variables proxying for firm characteristics and uncertainty.\n*   **$Indi$**: Industry-fixed effects.\n*   **$Yeart$**: Year-fixed effects.\n*   **$εi,t$**: The regression error term.\n\n**Supporting Quotes:**\n*   \"Specifically, we estimate for the initial response $(EarnResp)$ of the market to the conference call of CEO $i$ in quarter $t:$\" [5, 6]\n    *   **Page:** 23\n    *   **Section:** 5.1 Empirical strategy\n*   \"Since both positive and negative surprises can be informative, we use SurpDecAbs, the absolute value of SurpDec in the regression.\" [7, 8]\n    *   **Page:** 24\n    *   **Section:** 5.1 Empirical strategy\n*   \"We capture soft information with unexpected negativity, defined as the change in the frequency of negative words relative to the previous call, $∆Neg.$\" [8, 9]\n    *   **Page:** 24\n    *   **Section:** 5.1 Empirical strategy\n\n\n### **Equation (6)**\n> $CAR01i,t$ =  $α$ +  $β1$ ·  $SurpDeci,t$ +  $β2$ ·  $ClarityCEOi$ ·  $SurpDeci,t+$\n> +  $β3$ ·  $∆NegCalli,t$ +  $β4$ ·  $ClarityCEO,i$ ·  $∆NegCalli,t$ +  $β5$ ·  $ClarityCEOi+$\n> +  $βk$ ·  $Controlski,t$ +  $βk$ ·  $Controlski,t$ ·  $[SurpDeci,t,∆NegCalli,t]$ +  $εi,t$ (6)\n\n**Definitions:**\n*   **$i, t, k$**: Subscripts indexing the manager $i$, quarter $t$, and control variables index $k$.\n*   **$CAR01i,t$**: The short-term market response, measured as the cumulative abnormal return over the day of the call ($t=0$) and the subsequent trading day ($t=1$).\n*   **$α, β1, β2, β3, β4, β5, βk$**: Regression coefficients.\n*   **$SurpDeci,t$**: \"Hard\" earnings information, measured by the earnings surprise decile.\n*   **$ClarityCEOi$** (and printed variation **$ClarityCEO,i$**): The clarity measure of CEO $i$.\n*   **$∆NegCalli,t$**: \"Soft\" earnings information, measured by the change in call negativity.\n*   **$Controlski,t$**: The set of control variables.\n*   **$[SurpDeci,t,∆NegCalli,t]$**: Represents the interaction terms between the control variables and both the hard and soft earnings information.\n*   **$εi,t$**: The regression error term.\n\n**Supporting Quotes:**\n*   \"Thus, we estimate:\" [10]\n    *   **Page:** 28\n    *   **Section:** 5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?\n*   \"To answer, we focus on interactions between $ClarityCEO$ and both “hard” (the earnings surprise, $SurpDec)$ and “soft” (change in negativity, $∆Neg)$ earnings information.\" [11]\n    *   **Page:** 28\n    *   **Section:** 5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?\n*   \"The set of control variables remains the same, and they are interacted with the earnings surprise and with the change in negativity.\" [11]\n    *   **Page:** 28\n    *   **Section:** 5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?\n\n\n### **Equation (7)**\n> $∆Valuej$ =  $α$ +  $β$ ·  $∆ClarityCEO,j$ +  $βk$ ·  $∆Controlskj$ +  $FF48j$ +  $εj$ (7)\n\n**Definitions:**\n*   **$j$**: Subscript indexing the specific CEO turnover event.\n*   **$k$**: Subscript indexing the control variables.\n*   **$∆Valuej$**: The change in a firm's valuation associated with a turnover, calculated as the difference in the average Tobin's Q between the incoming and outgoing CEO.\n*   **$α, β, βk$**: Regression coefficients.\n*   **$∆ClarityCEO,j$**: The difference in the clarity measure between the outgoing and the incoming CEO during turnover event $j$.\n*   **$∆Controlskj$**: The differences or changes in observable confounding factors (such as changes in total assets, ROA, intangibles, etc.).\n*   **$FF48j$**: Fama-French 48 industry-fixed effects.\n*   **$εj$**: The regression error term.\n\n**Supporting Quotes:**\n*   \"Specifically, across the $j$ turnover events we estimate:\" [12]\n    *   **Page:** 31\n    *   **Section:** 6 Clear talk and firm value\n*   \"To measure $∆Value,$ we calculate the average of Tobin’s Q over each outgoing and incoming CEO’s tenure and take the difference: $∆Q$ = $QNewCEO$ − $QOldCEO.$\" [13]\n    *   **Page:** 31\n    *   **Section:** 6 Clear talk and firm value\n*   \"We also explicitly control for changes in plausible observable confounding factors.\" [12]\n    *   **Page:** 31\n    *   **Section:** 6 Clear talk and firm value",
+      "quotes": [
+        {
+          "n": 1,
+          "cited_text": "13",
+          "start_char": 33341,
+          "end_char": 33343,
+          "chunk_id": "be1005bf-1604-43e4-ba48-c1455b0d4121"
+        },
+        {
+          "n": 2,
+          "cited_text": "for firm effects. The next section develops the estimation procedure in more detail.",
+          "start_char": 40524,
+          "end_char": 40609,
+          "chunk_id": "d5cf4791-1b72-4ee8-9091-05dfb978db95"
+        },
+        {
+          "n": 3,
+          "cited_text": "22The average EPR contains 1.22% uncertainty words.",
+          "start_char": 41267,
+          "end_char": 41319,
+          "chunk_id": "a03702e4-bf80-4c28-b178-8fbb184638e0"
+        },
+        {
+          "n": 4,
+          "cited_text": "which we denote UncRes, can be interpreted as residual uncertainty that is not explained",
+          "start_char": 41775,
+          "end_char": 41864,
+          "chunk_id": "42f3ca45-fa98-41a5-9bfa-c5b8f99fac33"
+        },
+        {
+          "n": 5,
+          "cited_text": "more informative, hence will elicit stronger responses from market participants.",
+          "start_char": 53708,
+          "end_char": 53789,
+          "chunk_id": "ce5f8985-5ee3-4f32-8ea5-b1a690fcec08"
+        },
+        {
+          "n": 6,
+          "cited_text": "the market to the conference call of CEO i in quarter t:",
+          "start_char": 54269,
+          "end_char": 54326,
+          "chunk_id": "e1d7e87e-e162-40da-abab-02e5ef8dc96d"
+        },
+        {
+          "n": 7,
+          "cited_text": "three days after the call in quarter t. We calculate the consensus as the median of all",
+          "start_char": 55436,
+          "end_char": 55524,
+          "chunk_id": "7f078e9e-9448-4ef8-9b17-e99368b80882"
+        },
+        {
+          "n": 8,
+          "cited_text": "informative, we use SurpDecAbs, the absolute value of SurpDec in the regression.32",
+          "start_char": 55974,
+          "end_char": 56057,
+          "chunk_id": "25f6d268-9d27-47e0-86da-bc4bcc4441f7"
+        },
+        {
+          "n": 9,
+          "cited_text": "32Using surprise deciles follows Hirshleifer, Lim, and Teoh (2009) and DellaVigna and Pollet (2009) who show that these earnings quantiles exhibit an approximately linear relationship with earnings responses. The relationship between the earnings surprise itself and the immediate stock response, by contrast, is monotonic but highly nonlinear (Kothari, 2001).",
+          "start_char": 57330,
+          "end_char": 57691,
+          "chunk_id": "48c3e9c4-39c0-4277-a6fd-f3c46c877af6"
+        },
+        {
+          "n": 10,
+          "cited_text": "Burgstahler, and Martin, 2002). Thus, we estimate:",
+          "start_char": 66905,
+          "end_char": 66956,
+          "chunk_id": "f36aff5e-2db2-4f07-b370-18e93186ec35"
+        },
+        {
+          "n": 11,
+          "cited_text": "the response to hard information that is affected? Or the response to soft information?",
+          "start_char": 66376,
+          "end_char": 66464,
+          "chunk_id": "79a74636-df26-4e4f-ae09-3d2de02ed700"
+        },
+        {
+          "n": 12,
+          "cited_text": "to appoint clear talkers at special times given past firm performance, for example, after poor",
+          "start_char": 72149,
+          "end_char": 72244,
+          "chunk_id": "a73d6f83-9332-40c3-bba2-9ff49eb2b4ec"
+        },
+        {
+          "n": 13,
+          "cited_text": "unobserved time-invariant firm characteristics. We also explicitly control for changes in",
+          "start_char": 72691,
+          "end_char": 72781,
+          "chunk_id": "7e7d0ca7-8f10-4cd2-a23b-6b5d861ca646"
+        }
+      ],
+      "located": [
+        {
+          "quote": "We calculate the fraction of uncertainty words among all the words spoken by the CEO, during the presentation and then when answering questions from analysts:",
+          "page": "14",
+          "section": "4.2 Uncertainty words"
+        },
+        {
+          "quote": "We calculate the fraction of uncertainty words among all the words spoken by the CEO, during the presentation and then when answering questions from analysts:",
+          "page": "14",
+          "section": "4.2 Uncertainty words"
+        },
+        {
+          "quote": "We also calculate the fraction of uncertainty words in analyst questions:",
+          "page": "14",
+          "section": "4.2 Uncertainty words"
+        },
+        {
+          "quote": "First, according to Equation 4 we estimate each CEO’s fixed effect in the frequency of 'uncertainty' words in conference call answers.",
+          "page": "17",
+          "section": "4.4 CEO clarity - estimation"
+        },
+        {
+          "quote": "Then, we define CEO $i’s$ clarity as the negative of the fixed effect:",
+          "page": "17",
+          "section": "4.4 CEO clarity - estimation"
+        },
+        {
+          "quote": "where $CEOi,t$ is an indicator variable equal to one if manager $i$ is CEO in quarter $t$ and 0 otherwise.",
+          "page": "18",
+          "section": "4.4 CEO clarity - estimation"
+        },
+        {
+          "quote": "The systematic component of each CEO is captured by the $γ1,...,NCEO$ coefficients on the indicator variables...",
+          "page": "18",
+          "section": "4.4 CEO clarity - estimation"
+        },
+        {
+          "quote": "The error terms, $εi,t,$ which we denote UncRes, can be interpreted as residual uncertainty that is not explained by any of the control variables included in the regression.",
+          "page": "18",
+          "section": "4.4 CEO clarity - estimation"
+        },
+        {
+          "quote": "Specifically, we estimate for the initial response $(EarnResp)$ of the market to the conference call of CEO $i$ in quarter $t:$",
+          "page": "23",
+          "section": "5.1 Empirical strategy"
+        },
+        {
+          "quote": "Since both positive and negative surprises can be informative, we use SurpDecAbs, the absolute value of SurpDec in the regression.",
+          "page": "24",
+          "section": "5.1 Empirical strategy"
+        },
+        {
+          "quote": "We capture soft information with unexpected negativity, defined as the change in the frequency of negative words relative to the previous call, $∆Neg.$",
+          "page": "24",
+          "section": "5.1 Empirical strategy"
+        },
+        {
+          "quote": "earnings information, measured by the change in call negativity.\n*   **$Controlski,t$**: The set of control variables.\n*   **$[SurpDeci,t,∆NegCalli,t]$**: Represents the interaction terms between the control variables and both the hard and soft earnings information.\n*   **$εi,t$**: The regression error term.\n\n**Supporting Quotes:**\n*",
+          "page": "28",
+          "section": "5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?"
+        },
+        {
+          "quote": "To answer, we focus on interactions between $ClarityCEO$ and both “hard” (the earnings surprise, $SurpDec)$ and “soft” (change in negativity, $∆Neg)$ earnings information.",
+          "page": "28",
+          "section": "5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?"
+        },
+        {
+          "quote": "The set of control variables remains the same, and they are interacted with the earnings surprise and with the change in negativity.",
+          "page": "28",
+          "section": "5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?"
+        },
+        {
+          "quote": "Specifically, across the $j$ turnover events we estimate:",
+          "page": "31",
+          "section": "6 Clear talk and firm value"
+        },
+        {
+          "quote": "To measure $∆Value,$ we calculate the average of Tobin’s Q over each outgoing and incoming CEO’s tenure and take the difference: $∆Q$ = $QNewCEO$ − $QOldCEO.$",
+          "page": "31",
+          "section": "6 Clear talk and firm value"
+        },
+        {
+          "quote": "We also explicitly control for changes in plausible observable confounding factors.",
+          "page": "31",
+          "section": "6 Clear talk and firm value"
+        }
+      ]
+    }
+  },
+  "source": {
+    "id": "5f348ced-c548-45f5-b61a-817163bb49eb",
+    "title": "Dzielinski et al. - Straight talkers and vague talkers The effects of managerial style in earnings conference calls.pdf"
+  }
+}
