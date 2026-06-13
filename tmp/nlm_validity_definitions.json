@@ -1,0 +1,14 @@
+{
+  "_purpose": "2.5 validity-yardstick variable definitions (NLM content-discovery, guide §3a)",
+  "captures": {
+    "hoberg2016": {
+      "Q1_def": {
+        "query": "Reading only this paper, the paper \"Text-based network industries and endogenous product differentiation\" by Hoberg and Phillips (2016, Journal of Political Economy): How is the text-based total product-market similarity measure (the sum of pairwise product-market similarities between a firm and other firms, from the Text-Based Network Industry Classification) defined and constructed from firms' product descriptions, and what does a higher value indicate about a firm's competitive environment? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+        "answer": "",
+        "quotes": [],
+        "located": [],
+        "discovered_sources": []
+      }
+    }
+  }
+}
