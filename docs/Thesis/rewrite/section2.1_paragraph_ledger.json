@@ -1382,11 +1382,11 @@
       ],
       "prose_gate": {
         "rule": "P4.1 + P4.2 SUPPORTED before prose (P4.3 is a non-gating record for 2.3/3)",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "The anticipatory pattern just described, however, is not the only thing moving uncertainty language on a call. How uncertain a CEO sounds is partly a durable personal trait: some executives simply speak more cautiously than others, quarter after quarter. \\citet{bertrand_schoar2003} show that managers carry such persistent, individual styles---manager fixed effects---that durably shape the policies of the firms they run, with a manager's imprint in one firm strongly predicting his imprint in the next across investment, financial, and organizational policy alike. \\citet{dwz2021} construct such a decomposition for the language of earnings calls, separating a CEO's use of uncertainty words into a persistent, manager-specific style component and a time-varying, call-level residual. The implication for our purpose is a locating one. A persistent style is a fixed trait of the speaker, not a signal that tracks a particular, still-undisclosed transaction; an anticipatory component, by contrast, must emerge while a given deal is pending and subside once it is announced---it must vary from call to call within a single executive's tenure. If such a component exists, it therefore cannot reside in the persistent style; it can only live in the call-varying residual that remains once persistent style is netted out. This locates where an anticipatory signal must be---it does not claim the residual is that signal, which only the research design that follows can isolate.",
+      "prose_status": "DRAFTED"
     },
     "P5": {
       "order": 5,
