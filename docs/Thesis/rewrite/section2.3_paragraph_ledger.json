@@ -16,7 +16,7 @@
   "subsection": "2.3",
   "title": "Estimation of the Main Variable",
   "role": "the measurement heart",
-  "status": "RATIFIED 2026-06-13 (user ratification ceremony) -- incl. the UncPre over-control P3 cut -> P2.5 positive fold",
+  "status": "RATIFIED 2026-06-14 (user: 'consider everything ratified for now'; PROVISIONAL, from PDF -- may revisit) | prose in thesis_draft.tex (full §2, compiles clean).",
   "created": "2026-06-13",
   "_governing": {
     "hard_rules": [
@@ -130,11 +130,11 @@
       ],
       "prose_gate": {
         "rule": "all propositions confirmed/cleared before prose",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
       "final_prose": "The dependent variable is built from the language of the call. Following the apparatus adopted in Section~2.1, we measure uncertainty with the Loughran and McDonald finance-specific uncertainty word list, applied as a word share. For a CEO's answers in the question-and-answer session, the raw measure is the share of uncertainty words among all the words the CEO speaks when answering analysts, which is Equation~(2) of \\citet{dwz}:\n\\begin{equation}\n\\mathrm{UncAnsCEO} = \\frac{\\mathrm{UnctWordsAnsCEO}}{\\mathrm{WordsAnsCEO}}.\n\\end{equation}\nThis raw share is the quantity the decomposition below operates on. The same word-share form is computed for the scripted presentation, $\\mathrm{UncPreCEO}$, and for the analysts' own questions, $\\mathrm{UncQue}$; these enter the decomposition as controls, not as the dependent variable. How the transcripts are tokenized and the words matched is a construction detail we defer to Section~3.1; here the measure is taken as given, and the question is which part of it can carry an anticipatory signal.",
-      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 v2 (bare 'DWZ'->natbib cites; eq (2)/(4)/(5) cited; 'published residuals' cut; eq verbatim-verified; dash-free; pushed to .tex for PDF review; NOT ratified)"
+      "prose_status": "RATIFIED 2026-06-14 (user: 'consider everything ratified for now'; PROVISIONAL, from PDF -- may revisit)"
     },
     "P2": {
       "order": 2,
@@ -225,11 +225,11 @@
       ],
       "prose_gate": {
         "rule": "all propositions confirmed/cleared before prose",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
       "final_prose": "An anticipatory, deal-tracking signal must vary from call to call within a single CEO's tenure, so, as established in Section~2.1, it can reside only in the call-varying part of this measure and not in the CEO's persistent speaking style. To separate the two, we adopt the decomposition in Equation~(4) of \\citet{dwz}, estimated on our sample:\n\\begin{equation}\n\\mathrm{UncAnsCEO}_{i,t} = \\alpha + \\gamma_i\\,\\mathrm{CEO}_{i,t} + \\beta_s\\,\\mathrm{Speech}_{s,i,t} + \\beta_k\\,\\mathrm{FirmChars}_{k,i,t} + \\mathrm{Year}_t + \\varepsilon_{i,t},\n\\end{equation}\nwhere $\\mathrm{CEO}_{i,t}$ is an indicator for manager $i$ being CEO in quarter $t$, $\\mathrm{Speech}_{s,i,t}=\\{\\mathrm{UncPreCEO},\\mathrm{UncQue},\\mathrm{NegCall}\\}$ collects other linguistic features of the same call, $\\mathrm{FirmChars}_{k,i,t}=\\{\\mathrm{SurpDec},\\mathrm{EPSgrowth},\\mathrm{StockRet},\\mathrm{MarketRet}\\}$ collects contemporaneous performance, and $\\mathrm{Year}_t$ absorbs common annual conditions. The persistent component is the CEO fixed effect, summarized as $\\mathrm{ClarityCEO}_i=-\\gamma_i$, and the object of interest is its residual term, $\\mathrm{UncResCEO}=\\varepsilon_{i,t}$, which we estimate on our data. Because $\\mathrm{UncResCEO}$ is taken net of the persistent style and of these observable call-level controls, it is narrower than a style-only residual: a sharper version of the call-level component located in Section~2.1, not a different object. The authors themselves construct this residual and use it as an explanatory variable in their own market-response model (their Equation~(5)); our contribution is not the measure but the anticipatory, disclosure-state reading we give it around undisclosed deals. Finally, because the residual is net of the scripted presentation, $\\mathrm{UncPreCEO}$, it isolates the unscripted component, the place where the anticipation of an undisclosed deal would surface; should some of that anticipation also reach the prepared remarks, the residual understates it and so reads as a conservative floor. By the same construction it is net of analyst-question uncertainty, $\\mathrm{UncQue}$, and of call negativity, $\\mathrm{NegCall}$, a property Section~2.5 relies on when it separates the signal from analyst scrutiny.",
-      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 v2 (bare 'DWZ'->natbib cites; eq (2)/(4)/(5) cited; 'published residuals' cut; eq verbatim-verified; dash-free; pushed to .tex for PDF review; NOT ratified)"
+      "prose_status": "RATIFIED 2026-06-14 (user: 'consider everything ratified for now'; PROVISIONAL, from PDF -- may revisit)"
     },
     "P3": {
       "order": 3,
@@ -270,11 +270,11 @@
       ],
       "prose_gate": {
         "rule": "all propositions confirmed/cleared before prose",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
       "final_prose": "One feature of this construction deserves note. Because $\\mathrm{UncResCEO}$ is itself the residual from a first-stage regression and then serves as the dependent variable in the analyses that follow, the design is a standard two-step one, and conventional second-stage standard errors can be understated unless a two-step correction is applied. We flag the property rather than treat it as a defect: it is generic to two-step estimation, \\citeauthor{dwz} themselves use the residual as a regressor, and where it matters a bootstrap that re-estimates both stages supplies a remedy. The deeper question, whether the residual reflects genuine uncertainty rather than merely the analyst scrutiny a call attracts, is not settled by construction; we treat it as an empirical matter and take it up in Section~2.5.",
-      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 v2 (bare 'DWZ'->natbib cites; eq (2)/(4)/(5) cited; 'published residuals' cut; eq verbatim-verified; dash-free; pushed to .tex for PDF review; NOT ratified)"
+      "prose_status": "RATIFIED 2026-06-14 (user: 'consider everything ratified for now'; PROVISIONAL, from PDF -- may revisit)"
     }
   },
   "next_action": "[CURRENT 2026-06-13 -- read FIRST; everything after '||' is SUPERSEDED historical log] 2.3 RATIFIED (top-level status is authoritative); prose pending its turn in ledger-first drafting. The 'NOT ratified / RE-RATIFY' fragments below are superseded || [2026-06-13 scrutiny-reframe sweep] integrity fix only: P2.5 ref re-pointed 2.2 P5.3 -> 2.5 P4.4 (2.2 P5.3 was dropped); P3.2 'scrutiny artifact' -> 'merely analyst scrutiny'. No content change; 2.3 stays RATIFIED. 2.3 P3 (UncPre over-control THREAT-paragraph) CUT 2026-06-13 (user 'cut it' + DWZ evidence + advisor): folded into P2.5 as ONE POSITIVE sentence (DWZ's isolation design; 'would' not 'must'; conservative floor) carrying the RULE-COH-8 net-of-UncQue/NegCall grounding; P4 generated-regressand renumbered -> P3; 2.4/2.5 cross-refs ('2.3 P4'->'2.3 P3') fixed in the same edit. GATE: the positive DWZ attribution is provisional (answer-only) -> write-time verbatim span or fall back to the bare hedge. Plan now FINAL for every 2.3 paragraph; RE-RATIFY. Status PLANNED, prose BLOCKED. 2.3 QUEUED EDITS APPLIED 2026-06-13 (de-queued per user 'revise planning to 100% complete'): P3.2 FirmChars bad-control CUT (we adopt DWZ's spec; don't scrutinize) + P3.3->P3.2 renumber; P3.1 UncPre + P4.1 generated-regressand RETONED suggestive (repurposing property / standard two-step, NOT a DWZ critique). Plan now FINAL for every 2.3 paragraph. Status PLANNED, prose BLOCKED, NOT ratified. 2.3 ADVISOR-CLEAN (2026-06-13): seam cross-checks 1-4 clean (RULE-COH-7, Catch-1 gloss, COH-8 grounding, C3 numbers, eq-2/eq-4 match). Resolved 2 catches: P3.2 FirmChars sign is INDETERMINATE (killed 'conservative/lower-bound'; drop-FirmChars rerun gates it); P2.2 attribution = DWZ's SPEC re-estimated on our sample (not published residuals). Status PLANNED, prose BLOCKED, NOT ratified. Original seam plan kept below for the record. Advisor-check SEAMS (done): (vs 2.1 P4) RULE-COH-7 + Catch-1 gloss; (vs 2.2) the residual 2.2 forward-refs is defined here + COH-8 net-of-UncQue grounded; (vs claims ledger) C3/R3 numbers bible-verbatim; (vs DWZ extraction) eq-2/eq-4 match. Then resolve + move to 2.4. Seams to carry to 2.4: eq-4 has Year FE while 2.4 designs add cal-year-qtr FE (layered time controls); first-stage estimated globally then stage-2 uses subsets (generated-regressand). NLM verification (pagan1984) gated behind ratification."
