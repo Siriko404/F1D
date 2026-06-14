@@ -11,12 +11,12 @@
       "definitional",
       "framing-nonverifiable"
     ],
-    "status": "RATIFIED 2026-06-13 (user ceremony). Prose still BLOCKED -- drafted at write-time after ALL four subsections are ratified."
+    "status": "RATIFIED 2026-06-13 then SCRUTINY-REFRAME APPLIED 2026-06-13 -> RE-RATIFY 2.2. Prose still BLOCKED."
   },
   "subsection": "2.2",
   "title": "Hypothesis Development",
   "role": "the empirical (per-hypothesis) literature review",
-  "status": "RATIFIED 2026-06-13 (user ratification ceremony)",
+  "status": "REFRAME APPLIED 2026-06-13 -- RE-RATIFY (was RATIFIED 2026-06-13; scrutiny P5 leaned to a flag, P5.3/P5.4 dropped -> folded into 2.5).",
   "created": "2026-06-13",
   "_governing": {
     "hard_rules": [
@@ -298,13 +298,14 @@
     "P5": {
       "order": 5,
       "lit_body": "the competing analyst-scrutiny hypothesis (NEW; matsumoto2011 CALLBACK P2)",
-      "intent": "State the competing analyst-scrutiny reading formally as the rival 4.1 tests and rules out -- positioned as a confound, not a P7 reading, and not a mechanism claim.",
-      "serves": "Gives the 4.1 rule-out a home; pairs with the 2.5.4 scrutiny construct.",
-      "boundary": "State the rival hypothesis only; the construct definition lives in 2.5, the test/results in 4.1; NOT a 4th estimating equation in 2.4.",
-      "thin_claim": "Real competing hypothesis (not a strawman); ruling it out does NOT establish our mechanism.",
+      "intent": "Briefly FLAG the alternative analyst-scrutiny reading and position it -- an identification threat DEVELOPED + motivated in 2.5 P4 (our measure, its validity, why plausible) and tested & REJECTED as a side analysis in 4.1. 2.2 only flags it; it does NOT own the table-pointing motivation (advisor: no double-intro).",
+      "serves": "Flags the rival inside the hypothesis set; the construct + motivation live in 2.5 P4, the test/verdict in 4.1.",
+      "boundary": "FLAG the rival only (one or two clauses); the construct definition + plausibility motivation live in 2.5 P4, the test/verdict in 4.1; NOT a 4th estimating equation in 2.4. Do NOT restate the validation/run-up tables here (2.5 owns them).",
+      "thin_claim": "A plausible alternative driver (not a strawman), tested and rejected as a side identification check; rejecting it does NOT establish our mechanism.",
       "guardrails": [
-        "RULE-COH-5: scrutiny is a CONFOUND, distinct from P7's two equivalent readings; rule-out != mechanism.",
-        "RULE-COH-8: scrutiny (CashScrutiny = cash-question VOLUME) is distinct from UncQue (question-language uncertainty, already an eq-4 control)."
+        "RULE-COH-5: scrutiny is a PLAUSIBLE ALTERNATIVE DRIVER (identification threat we test, motivated in 2.5 P4), tested & REJECTED in 4.1 -- NOT a P7 reading; rejecting it != establishing a mechanism.",
+        "NO DOUBLE-INTRO (advisor): 2.2 only FLAGS the rival; the why-plausible + the tables + the construct are 2.5 P4's job. Keep 2.2 P5 lean.",
+        "Verdict (the nulls + 'rejected') belongs to 4.1 -- do NOT state it as established here."
       ],
       "propositions": [
         {
@@ -319,40 +320,14 @@
         },
         {
           "prop_id": "P5.2",
-          "statement": "This scrutiny channel is a confound the 4.1 design tests and rules out; it is distinct from the two observationally-equivalent readings of 2.1 (compliance-constrained vs strategic silence), and ruling it out does not establish a mechanism.",
-          "role_in_paragraph": "Positions the rival correctly (register).",
+          "statement": "This scrutiny channel is an identification threat -- developed + motivated in 2.5 P4 and tested as a side analysis in 4.1, where it is rejected; it is distinct from the two observationally-equivalent readings of 2.1 (compliance-constrained vs strategic silence), and rejecting it does not establish a mechanism.",
+          "role_in_paragraph": "Positions the rival (flag): an identification threat owned by 2.5, tested/rejected in 4.1.",
           "type": "framing-nonverifiable",
           "relation_to_2_1": "CALLBACK",
           "anchor_2_1": [
             "P7"
           ],
           "verification_plan": "Framing; RULE-COH-5. Write-time pass.",
-          "status": "PLANNED"
-        },
-        {
-          "prop_id": "P5.3",
-          "statement": "Cash scrutiny (the volume/topic of cash questions) is distinct from analyst-question uncertainty language (UncQue), which the residual already nets out by construction; so the rule-out targets the question-volume path and is non-redundant.",
-          "role_in_paragraph": "Reconciles the rival with the eq-4 control set.",
-          "type": "framing-nonverifiable",
-          "relation_to_2_1": "NEW",
-          "anchor_2_1": [],
-          "verification_plan": "Framing; RULE-COH-8; rests on the NLM-verified eq-4 control set (tmp/nlm_dwz_equations.json). Confirm CashScrutiny is a volume measure at write-time (gen_empire_did_table.py: CashScrutiny = % analyst Q&A turns on cash).",
-          "status": "PLANNED"
-        },
-        {
-          "prop_id": "P5.4",
-          "statement": "Analyst questioning is a genuine, informative force on calls, which is what makes the scrutiny channel a credible rival rather than a strawman.",
-          "role_in_paragraph": "Establishes the rival's plausibility.",
-          "type": "callback-verified",
-          "relation_to_2_1": "CALLBACK",
-          "anchor_2_1": [
-            "P2"
-          ],
-          "source": {
-            "key": "matsumoto2011",
-            "nlm_source_id": "a1dacc9f-2bee-46ba-9261-496fd687c8e6"
-          },
-          "verification_plan": "CALLBACK -- matsumoto Q&A information content already SUPPORTED in 2.1 P2. No new query.",
           "status": "PLANNED"
         }
       ],
@@ -365,5 +340,5 @@
       "prose_status": "BLOCKED"
     }
   },
-  "next_action": "2.2 QUEUED EDITS APPLIED 2026-06-13 (de-queued per user 'revise planning to 100% complete'): P2.2 thewissen -> one-clause callback (15% dropped); P2.3 'involuntary' dropped (aligns 2.1 P7); P4.2 keown CUT + P4.3->P4.2 renumber. Plan now FINAL for every 2.2 paragraph. Status PLANNED, prose BLOCKED, NOT ratified. 2.2 paragraph-level plan ADVISOR-CLEAN (2026-06-13): sound + ratifiable; 2 guardrails encoded (P4 GAP discriminator; P1.2 H1a is differential). Seams to carry into 2.4: (a) H1 run-up sample DROPS post-announce quarters while H1b event-study KEEPS them (capped +4) -- 2.4 must hold this; (b) do not let matsumoto (P5.4) overstate as backing the cash-scrutiny channel specifically. Status PLANNED, prose BLOCKED, NOT ratified (ratification deferred to end of all subsections; NLM verification gated behind ratification). Next subsection to plan: 2.3 (equation-gated; RULE-COH-7 seam + generated-regressand + FirmChars bad-control)."
+  "next_action": "SCRUTINY REFRAME APPLIED 2026-06-13 (user-approved + advisor): 2.2 P5 leaned to a FLAG -- P5.1 (rival reading) + P5.2 (positioned as an identification threat developed in 2.5 P4, tested/rejected in 4.1); P5.3 (volume-vs-UncQue) + P5.4 (matsumoto plausibility) DROPPED from 2.2 (covered by 2.5 P4.1 + RULE-COH-8 + the co-movement motivation; matsumoto demoted to an optional 2.1 callback). RULE-COH-5 reworded confound -> plausible alternative driver. RE-RATIFY 2.2 from the beginning, then ratify 2.5. Status: reframe applied, prose BLOCKED, NOT re-ratified."
 }

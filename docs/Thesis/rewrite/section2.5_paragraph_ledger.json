@@ -27,12 +27,12 @@
       "C3/C4/C5 numbers are 'bible-verbatim' PER THE CLAIM LEDGER's self-description -- NOT re-checked vs _tables_from_bible.tex this session. At write-time they go through the SAME bible cross-check that closed Catch-3; do not trust from the ledger alone (advisor).",
       "NLM is SOLE authority for papers; ignore mempalace auto-recall."
     ],
-    "coherence_rules_in_force": "RULE-COH-5 (scrutiny construct here is the definitional counterpart to the 2.2 P5 hypothesis; rule-out != mechanism), RULE-COH-8 (CashScrutiny = cash-question VOLUME, distinct from UncQue word-uncertainty -- confirmed in code, gen_empire_did_table.py:73). Boundary: scrutiny RESULTS -> 4.1; presentation-contrast RESULTS -> 4.2 (do not preview)."
+    "coherence_rules_in_force": "RULE-COH-5 (scrutiny = PLAUSIBLE ALTERNATIVE DRIVER / identification threat tested & rejected in 4.1; 2.5 P4 OWNS the motivation, 2.2 P5 only flags; rejecting != mechanism), RULE-COH-8 (CashScrutiny = cash-question VOLUME, distinct from UncQue word-uncertainty -- confirmed in code, gen_empire_did_table.py:73). Boundary: scrutiny VERDICT/RESULTS -> 4.1; presentation-contrast RESULTS -> 4.2 (do not preview)."
   },
   "_plan": {
-    "section_job": "Validate the construct (convergent + discriminant) and pre-empt the scrutiny confound -- earn trust the residual measures what's claimed BEFORE results.",
-    "spine": "P1 two demands -> P2 convergent ('consistent with', hedged) -> P3 discriminant (decisive; lead) -> P4 scrutiny rule-out pre-registration -> P5 define remaining key constructs.",
-    "serves": "Construct credibility; pre-registers the 4.1 scrutiny rule-out; defines key non-main constructs.",
+    "section_job": "Validate the construct (convergent + discriminant) and MOTIVATE the scrutiny identification side-test (our measure -> plausible alternative driver -> tested & rejected in 4.1) -- earn trust the residual measures what's claimed BEFORE results.",
+    "spine": "P1 two demands -> P2 convergent ('consistent with', hedged) -> P3 discriminant (decisive; lead) -> P4 scrutiny: our measure + why plausible (validity table as ID ground) + side-test motivation (verdict in 4.1) -> P5 define remaining key constructs.",
+    "serves": "Construct credibility; introduces + motivates the scrutiny identification side-test (verdict in 4.1); defines key non-main constructs.",
     "boundary": "Validity + scrutiny construct + key non-main constructs. MAIN var -> 2.3. Scrutiny RESULTS -> 4.1. Presentation-contrast RESULTS -> 4.2. Controls -> Appendix.",
     "thin_claim": "Convergent = 'consistent with' (weak, disclosed); discriminant = decisive and genuine (not a construction artifact; presentation is a related channel, no full-independence claim); scrutiny = 'doesn't account for THIS run-up,' not 'never matters.'",
     "division_of_labor": "Mostly NEW -- validity is work 2.1 does not do. Presentation/Q&A split = CALLBACK P2. Scrutiny construct = definitional counterpart to the 2.2 P5 hypothesis.",
@@ -202,22 +202,22 @@
     "P4": {
       "order": 4,
       "lit_body": "pre-register the analyst-scrutiny rule-out (forward to 4.1)",
-      "intent": "FOREGROUND CashScrutiny as OUR OWN constructed measure with its own validity (CashRatio predicts it, 0.7530***/0.8519***), distinct from the external yardsticks; THEN pre-register the three-step rule-out, framed as 'doesn't account for THIS run-up.'",
-      "serves": "The definitional counterpart to the 2.2 P5 hypothesis; routes the test to 4.1.",
+      "intent": "Introduce CashScrutiny as OUR OWN constructed measure and MOTIVATE the identification side-test: (a) it is VALID -- CashRatio predicts it (0.7530***/0.8519***), the same validity class as the other 2.5 yardsticks; (b) it is a PLAUSIBLE alternative DRIVER -- it itself rises around cash-deal announcements -- so it could mechanically generate the run-up. We therefore test, as a SIDE analysis in 4.1, whether scrutiny (not the disclosure bind) accounts for the run-up. 2.5 owns this motivation (2.2 only flags); the REJECTION verdict is reported in 4.1, not here.",
+      "serves": "Owns the scrutiny construct + the identification motivation (validity table as ground); the 2.2 P5 flag points here; the test/verdict is 4.1.",
       "boundary": "Construct + pre-registration only; the RESULTS are 4.1.",
-      "thin_claim": "Keep EXACTLY as hedged: 'does not account for THIS run-up; not that scrutiny never matters' (C4, NULL-only, underpowered).",
+      "thin_claim": "Keep the hedge EXACTLY when stated (in 4.1): 'does not account for THIS run-up; not that scrutiny never matters' (C4, NULL-only, underpowered). In 2.5: MOTIVATE + pre-register only; do NOT assert the rejection as established here.",
       "guardrails": [
         "RULE-COH-8: CashScrutiny = % of analyst Q&A turns on cash/liquidity (VOLUME), distinct from UncQue word-uncertainty (confirmed gen_empire_did_table.py:73).",
-        "RULE-COH-5: rule-out != mechanism; this is a confound check, not one of P7's two readings.",
-        "Keep C4 hedge VERBATIM; the confound IS real (HighCashScrutiny rises pre-announce) -- only the gating interaction kills it, and it is underpowered.",
-        "Results -> 4.1 (do not state them as established here beyond pre-registration).",
-        "FOREGROUND CashScrutiny as our constructed measure + its validity (step-(i) CashRatio->CashScrutiny) BEFORE the rule-out chain -- not buried inside it."
+        "RULE-COH-5: scrutiny is a PLAUSIBLE ALTERNATIVE DRIVER (identification threat) tested & REJECTED in 4.1 -- NOT one of P7's two readings; rejecting it != establishing a mechanism.",
+        "NUMBER SPLIT (advisor): 0.7530***/0.8519*** (validity) STAYS in 2.5; 'rises around cash deals' is QUALITATIVE here -- the 0.0408** magnitude + the -0.0000/-0.0056 nulls + the rejection verdict are 4.1's, NOT previewed in 2.5.",
+        "BUILD home: how it's built (spec/definition) lives HERE in 2.5 (user); do not strip the deeper data-pipeline mechanics from 3.1 where every variable's mechanics sit.",
+        "C4 hedge stays VERBATIM where stated (4.1); in 2.5, motivate + pre-register only -- the confound IS real (rises pre-announce) but only the underpowered gating test rejects it."
       ],
       "propositions": [
         {
           "prop_id": "P4.1",
           "statement": "Define CashScrutiny = the share (%) of analyst Q&A turns devoted to cash/liquidity, and HighCashScrutiny = 1[CashScrutiny > median] (median = 0; ~11% of calls draw any cash scrutiny) -- a VOLUME/topic measure of analyst attention, distinct from the uncertainty wording of questions (UncQue).",
-          "role_in_paragraph": "The scrutiny construct definition.",
+          "role_in_paragraph": "The scrutiny construct definition (the BUILD/spec home is 2.5, per user).",
           "type": "verified-code",
           "relation_to_2_1": "NEW",
           "anchor_2_1": [],
@@ -230,8 +230,8 @@
         },
         {
           "prop_id": "P4.2",
-          "statement": "Pre-register the three-step rule-out (executed in 4.1): (i) the measure is valid -- CashRatio predicts CashScrutiny (0.7530***/0.8519***); (ii) the channel is absent -- CashScrutiny->UncRes is null (~ -0.0000 n.s.); (iii) scrutiny does not gate the run-up -- the PreAnnounceQtr x scrutiny interaction is null (-0.0056 n.s.).",
-          "role_in_paragraph": "The pre-registered logic.",
+          "statement": "Motivate the side-test: CashScrutiny is (a) VALID -- CashRatio predicts it (0.7530***/0.8519***) -- and (b) a PLAUSIBLE alternative driver -- it itself rises around cash-deal announcements. Because it co-moves with both cash and the event, it could mechanically generate the pre-announcement run-up (a textbook identification threat). We therefore test, as a side analysis in 4.1, whether scrutiny rather than the disclosure bind accounts for the run-up. (The test's null magnitudes and verdict are reported in 4.1, not previewed here.)",
+          "role_in_paragraph": "The plausibility motivation (validity 0.7530*** + qualitative co-movement) + the pre-registered side-test.",
           "type": "bible-verbatim",
           "relation_to_2_1": "NEW",
           "anchor_2_1": [],
@@ -239,13 +239,13 @@
             "key": "claim_findings_ledger",
             "ref": "C4 (bible-verbatim)"
           },
-          "verification_plan": "Numbers bible-verbatim; framed as pre-registration (results live in 4.1). No NLM.",
+          "verification_plan": "0.7530***/0.8519*** validity bible-verbatim (C4; bible cross-check at write-time); co-movement stated QUALITATIVELY ('rises around cash deals') -- the 0.0408** magnitude + the nulls live in 4.1. Framed as motivation + pre-registration. No NLM.",
           "status": "PLANNED"
         },
         {
           "prop_id": "P4.3",
-          "statement": "The conclusion is hedged exactly: the rule-out shows analyst scrutiny does not account for THIS pre-announcement run-up -- NOT that scrutiny never matters. The confound is genuine (HighCashScrutiny itself rises pre-announcement, 0.0408**); only the gating interaction rules it out, and that test is underpowered (absence of evidence, not equivalence).",
-          "role_in_paragraph": "The calibrated hedge (C4).",
+          "statement": "Forward-pointer only: the side-test's verdict -- that analyst scrutiny does NOT account for THIS pre-announcement run-up (not that scrutiny never matters) -- is reported in 4.1, hedged exactly per C4 and flagged as underpowered (absence of evidence, not equivalence). 2.5 does not assert it as established.",
+          "role_in_paragraph": "Forward-ref to the 4.1 verdict (the C4 hedge is owned and stated there).",
           "type": "framing-nonverifiable",
           "relation_to_2_1": "CALLBACK",
           "anchor_2_1": [
@@ -255,7 +255,7 @@
             "key": "claim_findings_ledger",
             "ref": "C4 thinnest_claim"
           },
-          "verification_plan": "Hedge VERBATIM from C4; RULE-COH-5 (rule-out != mechanism). Write-time pass.",
+          "verification_plan": "C4 hedge VERBATIM in 4.1; 2.5 carries only the forward-ref (no nulls, no established-rejection). Write-time pass.",
           "status": "PLANNED"
         }
       ],
@@ -303,5 +303,5 @@
       "prose_status": "BLOCKED"
     }
   },
-  "next_action": "2.5 ALL DECIDED EDITS APPLIED 2026-06-13 (per user 'revise planning to 100% complete'): F1 content-location reframe (killed 'persistent industry trait/condition' in P3 intent + P3.2); folded the 4 NLM-verified yardstick defs (papers block + P2/P3 verification_plans); F3 time-varying strengthening into P3.3; F4 convergent identification basis into P2; foregrounded CashScrutiny (P4); F2 (hoberg2010/'fluidity' flag-not-drop) + F5 (Hassan cite-year) recorded as write-time flags. Plan now FINAL for every 2.5 paragraph. Status PLANNED, prose BLOCKED, NOT ratified. WRITE-TIME FLAGS: F2, F5, and the same 'persistent' defect in variable_ledger.json L188. 2.5 ADVISOR-CLEAN (2026-06-13). Resolved: P3.3 reframed -- the near-zero competition->UncRes is GENUINE, not a construction artifact (competition not an eq-4 control; tab:h23's in-sample UncPre->UncRes 0.0111** proves non-orthogonality). Added bible-cross-check note for C3/C4/C5 numbers at write-time. COMPLETENESS AUDIT PASSED (advisor): C1-C7 + R1-R3 each homed exactly once across 2.2-2.5, no orphans/double-homes, C7 correctly excluded (->4.2). ALL FOUR SUBSECTIONS (2.2-2.5) NOW PLANNED + ADVISOR-CLEAN. LOOP TERMINAL -> hand to user for ratification. Original seam plan: (vs 2.2 P5) scrutiny construct = the hypothesis's counterpart, RULE-COH-5/8 consistent; (vs 2.3) the residual under test is the 2.3 DV; the P3.3 construction subtlety (UncPre-control -> discriminant partly expected) -- ADJUDICATE; (vs claims ledger) C3/C4/C5 numbers bible-verbatim + hedges verbatim; (vs code) CashScrutiny volume def. Then resolve. THIS IS THE LAST SUBSECTION -> after advisor-clean, STOP the loop + PushNotification + hand to user for ratification. Do NOT drift into NLM verification or prose."
+  "next_action": "SCRUTINY REFRAME APPLIED 2026-06-13 (user-approved + advisor): P4 now MOTIVATES (our measure -> plausible alternative driver; validity 0.7530***/0.8519*** STAYS, co-movement QUALITATIVE) -> side-test -> verdict in 4.1 (the 0.0408** magnitude, the -0.0000/-0.0056 nulls, and the rejection + C4 hedge are 4.1's, NOT previewed). 2.2 P5 leaned to a flag. RE-RATIFY 2.2 first, then ratify 2.5. 2.5 ALL DECIDED EDITS APPLIED 2026-06-13 (per user 'revise planning to 100% complete'): F1 content-location reframe (killed 'persistent industry trait/condition' in P3 intent + P3.2); folded the 4 NLM-verified yardstick defs (papers block + P2/P3 verification_plans); F3 time-varying strengthening into P3.3; F4 convergent identification basis into P2; foregrounded CashScrutiny (P4); F2 (hoberg2010/'fluidity' flag-not-drop) + F5 (Hassan cite-year) recorded as write-time flags. Plan now FINAL for every 2.5 paragraph. Status PLANNED, prose BLOCKED, NOT ratified. WRITE-TIME FLAGS: F2, F5, and the same 'persistent' defect in variable_ledger.json L188. 2.5 ADVISOR-CLEAN (2026-06-13). Resolved: P3.3 reframed -- the near-zero competition->UncRes is GENUINE, not a construction artifact (competition not an eq-4 control; tab:h23's in-sample UncPre->UncRes 0.0111** proves non-orthogonality). Added bible-cross-check note for C3/C4/C5 numbers at write-time. COMPLETENESS AUDIT PASSED (advisor): C1-C7 + R1-R3 each homed exactly once across 2.2-2.5, no orphans/double-homes, C7 correctly excluded (->4.2). ALL FOUR SUBSECTIONS (2.2-2.5) NOW PLANNED + ADVISOR-CLEAN. LOOP TERMINAL -> hand to user for ratification. Original seam plan: (vs 2.2 P5) scrutiny construct = the hypothesis's counterpart, RULE-COH-5/8 consistent; (vs 2.3) the residual under test is the 2.3 DV; the P3.3 construction subtlety (UncPre-control -> discriminant partly expected) -- ADJUDICATE; (vs claims ledger) C3/C4/C5 numbers bible-verbatim + hedges verbatim; (vs code) CashScrutiny volume def. Then resolve. THIS IS THE LAST SUBSECTION -> after advisor-clean, STOP the loop + PushNotification + hand to user for ratification. Do NOT drift into NLM verification or prose."
 }
