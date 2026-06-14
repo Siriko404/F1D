@@ -21,12 +21,13 @@
   - `subagents/workflows/wf_31962b68-29a/...` (probe, model omitted) — sonnet.
   - `subagents/agent-abb1768162511d230.jsonl` (Agent tool, model:'opus') — line 4 = `"type":"assistant"` + `"model":"claude-sonnet-4-6"`. (`"advisorModel":"claude-opus-4-8"` on the same line is a SEPARATE config field, not the run model.)
 - **USER DISPUTES (strong prior — likely I am missing something):** "you CAN spawn opus agents, I've done it a thousand times."
-- **UNRESOLVED.** Before re-spawning, TRY in order and CONFIRM the assistant-message model is opus on a fresh probe:
-  1. `model: 'claude-opus-4-8'` (the FULL id, not the `'opus'` alias) on `agent()` / Agent tool.
-  2. A `subagent_type` / `agentType` whose frontmatter pins opus.
-  3. Check `/model` state + the ultracode / fast-mode interaction (these may set the spawn model).
-  4. Re-probe a trivial agent, grep its transcript for the `type:assistant` line's `model` — must read `claude-opus-*` before proceeding.
-- **DO NOT** re-run the 4-agent Phase-A fleet until opus is confirmed on the actual run model.
+- **UNRESOLVED.** Resolve in this order, and CONFIRM the assistant-message model is opus on a fresh probe:
+  1. **ASK THE USER how they spawn opus subagents** — they do it routinely ("a thousand times"); a 30-second answer beats re-probing. (`advisorModel:claude-opus-4-8` on the same transcript line PROVES opus-4-8 is reachable in this environment, so the user is very likely right.)
+  2. Try `model: 'claude-opus-4-8'` (the FULL id, not the `'opus'` alias).
+  3. Try a `subagent_type` / `agentType` whose frontmatter pins opus; check `/model` state + the ultracode / fast-mode interaction.
+  4. Re-probe a trivial agent + confirm its `type:assistant` line's `model` reads `claude-opus-*` before proceeding.
+- **DO NOT** re-run the 4-agent fleet until opus is confirmed on the actual run model. And do NOT silently fall back to sonnet (user rejected it).
+- **FALLBACK if opus subagents cannot be confirmed:** the **Opus main loop (you) does the planning directly** (plan all 5 subsection chains yourself) + **advisor (Opus) red-teams**. The whole multi-agent apparatus may be unnecessary — you ARE Opus. This avoids a deadlock behind the blocker; it is NOT a license to fan out on sonnet.
 
 ---
 
@@ -47,7 +48,7 @@ TOTAL = 8 agents.
 - **MOST IMPORTANT (user):** every agent (planners AND red-team) records `reason` (WHY) + `evidence` (manifest pointers it is BASED ON) **atomically** on every purpose, proposition, and red-team verdict. This is what makes the plan auditable.
 - **Planners are IDENTICAL** (same task, same manifest, same diligence) — reliability by independent replication, NOT diverse lenses (user override of an earlier idea).
 - **Who writes JSON:** agents RETURN schema-validated JSON; the MAIN loop writes the files (drift-guard + commit). (Workflow scripts cannot write files anyway.)
-- **Saved Phase-A script (SONNET — needs the opus fix):** `<session>/.claude/.../workflows/scripts/sec34-phasea-subsection-chains-wf_484fca33-0e3.js` (re-author with the opus fix; the schemas + prompts + rubric are all in it).
+- **Saved Phase-A script (the COMPLETE artifact — verbatim prompts + schemas + rubric):** committed at `docs/Thesis/rewrite/sec34_phaseA_workflow.js`. It ran on SONNET (Workflow tool); re-use it once opus spawning is confirmed, OR read it as the spec for the Opus-main-loop fallback. Do NOT re-author from the summary above (drift risk) — use this file.
 
 ### Schemas (baked into the script)
 - **SUBSECTION_PLAN_SET** = `{ subsections: [ { subsection_id, title, purpose{statement,reason,evidence}, delivers_claims[], tables_referenced[], hypotheses_paid_off[], pays_off_section2[], proposition_chain:[ {prop_id, statement, role, type(result-number|design-method|definitional|framing|external-NLM|callback-verified), reason, evidence[], numbers[](each token WITH its table source), register_locks[], depends_on[]} ], coverage{purpose_fully_delivered, gaps[]}, open_decisions[] } ], global_notes[] }`
@@ -89,7 +90,7 @@ TOTAL = 8 agents.
 ---
 
 ## NEXT ACTION (post-compaction)
-1. **RESOLVE the opus-spawn blocker** (full model id / subagent_type / re-probe + confirm assistant-message model = opus). Discuss with user.
-2. Once opus confirmed: re-author + run Phase A (the saved script + the opus fix).
+1. **RESOLVE the opus-spawn blocker — START BY ASKING THE USER how they spawn opus** (see BLOCKER step 1). Then confirm on a fresh probe's `type:assistant` model.
+2. **IF opus subagents confirmed:** run Phase A from `sec34_phaseA_workflow.js`. **IF NOT resolvable:** take the FALLBACK — Opus main loop plans the 5 subsection chains directly (use the .js as the spec), advisor (Opus) red-teams. Never fan out on sonnet.
 3. GATE: write the 5 subsection-plan files (`docs/Thesis/rewrite/section3.1_subsection_plan.json` ... `section4.1_...`), commit, SHOW user, ratify.
 4. Phase B (paragraphs).
