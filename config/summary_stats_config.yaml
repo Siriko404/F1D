@@ -11,24 +11,40 @@
 # render.thesis_suites and falls back to legacy include_suites only if
 # thesis_suites is absent (should never happen in v7+).
 
-# Anchor panel per variable — where to pull observations from for a shared var.
-# Default (unset) = first-encountered suite in render order. Sources thesis_suites
-# panels for shared controls; runtime-computed v6 IVs fall back to runner CSV.
+# =============================================================================
+# 2026-06-14 EMPIRE-THESIS SCOPE LOCK (user-ratified). Table 1 spans the 11-table
+# empire-building thesis: empire run-up/drop/placebo/cashspec + scrutiny
+# (validity/channel/gating) + convergent validity (H11/H24/H24b). Dropped from the
+# old draft: H1/H1.2/H1.3 cash-holdings+moderators, H14c/H18 reaction, H23
+# competition, Brexit/Boasiako endogeneity. See ~/.claude/plans/wise-sleeping-jellyfish.md.
+# =============================================================================
+
+# Suite-framework tables in the thesis (the ONLY suites whose specs contribute
+# variables). The empire/scrutiny tables are NOT suites -> handled via extra_panels.
+summary_stats_suites:
+  - H11    # convergent validity: political risk
+  - H24    # convergent validity: US policy uncertainty
+  - H24b   # convergent validity: global policy uncertainty
+
+# Extra anchor panels (loaded as anchor targets only; their columns do NOT enter the
+# variable set). Generator loads these in main() and constructs the derived scrutiny
+# vars on EMPIRE. Routes via anchor_panel + extra_vars below.
+extra_panels:
+  EMPIRE: h1_cash_holdings   # outputs/variables/<dir>/*/<dir>_panel.parquet
+  RESID: "outputs/econometric/ceo_clarity_extended/*/ceo_clarity_residual.parquet"
+
+# Anchor panel per variable — the canonical all-universe source for shared vars.
+# Firm-financial controls + CashRatio -> EMPIRE (the h1 call universe every empire/
+# scrutiny table uses). UncResCEO -> RESID (full all-call residual, not a suite
+# estimation sample). Convergent-only vars (PRisk/EPU/GEPU, UncQue/NegCall/FirmMat/
+# EarnVol/UncPreCEO) keep their suite-panel default.
 anchor_panel:
-  UncPreCEO: H1.ceo2.decomp
-  CashRatio: H1.ceo2.decomp
-  CashRatio_lead: H1.ceo2.decomp
-  lnAssets: H1.ceo2.decomp
-  TobinsQ: H1.ceo2.decomp
-  ROA: H1.ceo2.decomp
-  Leverage: H1.ceo2.decomp
-  Capex: H1.ceo2.decomp
-  DivDummy: H1.ceo2.decomp
-  sCFO: H1.ceo2.decomp
-  SalesGrowth: H1.ceo2.decomp
-  RDSales: H1.ceo2.decomp
-  CashFlowAt: H1.ceo2.decomp
-  DailyVola: H1.ceo2.decomp
+  CashRatio: EMPIRE
+  lnAssets: EMPIRE
+  TobinsQ: EMPIRE
+  ROA: EMPIRE
+  DivDummy: EMPIRE
+  UncResCEO: RESID
 
 # Variables to skip from Table 1.
 #
@@ -53,9 +69,11 @@ exclude_vars:
   # H1.3 indicator (binary; raw CFvol not in any suite as primitive)
   - HighCFvol
   # Legacy v5 IVs (CEO/Mgr/NoCEO partition; v7 uses CEO-only decomp)
+  # NOTE 2026-06-14: UncAnsCEO un-excluded -- it is the raw Q&A uncertainty DV reported
+  # in tab:cash_scrutiny_channel (a kept table), added via extra_vars below. The old
+  # exclude was a legacy-partition cleanup, not a sourcing decision.
   - UncAnsMgr
   - UncPreMgr
-  - UncAnsCEO
   - UncAnsNoCEO
   - UncPreNoCEO
 
@@ -132,11 +150,17 @@ panel_dir_alias:
   H21.r: h21_sec_letters
   H22.r: h22_equity_constraints
 
-# Supplementary substantive variables NOT in any spec's IV/DV/Control list.
-# Use for raw economic measures whose transformed form (z-scored, logged) is
-# what enters the regression. Reader needs the raw form for interpretation.
+# Supplementary substantive variables NOT in any thesis-suite spec's IV/DV/Control
+# list. The empire/scrutiny vars: derived analyst-scrutiny measures constructed on
+# EMPIRE (CashScrutiny/HighCashScrutiny/HighCash) + the H1 firm controls the
+# convergent specs omit (Leverage/Capex/sCFO). All anchored on EMPIRE (h1 universe).
 extra_vars:
-  - name: TotalSimilarity
-    anchor: H23
-    panel: "A. Independent Variables"
-    note: "HP 2016 raw TSIMM; H23 regression uses z_log_TotalSimilarity"
+  - {name: PreAnnounceQtr,   anchor: EMPIRE, panel: "A. Independent Variables", note: "run-up treatment: 1[quarter before firm's first >=50%-cash deal]; full Main panel"}
+  - {name: CashScrutiny,     anchor: EMPIRE, panel: "A. Independent Variables", note: "% analyst Q&A turns on cash/liquidity (= stock_score*100)"}
+  - {name: HighCashScrutiny, anchor: EMPIRE, panel: "A. Independent Variables", note: "1[CashScrutiny > median]; median=0 -> any cash scrutiny"}
+  - {name: HighCash,         anchor: EMPIRE, panel: "C. Firm Controls", note: "1[CashRatio >= top tercile]"}
+  - {name: UncAnsCEO,        anchor: EMPIRE, panel: "B. Dependent Variables", note: "raw CEO Q&A uncertainty (DWZ eq-2 LHS); residual = UncResCEO; reported in tab:cash_scrutiny_channel"}
+  - {name: CashRatio_lag,    anchor: EMPIRE, panel: "C. Firm Controls", note: "CashRatio one-quarter lag (partial-adjustment control in MA1/MA2/MA3)"}
+  - {name: Leverage,         anchor: EMPIRE, panel: "C. Firm Controls", note: "H1 control set; not in convergent specs"}
+  - {name: Capex,            anchor: EMPIRE, panel: "C. Firm Controls", note: "H1 control set; not in convergent specs"}
+  - {name: sCFO,             anchor: EMPIRE, panel: "C. Firm Controls", note: "H1 control set; not in convergent specs"}

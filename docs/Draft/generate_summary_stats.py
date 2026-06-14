@@ -443,15 +443,53 @@ def compile_pdf(standalone_tex: Path) -> bool:
         return False
 
 
+def _cash_acquirer_treat(repo_root: Path):
+    """First >=50%-cash acquisition quarter per firm (gvkey -> dq), for PreAnnounceQtr.
+    Ported from scripts/gen_empire_did_table.py (sdc + manifest, cash arm pc>=50).
+    Returns a DataFrame[gvkey, dq] or None if the SDC/manifest inputs are absent."""
+    sdc_path = repo_root / "inputs" / "SDC" / "sdc-ma-merged.parquet"
+    man_glob = sorted(repo_root.glob("outputs/1.4_AssembleManifest/*/master_sample_manifest.parquet"))
+    if not sdc_path.exists() or not man_glob:
+        print("  [warn] PreAnnounceQtr: SDC or manifest input missing -> skipped")
+        return None
+    s = pd.read_parquet(
+        sdc_path,
+        columns=["Acquiror 6-digit CUSIP", "Acquiror Nation", "Acquiror Public Status",
+                 "Date Announced", "Deal Status", "Percentage of Cash"],
+    ).rename(columns={"Acquiror 6-digit CUSIP": "c6", "Percentage of Cash": "pc"})
+    s["da"] = pd.to_datetime(s["Date Announced"], errors="coerce")
+    yr = s["da"].dt.year
+    known = ((yr >= 2002) & (yr <= 2018)
+             & (s["Acquiror Nation"] == "United States")
+             & (s["Acquiror Public Status"] == "Public")
+             & (s["Deal Status"].isin(["Completed", "Pending", "Withdrawn"]))
+             & s["pc"].notna())
+    cd = s[known & (s["pc"] >= 50)].copy()                       # cash arm: >=50% cash
+    cd["dq"] = cd["da"].dt.year * 4 + (cd["da"].dt.quarter - 1)
+    first = cd.sort_values("dq").groupby("c6", as_index=False)["dq"].first()
+    m = pd.read_parquet(man_glob[-1], columns=["gvkey", "cusip"])
+    m["gvkey"] = m["gvkey"].astype(str).str.zfill(6)
+    m["c6"] = m["cusip"].astype(str).str[:6]
+    treat = m[["gvkey", "c6"]].drop_duplicates("gvkey").merge(first, on="c6", how="inner")
+    return treat[["gvkey", "dq"]].drop_duplicates("gvkey")
+
+
 def main() -> int:
     render = yaml.safe_load(RENDER_ORDER.read_text(encoding="utf-8"))
     ss_cfg = yaml.safe_load(SS_CONFIG.read_text(encoding="utf-8")) if SS_CONFIG.exists() else {}
 
     all_suites = list(render.get("suites", []))
-    # Single source of truth: thesis_suites: in suite_render_order.yaml.
-    # The legacy include_suites: in summary_stats_config.yaml is consulted only
-    # as a fallback when thesis_suites is absent (should not happen in v7+).
-    include_suites = list(render.get("thesis_suites") or ss_cfg.get("include_suites") or all_suites)
+    # Scope source of truth (2026-06-14 empire-thesis lock): summary_stats_suites: in
+    # summary_stats_config.yaml names exactly the suite-framework tables in the thesis
+    # (H11/H24/H24b convergent validity). Falls back to render.thesis_suites (the legacy
+    # all_tables list) only if that key is absent. The empire/scrutiny tables are NOT
+    # suites; their variables are added via extra_panels + extra_vars below.
+    include_suites = list(
+        ss_cfg.get("summary_stats_suites")
+        or render.get("thesis_suites")
+        or ss_cfg.get("include_suites")
+        or all_suites
+    )
     anchor_overrides = ss_cfg.get("anchor_panel") or {}
     exclude_vars = set(ss_cfg.get("exclude_vars") or [])
     panel_dir_alias = ss_cfg.get("panel_dir_alias") or {}
@@ -483,6 +521,79 @@ def main() -> int:
         f"{len(runner_stats_map)}/{len(include_suites)} runner CSVs"
     )
 
+    # --- Extra anchor panels (empire/scrutiny coverage) -------------------------------
+    # These are NOT in include_suites, so their columns do NOT enter the IV/DV/control
+    # var sets; they are loaded only as ANCHOR TARGETS for vars routed here via
+    # anchor_panel (config) or appended via extra_vars. This is how the empire-building
+    # event-study + analyst-scrutiny tables (standalone scripts, not the suite framework)
+    # get all-universe rows in Table 1.
+    #   EMPIRE = the h1_cash_holdings CALL panel: canonical cash universe for CashRatio,
+    #            the firm-financial control set, and the derived analyst-scrutiny vars
+    #            (CashScrutiny/HighCashScrutiny constructed here, ported from
+    #            scripts/gen_empire_did_table.py:base_panel; HighCash = top-tercile cash).
+    #   RESID  = the all-call DWZ residual file: UncResCEO on its FULL universe (the suite
+    #            runner CSV would give the convergent estimation sample, not the universe).
+    extra_panels = ss_cfg.get("extra_panels") or {}
+    score_parquet = REPO_ROOT / "tmp" / "_cash_stock_score_call.parquet"
+
+    def _latest_glob(pattern: str):
+        hits = sorted(REPO_ROOT.glob(pattern))
+        return hits[-1] if hits else None
+
+    if "EMPIRE" in extra_panels:
+        emp_path = _latest_glob(
+            f"outputs/variables/{extra_panels['EMPIRE']}/*/{extra_panels['EMPIRE']}_panel.parquet"
+        )
+        if emp_path is not None:
+            emp = pd.read_parquet(emp_path)
+            emp_main = emp[emp["sample"] == "Main"] if "sample" in emp.columns else emp
+            # Derived analyst-scrutiny vars (computed on the Main call universe).
+            if score_parquet.exists() and "file_name" in emp.columns:
+                score = pd.read_parquet(score_parquet, columns=["file_name", "stock_score"])
+                emp = emp.merge(score, on="file_name", how="left")
+                emp["CashScrutiny"] = emp["stock_score"] * 100.0  # % analyst Q&A turns on cash
+                med = emp.loc[emp.get("sample", "Main") == "Main", "CashScrutiny"].median() \
+                    if "sample" in emp.columns else emp["CashScrutiny"].median()
+                emp["HighCashScrutiny"] = np.where(emp["CashScrutiny"] > med, 1.0, 0.0)
+                emp.loc[emp["CashScrutiny"].isna(), "HighCashScrutiny"] = np.nan
+            if "CashRatio" in emp.columns:
+                terc = emp_main["CashRatio"].quantile(2.0 / 3.0)  # top-tercile threshold (Main)
+                emp["HighCash"] = np.where(emp["CashRatio"] >= terc, 1.0, 0.0)
+                emp.loc[emp["CashRatio"].isna(), "HighCash"] = np.nan
+                if {"gvkey", "start_date"}.issubset(emp.columns):
+                    sd = pd.to_datetime(emp["start_date"])
+                    emp["_g"] = emp["gvkey"].astype(str).str.zfill(6)
+                    emp["_cq"] = sd.dt.year * 4 + (sd.dt.quarter - 1)  # calendar year-quarter index
+                    emp = emp.sort_values(["_g", "_cq"])
+                    # CashRatio one-quarter within-firm lag (partial-adjustment control;
+                    # consecutive quarters only) -- ported from gen_empire_did_table.base_panel.
+                    emp["CashRatio_lag"] = emp.groupby("_g")["CashRatio"].shift(1)
+                    _pcq = emp.groupby("_g")["_cq"].shift(1)
+                    emp.loc[_pcq != emp["_cq"] - 1, "CashRatio_lag"] = np.nan
+                    # PreAnnounceQtr = 1[the single quarter before the firm's first >=50%-cash
+                    # deal]. Defined on the FULL Main panel (post-announcement quarters NOT
+                    # dropped -> consistent with every other row; never-acquirers = 0). The
+                    # regression sample drops post-quarters, so its prevalence differs slightly.
+                    treat = _cash_acquirer_treat(REPO_ROOT)
+                    if treat is not None:
+                        emp = emp.merge(treat.rename(columns={"gvkey": "_g"}), on="_g", how="left")
+                        emp["PreAnnounceQtr"] = (emp["_cq"] - emp["dq"] == -1).astype(float)
+                        emp = emp.drop(columns=["dq"])
+                        print(f"  [extra] PreAnnounceQtr: {int(emp['PreAnnounceQtr'].sum()):,} pre-announce quarters flagged")
+                    emp = emp.drop(columns=["_g", "_cq"])
+            panels["EMPIRE"] = emp
+            print(f"  [extra] EMPIRE ({extra_panels['EMPIRE']}): {len(emp):,} rows + derived scrutiny vars")
+        else:
+            print(f"  [warn] EMPIRE panel {extra_panels['EMPIRE']} not found")
+
+    if "RESID" in extra_panels:
+        resid_path = _latest_glob(extra_panels["RESID"])
+        if resid_path is not None:
+            panels["RESID"] = pd.read_parquet(resid_path)
+            print(f"  [extra] RESID ({resid_path.name}): {len(panels['RESID']):,} rows (all-call UncResCEO)")
+        else:
+            print(f"  [warn] RESID panel {extra_panels['RESID']} not found")
+
     stats = build_panels(include_suites, specs, panels, runner_stats_map, anchor_overrides, exclude_vars)
     stats = append_extra_vars(stats, extra_vars, panels)
     print(f"\nVariables summarized: {len(stats)}")
@@ -490,7 +601,7 @@ def main() -> int:
 
     # Anchor balance on whichever HC suite has its panel loaded (v6 thesis-suite first;
     # legacy H1 fallback for older configs).
-    balance_anchor_candidates = ["H1.ceo2.decomp", "H1.ceo2.decomp.qtrexp", "H1"]
+    balance_anchor_candidates = ["EMPIRE", "H1.ceo2.decomp", "H1.ceo2.decomp.qtrexp", "H1"]
     balance = None
     for anchor_sid in balance_anchor_candidates:
         if anchor_sid in panels:

@@ -10,7 +10,10 @@
 \usepackage{newtxtext,newtxmath}
 \usepackage{booktabs}
 \usepackage{amsmath}
+\usepackage{longtable}
 \usepackage{graphicx}
+\usepackage{adjustbox}
+\usepackage{pdflscape}
 \usepackage[authoryear]{natbib}
 \usepackage[hidelinks]{hyperref}
 \pagestyle{plain}
@@ -115,11 +118,11 @@ Several choices that do not belong to a single equation are recorded here. On in
 
 Before the residual can carry the weight the empirical strategy places on it, its measurement warrants a check. We ask whether the residual moves with established measures of uncertainty, and, separately, whether the pre-announcement rise might instead reflect the volume of analyst attention to cash rather than the disclosure bind. The first is convergent validity, tested in this section; the second is a plausible alternative driver, developed below and put to the data as a side analysis in Section~4.1. By construction the residual is already net of the scripted presentation and of the wording of analysts' questions (Section~2.3); the checks here ask whether it behaves like a measure of uncertainty and whether the scrutiny rival can explain it away. Validity is treated as an empirical question, not an assumption.
 
-The residual is significantly and positively associated, in one-tailed tests, with all three established measures of uncertainty and risk. It rises with firm-level political risk, the share of a firm's earnings call devoted to political risk of \citet{hassan2020} (coefficient $0.0001$, $p<0.01$); with United States economic policy uncertainty, the newspaper-based index of \citet{baker2016} ($0.0124$, $p<0.05$); and with global economic policy uncertainty, the GDP-weighted index of \citet{davis2016} ($0.0181$, $p<0.05$). In economic terms, a one-standard-deviation increase in each measure raises residual uncertainty by \textbf{[PLACEHOLDER-FB: PRisk by a\%, US-EPU by b\%, GEPU by c\% of the residual's standard deviation; fill from corrected summary statistics]}.
+The residual is significantly and positively associated, in one-tailed tests, with all three established measures of uncertainty and risk. It rises with firm-level political risk, the share of a firm's earnings call devoted to political risk of \citet{hassan2020} (coefficient $0.0001$, $p<0.01$; Table~\ref{tab:h11_prisk_uncertainty}); with United States economic policy uncertainty, the newspaper-based index of \citet{baker2016} ($0.0124$, $p<0.05$; Table~\ref{tab:h24_us_epu}); and with global economic policy uncertainty, the GDP-weighted index of \citet{davis2016} ($0.0181$, $p<0.05$; Table~\ref{tab:h24b_global_epu}). In economic terms, a one-standard-deviation increase in each measure raises residual uncertainty by about 5 percent of its standard deviation for firm-level political risk, 1.5 percent for United States policy uncertainty, and 2.2 percent for global policy uncertainty.
 
-One channel deserves separate treatment, because it is the most immediate rival to the anticipatory reading. We construct $\mathrm{CashScrutiny}$, the share of analyst question-and-answer turns devoted to cash and liquidity (the word list that identifies these turns is reported in the Appendix), and an indicator $\mathrm{HighCashScrutiny}$ for calls above the median. The measure behaves as intended: a firm's cash position predicts how much analysts ask about cash ($0.7530$ and $0.8519$), so it tracks what it is built to track. It is also a plausible alternative driver of the run-up, because cash scrutiny itself rises in the quarter before a cash acquisition, so it co-moves with both the cash position and the event and could in principle generate the pre-announcement rise mechanically. We therefore treat it as an identification threat and test it directly, as a side analysis whose results are reported in Section~4.1. The measure is the volume of cash questions, not their uncertainty wording: the latter, $\mathrm{UncQue}$, is already netted out inside the residual by the decomposition of Section~2.3, so this test addresses a distinct path that the residual does not already absorb.
+One channel deserves separate treatment, because it is the most immediate rival to the anticipatory reading. We construct $\mathrm{CashScrutiny}$, the share of analyst question-and-answer turns devoted to cash and liquidity (the word list that identifies these turns is reported in the Appendix), and an indicator $\mathrm{HighCashScrutiny}$ for calls above the median. The measure behaves as intended: a firm's cash position predicts how much analysts ask about cash ($0.7530$ and $0.8519$; Table~\ref{tab:cash_scrutiny_validity}), so it tracks what it is built to track. It is also a plausible alternative driver of the run-up, because cash scrutiny itself rises in the quarter before a cash acquisition, so it co-moves with both the cash position and the event and could in principle generate the pre-announcement rise mechanically. We therefore treat it as an identification threat and test it directly, as a side analysis whose results are reported in Section~4.1. The measure is the volume of cash questions, not their uncertainty wording: the latter, $\mathrm{UncQue}$, is already netted out inside the residual by the decomposition of Section~2.3, so this test addresses a distinct path that the residual does not already absorb.
 
-The remaining constructs used in the designs are defined here. $\mathrm{CashRatio}$ is the firm's cash-to-assets ratio. $\mathrm{PreAnnounceQtr}$, defined in Section~2.2 and used in Section~2.4, marks the quarter before a firm's first cash acquisition. $\mathrm{CashScrutiny}$ and $\mathrm{HighCashScrutiny}$ are as defined above. The remaining control variables, the firm-financial set of Section~2.4 together with the linguistic and performance controls of the decomposition, are catalogued in the Appendix.
+The remaining constructs used in the designs are defined here. $\mathrm{CashRatio}$ is the firm's cash-to-assets ratio. $\mathrm{PreAnnounceQtr}$, defined in Section~2.2 and used in Section~2.4, marks the quarter before a firm's first cash acquisition. $\mathrm{CashScrutiny}$ and $\mathrm{HighCashScrutiny}$ are as defined above. The remaining control variables, the firm-financial set of Section~2.4 together with the linguistic and performance controls of the decomposition, are catalogued in the Appendix. Summary statistics appear in Table~\ref{tab:summary_stats}.
 
 % References — every entry verbatim-verified against the paper's own first/title page
 % (local PDFs in docs/papers/ + NotebookLM scoped quotes, 2026-06-09).
@@ -186,5 +189,9 @@ Keown and Pinkerton. 1981. Merger announcements and insider trading activity: An
 Verrecchia, R. 1983. Discretionary disclosure. \emph{Journal of Accounting and Economics} 5: 179--194.
 
 \end{thebibliography}
+
+\clearpage
+% Tables (auto-generated, byte-exact from the bible; regenerate via tmp/extract_draft_tables.py)
+\input{_tables_from_bible.tex}
 
 \end{document}
