@@ -88,8 +88,8 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "Before the residual can carry the weight the empirical strategy places on it, it must clear two demands. It must be convergent, moving with established measures of uncertainty, and it must be discriminant, distinct from observable channels that could pass for the signal without being it. We test both in this section. We also flag, and later test, one further possibility: that the pre-announcement rise reflects not the disclosure bind but the volume of analyst attention to cash, a plausible alternative driver we develop below and put to the data as a side analysis in Section~4.1. Throughout, validity is treated as an empirical question answered here, not an assumption.",
+      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (numbers bible-verbatim incl. P3 N-fix; 'consistent with' verbatim; F1 no 'persistent'; scrutiny verdict->4.1; cites verified; hoberg2010/fluidity dropped; dash-free; pushed to .tex for PDF review; NOT ratified)"
     },
     "P2": {
       "order": 2,
@@ -139,8 +139,8 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "The residual is consistent with established measures of uncertainty, though the evidence is supportive rather than decisive. It is positively associated with firm-level political risk, the share of a firm's earnings call devoted to political risk of \\citet{hassan2020}, with a coefficient of $0.0001$ that is statistically significant but economically negligible against the residual's own variation; and with economic policy uncertainty, both the United States newspaper-based index of \\citet{baker2016} ($0.0124$) and the global, GDP-weighted index of \\citet{davis2016} ($0.0181$). Three features keep this leg modest. The tests are one-tailed; the political-risk association, though measured at the firm-quarter level that matches the residual most closely, is economically trivial; and the policy-uncertainty indices are macro series observed monthly, so every firm shares a single value in any period and the association is identified only off aggregate co-movement within a year. We therefore read the residual as consistent with these measures, not as established by them.",
+      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (numbers bible-verbatim incl. P3 N-fix; 'consistent with' verbatim; F1 no 'persistent'; scrutiny verdict->4.1; cites verified; hoberg2010/fluidity dropped; dash-free; pushed to .tex for PDF review; NOT ratified)"
     },
     "P3": {
       "order": 3,
@@ -200,8 +200,8 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "The discriminant evidence is cleaner, and it leads the validity case. Product-market competition, measured by the text-based total product-market similarity of \\citet{hoberg2016}, loads on the scripted presentation but not on the call-varying residual: it predicts presentation uncertainty ($0.0304$ and $0.0302$ across specifications, on $18{,}492$ firm-quarters) while its association with the residual is indistinguishable from zero ($0.0008$ and $0.0023$, both insignificant, on the smaller residual sample of $12{,}728$). The reading is a locating one. Competition is a known, disclosable condition of the business that a firm can address in its prepared remarks, so it surfaces there rather than in the unscripted residual the design reserves for the deal-specific signal. The near-zero is a genuine result and not an artifact of construction: competition is not among the controls the residual is netted against, and in this very sample the scripted presentation does carry into the residual ($0.0111$ and $0.0230$), so orthogonality is not mechanical here; moreover, because competition varies within a firm over time, the firm fixed effects do not absorb it, the firm-fixed-effects presentation association remains estimable and strong ($0.0302$), and the matching null in the residual is therefore informative. Presentation uncertainty is a related channel, and we claim no more than that competition does not surface in the residual.",
+      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (numbers bible-verbatim incl. P3 N-fix; 'consistent with' verbatim; F1 no 'persistent'; scrutiny verdict->4.1; cites verified; hoberg2010/fluidity dropped; dash-free; pushed to .tex for PDF review; NOT ratified)"
     },
     "P4": {
       "order": 4,
@@ -278,8 +278,8 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "One channel deserves separate treatment, because it is the most immediate rival to the anticipatory reading. We construct $\\mathrm{CashScrutiny}$, the share of analyst question-and-answer turns devoted to cash and liquidity, and an indicator $\\mathrm{HighCashScrutiny}$ for calls above the median, which is zero, since most calls draw no cash scrutiny at all. The measure behaves as intended: a firm's cash position predicts how much analysts ask about cash ($0.7530$ and $0.8519$), so it tracks what it is built to track. It is also a plausible alternative driver of the run-up, because cash scrutiny itself rises in the quarter before a cash acquisition, so it co-moves with both the cash position and the event and could in principle generate the pre-announcement rise mechanically. We therefore treat it as an identification threat and test it directly, as a side analysis whose results are reported in Section~4.1. The measure is the volume of cash questions, not their uncertainty wording: the latter, $\\mathrm{UncQue}$, is already netted out inside the residual by the decomposition of Section~2.3, so this test addresses a distinct path that the residual does not already absorb.",
+      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (numbers bible-verbatim incl. P3 N-fix; 'consistent with' verbatim; F1 no 'persistent'; scrutiny verdict->4.1; cites verified; hoberg2010/fluidity dropped; dash-free; pushed to .tex for PDF review; NOT ratified)"
     },
     "P5": {
       "order": 5,
@@ -313,8 +313,8 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "The remaining constructs used in the designs are defined here. $\\mathrm{CashRatio}$ is the firm's cash-to-assets ratio. $\\mathrm{PreAnnounceQtr}$, defined in Section~2.2 and used in Section~2.4, marks the quarter before a firm's first cash acquisition. $\\mathrm{CashScrutiny}$ and $\\mathrm{HighCashScrutiny}$ are as defined above. The remaining control variables, the firm-financial set of Section~2.4 together with the linguistic and performance controls of the decomposition, are catalogued in the Appendix.",
+      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (numbers bible-verbatim incl. P3 N-fix; 'consistent with' verbatim; F1 no 'persistent'; scrutiny verdict->4.1; cites verified; hoberg2010/fluidity dropped; dash-free; pushed to .tex for PDF review; NOT ratified)"
     }
   },
   "next_action": "[CURRENT 2026-06-13 -- read FIRST; everything after '||' is SUPERSEDED historical log] 2.5 RATIFIED (last subsection); prose pending its turn. The 'NOT ratified' fragments below are superseded || [100%-clean fix 2026-06-13] DE-VERDICTED §2.5: P4.3 -> pure pointer (removed 'scrutiny does NOT account for THIS run-up'); P1 intent + P1.1 dropped '& rejected' -> 'tested' (verdict lives ONLY in 4.1). WRITE-TIME OVERCLAIM FLAGS (advisor, do NOT change ledger substance now): (a) P4.2 prose say 'tracks cash / behaves as intended', NOT a bald 'it is VALID'; (b) 'rises around cash-deal announcements' -> 'ahead of / in the quarter before' (0.0408**, tighter + matches the evidence). [sweep] 2.5 P1/P1.1 + div_of_labor reframed (confound/artifact -> competing channel / plausible driver); P4 lit_body + guardrail reworded; ADDED P4.4 (non-redundancy, restores dropped 2.2 P5.3; 2.3 P2.5 points here). SCRUTINY REFRAME APPLIED 2026-06-13 (user-approved + advisor): P4 now MOTIVATES (our measure -> plausible alternative driver; validity 0.7530***/0.8519*** STAYS, co-movement QUALITATIVE) -> side-test -> verdict in 4.1 (the 0.0408** magnitude, the -0.0000/-0.0056 nulls, and the rejection + C4 hedge are 4.1's, NOT previewed). 2.2 P5 leaned to a flag. RE-RATIFY 2.2 first, then ratify 2.5. 2.5 ALL DECIDED EDITS APPLIED 2026-06-13 (per user 'revise planning to 100% complete'): F1 content-location reframe (killed 'persistent industry trait/condition' in P3 intent + P3.2); folded the 4 NLM-verified yardstick defs (papers block + P2/P3 verification_plans); F3 time-varying strengthening into P3.3; F4 convergent identification basis into P2; foregrounded CashScrutiny (P4); F2 (hoberg2010/'fluidity' flag-not-drop) + F5 (Hassan cite-year) recorded as write-time flags. Plan now FINAL for every 2.5 paragraph. Status PLANNED, prose BLOCKED, NOT ratified. WRITE-TIME FLAGS: F2, F5, and the same 'persistent' defect in variable_ledger.json L188. 2.5 ADVISOR-CLEAN (2026-06-13). Resolved: P3.3 reframed -- the near-zero competition->UncRes is GENUINE, not a construction artifact (competition not an eq-4 control; tab:h23's in-sample UncPre->UncRes 0.0111** proves non-orthogonality). Added bible-cross-check note for C3/C4/C5 numbers at write-time. COMPLETENESS AUDIT PASSED (advisor): C1-C7 + R1-R3 each homed exactly once across 2.2-2.5, no orphans/double-homes, C7 correctly excluded (->4.2). ALL FOUR SUBSECTIONS (2.2-2.5) NOW PLANNED + ADVISOR-CLEAN. LOOP TERMINAL -> hand to user for ratification. Original seam plan: (vs 2.2 P5) scrutiny construct = the hypothesis's counterpart, RULE-COH-5/8 consistent; (vs 2.3) the residual under test is the 2.3 DV; the P3.3 construction subtlety (UncPre-control -> discriminant partly expected) -- ADJUDICATE; (vs claims ledger) C3/C4/C5 numbers bible-verbatim + hedges verbatim; (vs code) CashScrutiny volume def. Then resolve. THIS IS THE LAST SUBSECTION -> after advisor-clean, STOP the loop + PushNotification + hand to user for ratification. Do NOT drift into NLM verification or prose."
