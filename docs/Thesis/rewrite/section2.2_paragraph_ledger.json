@@ -182,11 +182,11 @@
       ],
       "prose_gate": {
         "rule": "all propositions confirmed/cleared before prose",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "The first hypothesis, H1, concerns timing: residual Q\\&A uncertainty is elevated in a cash acquirer's pre-announcement quarter, relative to that firm's own other quarters---the anticipatory dimension stated as a falsifiable prediction. That the prediction is not mechanical is clear from the nearest evidence, which runs the other way: \\citet{thewissen2024} document that acquirers manage the tone of their disclosure ahead of stock-for-stock deals, a deliberate adjustment. H1 predicts a different register in a different setting---not tone managed to move the market, but uncertainty language that surfaces in a cash acquirer's answers while the deal is withheld. Consistent with the bounded reading established earlier, the hypothesis takes no stance on whether that surfacing is compliance-constrained or strategically chosen; it asserts only that the language moves, and when.",
+      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (advisor-cleared: motive-cut + flatter clause; .tex push deferred)"
     },
     "P3": {
       "order": 3,
