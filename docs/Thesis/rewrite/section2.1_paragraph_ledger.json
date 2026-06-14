@@ -1912,5 +1912,18 @@
       "source_id": "6dc00775-74d4-43e7-8af8-60376e877533",
       "source_title": "The Journal of Finance - September 1981 - KEOWN - Merger Announcements and Insider Trading Activity  An Empirical.pdf"
     }
+  },
+  "bib_identity": {
+    "keown1981": {
+      "method": "NLM-identity",
+      "source": {
+        "id": "6dc00775-74d4-43e7-8af8-60376e877533",
+        "title": "The Journal of Finance - September 1981 - KEOWN - Merger Announcements and Insider Trading Activity  An Empirical.pdf"
+      },
+      "query": "Reading only this paper, this source: state ONLY the exact title; the authors (list every author, with full first names or initials exactly as printed on the document); the journal or working-paper series; and the year of this document. Do not infer beyond what the document itself states.",
+      "answer": "**Title:** Merger Announcements and Insider Trading Activity: An Empirical Investigation\n**Authors:** ARTHUR J. KEOWN and JOHN M. PINKERTON\n**Journal:** THE JOURNAL OF FINANCE\n**Year:** 1981",
+      "quotes": [],
+      "verdict": "PENDING"
+    }
   }
 }
