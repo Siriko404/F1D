@@ -116,8 +116,8 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "Each hypothesis of Section~2.2 maps to an estimating equation, and all three share a common panel frame: a within-firm, two-way fixed-effects regression of an outcome on event-time treatment indicators, estimated on quarterly firm observations with standard errors clustered by firm. The main design tests H1. Writing $Y_{it}$ for the outcome of firm $i$ in quarter $t$,\n\\begin{equation}\nY_{it} = \\beta\\,\\mathrm{PreAnnounceQtr}_{it} + \\gamma' X_{it} + \\phi_i + \\tau_t + \\varepsilon_{it},\n\\end{equation}\nwhere $X_{it}$ is a vector of firm controls (leverage, log assets, Tobin's $Q$, return on assets, capital expenditure, a dividend indicator, and scaled cash flow from operations), $\\phi_i$ is a firm fixed effect, and $\\tau_t$ is a calendar year-quarter fixed effect. The treatment $\\mathrm{PreAnnounceQtr}_{it}=\\mathbf{1}[e=-1]$ marks the call in the quarter before the firm's first cash acquisition; post-announcement quarters ($e\\ge 0$) are dropped, so the design reads the run-up and not the aftermath, while firms with no cash acquisition, for which $e$ is undefined, anchor the calendar-time effects. The coefficient $\\beta$ is the estimand: it estimates the pre-announcement shift $\\theta_{-1}$ of Section~2.2, a within-firm contrast between a treated firm's pre-announcement quarter and its own ordinary quarters. We read it descriptively, as an anticipation contrast, and make no causal or parallel-trends claim.",
+      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (MA1/MA2/MA3 verified vs code file:line; beta<->theta/kappa bridges; advisor-clean; dash-free; NO numbers; pushed to .tex for PDF review; NOT ratified)"
     },
     "P2": {
       "order": 2,
@@ -174,8 +174,8 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "H1b requires tracing the outcome across event time rather than at a single point, so the main design generalizes to an event study that replaces the single indicator with a set of event-time bins:\n\\begin{equation}\nY_{it} = \\sum_{b}\\beta_b\\,\\mathrm{Bin}_{b,it} + \\gamma' X_{it} + \\phi_i + \\tau_t + \\varepsilon_{it},\n\\end{equation}\nwith four bins: $\\mathrm{PRE2}$ ($e=-2$), $\\mathrm{PRE1}$ ($e=-1$), $\\mathrm{GAP}$ (announced but not yet completed), and $\\mathrm{POST}$ (completed). The omitted baseline is the set of quarters at $e\\le -3$ together with never-acquirers; the post-announcement window is capped at four quarters and truncated at a firm's next announcement. The discriminating window is the gap. If residual uncertainty has resolved by announcement, its coefficient should fall to zero at $\\mathrm{GAP}$, when the deal is public but the cash has not yet left, so a Wald test of $\\beta_{\\mathrm{PRE1}}-\\beta_{\\mathrm{GAP}}>0$ carries the empirical content of H1b; the same specification, estimated for the cash ratio in place of uncertainty, traces the persistence of the cash on the other clock, a persistence that is largely mechanical, since the cash is paid only at completion and so sits on the books through the gap. $\\mathrm{PRE2}$ is a pre-trend check, expected to be near zero. The bins are estimated for cash acquirers and, as a placebo, for stock acquirers, and every coefficient and Wald contrast is reported two-tailed.",
+      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (MA1/MA2/MA3 verified vs code file:line; beta<->theta/kappa bridges; advisor-clean; dash-free; NO numbers; pushed to .tex for PDF review; NOT ratified)"
     },
     "P3": {
       "order": 3,
@@ -232,8 +232,8 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "H1a is a claim about the difference between cash and stock acquirers, so it is tested in a single pooled specification carrying both treatments at once:\n\\begin{equation}\nY_{it} = \\beta_c\\,\\mathrm{PreAnnCash}_{it} + \\beta_s\\,\\mathrm{PreAnnStock}_{it} + \\gamma' X_{it} + \\phi_i + \\tau_t + \\varepsilon_{it},\n\\end{equation}\nwhere $\\mathrm{PreAnnCash}_{it}$ and $\\mathrm{PreAnnStock}_{it}$ mark the quarter before a firm's first cash and first stock acquisition. The sample keeps only the quarters before a firm's first deal of either type, plus firms that make neither, which form the fixed-effects baseline. The formal cash-specificity test is the single linear restriction $\\beta_c-\\beta_s>0$, evaluated by a Wald test; this difference, and not a comparison of one significant coefficient against one insignificant one, is what estimates $\\theta_{-1}^{\\,\\mathrm{cash}}-\\theta_{-1}^{\\,\\mathrm{stock}}$ in H1a. When the outcome is the cash ratio rather than residual uncertainty, the specification adds the cash ratio's own one-quarter lag, so the pre-announcement coefficient tracks the change in cash rather than its level; the residual outcome takes no such lag.",
+      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (MA1/MA2/MA3 verified vs code file:line; beta<->theta/kappa bridges; advisor-clean; dash-free; NO numbers; pushed to .tex for PDF review; NOT ratified)"
     },
     "P4": {
       "order": 4,
@@ -289,8 +289,8 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "The identifying assumptions are descriptive and common to the three designs. Identification is within firm, through the firm fixed effects, and within calendar time, through the year-quarter fixed effects; the estimand in each case is a pre-announcement mean shift relative to a firm's own ordinary quarters and to untreated firms. The $\\mathrm{PRE2}$ bin is a validity device rather than an identification proof: a pre-trend near zero is consistent with the reading, but we claim no parallel-trends result and no causal effect. The mapping from design to hypothesis is one to one: the single-indicator regression tests H1, the event study tests H1b, and the pooled interacted regression tests H1a. The control pool itself differs across designs: in the single-indicator and event-study regressions a firm remains in the baseline until its first cash acquisition, so stock-only acquirers sit among the controls, whereas the pooled regression restricts the baseline to firms that make neither a cash nor a stock acquisition. Two distinct control layers operate and should not be conflated. The residual outcome is already net of a first set of controls, the linguistic and performance variables of the decomposition in Section~2.3, estimated with CEO and year fixed effects; the designs here add a second set, the firm-financial controls $X_{it}$, with firm and finer year-quarter fixed effects. The two layers serve different purposes and are estimated at different stages.",
+      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (MA1/MA2/MA3 verified vs code file:line; beta<->theta/kappa bridges; advisor-clean; dash-free; NO numbers; pushed to .tex for PDF review; NOT ratified)"
     },
     "P5": {
       "order": 5,
@@ -377,8 +377,8 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "Several choices that do not belong to a single equation are recorded here. On inference, standard errors are clustered by firm throughout, while some validity tables cluster two ways, by firm and by calendar quarter; focal treatment tests are reported two-tailed, the convention we adopt for honesty even where a directional prediction would license a one-tailed test. On contamination, deal timing is endogenous, and because only a firm's first deal sets the event clock, later deals can pollute the baseline; we mitigate this by truncating each firm's post-window at its second announcement, but the never-acquirer baseline and the first-deal focus remain assumptions, not identification. On functional form, the outcomes are levels or word shares rather than counts, the cash-ratio regressions carry a partial-adjustment lag because cash is sticky whereas the residual regressions do not, and, because the residual is a generated regressand from Section~2.3, the two-step standard-error caveat carries over to every design here. On selection, the residual outcome exists only for CEOs with at least five calls, in the non-financial, non-utility sample where the decomposition is run, so the uncertainty regressions describe a larger, more-covered set of firms than the cash-ratio regressions, a limit on external validity we disclose. The firm-financial controls follow the standard cash-determinants regression, read mechanically, with cash treated as a by-product of retained free cash flow rather than a war chest built for a deal.",
+      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (MA1/MA2/MA3 verified vs code file:line; beta<->theta/kappa bridges; advisor-clean; dash-free; NO numbers; pushed to .tex for PDF review; NOT ratified)"
     }
   },
   "next_action": "[CURRENT 2026-06-13 -- read FIRST; everything after '||' is SUPERSEDED historical log] 2.4 RATIFIED; prose pending its turn. The 'hand to user for ratification' step below is DONE/superseded || 2.4 ADVISOR-CLEAN (2026-06-13): seam cross-checks 2-5 clean (equations->file:line, design->hypothesis map, GAP, generated-regressand, two-control-sets, Catch-3). Resolved: A) added P5.5 selection disclosure (>=5-call Main-industry subsample, claim C2 risk -- homed in 2.4 P5, mechanic stays 3.1); B) tightened P1.3 to within-firm (never-acquirers anchor TIME effects, matches 2.2 H1); + noted stage-1 CEO vs stage-2 firm clustering level. FLAGS TO CARRY INTO 2.5: (1) validity papers (hassan2020, baker2016, davis2016, hoberg2010/2016) were DATA-SOURCED in the original draft -- NOT necessarily NLM-verified; if 2.5 ENGAGES them as claims, flag for write-time NLM verification (like pagan/opler), do not assume 'in bib = verified'; (2) keep C5 'consistent with' + C4 'doesn't account for THIS run-up' hedges VERBATIM; (3) GOOD: CashScrutiny = volume confirmed in code (gen_empire_did_table.py:73, stock_score*100 = % analyst Q&A turns on cash) -> RULE-COH-8 premise grounded. 2.5 is the LAST subsection -> after it, STOP + hand to user for ratification (do NOT drift into NLM/prose). Original seam plan: (vs 2.2) design->hypothesis map + GAP discriminator + PreAnnounceQtr/PreAnn_cash consistency; (vs 2.3) generated-regressand propagation + the two-control-set distinction + Catch-3 closure; (vs claims ledger) R1/R2 + C1/C2/C6 framed correctly; (vs code) every equation traces to file:line. Then resolve + move to 2.5 (the LAST subsection). NLM verification of new cites gated behind ratification."
