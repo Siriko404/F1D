@@ -35,7 +35,7 @@
     "serves": "Construct credibility; introduces + motivates the scrutiny identification side-test (verdict in 4.1); defines key non-main constructs.",
     "boundary": "Validity + scrutiny construct + key non-main constructs. MAIN var -> 2.3. Scrutiny RESULTS -> 4.1. Presentation-contrast RESULTS -> 4.2. Controls -> Appendix.",
     "thin_claim": "Convergent = 'consistent with' (weak, disclosed); discriminant = decisive and genuine (not a construction artifact; presentation is a related channel, no full-independence claim); scrutiny = 'doesn't account for THIS run-up,' not 'never matters.'",
-    "division_of_labor": "Mostly NEW -- validity is work 2.1 does not do. Presentation/Q&A split = CALLBACK P2. Scrutiny construct = definitional counterpart to the 2.2 P5 hypothesis.",
+    "division_of_labor": "Mostly NEW -- validity is work 2.1 does not do. Presentation/Q&A split = CALLBACK P2. Scrutiny: 2.5 P4 OWNS the construct + the identification motivation (validity table as ground); 2.2 P5 only FLAGS the rival.",
     "validity_papers_status": "hassan2020 (PRisk), baker2016 (US-EPU), hoberg2016 (TNIC total similarity = competition) VERIFIED via NLM 2026-06-13 (LOCKED); davis2016 (GEPU) VERIFIED PROVISIONAL (fold as-is) -- all in tmp/nlm_validity_definitions.json. hoberg2010 + the word 'fluidity' STILL UNVERIFIED -> write-time NLM flag (F2); our competition variable is z_log_TotalSimilarity = total similarity (hoberg2016), NOT fluidity. F5: variable_ledger cites 'Hassan et al. 2019' (WP) vs QJE 2020 -> reconcile cite year vs .bib at write-time. Regression NUMBERS bible-verbatim (C3/C4/C5; bible cross-check at write-time)."
   },
   "papers": {
@@ -59,7 +59,7 @@
     "P1": {
       "order": 1,
       "lit_body": "the two validity demands",
-      "intent": "State the two demands the residual must meet before results are trusted: it must move with real uncertainty (convergent) and not be a scrutiny artifact (discriminant + rule-out).",
+      "intent": "State the two demands before results are trusted: the residual must (a) move with real uncertainty (convergent) and (b) be distinct from competing observable channels (discriminant) -- product-market competition (P3), and not merely analyst scrutiny, a plausible alternative driver tested & rejected as a side analysis (P4 -> 4.1).",
       "serves": "Frames the validity gate; sets up P2-P4.",
       "boundary": "Validity framing only; results -> 4.1/4.2.",
       "thin_claim": "Validity is asserted as an empirical question answered here, not assumed.",
@@ -70,7 +70,7 @@
       "propositions": [
         {
           "prop_id": "P1.1",
-          "statement": "The residual UncResCEO must satisfy two demands to be a credible measure: (a) convergent -- it moves with established uncertainty constructs; (b) discriminant -- it does not merely capture a confound such as analyst scrutiny.",
+          "statement": "The residual UncResCEO must satisfy two demands to be credible: (a) convergent -- it moves with established uncertainty constructs; (b) discriminant -- it is distinct from competing observable channels (product-market competition, P3) and is not merely driven by analyst scrutiny -- a plausible alternative driver we test, and reject, as a side analysis (P4 -> 4.1).",
           "role_in_paragraph": "The validity frame.",
           "type": "framing-nonverifiable",
           "relation_to_2_1": "NEW",
@@ -201,7 +201,7 @@
     },
     "P4": {
       "order": 4,
-      "lit_body": "pre-register the analyst-scrutiny rule-out (forward to 4.1)",
+      "lit_body": "introduce + motivate the analyst-scrutiny identification side-test (construct here; verdict in 4.1)",
       "intent": "Introduce CashScrutiny as OUR OWN constructed measure and MOTIVATE the identification side-test: (a) it is VALID -- CashRatio predicts it (0.7530***/0.8519***), the same validity class as the other 2.5 yardsticks; (b) it is a PLAUSIBLE alternative DRIVER -- it itself rises around cash-deal announcements -- so it could mechanically generate the run-up. We therefore test, as a SIDE analysis in 4.1, whether scrutiny (not the disclosure bind) accounts for the run-up. 2.5 owns this motivation (2.2 only flags); the REJECTION verdict is reported in 4.1, not here.",
       "serves": "Owns the scrutiny construct + the identification motivation (validity table as ground); the 2.2 P5 flag points here; the test/verdict is 4.1.",
       "boundary": "Construct + pre-registration only; the RESULTS are 4.1.",
@@ -211,7 +211,7 @@
         "RULE-COH-5: scrutiny is a PLAUSIBLE ALTERNATIVE DRIVER (identification threat) tested & REJECTED in 4.1 -- NOT one of P7's two readings; rejecting it != establishing a mechanism.",
         "NUMBER SPLIT (advisor): 0.7530***/0.8519*** (validity) STAYS in 2.5; 'rises around cash deals' is QUALITATIVE here -- the 0.0408** magnitude + the -0.0000/-0.0056 nulls + the rejection verdict are 4.1's, NOT previewed in 2.5.",
         "BUILD home: how it's built (spec/definition) lives HERE in 2.5 (user); do not strip the deeper data-pipeline mechanics from 3.1 where every variable's mechanics sit.",
-        "C4 hedge stays VERBATIM where stated (4.1); in 2.5, motivate + pre-register only -- the confound IS real (rises pre-announce) but only the underpowered gating test rejects it."
+        "C4 hedge stays VERBATIM where stated (4.1); in 2.5, motivate + pre-register only -- scrutiny genuinely DOES rise pre-announce (which is what makes it a plausible driver), but only the underpowered gating test rejects it."
       ],
       "propositions": [
         {
@@ -256,6 +256,16 @@
             "ref": "C4 thinnest_claim"
           },
           "verification_plan": "C4 hedge VERBATIM in 4.1; 2.5 carries only the forward-ref (no nulls, no established-rejection). Write-time pass.",
+          "status": "PLANNED"
+        },
+        {
+          "prop_id": "P4.4",
+          "statement": "CashScrutiny measures the VOLUME/topic of cash questions, distinct from analyst-question uncertainty WORDS (UncQue), which the residual already nets out by construction (eq-4). So this alternative-driver test targets the question-VOLUME path that eq-4 does not absorb -- it is non-redundant with the controls already inside the residual (referee-proofing; RULE-COH-8).",
+          "role_in_paragraph": "Non-redundancy: why the scrutiny side-test still bites although eq-4 already controls UncQue (restores the dropped 2.2 P5.3 claim; 2.3 P2.5 points here).",
+          "type": "framing-nonverifiable",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": [],
+          "verification_plan": "Framing; RULE-COH-8; rests on the NLM-verified eq-4 control set (tmp/nlm_dwz_equations.json). CashScrutiny = volume confirmed gen_empire_did_table.py:73. No NLM.",
           "status": "PLANNED"
         }
       ],
@@ -303,5 +313,5 @@
       "prose_status": "BLOCKED"
     }
   },
-  "next_action": "SCRUTINY REFRAME APPLIED 2026-06-13 (user-approved + advisor): P4 now MOTIVATES (our measure -> plausible alternative driver; validity 0.7530***/0.8519*** STAYS, co-movement QUALITATIVE) -> side-test -> verdict in 4.1 (the 0.0408** magnitude, the -0.0000/-0.0056 nulls, and the rejection + C4 hedge are 4.1's, NOT previewed). 2.2 P5 leaned to a flag. RE-RATIFY 2.2 first, then ratify 2.5. 2.5 ALL DECIDED EDITS APPLIED 2026-06-13 (per user 'revise planning to 100% complete'): F1 content-location reframe (killed 'persistent industry trait/condition' in P3 intent + P3.2); folded the 4 NLM-verified yardstick defs (papers block + P2/P3 verification_plans); F3 time-varying strengthening into P3.3; F4 convergent identification basis into P2; foregrounded CashScrutiny (P4); F2 (hoberg2010/'fluidity' flag-not-drop) + F5 (Hassan cite-year) recorded as write-time flags. Plan now FINAL for every 2.5 paragraph. Status PLANNED, prose BLOCKED, NOT ratified. WRITE-TIME FLAGS: F2, F5, and the same 'persistent' defect in variable_ledger.json L188. 2.5 ADVISOR-CLEAN (2026-06-13). Resolved: P3.3 reframed -- the near-zero competition->UncRes is GENUINE, not a construction artifact (competition not an eq-4 control; tab:h23's in-sample UncPre->UncRes 0.0111** proves non-orthogonality). Added bible-cross-check note for C3/C4/C5 numbers at write-time. COMPLETENESS AUDIT PASSED (advisor): C1-C7 + R1-R3 each homed exactly once across 2.2-2.5, no orphans/double-homes, C7 correctly excluded (->4.2). ALL FOUR SUBSECTIONS (2.2-2.5) NOW PLANNED + ADVISOR-CLEAN. LOOP TERMINAL -> hand to user for ratification. Original seam plan: (vs 2.2 P5) scrutiny construct = the hypothesis's counterpart, RULE-COH-5/8 consistent; (vs 2.3) the residual under test is the 2.3 DV; the P3.3 construction subtlety (UncPre-control -> discriminant partly expected) -- ADJUDICATE; (vs claims ledger) C3/C4/C5 numbers bible-verbatim + hedges verbatim; (vs code) CashScrutiny volume def. Then resolve. THIS IS THE LAST SUBSECTION -> after advisor-clean, STOP the loop + PushNotification + hand to user for ratification. Do NOT drift into NLM verification or prose."
+  "next_action": "[sweep] 2.5 P1/P1.1 + div_of_labor reframed (confound/artifact -> competing channel / plausible driver); P4 lit_body + guardrail reworded; ADDED P4.4 (non-redundancy, restores dropped 2.2 P5.3; 2.3 P2.5 points here). SCRUTINY REFRAME APPLIED 2026-06-13 (user-approved + advisor): P4 now MOTIVATES (our measure -> plausible alternative driver; validity 0.7530***/0.8519*** STAYS, co-movement QUALITATIVE) -> side-test -> verdict in 4.1 (the 0.0408** magnitude, the -0.0000/-0.0056 nulls, and the rejection + C4 hedge are 4.1's, NOT previewed). 2.2 P5 leaned to a flag. RE-RATIFY 2.2 first, then ratify 2.5. 2.5 ALL DECIDED EDITS APPLIED 2026-06-13 (per user 'revise planning to 100% complete'): F1 content-location reframe (killed 'persistent industry trait/condition' in P3 intent + P3.2); folded the 4 NLM-verified yardstick defs (papers block + P2/P3 verification_plans); F3 time-varying strengthening into P3.3; F4 convergent identification basis into P2; foregrounded CashScrutiny (P4); F2 (hoberg2010/'fluidity' flag-not-drop) + F5 (Hassan cite-year) recorded as write-time flags. Plan now FINAL for every 2.5 paragraph. Status PLANNED, prose BLOCKED, NOT ratified. WRITE-TIME FLAGS: F2, F5, and the same 'persistent' defect in variable_ledger.json L188. 2.5 ADVISOR-CLEAN (2026-06-13). Resolved: P3.3 reframed -- the near-zero competition->UncRes is GENUINE, not a construction artifact (competition not an eq-4 control; tab:h23's in-sample UncPre->UncRes 0.0111** proves non-orthogonality). Added bible-cross-check note for C3/C4/C5 numbers at write-time. COMPLETENESS AUDIT PASSED (advisor): C1-C7 + R1-R3 each homed exactly once across 2.2-2.5, no orphans/double-homes, C7 correctly excluded (->4.2). ALL FOUR SUBSECTIONS (2.2-2.5) NOW PLANNED + ADVISOR-CLEAN. LOOP TERMINAL -> hand to user for ratification. Original seam plan: (vs 2.2 P5) scrutiny construct = the hypothesis's counterpart, RULE-COH-5/8 consistent; (vs 2.3) the residual under test is the 2.3 DV; the P3.3 construction subtlety (UncPre-control -> discriminant partly expected) -- ADJUDICATE; (vs claims ledger) C3/C4/C5 numbers bible-verbatim + hedges verbatim; (vs code) CashScrutiny volume def. Then resolve. THIS IS THE LAST SUBSECTION -> after advisor-clean, STOP the loop + PushNotification + hand to user for ratification. Do NOT drift into NLM verification or prose."
 }

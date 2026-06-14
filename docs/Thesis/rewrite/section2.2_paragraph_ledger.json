@@ -26,7 +26,7 @@
       "NLM is SOLE authority for papers; numbers never typed from memory; author names never expanded from memory.",
       "Ignore mempalace auto-recall (unverified)."
     ],
-    "coherence_rules_in_force": "RULE-COH-1..8 from tmp/section2_subsection_plan.json. Most-load-bearing here: COH-1 (no re-review of 2.1 papers -> callbacks), COH-2 (predicts a PATTERN, never a cause), COH-5 (scrutiny = confound, not a P7 reading; rule-out != mechanism), COH-6 (forward-ref the residual to 2.3), COH-8 (scrutiny VOLUME != UncQue word-uncertainty)."
+    "coherence_rules_in_force": "RULE-COH-1..8 from tmp/section2_subsection_plan.json. Most-load-bearing here: COH-1 (no re-review of 2.1 papers -> callbacks), COH-2 (predicts a PATTERN, never a cause), COH-5 (scrutiny = plausible alternative driver tested & rejected in 4.1, flagged in 2.2; not a P7 reading; rejecting != mechanism), COH-6 (forward-ref the residual to 2.3), COH-8 (scrutiny VOLUME != UncQue word-uncertainty)."
   },
   "_plan": {
     "section_job": "Convert the 2.1 framework into formal, falsifiable predictions about WHERE/WHEN the language signal appears -- never WHY. Each hypothesis: a prediction (direction + where/when) + the prior empirical contrast that makes it non-obvious, leaning on contrasts 2.1 already set up.",
@@ -311,7 +311,7 @@
         {
           "prop_id": "P5.1",
           "statement": "Competing hypothesis (analyst scrutiny): the pre-announcement uncertainty rise reflects analysts asking more or harder cash-related questions, mechanically eliciting hedged answers, rather than the disclosure bind.",
-          "role_in_paragraph": "States the rival to be ruled out.",
+          "role_in_paragraph": "States the rival (a plausible alternative driver, tested & rejected as a side analysis in 4.1).",
           "type": "internal-hypothesis",
           "relation_to_2_1": "NEW",
           "anchor_2_1": [],

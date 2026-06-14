@@ -44,7 +44,7 @@
     "division_of_labor": "2.1 DEVELOPED both dimensions (P3 anticipatory, P5 cash + two clocks) and the contrasts (P6 thewissen/keown). 2.2 ADDS: formal falsifiable hypotheses (directions, treated sets, PreAnnounceQtr=1[e=-1]) + the scrutiny competing-hypothesis (NEW). It does NOT re-review the 2.1 papers.",
     "register_constraints": [
       "RULE-COH-2 (no cause)",
-      "RULE-COH-5 (scrutiny is a confound)",
+      "RULE-COH-5 (scrutiny is a plausible alternative driver, flagged in 2.2)",
       "RULE-COH-6 (forward-ref the residual to 2.3)"
     ],
     "subsection_prop_chain": [
@@ -330,18 +330,18 @@
   "2.5": {
     "title": "Specification and Measurement of Key Constructs",
     "role": "the validity gate",
-    "purpose": "Validate the construct (convergent + discriminant) and pre-empt the scrutiny confound -- earn trust the residual measures what's claimed BEFORE results.",
-    "serves": "Construct credibility; pre-registers the 4.1 scrutiny rule-out; defines remaining key constructs.",
+    "purpose": "Validate the construct (convergent + discriminant) and MOTIVATE the scrutiny identification side-test (our measure -> plausible alternative driver -> tested & rejected in 4.1) -- earn trust the residual measures what's claimed BEFORE results.",
+    "serves": "Construct credibility; introduces + motivates the scrutiny identification side-test (verdict in 4.1); defines remaining key constructs.",
     "boundary": "Validity + scrutiny construct + key non-main constructs. MAIN var -> 2.3. Scrutiny RESULTS -> 4.1. Controls -> Appendix. Do NOT preview the 4.2 presentation-contrast RESULTS (C7): 2.5.3 may use the presentation/residual split as a validity device but states no 4.2 finding.",
     "thin_claim": "Convergent = 'consistent with' (weak, disclosed); discriminant = decisive; scrutiny = 'doesn't account for THIS run-up,' not 'never matters.'",
     "division_of_labor": "Mostly NEW -- validity is work 2.1 does not do. Only the presentation/Q&A split it leans on is a CALLBACK to P2. The scrutiny construct here is the definitional counterpart to the 2.2 scrutiny HYPOTHESIS (RULE-COH-5).",
     "register_constraints": [
-      "RULE-COH-5 (scrutiny construct; rule-out != mechanism)"
+      "RULE-COH-5 (scrutiny = plausible alternative driver tested & rejected; rejecting != mechanism)"
     ],
     "subsection_prop_chain": [
       {
         "id": "SC2.5.1",
-        "claim": "Two demands on the residual: it must (a) move with real uncertainty (convergent), and (b) not be a scrutiny artifact (discriminant + rule-out).",
+        "claim": "Two demands on the residual: (a) move with real uncertainty (convergent), and (b) be distinct from competing observable channels (discriminant) -- competition (SC2.5.3), and not merely analyst scrutiny, a plausible alternative driver tested & rejected as a side analysis (SC2.5.4 -> 4.1).",
         "relation_to_2_1": "NEW",
         "anchor_2_1": [],
         "source_candidates": [],
@@ -381,7 +381,7 @@
       },
       {
         "id": "SC2.5.4",
-        "claim": "Pre-register the scrutiny rule-out (4.1 forward-ref): define CashScrutiny / HighCashScrutiny + the three-step logic; frame as 'doesn't account for THIS run-up.'",
+        "claim": "Introduce + MOTIVATE the scrutiny identification side-test: define CashScrutiny / HighCashScrutiny, establish its validity (CashRatio->CashScrutiny) + plausibility (rises around cash deals), and pre-register the side-test (verdict in 4.1); frame the verdict as 'doesn't account for THIS run-up.'",
         "relation_to_2_1": "NEW",
         "anchor_2_1": [],
         "source_candidates": [],
@@ -404,7 +404,7 @@
     "equations_needed": [
       "validity regression form (light; logic is the focus)"
     ],
-    "paragraph_map_provisional": "~5 paragraphs: P1 two-demands(SC2.5.1) | P2 convergent(SC2.5.2) | P3 discriminant(SC2.5.3) | P4 scrutiny-rule-out(SC2.5.4) | P5 key-constructs(SC2.5.5).",
+    "paragraph_map_provisional": "~5 paragraphs: P1 two-demands(SC2.5.1) | P2 convergent(SC2.5.2) | P3 discriminant(SC2.5.3) | P4 scrutiny motivation + side-test(SC2.5.4) | P5 key-constructs(SC2.5.5).",
     "nlm_needs": "VERIFY (engage, not merely data-source): hassan2020 political risk; baker2016/davis2016 policy uncertainty; hoberg2010/hoberg2016 product-market competition. Numbers are from claim_findings_ledger (bible-verbatim), not re-derived."
   }
 }
