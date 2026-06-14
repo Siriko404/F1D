@@ -118,11 +118,11 @@
       ],
       "prose_gate": {
         "rule": "all propositions confirmed/cleared before prose",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "The preceding section isolates two dimensions of the pattern we expect: an \\emph{anticipatory} dimension, in which CEO uncertainty language is elevated while an acquisition remains undisclosed and recedes once it is announced, and a \\emph{cash-concentrated} dimension, in which that elevation is stronger for cash acquisitions than for stock. This section turns those dimensions into formal, falsifiable predictions about \\emph{where} and \\emph{when} the signal appears in a CEO's unscripted answers---not why it appears, a mechanism the framework leaves open. The object of each prediction is the call-varying residual of CEO uncertainty language in the Q\\&A---the component that remains once a CEO's persistent speaking style is netted out, which the next section defines formally---and every prediction is read in descriptive, correlational terms. Timing is measured in event time: $e$ counts calendar quarters relative to a firm's first acquisition announcement, so that $e=-1$ denotes the call in the quarter immediately before it. The focal pre-announcement indicator is $\\mathrm{PreAnnounceQtr} = \\mathbf{1}[e=-1]$, defined for a firm's first acquisition financed at least half in cash. The three hypotheses that follow---H1, H1a, and H1b---are stated here as predictions and confronted with the data by the designs developed below.",
+      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (advisor-cleared; .tex push deferred per user)"
     },
     "P2": {
       "order": 2,
