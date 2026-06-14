@@ -85,9 +85,20 @@ def show():
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--show", action="store_true")
+    ap.add_argument("--verdict", nargs=2, metavar=("KEY", "VERDICT"),
+                    help="record a HUMAN-adjudicated verdict for a bib_identity key (guide S9)")
+    ap.add_argument("--note", default="", help="verdict note")
     a = ap.parse_args()
     if a.show:
         show()
+    elif a.verdict:
+        key, verdict = a.verdict
+        ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
+        ledger["bib_identity"][key]["verdict"] = verdict
+        ledger["bib_identity"][key]["verdict_note"] = a.note
+        LEDGER.write_text(json.dumps(ledger, indent=2, ensure_ascii=False), encoding="utf-8")
+        C.commit(f"verify(2.1/bib): {key} verdict {verdict}")
+        print(f"recorded {key} -> {verdict}")
     else:
         if not C.EXE:
             raise SystemExit("notebooklm CLI not found on PATH; run `notebooklm login` first.")

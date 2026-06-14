@@ -1923,7 +1923,8 @@
       "query": "Reading only this paper, this source: state ONLY the exact title; the authors (list every author, with full first names or initials exactly as printed on the document); the journal or working-paper series; and the year of this document. Do not infer beyond what the document itself states.",
       "answer": "**Title:** Merger Announcements and Insider Trading Activity: An Empirical Investigation\n**Authors:** ARTHUR J. KEOWN and JOHN M. PINKERTON\n**Journal:** THE JOURNAL OF FINANCE\n**Year:** 1981",
       "quotes": [],
-      "verdict": "PENDING"
+      "verdict": "SUPPORTED",
+      "verdict_note": "NLM identity self-report (guide S4, answer-sourced): Arthur J. Keown and John M. Pinkerton; The Journal of Finance; 1981. Initials A.J./J.M. recovered; title, journal, year confirmed; volume/pages out of NLM scope (remain bib-typed)."
     }
   }
 }
