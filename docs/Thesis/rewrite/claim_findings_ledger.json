@@ -92,7 +92,7 @@
     {
       "rank": 4,
       "id": "C4_scrutiny_ruleout",
-      "hypothesis": "alternative rule-out",
+      "hypothesis": "plausible alternative driver, tested & rejected",
       "claim": "The run-up is not an artifact of analysts asking more cash questions.",
       "tables": [
         "tab:reason_gating",
@@ -110,7 +110,7 @@
       "referee_proof": "NULL ONLY -- underpowered; interaction CI [-0.027,+0.016]; 89% of calls draw no cash scrutiny",
       "risks": [
         "absence-of-evidence, not equivalence",
-        "the confound (scrutiny rises pre-announce) is genuine; only the gating interaction kills it, and it is underpowered"
+        "the scrutiny rise pre-announce is genuine (a plausible driver); only the gating interaction rejects it, and it is underpowered"
       ],
       "thinnest_claim": "Keep EXACTLY as hedged: 'does not account for THIS run-up; not that scrutiny never matters.' Do NOT strengthen."
     },

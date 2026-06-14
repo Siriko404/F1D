@@ -38,7 +38,7 @@ Each subsection feeds the next; none repeats another. This arc is the backbone.
 - **Equations:** none (conceptual).
 - **Serves:** the lens that makes every later choice make sense; produces the two dimensions §2.2 formalizes.
 - **Boundary (must NOT):** no formal model, no tested mechanism, no causal claim; don't define the measure (§2.3) or estimator (§2.4).
-- **Thin-claim discipline:** state descriptive/correlational/mechanism-open UP FRONT; cash-concentration framed via the visible-position bind, not the ruled-out scrutiny channel.
+- **Thin-claim discipline:** state descriptive/correlational/mechanism-open UP FRONT; cash-concentration framed via the visible-position bind, not the scrutiny channel (a plausible alternative driver tested & rejected in §4.1).
 
 ### §2.2 Hypothesis Development — *the empirical lit review (per hypothesis)*
 - **Purpose:** convert the framework into formal, falsifiable, empirically-grounded predictions.
@@ -47,7 +47,7 @@ Each subsection feeds the next; none repeats another. This arc is the backbone.
   2. **H1 (run-up / anticipatory):** residual Q&A uncertainty elevated in the pre-announcement quarter for cash acquirers vs own other quarters. Ground vs thewissen2024 (managed tone before stock deals — we predict the opposite register: unmanaged uncertainty, before cash deals).
   3. **H1a (cash-concentration):** stronger for cash than stock. Ground vs cash-acquisitiveness (Harford 1999). Frame as CONCENTRATION, not strict specificity.
   4. **H1b (differential timing):** uncertainty on the information clock (resolves at announcement); cash on the transaction clock (persists to completion). Distinguish from price run-up/leakage (Keown-Pinkerton 1981) — we track LANGUAGE, not price.
-  5. State the competing **analyst-scrutiny** reading formally here as the hypothesis §4.1 tests/rules out (gives the rule-out a home).
+  5. FLAG the competing **analyst-scrutiny** reading here (lean); its construct + motivation live in §2.5, and §4.1 tests & rejects it.
 - **Literature (VERIFY):** thewissen2024, ragozzino2024 (contrast); Harford (1999); Keown-Pinkerton (1981); analyst Q&A behavior (e.g., Matsumoto, Pronk & Roelofsen 2011).
 - **Equations:** none; define estimands precisely (PreAnnounceQtr = 1[e=-1]).
 - **Serves:** falsifiable claims with stakes; the bridge to the designs (§2.4 maps each design to a hypothesis).
@@ -83,12 +83,12 @@ Each subsection feeds the next; none repeats another. This arc is the backbone.
 - **Thin-claim:** descriptive estimand, no identification; honest about the never-acquirer baseline, first-deal contamination, inference choices.
 
 ### §2.5 Specification and Measurement of Key Constructs — *the validity gate*
-- **Purpose:** validate the construct (convergent + discriminant) and pre-empt the scrutiny confound.
+- **Purpose:** validate the construct (convergent + discriminant) and MOTIVATE the scrutiny identification side-test (a plausible alternative driver, tested & rejected in §4.1).
 - **Must do:**
-  1. State the two demands: the residual must (a) move with real uncertainty, (b) not be a scrutiny artifact.
+  1. State the two demands: the residual must (a) move with real uncertainty, (b) be distinct from competing observable channels (competition; and not merely analyst scrutiny, a plausible alternative driver tested in §4.1).
   2. **Convergent validity:** residual loads on political risk (hassan2020) + policy uncertainty (baker2016/davis2016). HONEST: "consistent with" — one-tailed, PRisk economically trivial, US-EPU marginal. Do not oversell.
   3. **Discriminant validity (the decisive evidence):** product-market competition (hoberg2010/hoberg2016) loads on the presentation, NOT the residual (0.0304*** vs 0.0008 n.s.). Lead with this — it is the clean result.
-  4. **Pre-register the scrutiny rule-out** (§4.1 forward-ref): define CashScrutiny/HighCashScrutiny + the three-step logic; frame as "doesn't account for THIS run-up."
+  4. **Introduce + motivate the scrutiny side-test** (§4.1 forward-ref): define CashScrutiny/HighCashScrutiny, establish validity (CashRatio→CashScrutiny) + plausibility (rises ahead of cash deals); the verdict ("doesn't account for THIS run-up") is reported in §4.1, not §2.5.
   5. Define remaining KEY constructs (CashRatio, PreAnnounceQtr, CashScrutiny); controls -> Appendix.
 - **Literature (VERIFY new):** validity benchmarks hassan2020, baker2016, davis2016, hoberg2010/2016 — already cited, now ENGAGED not merely data-sourced.
 - **Equations:** the validity regression form (light; logic is the focus).
@@ -101,7 +101,7 @@ Each subsection feeds the next; none repeats another. This arc is the backbone.
 ## 3. Cross-cutting coherence flags (the diligent catches)
 
 1. **"Empire-Building" table captions vs the disclosure framing.** Captions say "Empire-Building Run-Up Test," which invokes Jensen (1986) free-cash-flow/agency — a theory the paper does NOT make (its story is disclosure-state uncertainty). Either reframe the caption language (pre-announcement cash run-up) or lightly ground the cash build-up in the cash-for-acquisitions literature (Harford 1999) WITHOUT the value-destroying-agency connotation. **Decision needed before §2.1.**
-2. **Cash-concentration mechanism vs the ruled-out scrutiny channel.** §2.1/§2.2 must motivate cash-concentration via the *visible material position under the gag*, NOT via "analysts ask harder cash questions" — because §4.1 rules the scrutiny channel out. Internal contradiction risk if framed wrongly.
+2. **Cash-concentration mechanism vs the scrutiny channel (tested & rejected in §4.1).** §2.1/§2.2 must motivate cash-concentration via the *visible material position under the gag*, NOT via "analysts ask more cash questions" — because §4.1 tests and rejects the scrutiny channel as the driver. Internal contradiction risk if framed wrongly.
 3. **Intro 2x2 vs §2.1 2x2 redundancy.** Division of labor: intro = brief gap/promise; §2.1 = the developed positioning. Avoid verbatim duplication.
 4. **Downstream ripple (bounded).** After §2 is rewritten, intro/abstract/§5 need a coherence pass to preview/pay-off §2's developed-but-bounded framing. Bounded theory keeps this small, not a cascade.
 
