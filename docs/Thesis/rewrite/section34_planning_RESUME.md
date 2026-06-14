@@ -9,25 +9,21 @@
 - **Manifest RATIFIED** (8 units, below). **Both flagged input-fixes DONE + committed:**
   - `93a39904` — variable_ledger refreshed to the live 11-table / 5-subsection scope (stale summary-stats moments stripped -> table authority; 3 dropped tables + 12 dead-only vars marked; anchors verified current).
   - `08b27919` — SD-basis verified (§2.5 FB safe under both UncRes SDs 0.3010/0.3072) + an additive `_sd_basis_note_2026_06_14` recorded in `claim_findings_ledger.json` for §3.2.
-- **Workflow design SETTLED** (below). Phase A was launched once but **ran SONNET** and the user killed it.
-- **⛔ BLOCKER: opus-subagent spawn is DISPUTED. Resolve BEFORE re-spawning the fleet.**
+- **Workflow design SETTLED** (below). **✅ BLOCKER RESOLVED + CONFIRMED** (cause = the `CLAUDE_CODE_SUBAGENT_MODEL` env pin; removed it; post-restart probe + the Phase-A fleet both ran `claude-opus-4-8`). See BLOCKER section.
+- **✅ PHASE A COMPLETE (run `wf_7fca1f54-86c`, 4 opus agents, 839K tokens).** 3 opus planners + 1 opus red-team. Outputs written to `docs/Thesis/rewrite/`: `section{3.1,3.2,3.3,3.4,4.1}_subsection_plan.json` (the synthesized, red-teamed chains), `section34_phaseA_redteam.json` (flaws_found 0C/2Ma/5Mi all fixed + coverage_matrix), `section34_phaseA_planners_raw.json` (3 raw planners). reason+evidence atomic on EVERY purpose+proposition (0 missing). Coverage matrix: C1/C2/C4/C6 each homed once; H1/H1a/H1b paid off; 2.5-P4 promise → 4.1; C3/C7 correctly homeless; C5 stays in 2.5. **AWAITING USER RATIFICATION = the GATE before Phase B.**
 
 ---
 
-## ⛔ BLOCKER — opus subagent model (DISPUTED — resolve first, do NOT spend the fleet until confirmed)
+## ✅ BLOCKER — opus subagent model (CAUSE FOUND + FIX APPLIED 2026-06-14; one restart + probe left)
 
-- **My probes (firm evidence):** subagents spawned via BOTH the Workflow tool AND the Agent tool (with `model:'opus'` OR omitted) recorded `"model":"claude-sonnet-4-6"` on the **assistant** message.
-  - `subagents/workflows/wf_484fca33-0e3/agent-*.jsonl` (Phase-A planners) — sonnet on lines 4,5,6,9,10,12.
-  - `subagents/workflows/wf_31962b68-29a/...` (probe, model omitted) — sonnet.
-  - `subagents/agent-abb1768162511d230.jsonl` (Agent tool, model:'opus') — line 4 = `"type":"assistant"` + `"model":"claude-sonnet-4-6"`. (`"advisorModel":"claude-opus-4-8"` on the same line is a SEPARATE config field, not the run model.)
-- **USER DISPUTES (strong prior — likely I am missing something):** "you CAN spawn opus agents, I've done it a thousand times."
-- **UNRESOLVED.** Resolve in this order, and CONFIRM the assistant-message model is opus on a fresh probe:
-  1. **ASK THE USER how they spawn opus subagents** — they do it routinely ("a thousand times"); a 30-second answer beats re-probing. (`advisorModel:claude-opus-4-8` on the same transcript line PROVES opus-4-8 is reachable in this environment, so the user is very likely right.)
-  2. Try `model: 'claude-opus-4-8'` (the FULL id, not the `'opus'` alias).
-  3. Try a `subagent_type` / `agentType` whose frontmatter pins opus; check `/model` state + the ultracode / fast-mode interaction.
-  4. Re-probe a trivial agent + confirm its `type:assistant` line's `model` reads `claude-opus-*` before proceeding.
-- **DO NOT** re-run the 4-agent fleet until opus is confirmed on the actual run model. And do NOT silently fall back to sonnet (user rejected it).
-- **FALLBACK if opus subagents cannot be confirmed:** the **Opus main loop (you) does the planning directly** (plan all 5 subsection chains yourself) + **advisor (Opus) red-teams**. The whole multi-agent apparatus may be unnecessary — you ARE Opus. This avoids a deadlock behind the blocker; it is NOT a license to fan out on sonnet.
+- **ROOT CAUSE (settled — user was right, opus IS spawnable):** `~/.claude/settings.json` `env` block pinned `"CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-6"`. Per the resolution-order reference (below), this env var is **priority 1** — it overrides per-call `model:'opus'` AND subagent frontmatter, and a blocked override **silently falls back** (no error). That is why all 6 probes ran sonnet despite `model:'opus'`.
+- **Reference that diagnosed it:** `C:\Users\sinas\Downloads\claude-code-opus-agents-stepbystep.md` (§1.2 = the #1 silent culprit; §6 = precedence: env var > per-call param > frontmatter > inherit). Pre-flight was otherwise clean: v2.1.177, no `availableModels` block, `ANTHROPIC_MODEL=claude-opus-4-8`.
+- **FIX APPLIED (this session):** removed the `CLAUDE_CODE_SUBAGENT_MODEL` line from `~/.claude/settings.json` (user chose "remove the pin" over "force all → opus"). Effect after restart: per-call `model:'opus'` resolves to opus; plugin agents with their own frontmatter model stay cheap; frontmatter-less ones inherit the opus session. To REVERT: re-add `"CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-6"` to the `env` block.
+- **WHY A RESTART IS REQUIRED:** the var was injected into THIS session's process env at launch (priority 1) — it cannot be overridden in-session, so the fix only takes effect in a NEW session.
+- **REMAINING STEPS (post-restart):**
+  1. Probe: spawn ONE trivial agent (Agent tool, `model:'opus'`), then read its `subagents/agent-*.jsonl` → confirm the `type:assistant` line's `model` reads `claude-opus-*` (NOT sonnet). `env | grep CLAUDE_CODE_SUBAGENT_MODEL` should now return nothing.
+  2. If confirmed → launch Phase A from `sec34_phaseA_workflow.js` with the planners on opus.
+  3. If somehow STILL sonnet → fall back to: Opus main loop (you) plans the 5 subsection chains directly + advisor (Opus) red-teams. Never fan out on sonnet.
 
 ---
 
@@ -89,8 +85,7 @@ TOTAL = 8 agents.
 
 ---
 
-## NEXT ACTION (post-compaction)
-1. **RESOLVE the opus-spawn blocker — START BY ASKING THE USER how they spawn opus** (see BLOCKER step 1). Then confirm on a fresh probe's `type:assistant` model.
-2. **IF opus subagents confirmed:** run Phase A from `sec34_phaseA_workflow.js`. **IF NOT resolvable:** take the FALLBACK — Opus main loop plans the 5 subsection chains directly (use the .js as the spec), advisor (Opus) red-teams. Never fan out on sonnet.
-3. GATE: write the 5 subsection-plan files (`docs/Thesis/rewrite/section3.1_subsection_plan.json` ... `section4.1_...`), commit, SHOW user, ratify.
-4. Phase B (paragraphs).
+## NEXT ACTION
+1. **GATE — user ratifies the 5 Phase-A subsection plans** (`section{3.1,3.2,3.3,3.4,4.1}_subsection_plan.json`). On amend requests, edit the affected plan file(s) directly (or re-run via `Workflow({scriptPath: sec34_phaseA_workflow.js, resumeFromRunId: "wf_7fca1f54-86c"})` after editing the script).
+2. **After ratification → Phase B (paragraphs):** clone the Phase-A workflow shape — 3 opus planners + 1 opus red-team — but TASK = allocate each ratified chain into paragraphs, give each paragraph an atomic purpose + its own proposition chain (reason+evidence atomic). Output = the 5 paragraph ledgers, modeled on `section2.2_paragraph_ledger.json`. The 8-agent total (4+4) is now half-spent.
+3. Open decisions still to settle with the user before drafting prose: 3.2/3.4 SD-basis (0.3010 vs 0.3072); orphan bibitems (lerman2026/bushee2018/everhart2025/gokkaya2025) cite-or-remove; Appendix I edits; the C6 two-way-clustering rerun-class (3.4 open_decisions[1]).

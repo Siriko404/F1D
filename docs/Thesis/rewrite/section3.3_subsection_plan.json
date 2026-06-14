@@ -1,0 +1,190 @@
+{
+  "subsection_id": "3.3",
+  "title": "Main Analysis 2: Differential Timing Around the Announcement",
+  "purpose": {
+    "statement": "Pay off H1b and the Section 2.4 MA2 event-study design by establishing claim C1 (the strongest, two-tailed result): residual uncertainty spikes at the pre-announcement quarter and collapses the instant the deal is public (the GAP window: announced, not yet closed), while the acquirer's cash ratio does NOT fall at announcement and declines only at completion when cash leaves the firm. The claim rests on the CONTRAST of the two paths (uncertainty on the information clock, cash on the transaction clock), not on the magnitude of any single coefficient, and does not over-read the below-baseline POST.",
+    "reason": "C1 is the ledger's rank-1, most-referee-proof result, mandated to CARRY the paper; 2.2 P4 stated H1b (theta_-1>0, theta_gap=0, kappa_gap>0) and 2.4 P2 built the event study with the GAP bin as the MNPI discriminator. The round-trip is the thesis's signature finding.",
+    "evidence": [
+      "claim_findings_ledger.json C1 (rank 1 STRONGEST; two-tailed; 'frame as the round-trip contrast; do not over-read the negative POST')",
+      "thesis_draft.tex 2.2 H1b (theta_-1>0, theta_gap=0, kappa_gap>0, L71)",
+      "thesis_draft.tex 2.4 P2 (event-study spec; Wald PRE1-GAP carries H1b; L100-104)",
+      "old_draft_81efc78.tex L124-135"
+    ]
+  },
+  "delivers_claims": [
+    "C1"
+  ],
+  "tables_referenced": [
+    "tab:empire_drop_matched",
+    "tab:empire_drop_placebo"
+  ],
+  "proposition_chain": [
+    {
+      "prop_id": "3.3-P1",
+      "statement": "MA2 replaces the single pre-announcement indicator with the four-bin event study (PRE2 at e=-2, PRE1 at e=-1, GAP announced-but-unclosed, POST completed; baseline e<=-3 plus never-acquirers) on the matched universe where both the residual and the cash ratio are defined (28,102 firm-quarters of 1,320 firms); the specification is otherwise that of MA1 and, with no ordering imposed across bins, every coefficient is two-tailed. The matched universe estimates BOTH outcomes on the identical rows, defending the differential-timing reading against a sample-composition artifact.",
+      "role": "premise",
+      "type": "design-method",
+      "reason": "tab:empire_drop_matched is the primary table because it alone carries BOTH clocks (the placebo table has no CashRatio column); the shared-sample design is exactly what licenses reading the two paths against each other.",
+      "evidence": [
+        "thesis_draft.tex 2.4 P2 (event-study equation + bins; baseline e<=-3 + never-acquirers; two-tailed, L100-104)",
+        "variable_ledger.json tab:empire_drop_matched design.matched_universe (one shared sample, both DVs on the same rows)",
+        "_tables_from_bible.tex tab:empire_drop_matched (N 28,102, 1,320 firms)"
+      ],
+      "numbers": [
+        "28,102 firm-quarters / 1,320 firms (tab:empire_drop_matched)"
+      ],
+      "register_locks": [
+        "correlational",
+        "no-identification"
+      ],
+      "depends_on": [
+        "3.1-P5",
+        "3.2-P1"
+      ]
+    },
+    {
+      "prop_id": "3.3-P2",
+      "statement": "The pre-trend is flat on both clocks: the e=-2 (PRE2) coefficient is null for the residual (0.0068 n.s.) and for the cash ratio (0.0008 n.s.), so the PRE1 estimates are not the tail of a pre-existing trend. This is a validity device, not an identification proof.",
+      "role": "premise",
+      "type": "result-number",
+      "reason": "PRE2 is the 2.4-promised pre-trend check; without it the PRE1 spike could be dismissed as trend. Stated as a validity device per the no-parallel-trends register (2.4 P4.1).",
+      "evidence": [
+        "thesis_draft.tex 2.4 P2/P4 (PRE2 is the pre-trend validity check, expected ~0; no parallel-trends claim)",
+        "claim_findings_ledger.json C1 finding (PRE2 0.0068 n.s.)",
+        "old_draft_81efc78.tex L128"
+      ],
+      "numbers": [
+        "0.0068 (tab:empire_drop_matched col 1 UncResCEO PRE2, SE 0.0178, n.s.)",
+        "0.0008 (tab:empire_drop_matched col 2 CashRatio PRE2, SE 0.0024, n.s.)"
+      ],
+      "register_locks": [
+        "correlational",
+        "no-identification"
+      ],
+      "depends_on": [
+        "3.3-P1"
+      ]
+    },
+    {
+      "prop_id": "3.3-P3",
+      "statement": "The discriminating contrast is the drop AT the gap. On the information clock, residual uncertainty spikes at PRE1 (0.0473***) and falls to insignificance the instant the deal is public (GAP 0.0018, n.s.), a significant PRE1-GAP drop of 0.0455** and a large significant peak-to-completion swing (PRE1-POST 0.0723***). On the transaction clock, the cash ratio is elevated at PRE1 (0.0061**), does NOT fall when the deal is announced (PRE1-GAP drop 0.0006, n.s.), and declines only once cash leaves at completion (GAP-POST drop 0.0210***, POST -0.0155***). Because the GAP CashRatio coefficient itself (0.0055) is positive but insignificant, cash persistence rests on the absence of a PRE1-GAP decline, not on a significant gap level.",
+      "role": "result",
+      "type": "result-number",
+      "reason": "These two legs jointly ARE the H1b/C1 contrast: uncertainty resolves at announcement (theta_gap=0, the MNPI fingerprint per 2.2 P4) while cash persists through the gap (kappa_gap>0). Leading with the GAP contrast (not the peak-to-post swing) follows the 2.4 P2.2 Wald discriminator. The kappa_gap honesty note keeps the register exact.",
+      "evidence": [
+        "claim_findings_ledger.json C1 (UncResCEO PRE1/GAP/POST/PRE1_minus_GAP/PRE1_minus_POST; CashRatio PRE1/POST/GAP_minus_POST)",
+        "thesis_draft.tex 2.2 P4 (theta_gap=0 discriminator; kappa_gap>0 cash persists, partly mechanical)",
+        "thesis_draft.tex 2.4 P2.2 (PRE1-GAP Wald carries H1b)",
+        "_tables_from_bible.tex tab:empire_drop_matched (GAP CashRatio 0.0055 n.s.; Drop PRE1-GAP CashRatio 0.0006 n.s.)"
+      ],
+      "numbers": [
+        "UncResCEO PRE1 0.0473*** (tab:empire_drop_matched col 1, SE 0.0178)",
+        "UncResCEO GAP 0.0018 (col 1, SE 0.0187, n.s.)",
+        "Drop PRE1-GAP UncResCEO 0.0455** (col 1, SE 0.0225)",
+        "Drop PRE1-POST UncResCEO 0.0723*** (col 1, SE 0.0190)",
+        "CashRatio PRE1 0.0061** (col 2, SE 0.0024)",
+        "Drop PRE1-GAP CashRatio 0.0006 (col 2, n.s.)",
+        "CashRatio GAP 0.0055 (col 2, SE 0.0034, n.s.)",
+        "CashRatio POST -0.0155*** (col 2, SE 0.0022)",
+        "Drop GAP-POST CashRatio 0.0210*** (col 2, SE 0.0042)"
+      ],
+      "register_locks": [
+        "correlational",
+        "within-firm",
+        "no-identification"
+      ],
+      "depends_on": [
+        "3.3-P2"
+      ]
+    },
+    {
+      "prop_id": "3.3-P4",
+      "statement": "The entry spike is economically the same event as MA1 (0.0473 here against 0.0461 there, about fifteen percent of a residual standard deviation); what MA2 adds is the round trip, the peak-to-post swing of 0.0723***, so the uncertainty raised in the pre-announcement window is fully unwound once the information is public. The cash leg is identified off the same well-behaved partial-adjustment specification as MA1 (lag 0.7547).",
+      "role": "inference",
+      "type": "result-number",
+      "reason": "Connects C1 to C2 (same event) and quantifies the resolution; the peak-to-post number confirms the round trip but is presented secondary to the GAP contrast. The SD-scaling here is a disclosed approximation since MA2 runs on the matched universe (a third universe).",
+      "evidence": [
+        "claim_findings_ledger.json C1 (PRE1 0.0473; PRE1-POST 0.0723)",
+        "_tables_from_bible.tex tab:empire_building_did col 2 (0.0461, the MA1 spike); tab:empire_drop_matched col 2 CashRatio_lag 0.7547",
+        "tab:summary_stats Panel B (SD 0.3010)",
+        "old_draft_81efc78.tex L132 (round-trip framing)"
+      ],
+      "numbers": [
+        "PRE1 0.0473*** (tab:empire_drop_matched col 1) vs MA1 0.0461*** (tab:empire_building_did col 2)",
+        "Drop PRE1-POST 0.0723*** (tab:empire_drop_matched col 1, SE 0.0190)",
+        "~15% of SD = 0.0473 / 0.3010 (tab:summary_stats Panel B) = 15.7%",
+        "CashRatio_lag 0.7547*** (tab:empire_drop_matched col 2, SE 0.0108)"
+      ],
+      "register_locks": [
+        "correlational",
+        "no-identification"
+      ],
+      "depends_on": [
+        "3.3-P3",
+        "3.2-P4"
+      ]
+    },
+    {
+      "prop_id": "3.3-P5",
+      "statement": "The cash arm of the placebo event study reproduces the same round trip on its own complete-case cash universe (29,535 firm-quarters of 1,326 firms): a significant PRE1 spike (0.0486***) that collapses to insignificance at the GAP (0.0058, n.s.), a significant PRE1-GAP drop (0.0428*) and a significant peak-to-post swing (0.0681***). Only the placebo table's CASH column is used here; its cash-vs-stock CONTRAST is reserved for 3.4.",
+      "role": "result",
+      "type": "result-number",
+      "reason": "tab:empire_drop_placebo's CASH arm independently corroborates the matched round-trip on a second sample; using only its cash arm here (its stock column and the cash-vs-stock contrast go to 3.4) avoids double-claiming the specificity comparison. The placebo cash N is 29,535, not the matched 28,102.",
+      "evidence": [
+        "claim_findings_ledger.json C6 finding (placebo_cash_PRE1 0.0486***)",
+        "_tables_from_bible.tex tab:empire_drop_placebo col 1 (cash PRE1 0.0486***, GAP 0.0058 n.s., Drop PRE1-GAP 0.0428*, Drop PRE1-POST 0.0681***; N 29,535 / 1,326 firms)",
+        "old_draft_81efc78.tex L143 (cash arm reproduces, 29,535 firm-quarters)"
+      ],
+      "numbers": [
+        "0.0486*** (tab:empire_drop_placebo col 1 cash PRE1, SE 0.0174)",
+        "0.0058 (tab:empire_drop_placebo col 1 cash GAP, SE 0.0181, n.s.)",
+        "0.0428* (tab:empire_drop_placebo col 1 cash Drop PRE1-GAP, SE 0.0221)",
+        "0.0681*** (tab:empire_drop_placebo col 1 cash Drop PRE1-POST, SE 0.0187)",
+        "29,535 / 1,326 firms (tab:empire_drop_placebo cash column N)"
+      ],
+      "register_locks": [
+        "correlational",
+        "within-firm"
+      ],
+      "depends_on": [
+        "3.3-P3"
+      ]
+    },
+    {
+      "prop_id": "3.3-P6",
+      "statement": "The claim rests on the contrast between the two paths, not on the magnitude or sign of any single drop: uncertainty tracks the information and reverses at announcement; cash tracks the transaction and falls at completion, a persistence that is partly mechanical since cash leaves only at closing. We do not over-read the below-baseline POST uncertainty coefficient (-0.0250*).",
+      "role": "caveat",
+      "type": "framing",
+      "reason": "C1's explicit register lock: the round-trip CONTRAST is the claim; the negative POST is a flagged not-to-over-read item and the cash-persistence mechanical component is disclosed. Stating both protects the strongest result from referee over-reading.",
+      "evidence": [
+        "claim_findings_ledger.json C1 risks ('POST uncertainty overshoots below baseline (-0.0250*) -- do not over-read'; 'cash persists to completion is partly mechanical')",
+        "thesis_draft.tex 2.2 P4.2 (do not over-read POST; cash leg partly mechanical)",
+        "old_draft_81efc78.tex L134"
+      ],
+      "numbers": [
+        "-0.0250* (tab:empire_drop_matched col 1 POST, SE 0.0130) -- flagged not-to-over-read"
+      ],
+      "register_locks": [
+        "correlational",
+        "no-identification",
+        "mechanism-open",
+        "supportive-not-definitive"
+      ],
+      "depends_on": [
+        "3.3-P3",
+        "3.3-P5"
+      ]
+    }
+  ],
+  "coverage": {
+    "purpose_fully_delivered": "Complete. P1 sets the matched-universe event study (both clocks, same rows); P2 establishes the flat pre-trend (validity device); P3 delivers the two diverging legs led by the GAP contrast (information clock resolves at GAP; transaction clock persists to completion, with the kappa_gap honesty note); P4 ties the entry spike to MA1 and quantifies the round trip; P5 corroborates on the placebo cash arm (N 29,535) while reserving the stock contrast for 3.4; P6 locks the claim to the contrast, bars over-reading the POST, and discloses the mechanical cash component. C1/H1b delivered exactly at the ledger ceiling.",
+    "gaps": [
+      "The cash-VS-stock specificity contrast from tab:empire_drop_placebo is deliberately NOT claimed here (reserved for 3.4) to avoid double-claiming",
+      "The mechanical component of cash persistence and the below-baseline POST are disclosed as bounded, not pushed as findings"
+    ]
+  },
+  "open_decisions": [
+    "The ~15% magnitude in 3.3-P4 inherits the 3.2 SD-basis decision; MA2 runs on the matched universe (N=28,102), a third universe, so the SD used to scale a matched-universe effect is a disclosed approximation (audit seed: matched-universe SD used to scale MA2 effect). Keep consistent with the 3.2 choice.",
+    "Whether to standardize clustering to two-way (firm x calendar-quarter) across the event-study tables (R2 rerun-class; surface only)"
+  ]
+}

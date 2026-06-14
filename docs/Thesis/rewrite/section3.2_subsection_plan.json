@@ -1,0 +1,155 @@
+{
+  "subsection_id": "3.2",
+  "title": "Main Analysis 1: The Pre-Announcement Run-Up",
+  "purpose": {
+    "statement": "Pay off H1 and the Section 2.4 MA1 single-indicator design by establishing claim C2: within firms, residual CEO Q&A uncertainty (UncResCEO) is elevated in the pre-announcement quarter of cash acquirers relative to their own other quarters, with the cash ratio rising on the same clock, while the stock-acquirer placebo shows no comparable positive run-up. Read strictly correlationally, within-firm, no identification. The formal cash-vs-stock difference is deferred to 3.4.",
+    "reason": "2.2 P2 stated H1 (theta_-1>0) and 2.4 P1 mapped the single-indicator design to it; the thesis needs the first empirical pillar (the run-up exists) before timing (3.3) and cash-specificity (3.4) can build on it. C2 is the ledger's rank-2 SOLID second pillar.",
+    "evidence": [
+      "claim_findings_ledger.json C2 (rank 2; thinnest 'elevated for cash acquirers, not detectable for stock'; survives two-tailed p=.0074)",
+      "thesis_draft.tex 2.2 H1 (theta_-1>0, L57)",
+      "thesis_draft.tex 2.4 P1 (MA1 equation, beta estimates theta_-1, L94-98)",
+      "old_draft_81efc78.tex L111-122"
+    ]
+  },
+  "delivers_claims": [
+    "C2"
+  ],
+  "tables_referenced": [
+    "tab:empire_building_did",
+    "tab:summary_stats"
+  ],
+  "proposition_chain": [
+    {
+      "prop_id": "3.2-P1",
+      "statement": "MA1 estimates the single-indicator two-way fixed-effects regression of Section 2.4 (firm and calendar year-quarter FE, firm-clustered SE) four times: each outcome (CashRatio, UncResCEO) in each arm (cash >=50%, stock >=50% placebo), with treated firms' post-announcement quarters dropped so the design observes only the run-up. Identification is within-firm (a treated firm's pre-announcement quarter against its own ordinary quarters); the estimating equation lives in 2.4 and is not restated.",
+      "role": "premise",
+      "type": "design-method",
+      "reason": "Establishes the estimand (beta = theta_-1, a within-firm anticipation contrast) so the coefficients that follow have a defined meaning, while honoring the boundary that the equation belongs to 2.4.",
+      "evidence": [
+        "thesis_draft.tex 2.4 P1 (MA1 equation + estimand, L94-98)",
+        "_tables_from_bible.tex deal-specification page (the four-regression layout)",
+        "variable_ledger.json tab:empire_building_did design (PanelOLS two-way FE, firm-clustered, post-announce dropped)"
+      ],
+      "numbers": [],
+      "register_locks": [
+        "correlational",
+        "no-identification"
+      ],
+      "depends_on": [
+        "3.1-P5"
+      ]
+    },
+    {
+      "prop_id": "3.2-P2",
+      "statement": "In the cash arm both clocks move in the final pre-announcement quarter: residual Q&A uncertainty is elevated and the cash ratio is rising (a coefficient that tracks the change in cash, not its level, because the cash equation carries the partial-adjustment lag). The residual coefficient survives a two-tailed test (p=.0074), so the table's one-tailed reporting convention does not drive the load-bearing result.",
+      "role": "result",
+      "type": "result-number",
+      "reason": "This is the core C2/H1 positive finding: the run-up is visible on the language clock with the cash clock corroborating. The two-tailed survival is load-bearing because the table prints one-tailed and a referee will check whether the result is an artifact of the convention; it is not.",
+      "evidence": [
+        "claim_findings_ledger.json C2 (cash_UncResCEO; cash_CashRatio; two_tailed_check p=.0074)",
+        "old_draft_81efc78.tex L117-119",
+        "thesis_draft.tex 2.4 P3.3 (CashRatio carries partial-adjustment lag; residual takes none)"
+      ],
+      "numbers": [
+        "0.0461*** (tab:empire_building_did col 2, SE 0.0172)",
+        "0.0051*** (tab:empire_building_did col 1, SE 0.0017)",
+        "0.7990*** (CashRatio_{t-1} partial-adjustment lag, tab:empire_building_did col 1, SE 0.0070)",
+        "two-tailed p=.0074 (claim_findings_ledger C2; t=0.0461/0.0172=2.68)"
+      ],
+      "register_locks": [
+        "correlational",
+        "within-firm",
+        "no-identification"
+      ],
+      "depends_on": [
+        "3.2-P1"
+      ]
+    },
+    {
+      "prop_id": "3.2-P3",
+      "statement": "The two cash-arm columns run on different universes because the residual exists only for CEOs with at least five calls: the uncertainty test (col 2) uses 27,622 firm-quarters of 1,248 firms while the cash-ratio test (col 1) uses 67,590 of 2,232; the uncertainty test is therefore the more demanding, smaller-universe one.",
+      "role": "caveat",
+      "type": "result-number",
+      "reason": "A referee will note the residual and cash columns are not the same sample; disclosing it pre-empts the criticism and explains the >=5-call selection (mechanic from 3.1, threat home 2.4 P5.5). These counts come from the empire_building_did N row, NOT from summary_stats panels.",
+      "evidence": [
+        "_tables_from_bible.tex tab:empire_building_did (Firms/N rows, cols 1,2)",
+        "claim_findings_ledger.json C2 N block",
+        "section2.4_paragraph_ledger.json P5.5 (>=5-call selection)",
+        "old_draft_81efc78.tex L117 (the two-universe disclosure)"
+      ],
+      "numbers": [
+        "27,622 / 1,248 firms (cash UncResCEO universe, tab:empire_building_did col 2 N row)",
+        "67,590 / 2,232 firms (cash CashRatio universe, tab:empire_building_did col 1 N row)"
+      ],
+      "register_locks": [
+        "correlational"
+      ],
+      "depends_on": [
+        "3.2-P2",
+        "3.1-P5"
+      ]
+    },
+    {
+      "prop_id": "3.2-P4",
+      "statement": "The effect is material but modest: the uncertainty coefficient equals roughly fifteen percent of a residual standard deviation (about 15.3% on the all-universe basis), for a variable from which everything persistent has already been removed, in a quarter that is about one percent of the sample; the cash coefficient adds roughly half a percentage point of assets (about 3.0% of the mean cash ratio) to the cash stock in a single quarter. The SD basis is the live open decision and is surfaced, not silently picked.",
+      "role": "inference",
+      "type": "result-number",
+      "reason": "Economic-magnitude reading turns the coefficient into a claim with stakes while keeping it honest (modest, on an already-purged variable). The denominators are sourced to live Table-1 cells; the stale old-draft pointers ('Table 1 Panel B 0.3072', '1.4% of sample', 'mean 0.1573 Panel A') are dropped.",
+      "evidence": [
+        "claim_findings_ledger.json _sd_basis_note_2026_06_14 (dual-SD: 0.3010 all-universe vs 0.3072 estimation-sample; magnitude ~15% robust either way 15.0% vs 15.3%; old-draft 'Panel B' pointer stale)",
+        "tab:summary_stats (UncResCEO SD 0.3010 Panel B; CashRatio mean 0.1708 Panel C; PreAnnounceQtr mean 0.0094 Panel A)",
+        "old_draft_81efc78.tex L119 (fifteen percent of a SD; the stale 0.3072/Panel-B and 0.1573 pointers)"
+      ],
+      "numbers": [
+        "~15% of SD = 0.0461 (tab:empire_building_did col 2) / 0.3010 (tab:summary_stats Panel B) = 15.3% [or /0.3072 estimation-sample = 15.0%]",
+        "~3% of mean cash = 0.0051 (tab:empire_building_did col 1) / 0.1708 (tab:summary_stats Panel C) = 3.0%",
+        "~1% of sample = PreAnnounceQtr mean 0.0094 (tab:summary_stats Panel A)"
+      ],
+      "register_locks": [
+        "correlational",
+        "supportive-not-definitive",
+        "no-identification"
+      ],
+      "depends_on": [
+        "3.2-P2",
+        "3.1-P6"
+      ]
+    },
+    {
+      "prop_id": "3.2-P5",
+      "statement": "The stock arm is the placebo: under the same disclosure constraint, with otherwise nearly identical models (the stock partial-adjustment lag 0.8013 is almost the same as the cash 0.7990), neither residual uncertainty (-0.0429, n.s.) nor the cash ratio (-0.0036, n.s.) shows a comparable positive run-up, so what differs at e=-1 is the response, not the model. A side-by-side reading is not yet a formal test of the difference; the formal cash-vs-stock test is supplied in Section 3.4 (Main Analysis 3).",
+      "role": "inference",
+      "type": "result-number",
+      "reason": "Delivers the 'not detectable for stock' half of C2's thinnest claim; the near-identical lag rules out a model-difference explanation. The explicit deferral to 3.4 pre-empts the C6 Gelman-Stern trap of reading sig-vs-n.s. as the formal test.",
+      "evidence": [
+        "claim_findings_ledger.json C2 (stock_UncResCEO -0.0429 n.s.; stock_CashRatio -0.0036 n.s.)",
+        "claim_findings_ledger.json C6 risks (do NOT use side-by-side as the specificity test; Gelman-Stern)",
+        "old_draft_81efc78.tex L121 (placebo + hand-off to MA3)"
+      ],
+      "numbers": [
+        "-0.0429 (tab:empire_building_did col 6, SE 0.0307, n.s.)",
+        "-0.0036 (tab:empire_building_did col 5, n.s.)",
+        "0.8013*** stock lag (tab:empire_building_did col 5, SE 0.0057) vs 0.7990*** cash lag (col 1)"
+      ],
+      "register_locks": [
+        "correlational",
+        "concentration-not-strict-specificity"
+      ],
+      "depends_on": [
+        "3.2-P2"
+      ]
+    }
+  ],
+  "coverage": {
+    "purpose_fully_delivered": "Complete. P1 sets the design/estimand (within-firm, no identification); P2 delivers the cash-arm run-up on both clocks with two-tailed survival (the C2 positive, H1 paid off); P3 discloses the two-universe N difference (from empire_building_did, not summary_stats); P4 gives the honest economic magnitude with denominators sourced to live Table-1 cells; P5 delivers the stock placebo and forward-links the formal difference to 3.4, sealing the Gelman-Stern trap. C2/H1 delivered exactly at the ledger ceiling: detectable for cash, not for stock, correlational and within-firm.",
+    "gaps": [
+      "The formal cash-vs-stock difference is deliberately NOT claimed here (deferred to 3.4) -- bounded-by-design to avoid the Gelman-Stern fallacy",
+      "The SD-basis (and the parallel cash-mean basis) is left as a flagged open decision rather than resolved, per surface-not-solve"
+    ]
+  },
+  "open_decisions": [
+    "SD-basis for the ~15%-of-SD magnitude: estimation-sample 0.3072 (N=27,622, the UncResCEO-equation universe, with a footnote) OR all-universe Table-1 0.3010 (N=44,900). Magnitude ~15% robust either way (15.0% vs 15.3%). NOTE: the locked 2.5 prose already scales its FB percentages by the all-universe 0.300988, a coherence pull toward 0.3010; the old-draft 'Table 1 Panel B (0.3072)' pointer is doubly stale (the all-universe Table 1 has no Panel B reporting 0.3072 -- UncResCEO sits in Panel B at 0.3010). Pick ONE basis and apply consistently across 3.2/3.3/3.4.",
+    "Parallel cash-mean denominator basis: the old draft used a stale mean 0.1573 (Panel A); the live Table-1 mean CashRatio is 0.1708 (Panel C), giving 3.0% (was ~3.2%). Use 0.1708.",
+    "Whether to report the one-tailed convention explicitly in 3.2 given the two-tailed survival (R1 rerun-class)."
+  ]
+}

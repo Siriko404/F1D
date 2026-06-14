@@ -1,0 +1,158 @@
+{
+  "subsection_id": "4.1",
+  "title": "Ruling Out Analyst Scrutiny",
+  "purpose": {
+    "statement": "Pay off the 2.2-P5 flag and the 2.5-P4 promise ('tested as a side analysis whose results are reported in Section 4.1') by establishing claim C4: analyst cash-scrutiny does not account for THIS pre-announcement run-up. Deliver the honest three-step rule-out -- (1) the scrutiny measure is real (CashRatio predicts it), (2) scrutiny alone does not move the residual, (3) in the operative reason-gating model scrutiny is null and its interaction with the pre-announcement window is null while the run-up survives -- AFTER first conceding the confound is genuine (scrutiny incidence itself rises pre-announcement). Keep the register NULL-only and underpowered: 'does not account for THIS run-up, not that scrutiny never matters.'",
+    "reason": "2.2 P5 flagged the analyst-scrutiny rival as a real competing hypothesis and 2.5 P4 motivated it as an identification threat with its verdict promised in 4.1; the thesis's identification credibility depends on confronting and bounding the most immediate alternative driver of the run-up. C4 is the ledger's rank-4, NULL-only, underpowered result.",
+    "evidence": [
+      "claim_findings_ledger.json C4 (NULL ONLY, underpowered; 'does not account for THIS run-up; not that scrutiny never matters'; do NOT strengthen)",
+      "thesis_draft.tex 2.2 P5 (flag the scrutiny rival; tested in 4.1, L74)",
+      "thesis_draft.tex 2.5 P4 (construct + motivation; verdict in 4.1; scrutiny rises pre-announce, L122)",
+      "old_draft_81efc78.tex L150-163"
+    ]
+  },
+  "delivers_claims": [
+    "C4"
+  ],
+  "tables_referenced": [
+    "tab:cash_scrutiny_validity",
+    "tab:cash_scrutiny_channel",
+    "tab:reason_gating",
+    "tab:empire_building_did"
+  ],
+  "proposition_chain": [
+    {
+      "prop_id": "4.1-P1",
+      "statement": "The scrutiny alternative holds that pre-deal quarters draw harder analyst questions about cash, and that hard questions, not the deal, produce the hedged answers. This confound is genuine, not a strawman: the incidence of cash scrutiny itself rises in the quarter before a cash acquisition (HighCashScrutiny 0.0408**), so it co-moves with both the cash position and the event and could in principle generate the run-up mechanically. (The continuous-volume measure CashScrutiny rises too but insignificantly, 0.0854 n.s., so the genuine confound is the incidence, not the volume.)",
+      "role": "premise",
+      "type": "result-number",
+      "reason": "Per the advisor and 2.5-P4, the honest chain must FIRST concede the confound is real, and the plausibility evidence must be the SIGNIFICANT incidence rise (HighCashScrutiny 0.0408**, empire_building_did col 4), NOT the insignificant continuous-volume coefficient. Leading with an n.s. coefficient would self-defeat the 'real rival' premise that 2.2 P5 / 2.5 P4 established. This is why empire_building_did is in 4.1's table list.",
+      "evidence": [
+        "claim_findings_ledger.json C4 (confound_is_real: HighCashScrutiny rises pre-announce 0.0408**, tab:empire_building_did col 4)",
+        "thesis_draft.tex 2.5 P4 ('cash scrutiny itself rises in the quarter before a cash acquisition', L122)",
+        "_tables_from_bible.tex tab:empire_building_did (col 4 HighCashScrutiny 0.0408**; col 3 CashScrutiny 0.0854 n.s.)"
+      ],
+      "numbers": [
+        "0.0408** (tab:empire_building_did col 4 HighCashScrutiny PreAnnounceQtr, SE 0.0194)",
+        "0.0854 (tab:empire_building_did col 3 CashScrutiny PreAnnounceQtr, SE 0.0749, n.s.) -- continuous volume, insignificant, recast as 'incidence rises, volume does not'"
+      ],
+      "register_locks": [
+        "correlational",
+        "mechanism-open"
+      ],
+      "depends_on": [
+        "3.2-P2"
+      ]
+    },
+    {
+      "prop_id": "4.1-P2",
+      "statement": "Step one: the scrutiny measure is real. The share of analyst Q&A turns devoted to cash and liquidity rises strongly with the firm's cash ratio (0.7530***, one-tailed; 0.8519*** with the full control set) and with a high-cash indicator (0.1754***), so the nulls that follow are not the artifact of a dead measure.",
+      "role": "premise",
+      "type": "result-number",
+      "reason": "Construct validity (the 2.5-P4.2 ground, the same validity class as the other 2.5 yardsticks) is the precondition that makes the subsequent nulls informative rather than mechanical; this is the first of the three rule-out steps and the promise/delivery split (motivated in 2.5, delivered here).",
+      "evidence": [
+        "claim_findings_ledger.json C4 (validity_CashRatio_to_Scrutiny 0.7530***/0.8519*** one-tailed; measure is real)",
+        "thesis_draft.tex 2.5 P4.2 (CashRatio predicts CashScrutiny 0.7530/0.8519 as ground, L122)",
+        "_tables_from_bible.tex tab:cash_scrutiny_validity cols 1,2 (CashRatio) and col 3 (HighCash)"
+      ],
+      "numbers": [
+        "0.7530*** (tab:cash_scrutiny_validity col 1 CashRatio, SE 0.0949)",
+        "0.8519*** (tab:cash_scrutiny_validity col 2 CashRatio + controls, SE 0.0967)",
+        "0.1754*** (tab:cash_scrutiny_validity col 3 HighCash, SE 0.0237)"
+      ],
+      "register_locks": [
+        "correlational"
+      ],
+      "depends_on": [
+        "4.1-P1"
+      ]
+    },
+    {
+      "prop_id": "4.1-P3",
+      "statement": "Step two: scrutiny alone does not move the residual. Its direct effect on UncResCEO is zero to four decimal places (-0.0000, SE 0.0013; 41,512 calls), and the null holds under a logit on the dichotomized residual (-0.0003) and on the raw uncertainty measure and coarser scrutiny proxies alike. This is non-redundant with the residual's construction because CashScrutiny is the VOLUME of cash questions, whereas the question-uncertainty wording (UncQue) is already netted out inside the residual by eq-4.",
+      "role": "result",
+      "type": "result-number",
+      "reason": "The second rule-out step (the direct-effect null) plus the 2.5-P4.4 non-redundancy argument: this test targets the question-volume path eq-4 does not absorb, so the null is meaningful rather than mechanical.",
+      "evidence": [
+        "claim_findings_ledger.json C4 (channel_Scrutiny_to_UncRes -0.0000 OLS, -0.0003 logit n.s.)",
+        "thesis_draft.tex 2.5 P4.4 (CashScrutiny = volume, distinct from UncQue which eq-4 nets out, L122)",
+        "_tables_from_bible.tex tab:cash_scrutiny_channel Panel A (UncResCEO -0.0000) + Panel B (logit -0.0003); N 41,512"
+      ],
+      "numbers": [
+        "-0.0000 (tab:cash_scrutiny_channel Panel A UncResCEO, SE 0.0013, n.s.)",
+        "-0.0003 (tab:cash_scrutiny_channel Panel B logit, SE 0.0074, n.s.)",
+        "N 41,512 calls (tab:cash_scrutiny_channel)"
+      ],
+      "register_locks": [
+        "correlational"
+      ],
+      "depends_on": [
+        "4.1-P2"
+      ]
+    },
+    {
+      "prop_id": "4.1-P4",
+      "statement": "Step three, the operative test: with scrutiny and the pre-announcement indicator in the same model on the cash-acquirer pre-announcement universe, the pre-announcement indicator stays significant (0.0413*** with scrutiny entered, 0.0439** with the interaction added) while scrutiny's own effect is null (0.0000/0.0001) and the scrutiny-by-pre-announcement interaction is insignificant (-0.0056, SE 0.0111). The reason raises uncertainty; the questioning does not, and the questioning does not amplify the reason.",
+      "role": "result",
+      "type": "result-number",
+      "reason": "This is the decisive C4 test: the run-up survives once scrutiny and its interaction with the event window are controlled, so scrutiny does not account for this particular run-up (the within-model dissociation the rule-out rests on).",
+      "evidence": [
+        "claim_findings_ledger.json C4 (gating_PreAnnounceQtr 0.0413***/0.0439**; gating_CashScrutiny 0.0000/0.0001 n.s.; gating_interaction -0.0056 n.s.)",
+        "thesis_draft.tex 2.2 P5.1 (the rival prediction tested in 4.1)",
+        "_tables_from_bible.tex tab:reason_gating cols 1,2"
+      ],
+      "numbers": [
+        "0.0413*** (tab:reason_gating col 1 PreAnnounceQtr, SE 0.0177)",
+        "0.0439** (tab:reason_gating col 2 PreAnnounceQtr, SE 0.0189)",
+        "0.0000 / 0.0001 (tab:reason_gating CashScrutiny cols 1-2, n.s.)",
+        "-0.0056 (tab:reason_gating col 2 CashScrutiny x PreAnnounceQtr, SE 0.0111, n.s.)"
+      ],
+      "register_locks": [
+        "correlational",
+        "within-firm"
+      ],
+      "depends_on": [
+        "4.1-P3"
+      ]
+    },
+    {
+      "prop_id": "4.1-P5",
+      "statement": "We keep the register honest: this is a failure to find paired with a within-model dissociation, not a powered equivalence test. The interaction's confidence interval (approximately [-0.027, +0.016]) does not exclude effects that would matter against a run-up near 0.04, 89% of calls draw no cash scrutiny at all, and a significant-versus-insignificant contrast is not itself a test. The claim is that scrutiny does not account for THIS run-up, not that scrutiny never matters anywhere.",
+      "role": "caveat",
+      "type": "framing",
+      "reason": "C4's mandatory register lock: NULL-only, underpowered, absence-of-evidence not equivalence. The verbatim hedge ('does not account for THIS run-up; not that scrutiny never matters') must be kept and not strengthened.",
+      "evidence": [
+        "claim_findings_ledger.json C4 referee_proof ('NULL ONLY -- underpowered; interaction CI [-0.027,+0.016]; 89% of calls draw no cash scrutiny') + thinnest_claim (verbatim hedge, 'Do NOT strengthen')",
+        "thesis_draft.tex 2.5 P4 / section2.5_paragraph_ledger P4.3 (4.1 owns the C4 hedge verbatim)",
+        "old_draft_81efc78.tex L162"
+      ],
+      "numbers": [
+        "interaction 95% CI approx [-0.027, +0.016] (claim_findings C4; from -0.0056 +/- 1.96*0.0111)",
+        "89% of calls draw no cash scrutiny (tab:empire_building_did notes; tab:summary_stats CashScrutiny median 0, HighCashScrutiny mean 0.1127 -> ~11% draw any)",
+        "run-up near 0.04 (the PreAnnounceQtr magnitude the CI is judged against)"
+      ],
+      "register_locks": [
+        "correlational",
+        "no-identification",
+        "mechanism-open",
+        "supportive-not-definitive"
+      ],
+      "depends_on": [
+        "4.1-P4",
+        "4.1-P1"
+      ]
+    }
+  ],
+  "coverage": {
+    "purpose_fully_delivered": "Complete. P1 concedes the confound is genuine using the SIGNIFICANT incidence rise (HighCashScrutiny 0.0408**) rather than the insignificant volume coefficient, so the rule-out is not a strawman; P2-P4 deliver the three-step rule-out (measure real 0.7530*** -> scrutiny does not move the residual -0.0000 -> reason-gating leaves the run-up intact 0.0413***/0.0439** with interaction -0.0056 n.s.); P5 locks the NULL-only, underpowered register with the verbatim hedge. C4 delivered exactly at the ledger ceiling: scrutiny does not account for THIS run-up, with no strengthening. The 2.2-P5 + 2.5-P4 promise is paid off here and only here.",
+    "gaps": [
+      "By design C4 is absence-of-evidence, not a powered equivalence test -- the underpowered, NULL-only status is disclosed as bounded-by-design, not concealed",
+      "4.1 does not establish the disclosure mechanism (rejecting one rival is not establishing a cause) -- mechanism stays open, consistent with the whole-thesis register"
+    ]
+  },
+  "open_decisions": [
+    "After the Section 4.2 (presentation-contrast / C7) drop, orphan bibitems lerman2026, bushee2018, everhart2025, gokkaya2025 are now uncited anywhere in the locked Section 2 (verified: none appear in any 2.1-2.5 citep/citet) -> cite-or-remove at the bibliography pass; 4.1 does not use them",
+    "The CashScrutiny cash/liquidity word-list disclosure lives in Appendix I (flagged 'pending edits' thesis_draft.tex L197) and 2.5 P4 forward-references it -> confirm the Appendix I pointer resolves",
+    "Whether to report the gating PreAnnounceQtr at both 0.0413*** (col 1) and 0.0439** (col 2) given the table prints one-tailed for the directional terms (R1 rerun-class)"
+  ]
+}

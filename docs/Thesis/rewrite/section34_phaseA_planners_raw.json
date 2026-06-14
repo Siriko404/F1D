@@ -1,0 +1,2472 @@
+[
+  {
+    "subsections": [
+      {
+        "subsection_id": "3.1",
+        "title": "Data, Sample, and Variable Construction",
+        "purpose": {
+          "statement": "Lay the empirical foundation the three main analyses and Section 4.1 rest on: name the four data sources and how they link; give the CONSTRUCTION MECHANICS of the measures (tokenization, word-share, the DWZ eq-4 first stage estimated on our data, the SDC->Compustat CUSIP6 link, the >=5-call coverage filter as a mechanic); define the key estimation variables by POINTING BACK to where each is already defined (UncResCEO->2.3; CashRatio/PreAnnounceQtr/CashScrutiny/HighCashScrutiny->2.5; firm controls->Appendix); and lay out the three-layer sample (call panel -> deal universe -> design-specific restrictions) that explains why N varies table to table. Table 1 (tab:summary_stats) is the exhibit.",
+          "reason": "Section 2 defined the constructs and designs in the abstract; the reader cannot trust any Section 3 number without knowing the data provenance, the build, and the sample layering. The template fixes a 'Data/Sample/Variable Construction' subsection here; the roadmap and 2.x boundaries route DEFINITIONS to 2.3/2.5/Appendix and CONSTRUCTION MECHANICS + sample to 3.1, so 3.1 must deliver mechanics+sample without re-deriving definitions.",
+          "evidence": [
+            "DraftTemplate.txt III. Data/Sample/Variable Construction slot",
+            "old_draft_81efc78.tex L99-109 (the four sources, the three-layer sample, the point-back paragraph)",
+            "variable_ledger.json tables: tab:summary_stats panel_A/panel_B; UncResCEO/CashRatio/CashScrutiny/HighCashScrutiny/PreAnnounceQtr construction file:line",
+            "2.3 boundary (construction mechanics tokenize/match -> 3.1)",
+            "2.5 P5 boundary (key constructs defined there; controls -> Appendix)",
+            "2.4 P5.5 (selection THREAT homed in 2.4; 3.1 carries the >=5-call MECHANIC + coverage skew)"
+          ]
+        },
+        "delivers_claims": [
+          "data-foundation for C1, C2, C4, C6 (no headline claim of its own)"
+        ],
+        "tables_referenced": [
+          "tab:summary_stats"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "3.1-P1",
+            "statement": "Four data sources combine: Capital IQ earnings-call transcripts (US public firms, 2002-2018, parsed to speaker-turn level with role and presentation/Q&A segment markers); quarterly Compustat North America fundamentals (matched as the most recent fiscal quarter ending on or before the call); CRSP daily and IBES earnings records (stock-return, market-return, earnings-surprise controls the eq-4 decomposition requires); and SDC M&A (announcement date, completion/withdrawal date, payment composition).",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "Every downstream number originates in one of these four sources; the reader must see the raw inputs before any construction or sample logic. This is the data-provenance premise the whole section leans on.",
+            "evidence": [
+              "old_draft_81efc78.tex L101-103",
+              "variable_ledger.json upstream blocks for UncResCEO (Capital IQ + LM dict), CashRatio (Compustat cheq/atq), PreAnnounceQtr (SDC)",
+              "2.3 (CRSP/IBES feed the eq-4 FirmChars StockRet/MarketRet/EPSgrowth/SurpDec)"
+            ],
+            "numbers": [
+              "2002-2018 (sample period, tab:summary_stats notes)"
+            ],
+            "register_locks": [],
+            "depends_on": []
+          },
+          {
+            "prop_id": "3.1-P2",
+            "statement": "The sources are linked across identifier systems: SDC identifies acquirers by six-digit CUSIP while the call panel is keyed by Compustat gvkey, so deals are joined to calls through the acquirer six-digit CUSIP via the master-sample manifest (CRSP-Compustat link table).",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "The cash/stock-acquirer classification and the event clock exist only because SDC deals are matched to the call panel; the record-linkage step is a material researcher degree of freedom (disclosure completeness) that must be stated, not assumed.",
+            "evidence": [
+              "old_draft_81efc78.tex L103 (CUSIP6 link)",
+              "variable_ledger.json tab:empire_building_did design.firm_link (SDC CUSIP6 -> gvkey via master_sample_manifest.parquet); PreAnnounceQtr construction manifest() L105-112"
+            ],
+            "numbers": [],
+            "register_locks": [],
+            "depends_on": [
+              "3.1-P1"
+            ]
+          },
+          {
+            "prop_id": "3.1-P3",
+            "statement": "We build the uncertainty measures ourselves: each call is tokenized, uncertainty words are matched against the Loughran-McDonald finance-specific 'uncertainty' list (1993-2024 release), and the uncertainty-word share is computed separately by speaker and segment; the CEO Q&A share UncAnsCEO is then residualized via the DWZ equation-4 first stage (estimated on our sample) to produce UncResCEO, with UncPreCEO retained as the prepared-remarks share. This is the CONSTRUCTION MECHANIC only; the definition and justification of UncResCEO live in Section 2.3.",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "2.3 defines UncResCEO and writes eq-4 but explicitly defers tokenize/match mechanics to 3.1; 3.1 must supply those mechanics (and the LM release, the by-speaker-by-segment computation) without re-deriving eq-4 or re-justifying the residual (boundary against 2.3 turf).",
+            "evidence": [
+              "old_draft_81efc78.tex L105 (tokenize, by-speaker-by-segment, eq-4 first stage, UncPre retained)",
+              "2.3 boundary ('construction mechanics tokenize/match -> 3.1'; eq-4 + residual justification stay in 2.3)",
+              "variable_ledger.json UncResCEO.construction (run_h0_3_ceo_clarity_extended.py L369/393-405) + upstream (LM 'Uncertainty' category, tokenize_transcripts.py L768-786)"
+            ],
+            "numbers": [
+              "1993-2024 (LM dictionary release)"
+            ],
+            "register_locks": [],
+            "depends_on": [
+              "3.1-P1"
+            ]
+          },
+          {
+            "prop_id": "3.1-P4",
+            "statement": "The remaining key estimation variables are defined by POINTING BACK, not re-derived: UncResCEO is defined in Section 2.3; CashRatio (cash and equivalents over total assets), PreAnnounceQtr (=1 in the single quarter before a firm's first qualifying deal, e=-1), and CashScrutiny/HighCashScrutiny (share of analyst Q&A turns on cash/liquidity; any-scrutiny indicator) are defined in Section 2.5; the firm-financial controls (leverage, log assets, Tobin's Q, ROA, capex, dividend indicator, cash-flow volatility) are catalogued in the Appendix.",
+            "role": "definition",
+            "type": "definitional",
+            "reason": "The boundary rule forbids 3.1 from reaching into 2.3/2.5/Appendix turf to re-define constructs; 3.1's job is to give construction mechanics and route definitions. This proposition discharges the routing without duplicating definitions.",
+            "evidence": [
+              "old_draft_81efc78.tex L106-107 (the point-back paragraph)",
+              "2.5 P5.1 (CashRatio/PreAnnounceQtr/CashScrutiny defined in 2.5; controls -> Appendix)",
+              "2.3 (UncResCEO defined there)",
+              "variable_ledger.json HighCashScrutiny.flag + CashRatio_lag.flag (MISSING from appendix defs -> Appendix open decision)"
+            ],
+            "numbers": [
+              "e=-1 (PreAnnounceQtr, variable_ledger PreAnnounceQtr.definition)"
+            ],
+            "register_locks": [],
+            "depends_on": [
+              "3.1-P3"
+            ]
+          },
+          {
+            "prop_id": "3.1-P5",
+            "statement": "The estimation samples are built in three layers: (1) the base call panel (every matched Capital IQ call of a US public, non-financial, non-utility firm 2002-2018, excluding CEOs with fewer than five calls, for whom no style and hence no residual is estimable); (2) the deal universe (SDC acquisitions by US public acquirers 2002-2018 with known payment composition and status in {completed, pending, withdrawn}; >=50%-cash deals form the cash arm, >=50%-stock the stock placebo arm, each firm's first qualifying deal setting its event clock); and (3) design-specific restrictions (the run-up test drops treated post-announcement quarters; the event studies cap the post-window at four quarters; the scrutiny tests require >=3 analyst Q&A turns).",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "N varies across every results table (27,622 vs 67,590 vs 28,102 vs 25,600 ...); without the three-layer logic the reader reads the varying counts as inconsistency rather than as each test keeping only the firms for which its comparison is defined. The >=5-call filter is stated here as a MECHANIC (2.4 P5.5 owns the selection THREAT).",
+            "evidence": [
+              "old_draft_81efc78.tex L109 (three-layer sample)",
+              "variable_ledger.json tab:empire_building_did design.deal_filter/treatment_definition; tab:empire_drop_matched design.window_hygiene (+4 cap, post-withdrawal drop, truncation at 2nd announcement); cash_scrutiny_validity design (MIN_QA>=3)",
+              "2.4 P5.5 (>=5-call universe is the stage-1 residual universe; coverage skews to larger firms)",
+              "2.4 SEAM-A (MA1 drops post; MA2 keeps capped +4)"
+            ],
+            "numbers": [
+              "five calls (>=5-call filter, variable_ledger run_h0_3 MIN_CALLS=5)",
+              ">=50% cash / >=50% stock (arm thresholds, variable_ledger deal_filter)",
+              "+4 quarters (post-window cap)",
+              ">=3 analyst Q&A turns (cash_scrutiny_validity MIN_QA)"
+            ],
+            "register_locks": [],
+            "depends_on": [
+              "3.1-P1",
+              "3.1-P2"
+            ]
+          },
+          {
+            "prop_id": "3.1-P6",
+            "statement": "Because the residual exists only on the >=5-call, non-financial/non-utility Main universe, the uncertainty regressions describe a larger, more-covered (and thus larger-firm-skewed) set of firms than do the cash-ratio regressions, and every table reports its own firm and observation counts; Table 1 reports summary statistics for the main estimation samples.",
+            "role": "caveat",
+            "type": "design-method",
+            "reason": "Discloses the coverage skew as a stated property of the sample build (the external-validity limit), keeping it a MECHANIC-level disclosure here while the THREAT framing was already homed in 2.4 P5.5. Closes 3.1 by routing the reader to Table 1.",
+            "evidence": [
+              "2.4 P5.5 (selection threat; residual subsample skews larger/more-covered)",
+              "old_draft_81efc78.tex L117,L119 (different universes 67,590 vs 27,622; 'the uncertainty test is correspondingly the more demanding')",
+              "variable_ledger.json tab:summary_stats panel_A (CashRatio universe N=67,590) vs panel_B (UncResCEO universe N=27,622)"
+            ],
+            "numbers": [
+              "27,622 / 1,248 firms (UncResCEO cash universe, tab:summary_stats panel_B)",
+              "67,590 / 2,232 firms (CashRatio universe, tab:summary_stats panel_A)"
+            ],
+            "register_locks": [
+              "supportive-not-definitive"
+            ],
+            "depends_on": [
+              "3.1-P5"
+            ]
+          }
+        ],
+        "pays_off_section2": [
+          "2.3 (supplies the construction mechanics 2.3 deferred)",
+          "2.5 (routes the key-construct definitions)",
+          "2.4 (supplies the three-layer sample the designs presume; states the >=5-call MECHANIC behind the 2.4 P5.5 threat)"
+        ],
+        "hypotheses_paid_off": [],
+        "open_decisions": [
+          "Appendix I pending edits (the CashScrutiny cash/liquidity word list lives there; 2.5 P4 FC forward-references it) plus variable_ledger flags that HighCashScrutiny and CashRatio_lag are MISSING from the appendix definitions table -> fold both into the single Appendix open decision",
+          "decide whether the LM 1993-2024 release vs DWZ's older list warrants a footnote (audit seed D9; currently not footnoted)"
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "Complete. P1 (four sources) + P2 (the CUSIP6 link) deliver provenance; P3 delivers the build mechanics (tokenize/word-share/eq-4 first stage) without re-deriving the 2.3 definition; P4 routes every key-variable definition back to 2.3/2.5/Appendix per the boundary; P5 delivers the three-layer sample that explains varying N; P6 discloses the coverage skew and points to Table 1. No definitional turf is re-entered; no result number is previewed.",
+          "gaps": [
+            "By design 3.1 makes no headline empirical claim (it is foundational); the deliberate boundary is that variable DEFINITIONS and the selection THREAT framing are NOT here (they live in 2.3/2.5/Appendix and 2.4 P5.5) -- this is bounded-by-design, not a missing deliverable"
+          ]
+        }
+      },
+      {
+        "subsection_id": "3.2",
+        "title": "Main Analysis 1: The Pre-Announcement Run-Up",
+        "purpose": {
+          "statement": "Pay off H1 and the Section 2.4 MA1 design by establishing claim C2: within firms, residual CEO Q&A uncertainty (UncResCEO) is elevated in the pre-announcement quarter of cash acquirers relative to their own other quarters, and is not detectable for stock acquirers; the firm's cash ratio rises in the same quarter while no comparable rise appears for stock. Read strictly correlationally, within-firm, with no identification or causal claim.",
+          "reason": "2.2 P2 stated H1 as a falsifiable prediction and 2.4 P1 mapped the single-indicator DiD to it; the thesis needs the first empirical pillar (the run-up exists) before timing (3.3) and cash-specificity (3.4) can build on it. C2 is the ledger's rank-2 'solid second pillar'.",
+          "evidence": [
+            "claim_findings_ledger C2 (rank 2; thinnest_claim 'elevated for cash acquirers, not detectable for stock'; survives two-tailed p=.0074)",
+            "2.2 P2 (H1 statement, theta_-1>0)",
+            "2.4 P1 (MA1 equation, beta estimates theta_-1)",
+            "old_draft_81efc78.tex L111-122"
+          ]
+        },
+        "delivers_claims": [
+          "C2"
+        ],
+        "tables_referenced": [
+          "tab:empire_building_did",
+          "tab:summary_stats"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "3.2-P1",
+            "statement": "We estimate the MA1 two-way fixed-effects regression Y = beta*PreAnnounceQtr + gamma'X + firm FE + cal-year-quarter FE, SE clustered by firm, four times: each outcome (CashRatio, UncResCEO) in each arm (cash >=50%, stock >=50% placebo), with treated firms' post-announcement quarters dropped so the design observes only the run-up. The treatment coefficient is tested one-tailed (beta>0), controls two-tailed.",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "Establishes the estimating design and estimand (theta_-1) so the coefficients that follow have a defined meaning; this is the MA1 spine from 2.4 P1 applied to the data.",
+            "evidence": [
+              "2.4 P1.1/P1.2 (MA1 equation + treatment/sample def, transcribed from gen_empire_did_table.py:141)",
+              "variable_ledger.json tab:empire_building_did design (estimator, SE, arms, post-drop)",
+              "_tables_from_bible.tex deal-specification page (the four-regression layout)"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.1-P5"
+            ]
+          },
+          {
+            "prop_id": "3.2-P2",
+            "statement": "In the cash arm, both clocks move in the final pre-announcement quarter: residual Q&A uncertainty is elevated and the cash ratio is rising (a coefficient that tracks the change in cash, not its level, because the cash equation carries the partial-adjustment lag).",
+            "role": "result",
+            "type": "result-number",
+            "reason": "This is the core positive finding of C2/H1: the run-up is visible on the language clock, with the cash clock corroborating. The lag note prevents misreading the cash coefficient as a level.",
+            "evidence": [
+              "claim_findings_ledger C2 (cash_UncResCEO, cash_CashRatio)",
+              "old_draft_81efc78.tex L117-119",
+              "2.4 P3.3/P5.3 (CashRatio carries partial-adjustment lag; residual takes none)"
+            ],
+            "numbers": [
+              "0.0461*** (tab:empire_building_did col2, SE 0.0172)",
+              "0.0051*** (tab:empire_building_did col1, SE 0.0017)",
+              "0.7990*** (CashRatio_{t-1} partial-adjustment lag, tab:empire_building_did col1, SE 0.0070)"
+            ],
+            "register_locks": [
+              "correlational",
+              "within-firm",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.2-P1"
+            ]
+          },
+          {
+            "prop_id": "3.2-P3",
+            "statement": "The stock arm is the placebo: under the same disclosure constraint but with otherwise nearly identical models (the stock partial-adjustment lag 0.8013 is almost the same), neither the uncertainty indicator nor the cash ratio shows a comparable positive run-up, so what differs at e=-1 is the response, not the model.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "C2's thinnest claim is the side-by-side 'elevated for cash, not detectable for stock'; the placebo is what makes the cash run-up informative. The near-identical lag rules out a model-difference explanation.",
+            "evidence": [
+              "claim_findings_ledger C2 (stock_UncResCEO -0.0429 n.s.; stock_CashRatio -0.0036 n.s.)",
+              "old_draft_81efc78.tex L121",
+              "2.2 P3 / 2.4 (stock = placebo, same bind minus cash commitment)"
+            ],
+            "numbers": [
+              "-0.0429 (tab:empire_building_did col6, SE 0.0307, n.s.)",
+              "-0.0036 (tab:empire_building_did col5, n.s.)",
+              "0.8013*** (stock CashRatio_{t-1} lag, tab:empire_building_did col5, SE 0.0057)"
+            ],
+            "register_locks": [
+              "concentration-not-strict-specificity"
+            ],
+            "depends_on": [
+              "3.2-P2"
+            ]
+          },
+          {
+            "prop_id": "3.2-P4",
+            "statement": "The effect is material but modest: the uncertainty coefficient is roughly fifteen percent of a standard deviation of the residual, for a variable from which everything persistent has already been removed, in a quarter that is about 1.4% of the sample; the cash coefficient adds roughly half a percentage point of assets to the cash stock in a single quarter.",
+            "role": "inference",
+            "type": "result-number",
+            "reason": "Economic-magnitude reading turns the coefficient into a claim with stakes while keeping it honest (modest, on an already-purged variable). The SD basis is the live open decision and must be surfaced, not silently picked.",
+            "evidence": [
+              "old_draft_81efc78.tex L119 (fifteen percent of a SD; 1.4%; half a percentage point)",
+              "claim_findings_ledger _sd_basis_note_2026_06_14 (the dual-SD problem and the stale Panel-B pointer)"
+            ],
+            "numbers": [
+              "0.0461 (tab:empire_building_did col2) ~= 15% of SD",
+              "SD basis UNRESOLVED: 0.3072 (estimation-sample UncResCEO SD, N=27,622) vs 0.3010 (all-universe Table-1 UncResCEO SD, tab:summary_stats, N=44,900) -> ~15.0% vs ~15.3%",
+              "0.0094 mean of PreAnnounceQtr ~= 1.4% of sample (tab:summary_stats)",
+              "0.0051 (tab:empire_building_did col1) = half a percentage point of assets"
+            ],
+            "register_locks": [
+              "supportive-not-definitive"
+            ],
+            "depends_on": [
+              "3.2-P2"
+            ]
+          },
+          {
+            "prop_id": "3.2-P5",
+            "statement": "A side-by-side reading of cash against stock is not yet a formal test of their difference; that formal cash-stock test is supplied in Section 3.4 (Main Analysis 3).",
+            "role": "caveat",
+            "type": "framing",
+            "reason": "Prevents 3.2 from over-claiming cash-specificity (the Gelman-Stern trap) and forward-links to the MA3 formal test, preserving the EFFECT/CAUSE discipline. Keeps 3.2 to the 'detectable vs not-detectable' register C2 allows.",
+            "evidence": [
+              "claim_findings_ledger C6 risks (do NOT use side-by-side as the specificity test; Gelman-Stern)",
+              "old_draft_81efc78.tex L121 ('A side-by-side reading is not yet a formal test; Main Analysis 3 supplies that')",
+              "2.4 P3 (the formal Wald difference is the MA3 test)"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "concentration-not-strict-specificity"
+            ],
+            "depends_on": [
+              "3.2-P3"
+            ]
+          }
+        ],
+        "pays_off_section2": [
+          "2.2 P2 (H1 directional prediction)",
+          "2.4 P1 (MA1 design and the theta_-1 estimand)"
+        ],
+        "hypotheses_paid_off": [
+          "H1"
+        ],
+        "open_decisions": [
+          "SD-basis for the ~15%-of-SD magnitude: choose estimation-sample 0.3072 (with a footnote) OR all-universe Table-1 0.3010, and cite it correctly; the magnitude (~15%) is robust either way (15.0% vs 15.3%) but the stale old-draft pointer 'Table 1 Panel B' must be dropped (the all-universe Table 1 has no Panel B)"
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "Complete. P1 sets the design/estimand; P2 delivers the cash-arm run-up on both clocks (the C2 positive); P3 delivers the stock placebo (the 'not detectable' half); P4 gives the honest economic magnitude; P5 caveats against premature cash-specificity and forward-links to 3.4. The chain delivers C2/H1 exactly at the ledger ceiling: detectable for cash, not for stock, correlational and within-firm.",
+          "gaps": [
+            "The formal cash-vs-stock difference is deliberately NOT claimed here (deferred to 3.4) -- bounded-by-design to avoid the Gelman-Stern fallacy",
+            "The SD-basis number is left as a flagged open decision rather than resolved, per the surface-not-solve instruction"
+          ]
+        }
+      },
+      {
+        "subsection_id": "3.3",
+        "title": "Main Analysis 2: Differential Timing Around the Announcement",
+        "purpose": {
+          "statement": "Pay off H1b and the Section 2.4 MA2 event-study design by establishing claim C1 (the strongest, two-tailed result): residual Q&A uncertainty spikes in the pre-announcement quarter and collapses the instant the deal is public (the GAP window: announced, not yet closed), while the acquirer's cash ratio does NOT fall at announcement and declines only at completion when cash leaves the firm. The claim rests on the CONTRAST of the two paths (uncertainty on the information clock, cash on the transaction clock), not on the magnitude of any single coefficient.",
+          "reason": "C1 is the ledger's rank-1, most-referee-proof result and is mandated to CARRY the paper; 2.2 P4 stated H1b and 2.4 P2 built the event study with the GAP bin as the MNPI discriminator. The round-trip is the thesis's signature finding.",
+          "evidence": [
+            "claim_findings_ledger C1 (rank 1 STRONGEST; two-tailed; 'keep as the round-trip contrast; do not over-read the negative POST')",
+            "2.2 P4 (H1b: theta_-1>0, theta_gap=0, kappa_gap>0; GAP discriminator)",
+            "2.4 P2 (event-study spec; Wald PRE1-GAP carries H1b content)",
+            "old_draft_81efc78.tex L124-135"
+          ]
+        },
+        "delivers_claims": [
+          "C1"
+        ],
+        "tables_referenced": [
+          "tab:empire_drop_matched",
+          "tab:empire_drop_placebo"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "3.3-P1",
+            "statement": "We replace the single pre-announcement indicator with the four-bin event study on the matched universe (the firms for which both the residual and the cash ratio are defined): PRE2 (e=-2), PRE1 (e=-1), GAP (announced but not yet completed), POST (completed); baseline is e<=-3 plus never-acquirers; specification otherwise as in MA1 and every coefficient two-tailed. The matched universe estimates BOTH outcomes on the identical rows, defending the differential timing against a sample-composition artifact.",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "tab:empire_drop_matched is the primary table because it alone carries BOTH clocks (the placebo table has no CashRatio column); the shared-sample design is exactly what licenses reading the two paths against each other.",
+            "evidence": [
+              "2.4 P2.1 (event-study equation + bins, transcribed from empire_drop_test.py:149)",
+              "variable_ledger.json tab:empire_drop_matched design.matched_universe (one shared sample, both DVs on the same rows)",
+              "old_draft_81efc78.tex L126"
+            ],
+            "numbers": [
+              "28,102 firm-quarters / 1,320 firms (tab:empire_drop_matched)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.1-P5",
+              "3.2-P1"
+            ]
+          },
+          {
+            "prop_id": "3.3-P2",
+            "statement": "The pre-trend is flat on both clocks: the e=-2 (PRE2) coefficient is null for the residual and for the cash ratio, so the PRE1 estimates are not the tail of a pre-existing trend (a validity device, not an identification proof).",
+            "role": "premise",
+            "type": "result-number",
+            "reason": "PRE2 is the 2.4-promised pre-trend check; without it the PRE1 spike could be dismissed as trend. Stated as a validity device per the no-parallel-trends register.",
+            "evidence": [
+              "2.4 P2.2 (PRE2 is the pre-trend validity check, expected ~0)",
+              "claim_findings_ledger C1 finding (PRE2 0.0068 n.s.)",
+              "old_draft_81efc78.tex L128"
+            ],
+            "numbers": [
+              "0.0068 (tab:empire_drop_matched col1 UncResCEO PRE2, SE 0.0178, n.s.)",
+              "0.0008 (tab:empire_drop_matched col2 CashRatio PRE2, SE 0.0024, n.s.)"
+            ],
+            "register_locks": [
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.3-P1"
+            ]
+          },
+          {
+            "prop_id": "3.3-P3",
+            "statement": "On the information clock, residual uncertainty spikes at PRE1 and collapses the instant the deal is public: the GAP coefficient is insignificant, a significant fall from the pre-announcement quarter, and the full peak-to-completion swing is large and significant.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "This is the H1b language-clock leg: elevated while undisclosed, resolved at announcement (the GAP drop is the MNPI fingerprint per 2.2 P4 / 2.4 P2.2).",
+            "evidence": [
+              "claim_findings_ledger C1 (UncResCEO PRE1/GAP/POST/PRE1_minus_GAP/PRE1_minus_POST)",
+              "2.2 P4 (theta_gap=0 is the discriminator)",
+              "old_draft_81efc78.tex L130"
+            ],
+            "numbers": [
+              "0.0473*** (tab:empire_drop_matched col1 PRE1, SE 0.0178)",
+              "0.0018 (tab:empire_drop_matched col1 GAP, SE 0.0187, n.s.)",
+              "0.0455** (tab:empire_drop_matched Drop PRE1-GAP, SE 0.0225)",
+              "0.0723*** (tab:empire_drop_matched Drop PRE1-POST, SE 0.0190)"
+            ],
+            "register_locks": [
+              "correlational",
+              "within-firm"
+            ],
+            "depends_on": [
+              "3.3-P2"
+            ]
+          },
+          {
+            "prop_id": "3.3-P4",
+            "statement": "On the transaction clock, the cash ratio moves on the deal, not the news: elevated at PRE1, it does NOT fall when the deal is announced (the PRE1-GAP drop is null) and declines only once cash leaves the firm at completion (a significant GAP-to-POST decline).",
+            "role": "result",
+            "type": "result-number",
+            "reason": "This is the H1b cash-clock leg: kappa_gap>0 (cash persists through the gap). The two legs (P3 + P4) together ARE the differential-timing contrast.",
+            "evidence": [
+              "claim_findings_ledger C1 (CashRatio PRE1/GAP/POST/GAP_minus_POST)",
+              "2.2 P4 (kappa_gap>0; cash persists to completion, partly mechanical)",
+              "old_draft_81efc78.tex L130"
+            ],
+            "numbers": [
+              "0.0061** (tab:empire_drop_matched col2 PRE1, SE 0.0024)",
+              "0.0006 (tab:empire_drop_matched Drop PRE1-GAP CashRatio, n.s.)",
+              "-0.0155*** (tab:empire_drop_matched col2 POST, SE 0.0022)",
+              "0.0210*** (tab:empire_drop_matched Drop GAP-POST CashRatio, SE 0.0042)"
+            ],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "3.3-P2"
+            ]
+          },
+          {
+            "prop_id": "3.3-P5",
+            "statement": "The cash arm of the placebo event study reproduces the same round trip (a significant PRE1 spike that collapses to insignificance at the GAP and a significant peak-to-post swing), corroborating the matched-universe result on the cash arm's own complete-case universe.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "tab:empire_drop_placebo's CASH arm independently reproduces the round trip; using only its cash arm here (the cash-vs-stock CONTRAST is reserved for 3.4) avoids double-claiming the specificity comparison.",
+            "evidence": [
+              "claim_findings_ledger C6 finding (placebo_cash_PRE1 0.0486***)",
+              "advisor: use the placebo table's CASH arm in 3.3 (corroborates the round-trip), its cash-vs-stock contrast in 3.4",
+              "old_draft_81efc78.tex L132 ('the entry spike is economically the same event as Main Analysis 1')"
+            ],
+            "numbers": [
+              "0.0486*** (tab:empire_drop_placebo col1 cash PRE1, SE 0.0174)",
+              "0.0058 (tab:empire_drop_placebo col1 cash GAP, SE 0.0181, n.s.)",
+              "0.0681*** (tab:empire_drop_placebo col1 cash Drop PRE1-POST, SE 0.0187)"
+            ],
+            "register_locks": [
+              "correlational",
+              "within-firm"
+            ],
+            "depends_on": [
+              "3.3-P3"
+            ]
+          },
+          {
+            "prop_id": "3.3-P6",
+            "statement": "The claim rests on the contrast between the two paths, not on the magnitude of any single drop: uncertainty tracks the information and reverses at announcement; cash tracks the transaction and falls at completion. We do not over-read the below-baseline POST uncertainty coefficient.",
+            "role": "caveat",
+            "type": "framing",
+            "reason": "C1's explicit register lock: the round-trip CONTRAST is the claim; the negative POST is a flagged not-to-over-read item. Stating this protects the strongest result from a referee over-reading the overshoot.",
+            "evidence": [
+              "claim_findings_ledger C1 risks ('POST uncertainty overshoots below baseline (-0.0250*) -- do not over-read'; cash-persistence partly mechanical)",
+              "2.2 P4.2 (do not over-read POST; cash leg partly mechanical)",
+              "old_draft_81efc78.tex L134"
+            ],
+            "numbers": [
+              "-0.0250* (tab:empire_drop_matched col1 POST, SE 0.0130) -- flagged not-to-over-read"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification",
+              "supportive-not-definitive"
+            ],
+            "depends_on": [
+              "3.3-P3",
+              "3.3-P4"
+            ]
+          }
+        ],
+        "pays_off_section2": [
+          "2.2 P4 (H1b two-clock prediction)",
+          "2.4 P2 (MA2 event-study design; GAP discriminator; PRE2 validity device)"
+        ],
+        "hypotheses_paid_off": [
+          "H1b"
+        ],
+        "open_decisions": [
+          "whether to standardize clustering to two-way (firm x calendar-quarter) across the event-study tables (R2 rerun-class; surface only)"
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "Complete. P1 sets the matched-universe event study (both clocks, same rows); P2 establishes the flat pre-trend; P3 and P4 deliver the two diverging legs (information clock resolves at GAP; transaction clock persists to completion) that jointly constitute the H1b/C1 contrast; P5 corroborates on the placebo cash arm; P6 locks the claim to the contrast and bars over-reading the POST. The strongest result is delivered exactly at the ledger ceiling.",
+          "gaps": [
+            "The cash-VS-stock specificity contrast from tab:empire_drop_placebo is deliberately NOT claimed here (reserved for 3.4) to avoid double-claiming",
+            "The mechanical component of cash persistence and the below-baseline POST are disclosed as bounded, not pushed as findings"
+          ]
+        }
+      },
+      {
+        "subsection_id": "3.4",
+        "title": "Main Analysis 3: Cash-Specificity",
+        "purpose": {
+          "statement": "Pay off H1a and the Section 2.4 MA3 pooled-interacted design by establishing claim C6: the cash-stock difference in the pre-announcement uncertainty run-up survives a FORMAL Wald test of the cash-minus-stock difference (valid at 5%, two-tailed). Critically, SPLIT the EFFECT from the CAUSE: the run-up (EFFECT) is cash-specific and claimable, but the underlying cash build-up (proposed CAUSE) is NOT cash-specific, so the war-chest mechanism stays OPEN. Frame as concentration, not strict specificity; supportive, not definitive.",
+          "reason": "2.2 P3 stated H1a and 2.4 P3 built the pooled interaction with the formal Wald difference as the anti-Gelman-Stern test; C6 is the ledger's rank-6 result that the advisor-corrected ledger confirms is VALID at 5% but fragile (imprecise stock arm) and whose cause leg fails.",
+          "evidence": [
+            "claim_findings_ledger C6 (EFFECT_diff 0.0983** p=.039 VALID at 5%; CAUSE_diff 0.0064 n.s. matched / 0.0092* full; 'survives a formal test' is ACCURATE; do NOT use Gelman-Stern side-by-side)",
+            "2.2 P3 (H1a: theta_-1^cash > theta_-1^stock; concentration not specificity)",
+            "2.4 P3 (pooled interacted spec + Wald difference)",
+            "old_draft_81efc78.tex L137-148"
+          ]
+        },
+        "delivers_claims": [
+          "C6"
+        ],
+        "tables_referenced": [
+          "tab:empire_cashspec",
+          "tab:empire_drop_placebo"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "3.4-P1",
+            "statement": "Cash-specificity is tested in two steps: first the MA2 event study is rerun side by side on the stock placebo arm (descriptive), then both arms are pooled in a single interacted model that formally tests the cash-minus-stock difference, for the EFFECT (pre-announcement uncertainty) and its proposed CAUSE (the cash build-up) alike. Both tables are two-tailed throughout; the pooled baseline is firms that make neither a cash nor a stock deal.",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "Sets up the MA3 design (2.4 P3) and pre-commits to the EFFECT/CAUSE split that is the heart of the honest C6 claim, plus the never-EITHER baseline (SEAM-D) that distinguishes MA3's control pool.",
+            "evidence": [
+              "2.4 P3.1/P3.2 (pooled interacted spec + Wald, transcribed from empire_cashspec_interaction.py:90)",
+              "2.4 SEAM-D (MA3 baseline = never-either acquirers)",
+              "variable_ledger.json tab:empire_cashspec design.formal_test",
+              "old_draft_81efc78.tex L139"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.1-P5",
+              "3.3-P1"
+            ]
+          },
+          {
+            "prop_id": "3.4-P2",
+            "statement": "Side by side, only the cash arm moves: the cash arm reproduces the run-up and resolution while the stock arm shows none of it (its pre-announcement coefficient is negative and insignificant, and if anything its uncertainty moves the other way across announcement). Neither arm trends into the event (the PRE2 pre-trend is flat in both).",
+            "role": "result",
+            "type": "result-number",
+            "reason": "The descriptive cash-vs-stock contrast from tab:empire_drop_placebo (the contrast reserved out of 3.3) motivates the formal test; the opposite-direction stock move is what later makes the formal gap exceed either coefficient.",
+            "evidence": [
+              "claim_findings_ledger C6 (placebo_cash_PRE1 0.0486***; placebo_stock_PRE1 -0.0404 n.s.; stock PRE1-GAP -0.0756*)",
+              "old_draft_81efc78.tex L141-143",
+              "advisor: placebo cash-vs-stock contrast belongs to 3.4"
+            ],
+            "numbers": [
+              "0.0486*** (tab:empire_drop_placebo col1 cash PRE1, SE 0.0174)",
+              "-0.0404 (tab:empire_drop_placebo col2 stock PRE1, SE 0.0299, n.s.)",
+              "-0.0756* (tab:empire_drop_placebo col2 stock Drop PRE1-GAP, SE 0.0405)",
+              "0.0105 / -0.0056 (tab:empire_drop_placebo PRE2 cash/stock, both n.s.)"
+            ],
+            "register_locks": [
+              "concentration-not-strict-specificity"
+            ],
+            "depends_on": [
+              "3.4-P1"
+            ]
+          },
+          {
+            "prop_id": "3.4-P3",
+            "statement": "On the EFFECT, the pooled model delivers the formal cash-specificity result: the cash arm's pre-announcement uncertainty coefficient is significant and the stock arm's is insignificant and negative, and the formal cash-minus-stock Wald difference is significant at the 5% level (two-tailed) -- because the arms move in opposite directions the gap exceeds either coefficient, roughly a third of a residual standard deviation. This formal linear-restriction test, not a comparison of one significant against one insignificant coefficient, is the cash-specificity claim.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "This IS C6: the EFFECT survives the formal Wald test at 5%. Stating it as the linear restriction explicitly avoids the Gelman-Stern fallacy the ledger flags as referee bait.",
+            "evidence": [
+              "claim_findings_ledger C6 (EFFECT_cash 0.0459**; EFFECT_stock -0.0524 n.s.; EFFECT_diff 0.0983** z=2.06 p=.039; 'survives a formal test' ACCURATE; do NOT replace with side-by-side)",
+              "2.4 P3.2 (Wald difference IS the formal test, anti-Gelman-Stern)",
+              "old_draft_81efc78.tex L145"
+            ],
+            "numbers": [
+              "0.0459** (tab:empire_cashspec col1 cash, SE 0.0185)",
+              "-0.0524 (tab:empire_cashspec col1 stock, SE 0.0436, n.s.)",
+              "0.0983** (tab:empire_cashspec col1 Cash-Stock formal test, SE 0.0476; z=2.06, p=.039)"
+            ],
+            "register_locks": [
+              "correlational",
+              "concentration-not-strict-specificity",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.4-P2"
+            ]
+          },
+          {
+            "prop_id": "3.4-P4",
+            "statement": "On the proposed CAUSE, the cash build-up is only weakly cash-sided: the cash-minus-stock difference is insignificant on the matched universe and reaches only marginal significance on the full panel. The proposed war-chest mechanism is therefore NOT established; the mechanism stays open.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "The EFFECT/CAUSE split is the load-bearing honesty of C6: claim the cash-specific EFFECT, but do NOT claim the cause is cash-specific. This keeps the mechanism-open lock intact and pre-empts the referee who would over-read the run-up as a tested war-chest channel.",
+            "evidence": [
+              "claim_findings_ledger C6 (CAUSE_diff_matched 0.0064 n.s.; CAUSE_diff_full 0.0092*; 'the cash build-up itself is NOT cash-specific'; keep mechanism OPEN)",
+              "2.2 P3.3 / 2.4 P3 guardrail (EFFECT-not-CAUSE)",
+              "old_draft_81efc78.tex L145-146"
+            ],
+            "numbers": [
+              "0.0064 (tab:empire_cashspec col2 Cash-Stock matched, SE 0.0071, n.s.)",
+              "0.0092* (tab:empire_cashspec col3 Cash-Stock full panel, SE 0.0055)"
+            ],
+            "register_locks": [
+              "mechanism-open",
+              "correlational"
+            ],
+            "depends_on": [
+              "3.4-P3"
+            ]
+          },
+          {
+            "prop_id": "3.4-P5",
+            "statement": "We therefore read the result as supported but fragile: one formal test at the 5% level supports H1a's claim of concentration in cash, the result rides on the imprecise negative stock estimate, and the cause's own cash-specificity is weaker still (marginal, full panel only). The wording stays with 'concentrated', not 'specific', and asserts no cause.",
+            "role": "caveat",
+            "type": "framing",
+            "reason": "Locks C6 at the ledger ceiling: valid-but-fragile, concentration-not-specificity, supportive-not-definitive, mechanism-open. This is the calibrated hedge the body and ledger already carry and must not be dropped.",
+            "evidence": [
+              "claim_findings_ledger C6 thinnest_claim + risks ('supportive rather than definitive'; imprecise stock arm; mechanism open)",
+              "2.2 P3 thin_claim (concentration not strict specificity; supportive-not-definitive)",
+              "old_draft_81efc78.tex L147"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "concentration-not-strict-specificity",
+              "supportive-not-definitive",
+              "mechanism-open",
+              "correlational"
+            ],
+            "depends_on": [
+              "3.4-P3",
+              "3.4-P4"
+            ]
+          }
+        ],
+        "pays_off_section2": [
+          "2.2 P3 (H1a concentration prediction)",
+          "2.4 P3 (MA3 pooled interacted design + formal Wald difference)"
+        ],
+        "hypotheses_paid_off": [
+          "H1a"
+        ],
+        "open_decisions": [
+          "two-way clustering (firm x calendar-quarter, as the EPU tables already use) applied to tab:empire_cashspec could STRENGTHEN C6 -- flag as a rerun-class option, do not resolve (R2)"
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "Complete. P1 sets the two-step MA3 design and pre-commits the EFFECT/CAUSE split; P2 gives the descriptive cash-vs-stock contrast; P3 delivers the formal Wald EFFECT result (cash-specific, valid at 5%) as a linear restriction (avoiding Gelman-Stern); P4 delivers the failing CAUSE leg (mechanism stays open); P5 locks the supported-but-fragile, concentration-not-specificity hedge. C6/H1a is delivered exactly at the advisor-corrected ledger ceiling.",
+          "gaps": [
+            "The war-chest CAUSE mechanism is deliberately left OPEN (the cause leg fails) -- this is bounded-by-design, not a missing deliverable",
+            "The strength of the formal test rests on a single comparison and an imprecise stock arm -- disclosed as fragility, not hidden"
+          ]
+        }
+      },
+      {
+        "subsection_id": "4.1",
+        "title": "Ruling Out Analyst Scrutiny",
+        "purpose": {
+          "statement": "Pay off the 2.2-P5 flag and the 2.5-P4 promise ('tested in Section 4.1') by establishing claim C4: analyst cash-scrutiny does not account for THIS pre-announcement run-up. Deliver the honest three-step rule-out -- (1) the scrutiny measure is real (CashRatio predicts it), (2) scrutiny alone does not move the residual, (3) in the operative reason-gating model scrutiny is null and its interaction with the pre-announcement window is null while the run-up survives -- AFTER first conceding that the confound is genuine (scrutiny itself rises pre-announcement). Keep the register NULL-only and underpowered: 'does not account for THIS run-up, not that scrutiny never matters.'",
+          "reason": "2.2 P5 flagged the analyst-scrutiny rival as a real competing hypothesis and 2.5 P4 motivated it as an identification threat with its verdict promised in 4.1; the thesis's identification credibility depends on confronting and bounding the most immediate alternative driver of the run-up. C4 is the ledger's rank-4, NULL-only result.",
+          "evidence": [
+            "claim_findings_ledger C4 (NULL ONLY, underpowered; 'does not account for THIS run-up; not that scrutiny never matters'; do NOT strengthen)",
+            "2.2 P5 (flag the scrutiny rival)",
+            "2.5 P4 (own the construct + motivation; verdict in 4.1; the confound is real -- scrutiny rises pre-announce)",
+            "old_draft_81efc78.tex L150-163"
+          ]
+        },
+        "delivers_claims": [
+          "C4"
+        ],
+        "tables_referenced": [
+          "tab:cash_scrutiny_validity",
+          "tab:cash_scrutiny_channel",
+          "tab:reason_gating",
+          "tab:empire_building_did"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "4.1-P1",
+            "statement": "The scrutiny alternative holds that pre-deal quarters draw harder analyst questions about cash, and that hard questions, not the deal, produce the hedged answers. This confound is genuine, not a strawman: cash scrutiny itself rises in the quarter before a cash acquisition, co-moving with both the cash position and the event.",
+            "role": "premise",
+            "type": "result-number",
+            "reason": "Per the advisor, the honest chain must FIRST concede the confound is real (HighCashScrutiny rises pre-announce, tab:empire_building_did col4) or 4.1 reads as a strawman and breaks the 'real rival' lock that 2.2 P5 / 2.5 P4 established. This is why empire_building_did is in 4.1's table list.",
+            "evidence": [
+              "claim_findings_ledger C4 (confound_is_real: HighCashScrutiny rises pre-announce 0.0408**, tab:empire_building_did col4)",
+              "2.5 P4.2 (scrutiny is a PLAUSIBLE alternative driver -- it rises around cash deals)",
+              "advisor: add empire_building_did col4 to 4.1 tables for the plausibility premise"
+            ],
+            "numbers": [
+              "0.0408** (tab:empire_building_did col4 HighCashScrutiny PreAnnounceQtr, SE 0.0194)",
+              "0.0854 (tab:empire_building_did col3 CashScrutiny PreAnnounceQtr, SE 0.0749, n.s.)"
+            ],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "3.2-P2"
+            ]
+          },
+          {
+            "prop_id": "4.1-P2",
+            "statement": "Step 1 -- the scrutiny measure is real: the share of analyst Q&A turns devoted to cash and liquidity rises strongly with the firm's cash ratio (and with a high-cash indicator), and the cash-ratio link survives the full control set. So the nulls that follow are not the artifact of a dead measure.",
+            "role": "premise",
+            "type": "result-number",
+            "reason": "Validity of the scrutiny measure (2.5 P4.2's 0.7530***/0.8519***) is the precondition that makes the subsequent nulls informative rather than mechanical; this is the first of the three rule-out steps.",
+            "evidence": [
+              "claim_findings_ledger C4 (validity_CashRatio_to_Scrutiny 0.7530***/0.8519*** one-tailed; measure is real)",
+              "2.5 P4.2 (CashRatio predicts CashScrutiny -- same validity class)",
+              "old_draft_81efc78.tex L156"
+            ],
+            "numbers": [
+              "0.7530*** (tab:cash_scrutiny_validity col1 CashRatio, SE 0.0949)",
+              "0.8519*** (tab:cash_scrutiny_validity col2 CashRatio + controls, SE 0.0967)",
+              "0.1754*** (tab:cash_scrutiny_validity col3 HighCash, SE 0.0237)"
+            ],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "4.1-P1"
+            ]
+          },
+          {
+            "prop_id": "4.1-P3",
+            "statement": "Step 2 -- scrutiny alone does not move the residual: its direct effect on UncResCEO is zero to four decimal places, and the null holds under a logit on the dichotomized residual, on the raw uncertainty measure, and under coarser scrutiny proxies alike. This is non-redundant with the residual's construction because CashScrutiny is the VOLUME of cash questions, whereas the question-uncertainty wording (UncQue) is already netted out inside the residual by eq-4.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "The second rule-out step (the direct-effect null) plus the 2.5-P4.4 non-redundancy argument: this test targets the question-volume path eq-4 does not absorb, so the null is meaningful rather than mechanical.",
+            "evidence": [
+              "claim_findings_ledger C4 (channel_Scrutiny_to_UncRes -0.0000 OLS, -0.0003 logit n.s.)",
+              "2.5 P4.4 (CashScrutiny = volume, distinct from UncQue which eq-4 already nets out)",
+              "old_draft_81efc78.tex L158"
+            ],
+            "numbers": [
+              "-0.0000 (tab:cash_scrutiny_channel Panel A UncResCEO, SE 0.0013, n.s.)",
+              "-0.0003 (tab:cash_scrutiny_channel Panel B logit, SE 0.0074, n.s.)"
+            ],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "4.1-P2"
+            ]
+          },
+          {
+            "prop_id": "4.1-P4",
+            "statement": "Step 3 (the operative test) -- the reason-gating model puts both in the same model on the cash-acquirer pre-announcement universe: the pre-announcement indicator stays significant with scrutiny entered as a regressor and with the interaction added, while scrutiny's own effect is null and the scrutiny-by-pre-announcement interaction is insignificant. The reason raises uncertainty; the questioning does not, and the questioning does not amplify the reason.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "This is the decisive C4 test: the run-up survives once scrutiny and its interaction with the event window are controlled, so scrutiny does not account for this particular run-up.",
+            "evidence": [
+              "claim_findings_ledger C4 (gating_PreAnnounceQtr 0.0413***/0.0439**; gating_CashScrutiny 0.0000/0.0001 n.s.; gating_interaction -0.0056 n.s.)",
+              "2.2 P5.1 (the rival prediction tested in 4.1)",
+              "old_draft_81efc78.tex L160"
+            ],
+            "numbers": [
+              "0.0413*** (tab:reason_gating col1 PreAnnounceQtr, SE 0.0177)",
+              "0.0439** (tab:reason_gating col2 PreAnnounceQtr, SE 0.0189)",
+              "0.0001 (tab:reason_gating col2 CashScrutiny, SE 0.0018, n.s.)",
+              "-0.0056 (tab:reason_gating col2 CashScrutiny x PreAnnounceQtr, SE 0.0111, n.s.)"
+            ],
+            "register_locks": [
+              "correlational",
+              "within-firm"
+            ],
+            "depends_on": [
+              "4.1-P3"
+            ]
+          },
+          {
+            "prop_id": "4.1-P5",
+            "statement": "We keep the register honest: this is a failure to find paired with a within-model dissociation, not a powered equivalence test. The interaction's confidence interval does not exclude effects that would matter against a run-up near 0.04, 89% of calls draw no cash scrutiny at all, and a significant-versus-insignificant contrast is not itself a test. The claim is that scrutiny does not account for THIS run-up, not that scrutiny never matters anywhere.",
+            "role": "caveat",
+            "type": "framing",
+            "reason": "C4's mandatory register lock: NULL-only, underpowered, absence-of-evidence not equivalence. The verbatim hedge ('does not account for THIS run-up; not that scrutiny never matters') must be kept and not strengthened.",
+            "evidence": [
+              "claim_findings_ledger C4 (referee_proof 'NULL ONLY -- underpowered; interaction CI [-0.027,+0.016]; 89% of calls draw no cash scrutiny'; thinnest_claim verbatim hedge)",
+              "2.5 P4.3 (4.1 owns the C4 hedge verbatim)",
+              "old_draft_81efc78.tex L162"
+            ],
+            "numbers": [
+              "interaction 95% CI [-0.027, +0.016] (tab:reason_gating, derived from -0.0056 SE 0.0111)",
+              "89% of calls draw no cash scrutiny (tab:summary_stats HighCashScrutiny mean 0.1127 -> ~11% draw any)"
+            ],
+            "register_locks": [
+              "supportive-not-definitive",
+              "mechanism-open",
+              "correlational"
+            ],
+            "depends_on": [
+              "4.1-P4"
+            ]
+          }
+        ],
+        "pays_off_section2": [
+          "2.2 P5 (the flagged analyst-scrutiny rival)",
+          "2.5 P4 (the scrutiny construct + identification motivation; verdict promised in 4.1)"
+        ],
+        "hypotheses_paid_off": [],
+        "open_decisions": [
+          "After the Section 4.2 (presentation-contrast) drop, orphan bibitems lerman2026, bushee2018, everhart2025, gokkaya2025 are now uncited -> cite-or-remove (these supported the dropped presentation-contrast / nearest-work prose; decide at the bibliography pass)",
+          "the CashScrutiny cash/liquidity word list disclosure lives in Appendix I (pending) and 2.5 P4 forward-references it -> confirm the Appendix I pointer resolves"
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "Complete. P1 concedes the confound is genuine (scrutiny rises pre-announce) so the rule-out is not a strawman; P2-P4 deliver the three-step rule-out (measure real -> scrutiny does not move the residual -> reason-gating leaves the run-up intact, interaction null); P5 locks the NULL-only, underpowered register with the verbatim hedge. C4 is delivered exactly at the ledger ceiling: scrutiny does not account for THIS run-up, with no strengthening.",
+          "gaps": [
+            "By design C4 is absence-of-evidence, not a powered equivalence test -- the underpowered, NULL-only status is disclosed as bounded-by-design, not concealed",
+            "4.1 does not establish the disclosure mechanism (rejecting one rival is not establishing a cause) -- mechanism stays open, consistent with the whole-thesis register"
+          ]
+        }
+      }
+    ],
+    "global_notes": [
+      "TASK FRAMING: This is a RE-PLAN to the thin-claim ceiling of the existing coherent draft (old_draft_81efc78.tex L99-176), NOT invent-from-scratch. The proposition chains follow that draft's structure and numbers but are re-anchored to the post-2026-06-14 claim ceiling: Section 4.2 (presentation-contrast / C7) is DROPPED, the competition/discriminant test (C3) is gone, and the EFFECT/CAUSE split on C6 plus the confound-first ordering on C4 are enforced per the advisor.",
+      "PROPOSITION TAXONOMY NOTE: PROPOSITION_RULES.md (T1-T13 over-emit-never-judge) is the AUDIT-extraction taxonomy for EXISTING prose, not this design task. Here the chains are CURATED and minimal-but-complete (premise -> result -> inference -> caveat); over-emission would be wrong. Roles/types use the StructuredOutput enums.",
+      "E1 LESSON ENFORCED: NO Pagan / generated-regressand / two-step-SE caveat appears anywhere in the Section 3/4.1 chains. UncResCEO is an operationally-defined measure, not a latent proxy; Section 2.3 P3 states the two-step property once and SEAM-C propagates it -- it is NOT re-inserted as a Section 3 defect.",
+      "NUMBERS DISCIPLINE: every number token in every proposition carries its table source (tab:* col/row). No number is from memory. All coefficients trace to _tables_from_bible.tex via claim_findings_ledger; the dual-SD basis (0.3072 vs 0.3010) and the orphan-bibitem and Appendix-I items are SURFACED as open_decisions, not solved.",
+      "REGISTER LOCKS run through every chain: correlational / no-identification / concentration-not-strict-specificity / mechanism-open / supportive-not-definitive. C1 (3.3) is the strongest and CARRIES the paper (round-trip contrast); C2 (3.2) is the solid second pillar; C6 (3.4) is valid-at-5%-but-fragile (EFFECT cash-specific, CAUSE not); C4 (4.1) is NULL-only and underpowered.",
+      "ADVISOR-DRIVEN ANSWER CHANGE: 4.1's tables_referenced was expanded to INCLUDE tab:empire_building_did (col4) -- required so the chain can concede the confound is genuine (HighCashScrutiny rises pre-announce 0.0408**) before the rule-out, preserving the 'real rival not strawman' register that 2.2 P5 / 2.5 P4 set up. Without it 4.1 reads as a strawman.",
+      "PLACEBO TABLE SPLIT: tab:empire_drop_placebo is listed in both 3.3 and 3.4. Its CASH arm corroborates the round-trip in 3.3 (3.3-P5); its cash-VS-stock CONTRAST is reserved for 3.4 (3.4-P2) so the specificity comparison is not double-claimed.",
+      "BOUNDARY DISCIPLINE: 3.1 gives construction MECHANICS + sample and POINTS BACK for definitions (UncRes->2.3, CashRatio/PreAnnounceQtr/CashScrutiny->2.5, controls->Appendix); the >=5-call filter is stated as a MECHANIC in 3.1 while its selection-THREAT framing stays homed in 2.4 P5.5. No subsection reaches into another's turf.",
+      "FILES READ IN FULL (absolute paths): docs/Thesis/thesis_draft.tex (locked Section 2 + bibliography); docs/Thesis/_tables_from_bible.tex (11 result tables, byte-exact); docs/Thesis/rewrite/claim_findings_ledger.json (C1-C7 + _sd_basis_note); docs/Thesis/rewrite/section2.2/2.3/2.4/2.5_paragraph_ledger.json (planning substance, verification receipts skipped); docs/Thesis/variable_ledger.json (live variables; DROPPED dead-only vars ignored); docs/Thesis/rewrite/section2_roadmap.md; docs/Thesis/DraftTemplate.txt; tmp/old_draft_81efc78.tex L90-184 (prior Section 3/4 prose, NOT ratified, claim ceiling OVERRIDES); docs/Thesis/_archive/audit_20260612/AUDIT_PROTOCOL.md (E1-E7) + PROPOSITION_RULES.md."
+    ]
+  },
+  {
+    "subsections": [
+      {
+        "subsection_id": "3.1",
+        "title": "Data, Sample, and Variable Construction",
+        "purpose": {
+          "statement": "Deliver the empirical foundation: the four data sources and how they link, the construction MECHANICS of the key variables (pointing definitions BACK to 2.3/2.5/Appendix, not re-deriving them), and the three-layer estimation sample, so that every downstream table's universe and every number in Table 1 (summary_stats) is grounded and reproducible.",
+          "reason": "Section 2.3/2.4/2.5 set up UncResCEO, the three designs, and the key constructs but deferred 'how the transcripts are tokenized and the words matched' (2.3-P1) and the data/sample build (2.4 boundary) explicitly to 3.1. Without 3.1 the reader cannot see where the numbers come from or why sample sizes vary across tables.",
+          "evidence": [
+            "thesis_draft.tex 2.3-P1 'a construction detail we defer to Section 3.1'",
+            "thesis_draft.tex 2.4 boundary 'Data/sample-build -> 3.1'",
+            "section34_planning_RESUME.md scaffold row 3.1",
+            "old_draft_81efc78.tex L99-109 (prior 3.1 prose: 4 sources, build, 3-layer sample)",
+            "tab:summary_stats (the exhibit 3.1 anchors)"
+          ]
+        },
+        "delivers_claims": [
+          "(none: 3.1 is foundational, delivers no C-claim; it grounds Table 1 and every later table's universe)"
+        ],
+        "tables_referenced": [
+          "tab:summary_stats"
+        ],
+        "hypotheses_paid_off": [],
+        "pays_off_section2": [
+          "2.3-P1 deferral of tokenization/matching mechanics",
+          "2.4 boundary routing the data/sample build to 3.1",
+          "2.5-P5 'Summary statistics appear in Table~\\ref{tab:summary_stats}'"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "3.1-P1",
+            "statement": "The data combine four sources: Capital IQ earnings-call transcripts (US public firms, 2002-2018, parsed by speaker role and presentation/Q&A segment); quarterly Compustat North America for firm fundamentals (matched as the most recent fiscal quarter ending on or before the call); CRSP daily and IBES for the stock-return, market-return, and earnings-surprise controls the decomposition requires; and SDC for acquisition announcement/completion dates and cash-vs-stock payment composition.",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "3.1 must name the data origin of every variable used downstream; the four-source structure is the foundation the whole empirical section rests on, and Section 2 deferred it here.",
+            "evidence": [
+              "old_draft_81efc78.tex L101-103",
+              "variable_ledger UncResCEO.upstream (Capital IQ transcripts + LM dictionary)",
+              "variable_ledger CashRatio.raw_source 'Compustat (cheq, atq)'",
+              "variable_ledger tab:empire_building_did design.deal_filter (SDC fields)",
+              "thesis_draft.tex 2.3-P1 (LM apparatus, presentation/Q&A split)"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "2.1-P2 (presentation/Q&A split)",
+              "2.3-P1 (LM uncertainty measure)"
+            ]
+          },
+          {
+            "prop_id": "3.1-P2",
+            "statement": "The transcript-to-firm and deal-to-firm links are mechanical: each call is matched to Compustat by firm identifier and to its most recent fiscal quarter; SDC identifies acquirers by six-digit CUSIP, linked to the call panel's Compustat firm identifier via the CRSP-Compustat link table (master_sample_manifest).",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "Record linkage is a researcher degree of freedom that must be disclosed (audit D3); the CUSIP6->gvkey link defines which firms count as acquirers and is the join behind PreAnnounceQtr.",
+            "evidence": [
+              "old_draft_81efc78.tex L103",
+              "variable_ledger tab:empire_building_did design.firm_link 'SDC acquirer 6-digit CUSIP -> gvkey via master_sample_manifest.parquet'",
+              "variable_ledger PreAnnounceQtr.construction (manifest CUSIP6->gvkey link)"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "3.1-P1"
+            ]
+          },
+          {
+            "prop_id": "3.1-P3",
+            "statement": "The uncertainty measures are built in-house: each call is tokenized and the LM uncertainty-word share computed separately by speaker and segment; the CEO's Q&A share UncAnsCEO is the input that the DWZ equation-4 decomposition (defined in 2.3) turns into the residual UncResCEO. Full variable definitions live in 2.3/2.5/Appendix; 3.1 gives only the construction mechanics and points back.",
+            "role": "definition",
+            "type": "design-method",
+            "reason": "This is the tokenization/matching mechanic 2.3-P1 deferred here; the boundary rule forbids re-deriving eq-4 (that is 2.3's turf) so 3.1 must point back, not restate the decomposition.",
+            "evidence": [
+              "thesis_draft.tex 2.3-P1 'How the transcripts are tokenized and the words matched is a construction detail we defer to Section 3.1'",
+              "old_draft_81efc78.tex L105",
+              "variable_ledger UncResCEO.construction (run_h0_3_ceo_clarity_extended.py:369; residual L393-405)",
+              "section2_roadmap.md 2.3 boundary 'Construction MECHANICS (tokenize, match) -> 3.1'"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "2.3-P1 (UncAnsCEO eq-2)",
+              "2.3-P2 (DWZ eq-4 -> UncResCEO)"
+            ]
+          },
+          {
+            "prop_id": "3.1-P4",
+            "statement": "The remaining key constructs are stated with their construction source and pointed back to their defining section: PreAnnounceQtr = 1[e=-1] before a firm's first qualifying deal, never-acquirers as baseline (defined 2.2/2.4); CashRatio = cheq/atq (2.5/Appendix); CashScrutiny = share of analyst Q&A turns on cash/liquidity from the locked word list in Appendix I, with HighCashScrutiny flagging any such scrutiny since the median call draws none.",
+            "role": "definition",
+            "type": "definitional",
+            "reason": "3.1 must inventory the constructs whose mechanics it owns while respecting that their formal definitions were given in 2.2/2.4/2.5; HighCashScrutiny and CashRatio_lag are flagged as not-yet-in-Appendix (an open decision).",
+            "evidence": [
+              "thesis_draft.tex 2.5-P5 (CashRatio, PreAnnounceQtr, CashScrutiny inventory)",
+              "variable_ledger PreAnnounceQtr.definition (e==-1, first deal, never-acquirers 0)",
+              "variable_ledger CashRatio.definition (cheq/atq)",
+              "variable_ledger CashScrutiny.definition + HighCashScrutiny.definition (median=0, ~11% of calls)",
+              "old_draft_81efc78.tex L107"
+            ],
+            "numbers": [
+              "HighCashScrutiny mean 0.1127 (tab:summary_stats Panel A) ~ 11% of calls draw cash scrutiny",
+              "PreAnnounceQtr mean 0.0094 (tab:summary_stats Panel A) ~ 1% of sample"
+            ],
+            "register_locks": [
+              "correlational",
+              "concentration-not-strict-specificity"
+            ],
+            "depends_on": [
+              "2.2-P1 (PreAnnounceQtr)",
+              "2.4-P1 (PreAnnounceQtr in design)",
+              "2.5-P5 (key constructs)"
+            ]
+          },
+          {
+            "prop_id": "3.1-P5",
+            "statement": "The estimation sample is built in three layers: (a) the base call panel (every Capital IQ call of a US public firm 2002-2018 matched to Compustat, excluding financial and utility firms, and excluding CEOs with fewer than five calls, for whom no style and hence no residual is defined); (b) the deal universe (SDC acquisitions by US public acquirers 2002-2018 with known status and payment composition, >=50% cash defining the cash arm and >=50% stock the stock placebo, each firm's first qualifying deal setting its event clock); (c) design-specific trims (run-up drops post-announcement quarters; event studies cap the post-window at four quarters; scrutiny tests require enough analyst Q&A turns).",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "Sample sizes differ across every downstream table; 3.1 must explain why (each design keeps only the firms for which its comparison is defined) so the varying N's read as principled, not arbitrary. The >=5-call mechanic is given here; the external-validity SELECTION threat it creates is homed in 2.4-P5.5, not re-disclosed here (boundary).",
+            "evidence": [
+              "old_draft_81efc78.tex L109",
+              "variable_ledger tab:empire_building_did design.deal_filter + treatment_definition",
+              "variable_ledger tab:h11... sample 'firms with fewer than 5 calls excluded'",
+              "thesis_draft.tex 2.4-P5 (selection threat homed in 2.4, mechanic in 3.1)",
+              "variable_ledger tab:cash_scrutiny_validity design.sample (require >=3 analyst Q&A turns)"
+            ],
+            "numbers": [
+              "Anchor sample 88,205 call-obs across 1,884 firms (tab:summary_stats notes)",
+              "UncResCEO N=44,900 (tab:summary_stats Panel B) reflects the >=5-call non-financial/non-utility universe"
+            ],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "3.1-P1",
+              "2.4-P5 (selection threat home)"
+            ]
+          },
+          {
+            "prop_id": "3.1-P6",
+            "statement": "Table 1 reports summary statistics for the variables on their anchor-sample universes; N varies by row because each variable is summarized on complete cases within its panel (the anchor sample is 88,205 call-observations across 1,884 firms, 2002-2018), and the residual UncResCEO is centered near zero with standard deviation 0.3010 by construction.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "Table 1 is the exhibit 3.1 anchors and 2.5-P5 forward-references; the residual's SD reported here is the all-universe basis that 3.2's economic-magnitude statements will use, so it must be sourced cleanly to Panel B.",
+            "evidence": [
+              "tab:summary_stats (full table)",
+              "tab:summary_stats notes ('Anchor sample 88,205 ... 1,884 firms; N varies by row')",
+              "thesis_draft.tex 2.5-P5 'Summary statistics appear in Table~\\ref{tab:summary_stats}'"
+            ],
+            "numbers": [
+              "UncResCEO mean -0.0000, SD 0.3010, N 44,900 (tab:summary_stats Panel B)",
+              "CashRatio mean 0.1708, SD 0.1806 (tab:summary_stats Panel C)",
+              "Anchor sample 88,205 obs / 1,884 firms (tab:summary_stats notes)"
+            ],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "3.1-P5",
+              "2.5-P5"
+            ]
+          }
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "The purpose has four components, each closed by a prop: (1) four data sources + links -> 3.1-P1 (sources) and 3.1-P2 (CUSIP6->gvkey and Compustat linkage); (2) construction mechanics pointing back, not re-deriving -> 3.1-P3 (uncertainty measures, points to 2.3) and 3.1-P4 (PreAnnounceQtr/CashRatio/CashScrutiny inventory pointing to 2.2/2.4/2.5/Appendix); (3) three-layer sample explaining varying N -> 3.1-P5; (4) Table 1 grounded -> 3.1-P6. Section-2 promises paid off: 2.3-P1's tokenization deferral (3.1-P3), 2.4's data/sample routing (3.1-P5), 2.5-P5's summary-stats pointer (3.1-P6). Boundary honored: no eq-4 re-derivation (3.1-P3 points back), and the >=5-call SELECTION threat is left in 2.4-P5.5 (3.1-P5 gives only the mechanic).",
+          "gaps": [
+            "HighCashScrutiny and CashRatio_lag are not yet in the Appendix definitions table that 3.1 points to (variable_ledger flags) -> surfaced as an open decision, not a chain gap.",
+            "Appendix I (the CashScrutiny cash/liquidity word list) has pending user edits -> surfaced as an open decision."
+          ]
+        },
+        "open_decisions": [
+          "The Appendix variable-definition table is missing HighCashScrutiny and CashRatio_lag (variable_ledger flags 'add during S3.1 rewrite'); 3.1-P4 points back to an Appendix that must first be completed.",
+          "Appendix I (CashScrutiny word list) is marked 'pending edits' in thesis_draft.tex L197-198; 3.1-P4 forward-references it and depends on its finalization.",
+          "Whether the Appendix needs an explicit line for CashRatio_lag's consecutive-quarter construction (table note currently covers it; variable_ledger flags the decision)."
+        ]
+      },
+      {
+        "subsection_id": "3.2",
+        "title": "Main Analysis 1: The Pre-Announcement Run-Up",
+        "purpose": {
+          "statement": "Establish that the anticipatory run-up exists: residual CEO Q&A uncertainty is elevated in the pre-announcement quarter of cash acquirers relative to their own other quarters, with the cash ratio also rising, while the stock-acquirer placebo shows no comparable positive run-up; deliver claim C2 and pay off H1 and the 2.4 main (MA1) design, in a correlational/within-firm register.",
+          "reason": "Section 2.2 states H1 (theta_-1 > 0) and 2.4-P1 gives the MA1 estimating equation but neither tests it; 3.2 is where H1 first meets the data. C2 is the solid second pillar of the paper and must be delivered without overclaim.",
+          "evidence": [
+            "thesis_draft.tex 2.2-P2 (H1: theta_-1 > 0)",
+            "thesis_draft.tex 2.4-P1 (MA1 equation, beta estimates theta_-1)",
+            "claim_findings_ledger C2 (run-up exists, SOLID)",
+            "tab:empire_building_did",
+            "section34_planning_RESUME.md scaffold row 3.2"
+          ]
+        },
+        "delivers_claims": [
+          "C2"
+        ],
+        "tables_referenced": [
+          "tab:empire_building_did"
+        ],
+        "hypotheses_paid_off": [
+          "H1"
+        ],
+        "pays_off_section2": [
+          "2.2-P2 H1 (the anticipatory timing prediction)",
+          "2.4-P1 the MA1 single-indicator design (beta = theta_-1 estimand)"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "3.2-P1",
+            "statement": "MA1 estimates the single-indicator two-way fixed-effects regression of 2.4-P1 (firm and calendar year-quarter FE, firm-clustered SE) for each outcome (CashRatio, UncResCEO) on each arm (cash and stock acquirers), holding the equation fixed; identification is within-firm (a treated firm's pre-announcement quarter against its own ordinary quarters), post-announcement quarters dropped so only the run-up is read.",
+            "role": "design-method",
+            "type": "design-method",
+            "reason": "The chain must restate which estimating equation is being run (the MA1 spec from 2.4) and its descriptive estimand before presenting numbers, so the reader knows beta = theta_-1, a within-firm anticipation contrast, not a causal effect.",
+            "evidence": [
+              "thesis_draft.tex 2.4-P1 (MA1 equation + estimand)",
+              "tab:empire_building_did deal-specification page (4 regressions, same equation)",
+              "variable_ledger tab:empire_building_did design (PanelOLS two-way FE, firm-clustered, post-announce dropped)"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "2.4-P1 (MA1 design)",
+              "2.2-P2 (H1)"
+            ]
+          },
+          {
+            "prop_id": "3.2-P2",
+            "statement": "In the cash arm both clocks move in the final pre-announcement quarter: the cash ratio is still rising and residual Q&A uncertainty is elevated; the residual coefficient survives a two-tailed test (p=.0074), so the one-tailed reporting convention does not drive the load-bearing result.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "This is the core C2 finding (H1 paid off). The two-tailed survival is a load-bearing prop because the table reports one-tailed and a referee will check whether the result is an artifact of the test convention; it is not.",
+            "evidence": [
+              "tab:empire_building_did col 2 (cash UncResCEO) and col 1 (cash CashRatio)",
+              "claim_findings_ledger C2 'two_tailed_check p=.0074 SURVIVES two-tailed at <.01'"
+            ],
+            "numbers": [
+              "UncResCEO 0.0461*** (SE 0.0172; tab:empire_building_did col 2)",
+              "CashRatio 0.0051*** (SE 0.0017; tab:empire_building_did col 1)",
+              "two-tailed p=.0074 (claim_findings_ledger C2; t=0.0461/0.0172=2.68)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.2-P1"
+            ]
+          },
+          {
+            "prop_id": "3.2-P3",
+            "statement": "The two cash-arm columns run on different universes because the residual exists only for CEOs with at least five calls: the uncertainty test (col 2) uses 27,622 firm-quarters of 1,248 firms while the cash-ratio test (col 1) uses 67,590 of 2,232; the uncertainty test is therefore the more demanding, smaller-universe one.",
+            "role": "caveat",
+            "type": "result-number",
+            "reason": "The advisor flagged the two-universe point as a must-survive link; a referee will note the residual and cash columns are not the same sample, and disclosing it pre-empts the criticism while explaining the >=5-call selection (mechanic from 3.1, threat home 2.4-P5.5).",
+            "evidence": [
+              "tab:empire_building_did Firms/N row (cols 1,2)",
+              "claim_findings_ledger C2 N block",
+              "thesis_draft.tex 2.4-P5 (>=5-call selection)",
+              "old_draft_81efc78.tex L117 (the two-universe disclosure)"
+            ],
+            "numbers": [
+              "cash UncResCEO N 27,622 / 1,248 firms (tab:empire_building_did)",
+              "cash CashRatio N 67,590 / 2,232 firms (tab:empire_building_did)"
+            ],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "3.2-P2",
+              "3.1-P5"
+            ]
+          },
+          {
+            "prop_id": "3.2-P4",
+            "statement": "The effects are economically modest but material: the uncertainty coefficient equals about fifteen percent of a residual standard deviation, and the cash coefficient (tracking the change, not the level, because of the partial-adjustment lag) adds roughly three percent of the mean cash ratio in a single quarter that makes up about one percent of the sample.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "Economic magnitude makes C2 concrete without overclaiming; each derived percentage must carry its arithmetic provenance (coefficient over SD/mean) per the audit derived-arithmetic gate and the advisor.",
+            "evidence": [
+              "tab:empire_building_did col 2 (0.0461) and col 1 (0.0051)",
+              "tab:summary_stats Panel B (UncResCEO SD 0.3010) and Panel C (CashRatio mean 0.1708) and Panel A (PreAnnounceQtr mean 0.0094)",
+              "claim_findings_ledger _sd_basis_note (magnitude ~15% robust either basis)"
+            ],
+            "numbers": [
+              "~15% of residual SD = 0.0461 (tab:empire_building_did col 2) / 0.3010 (tab:summary_stats Panel B) = 15.3% [or /0.3072 estimation-sample = 15.0%]",
+              "~3% of mean cash = 0.0051 (tab:empire_building_did col 1) / 0.1708 (tab:summary_stats Panel C) = 3.0%",
+              "~1% of sample = PreAnnounceQtr mean 0.0094 (tab:summary_stats Panel A)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.2-P2",
+              "3.1-P6"
+            ]
+          },
+          {
+            "prop_id": "3.2-P5",
+            "statement": "The stock arm is the placebo and shows no comparable positive run-up: the uncertainty indicator is -0.0429 (n.s.) and the cash ratio -0.0036 (n.s.), while the arms are otherwise alike (near-identical partial-adjustment lags), so what differs in the pre-announcement quarter is the response, not the model. A side-by-side reading is not yet a formal test of the difference; MA3 (3.4) supplies that.",
+            "role": "inference",
+            "type": "result-number",
+            "reason": "The placebo is the first cash-vs-stock contrast and the register lock 'no comparable POSITIVE run-up' (audit invariant) must be honored exactly; the explicit hand-off to 3.4 pre-empts the Gelman-Stern trap of reading the side-by-side as the formal test.",
+            "evidence": [
+              "tab:empire_building_did cols 5,6 (stock CashRatio, stock UncResCEO)",
+              "claim_findings_ledger C2 (stock n.s.)",
+              "AUDIT_PROTOCOL.md invariant 'no comparable POSITIVE run-up'",
+              "old_draft_81efc78.tex L121 (placebo + hand-off to MA3)"
+            ],
+            "numbers": [
+              "stock UncResCEO -0.0429 (SE 0.0307, n.s.; tab:empire_building_did col 6)",
+              "stock CashRatio -0.0036 (n.s.; tab:empire_building_did col 5)",
+              "cash lag 0.7990*** vs stock lag 0.8013*** (tab:empire_building_did cols 1,5)"
+            ],
+            "register_locks": [
+              "correlational",
+              "concentration-not-strict-specificity"
+            ],
+            "depends_on": [
+              "3.2-P2",
+              "3.4-P4 (formal test deferred there)"
+            ]
+          }
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "Purpose components closed: (1) run-up exists for cash -> 3.2-P2 (UncResCEO 0.0461***, CashRatio 0.0051***, two-tailed survival); (2) descriptive within-firm register -> 3.2-P1 (estimand) with register locks on every prop; (3) economic materiality -> 3.2-P4; (4) stock placebo shows no positive run-up -> 3.2-P5; (5) two-universe honesty -> 3.2-P3. C2 delivered; H1 (theta_-1>0) paid off by 3.2-P2; 2.4-P1's MA1 design exercised by 3.2-P1. The Gelman-Stern trap is avoided by 3.2-P5 explicitly deferring the formal cash-vs-stock difference to 3.4. SD-basis is surfaced (open_decisions) with both bases carried in 3.2-P4's numbers.",
+          "gaps": [
+            "None for C2 delivery. The formal cash-vs-stock test is intentionally NOT here (it is 3.4); this is a boundary, not a gap."
+          ]
+        },
+        "open_decisions": [
+          "SD-basis for the ~15% magnitude: estimation-sample 0.3072 (N=27,622, the UncResCEO-equation universe) vs all-universe Table-1 Panel B 0.3010 (N=44,900). Both give ~15% (15.0% vs 15.3%). NOTE the _sd_basis_note's claim that the all-universe Table 1 'has no Panel B' is itself STALE: tab:summary_stats DOES have a Panel B with UncResCEO SD 0.3010. Pick a basis and cite it correctly; the old-draft pointer 'Table 1 Panel B (0.3072)' is doubly stale (wrong value and wrong implication).",
+          "The old-draft '~3% of the mean cash ratio (0.1573, Panel A)' used a STALE mean; the live Table 1 mean CashRatio is 0.1708 (Panel C), giving 3.0% (was ~3.2%). Use 0.1708.",
+          "Whether to report the one-tailed convention explicitly in 3.2 given the two-tailed survival (R1 rerun-class, claim_findings)."
+        ]
+      },
+      {
+        "subsection_id": "3.3",
+        "title": "Main Analysis 2: Differential Timing Around the Announcement",
+        "purpose": {
+          "statement": "Deliver the strongest result (C1): the same run-up, read as an event-time sequence, shows residual uncertainty resolving AT announcement (the GAP discriminator: it drops to zero while the deal is announced but not yet closed) while the acquirer's cash persists until completion, so the two run on different clocks; pay off H1b and the 2.4 event-study (MA2) design in a two-tailed, correlational register, without over-reading the negative POST.",
+          "reason": "H1b (theta_-1>0, theta_gap=0, kappa_gap>0) is the paper's most referee-proof claim because it rests on a contrast of two paths, not a single coefficient; 3.3 is where it is tested. The GAP bin is the MNPI fingerprint and must lead the inference.",
+          "evidence": [
+            "thesis_draft.tex 2.2-P4 (H1b formal: theta_-1>0, theta_gap=0, kappa_gap>0)",
+            "thesis_draft.tex 2.4-P2 (MA2 event study, Wald PRE1-GAP carries H1b)",
+            "claim_findings_ledger C1 (STRONGEST, two-tailed)",
+            "tab:empire_drop_matched",
+            "section34_planning_RESUME.md scaffold row 3.3"
+          ]
+        },
+        "delivers_claims": [
+          "C1"
+        ],
+        "tables_referenced": [
+          "tab:empire_drop_matched",
+          "tab:empire_drop_placebo"
+        ],
+        "hypotheses_paid_off": [
+          "H1b"
+        ],
+        "pays_off_section2": [
+          "2.2-P4 H1b (differential timing / two clocks)",
+          "2.4-P2 the event-study design (GAP discriminator, PRE2 pre-trend, two-tailed)"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "3.3-P1",
+            "statement": "MA2 replaces the single pre-announcement indicator with four event-time bins (PRE2 at e=-2, PRE1 at e=-1, GAP announced-but-unclosed, POST completed) on the matched universe where both the residual and the cash ratio are defined (28,102 firm-quarters of 1,320 firms); the specification is otherwise that of MA1 and, with no ordering imposed across bins, every coefficient is two-tailed.",
+            "role": "design-method",
+            "type": "design-method",
+            "reason": "The reader must see the bin structure and the two-tailed convention before the numbers; the matched universe (both DVs on the same rows) is what licenses reading the two clocks against each other without a sample-composition artifact.",
+            "evidence": [
+              "thesis_draft.tex 2.4-P2 (MA2 bins, baseline e<=-3 + never-acquirers, two-tailed)",
+              "tab:empire_drop_matched (N 28,102, 1,320 firms)",
+              "variable_ledger tab:empire_drop_matched design.matched_universe (one shared sample, both DVs)"
+            ],
+            "numbers": [
+              "N 28,102 firm-quarters / 1,320 firms (tab:empire_drop_matched)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "2.4-P2 (MA2 design)",
+              "2.2-P4 (H1b)"
+            ]
+          },
+          {
+            "prop_id": "3.3-P2",
+            "statement": "The pre-trend is flat: the PRE2 (e=-2) coefficient is null on both clocks (0.0068 for the residual, 0.0008 for the cash ratio, neither significant), so the PRE1 estimates are not the tail of a pre-existing trend.",
+            "role": "premise",
+            "type": "result-number",
+            "reason": "PRE2 is the validity device (2.4-P2): a near-zero pre-trend is what licenses reading PRE1 as the event, though it is not a causal parallel-trends proof (register lock).",
+            "evidence": [
+              "tab:empire_drop_matched PRE2 row (cols 1,2)",
+              "thesis_draft.tex 2.4-P2 'PRE2 is a pre-trend check, expected to be near zero'",
+              "thesis_draft.tex 2.4-P4 'PRE2 bin is a validity device rather than an identification proof'"
+            ],
+            "numbers": [
+              "PRE2 UncResCEO 0.0068 (SE 0.0178, n.s.; tab:empire_drop_matched col 1)",
+              "PRE2 CashRatio 0.0008 (SE 0.0024, n.s.; tab:empire_drop_matched col 2)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.3-P1"
+            ]
+          },
+          {
+            "prop_id": "3.3-P3",
+            "statement": "The discriminating contrast is the drop AT the gap: residual uncertainty spikes at PRE1 (0.0473***) and falls to 0.0018 (n.s.) the instant the deal is public, a significant PRE1-GAP drop of 0.0455**, whereas the cash ratio elevated at PRE1 (0.0061**) does NOT fall at the gap (PRE1-GAP drop 0.0006, n.s.) and declines only once cash leaves at completion (GAP-POST drop 0.0210***).",
+            "role": "result",
+            "type": "result-number",
+            "reason": "This is the MNPI fingerprint and the empirical content of H1b: uncertainty resolves at announcement (information clock) while cash persists through the gap (transaction clock). The advisor flagged that the inference must LEAD with the GAP contrast, not the peak-to-post swing.",
+            "evidence": [
+              "tab:empire_drop_matched UncResCEO PRE1/GAP and Drop:PRE1-GAP rows (col 1)",
+              "tab:empire_drop_matched CashRatio PRE1/GAP/POST and Drop:GAP-POST rows (col 2)",
+              "thesis_draft.tex 2.4-P2 (Wald PRE1-GAP carries H1b)",
+              "claim_findings_ledger C1 finding block"
+            ],
+            "numbers": [
+              "UncResCEO PRE1 0.0473*** (SE 0.0178; tab:empire_drop_matched col 1)",
+              "UncResCEO GAP 0.0018 (SE 0.0187, n.s.; col 1)",
+              "Drop PRE1-GAP 0.0455** (SE 0.0225; col 1)",
+              "CashRatio PRE1 0.0061** (SE 0.0024; col 2)",
+              "CashRatio Drop PRE1-GAP 0.0006 (n.s.; col 2)",
+              "CashRatio Drop GAP-POST 0.0210*** (SE 0.0042; col 2)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.3-P2"
+            ]
+          },
+          {
+            "prop_id": "3.3-P4",
+            "statement": "The entry spike is economically the same event as MA1 (0.0473 here against 0.0461 there, about fifteen percent of a residual standard deviation); what MA2 adds is the round trip, the peak-to-post swing of 0.0723***, so the uncertainty raised in the pre-announcement window is fully unwound once the information is public.",
+            "role": "inference",
+            "type": "result-number",
+            "reason": "Connects C1 to C2 (same event) and quantifies the resolution; the peak-to-post number is presented as confirmation of the round trip, secondary to the GAP contrast (advisor), not as the lead.",
+            "evidence": [
+              "tab:empire_drop_matched PRE1 (0.0473) and Drop:PRE1-POST (0.0723) rows (col 1)",
+              "tab:empire_building_did col 2 (0.0461, the MA1 spike)",
+              "tab:summary_stats Panel B (SD 0.3010)",
+              "old_draft_81efc78.tex L132 (round-trip framing)"
+            ],
+            "numbers": [
+              "PRE1 0.0473*** vs MA1 0.0461*** (tab:empire_drop_matched col 1; tab:empire_building_did col 2)",
+              "Drop PRE1-POST 0.0723*** (SE 0.0190; tab:empire_drop_matched col 1)",
+              "~15% of SD = 0.0473 / 0.3010 (tab:summary_stats Panel B) = 15.7%"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.3-P3",
+              "3.2-P4"
+            ]
+          },
+          {
+            "prop_id": "3.3-P5",
+            "statement": "The negative POST level (-0.0250*) is not to be over-read: it sits marginally below baseline, and the claim rests on the CONTRAST between the two paths (uncertainty reverses at announcement, cash falls at completion), not on the magnitude or sign of any single drop. This is the differential-timing prediction of H1b.",
+            "role": "caveat",
+            "type": "result-number",
+            "reason": "C1 register lock (claim_findings: 'do not over-read the negative POST'); the advisor flagged POST as a SEPARATE don't-over-read prop distinct from the GAP discriminator. The contrast-not-coefficient framing is what makes C1 referee-proof.",
+            "evidence": [
+              "tab:empire_drop_matched POST row (col 1)",
+              "claim_findings_ledger C1 risks 'POST uncertainty overshoots below baseline (-0.0250*) -- do not over-read'",
+              "claim_findings_ledger C1 thinnest_claim 'Frame as the round-trip contrast; do not over-read the negative POST'",
+              "old_draft_81efc78.tex L134 (contrast not magnitude)"
+            ],
+            "numbers": [
+              "POST UncResCEO -0.0250* (SE 0.0130; tab:empire_drop_matched col 1)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification",
+              "mechanism-open"
+            ],
+            "depends_on": [
+              "3.3-P3"
+            ]
+          },
+          {
+            "prop_id": "3.3-P6",
+            "statement": "The cash-persistence leg is partly mechanical (cash physically leaves the balance sheet only at closing), by design; H1b's content is the divergence of the two paths, not the level of either, and the cash equation is identified off the same well-behaved partial-adjustment specification (lag 0.7547) as in MA1.",
+            "role": "caveat",
+            "type": "result-number",
+            "reason": "H1b register lock from 2.2-P4: the cash leg being mechanical is acknowledged so the contrast (not the cash level) carries the claim; this pre-empts a referee reading 'cash persists' as a substantive finding.",
+            "evidence": [
+              "thesis_draft.tex 2.2-P4 ('the cash leg is largely mechanical, since cash leaves only when the deal is paid')",
+              "tab:empire_drop_matched CashRatio_lag row (0.7547)",
+              "section2.2_paragraph_ledger P4.2 (cash-persistence partly mechanical)"
+            ],
+            "numbers": [
+              "CashRatio partial-adjustment lag 0.7547*** (SE 0.0108; tab:empire_drop_matched col 2)",
+              "CashRatio POST -0.0155*** (SE 0.0022; col 2)"
+            ],
+            "register_locks": [
+              "correlational",
+              "mechanism-open"
+            ],
+            "depends_on": [
+              "3.3-P3"
+            ]
+          }
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "Purpose components closed: (1) GAP discriminator (uncertainty drops at announcement while cash persists) -> 3.3-P3, the lead inference; (2) flat pre-trend validating PRE1 -> 3.3-P2; (3) round-trip / resolution -> 3.3-P4; (4) don't-over-read POST -> 3.3-P5 (separate caveat); (5) cash leg mechanical -> 3.3-P6; (6) two-tailed correlational register -> 3.3-P1 with locks on every prop. C1 delivered; H1b (theta_-1>0, theta_gap=0, kappa_gap>0) paid off across 3.3-P3 (theta and kappa at gap) and 3.3-P4 (theta_-1>0); 2.4-P2's event-study design exercised by 3.3-P1. The contrast-not-single-coefficient framing (3.3-P5) is what keeps C1 at its referee-proof ceiling.",
+          "gaps": [
+            "The stock placebo arm of the event study (tab:empire_drop_placebo) is referenced as the natural extension but its cash-vs-stock formal reading belongs to 3.4; 3.3 uses empire_drop_placebo only to note the cash arm's own event path reproduces, deferring the formal cash-vs-stock contrast to 3.4. This is a boundary, not a gap."
+          ]
+        },
+        "open_decisions": [
+          "The ~15% magnitude in 3.3-P4 inherits the same SD-basis decision as 3.2 (0.3010 all-universe vs 0.3072 estimation-sample); MA2 runs on the matched universe (N=28,102), a THIRD universe, so the SD used to scale a matched-universe effect is a disclosed approximation (audit seed §7b: 'matched-universe SD used to scale MA2 effect drawn from MA1 universe -- record the response'). Keep consistent with the 3.2 choice.",
+          "Whether to present the GAP-POST and PRE1-POST cash drops (0.0210***, 0.0216***) in text or leave to the table; they support the transaction-clock reading but are secondary."
+        ]
+      },
+      {
+        "subsection_id": "3.4",
+        "title": "Main Analysis 3: Cash-Specificity",
+        "purpose": {
+          "statement": "Deliver C6: a formal test that the run-up concentrates in cash. Two steps: (i) the side-by-side event study on the stock placebo (only the cash arm moves); (ii) the pooled interacted model whose formal Wald cash-minus-stock difference on the EFFECT (pre-announcement uncertainty) is 0.0983** (z~2.07, valid at 5%, two-tailed), while the proposed CAUSE (the cash build-up itself) is NOT cash-specific (0.0064 n.s. matched), so the effect concentrates in cash but the mechanism stays open. Pay off H1a as concentration, not strict specificity.",
+          "reason": "H1a (theta_-1^cash > theta_-1^stock) is the third pillar; the ledger (C6, advisor-corrected) requires the FORMAL Wald test, NOT a Gelman-Stern sig-vs-n.s. comparison, and requires separating the claimable EFFECT from the open CAUSE.",
+          "evidence": [
+            "thesis_draft.tex 2.2-P3 (H1a formal: theta_-1^cash > theta_-1^stock)",
+            "thesis_draft.tex 2.4-P3 (MA3 pooled interacted, Wald beta_c-beta_s is the formal test)",
+            "claim_findings_ledger C6 (formal test valid at 5%; EFFECT vs CAUSE; NO Gelman-Stern)",
+            "tab:empire_cashspec",
+            "tab:empire_drop_placebo",
+            "section34_planning_RESUME.md scaffold row 3.4"
+          ]
+        },
+        "delivers_claims": [
+          "C6"
+        ],
+        "tables_referenced": [
+          "tab:empire_cashspec",
+          "tab:empire_drop_placebo"
+        ],
+        "hypotheses_paid_off": [
+          "H1a"
+        ],
+        "pays_off_section2": [
+          "2.2-P3 H1a (cash-concentration)",
+          "2.4-P3 the pooled interacted design + the formal cash-minus-stock Wald restriction"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "3.4-P1",
+            "statement": "Step one reruns the event study side by side on the stock placebo arm: neither arm trends into the event (PRE2 flat in both: 0.0105 cash, -0.0056 stock, neither significant), and only the cash arm moves, reproducing the run-up (PRE1 0.0486***, peak-to-post drop 0.0681***) while the stock arm shows none of it (PRE1 -0.0404 n.s.) and if anything moves the other way across announcement (PRE1-GAP -0.0756*).",
+            "role": "premise",
+            "type": "result-number",
+            "reason": "The side-by-side establishes the qualitative cash-vs-stock asymmetry that motivates the formal test; the stock arm's OPPOSITE movement strengthens the placebo logic but is explicitly NOT the test (Gelman-Stern guard).",
+            "evidence": [
+              "tab:empire_drop_placebo cols 1 (cash) and 2 (stock): PRE2, PRE1, Drop rows",
+              "claim_findings_ledger C6 (placebo_cash_PRE1 0.0486***; placebo_stock_PRE1 -0.0404 n.s.; PRE1-GAP -0.0756*)",
+              "old_draft_81efc78.tex L143 (side-by-side reading)"
+            ],
+            "numbers": [
+              "cash PRE2 0.0105 (n.s.) / stock PRE2 -0.0056 (n.s.) (tab:empire_drop_placebo)",
+              "cash PRE1 0.0486*** (SE 0.0174; col 1)",
+              "cash Drop PRE1-POST 0.0681*** (SE 0.0187; col 1)",
+              "stock PRE1 -0.0404 (SE 0.0299, n.s.; col 2)",
+              "stock Drop PRE1-GAP -0.0756* (SE 0.0405; col 2)"
+            ],
+            "register_locks": [
+              "correlational",
+              "concentration-not-strict-specificity"
+            ],
+            "depends_on": [
+              "3.3-P3",
+              "2.2-P3 (H1a)"
+            ]
+          },
+          {
+            "prop_id": "3.4-P2",
+            "statement": "A side-by-side display implies a comparison it never runs, so the pooled interacted model of 2.4-P3 carries both treatments and tests the cash-minus-stock difference directly with a single Wald restriction (beta_c - beta_s > 0), which is what estimates theta_-1^cash - theta_-1^stock in H1a; this difference, not a comparison of one significant against one insignificant coefficient, is the formal test.",
+            "role": "design-method",
+            "type": "design-method",
+            "reason": "The C6 C-trap: the test MUST be the formal Wald linear restriction, never the Gelman-Stern 'significant for cash vs n.s. for stock' side-by-side. Stating this explicitly is mandatory.",
+            "evidence": [
+              "thesis_draft.tex 2.4-P3 (pooled spec + Wald beta_c-beta_s; 'not a comparison of one significant coefficient against one insignificant one')",
+              "claim_findings_ledger C6 risks ('DO NOT replace the formal test with the side-by-side ... Gelman-Stern fallacy')",
+              "variable_ledger tab:empire_cashspec design.formal_test (Wald on PreAnn_cash - PreAnn_stock)"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "correlational",
+              "concentration-not-strict-specificity"
+            ],
+            "depends_on": [
+              "3.4-P1",
+              "2.4-P3 (MA3 design)"
+            ]
+          },
+          {
+            "prop_id": "3.4-P3",
+            "statement": "On the EFFECT, the cash arm's pre-announcement uncertainty coefficient (0.0459**) against the stock arm's (-0.0524, n.s.) yields a formal cash-minus-stock difference of 0.0983** (z~2.07, p=.039, two-tailed); because the arms move in opposite directions the gap exceeds either coefficient, about a third of a residual standard deviation. This survives a formal test at the 5% level.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "This is the claimable C6 result; the ledger (advisor-corrected) confirms 'survives a formal test' is ACCURATE, not an overclaim, because the table is two-tailed and p=.039. The magnitude carries its arithmetic provenance.",
+            "evidence": [
+              "tab:empire_cashspec col 1 (EFFECT, UncResCEO matched): PreAnn cash, PreAnn stock, Cash-Stock rows",
+              "claim_findings_ledger C6 finding (EFFECT_diff 0.0983** -> z=2.06, p=.039)",
+              "tab:summary_stats Panel B (SD 0.3010)"
+            ],
+            "numbers": [
+              "EFFECT cash 0.0459** (SE 0.0185; tab:empire_cashspec col 1)",
+              "EFFECT stock -0.0524 (SE 0.0436, n.s.; col 1)",
+              "EFFECT diff 0.0983** (SE 0.0476; col 1); z=0.0983/0.0476=2.07, p=.039 (two-tailed)",
+              "~a third of SD = 0.0983 / 0.3010 (tab:summary_stats Panel B) = 32.7% [or /0.3072 = 32.0%]"
+            ],
+            "register_locks": [
+              "correlational",
+              "concentration-not-strict-specificity",
+              "supportive-not-definitive"
+            ],
+            "depends_on": [
+              "3.4-P2"
+            ]
+          },
+          {
+            "prop_id": "3.4-P4",
+            "statement": "On the proposed CAUSE, the cash build-up itself is only weakly cash-sided: the cash-minus-stock difference in the run-up's cash accumulation is insignificant on the matched universe (0.0064, n.s.) and reaches only 0.0092* on the full panel; so the EFFECT concentrates in cash while the accumulation CAUSE does not, and the why stays open.",
+            "role": "inference",
+            "type": "result-number",
+            "reason": "The advisor flagged EFFECT and CAUSE as two result-props with OPPOSITE verdicts that must not be collapsed; the failing CAUSE leg is exactly what keeps the mechanism-open register lock firing and prevents a war-chest mechanism claim.",
+            "evidence": [
+              "tab:empire_cashspec col 2 (CashRatio matched +lag) and col 3 (CashRatio full panel +lag): Cash-Stock row",
+              "claim_findings_ledger C6 (CAUSE_diff_matched 0.0064 n.s.; CAUSE_diff_full 0.0092*; 'mechanism stays open')",
+              "section2.2_paragraph_ledger P3 guardrail (EFFECT-not-CAUSE)"
+            ],
+            "numbers": [
+              "CAUSE diff matched 0.0064 (SE 0.0071, n.s.; tab:empire_cashspec col 2)",
+              "CAUSE diff full panel 0.0092* (SE 0.0055; tab:empire_cashspec col 3)"
+            ],
+            "register_locks": [
+              "correlational",
+              "mechanism-open",
+              "concentration-not-strict-specificity"
+            ],
+            "depends_on": [
+              "3.4-P3"
+            ]
+          },
+          {
+            "prop_id": "3.4-P5",
+            "statement": "The result is therefore supported but fragile: one formal test at the 5% level supports H1a's concentration claim, but its significance rides on the imprecise negative stock estimate (-0.0524, SE 0.0436), and the cause's own cash-specificity is weaker still; the wording stays with 'concentrated', not strict specificity, and no cause is asserted.",
+            "role": "caveat",
+            "type": "result-number",
+            "reason": "C6 register lock 'supportive-not-definitive': the body already discloses the fragility (imprecise stock arm); the chain must keep that hedge so H1a is paid off at, not above, its ceiling.",
+            "evidence": [
+              "claim_findings_ledger C6 risks ('real fragility is the imprecise stock arm -0.0524 n.s., SE 0.0436; keep supportive rather than definitive')",
+              "thesis_draft.tex 2.1-P6 / 2.2-P3 (concentration not strict specificity)",
+              "old_draft_81efc78.tex L147 ('supported but fragile -- concentration, not strict specificity')",
+              "variable_ledger tab:empire_cashspec design.honest_caveat"
+            ],
+            "numbers": [
+              "EFFECT stock -0.0524 (SE 0.0436, n.s.; tab:empire_cashspec col 1) -- the imprecise arm the difference rides on"
+            ],
+            "register_locks": [
+              "correlational",
+              "concentration-not-strict-specificity",
+              "supportive-not-definitive",
+              "mechanism-open"
+            ],
+            "depends_on": [
+              "3.4-P3",
+              "3.4-P4"
+            ]
+          }
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "Purpose components closed: (1) side-by-side placebo (only cash moves) -> 3.4-P1; (2) the formal test is the Wald restriction, not Gelman-Stern -> 3.4-P2; (3) EFFECT cash-specific at 5% -> 3.4-P3 (0.0983**); (4) CAUSE not cash-specific, mechanism open -> 3.4-P4 (0.0064 n.s.); (5) supported-but-fragile hedge -> 3.4-P5. C6 delivered at its exact ceiling; H1a (theta_-1^cash > theta_-1^stock) paid off by 3.4-P3; 2.4-P3's pooled interacted design exercised by 3.4-P2. The two C-traps are both honored: formal Wald (3.4-P2) and the EFFECT/CAUSE split with opposite verdicts (3.4-P3 vs 3.4-P4).",
+          "gaps": [
+            "None for C6 delivery. The EFFECT is claimed (valid at 5%); the CAUSE is explicitly NOT claimed (mechanism open) -- this is the ceiling, not a gap."
+          ]
+        },
+        "open_decisions": [
+          "R2 rerun-class (claim_findings): applying two-way clustering (firm x calendar-quarter, as the EPU validity tables already use) to tab:empire_cashspec could STRENGTHEN C6; currently firm-clustered only. Surface for user decision, do not assume the rerun.",
+          "The CAUSE full-panel 0.0092* is one-tailed-flavored marginal; whether to report it at all given it does not support a cause claim (it is presented only to show the cause leg is weak)."
+        ]
+      },
+      {
+        "subsection_id": "4.1",
+        "title": "Ruling Out Analyst Scrutiny",
+        "purpose": {
+          "statement": "Deliver C4: confront the most immediate rival to the anticipatory reading (that pre-deal quarters simply draw harder analyst questions about cash, and hard questions produce hedged answers) and show, in three steps, that it does not account for THIS run-up, while keeping the verdict honestly bounded (NULL-only, underpowered; not a claim that scrutiny never matters). Pay off the promise made in 2.2-P5 and developed/motivated in 2.5-P4.",
+          "reason": "2.2-P5 flags the scrutiny rival and 2.5-P4 motivates it as a plausible alternative driver, both promising the test/verdict in 4.1; this is the only place the verdict is stated. C4 is NULL-only and underpowered, so the honesty must be built into the chain, not appended.",
+          "evidence": [
+            "thesis_draft.tex 2.2-P5 ('put directly to the data as a side analysis in Section 4.1')",
+            "thesis_draft.tex 2.5-P4 ('a side analysis whose results are reported in Section 4.1')",
+            "claim_findings_ledger C4 (NULL-only, underpowered; 'does not account for THIS run-up')",
+            "tab:reason_gating, tab:cash_scrutiny_validity, tab:cash_scrutiny_channel",
+            "section34_planning_RESUME.md scaffold row 4.1"
+          ]
+        },
+        "delivers_claims": [
+          "C4"
+        ],
+        "tables_referenced": [
+          "tab:reason_gating",
+          "tab:cash_scrutiny_validity",
+          "tab:cash_scrutiny_channel",
+          "tab:empire_building_did"
+        ],
+        "hypotheses_paid_off": [],
+        "pays_off_section2": [
+          "2.2-P5 (the scrutiny rival flagged in the hypothesis set)",
+          "2.5-P4 (the scrutiny construct + identification motivation; verdict promised here)"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "4.1-P1",
+            "statement": "The scrutiny alternative is genuinely plausible, not a strawman: cash scrutiny itself rises in the pre-announcement quarter (HighCashScrutiny 0.0408**), so it co-moves with both the cash position and the event and could in principle generate the run-up mechanically; this is what makes it an identification threat worth confronting.",
+            "role": "premise",
+            "type": "result-number",
+            "reason": "The advisor flagged the plausibility prop as NON-NEGOTIABLE: without it the rule-out reads as knocking down a strawman, and the rival's genuine rise pre-announce (a real confound) is what the gating test must overcome. This is the (a) link.",
+            "evidence": [
+              "tab:empire_building_did col 4 (HighCashScrutiny cash arm 0.0408**)",
+              "claim_findings_ledger C4 finding 'confound_is_real: HighCashScrutiny itself RISES pre-announce 0.0408** (tab:empire_building_did col 4)'",
+              "thesis_draft.tex 2.5-P4 ('cash scrutiny itself rises in the quarter before a cash acquisition')"
+            ],
+            "numbers": [
+              "HighCashScrutiny pre-announce 0.0408** (SE 0.0194; tab:empire_building_did col 4)"
+            ],
+            "register_locks": [
+              "correlational",
+              "mechanism-open"
+            ],
+            "depends_on": [
+              "2.2-P5 (scrutiny rival)",
+              "2.5-P4 (scrutiny construct + motivation)"
+            ]
+          },
+          {
+            "prop_id": "4.1-P2",
+            "statement": "Step one: the scrutiny measure is real. The share of analyst Q&A turns devoted to cash and liquidity rises strongly with the firm's cash ratio (0.7530***, one-tailed; 0.8519*** with the full control set) and with a high-cash indicator (0.1754***), so the nulls that follow are not the artifact of a dead measure.",
+            "role": "premise",
+            "type": "result-number",
+            "reason": "Establishing measure validity is the necessary first leg of the three-step rule-out (claim_findings C4 / 2.5-P4); a null from a measure that tracks nothing would be uninformative. This 0.7530*** is the promise/delivery split: motivated in 2.5, delivered here.",
+            "evidence": [
+              "tab:cash_scrutiny_validity cols 1,2 (CashRatio) and col 3 (HighCash)",
+              "claim_findings_ledger C4 'validity_CashRatio_to_Scrutiny 0.7530***/0.8519*** -- measure is real'",
+              "thesis_draft.tex 2.5-P4 (validity 0.7530/0.8519 as ground)"
+            ],
+            "numbers": [
+              "CashScrutiny on CashRatio 0.7530*** (SE 0.0949; tab:cash_scrutiny_validity col 1)",
+              "with controls 0.8519*** (SE 0.0967; col 2)",
+              "on HighCash 0.1754*** (SE 0.0237; col 3)"
+            ],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "4.1-P1"
+            ]
+          },
+          {
+            "prop_id": "4.1-P3",
+            "statement": "Step two: scrutiny alone does not move the residual. Its direct effect on UncResCEO is zero to four decimal places (-0.0000, SE 0.0013; 41,512 calls), and the null holds under a logit on the dichotomized residual (-0.0003) and on the raw uncertainty measure and coarser scrutiny proxies alike.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "The direct-channel null is the second leg: a measure that is real (4.1-P2) yet does not move the residual is the first evidence the rival is not the driver.",
+            "evidence": [
+              "tab:cash_scrutiny_channel Panel A (UncResCEO -0.0000) and Panel B (logit -0.0003)",
+              "claim_findings_ledger C4 'channel_Scrutiny_to_UncRes -0.0000 n.s. (OLS), -0.0003 n.s. (logit)'",
+              "tab:cash_scrutiny_channel notes ('coarser scrutiny measures give the same null')"
+            ],
+            "numbers": [
+              "CashScrutiny on UncResCEO -0.0000 (SE 0.0013, n.s.; tab:cash_scrutiny_channel Panel A)",
+              "logit -0.0003 (SE 0.0074, n.s.; Panel B)",
+              "N 41,512 calls (tab:cash_scrutiny_channel)"
+            ],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "4.1-P2"
+            ]
+          },
+          {
+            "prop_id": "4.1-P4",
+            "statement": "Step three, the operative test: in the same model on the cash-acquirer pre-announcement universe the pre-announcement indicator stays at 0.0413*** (scrutiny entered as a regressor) and 0.0439** (with the interaction added), while scrutiny's own effect is null (0.0000/0.0001) and the scrutiny x pre-announcement interaction is -0.0056 (SE 0.0111, n.s.); the reason raises uncertainty, the questioning does not, and the questioning does not amplify the reason.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "The reason-gating interaction is the decisive test (claim_findings C4): it shows the run-up survives controlling for scrutiny and that scrutiny does not gate it. This is the within-model dissociation that the rule-out rests on.",
+            "evidence": [
+              "tab:reason_gating cols 1,2 (CashScrutiny, PreAnnounceQtr, interaction rows)",
+              "claim_findings_ledger C4 'gating_PreAnnounceQtr 0.0413***/0.0439**; gating_CashScrutiny 0.0000/0.0001 n.s.; gating_interaction -0.0056 n.s.'",
+              "thesis_draft.tex 2.5-P4 (reason-gating is the operative channel test)"
+            ],
+            "numbers": [
+              "PreAnnounceQtr 0.0413*** (SE 0.0177; tab:reason_gating col 1) / 0.0439** (SE 0.0189; col 2)",
+              "CashScrutiny 0.0000 / 0.0001 (n.s.; tab:reason_gating)",
+              "interaction -0.0056 (SE 0.0111, n.s.; tab:reason_gating col 2)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "4.1-P3"
+            ]
+          },
+          {
+            "prop_id": "4.1-P5",
+            "statement": "The register stays honest: this is a failure to find paired with a within-model dissociation, not a powered equivalence test. The interaction's confidence interval [-0.027, +0.016] does not exclude effects that would matter against a run-up near 0.04, 89% of calls draw no cash scrutiny at all, and a significant-versus-insignificant contrast is not itself a test. The claim is that scrutiny does not account for THIS run-up, not that scrutiny never matters anywhere.",
+            "role": "caveat",
+            "type": "result-number",
+            "reason": "The advisor flagged the underpowered caveat as a LOAD-BEARING prop: dropping it turns C4 into the overclaim the ledger forbids. This is the (c) link and the exact hedge claim_findings mandates be kept verbatim.",
+            "evidence": [
+              "claim_findings_ledger C4 referee_proof ('NULL ONLY -- underpowered; interaction CI [-0.027,+0.016]; 89% of calls draw no cash scrutiny')",
+              "claim_findings_ledger C4 thinnest_claim ('Keep EXACTLY as hedged: does not account for THIS run-up; not that scrutiny never matters. Do NOT strengthen.')",
+              "old_draft_81efc78.tex L162 (the verbatim hedge)",
+              "tab:empire_building_did notes (89% of calls raise no cash turns)"
+            ],
+            "numbers": [
+              "interaction 95% CI approx [-0.027, +0.016] (claim_findings C4; from -0.0056 +/- 1.96*0.0111)",
+              "89% of calls draw no cash scrutiny (tab:empire_building_did notes; HighCashScrutiny ~11%)",
+              "run-up near 0.04 (the PreAnnounceQtr magnitude the CI is judged against)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification",
+              "mechanism-open",
+              "supportive-not-definitive"
+            ],
+            "depends_on": [
+              "4.1-P4",
+              "4.1-P1"
+            ]
+          }
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "Purpose components closed: (1) rival genuinely plausible (HighCashScrutiny rises 0.0408**) -> 4.1-P1 (the (a) link, non-negotiable); (2) three-step test -> 4.1-P2 (validity 0.7530***), 4.1-P3 (channel null -0.0000), 4.1-P4 (gating PreAnn 0.0413*** vs interaction -0.0056 n.s.); (3) underpowered honesty -> 4.1-P5 (the (c) link, CI [-0.027,+0.016], 89% no scrutiny, the verbatim 'this run-up not never' hedge). C4 delivered at its NULL-only ceiling; the 2.2-P5 + 2.5-P4 promise is paid off here (and only here). Both advisor non-negotiables (4.1-P1 plausibility and 4.1-P5 underpowered caveat) are present, so C4 cannot read as a powered refutation.",
+          "gaps": [
+            "None. The chain deliberately stops at 'does not account for THIS run-up'; strengthening to an equivalence claim would breach the ceiling, so the absence of a stronger claim is correct, not a gap."
+          ]
+        },
+        "open_decisions": [
+          "Orphan bibitems after the 4.2/C7 drop: lerman2026, bushee2018, everhart2025, gokkaya2025 were cited by the dropped presentation-contrast section (4.2); they must be cited elsewhere or removed from the bibliography (cite-or-remove). 4.1 does not use them.",
+          "Whether to report the gating col-2 PreAnnounceQtr (0.0439**) and col-1 (0.0413***) both, or just one, given the one-tailed convention on the directional terms (R1 rerun-class)."
+        ]
+      }
+    ],
+    "global_notes": [
+      "I am one of three IDENTICAL independent Phase-A planners; this is my from-scratch plan of the five Section 3/4 subsection proposition chains, built to the thin-claim ceiling. No paragraph allocation (that is Phase B).",
+      "TABLE SCOPE: exactly 8 tables live in Section 3/4. h11_prisk / h24_us_epu / h24b_global_epu are 2.5's CONVERGENT-VALIDITY tables (C5) and must NOT be pulled into 3/4. empire_building_did is shared: cols 1,2,5,6 -> 3.2; col 4 (HighCashScrutiny 0.0408**) -> 4.1. empire_drop_placebo is shared 3.3 (cash arm reproduces) + 3.4 (formal cash-vs-stock). cash_scrutiny_validity's 0.7530*** appears in 2.5 (motivation) AND 4.1 (step 1) -- promise/delivery split, not double-counting.",
+      "C-TRAPS HONORED: C6 -> formal Wald 0.0983** (3.4-P2/P3), NO Gelman-Stern; EFFECT (claimable) vs CAUSE (open) split with opposite verdicts (3.4-P3 vs 3.4-P4). C4 -> NULL-only, plausibility prop (4.1-P1) + underpowered caveat (4.1-P5) both load-bearing; verbatim 'this run-up not never' hedge. C1 -> GAP discriminator leads (3.3-P3), negative POST -0.0250* is a SEPARATE don't-over-read caveat (3.3-P5).",
+      "E1 LESSON honored: the generated-regressand/Pagan critique was WITHDRAWN (UncResCEO is an operationally-defined measure, not a latent proxy); NO Pagan disclaimer is inserted anywhere in Section 3/4. The honest two-step flag is stated once in 2.3-P3 and not repeated as a Section-3 defect.",
+      "BOUNDARY honored: variable DEFINITIONS stay in 2.3/2.5/Appendix; 3.1 gives only construction mechanics + the 3-layer sample and points back. The >=5-call SELECTION threat (external validity) is homed in 2.4-P5.5; 3.1-P5 gives only the mechanic (why the residual exists only for >=5-call CEOs), and 3.2-P3 uses it to explain the two-universe N difference.",
+      "REGISTER LOCKS bind every result/inference prop: correlational, no-identification, concentration-not-strict-specificity, mechanism-open, supportive-not-definitive (per claim_findings).",
+      "NUMBER PROVENANCE: every number token carries its named table cell; every derived percentage carries its arithmetic (coefficient / SD or / mean WITH both source cells). Derived magnitudes were recomputed (15.0-15.3% of SD; ~1/3 of SD; 3.0% of mean) and are robust under both SD bases.",
+      "SURFACED OPEN DECISION (SD-basis): I found the _sd_basis_note_2026_06_14 is itself partly STALE -- it says the all-universe Table 1 'has no Panel B', but tab:summary_stats DOES have a Panel B (Dependent Variables) reporting UncResCEO SD 0.3010, N=44,900. So the all-universe basis is literally in the table. The old-draft pointer 'fifteen percent of a SD (0.3072, Table 1 Panel B)' is doubly stale (wrong value AND wrong panel-absence claim). Both bases still give ~15%.",
+      "SURFACED OPEN DECISION (stale mean): the old draft's '~3% of the mean cash ratio (0.1573, Panel A)' uses a stale mean; live Table 1 mean CashRatio is 0.1708 (Panel C), giving exactly 3.0%.",
+      "SURFACED OPEN DECISIONS (others): orphan bibitems lerman2026/bushee2018/everhart2025/gokkaya2025 after the 4.2/C7 drop (cite-or-remove); Appendix I CashScrutiny word-list pending edits; HighCashScrutiny and CashRatio_lag missing from the Appendix definitions table that 3.1 points back to.",
+      "DEPENDS_ON wiring: 3.2->2.4-P1/2.2-P2 (MA1/H1); 3.3->2.4-P2/2.2-P4 (MA2/H1b); 3.4->2.4-P3/2.2-P3 (MA3/H1a); 4.1->2.2-P5 + 2.5-P4 (scrutiny promise). 3.3-P4 depends on 3.2-P4 (same-event magnitude); 3.4-P1 depends on 3.3-P3 (event path).",
+      "PLAN-ONLY: no prose written, no NLM run, no number re-verification beyond reading the byte-exact table cells and recomputing the derived arithmetic. Each prop is typed and tagged with the later-stage verification it will need (result-number -> bible cross-check via verify_draft_numbers; design-method -> code file:line; etc.)."
+    ]
+  },
+  {
+    "subsections": [
+      {
+        "subsection_id": "3.1",
+        "title": "Data, Sample, and Variable Construction",
+        "purpose": {
+          "statement": "Deliver the empirical infrastructure that every downstream result rests on: (1) the four data sources and the CUSIP6->gvkey link that fuse them; (2) the build mechanics of the language measures, pointing back to 2.3 for the decomposition; (3) construction pointers for the key variables (UncResCEO->2.3, CashScrutiny->2.5/Appendix I, PreAnnounceQtr->2.2/2.4, CashRatio); (4) the three-layer sample (base call panel / SDC deal universe / design-specific filters); and (5) Table 1 summary statistics with the 'N varies by row' caveat. It must give MECHANICS and SAMPLE only and POINT BACK for definitions, never re-deriving Section 2 turf.",
+          "reason": "The DraftTemplate fixes 3.1 as Data/Sample/Variable Construction, and the task scopes it to 4 sources + the build + key-variable defs pointing back + the 3-layer sample + Table 1. The BOUNDARY rule forbids re-deriving 2.3/2.5/Appendix definitions, so 3.1's job is the construction-and-sample layer that makes the four result subsections legible.",
+          "evidence": [
+            "DraftTemplate.txt III 'Data / Sample / Variable Construction'",
+            "old_draft_81efc78.tex L101-109 (4 sources, build, 3-layer sample)",
+            "_tables_from_bible.tex tab:summary_stats (N=88,205; 1,884 firms; 'N varies by row')",
+            "section2.3_paragraph_ledger _plan (UncRes defined in 2.3; mechanics deferred to 3.1)",
+            "section2.5_paragraph_ledger P4/P5 (CashScrutiny build home is 2.5; word list -> Appendix I)",
+            "variable_ledger UncResCEO/CashScrutiny/CashRatio/PreAnnounceQtr construction evidence"
+          ]
+        },
+        "delivers_claims": [
+          "infrastructure for C1,C2,C4,C6 (no standalone claim)"
+        ],
+        "tables_referenced": [
+          "tab:summary_stats"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "3.1-P1",
+            "statement": "The analysis combines four data sources: Capital IQ earnings-call transcripts (US public firms, 2002-2018, parsed to speaker-role and presentation-vs-Q&A segment), quarterly Compustat North America fundamentals matched to the most recent fiscal quarter ending on or before each call, daily CRSP plus IBES records supplying the stock-return / market-return / earnings-surprise controls, and SDC acquisition records giving announcement date, completion or withdrawal date, and cash-vs-stock payment composition.",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "Atom (1) of the purpose: the reader cannot interpret any table without knowing the four inputs and what each supplies; this is the data foundation the old draft 3.1 establishes first.",
+            "evidence": [
+              "old_draft_81efc78.tex L101-103",
+              "variable_ledger UncResCEO construction (StockRet/MarketRet/EPSgrowth/SurpDec from CRSP/IBES)"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": []
+          },
+          {
+            "prop_id": "3.1-P2",
+            "statement": "The sources are linked through the acquirer's six-digit CUSIP via the CRSP-Compustat link table, because SDC keys deals by CUSIP while the call panel is keyed by Compustat firm identifier (gvkey).",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "Completes atom (1): the cross-dataset merge key is load-bearing for forming the deal universe in P6, and the build() step does CUSIP6->gvkey explicitly.",
+            "evidence": [
+              "old_draft_81efc78.tex L103",
+              "variable_ledger PreAnnounceQtr construction: manifest() L105-112 (CUSIP6->gvkey link)"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "3.1-P1"
+            ]
+          },
+          {
+            "prop_id": "3.1-P3",
+            "statement": "The uncertainty measures are built in-house: each call is tokenized and the Loughran-McDonald uncertainty-word share computed separately by speaker and segment; the CEO's Q&A share UncAnsCEO is the input the Section 2.3 decomposition operates on, and UncResCEO is its residual, estimated on our data. Definitions and the DWZ equation live in Section 2.3; only the tokenize-and-match mechanics are given here.",
+            "role": "definition",
+            "type": "design-method",
+            "reason": "Atom (2)+(3): supplies the construction MECHANICS of the main variable while explicitly pointing back to 2.3 for the equation, honoring the BOUNDARY rule that 3.1 gives mechanics and 2.3 owns the definition.",
+            "evidence": [
+              "old_draft_81efc78.tex L105",
+              "section2.3_paragraph_ledger P1.2/P2.2 (UncAnsCEO eq-2; UncResCEO = eq-4 residual)",
+              "variable_ledger UncAnsCEO/UncResCEO construction evidence"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "3.1-P1"
+            ]
+          },
+          {
+            "prop_id": "3.1-P4",
+            "statement": "The remaining key variables are constructed and pointed back to their definitional homes: PreAnnounceQtr = 1[e=-1] marks the quarter before a firm's first >=50%-cash deal (defined in 2.2/2.4); CashRatio = cash and equivalents over total assets (cheq/atq); CashScrutiny is the share of analyst Q&A turns containing a cash/liquidity term, with HighCashScrutiny flagging any such scrutiny since the median call draws none (construct defined in 2.5; word list in Appendix I).",
+            "role": "definition",
+            "type": "definitional",
+            "reason": "Atom (3): the four result subsections each lean on one of these variables, so 3.1 must give the construction pointer for each WITHOUT re-deriving the 2.2/2.4/2.5 definitions (boundary rule). Appendix I is the home for the CashScrutiny lexicon.",
+            "evidence": [
+              "old_draft_81efc78.tex L107",
+              "variable_ledger PreAnnounceQtr/CashRatio/CashScrutiny/HighCashScrutiny construction evidence",
+              "section2.5_paragraph_ledger P4.1 (CashScrutiny build home = 2.5; word list -> Appendix)"
+            ],
+            "numbers": [
+              "HighCashScrutiny flags ~11% of calls (tab:empire_building_did notes; tab:summary_stats HighCashScrutiny mean 0.1127)"
+            ],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "3.1-P1",
+              "3.1-P2"
+            ]
+          },
+          {
+            "prop_id": "3.1-P5",
+            "statement": "The estimation samples are built in three layers: (a) the base call panel (every Capital IQ call of a US public firm 2002-2018 matchable to Compustat, excluding financial and utility firms and CEOs with fewer than five calls, for whom no style and hence no residual is defined); (b) the SDC deal universe (US public acquirer, 2002-2018, status completed/pending/withdrawn, known payment composition, with >=50% cash and >=50% stock arms, each firm's first qualifying deal setting its event clock); (c) design-specific filters applied per test.",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "Atom (4): the layered sample explains why N differs across tables and grounds the selection caveat already homed in 2.4 P5; the >=5-call filter is the source of the larger UncRes-sample-vs-cash-sample gap.",
+            "evidence": [
+              "old_draft_81efc78.tex L109",
+              "section2.4_paragraph_ledger P5.5 (>=5-call Main-industry subsample; selection threat homed in 2.4)",
+              "_tables_from_bible.tex deal-specification page (eligibility criteria)"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "correlational",
+              "supportive-not-definitive"
+            ],
+            "depends_on": [
+              "3.1-P1",
+              "3.1-P2"
+            ]
+          },
+          {
+            "prop_id": "3.1-P6",
+            "statement": "The third, design-specific layer differs by test: the run-up test (3.2) drops a treated firm's post-announcement quarters; the event studies (3.3) cap the post-window at four quarters and truncate at the firm's next announcement; the scrutiny validity and channel tests (4.1) require at least three analyst Q&A turns per call. Sample sizes therefore vary across designs, and every table reports its own firm and observation counts.",
+            "role": "inference",
+            "type": "design-method",
+            "reason": "Atom (4) completion: pre-empts the referee question of why N moves table to table, and forward-links each sample-trim to the subsection that uses it without restating the estimating equations (2.4 turf).",
+            "evidence": [
+              "old_draft_81efc78.tex L109",
+              "section2.4_paragraph_ledger P1.2 (post-announce dropped, MA1) / P2.1 (window cap, MA2)",
+              "variable_ledger tab:cash_scrutiny_validity design/sample (require >=3 analyst Q&A turns)"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "3.1-P5"
+            ]
+          },
+          {
+            "prop_id": "3.1-P7",
+            "statement": "Table 1 reports summary statistics for the main estimation sample: 88,205 earnings-call observations across 1,884 firms; N varies by row because each variable is summarized on its anchor panel's complete cases, and per-suite samples differ due to lags, control availability, and merges.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "Atom (5): Table 1 is the descriptive anchor the template requires (Table 1 Summary Statistics) and the place the SD-basis open decision surfaces; the 'N varies by row' note is the byte-exact caveat from the table.",
+            "evidence": [
+              "_tables_from_bible.tex tab:summary_stats caption + Notes block",
+              "variable_ledger _meta (embedded summary-stats moments STRIPPED -> point to the table)"
+            ],
+            "numbers": [
+              "88,205 obs (tab:summary_stats Notes)",
+              "1,884 firms (tab:summary_stats Notes)",
+              "CashRatio mean 0.1708 (tab:summary_stats)",
+              "UncResCEO SD 0.3010, N=44,900 (tab:summary_stats)"
+            ],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "3.1-P5"
+            ]
+          }
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "All five purpose atoms are closed: P1+P2 deliver the four sources and the CUSIP6->gvkey link (atom 1); P3 gives the language-build mechanics pointing to 2.3 (atom 2); P3+P4 give construction pointers for UncResCEO/PreAnnounceQtr/CashRatio/CashScrutiny back to 2.3/2.2/2.4/2.5/Appendix I (atom 3); P5+P6 lay out the three-layer sample and why N varies (atom 4); P7 delivers Table 1 with the 'N varies by row' caveat (atom 5). No definition is re-derived from Section 2; every key variable points back to its home.",
+          "gaps": [
+            "Appendix I (CashScrutiny cash/liquidity word list) is pending edits -- 3.1 P4 forward-references it but the appendix itself is not yet finalized (surfaced, not solved)."
+          ]
+        }
+      },
+      {
+        "subsection_id": "3.2",
+        "title": "Main Analysis 1: The Pre-Announcement Run-Up",
+        "purpose": {
+          "statement": "Pay off H1 and the 2.4 MA1 design by establishing claim C2: residual CEO Q&A uncertainty (UncResCEO) is elevated in the pre-announcement quarter of cash acquirers relative to their own other quarters, with the cash ratio rising on the same clock, while the stock placebo arm shows neither -- read side by side, within-firm, correlationally. The formal cash-vs-stock difference is deferred to 3.4.",
+          "reason": "Task scope assigns 3.2 to C2 + tab:empire_building_did, paying off H1 + the 2.4 MA1 single-indicator design. The claim ceiling (C2 rank 2, SOLID) sets the thinnest version: elevated for cash, not detectable for stock, correlational/within-firm.",
+          "evidence": [
+            "claim_findings_ledger C2 (H1, tab:empire_building_did)",
+            "thesis_draft.tex 2.2 H1 (theta_-1>0) and 2.4 P1 (MA1 estimand)",
+            "section2.4_paragraph_ledger P4.2 (MA1->H1 map)"
+          ]
+        },
+        "delivers_claims": [
+          "C2"
+        ],
+        "hypotheses_paid_off": [
+          "H1"
+        ],
+        "pays_off_section2": [
+          "2.2 H1 (theta_-1>0)",
+          "2.4 P1 MA1 single-indicator design",
+          "2.4 P1.3 within-firm anticipation estimand"
+        ],
+        "tables_referenced": [
+          "tab:empire_building_did"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "3.2-P1",
+            "statement": "Main Analysis 1 estimates the pre-announcement shift for cash acquirers and, as a placebo, for stock acquirers, on each of two outcomes (the cash ratio and the residual), reporting the coefficient on PreAnnounceQtr; the estimating equation and within-firm identification are those laid out in Section 2.4 and are not restated.",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "Sets the frame and honors the boundary that 3.2 presents results, not the equation (2.4 turf). Establishes the four-column reading of the table before any number.",
+            "evidence": [
+              "thesis_draft.tex 2.4 P1 (MA1 equation)",
+              "_tables_from_bible.tex tab:empire_building_did (cols 1-2 cash, 5-6 stock)"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "no-identification",
+              "correlational"
+            ],
+            "depends_on": []
+          },
+          {
+            "prop_id": "3.2-P2",
+            "statement": "In the cash arm, residual Q&A uncertainty is elevated in the pre-announcement quarter, the headline payoff of H1.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "This IS claim C2 and the theta_-1>0 sign restriction of H1; the focal cell is the cash UncResCEO coefficient, significant two-tailed (p=.0074 per ledger) so robust to the R1 one-tailed concern.",
+            "evidence": [
+              "claim_findings_ledger C2 (cash_UncResCEO 0.0461***, survives two-tailed p=.0074)",
+              "thesis_draft.tex 2.2 H1 informal/formal"
+            ],
+            "numbers": [
+              "0.0461*** (tab:empire_building_did col 2)",
+              "SE 0.0172 (tab:empire_building_did col 2)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.2-P1"
+            ]
+          },
+          {
+            "prop_id": "3.2-P3",
+            "statement": "On the same clock the cash ratio is still rising in the pre-announcement quarter, a coefficient that tracks the change in cash (not its level) because the cash equation carries its own one-quarter partial-adjustment lag.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "Shows both clocks move pre-announcement (the kappa_-1>0 companion to theta_-1), and flags the lag so the coefficient is read as a change; the lag value documents that the cash equation is a standard, well-behaved cash regression.",
+            "evidence": [
+              "claim_findings_ledger C2 (cash_CashRatio 0.0051***)",
+              "thesis_draft.tex 2.4 P3 (lag added for cash outcome)"
+            ],
+            "numbers": [
+              "0.0051*** (tab:empire_building_did col 1)",
+              "SE 0.0017 (tab:empire_building_did col 1)",
+              "CashRatio lag 0.7990*** (tab:empire_building_did col 1)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.2-P1"
+            ]
+          },
+          {
+            "prop_id": "3.2-P4",
+            "statement": "The stock placebo arm shows neither move: residual uncertainty and the cash ratio are both insignificant in the pre-announcement quarter, while the arm is otherwise alike (its partial-adjustment lag is nearly identical), so what differs at e=-1 is the response, not the model. This is presented as a side-by-side reading only; the formal cash-vs-stock test is supplied in Section 3.4.",
+            "role": "inference",
+            "type": "result-number",
+            "reason": "Delivers the 'not detectable for stock' half of C2's thinnest claim and pre-empts the C6 Gelman-Stern trap by explicitly NOT treating sig-vs-n.s. as a test here -- the formal difference is deferred to 3.4 (advisor seam).",
+            "evidence": [
+              "claim_findings_ledger C2 (stock_UncResCEO -0.0429 n.s.; stock_CashRatio -0.0036 n.s.)",
+              "claim_findings_ledger C6 risks (do NOT use Gelman-Stern side-by-side as the test)"
+            ],
+            "numbers": [
+              "-0.0429 n.s. (tab:empire_building_did col 6)",
+              "SE 0.0307 (tab:empire_building_did col 6)",
+              "-0.0036 n.s. (tab:empire_building_did col 5)",
+              "stock lag 0.8013*** (tab:empire_building_did col 5)"
+            ],
+            "register_locks": [
+              "concentration-not-strict-specificity",
+              "supportive-not-definitive",
+              "correlational"
+            ],
+            "depends_on": [
+              "3.2-P2",
+              "3.2-P3"
+            ]
+          },
+          {
+            "prop_id": "3.2-P5",
+            "statement": "The uncertainty effect is economically modest: the coefficient equals roughly fifteen percent of a residual standard deviation, for a variable from which everything persistent has already been removed, in a quarter that is about 1.4 percent of the sample. The standard-deviation basis must be fixed (estimation-sample 0.3072 vs all-universe Table-1 0.3010); the ~15% magnitude is robust either way.",
+            "role": "caveat",
+            "type": "result-number",
+            "reason": "Gives the honest economic magnitude the old draft carried, but surfaces the SD-basis open decision (the stale Table-1 Panel B pointer) rather than copying the dead 0.3072/Panel-B reference; magnitude robustness is documented in the SD note.",
+            "evidence": [
+              "claim_findings_ledger _sd_basis_note_2026_06_14 (0.3010 all-universe vs 0.3072 estimation-sample; ~15% robust)",
+              "old_draft_81efc78.tex L119 (fifteen percent of a SD; stale Panel B pointer)"
+            ],
+            "numbers": [
+              "0.0461 effect (tab:empire_building_did col 2)",
+              "UncResCEO SD 0.3010 (tab:summary_stats) OR 0.3072 (estimation-sample, _sd_basis_note)",
+              "PreAnnounceQtr mean 0.0094 (tab:summary_stats; ~1.4% with treated-arm framing)"
+            ],
+            "register_locks": [
+              "correlational",
+              "supportive-not-definitive",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.2-P2"
+            ]
+          }
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "The chain delivers C2 in full: P2 establishes theta_-1>0 for cash uncertainty (the H1 payoff, two-tailed-robust); P3 shows the cash ratio rising on the same clock; P4 delivers the stock-placebo null side-by-side and explicitly defers the formal difference to 3.4, sealing the Gelman-Stern trap; P5 gives the honest economic magnitude with the register locks intact. H1's theta_-1>0 and the 2.4 MA1 design are both paid off. Numbers come only from tab:empire_building_did and the SD note, never the old draft's stale denominators.",
+          "gaps": [
+            "The economic-magnitude SD basis (0.3072 estimation-sample vs 0.3010 all-universe Table 1) is an open decision surfaced in P5, not resolved here; the parallel cash-mean denominator basis (0.1708 Table 1 vs stale 0.1573) is also unsettled."
+          ]
+        }
+      },
+      {
+        "subsection_id": "3.3",
+        "title": "Main Analysis 2: Differential Timing Around the Announcement",
+        "purpose": {
+          "statement": "Pay off H1b and the 2.4 MA2 event study by establishing claim C1 (the strongest, two-tailed result): residual uncertainty resolves at announcement (it spikes at PRE1 and falls to zero at the GAP bin, when the deal is public but the cash has not yet left), while the acquirer's cash persists across the gap and declines only at completion -- two clocks, information versus transaction. The round-trip contrast carries the claim; the negative POST is not over-read.",
+          "reason": "Task scope assigns 3.3 to C1 + tab:empire_drop_matched (+ the cash column of tab:empire_drop_placebo as corroboration), paying off H1b + the 2.4 MA2 event study. C1 is rank-1, STRONGEST, two-tailed, resting on a contrast of two paths.",
+          "evidence": [
+            "claim_findings_ledger C1 (H1b, tab:empire_drop_matched, STRONGEST)",
+            "thesis_draft.tex 2.2 H1b (theta_-1>0, theta_gap=0, kappa_gap>0)",
+            "section2.4_paragraph_ledger P2 (MA2 event study; GAP discriminator)"
+          ]
+        },
+        "delivers_claims": [
+          "C1"
+        ],
+        "hypotheses_paid_off": [
+          "H1b"
+        ],
+        "pays_off_section2": [
+          "2.2 H1b (theta_-1>0 and theta_gap=0, while kappa_gap>0)",
+          "2.4 P2 MA2 event-study design and the PRE1-GAP Wald discriminator"
+        ],
+        "tables_referenced": [
+          "tab:empire_drop_matched",
+          "tab:empire_drop_placebo"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "3.3-P1",
+            "statement": "Main Analysis 2 replaces the single pre-announcement indicator with four event-time bins (PRE2, PRE1, GAP, POST) on the matched universe, where both the residual and the cash ratio are defined, so the same finding reads as a sequence; the event-study specification is that of Section 2.4 and is not restated.",
+            "role": "premise",
+            "type": "design-method",
+            "reason": "Frames the event study and selects tab:empire_drop_matched as primary precisely because it carries BOTH clocks (the advisor's note), honoring the boundary that the spec lives in 2.4.",
+            "evidence": [
+              "thesis_draft.tex 2.4 P2 (event-study bins)",
+              "_tables_from_bible.tex tab:empire_drop_matched (col 1 UncResCEO, col 2 CashRatio; N=28,102; 1,320 firms)"
+            ],
+            "numbers": [
+              "N 28,102 firm-quarters (tab:empire_drop_matched)",
+              "1,320 firms (tab:empire_drop_matched)"
+            ],
+            "register_locks": [
+              "no-identification",
+              "correlational"
+            ],
+            "depends_on": []
+          },
+          {
+            "prop_id": "3.3-P2",
+            "statement": "The pre-trend is flat on both clocks two quarters out, so the PRE1 estimates are not the tail of a pre-existing trend; this is the validity device, not an identification proof.",
+            "role": "premise",
+            "type": "result-number",
+            "reason": "PRE2 near zero is the 2.4 validity device that licenses reading PRE1 as a shift; stated as a check, not a parallel-trends causal claim (register lock).",
+            "evidence": [
+              "claim_findings_ledger C1 (PRE2 0.0068 n.s.)",
+              "section2.4_paragraph_ledger P4.1 (PRE2 = validity device, no parallel-trends claim)"
+            ],
+            "numbers": [
+              "UncResCEO PRE2 0.0068 n.s. (tab:empire_drop_matched col 1)",
+              "CashRatio PRE2 0.0008 n.s. (tab:empire_drop_matched col 2)"
+            ],
+            "register_locks": [
+              "no-identification",
+              "correlational"
+            ],
+            "depends_on": [
+              "3.3-P1"
+            ]
+          },
+          {
+            "prop_id": "3.3-P3",
+            "statement": "Residual uncertainty spikes at PRE1 and falls to zero the instant the deal is public: the GAP coefficient is insignificant, a significant drop from PRE1 (Wald PRE1-GAP), and the peak-to-post swing is large and significant. This is the theta_-1>0, theta_gap=0 content of H1b.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "The information-clock half of C1: the GAP drop (announced, not yet closed) is the MNPI fingerprint the 2.4 P2.2 Wald test isolates; the PRE1-GAP contrast carries the empirical content of H1b, not any single coefficient.",
+            "evidence": [
+              "claim_findings_ledger C1 (PRE1 0.0473***, GAP 0.0018 n.s., PRE1-GAP 0.0455**, PRE1-POST 0.0723***)",
+              "section2.4_paragraph_ledger P2.2 (GAP discriminator; PRE1-GAP Wald)"
+            ],
+            "numbers": [
+              "PRE1 0.0473*** (tab:empire_drop_matched col 1)",
+              "GAP 0.0018 n.s. (tab:empire_drop_matched col 1)",
+              "Drop PRE1-GAP 0.0455** (tab:empire_drop_matched col 1)",
+              "Drop PRE1-POST 0.0723*** (tab:empire_drop_matched col 1)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.3-P2"
+            ]
+          },
+          {
+            "prop_id": "3.3-P4",
+            "statement": "The cash ratio runs on the other clock: elevated at PRE1, it does not fall when the deal is announced (the PRE1-GAP drop is null, so cash persists through the gap) and declines only once cash leaves at completion (significant GAP-POST drop; negative POST level). This is the kappa_gap>0 content of H1b, and its persistence is partly mechanical because cash is paid only at closing.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "The transaction-clock half of C1: the cash column's persistence across the GAP is what makes the two-clock divergence a contrast rather than a single drop; the register lock notes the mechanical component honestly.",
+            "evidence": [
+              "claim_findings_ledger C1 (CashRatio PRE1 0.0061**, GAP persists, POST -0.0155***, GAP-POST 0.0210***; risk: persistence partly mechanical)",
+              "thesis_draft.tex 2.2 H1b (kappa_gap>0)"
+            ],
+            "numbers": [
+              "CashRatio PRE1 0.0061** (tab:empire_drop_matched col 2)",
+              "CashRatio Drop PRE1-GAP 0.0006 n.s. (tab:empire_drop_matched col 2)",
+              "CashRatio POST -0.0155*** (tab:empire_drop_matched col 2)",
+              "CashRatio Drop GAP-POST 0.0210*** (tab:empire_drop_matched col 2)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification",
+              "mechanism-open"
+            ],
+            "depends_on": [
+              "3.3-P2"
+            ]
+          },
+          {
+            "prop_id": "3.3-P5",
+            "statement": "The claim rests on the contrast between the two paths -- uncertainty reverses at announcement, cash reverses at completion -- not on the magnitude of any single drop; the post-completion uncertainty level sits slightly below baseline but is not over-read.",
+            "role": "caveat",
+            "type": "framing",
+            "reason": "States the C1 reading explicitly and locks the named C-trap: do NOT over-read the negative POST (-0.0250*); the round-trip contrast, not the undershoot, is the result.",
+            "evidence": [
+              "claim_findings_ledger C1 thinnest_claim (frame as round-trip contrast; do not over-read negative POST)",
+              "claim_findings_ledger C1 risks (POST overshoots below baseline -0.0250*)"
+            ],
+            "numbers": [
+              "POST -0.0250* (tab:empire_drop_matched col 1)"
+            ],
+            "register_locks": [
+              "correlational",
+              "supportive-not-definitive",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.3-P3",
+              "3.3-P4"
+            ]
+          },
+          {
+            "prop_id": "3.3-P6",
+            "statement": "The cash-acquirer column of the placebo event study corroborates the matched round-trip on the cash universe (a PRE1 spike, a significant PRE1-GAP drop, and a significant peak-to-post swing), reproducing the same sequence on a second sample. The stock column of that table is reserved for Section 3.4.",
+            "role": "inference",
+            "type": "result-number",
+            "reason": "Resolves the dual-listing seam: tab:empire_drop_placebo appears under both 3.3 and 3.4, so here only its CASH column is used (as independent corroboration), and its STOCK column is explicitly handed to 3.4 to avoid presenting the same column twice (advisor seam).",
+            "evidence": [
+              "claim_findings_ledger C6 (placebo_cash_PRE1 0.0486***)",
+              "_tables_from_bible.tex tab:empire_drop_placebo col 1 (cash: PRE1 0.0486***, PRE1-GAP 0.0428*, PRE1-POST 0.0681***)"
+            ],
+            "numbers": [
+              "cash PRE1 0.0486*** (tab:empire_drop_placebo col 1)",
+              "cash Drop PRE1-GAP 0.0428* (tab:empire_drop_placebo col 1)",
+              "cash Drop PRE1-POST 0.0681*** (tab:empire_drop_placebo col 1)"
+            ],
+            "register_locks": [
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.3-P3"
+            ]
+          }
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "The chain delivers C1 completely and pays off all three legs of H1b: P2 establishes the flat pre-trend; P3 delivers theta_-1>0 and theta_gap=0 via the PRE1 spike and the significant PRE1-GAP drop (the MNPI-at-the-GAP fingerprint the 2.4 Wald isolates); P4 delivers kappa_gap>0 via cash persisting across the gap and falling only at completion; P5 frames the result as the two-path round-trip contrast and locks the do-not-over-read-POST caveat; P6 corroborates on the placebo cash column while cleanly reserving the stock column for 3.4. Every number is from tab:empire_drop_matched or the cash column of tab:empire_drop_placebo.",
+          "gaps": [
+            "None for the claim. The 'cash persistence is partly mechanical' point (P4) bounds but does not undermine the contrast; it is disclosed via the mechanism-open lock, not resolved."
+          ]
+        }
+      },
+      {
+        "subsection_id": "3.4",
+        "title": "Main Analysis 3: Cash-Specificity",
+        "purpose": {
+          "statement": "Pay off H1a and the 2.4 MA3 pooled-interacted design by establishing claim C6: the cash-vs-stock difference in the pre-announcement uncertainty run-up survives a FORMAL Wald test (the EFFECT is cash-specific at the 5% level, two-tailed), while keeping the difference between sig-and-n.s. out of the claim. It must separate the EFFECT (cash-specific) from the proposed CAUSE (the cash build-up, NOT cash-specific), leaving the war-chest mechanism open, and disclose the fragility of the imprecise stock arm.",
+          "reason": "Task scope assigns 3.4 to C6 + tab:empire_cashspec (+ tab:empire_drop_placebo), paying off H1a + the 2.4 MA3 pooled-interacted design. The C6 C-trap is explicit: keep the FORMAL Wald test (0.0983**), do NOT substitute a Gelman-Stern comparison.",
+          "evidence": [
+            "claim_findings_ledger C6 (H1a; tab:empire_cashspec + tab:empire_drop_placebo; valid at 5% two-tailed)",
+            "thesis_draft.tex 2.2 H1a (theta_-1^cash>theta_-1^stock) and 2.4 P3 (Wald beta_c-beta_s>0)",
+            "section2.4_paragraph_ledger P3.2 (the Wald difference IS the test; anti-Gelman-Stern)"
+          ]
+        },
+        "delivers_claims": [
+          "C6"
+        ],
+        "hypotheses_paid_off": [
+          "H1a"
+        ],
+        "pays_off_section2": [
+          "2.2 H1a (theta_-1^cash>theta_-1^stock)",
+          "2.4 P3 MA3 pooled-interacted design and the cash-minus-stock Wald restriction",
+          "2.4 P3.2 anti-Gelman-Stern framing"
+        ],
+        "tables_referenced": [
+          "tab:empire_cashspec",
+          "tab:empire_drop_placebo"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "3.4-P1",
+            "statement": "The placebo event study motivates a formal test: side by side, the cash arm reproduces the run-up while the stock arm shows none of it (a negative, insignificant pre-announcement coefficient, with stock uncertainty if anything moving the other way across announcement). A side-by-side display implies a comparison it never runs, so the pooled interacted model tests the difference directly.",
+            "role": "premise",
+            "type": "result-number",
+            "reason": "Uses the STOCK column of tab:empire_drop_placebo (the column reserved from 3.3) to motivate why a formal pooled test is needed, setting up the anti-Gelman-Stern move; resolves the dual-listing seam by giving this table its 3.4-specific role.",
+            "evidence": [
+              "claim_findings_ledger C6 (placebo_cash_PRE1 0.0486***; placebo_stock_PRE1 -0.0404 n.s.; stock PRE1-GAP -0.0756*)",
+              "_tables_from_bible.tex tab:empire_drop_placebo col 2 (stock)"
+            ],
+            "numbers": [
+              "stock PRE1 -0.0404 n.s. (tab:empire_drop_placebo col 2)",
+              "stock Drop PRE1-GAP -0.0756* (tab:empire_drop_placebo col 2)",
+              "cash PRE1 0.0486*** (tab:empire_drop_placebo col 1)"
+            ],
+            "register_locks": [
+              "concentration-not-strict-specificity",
+              "correlational"
+            ],
+            "depends_on": []
+          },
+          {
+            "prop_id": "3.4-P2",
+            "statement": "The pooled interacted model carries both treatments at once and tests the single linear restriction cash-minus-stock > 0 by Wald: on the EFFECT (pre-announcement uncertainty), the cash coefficient is positive and significant against an insignificant stock coefficient, yielding a formal cash-minus-stock difference significant at the 5% level (two-tailed). Because the arms move in opposite directions the gap exceeds either coefficient, about a third of a residual standard deviation.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "This IS claim C6 and the theta_-1^cash>theta_-1^stock payoff of H1a: the Wald difference (two-tailed, p=.039) is the FORMAL test the C-trap requires; the magnitude framing keeps the SD-basis caveat from 3.2 in view.",
+            "evidence": [
+              "claim_findings_ledger C6 (EFFECT_diff 0.0983** -> z=2.06 p=.039; cashspec is two-tailed)",
+              "section2.4_paragraph_ledger P3.2 (Wald = the formal test)"
+            ],
+            "numbers": [
+              "EFFECT cash 0.0459** (tab:empire_cashspec col 1)",
+              "EFFECT stock -0.0524 n.s. (tab:empire_cashspec col 1)",
+              "Cash-Stock diff 0.0983** (tab:empire_cashspec col 1)",
+              "SE 0.0476 (tab:empire_cashspec col 1)"
+            ],
+            "register_locks": [
+              "concentration-not-strict-specificity",
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "3.4-P1"
+            ]
+          },
+          {
+            "prop_id": "3.4-P3",
+            "statement": "The proposed CAUSE -- the cash build-up itself -- is NOT cash-specific: the cash-minus-stock difference on the cash ratio is insignificant on the matched universe and only marginal on the full panel. The effect concentrates in cash deals, but the war-chest mechanism that would explain why is not established, so the mechanism stays open.",
+            "role": "caveat",
+            "type": "result-number",
+            "reason": "Separates EFFECT from CAUSE exactly as the C6 ledger demands: claiming the cash-specific EFFECT while keeping the CAUSE/mechanism open (the cause leg 0.0064 n.s. fails), which is the mechanism-open register lock.",
+            "evidence": [
+              "claim_findings_ledger C6 (CAUSE_diff_matched 0.0064 n.s.; CAUSE_diff_full 0.0092*; mechanism stays open)",
+              "thesis_draft.tex 2.2 H1a (no claim the cash accumulation is peculiar to cash acquirers)"
+            ],
+            "numbers": [
+              "CAUSE diff matched 0.0064 n.s. (tab:empire_cashspec col 2)",
+              "CAUSE diff full panel 0.0092* (tab:empire_cashspec col 3)"
+            ],
+            "register_locks": [
+              "mechanism-open",
+              "concentration-not-strict-specificity",
+              "correlational"
+            ],
+            "depends_on": [
+              "3.4-P2"
+            ]
+          },
+          {
+            "prop_id": "3.4-P4",
+            "statement": "The result is supported but fragile: one formal test at the 5% level supports H1a's concentration claim, but it rests on a single comparison with an imprecisely estimated stock arm, so the wording stays with concentration rather than strict specificity, and the difference between a significant and an insignificant coefficient is explicitly NOT treated as the test.",
+            "role": "caveat",
+            "type": "framing",
+            "reason": "Locks the C6 fragility disclosure (imprecise stock arm, SE 0.0436) and the named C-trap (do NOT use Gelman-Stern), keeping 'concentration not strict specificity' and 'supportive not definitive' verbatim from the register that stands.",
+            "evidence": [
+              "claim_findings_ledger C6 risks (imprecise stock arm -0.0524 n.s. SE 0.0436; do NOT use Gelman-Stern; supportive rather than definitive)",
+              "claim_findings_ledger thin_claim_ceiling (concentration-not-strict-specificity; supportive-not-definitive)"
+            ],
+            "numbers": [
+              "stock arm -0.0524 n.s. SE 0.0436 (tab:empire_cashspec col 1)"
+            ],
+            "register_locks": [
+              "concentration-not-strict-specificity",
+              "supportive-not-definitive",
+              "mechanism-open",
+              "correlational"
+            ],
+            "depends_on": [
+              "3.4-P2",
+              "3.4-P3"
+            ]
+          }
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "The chain delivers C6 and pays off H1a in full: P1 uses the reserved stock column of the placebo table to motivate a formal test and seal the anti-Gelman-Stern logic; P2 delivers the formal Wald cash-minus-stock difference (0.0983**, two-tailed, p=.039) that IS the cash-specificity claim and the theta_-1^cash>theta_-1^stock payoff; P3 separates the cash-specific EFFECT from the non-cash-specific CAUSE, holding the mechanism open; P4 locks the concentration-not-specificity and supportive-not-definitive register and the fragility of the imprecise stock arm. The named C6 C-trap (keep the formal Wald, reject Gelman-Stern) is honored throughout. Numbers come only from tab:empire_cashspec and tab:empire_drop_placebo.",
+          "gaps": [
+            "The economic-magnitude SD basis from 3.2 (about a third of a residual SD in P2) is the same open decision surfaced there. A two-way (firm x quarter) clustering rerun could strengthen C6 (ledger R2) but is a rerun-class item homed in 2.4, surfaced not solved."
+          ]
+        }
+      },
+      {
+        "subsection_id": "4.1",
+        "title": "Ruling Out Analyst Scrutiny",
+        "purpose": {
+          "statement": "Discharge the forward-promise made in 2.2-P5 and 2.5-P4 ('tested in Section 4.1') by establishing claim C4: the pre-announcement run-up is not an artifact of analysts asking more cash questions. It must run the three-step argument (the scrutiny measure is real; scrutiny alone does not move the residual; the gating test leaves the run-up intact), keep the NULL-only / underpowered register exactly -- 'does not account for THIS run-up, not that scrutiny never matters' -- and NOT strengthen the claim.",
+          "reason": "Task scope assigns 4.1 to C4 + tab:reason_gating + tab:cash_scrutiny_validity + tab:cash_scrutiny_channel, paying off the 2.2-P5 + 2.5-P4 promise. C4 is rank-4, NULL-ONLY, underpowered; the ceiling forbids strengthening.",
+          "evidence": [
+            "claim_findings_ledger C4 (plausible alternative driver, tested & rejected; NULL only, underpowered)",
+            "thesis_draft.tex 2.2 P5 (scrutiny flagged, tested as side analysis in 4.1) and 2.5 P4 (construct + motivation; verdict in 4.1)",
+            "section2.2_paragraph_ledger P5 / section2.5_paragraph_ledger P4.3 (verdict belongs to 4.1)"
+          ]
+        },
+        "delivers_claims": [
+          "C4"
+        ],
+        "hypotheses_paid_off": [
+          "competing analyst-scrutiny hypothesis (rejected as the driver of this run-up)"
+        ],
+        "pays_off_section2": [
+          "2.2 P5 (the flagged scrutiny rival, tested here)",
+          "2.5 P4 (the scrutiny construct + identification motivation; this section reports the verdict and owns the C4 hedge verbatim)"
+        ],
+        "tables_referenced": [
+          "tab:cash_scrutiny_validity",
+          "tab:cash_scrutiny_channel",
+          "tab:reason_gating"
+        ],
+        "proposition_chain": [
+          {
+            "prop_id": "4.1-P1",
+            "statement": "The scrutiny alternative holds that pre-deal quarters draw harder analyst questions about cash, and that hard questions, not the deal, produce the hedged answers. It is addressed in three steps: whether the scrutiny measure is real, whether scrutiny moves the residual at all, and whether it accounts for this particular run-up. CashScrutiny is the construct defined in Section 2.5 and is not re-defined here.",
+            "role": "premise",
+            "type": "framing",
+            "reason": "Discharges the 2.2-P5/2.5-P4 forward-ref by naming the rival and the three-step plan, while honoring the boundary that the construct definition lives in 2.5 (4.1 reports the verdict).",
+            "evidence": [
+              "section2.5_paragraph_ledger P4 (construct + motivation owned by 2.5; verdict in 4.1)",
+              "old_draft_81efc78.tex L154 (three-step structure)"
+            ],
+            "numbers": [],
+            "register_locks": [
+              "mechanism-open",
+              "supportive-not-definitive",
+              "correlational"
+            ],
+            "depends_on": []
+          },
+          {
+            "prop_id": "4.1-P2",
+            "statement": "Step one: the measure is real. The share of analyst Q&A turns on cash and liquidity rises strongly with the firm's cash ratio, and the link survives the full control set, so the nulls that follow are not the artifact of a dead measure.",
+            "role": "premise",
+            "type": "result-number",
+            "reason": "Establishes construct validity (the 2.5 P4.2 validity ground) so that the subsequent nulls are interpretable as absence rather than measurement failure; this is the same validity class as the other 2.5 yardsticks.",
+            "evidence": [
+              "claim_findings_ledger C4 (validity_CashRatio_to_Scrutiny 0.7530***/0.8519***)",
+              "section2.5_paragraph_ledger P4.2 (validity 0.7530***/0.8519*** stays in 2.5/4.1)"
+            ],
+            "numbers": [
+              "0.7530*** (tab:cash_scrutiny_validity col 1)",
+              "0.8519*** (tab:cash_scrutiny_validity col 2)"
+            ],
+            "register_locks": [
+              "correlational"
+            ],
+            "depends_on": [
+              "4.1-P1"
+            ]
+          },
+          {
+            "prop_id": "4.1-P3",
+            "statement": "Step two: scrutiny does not move the residual. Its direct effect on UncResCEO is zero to four decimal places under OLS, and the null holds under a logit on the dichotomized residual and under coarser scrutiny proxies.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "The channel null: if scrutiny drove uncertainty, it would load on the residual; it does not, which is the first dissociation in the C4 argument.",
+            "evidence": [
+              "claim_findings_ledger C4 (channel_Scrutiny_to_UncRes -0.0000 OLS, -0.0003 logit)",
+              "_tables_from_bible.tex tab:cash_scrutiny_channel (UncResCEO col)"
+            ],
+            "numbers": [
+              "-0.0000 n.s. (tab:cash_scrutiny_channel UncResCEO, Panel A)",
+              "SE 0.0013 (tab:cash_scrutiny_channel UncResCEO, Panel A)",
+              "-0.0003 n.s. (tab:cash_scrutiny_channel UncResCEO, Panel B logit)"
+            ],
+            "register_locks": [
+              "mechanism-open",
+              "correlational"
+            ],
+            "depends_on": [
+              "4.1-P2"
+            ]
+          },
+          {
+            "prop_id": "4.1-P4",
+            "statement": "Step three (the operative test): with scrutiny and the pre-announcement indicator in the same model on the cash-acquirer pre-announcement universe, the pre-announcement indicator stays significant, scrutiny's own effect is null, and the scrutiny-by-pre-announcement interaction is insignificant. The reason raises uncertainty; the questioning does not, and does not amplify the reason.",
+            "role": "result",
+            "type": "result-number",
+            "reason": "The reason-gating dissociation is the core of C4: the run-up survives controlling for scrutiny and its interaction, so scrutiny does not account for THIS run-up.",
+            "evidence": [
+              "claim_findings_ledger C4 (gating_PreAnnounceQtr 0.0413***/0.0439**; gating_CashScrutiny 0.0000/0.0001 n.s.; interaction -0.0056 n.s.)",
+              "_tables_from_bible.tex tab:reason_gating"
+            ],
+            "numbers": [
+              "PreAnnounceQtr 0.0413*** (tab:reason_gating col 1)",
+              "PreAnnounceQtr 0.0439** (tab:reason_gating col 2)",
+              "CashScrutiny 0.0000 / 0.0001 n.s. (tab:reason_gating cols 1-2)",
+              "interaction -0.0056 n.s. SE 0.0111 (tab:reason_gating col 2)"
+            ],
+            "register_locks": [
+              "mechanism-open",
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "4.1-P3"
+            ]
+          },
+          {
+            "prop_id": "4.1-P5",
+            "statement": "The register is kept honest: the scrutiny confound is genuine -- cash scrutiny itself rises in the pre-announcement quarter -- so this is a failure to find paired with a within-model dissociation, not a powered equivalence test. The interaction's confidence interval does not exclude effects that would matter against a run-up near 0.04, and 89 percent of calls draw no cash scrutiny at all. The claim is that scrutiny does not account for THIS run-up, not that scrutiny never matters.",
+            "role": "caveat",
+            "type": "result-number",
+            "reason": "Locks the named C4 C-trap verbatim (NULL-only, underpowered, do NOT strengthen) and legitimately reuses the empire_building_did col 4 cell (HighCashScrutiny rises pre-announce 0.0408**) to show the confound is real, paying off the 2.5 motivation that scrutiny IS a plausible driver.",
+            "evidence": [
+              "claim_findings_ledger C4 (confound_is_real 0.0408**; CI [-0.027,+0.016]; 89% draw no scrutiny; do NOT strengthen)",
+              "claim_findings_ledger C4 thinnest_claim ('does not account for THIS run-up; not that scrutiny never matters' verbatim)"
+            ],
+            "numbers": [
+              "HighCashScrutiny 0.0408** (tab:empire_building_did col 4)",
+              "interaction CI [-0.027,+0.016] (claim_findings C4)",
+              "89% of calls draw no cash scrutiny (tab:empire_building_did notes; tab:summary_stats CashScrutiny median 0)"
+            ],
+            "register_locks": [
+              "mechanism-open",
+              "supportive-not-definitive",
+              "correlational",
+              "no-identification"
+            ],
+            "depends_on": [
+              "4.1-P4"
+            ]
+          }
+        ],
+        "coverage": {
+          "purpose_fully_delivered": "The chain discharges the 2.2-P5 and 2.5-P4 forward-promise and delivers C4 at exactly its ceiling: P1 names the rival and the three-step plan (pointing back to 2.5 for the construct); P2 establishes the measure is real; P3 shows scrutiny does not move the residual; P4 shows the reason-gating dissociation that leaves the run-up intact; P5 locks the NULL-only/underpowered hedge verbatim and uses the legitimately-reused HighCashScrutiny pre-announce cell (0.0408**) to concede the confound is genuine without strengthening the claim. The claim is held to 'does not account for THIS run-up, not that scrutiny never matters.' Numbers come from the three assigned tables plus the one reused empire_building_did cell.",
+          "gaps": [
+            "C4 is absence-of-evidence, not equivalence (underpowered) -- disclosed in P5 via the CI and the 89%-no-scrutiny facts, not closed. This is the honest ceiling, not a fixable gap."
+          ]
+        }
+      }
+    ],
+    "global_notes": [
+      "NUMBERS PROVENANCE: every number in this plan is sourced to a named cell of _tables_from_bible.tex or a claim_findings_ledger C-id. The old_draft_81efc78.tex was used for STRUCTURE only; its stale numbers were NOT carried (e.g., its cash mean 0.1573 and 'UncResCEO SD 0.3072 (Table 1 Panel B)' pointer are dead -- all-universe Table 1 shows CashRatio mean 0.1708 and UncResCEO SD 0.3010 with no Panel B).",
+      "OPEN DECISION 1 (SD/denominator basis, surfaced not solved): the economic-magnitude denominators are unsettled. UncResCEO SD: estimation-sample 0.3072 (N=27,622, the run-up sample) vs all-universe Table-1 0.3010 (N=44,900). The ~15% magnitude is robust either way (15.0% vs 15.3% per _sd_basis_note). The parallel cash-mean basis is also unsettled (Table-1 0.1708 vs old-draft stale 0.1573); the ~3%-of-mean magnitude is robust either way. Pick ONE basis and apply to BOTH denominators with a footnote; the SD note only names the SD, so the cash-mean basis is an extension to flag.",
+      "OPEN DECISION 2 (orphan bibitems, surfaced not solved): after the Section 4.2 / C7 presentation-contrast drop, four bibitems are no longer cited anywhere in the locked Section 2 -- lerman2026, bushee2018, everhart2025, gokkaya2025. They must be cited-or-removed when Section 3/4 prose is finalized (none of the five planned subsections cite them).",
+      "OPEN DECISION 3 (Appendix I pending): the CashScrutiny cash/liquidity word list belongs in Appendix I (per 2.5 FC directive and the BOUNDARY that 3.1/4.1 point back to it). Appendix I is flagged 'pending edits' in thesis_draft.tex L197; 3.1-P4 forward-references it but the appendix is not yet finalized.",
+      "TAIL-CONVENTION TENSION (already-homed R1, not a new caveat): 2.4 P5 prose says focal treatment tests are two-tailed, but several table notes print one-tailed for the treatment coefficient (e.g., tab:empire_building_did, tab:reason_gating). The load-bearing headlines hold either way (C1/C6 already two-tailed; C2 survives two-tailed at p=.0074); a few stars would soften two-tailed (e.g., reason_gating 0.0413*** -> **). Cite table stars AS PRINTED; treat the tension as the R1 rerun-class item homed in 2.4, not a Section 3/4 caveat.",
+      "BOUNDARY DISCIPLINE applied throughout: 3.2-3.4 PRESENT results and do NOT restate the 2.4 estimating equations; 4.1 does NOT re-define CashScrutiny (2.5 turf); the 2.4-homed disclosures (one-tailed->two-tailed, clustering, generated-regressand/E1, selection) are NOT re-homed into Section 3/4 -- only claim-level register locks (over-reading, mechanism-open, concentration, supportive-not-definitive) appear here. E1 lesson honored: NO Pagan generated-regressand disclaimer is inserted as a Section 3 defect.",
+      "SEAM RESOLVED: tab:empire_drop_placebo is assigned to BOTH 3.3 and 3.4 by the task; the plan gives it a non-overlapping role in each -- 3.3 uses only its CASH column (3.3-P6, corroborating the matched round-trip), and 3.4 uses its STOCK column (3.4-P1, motivating the pooled formal test). The same column is never presented twice.",
+      "CROSS-SUBSECTION C-TRAP HANDOFF: the cash-vs-stock formal comparison is DEFERRED from 3.2 (where stock is a side-by-side null only, 3.2-P4) to 3.4 (where the formal Wald difference 0.0983** is the test, 3.4-P2). This keeps the Gelman-Stern fallacy out of 3.2 and concentrates the formal cash-specificity claim in 3.4, per the C6 trap."
+    ]
+  }
+]

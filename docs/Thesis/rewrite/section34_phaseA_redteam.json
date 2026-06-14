@@ -1,0 +1,367 @@
+{
+  "redteam_report": [
+    {
+      "subsection_id": "3.1",
+      "planners_compared": [
+        "Planner 1",
+        "Planner 2",
+        "Planner 3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Planner 1's 3.1-P6 maps the empire_building_did N-counts onto summary_stats panels: 'tab:summary_stats panel_A (CashRatio universe N=67,590) vs panel_B (UncResCEO universe N=27,622)'. This is a number-traceability error: in the actual tab:summary_stats the panels are A=Independent Variables (PreAnnounceQtr, etc.), B=Dependent Variables (UncResCEO SD 0.3010, N 44,900), C=Firm Controls (CashRatio mean 0.1708). The 67,590/27,622 counts are NOT in summary_stats at all -- they live in the tab:empire_building_did N row. The variable_ledger 'panel_A/panel_B' labels Planner 1 borrowed refer to the empire_building_did universes, not the summary_stats panels.",
+          "severity": "MAJOR",
+          "reason": "Rubric 3 (number traceability): a number attributed to the wrong table cell. If carried into prose it would put result-table sample counts inside the descriptive Table 1, which a referee checking Table 1 would immediately flag as fabricated panel content.",
+          "evidence": [
+            "_tables_from_bible.tex tab:summary_stats L30-60 (Panel A Independent, Panel B Dependent UncResCEO SD 0.3010 N 44,900, Panel C Firm Controls CashRatio mean 0.1708)",
+            "_tables_from_bible.tex tab:empire_building_did L186-187 (N row: col 1 67,590 / 2,232 firms; col 2 27,622 / 1,248 firms)",
+            "variable_ledger.json L456-457 (panel_A/panel_B labels describe the empire_building_did CashRatio/UncResCEO universes, NOT summary_stats panels)"
+          ],
+          "which_planner": "Planner 1"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Took Planner 2/3 number attributions throughout 3.1 (anchor 88,205/1,884; UncResCEO SD 0.3010 Panel B; CashRatio 0.1708 Panel C) and routed the 67,590-vs-27,622 two-universe disclosure OUT of 3.1 and into 3.2-P3 at the empire_building_did table, attributed to that table's N row.",
+          "reason": "Fixes Planner 1's panel-naming collision; Planner 2 explicitly and correctly places UncResCEO in Panel B and CashRatio in Panel C; the two-universe count belongs at the result table, not in descriptive Table 1.",
+          "evidence": [
+            "_tables_from_bible.tex tab:summary_stats (panel structure)",
+            "Planner 2 3.1-P6 (correct Panel B/C placement)",
+            "Planner 2 3.2-P3 (two-universe disclosure homed at the table)"
+          ]
+        },
+        {
+          "decision": "Kept the >=5-call filter as a MECHANIC in 3.1-P5 and left its selection-THREAT framing in 2.4 P5.5 (not re-disclosed in 3.1), per all three planners and the 2.4 ledger boundary.",
+          "reason": "Rubric 5 (boundary): the selection threat is homed in 2.4 P5.5; 3.1 gives only the construction mechanic. All three planners agree; no flaw.",
+          "evidence": [
+            "section2.4_paragraph_ledger.json P5.5 ('Selection THREAT homed here (2.4 P5); the construction MECHANIC stays in 3.1')"
+          ]
+        },
+        {
+          "decision": "Folded HighCashScrutiny-missing-from-appendix and CashRatio_lag-missing-from-appendix into the single Appendix open decision, plus the Appendix-I-pending pointer.",
+          "reason": "Rubric 10 (open decisions surfaced): variable_ledger flags both as MISSING and 'add during S3.1 rewrite'; all three planners surfaced these. Confirmed against the ledger.",
+          "evidence": [
+            "variable_ledger.json HighCashScrutiny.flag (in_draft_appendix:false, 'add during S3.1 rewrite')",
+            "variable_ledger.json CashRatio_lag.flag (in_draft_appendix:false, 'decide in S3.1')",
+            "thesis_draft.tex L197 (Appendix I pending edits)"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "3.2",
+      "planners_compared": [
+        "Planner 1",
+        "Planner 2",
+        "Planner 3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Planner 1's 3.2-P4 states the pre-announcement quarter 'is about 1.4% of the sample'. The only traceable PreAnnounceQtr frequency in a live table cell is summary_stats mean 0.0094 = ~1%. The 1.4% figure is an estimation-sample frequency inherited verbatim from the old draft (L119), not present in any current table cell.",
+          "severity": "MINOR",
+          "reason": "Rubric 3 (number traceability) + stale-inheritance: a memory/old-draft number that does not trace to a current table cell. Same stale-inheritance class as the 0.1573->0.1708 mean and the 'Panel B 0.3072' pointer Planner 1 partially carries.",
+          "evidence": [
+            "_tables_from_bible.tex tab:summary_stats L36 (PreAnnounceQtr mean 0.0094, Panel A)",
+            "old_draft_81efc78.tex L119 ('a quarter that makes up 1.4% of the sample' -- estimation-sample, stale)",
+            "Planner 2 3.2-P4 (uses ~1% correctly); Planner 3 3.2-P5 (flags 1.4% as treated-arm framing)"
+          ],
+          "which_planner": "Planner 1"
+        },
+        {
+          "flaw": "Planner 1's 3.2-P4 frames the SD basis loosely ('SD basis UNRESOLVED: 0.3072 ... vs 0.3010 ... all-universe Table-1 UncResCEO SD, tab:summary_stats, N=44,900') but does not note the coherence pull that the locked 2.5 prose already scales its FB percentages by the all-universe 0.300988, nor does Planner 1 flag the parallel stale cash-mean. Planners 2 and 3 both caught the stale 0.1573->0.1708 mean and the doubly-stale 'Panel B 0.3072' pointer.",
+          "severity": "MINOR",
+          "reason": "Rubric 10 (open decisions surfaced soundly): the SD-basis decision is incompletely surfaced -- the cash-mean half and the 2.5-coherence pull are missing, which weakens the surface-not-solve handoff.",
+          "evidence": [
+            "section2.5_paragraph_ledger.json FB note (FB scaled by Table-1 SD UncResCEO=0.300988, all-universe)",
+            "_tables_from_bible.tex tab:summary_stats Panel C (CashRatio mean 0.1708)",
+            "Planner 2 open_decisions (stale 0.1573->0.1708; doubly-stale Panel B pointer); Planner 3 global_notes (same)"
+          ],
+          "which_planner": "Planner 1"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Took Planner 2's 3.2-P3 two-universe disclosure (27,622/1,248 vs 67,590/2,232 from the empire_building_did N row) and Planner 2's two-tailed-survival framing in 3.2-P2 (p=.0074 load-bearing because the table prints one-tailed).",
+          "reason": "Rubric 4 (C-traps) + rubric 3: the two-tailed survival pre-empts the one-tailed-artifact referee attack; Planner 2 sourced it cleanly to the table N row. Planner 1 omitted the two-tailed-survival prop.",
+          "evidence": [
+            "claim_findings_ledger.json C2 (two_tailed_check p=.0074)",
+            "_tables_from_bible.tex tab:empire_building_did (one-tailed treatment note L194; N row)"
+          ]
+        },
+        {
+          "decision": "Set all economic-magnitude denominators to live Table-1 cells (UncResCEO SD 0.3010 Panel B; CashRatio mean 0.1708 Panel C; PreAnnounceQtr mean 0.0094 Panel A) and dropped the stale old-draft pointers (0.3072/Panel-B, 0.1573, 1.4%).",
+          "reason": "Rubric 3: every number traces to a current cell; the stale pointers are surfaced as the open decision, not used as live numbers.",
+          "evidence": [
+            "_tables_from_bible.tex tab:summary_stats (Panel A/B/C cells)",
+            "claim_findings_ledger.json _sd_basis_note_2026_06_14 (old-draft Panel-B pointer stale)"
+          ]
+        },
+        {
+          "decision": "Kept the 3.4 forward-link in 3.2-P5 (side-by-side is not the formal test; MA3 supplies it), per all three planners.",
+          "reason": "Rubric 4 (C6 Gelman-Stern trap): prevents 3.2 from over-claiming cash-specificity. All three planners agree.",
+          "evidence": [
+            "claim_findings_ledger.json C6 risks (no Gelman-Stern); old_draft_81efc78.tex L121"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "3.3",
+      "planners_compared": [
+        "Planner 1",
+        "Planner 2",
+        "Planner 3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Planner 1's 3.3-P5 corroborates the round trip on 'the cash arm's own complete-case universe' but cites no N; the placebo cash arm N is 29,535 firm-quarters / 1,326 firms (NOT the matched 28,102). Planner 1 elsewhere (global notes implied) risks conflating the two. Planner 2 also did not state the placebo cash N in its event-study handling. Planner 3's 3.3-P6 correctly uses the placebo CASH column and the old draft confirms N=29,535.",
+          "severity": "MINOR",
+          "reason": "Rubric 3 (number traceability): the corroborating-sample size, if stated, must be the placebo cash column N (29,535), not the matched 28,102; omitting or conflating it weakens the 'second sample' corroboration claim.",
+          "evidence": [
+            "_tables_from_bible.tex tab:empire_drop_placebo L303-304 (N cash 29,535 / 1,326 firms; N stock 39,819 / 1,363 firms)",
+            "_tables_from_bible.tex tab:empire_drop_matched L246-247 (matched N 28,102 / 1,320 firms)",
+            "old_draft_81efc78.tex L143 ('a peak-to-post drop of 0.0681 (1%) across 29,535 firm-quarters')"
+          ],
+          "which_planner": "Planner 1"
+        },
+        {
+          "flaw": "All three planners assert the cash transaction-clock leg as 'kappa_gap>0 / cash persists' but none flags that the GAP CashRatio coefficient itself (0.0055) is positive-but-INSIGNIFICANT; the persistence rests on the absence of a significant PRE1-GAP decline (drop 0.0006 n.s.), not on a significant GAP level. H1b formally predicts kappa_gap>0, but the table shows it n.s.",
+          "severity": "MINOR",
+          "reason": "Rubric 2 (register intact) + rubric 1 (thin-claim ceiling): 'cash persists through the gap' is correct only if anchored to the null PRE1-GAP drop, not to a significant GAP coefficient. The honest reading (cash does not fall at announcement) is what the data support; the synthesized chain makes this explicit to avoid over-reading kappa_gap.",
+          "evidence": [
+            "_tables_from_bible.tex tab:empire_drop_matched L215 (GAP CashRatio 0.0055, SE 0.0034, n.s.) + L220 (Drop PRE1-GAP CashRatio 0.0006 n.s.)",
+            "thesis_draft.tex 2.2 H1b (kappa_gap>0, L71) vs the table n.s. GAP level"
+          ],
+          "which_planner": "all three"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Adopted Planner 3's explicit empire_drop_placebo column split: CASH column corroborates the round trip in 3.3 (3.3-P5), STOCK column and the cash-vs-stock contrast reserved for 3.4 (3.4-P1). Stated the placebo cash N as 29,535.",
+          "reason": "Rubric 6 (one home per table): cleanest non-overlapping role for the dual-listed placebo table; Planner 3's split is the most explicit and the N is correctly sourced.",
+          "evidence": [
+            "_tables_from_bible.tex tab:empire_drop_placebo (cash col 1 / stock col 2; N cash 29,535)",
+            "Planner 3 3.3-P6 + 3.4-P1 (column split)"
+          ]
+        },
+        {
+          "decision": "Led the inference with the GAP contrast (3.3-P3) and made the negative POST a separate do-not-over-read caveat (3.3-P6), keeping the cash-persistence-partly-mechanical note in the same caveat prop.",
+          "reason": "Rubric 4 (C1 POST not over-read): Planner 2/3 both separated the GAP discriminator from the POST caveat; this preserves the contrast-not-coefficient framing the ledger mandates.",
+          "evidence": [
+            "claim_findings_ledger.json C1 thinnest_claim + risks (round-trip contrast; do not over-read POST -0.0250*)"
+          ]
+        },
+        {
+          "decision": "Added the kappa_gap honesty note to 3.3-P3 (GAP CashRatio 0.0055 n.s.; persistence rests on the null PRE1-GAP drop).",
+          "reason": "Rubric 2: keeps the cash-clock claim at exactly what the table supports; advisor-confirmed.",
+          "evidence": [
+            "_tables_from_bible.tex tab:empire_drop_matched (GAP CashRatio 0.0055 n.s.; PRE1-GAP drop 0.0006 n.s.)"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "3.4",
+      "planners_compared": [
+        "Planner 1",
+        "Planner 2",
+        "Planner 3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "No planner-specific flaw of substance. I checked the two cells most likely to be mis-stated -- the CAUSE-matched difference (0.0064, no stars / n.s.) and the EFFECT diff (0.0983**, z~2.07, p=.039) -- and all three planners state both correctly, including the EFFECT/CAUSE split with opposite verdicts and the formal-Wald-not-Gelman-Stern framing. Planner 2/3 compute z=2.07 (0.0983/0.0476); Planner 1 cites the ledger's z=2.06; both round to p=.039 and are acceptable.",
+          "severity": "MINOR",
+          "reason": "Rubric default-to-flag does not warrant inventing a flaw: the C6 chain is clean across all three. Recorded as a MINOR note only to document that the two highest-risk cells were checked and passed.",
+          "evidence": [
+            "_tables_from_bible.tex tab:empire_cashspec L333 (Cash-Stock: 0.0983**, 0.0064 no stars, 0.0092*) + note L362 (two-tailed)",
+            "claim_findings_ledger.json C6 (EFFECT_diff 0.0983** z=2.06 p=.039; CAUSE_diff_matched 0.0064 n.s.)"
+          ],
+          "which_planner": "none"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Ordered the chain P1 (descriptive placebo stock-column side-by-side) -> P2 (formal Wald, never Gelman-Stern) -> P3 (EFFECT cash-specific at 5%) -> P4 (CAUSE not cash-specific, mechanism open) -> P5 (supported-but-fragile hedge), taking Planner 3's clean placebo-stock-column assignment for P1.",
+          "reason": "Rubric 4 (C6 C-trap) + rubric 1: this order pre-commits the EFFECT/CAUSE split and the anti-Gelman-Stern logic before the numbers; resolves the dual-listed placebo table by giving 3.4 the stock column.",
+          "evidence": [
+            "thesis_draft.tex 2.4 P3.2 (Wald is the formal test, not sig-vs-n.s.)",
+            "claim_findings_ledger.json C6 thinnest_claim (separate EFFECT from CAUSE)"
+          ]
+        },
+        {
+          "decision": "Sourced the EFFECT-diff significance to the empire_cashspec two-tailed table note (L362) so 'survives a formal test at 5%' is provably accurate, not an overclaim.",
+          "reason": "Rubric 1/4: the advisor-corrected ledger confirms 'survives a formal test' is ACCURATE because the table is two-tailed; anchoring to the note makes the claim referee-proof.",
+          "evidence": [
+            "_tables_from_bible.tex tab:empire_cashspec note L362 (two-tailed)",
+            "claim_findings_ledger.json _advisor_correction_2026_06_12 (survives a formal test is accurate)"
+          ]
+        },
+        {
+          "decision": "Kept the CAUSE leg failure (0.0064 n.s. matched / 0.0092* full) as the mechanism-open lock and surfaced the R2 two-way-clustering rerun as an open decision (could strengthen C6), per all three.",
+          "reason": "Rubric 2 (mechanism-open) + rubric 10: the cause leg fails -> war-chest mechanism stays open; the clustering rerun is a flagged R2 option, not assumed.",
+          "evidence": [
+            "claim_findings_ledger.json C6 (CAUSE leg fails; R2 two-way clustering could strengthen)"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "4.1",
+      "planners_compared": [
+        "Planner 1",
+        "Planner 2",
+        "Planner 3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Planner 1's 4.1-P1 lists BOTH the significant HighCashScrutiny 0.0408** AND the insignificant CashScrutiny 0.0854 n.s. in its 'confound is genuine' premise without distinguishing their roles, and its numbers array presents 0.0854 alongside 0.0408 as if both support plausibility. Leading or co-billing the 'confound is real' premise with an INSIGNIFICANT coefficient (0.0854 n.s.) self-defeats the premise; the 2.5-P4 basis for plausibility is the incidence rise (HighCashScrutiny 0.0408**), not the continuous volume.",
+          "severity": "MAJOR",
+          "reason": "Rubric 1 (thin-claim ceiling) + rubric 9 (evidence sound): a premise that the confound is genuine cannot rest on an n.s. coefficient. If 0.0854 n.s. is cited as positive evidence, a referee inverts it ('your own volume measure shows no significant rise'), collapsing the 'real rival not strawman' register that 2.2 P5 / 2.5 P4 require. The fix is to lead with 0.0408** (incidence) and recast 0.0854 as 'volume does not rise significantly', never as support.",
+          "evidence": [
+            "claim_findings_ledger.json C4 (confound_is_real: HighCashScrutiny rises 0.0408**, tab:empire_building_did col 4)",
+            "_tables_from_bible.tex tab:empire_building_did L163 (col 3 CashScrutiny 0.0854 SE 0.0749 n.s.; col 4 HighCashScrutiny 0.0408** SE 0.0194)",
+            "thesis_draft.tex 2.5 P4 ('cash scrutiny itself rises in the quarter before a cash acquisition')",
+            "Planner 1 4.1-P1 numbers array (lists 0.0854 n.s. alongside 0.0408**)"
+          ],
+          "which_planner": "Planner 1"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Built 4.1-P1 to lead the 'confound is genuine' premise with the SIGNIFICANT incidence rise (HighCashScrutiny 0.0408**, empire_building_did col 4) and recast the insignificant CashScrutiny 0.0854 explicitly as 'volume does not rise significantly, so the genuine confound is the incidence, not the volume.'",
+          "reason": "Rubric 1/9: makes the plausibility premise rest only on significant evidence, preserving the real-rival register; this is the advisor-flagged correction.",
+          "evidence": [
+            "claim_findings_ledger.json C4 (confound_is_real 0.0408**)",
+            "_tables_from_bible.tex tab:empire_building_did (col 3 0.0854 n.s.; col 4 0.0408**)"
+          ]
+        },
+        {
+          "decision": "Confirmed empire_building_did belongs in 4.1's table list (for the col-4 plausibility premise) -- all three planners agreed and the ledger requires it.",
+          "reason": "Rubric 6 (table homes): the confound-real premise needs col 4; without it 4.1 reads as a strawman. The cash-arm result columns (1,2,5,6) stay in 3.2, only col 4 is reused in 4.1 -- a legitimate promise/delivery split, not a double-home.",
+          "evidence": [
+            "claim_findings_ledger.json C4 (confound_is_real points to tab:empire_building_did col 4)",
+            "section2.5_paragraph_ledger.json P4 (0.0408** magnitude reserved for 4.1, not 2.5)"
+          ]
+        },
+        {
+          "decision": "Kept the C4 register verbatim (NULL-only, underpowered, CI [-0.027,+0.016], 89% no scrutiny, 'does not account for THIS run-up; not that scrutiny never matters') and did not strengthen, per all three.",
+          "reason": "Rubric 4 (C4 not strengthened): the ledger mandates the verbatim hedge; all three planners kept it; confirmed against C4 referee_proof.",
+          "evidence": [
+            "claim_findings_ledger.json C4 referee_proof + thinnest_claim ('Do NOT strengthen')"
+          ]
+        },
+        {
+          "decision": "Surfaced the orphan bibitems (lerman2026, bushee2018, everhart2025, gokkaya2025) as cite-or-remove, after verifying none appears in any Section 2 citep/citet.",
+          "reason": "Rubric 10 (open decisions): all four were cited only by the dropped 4.2/C7 prose; I confirmed against the locked Section 2 prose that none is cited there.",
+          "evidence": [
+            "thesis_draft.tex L136-149 (bibitems present) vs L34-124 (no citep/citet of these four in 2.1-2.5)",
+            "old_draft_81efc78.tex L169-171 (bushee2018/lerman2026 cited only in the dropped 4.2 presentation-contrast)"
+          ]
+        }
+      ]
+    }
+  ],
+  "coverage_matrix": [
+    {
+      "claim": "C2 (run-up exists; H1)",
+      "subsection": "3.2",
+      "tables": [
+        "tab:empire_building_did",
+        "tab:summary_stats"
+      ],
+      "status": "HOMED ONCE -- delivered at ceiling (elevated for cash, not detectable for stock; correlational/within-firm; two-tailed survival p=.0074; formal cash-vs-stock difference deferred to 3.4)"
+    },
+    {
+      "claim": "C1 (round-trip timing; H1b; STRONGEST)",
+      "subsection": "3.3",
+      "tables": [
+        "tab:empire_drop_matched",
+        "tab:empire_drop_placebo (cash column only)"
+      ],
+      "status": "HOMED ONCE -- delivered at ceiling (GAP discriminator leads; round-trip contrast carries the claim; negative POST -0.0250* not over-read; kappa_gap honesty note added)"
+    },
+    {
+      "claim": "C6 (formal cash-specificity; H1a)",
+      "subsection": "3.4",
+      "tables": [
+        "tab:empire_cashspec",
+        "tab:empire_drop_placebo (stock column / cash-vs-stock contrast)"
+      ],
+      "status": "HOMED ONCE -- delivered at ceiling (formal Wald 0.0983** valid at 5% two-tailed; EFFECT cash-specific / CAUSE not cash-specific 0.0064 n.s., mechanism open; Gelman-Stern avoided; concentration-not-specificity, supportive-not-definitive)"
+    },
+    {
+      "claim": "C4 (scrutiny rule-out; NULL-only)",
+      "subsection": "4.1",
+      "tables": [
+        "tab:cash_scrutiny_validity",
+        "tab:cash_scrutiny_channel",
+        "tab:reason_gating",
+        "tab:empire_building_did (col 4 only, plausibility premise)"
+      ],
+      "status": "HOMED ONCE -- delivered at ceiling (three-step rule-out after conceding the genuine confound via HighCashScrutiny 0.0408**; NULL-only, underpowered; verbatim hedge kept, not strengthened); pays off 2.2-P5 + 2.5-P4 promise"
+    },
+    {
+      "claim": "Data foundation (no C-claim)",
+      "subsection": "3.1",
+      "tables": [
+        "tab:summary_stats"
+      ],
+      "status": "HOMED ONCE -- four sources + CUSIP6 link + build mechanics (point back to 2.3) + key-variable routing (2.3/2.5/Appendix) + three-layer sample + Table 1; no definitional turf re-entered; >=5-call selection THREAT left in 2.4 P5.5"
+    },
+    {
+      "claim": "H1 (theta_-1>0)",
+      "subsection": "3.2",
+      "tables": [
+        "tab:empire_building_did"
+      ],
+      "status": "PAID OFF via 3.2-P2 (cash UncResCEO 0.0461***, two-tailed p=.0074)"
+    },
+    {
+      "claim": "H1a (theta_-1^cash > theta_-1^stock)",
+      "subsection": "3.4",
+      "tables": [
+        "tab:empire_cashspec"
+      ],
+      "status": "PAID OFF via 3.4-P3 (formal Wald cash-minus-stock 0.0983** at 5%) as concentration, not strict specificity"
+    },
+    {
+      "claim": "H1b (theta_-1>0, theta_gap=0, kappa_gap>0)",
+      "subsection": "3.3",
+      "tables": [
+        "tab:empire_drop_matched"
+      ],
+      "status": "PAID OFF via 3.3-P3/P4 (PRE1 0.0473*** -> GAP 0.0018 n.s. -> PRE1-GAP drop 0.0455**; cash PRE1-GAP drop 0.0006 n.s., GAP-POST 0.0210***); kappa_gap read off the null PRE1-GAP decline since GAP level 0.0055 is n.s."
+    },
+    {
+      "claim": "2.5-P4 scrutiny promise ('tested in Section 4.1')",
+      "subsection": "4.1",
+      "tables": [
+        "tab:reason_gating",
+        "tab:cash_scrutiny_validity",
+        "tab:cash_scrutiny_channel"
+      ],
+      "status": "DELIVERED in 4.1 only; verdict and C4 hedge owned here per 2.5-P4.3 / 2.2-P5"
+    },
+    {
+      "claim": "C3 (discriminant) / C7 (presentation-contrast)",
+      "subsection": "DROPPED",
+      "tables": [
+        "tab:h23_competition_uncertainty (DROPPED)",
+        "tab:h14c_ceo2_decomp (DROPPED)",
+        "tab:h18_ceo2_decomp (DROPPED)"
+      ],
+      "status": "OUT OF SCOPE -- C3 and the 4.2/C7 presentation-contrast are dropped; their tables are DROPPED in variable_ledger; no subsection homes them (correct)"
+    },
+    {
+      "claim": "C5 (convergent validity)",
+      "subsection": "2.5 (NOT Section 3/4)",
+      "tables": [
+        "tab:h11_prisk_uncertainty",
+        "tab:h24_us_epu",
+        "tab:h24b_global_epu"
+      ],
+      "status": "OUT OF SCOPE for Section 3/4 -- convergent validity belongs to Section 2.5; correctly NOT pulled into 3/4 by any planner"
+    }
+  ],
+  "global_notes": []
+}
