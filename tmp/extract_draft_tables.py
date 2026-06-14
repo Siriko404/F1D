@@ -92,6 +92,16 @@ for lab in order:
         body = (BIBLE_DIR / FRAGMENT[lab]).read_text(encoding="utf-8").rstrip()
     else:
         body = block_from_bible(lab)
+    if lab == "tab:cash_scrutiny_validity":
+        # 2026-06-14: the "Variable Construction (Link 1)" page that trails this fragment was
+        # relocated to docs/Thesis/appendix_I_cash_scrutiny.tex (Appendix I; user will edit it).
+        # Drop it from the generated tables so it is not duplicated. Bible fragment untouched.
+        _m = "\\begin{center}\\large\\textbf{Cash-Scrutiny Measure: Variable Construction"
+        _c = body.find(_m)
+        if _c >= 0:
+            body = body[:_c].rstrip()
+            if body.endswith("\\clearpage"):
+                body = body[: -len("\\clearpage")].rstrip()
     body = shrink_wide_tabulars(body)
     if lab in LANDSCAPE:
         parts += [f"% --- {lab} (landscape)", "\\begin{landscape}", body, "\\end{landscape}", ""]
