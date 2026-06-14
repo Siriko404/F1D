@@ -87,7 +87,8 @@
       "risks": [
         "UncPreCEO -> UncResCEO is significant in THIS table (0.0111** / 0.0230**), even though UncPre is a first-stage control in eq-4 -> evidence for the UncPre over-control/contamination concern (different, smaller sample so orthogonality is not mechanical here)"
       ],
-      "thinnest_claim": "Lead the validity story with this. Keep."
+      "thinnest_claim": "Lead the validity story with this. Keep.",
+      "_SUPERSEDED_2026_06_14": "DROPPED from the thesis (user): the product-market competition / discriminant test is removed entirely; C3 is no longer used in 2.5. Record kept for history only."
     },
     {
       "rank": 4,
@@ -135,7 +136,7 @@
         "one-tailed inflates these",
         "PRisk coefficient 0.0001 is statistically there but economically nothing vs UncRes SD 0.3072"
       ],
-      "thinnest_claim": "'Consistent with' established measures, NOT 'establishes/moves with.' Drop PRisk emphasis. Lean on the discriminant result (C3), not the convergent one."
+      "thinnest_claim": "LEAD with the SIGNIFICANT positive convergent association (one-tailed) of the residual with PRisk/US-EPU/GEPU; keep the economic magnitude (FB) and the one-tailed test as honest SECONDARY qualifiers. (C3/discriminant dropped 2026-06-14; do NOT 'lean on discriminant'.)"
     },
     {
       "rank": 6,
@@ -235,5 +236,6 @@
       "Abstract 'survives a formal test' STANDS (valid 5% two-tailed) -- do NOT remove.",
       "Keep correlational / no-identification / concentration-not-specificity register."
     ]
-  }
+  },
+  "_USER_OVERRIDE_2026_06_14": "C3 (discriminant/competition) and C5 (convergent) framing OVERRIDDEN by user from PDF review: DROP the competition/discriminant test entirely (C3 no longer used in 2.5); and 2.5 must LEAD with the SIGNIFICANT positive association of the residual with PRisk/US-EPU/GEPU (all significant, varying levels), with one-tailed + economic-magnitude as secondary caveats -- NOT lead with 'consistent with/weak'. Update C5 thinnest_claim accordingly at the 2.5 rewrite. (Recorded as a flag; C5/C3 numbers unchanged.)"
 }

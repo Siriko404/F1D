@@ -83,18 +83,17 @@ Each subsection feeds the next; none repeats another. This arc is the backbone.
 - **Thin-claim:** descriptive estimand, no identification; honest about the never-acquirer baseline, first-deal contamination, inference choices.
 
 ### §2.5 Specification and Measurement of Key Constructs — *the validity gate*
-- **Purpose:** validate the construct (convergent + discriminant) and MOTIVATE the scrutiny identification side-test (a plausible alternative driver, tested & rejected in §4.1).
+- **Purpose:** validate the construct (convergent validity) and MOTIVATE the scrutiny identification side-test (a plausible alternative driver, tested & rejected in §4.1).
 - **Must do:**
-  1. State the two demands: the residual must (a) move with real uncertainty, (b) be distinct from competing observable channels (competition; and not merely analyst scrutiny, a plausible alternative driver tested in §4.1).
+  1. State the checks: the residual must (a) move with real uncertainty (convergent); and (b) the pre-announcement rise must not be merely analyst scrutiny, a plausible alternative driver tested in §4.1.
   2. **Convergent validity:** residual loads on political risk (hassan2020) + policy uncertainty (baker2016/davis2016). HONEST: "consistent with" — one-tailed, PRisk economically trivial, US-EPU marginal. Do not oversell.
-  3. **Discriminant validity (the decisive evidence):** product-market competition (hoberg2010/hoberg2016) loads on the presentation, NOT the residual (0.0304*** vs 0.0008 n.s.). Lead with this — it is the clean result.
   4. **Introduce + motivate the scrutiny side-test** (§4.1 forward-ref): define CashScrutiny/HighCashScrutiny, establish validity (CashRatio→CashScrutiny) + plausibility (rises ahead of cash deals); the verdict ("doesn't account for THIS run-up") is reported in §4.1, not §2.5.
   5. Define remaining KEY constructs (CashRatio, PreAnnounceQtr, CashScrutiny); controls -> Appendix.
-- **Literature (VERIFY new):** validity benchmarks hassan2020, baker2016, davis2016, hoberg2010/2016 — already cited, now ENGAGED not merely data-sourced.
+- **Literature (VERIFY new):** validity benchmarks hassan2020, baker2016, davis2016 — already cited, now ENGAGED not merely data-sourced.
 - **Equations:** the validity regression form (light; logic is the focus).
 - **Serves:** earns trust the residual measures what's claimed BEFORE results.
 - **Boundary:** validity + scrutiny construct + key non-main constructs. MAIN var -> §2.3. Scrutiny RESULTS -> §4.1. Controls -> Appendix.
-- **Thin-claim:** convergent = "consistent with" (weak, disclosed); discriminant = decisive; scrutiny = "doesn't account for THIS run-up," not "never matters."
+- **Thin-claim:** convergent = LEAD with the significant association (one-tailed; magnitude secondary); scrutiny = "doesn't account for THIS run-up," not "never matters."
 
 ---
 
