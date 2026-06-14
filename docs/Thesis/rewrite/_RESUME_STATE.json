@@ -57,7 +57,7 @@
     "davis2016 (GEPU)": "source w22740.pdf (45de8338). PROVISIONAL (guide sec9): identity self-confirmed + n3 lead-in span; full def ('GDP-weighted avg of national EPU for 16 countries') is ANSWER-located, not a clean span. Weakest 'consistent with' benchmark. DISPOSITION (user+advisor): provisional is ACCEPTABLE for this benchmark -> FOLD AS-IS into 2.5, do NOT re-query; it does NOT block the 2.5 fold."
   },
   "PENDING_EDITS_unapplied": {
-    "_note": "DONE: the yardstick-AUDIT edits (F1-F5, EDITS_APPLIED_2026_06_13) AND the SCRUTINY-DRIVER REFRAME (scrutiny_reframe_DECIDED_2026_06_13) are ALL applied + swept, and the 2.2-2.5 plans RE/RATIFIED. The ONLY remaining unapplied items are the WRITE_TIME_FLAGS below -- applied PER-PARAGRAPH at prose time. THIS is the CANONICAL write-time-flags list (prose_progress_2026_06_13.write_time_flags points here; do not duplicate).",
+    "_note": "[2026-06-14] PROSE NOW WRITTEN + RATIFIED (provisional); full §2 + all 11 tables in the draft; FB FILLED. The WRITE_TIME_FLAGS below are now POST-RATIFICATION VERIFICATION OWED before final submission (NLM-verify the pagan1984 / opler1999 / bates2009 / petersen2009 / cameron2011 cites that are already in the prose + bibliography; reconcile the Hassan cite-year vs the .bib; confirm the MNPI expansion) -- these are checks, NOT blockers, and the compile already shows 0 undefined cites. DONE: the yardstick-AUDIT edits (F1-F5, EDITS_APPLIED_2026_06_13) AND the SCRUTINY-DRIVER REFRAME (scrutiny_reframe_DECIDED_2026_06_13) are ALL applied + swept, and the 2.2-2.5 plans RE/RATIFIED. The ONLY remaining unapplied items are the WRITE_TIME_FLAGS below -- applied PER-PARAGRAPH at prose time. THIS is the CANONICAL write-time-flags list (prose_progress_2026_06_13.write_time_flags points here; do not duplicate).",
     "WRITE_TIME_FLAGS": [
       "F5: Hassan cite year -- variable_ledger says 'Hassan et al. 2019' (WP) vs QJE 2020; reconcile vs the .bib.",
       "Owed NLM cites (verify at write-time, post-ratification upload): pagan1984 (2.3); opler1999/bates2009/petersen2009/cameron2011 (2.4).",
@@ -93,7 +93,7 @@
     "_competition_dropped_2026_06_14": "The F1/F3 'competition' edits in the 2.5 entry are MOOT (competition/discriminant DROPPED 2026-06-14). The non-competition parts (CashScrutiny foregrounding, convergent fold) remain; convergent later flipped to LEAD-with-significance (FD)."
   },
   "ratification_progress_2026_06_13": {
-    "_note": "Ratifies the LEDGER PLANS for the from-scratch 2.2-2.5 rewrite. ALL FOUR RATIFIED 2026-06-13 (2.2 re-ratified after the scrutiny reframe; 2.5 the last). DONE -- now in the prose phase.",
+    "_note": "Ratifies the LEDGER PLANS for the from-scratch 2.2-2.5 rewrite. ALL FOUR RATIFIED 2026-06-13 (2.2 re-ratified after the scrutiny reframe; 2.5 the last). DONE -- now in the prose phase. [2026-06-14] PROSE now ALSO RATIFIED (provisional, user 'consider everything ratified for now'); this block records the earlier 06-13 PLAN ratification -- see where_we_are / prose_progress for the prose, tables, refs, and FB status.",
     "2.2": "RE-RATIFIED 2026-06-13 (post scrutiny-reframe; P5 leaned to a flag).",
     "2.3": "RATIFIED 2026-06-13 (+ integrity ref-fix P2.5 -> 2.5 P4.4).",
     "2.4": "RATIFIED 2026-06-13.",
