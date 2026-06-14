@@ -76,7 +76,7 @@
       "rank": 3,
       "id": "C3_discriminant_validity",
       "hypothesis": "validity (discriminant)",
-      "claim": "A persistent industry condition surfaces in the scripted presentation, not in the call-varying residual.",
+      "claim": "A known, disclosable industry condition surfaces in the scripted presentation, not in the call-varying residual.",
       "table": "tab:h23_competition_uncertainty",
       "finding": {
         "competition_to_UncRes": "0.0008 n.s. (ind FE) / 0.0023 n.s. (firm FE)",

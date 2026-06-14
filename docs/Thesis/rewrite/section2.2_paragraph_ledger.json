@@ -11,12 +11,12 @@
       "definitional",
       "framing-nonverifiable"
     ],
-    "status": "RE-RATIFIED 2026-06-13 (user ceremony) after the scrutiny reframe. Prose still BLOCKED -- drafted after all four subsections are ratified."
+    "status": "RE-RATIFIED 2026-06-13 after the scrutiny reframe; all four subsections (2.2-2.5) ratified. PROSE IN PROGRESS (ledger-first): P1+P2 recorded, P3-P5 pending."
   },
   "subsection": "2.2",
   "title": "Hypothesis Development",
   "role": "the empirical (per-hypothesis) literature review",
-  "status": "RE-RATIFIED 2026-06-13 (user ceremony, post scrutiny-reframe; P5 leaned to a flag with 'harder'->'more', P5.3/P5.4 folded into 2.5). Prose BLOCKED.",
+  "status": "RE-RATIFIED 2026-06-13 (user ceremony, post scrutiny-reframe; P5 leaned to a flag with 'harder'->'more', P5.3/P5.4 folded into 2.5). RE-RATIFIED; PROSE IN PROGRESS (P1+P2 recorded; P3-P5 pending).",
   "created": "2026-06-13",
   "_governing": {
     "hard_rules": [
@@ -340,5 +340,5 @@
       "prose_status": "BLOCKED"
     }
   },
-  "next_action": "SCRUTINY REFRAME APPLIED 2026-06-13 (user-approved + advisor): 2.2 P5 leaned to a FLAG -- P5.1 (rival reading) + P5.2 (positioned as an identification threat developed in 2.5 P4, tested/rejected in 4.1); P5.3 (volume-vs-UncQue) + P5.4 (matsumoto plausibility) DROPPED from 2.2 (covered by 2.5 P4.1 + RULE-COH-8 + the co-movement motivation; matsumoto demoted to an optional 2.1 callback). RULE-COH-5 reworded confound -> plausible alternative driver. RE-RATIFY 2.2 from the beginning, then ratify 2.5. Status: reframe applied, prose BLOCKED, NOT re-ratified."
+  "next_action": "[CURRENT 2026-06-13 -- read FIRST; everything after '||' is SUPERSEDED historical log] 2.2 RE-RATIFIED + all four (2.2-2.5) ratified; now PROSE phase (ledger-first): P1+P2 recorded, P3-P5 pending. The 'RE-RATIFY 2.2 from the beginning / NOT re-ratified' directives below are DONE || SCRUTINY REFRAME APPLIED 2026-06-13 (user-approved + advisor): 2.2 P5 leaned to a FLAG -- P5.1 (rival reading) + P5.2 (positioned as an identification threat developed in 2.5 P4, tested/rejected in 4.1); P5.3 (volume-vs-UncQue) + P5.4 (matsumoto plausibility) DROPPED from 2.2 (covered by 2.5 P4.1 + RULE-COH-8 + the co-movement motivation; matsumoto demoted to an optional 2.1 callback). RULE-COH-5 reworded confound -> plausible alternative driver. RE-RATIFY 2.2 from the beginning, then ratify 2.5. Status: reframe applied, prose BLOCKED, NOT re-ratified."
 }
