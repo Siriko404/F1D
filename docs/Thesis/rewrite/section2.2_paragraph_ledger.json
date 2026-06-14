@@ -11,12 +11,12 @@
       "definitional",
       "framing-nonverifiable"
     ],
-    "status": "RATIFIED 2026-06-13 then SCRUTINY-REFRAME APPLIED 2026-06-13 -> RE-RATIFY 2.2. Prose still BLOCKED."
+    "status": "RE-RATIFIED 2026-06-13 (user ceremony) after the scrutiny reframe. Prose still BLOCKED -- drafted after all four subsections are ratified."
   },
   "subsection": "2.2",
   "title": "Hypothesis Development",
   "role": "the empirical (per-hypothesis) literature review",
-  "status": "REFRAME APPLIED 2026-06-13 -- RE-RATIFY (was RATIFIED 2026-06-13; scrutiny P5 leaned to a flag, P5.3/P5.4 dropped -> folded into 2.5).",
+  "status": "RE-RATIFIED 2026-06-13 (user ceremony, post scrutiny-reframe; P5 leaned to a flag with 'harder'->'more', P5.3/P5.4 folded into 2.5). Prose BLOCKED.",
   "created": "2026-06-13",
   "_governing": {
     "hard_rules": [
