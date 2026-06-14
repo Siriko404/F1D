@@ -10,7 +10,7 @@
 \item \textbf{CashScrutiny}$_{i,t}$ --- share (\%) of call $i$'s analyst Q\&A turns whose text contains at least one \emph{cash level} or \emph{liquidity} term (listed below); a turn-level binary averaged over the call's analyst Q\&A turns.
 \item \textbf{CashRatio}$_{i,t}$ = cheq/atq (cash \& equivalents $\div$ total assets).
 \item \textbf{High Cash}$_{i,t}$ = $\mathbf{1}[\text{CashRatio}_{i,t}\geq$ top tercile$]$.
-\item \textbf{Controls} $X_{i,t}$: Leverage, ln(Assets), Tobin's Q, ROA, Capex, Dividend Payer, Cash Flow (sCFO).
+\item \textbf{Controls} $X_{i,t}$: Leverage, ln(Assets), Tobin's Q, ROA, Capex, Dividend Payer, Cash-Flow Volatility (sCFO).
 \end{itemize}
 \vspace{2pt}\noindent\textbf{Specification.} Two-way fixed-effects OLS estimated at the call level:
 \[ \text{CashScrutiny}_{i,t} = \beta\,\text{Cash}_{i,t} + \gamma' X_{i,t} + \alpha_i + \delta_{q(t)} + \varepsilon_{i,t}, \]

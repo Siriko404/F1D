@@ -339,7 +339,9 @@ def emit_latex_fragment(stats: pd.DataFrame, balance: dict, out_path: Path) -> N
         f"Unit column: C = call-level, F = firm-year. "
         f"N varies by row because each variable is summarized on its anchor panel's Main "
         f"sample (complete cases per variable); per-suite samples differ due to lags, "
-        f"control availability, and merges."
+        f"control availability, and merges. "
+        f"\\texttt{{PRisk}} is \\citet{{hassan2020}}'s scaled political-risk score (a weighted, "
+        f"capped bigram index), not a percentage."
     )
     header_row = "Variable & Unit & N & Mean & SD & Min & P25 & Median & P75 & Max \\\\"
 
