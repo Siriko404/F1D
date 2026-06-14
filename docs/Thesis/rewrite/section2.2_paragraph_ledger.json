@@ -310,7 +310,7 @@
       "propositions": [
         {
           "prop_id": "P5.1",
-          "statement": "Competing hypothesis (analyst scrutiny): the pre-announcement uncertainty rise reflects analysts asking more or harder cash-related questions, mechanically eliciting hedged answers, rather than the disclosure bind.",
+          "statement": "Competing hypothesis (analyst scrutiny): the pre-announcement uncertainty rise reflects analysts asking more cash-related questions, mechanically eliciting hedged answers, rather than the disclosure bind.",
           "role_in_paragraph": "States the rival (a plausible alternative driver, tested & rejected as a side analysis in 4.1).",
           "type": "internal-hypothesis",
           "relation_to_2_1": "NEW",
