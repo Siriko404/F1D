@@ -199,7 +199,7 @@
     {
       "id": "R1_one_tailed",
       "risk": "One-tailed tests on focal coefficients (run-up, convergent validity, scrutiny, presentation).",
-      "impact": "Does NOT bite the load-bearing results: C2 run-up SURVIVES two-tailed (p=.007); C1 timing and C6 cashspec are ALREADY two-tailed. Mainly bites C5 convergent validity (US-EPU firm-FE 0.0123* -> n.s. two-tailed) -- being demoted anyway.",
+      "impact": "Does NOT bite the load-bearing results: C2 run-up SURVIVES two-tailed (p=.007); C1 timing and C6 cashspec are ALREADY two-tailed. Mainly bites C5 convergent validity (US-EPU firm-FE 0.0123* -> n.s. two-tailed) -- now LED-with per FD 2026-06-14 (one-tailed caveat kept secondary).",
       "class": "RERUN-lite (relabel stars from existing t-stats; no re-estimation)",
       "recommendation": "Move focal tests to two-tailed for honesty; load-bearing claims unaffected."
     },
@@ -219,7 +219,7 @@
   "thin_claim_ceiling": {
     "statement": "A within-firm, correlational pattern: residual CEO Q&A uncertainty is elevated in the pre-announcement quarter of cash acquirers (not detectable for stock), resolves at announcement, while the acquirer's cash persists to completion -- read as call language tracking the deal's disclosure state. NO tested mechanism, NO identification. Cash-specificity of the EFFECT IS claimable (C6 valid at 5%); cash-specificity of the CAUSE is NOT (mechanism stays open).",
     "register_that_stands": "correlational / no-identification / supportive-not-definitive / mechanism-open. This part is decided.",
-    "demoted": "C5 convergent validity -> 'consistent with'; C7 presentation -> texture or drop.",
+    "demoted": "C5 convergent validity -> LEAD with the significant association (FD override 2026-06-14; was 'consistent with'); C7 presentation -> texture or drop.",
     "RESOLVED_both_2026_06_12": {
       "decision": "BOTH -- the fork was a FALSE dichotomy (user). The claim is ONE signal with TWO dimensions: ANTICIPATORY (timing: appears pre-announcement, gone at announcement -- C1) AND CASH-CONCENTRATED (cash vs stock -- C2 + C6). Not rivals; the two coordinates of the same signal.",
       "both_in_the_title": "Title L18 'Cash Got Your Tongue? CEO Language Uncertainty Around Undisclosed Cash Acquisitions' = cash (Cash Acquisitions) + timing (Around Undisclosed). Abstract L27 already says 'an anticipatory, cash-deal-concentrated component.'",
