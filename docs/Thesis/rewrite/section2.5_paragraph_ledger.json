@@ -11,12 +11,12 @@
       "internal",
       "framing-nonverifiable"
     ],
-    "status": "PHASE-3 PLANNED. NOT ratified, NOT prose-written. NLM verification of the validity papers gated behind ratification."
+    "status": "RATIFIED 2026-06-13 (user ceremony). Prose BLOCKED -- written one paragraph at a time after the before-prose cleanup."
   },
   "subsection": "2.5",
   "title": "Specification and Measurement of Key Constructs",
   "role": "the validity gate",
-  "status": "planning",
+  "status": "RATIFIED 2026-06-13 (user ceremony, post scrutiny-reframe + de-verdict). Prose BLOCKED.",
   "created": "2026-06-13",
   "_governing": {
     "hard_rules": [
