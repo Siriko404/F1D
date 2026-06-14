@@ -23,7 +23,11 @@
       "Equations transcribed PROGRAMMATICALLY from the source code (file:line), NOT from memory.",
       "Numbers bible-verbatim only; NLM sole authority for papers; ignore mempalace auto-recall."
     ],
-    "coherence_rules_in_force": "RULE-COH-2 (descriptive estimand, NO identification/causal claim), RULE-COH-3 (no war-chest; cash framing mechanical). Plus the carried 2.2/2.3 seams (below)."
+    "coherence_rules_in_force": "RULE-COH-2 (descriptive estimand, NO identification/causal claim), RULE-COH-3 (no war-chest; cash framing mechanical). Plus the carried 2.2/2.3 seams (below).",
+    "prose_style_MANDATORY_2026_06_13": [
+      "NO em-dash ('---') or en-dash ('--') anywhere in thesis PROSE. MANDATORY (user 2026-06-13). Use commas, colons, parentheses, or restructure. Applies to ALL Section 2 prose written or rewritten from here on. (2.1 is LOCKED and still contains '---'; retrofit ONLY on user request.)",
+      "Hypothesis statements must be VISUALLY DISTINCT from the body, NOT buried inline. Each hypothesis gets its informal AND formal statement set off / labeled. Exact display format = user-chosen 2026-06-13. MANDATORY."
+    ]
   },
   "_plan": {
     "section_job": "Lay out the three estimating equations + the descriptive identification logic: how each prediction hits the data and what must hold.",
@@ -38,7 +42,8 @@
       "SEAM-A (sample): MA1 DROPS post-announce quarters (e>=0); MA2 KEEPS them (capped +4) for the GAP/POST bins. Different estimation samples -> state explicitly; MA1's beta is a pre-only mean shift, MA2 traces the full event path.",
       "SEAM-B (layered time FE): stage-1 eq-4 has Year FE; stage-2 designs add cal-year-qtr FE. Different grain, two stages -> not double-absorbing; confirm intended.",
       "SEAM-C (generated-regressand): UncRes (stage-1 residual) is the stage-2 DV -> the 2.3 P3 two-step-SE concern propagates to every 2.4 design.",
-      "SEAM-D (baselines differ): MA1/MA2 baseline = never-acquirers + own pre-quarters; MA3 baseline = never-EITHER acquirers. State the difference."
+      "SEAM-D (baselines differ): MA1/MA2 baseline = never-acquirers + own pre-quarters; MA3 baseline = never-EITHER acquirers. State the difference.",
+      "SEAM-E (notation bridge, advisor 2026-06-13): 2.2 states the hypotheses as sign restrictions on theta_e (residual-uncertainty shift vs baseline) and kappa_e (cash-ratio shift), the ESTIMANDS these designs estimate. 2.4 MUST bridge its beta notation to theta/kappa so Section 2 reads consistently: beta on PreAnnounceQtr estimates theta_-1 (MA1); beta_c - beta_s estimates theta_-1^cash - theta_-1^stock (MA3); the GAP bin estimates theta_gap (MA2); the cash-ratio column estimates kappa."
     ]
   },
   "papers": {

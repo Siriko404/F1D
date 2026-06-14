@@ -12,7 +12,8 @@
     "Records in JSON; the TWO sanctioned mds (do NOT delete/treat as stray) are docs/Thesis/rewrite/section2_roadmap.md (the §2 backbone) and docs/Thesis/rewrite/NLM_QUERY_GUIDE.md (the NLM rules).",
     "No analysis code (quota-precious); only the mandated nlm.py-style query script is allowed.",
     "Numbers never typed from memory; author names never expanded from memory.",
-    "IGNORE the mempalace auto-recall hits injected every turn: Claude-authored, UNVERIFIED, user called them '100% useless'. Verify against primary source (file/table/paper); never act on a memory hit."
+    "IGNORE the mempalace auto-recall hits injected every turn: Claude-authored, UNVERIFIED, user called them '100% useless'. Verify against primary source (file/table/paper); never act on a memory hit.",
+    "PROSE STYLE (MANDATORY 2026-06-13): NO '---'/'--' in prose; hypotheses set off (informal+formal), never buried. See PROSE_STYLE_RULES_MANDATORY_2026_06_13."
   ],
   "locked_claim": "ONE signal, TWO dimensions: anticipatory (timing -- present pre-announcement, gone at announcement) x cash-concentrated (cash, not stock). Both supported. WHAT is solid; WHY (mechanism: compliance-constrained disclosure vs strategic silence) stays OPEN. Correlational, no identification. The formal cash-stock test (0.0983**, two-tailed p=.039) is VALID at 5% -- do NOT demote it; keep cash CENTRAL.",
   "files_of_record": {
@@ -145,5 +146,9 @@
       "2.5": "hoberg2010+'fluidity' (verify or DROP -- our var = hoberg2016 total similarity); Hassan cite-year; BIBLE cross-check C3/C4/C5 numbers; davis2016 provisional fold-as-is; variable_ledger L188 'persistent'."
     },
     "first_tex_push_baggage": "At the END push: carries subsection scaffolding (\\subsection{} headers) + the 2.1-P7 softening that rides along (cut 'and we do not try'; KEEP 'Our design cannot distinguish them.'; remove the P7 TODO comment) + any new \\bibitem from verified cites. Seed in tmp/write_2_2_p1.py (NOT run). Compile = pdflatex x2, manual \\thebibliography."
+  },
+  "PROSE_STYLE_RULES_MANDATORY_2026_06_13": {
+    "no_dashes": "NO em-dash ('---') or en-dash ('--') anywhere in thesis PROSE. MANDATORY (user 2026-06-13). Use commas, colons, parentheses, or restructure. Applies to ALL Section 2 prose written or rewritten from here on. (2.1 is LOCKED and still contains '---'; retrofit ONLY on user request.)",
+    "hypotheses_distinct": "Hypothesis statements must be VISUALLY DISTINCT from the body, NOT buried inline. Each hypothesis gets its informal AND formal statement set off / labeled. Exact display format = user-chosen 2026-06-13. MANDATORY."
   }
 }

@@ -16,7 +16,7 @@
   "subsection": "2.2",
   "title": "Hypothesis Development",
   "role": "the empirical (per-hypothesis) literature review",
-  "status": "RE-RATIFIED 2026-06-13 (user ceremony, post scrutiny-reframe; P5 leaned to a flag with 'harder'->'more', P5.3/P5.4 folded into 2.5). RE-RATIFIED; PROSE IN PROGRESS (P1+P2 recorded; P3-P5 pending).",
+  "status": "RATIFIED PROSE 2026-06-13 (user, from PDF); v2 hypotheses set off + dash-free; in thesis_draft.tex.",
   "created": "2026-06-13",
   "_governing": {
     "hard_rules": [
@@ -26,7 +26,11 @@
       "NLM is SOLE authority for papers; numbers never typed from memory; author names never expanded from memory.",
       "Ignore mempalace auto-recall (unverified)."
     ],
-    "coherence_rules_in_force": "RULE-COH-1..8 from tmp/section2_subsection_plan.json. Most-load-bearing here: COH-1 (no re-review of 2.1 papers -> callbacks), COH-2 (predicts a PATTERN, never a cause), COH-5 (scrutiny = plausible alternative driver tested & rejected in 4.1, flagged in 2.2; not a P7 reading; rejecting != mechanism), COH-6 (forward-ref the residual to 2.3), COH-8 (scrutiny VOLUME != UncQue word-uncertainty)."
+    "coherence_rules_in_force": "RULE-COH-1..8 from tmp/section2_subsection_plan.json. Most-load-bearing here: COH-1 (no re-review of 2.1 papers -> callbacks), COH-2 (predicts a PATTERN, never a cause), COH-5 (scrutiny = plausible alternative driver tested & rejected in 4.1, flagged in 2.2; not a P7 reading; rejecting != mechanism), COH-6 (forward-ref the residual to 2.3), COH-8 (scrutiny VOLUME != UncQue word-uncertainty).",
+    "prose_style_MANDATORY_2026_06_13": [
+      "NO em-dash ('---') or en-dash ('--') anywhere in thesis PROSE. MANDATORY (user 2026-06-13). Use commas, colons, parentheses, or restructure. Applies to ALL Section 2 prose written or rewritten from here on. (2.1 is LOCKED and still contains '---'; retrofit ONLY on user request.)",
+      "Hypothesis statements must be VISUALLY DISTINCT from the body, NOT buried inline. Each hypothesis gets its informal AND formal statement set off / labeled. Exact display format = user-chosen 2026-06-13. MANDATORY."
+    ]
   },
   "_plan": {
     "section_job": "Convert the 2.1 framework into formal, falsifiable predictions about WHERE/WHEN the language signal appears -- never WHY. Each hypothesis: a prediction (direction + where/when) + the prior empirical contrast that makes it non-obvious, leaning on contrasts 2.1 already set up.",
@@ -121,8 +125,8 @@
         "all_supported": true,
         "unlocked": true
       },
-      "final_prose": "The preceding section isolates two dimensions of the pattern we expect: an \\emph{anticipatory} dimension, in which CEO uncertainty language is elevated while an acquisition remains undisclosed and recedes once it is announced, and a \\emph{cash-concentrated} dimension, in which that elevation is stronger for cash acquisitions than for stock. This section turns those dimensions into formal, falsifiable predictions about \\emph{where} and \\emph{when} the signal appears in a CEO's unscripted answers---not why it appears, a mechanism the framework leaves open. The object of each prediction is the call-varying residual of CEO uncertainty language in the Q\\&A---the component that remains once a CEO's persistent speaking style is netted out, which the next section defines formally---and every prediction is read in descriptive, correlational terms. Timing is measured in event time: $e$ counts calendar quarters relative to a firm's first acquisition announcement, so that $e=-1$ denotes the call in the quarter immediately before it. The focal pre-announcement indicator is $\\mathrm{PreAnnounceQtr} = \\mathbf{1}[e=-1]$, defined for a firm's first acquisition financed at least half in cash. The three hypotheses that follow---H1, H1a, and H1b---are stated here as predictions and confronted with the data by the designs developed below.",
-      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (advisor-cleared; .tex push deferred per user)"
+      "final_prose": "The preceding section isolates two dimensions of the pattern we expect. The first is an \\emph{anticipatory} dimension, in which CEO uncertainty language is elevated while an acquisition remains undisclosed and recedes once it is announced. The second is a \\emph{cash-concentrated} dimension, in which that elevation is stronger for cash acquisitions than for stock. This section turns those dimensions into formal, falsifiable predictions about \\emph{where} and \\emph{when} the signal appears in a CEO's unscripted answers, not why it appears, a mechanism the framework leaves open. The object of each prediction is the call-varying residual of CEO uncertainty language in the Q\\&A, the component that remains once a CEO's persistent speaking style is netted out (defined formally in the next section), and every prediction is read in descriptive, correlational terms. Timing is measured in event time: $e$ counts calendar quarters relative to a firm's first acquisition announcement, so that $e=-1$ denotes the call in the quarter immediately before it, and the focal pre-announcement indicator is $\\mathrm{PreAnnounceQtr}=\\mathbf{1}[e=-1]$, defined for a firm's first acquisition financed at least half in cash. To state the predictions compactly, we write $\\theta_e$ for the shift in residual Q\\&A uncertainty at event position $e$ relative to a firm's own baseline quarters (for cash acquirers, unless a deal-type superscript such as $\\mathrm{stock}$ indicates otherwise), and $\\kappa_e$ for the analogous shift in its cash-to-assets ratio; each hypothesis below is a sign restriction on these shifts, which the designs of Section~2.4 estimate. The three hypotheses, H1, H1a, and H1b, are stated both informally and formally and then confronted with the data.",
+      "prose_status": "RATIFIED 2026-06-13 (user, from PDF) -- v2: hypotheses set off (informal+formal math), dash-free"
     },
     "P2": {
       "order": 2,
@@ -185,8 +189,8 @@
         "all_supported": true,
         "unlocked": true
       },
-      "final_prose": "The first hypothesis, H1, concerns timing: residual Q\\&A uncertainty is elevated in a cash acquirer's pre-announcement quarter, relative to that firm's own other quarters---the anticipatory dimension stated as a falsifiable prediction. That the prediction is not mechanical is clear from the nearest evidence, which runs the other way: \\citet{thewissen2024} document that acquirers manage the tone of their disclosure ahead of stock-for-stock deals, a deliberate adjustment. H1 predicts a different register in a different setting---not tone managed to move the market, but uncertainty language that surfaces in a cash acquirer's answers while the deal is withheld. Consistent with the bounded reading established earlier, the hypothesis takes no stance on whether that surfacing is compliance-constrained or strategically chosen; it asserts only that the language moves, and when.",
-      "prose_status": "DRAFTED-IN-LEDGER 2026-06-13 (advisor-cleared: motive-cut + flatter clause; .tex push deferred)"
+      "final_prose": "The first hypothesis concerns timing. While the deal is withheld, the executive faces questions that bear on it but can neither address nor deny it, so residual uncertainty should run high in the quarter before the announcement and subside once the deal is public. That this is not mechanical is clear from the nearest evidence, which runs the other way. \\citet{thewissen2024} document that acquirers manage the tone of their disclosure ahead of stock-for-stock deals, a deliberate adjustment; H1 predicts a different register in a different setting, not tone managed to move the market but uncertainty language that surfaces in a cash acquirer's answers while the deal is withheld. Consistent with the bounded reading established earlier, the hypothesis takes no stance on whether that surfacing is compliance-constrained or strategically chosen; it asserts only that the language moves, and when.\n\\begin{quote}\n\\textbf{H1 (Timing).}\\\\\n\\emph{Informally:} residual Q\\&A uncertainty is higher in a cash acquirer's pre-announcement quarter than in that same firm's other quarters.\\\\\n\\emph{Formally:} $\\theta_{-1}>0$.\n\\end{quote}",
+      "prose_status": "RATIFIED 2026-06-13 (user, from PDF) -- v2: hypotheses set off (informal+formal math), dash-free"
     },
     "P3": {
       "order": 3,
@@ -244,11 +248,11 @@
       ],
       "prose_gate": {
         "rule": "all propositions confirmed/cleared before prose",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "The second hypothesis sharpens the first by asking where the elevation should concentrate. Cash and stock acquisitions share the disclosure setting, both material and both withheld, yet differ in one respect the design exploits: a cash purchase draws on an accumulated cash position, whereas a stock exchange need not. As developed in the framework, this makes the stock deal a natural placebo, the same withholding bind without the cash commitment, against which a cash acquirer's run-up can be read. The claim is one of concentration rather than strict specificity, and it concerns the run-up in language alone; H1a makes no claim that the underlying cash accumulation is itself peculiar to cash acquirers, and it asserts no cause.\n\\begin{quote}\n\\textbf{H1a (Concentration).}\\\\\n\\emph{Informally:} the pre-announcement elevation in residual uncertainty is larger for cash acquirers than for stock acquirers.\\\\\n\\emph{Formally:} $\\theta_{-1}^{\\,\\mathrm{cash}}>\\theta_{-1}^{\\,\\mathrm{stock}}$.\n\\end{quote}",
+      "prose_status": "RATIFIED 2026-06-13 (user, from PDF) -- v2: hypotheses set off (informal+formal math), dash-free"
     },
     "P4": {
       "order": 4,
@@ -289,11 +293,11 @@
       ],
       "prose_gate": {
         "rule": "all propositions confirmed/cleared before prose",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "The third hypothesis concerns resolution. The residual uncertainty and the acquirer's cash run on different clocks. The uncertainty tracks the undisclosed information and should resolve at announcement, receding once the deal is public even before it closes, whereas the cash that funds the purchase persists on the balance sheet until it is paid at completion. The most discriminating window is the gap between announcement and completion, when the deal is announced but not yet closed: there the language should already have returned to baseline while the cash still sits unspent. That the cash leg is largely mechanical, since cash leaves only when the deal is paid, is by design; H1b predicts the divergence of the two paths, not the level of either.\n\\begin{quote}\n\\textbf{H1b (Resolution).}\\\\\n\\emph{Informally:} residual uncertainty returns to baseline as soon as the deal is announced, even before it closes, whereas the cash that funds it remains in place until completion.\\\\\n\\emph{Formally:} $\\theta_{-1}>0$ and $\\theta_{\\mathrm{gap}}=0$, while $\\kappa_{\\mathrm{gap}}>0$.\n\\end{quote}",
+      "prose_status": "RATIFIED 2026-06-13 (user, from PDF) -- v2: hypotheses set off (informal+formal math), dash-free"
     },
     "P5": {
       "order": 5,
@@ -333,11 +337,11 @@
       ],
       "prose_gate": {
         "rule": "all propositions confirmed/cleared before prose",
-        "all_supported": false,
-        "unlocked": false
+        "all_supported": true,
+        "unlocked": true
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED"
+      "final_prose": "One alternative to this anticipatory reading should be flagged. The pre-announcement rise might reflect not the disclosure bind but analyst scrutiny: analysts spending more of the call on cash and liquidity, mechanically drawing out hedged answers. This is a plausible alternative driver of the run-up, distinct from the framework's two open readings rather than a third version of them, and the design treats it as an identification threat to confront. Its construction and motivation are developed in Section~2.5, and it is put directly to the data as a side analysis in Section~4.1. Flagging it here records that the run-up's most immediate competing explanation is tested, with the verdict reported there; confronting it bounds the alternatives without establishing the disclosure mechanism, which the framework leaves open.",
+      "prose_status": "RATIFIED 2026-06-13 (user, from PDF) -- v2: hypotheses set off (informal+formal math), dash-free"
     }
   },
   "next_action": "[CURRENT 2026-06-13 -- read FIRST; everything after '||' is SUPERSEDED historical log] 2.2 RE-RATIFIED + all four (2.2-2.5) ratified; now PROSE phase (ledger-first): P1+P2 recorded, P3-P5 pending. The 'RE-RATIFY 2.2 from the beginning / NOT re-ratified' directives below are DONE || SCRUTINY REFRAME APPLIED 2026-06-13 (user-approved + advisor): 2.2 P5 leaned to a FLAG -- P5.1 (rival reading) + P5.2 (positioned as an identification threat developed in 2.5 P4, tested/rejected in 4.1); P5.3 (volume-vs-UncQue) + P5.4 (matsumoto plausibility) DROPPED from 2.2 (covered by 2.5 P4.1 + RULE-COH-8 + the co-movement motivation; matsumoto demoted to an optional 2.1 callback). RULE-COH-5 reworded confound -> plausible alternative driver. RE-RATIFY 2.2 from the beginning, then ratify 2.5. Status: reframe applied, prose BLOCKED, NOT re-ratified."

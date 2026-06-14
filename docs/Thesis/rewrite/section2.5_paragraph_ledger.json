@@ -27,7 +27,11 @@
       "C3/C4/C5 numbers are 'bible-verbatim' PER THE CLAIM LEDGER's self-description -- NOT re-checked vs _tables_from_bible.tex this session. At write-time they go through the SAME bible cross-check that closed Catch-3; do not trust from the ledger alone (advisor).",
       "NLM is SOLE authority for papers; ignore mempalace auto-recall."
     ],
-    "coherence_rules_in_force": "RULE-COH-5 (scrutiny = PLAUSIBLE ALTERNATIVE DRIVER / identification threat tested & rejected in 4.1; 2.5 P4 OWNS the motivation, 2.2 P5 only flags; rejecting != mechanism), RULE-COH-8 (CashScrutiny = cash-question VOLUME, distinct from UncQue word-uncertainty -- confirmed in code, gen_empire_did_table.py:73). Boundary: scrutiny VERDICT/RESULTS -> 4.1; presentation-contrast RESULTS -> 4.2 (do not preview)."
+    "coherence_rules_in_force": "RULE-COH-5 (scrutiny = PLAUSIBLE ALTERNATIVE DRIVER / identification threat tested & rejected in 4.1; 2.5 P4 OWNS the motivation, 2.2 P5 only flags; rejecting != mechanism), RULE-COH-8 (CashScrutiny = cash-question VOLUME, distinct from UncQue word-uncertainty -- confirmed in code, gen_empire_did_table.py:73). Boundary: scrutiny VERDICT/RESULTS -> 4.1; presentation-contrast RESULTS -> 4.2 (do not preview).",
+    "prose_style_MANDATORY_2026_06_13": [
+      "NO em-dash ('---') or en-dash ('--') anywhere in thesis PROSE. MANDATORY (user 2026-06-13). Use commas, colons, parentheses, or restructure. Applies to ALL Section 2 prose written or rewritten from here on. (2.1 is LOCKED and still contains '---'; retrofit ONLY on user request.)",
+      "Hypothesis statements must be VISUALLY DISTINCT from the body, NOT buried inline. Each hypothesis gets its informal AND formal statement set off / labeled. Exact display format = user-chosen 2026-06-13. MANDATORY."
+    ]
   },
   "_plan": {
     "section_job": "Validate the construct (convergent + discriminant) and MOTIVATE the scrutiny identification side-test (our measure -> plausible alternative driver -> tested & rejected in 4.1) -- earn trust the residual measures what's claimed BEFORE results.",

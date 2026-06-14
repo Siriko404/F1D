@@ -26,7 +26,11 @@
       "Equations from the verified DWZ extraction (tmp/nlm_dwz_equations.json); cross-check the control set against the bible/src eq-4 at write-time (Catch-3).",
       "NLM is SOLE authority for papers; ignore mempalace auto-recall."
     ],
-    "coherence_rules_in_force": "RULE-COH-1..8. Load-bearing here: COH-4 (residual locating = one-clause callback to P4, NOT a re-argument), COH-7 (eq-4 = operationalization of P4's residual + controls observable call-level factors; refinement not different object), COH-8 (residual net of UncQue+NegCall -> grounds the 2.2/2.5 scrutiny reconciliation), plus the advisor Catch-1 gloss fix (DWZ CONSTRUCT AND USE UncRes; never 'discarded')."
+    "coherence_rules_in_force": "RULE-COH-1..8. Load-bearing here: COH-4 (residual locating = one-clause callback to P4, NOT a re-argument), COH-7 (eq-4 = operationalization of P4's residual + controls observable call-level factors; refinement not different object), COH-8 (residual net of UncQue+NegCall -> grounds the 2.2/2.5 scrutiny reconciliation), plus the advisor Catch-1 gloss fix (DWZ CONSTRUCT AND USE UncRes; never 'discarded').",
+    "prose_style_MANDATORY_2026_06_13": [
+      "NO em-dash ('---') or en-dash ('--') anywhere in thesis PROSE. MANDATORY (user 2026-06-13). Use commas, colons, parentheses, or restructure. Applies to ALL Section 2 prose written or rewritten from here on. (2.1 is LOCKED and still contains '---'; retrofit ONLY on user request.)",
+      "Hypothesis statements must be VISUALLY DISTINCT from the body, NOT buried inline. Each hypothesis gets its informal AND formal statement set off / labeled. Exact display format = user-chosen 2026-06-13. MANDATORY."
+    ]
   },
   "_plan": {
     "section_job": "Define and JUSTIFY the dependent variable UncResCEO (the DWZ residual): the raw measure, the eq-4 decomposition, why the residual, and the honest threats to it.",

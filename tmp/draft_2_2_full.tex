@@ -1,0 +1,38 @@
+% SUBSECTION 2.2 v2 -- hypotheses SET OFF (informal + formal math), DASH-FREE (no '---'/'--').
+% Markers %%...%% split paragraphs for the record script. Formal math = sign restrictions on theta/kappa
+% (the estimands 2.4's MA1/MA2/MA3 estimate): theta_e = shift in residual uncertainty at event pos e vs
+% baseline; kappa_e = same for cash-to-assets. H1: theta_-1>0 (=beta, MA1). H1a: theta_-1^cash>theta_-1^stock
+% (=beta_c>beta_s, MA3). H1b: theta_-1>0, theta_gap=0 (=beta(PRE1)>0, beta(GAP)~0, MA2), kappa_gap>0 (cash persists).
+% Phase C self-scan: NO '---'/'--'; hypotheses distinct (quote blocks); no estimator written (sign-restrictions only,
+% equations stay in 2.4); overclaim clean; P5 stays a flag (not a hypothesis), forward-points to 4.1.
+
+%%FUNNEL%%
+The preceding section isolates two dimensions of the pattern we expect. The first is an \emph{anticipatory} dimension, in which CEO uncertainty language is elevated while an acquisition remains undisclosed and recedes once it is announced. The second is a \emph{cash-concentrated} dimension, in which that elevation is stronger for cash acquisitions than for stock. This section turns those dimensions into formal, falsifiable predictions about \emph{where} and \emph{when} the signal appears in a CEO's unscripted answers, not why it appears, a mechanism the framework leaves open. The object of each prediction is the call-varying residual of CEO uncertainty language in the Q\&A, the component that remains once a CEO's persistent speaking style is netted out (defined formally in the next section), and every prediction is read in descriptive, correlational terms. Timing is measured in event time: $e$ counts calendar quarters relative to a firm's first acquisition announcement, so that $e=-1$ denotes the call in the quarter immediately before it, and the focal pre-announcement indicator is $\mathrm{PreAnnounceQtr}=\mathbf{1}[e=-1]$, defined for a firm's first acquisition financed at least half in cash. To state the predictions compactly, we write $\theta_e$ for the shift in residual Q\&A uncertainty at event position $e$ relative to a firm's own baseline quarters (for cash acquirers, unless a deal-type superscript such as $\mathrm{stock}$ indicates otherwise), and $\kappa_e$ for the analogous shift in its cash-to-assets ratio; each hypothesis below is a sign restriction on these shifts, which the designs of Section~2.4 estimate. The three hypotheses, H1, H1a, and H1b, are stated both informally and formally and then confronted with the data.
+
+%%H1%%
+The first hypothesis concerns timing. While the deal is withheld, the executive faces questions that bear on it but can neither address nor deny it, so residual uncertainty should run high in the quarter before the announcement and subside once the deal is public. That this is not mechanical is clear from the nearest evidence, which runs the other way. \citet{thewissen2024} document that acquirers manage the tone of their disclosure ahead of stock-for-stock deals, a deliberate adjustment; H1 predicts a different register in a different setting, not tone managed to move the market but uncertainty language that surfaces in a cash acquirer's answers while the deal is withheld. Consistent with the bounded reading established earlier, the hypothesis takes no stance on whether that surfacing is compliance-constrained or strategically chosen; it asserts only that the language moves, and when.
+\begin{quote}
+\textbf{H1 (Timing).}\\
+\emph{Informally:} residual Q\&A uncertainty is higher in a cash acquirer's pre-announcement quarter than in that same firm's other quarters.\\
+\emph{Formally:} $\theta_{-1}>0$.
+\end{quote}
+
+%%H1a%%
+The second hypothesis sharpens the first by asking where the elevation should concentrate. Cash and stock acquisitions share the disclosure setting, both material and both withheld, yet differ in one respect the design exploits: a cash purchase draws on an accumulated cash position, whereas a stock exchange need not. As developed in the framework, this makes the stock deal a natural placebo, the same withholding bind without the cash commitment, against which a cash acquirer's run-up can be read. The claim is one of concentration rather than strict specificity, and it concerns the run-up in language alone; H1a makes no claim that the underlying cash accumulation is itself peculiar to cash acquirers, and it asserts no cause.
+\begin{quote}
+\textbf{H1a (Concentration).}\\
+\emph{Informally:} the pre-announcement elevation in residual uncertainty is larger for cash acquirers than for stock acquirers.\\
+\emph{Formally:} $\theta_{-1}^{\,\mathrm{cash}}>\theta_{-1}^{\,\mathrm{stock}}$.
+\end{quote}
+
+%%H1b%%
+The third hypothesis concerns resolution. The residual uncertainty and the acquirer's cash run on different clocks. The uncertainty tracks the undisclosed information and should resolve at announcement, receding once the deal is public even before it closes, whereas the cash that funds the purchase persists on the balance sheet until it is paid at completion. The most discriminating window is the gap between announcement and completion, when the deal is announced but not yet closed: there the language should already have returned to baseline while the cash still sits unspent. That the cash leg is largely mechanical, since cash leaves only when the deal is paid, is by design; H1b predicts the divergence of the two paths, not the level of either.
+\begin{quote}
+\textbf{H1b (Resolution).}\\
+\emph{Informally:} residual uncertainty returns to baseline as soon as the deal is announced, even before it closes, whereas the cash that funds it remains in place until completion.\\
+\emph{Formally:} $\theta_{-1}>0$ and $\theta_{\mathrm{gap}}=0$, while $\kappa_{\mathrm{gap}}>0$.
+\end{quote}
+
+%%FLAG%%
+One alternative to this anticipatory reading should be flagged. The pre-announcement rise might reflect not the disclosure bind but analyst scrutiny: analysts spending more of the call on cash and liquidity, mechanically drawing out hedged answers. This is a plausible alternative driver of the run-up, distinct from the framework's two open readings rather than a third version of them, and the design treats it as an identification threat to confront. Its construction and motivation are developed in Section~2.5, and it is put directly to the data as a side analysis in Section~4.1. Flagging it here records that the run-up's most immediate competing explanation is tested, with the verdict reported there; confronting it bounds the alternatives without establishing the disclosure mechanism, which the framework leaves open.
+%%END%%
