@@ -1,0 +1,452 @@
+{
+  "redteam_report": [
+    {
+      "subsection_id": "abstract",
+      "planners_compared": [
+        "plan1",
+        "plan2",
+        "plan3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "AB.6 uses 'unwound at announcement' as the headline verb for the C1 round-trip ('That elevation is unwound at announcement, becoming indistinguishable from zero...').",
+          "severity": "MINOR",
+          "reason": "The locked body ties 'fully unwound' to the peak-to-COMPLETION swing (section3.3 P3: 'the swing from the pre-announcement peak to completion ... shows that the uncertainty raised ... is fully unwound once the information is public'), NOT to the GAP. The C1 trap forbids reading the GAP drop as a reversal/fall; leading with 'unwound at announcement' drifts toward that over-reading. Plan 2 does pair it with 'becoming indistinguishable from zero', so the claim is not false, but the headline verb should be the GAP-safe phrasing.",
+          "evidence": [
+            "plan2 ABS.6 statement ('That elevation is unwound at announcement, becoming indistinguishable from zero once the deal is public even before it closes')",
+            "section3.3 P3 final_prose ('fully unwound once the information is public' tied to peak-to-completion swing 0.0723)",
+            "claim_findings_ledger.json C1 risks ('do not over-read the negative POST'; resolution is the round-trip contrast, GAP ~0)"
+          ],
+          "which_planner": "plan2"
+        },
+        {
+          "flaw": "Sample-scale numeral inconsistency across plans: plan1 AB.3 omits firm/call counts; plan2 ABS.3 uses '~1,884 firms'; plan3 A3 uses 'roughly 88,000 calls across about 1,900 firms'.",
+          "severity": "MINOR",
+          "reason": "All are within the abstract convention (sample-scale numbers allowed) and none contradict the Table 1 anchor (88,205 calls / 1,884 firms). Not a ceiling or sign error; only a consistency choice. Synthesis standardizes to the exact Table 1 anchor as optional, with years as the floor.",
+          "evidence": [
+            "section3.1 P4 final_prose (88,205 calls / 1,884 firms / 2002 to 2018)",
+            "DraftTemplate.txt L48-50 (numbers allowed only for sample scale)"
+          ],
+          "which_planner": "plan2,plan3"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Lead the C1 abstract proposition (AB.6) with 'becomes indistinguishable from zero once the deal is announced', and drop 'unwound at announcement' as the headline verb.",
+          "reason": "GAP-safe phrasing matches the body's pairing of 'fully unwound' with the peak-to-completion swing and pre-empts the C1 reversal trap.",
+          "evidence": [
+            "section3.3 P3+P5 final_prose",
+            "claim_findings_ledger.json C1 thinnest_claim ('Frame as the round-trip contrast; do not over-read the negative POST')"
+          ]
+        },
+        {
+          "decision": "Abstract carries ZERO citations and ZERO author names; the measure is named descriptively ('a residual measure of CEO question-and-answer uncertainty ... net of persistent speaking style'). All three plans did this correctly; adopted.",
+          "reason": "The abstract-citation convention forbids \\citet; DWZ and all names live only in the intro and Section 2.",
+          "evidence": [
+            "DraftTemplate.txt L51-54",
+            "Task abstract-citation rule"
+          ]
+        },
+        {
+          "decision": "Keep the abstract's correlational/no-mechanism ceiling IMPLICIT (AB.8 contribution close: 'a within-firm correlational regularity rather than a tested mechanism'); add no dedicated caveat sentence.",
+          "reason": "The abstract convention has no honesty-caveat move (unlike intro M3 and conclusion M3); the ceiling is carried by the contribution wording. All three plans agreed.",
+          "evidence": [
+            "DraftTemplate.txt L33-54 (no caveat move in the abstract)",
+            "advisor guidance (abstract caveat stays implicit)"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "1",
+      "planners_compared": [
+        "plan1",
+        "plan2",
+        "plan3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Advisor INITIALLY flagged plan1 IN.3/IN.4 for assigning specific NLM source_ids to matsumoto2011 (a1dacc9f...) and keown1981 (6dc00775...), and plan2/plan3 for asserting those receipts 'SUPPORTED', on the basis that both papers appear under 'support_not_uploaded' in the 2.1 papers list. INVESTIGATED AND CLEARED, not a flaw.",
+          "severity": "MINOR",
+          "reason": "Primary-source check of the full 2.1 ledger refutes the fabrication concern: matsumoto2011 carries keyed nlm_source_id a1dacc9f-2bee-46ba-9261-496fd687c8e6 (P2.1 verdict SUPPORTED) and keown1981 carries 6dc00775-74d4-43e7-8af8-60376e877533 (P6.3 verdict SUPPORTED, 'uploaded 2026-06-12'). The 'support_not_uploaded' list is STALE, predating the uploads. The planners correctly inherited verified receipts; no integrity flaw. Logged here only to document the discriminating check the referee ran.",
+          "evidence": [
+            "section2.1_paragraph_ledger.json line 710/717 (matsumoto2011 nlm_source_id a1dacc9f..., P2.1 SUPPORTED)",
+            "section2.1_paragraph_ledger.json line 1742/1798 (keown1981 6dc00775..., P6.3 SUPPORTED, 'uploaded 2026-06-12')",
+            "section2.1 papers index lines 169-175 (stale support_not_uploaded list still naming Matsumoto and Keown)"
+          ],
+          "which_planner": "plan1,plan2,plan3"
+        },
+        {
+          "flaw": "plan2 INT.7 and plan3 I8 insert a convergent-validity (C5) clause into intro Move 2 (plan2: 'validate the residual against established uncertainty indices'; plan3 I8: a full sentence on PRisk/EPU with 'genuine uncertainty rather than a speaking artifact'). plan1 omits it entirely.",
+          "severity": "MINOR",
+          "reason": "C5 (convergent validity) is explicitly listed in task scope as a measurement validation that is NOT a headline and should NOT be elevated in any unit. plan3 I8 in particular reads as a near-standalone finding sentence, risking C5 being read as a fifth enumerated result alongside C2/C1/C6/C4. Not a ceiling violation per se, but a coverage/scope drift; the conservative move is to omit it from the intro preview.",
+          "evidence": [
+            "Task FINDINGS SCOPE ('C5 convergent validity = measurement validation, not a headline ... NOT elevated in any unit')",
+            "plan3 I8 statement (full convergent-validity sentence in M2)",
+            "claim_findings_ledger.json C5 (WEAK; one-tailed; led-with only at the 2.5 rewrite, not the intro)"
+          ],
+          "which_planner": "plan2,plan3"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Synthesize the intro Move-1 cite cluster exactly as the planners built it (matsumoto2011; verrecchia1983/dye1985; basic1988/rule10b5; hollander2010; thewissen2024/ragozzino2024/keown1981), each typed external-NLM with its 2.1 source_id, plus the gap statement IN.6 typed framing. No 'needs NLM verification' note is added.",
+          "reason": "All ten Move-1 external cites carry keyed source_ids and SUPPORTED verdicts in the 2.1 ledger; the gap statement is the one negative, correctly typed framing-nonverifiable. No new external claim is introduced, so no new NLM query is required.",
+          "evidence": [
+            "section2.1 P1.1/P1.2/P1.3/P1.4/P2.1/P2.2/P3.1/P6.1/P6.2/P6.3 verifications all SUPPORTED",
+            "section2.1 P6.4 (gap, INCONCLUSIVE_MANUAL, framing-nonverifiable)",
+            "thesis_draft.tex L130-178 (all ten are live bibitems; four dropped keys absent)"
+          ]
+        },
+        {
+          "decision": "OMIT the C5 convergent-validity clause from intro Move 2 (adopt plan1's omission over plan2/plan3's inclusion). If an editor later wants it, cap it at one restrained clause using the user-override register (significant positive association with PRisk/US-EPU/GEPU; one-tailed as a non-foregrounded caveat) and never as a fifth enumerated finding.",
+          "reason": "Task scope keeps C5 out of all three units as a non-headline; omission is the cleanest convention-faithful choice and removes the risk of a fifth-finding reading.",
+          "evidence": [
+            "Task FINDINGS SCOPE (C5 not elevated)",
+            "claim_findings_ledger.json _USER_OVERRIDE_2026_06_14 (C5 leads only at the 2.5 rewrite)",
+            "plan1 intro (no C5 clause)"
+          ]
+        },
+        {
+          "decision": "Keep the no-identification/correlational caveat (IN.13) as a STANDALONE proposition in Move 3, not folded into a result prop.",
+          "reason": "The convention's honesty requirement and the task rule both demand the intro state the caveat EXPLICITLY; a standalone prop ensures it cannot be omitted. plan1 IN.12, plan2 INT.13, and plan3 I14 all did this; adopted.",
+          "evidence": [
+            "DraftTemplate.txt L89-92",
+            "Task HARD RULE (intro states no-identification/correlational caveat EXPLICITLY)"
+          ]
+        },
+        {
+          "decision": "Signal C1's strength WITHIN the timing item (IN.10 'this round-trip contrast is the study's strongest result'), preserving body order C2 -> C1 -> C6 -> C4 ('First/Second/Finally' + rule-out) rather than reordering C1 to first.",
+          "reason": "Body order is C2 (3.2) -> C1 (3.3) -> C6 (3.4) -> C4 (4.1); the claim ceiling marks C1 strongest. Signaling strength in-place keeps the enumerated preview aligned to the section structure. plan1 IN.9 and plan3 I11 did this.",
+          "evidence": [
+            "claim_findings_ledger.json rank 1 = C1 (STRONGEST)",
+            "section3.2/3.3/3.4/4.1 final_prose order",
+            "Task BODY ORDER note (C1's strength signaled within the timing item, not by reordering)"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "5",
+      "planners_compared": [
+        "plan1",
+        "plan2",
+        "plan3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "plan3 K8 lists, as future research, 'applying a two-step correction to confirm the inference', explicitly framed as 'NOT a generated-regressand disclaimer, framed as future work'.",
+          "severity": "MINOR",
+          "reason": "E1 keeps the Pagan/generated-regressand/two-step-SE issue OUT of the abstract, intro, and conclusion entirely. Framing the two-step correction as future work still imports the generated-regressand concern into the conclusion, which the convention and E1 keep clean (it lives in Sections 2.3/2.4). The conclusion's future-research move should not reference it.",
+          "evidence": [
+            "plan3 K8 statement + reason ('applying a two-step correction to confirm the inference'; 'AUDIT_PROTOCOL E1 ... here framed only as optional future robustness')",
+            "AUDIT_PROTOCOL E1 (no Pagan/generated-regressand disclaimer in these units)",
+            "section2.3 P3 final_prose (the two-step caveat is a body-only disclosure)"
+          ],
+          "which_planner": "plan3"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "DROP plan3 K8's two-step-correction future-work item. Synthesize the future-research close (CO.7) from plan1 CO.6 / plan2 CON.7: other classes of withheld material events + designs able to separate compliance-constrained from strategic silence.",
+          "reason": "Removes the E1 violation while preserving a substantive, ceiling-faithful future-research move that flows from the open mechanism and the two unresolved readings.",
+          "evidence": [
+            "plan1 CO.6 + plan2 CON.7 (clean future-research set)",
+            "AUDIT_PROTOCOL E1",
+            "section2.2 P5 final_prose (compliance-vs-strategic left open)"
+          ]
+        },
+        {
+          "decision": "Include BOTH the core limitations (CO.5: correlational/no-identification/mechanism-open/war-chest-unestablished/two equivalent readings) AND the further boundaries (CO.6: CEO >=5-call selection toward larger firms; the underpowered scrutiny null). Adopt plan2 CON.6 + plan3 K6/K7 over plan1's single CO.5, which omits the selection and underpowered-null boundaries.",
+          "reason": "The body discloses both boundary classes (selection in 3.1/3.2; failure-to-find-not-equivalence in 4.1); the conclusion's limitations move should voice them. plan1's conclusion under-covered these.",
+          "evidence": [
+            "section3.1 P4 / section3.2 P2 final_prose (selection toward larger, more-covered firms)",
+            "section4.1 P4 final_prose (failure to find, not equivalence; ~89% of calls draw no scrutiny)",
+            "claim_findings_ledger.json C4 referee_proof (underpowered)"
+          ]
+        },
+        {
+          "decision": "Keep the conclusion at ~zero citations, drop the roadmap, and do NOT re-run the literature review; name the measure descriptively only. All three plans did this; adopted.",
+          "reason": "The conclusion convention is drastically shorter, ~zero citations, adds implications/limitations/future, and drops the roadmap and lit review.",
+          "evidence": [
+            "DraftTemplate.txt L157-179",
+            "DraftTemplate.txt L175-178 (differs-from-intro: drops roadmap, no lit review)"
+          ]
+        }
+      ]
+    }
+  ],
+  "coverage_matrix": [
+    {
+      "claim": "C2 (pre-announcement run-up: residual uncertainty elevated in the quarter before a cash deal, not for stock)",
+      "subsection": "abstract",
+      "tables": [
+        "tab:empire_building_did"
+      ],
+      "status": "COVERED (AB.5, qualitative, with stock side-by-side; matches col 2 positive+sig, col 6 null)"
+    },
+    {
+      "claim": "C2 (pre-announcement run-up)",
+      "subsection": "1",
+      "tables": [
+        "tab:empire_building_did"
+      ],
+      "status": "COVERED (IN.9, M3 'First', qualitative; matches col 2/col 6)"
+    },
+    {
+      "claim": "C2 (pre-announcement run-up)",
+      "subsection": "5",
+      "tables": [
+        "tab:empire_building_did"
+      ],
+      "status": "COVERED (CO.2, M2 qualitative summary; matches col 2/col 6)"
+    },
+    {
+      "claim": "C1 (differential timing: indistinguishable from zero once announced; cash persists to completion; STRONGEST)",
+      "subsection": "abstract",
+      "tables": [
+        "tab:empire_drop_matched"
+      ],
+      "status": "COVERED (AB.6, led by 'indistinguishable from zero once announced'; GAP ~0 n.s., cash persists; negative POST not read)"
+    },
+    {
+      "claim": "C1 (differential timing, strongest)",
+      "subsection": "1",
+      "tables": [
+        "tab:empire_drop_matched"
+      ],
+      "status": "COVERED (IN.10, M3 'Second', signaled strongest; GAP ~0, two clocks; POST not read)"
+    },
+    {
+      "claim": "C1 (differential timing, strongest)",
+      "subsection": "5",
+      "tables": [
+        "tab:empire_drop_matched"
+      ],
+      "status": "COVERED (CO.2, M2; 'indistinguishable from zero once announced', cash persists to completion)"
+    },
+    {
+      "claim": "C6 (cash-vs-stock gap via the FORMAL pooled Wald test; concentration-not-strict-specificity; cause open)",
+      "subsection": "abstract",
+      "tables": [
+        "tab:empire_cashspec"
+      ],
+      "status": "COVERED (AB.7, 'survives a formal pooled test'; matches diff 0.0983 p=.039; not Gelman-Stern)"
+    },
+    {
+      "claim": "C6 (formal pooled cash-specificity)",
+      "subsection": "1",
+      "tables": [
+        "tab:empire_cashspec"
+      ],
+      "status": "COVERED (IN.11, M3 'Finally'; formal Wald, EFFECT/CAUSE split, mechanism open)"
+    },
+    {
+      "claim": "C6 (formal pooled cash-specificity)",
+      "subsection": "5",
+      "tables": [
+        "tab:empire_cashspec"
+      ],
+      "status": "COVERED (CO.2, M2; 'formal pooled test'; CO.5 keeps war-chest cause open)"
+    },
+    {
+      "claim": "C4 (analyst scrutiny ruled out: does not account for THIS run-up, not 'scrutiny never matters')",
+      "subsection": "abstract",
+      "tables": [
+        "tab:reason_gating",
+        "tab:cash_scrutiny_channel"
+      ],
+      "status": "COVERED (AB.8, 'not explained by analysts devoting more of the call to cash questions'; hedged to this run-up)"
+    },
+    {
+      "claim": "C4 (scrutiny rule-out)",
+      "subsection": "1",
+      "tables": [
+        "tab:reason_gating",
+        "tab:cash_scrutiny_channel"
+      ],
+      "status": "COVERED (IN.12, M3; survives scrutiny + interaction; 'this run-up, not never matters')"
+    },
+    {
+      "claim": "C4 (scrutiny rule-out)",
+      "subsection": "5",
+      "tables": [
+        "tab:reason_gating",
+        "tab:cash_scrutiny_channel"
+      ],
+      "status": "COVERED (CO.3, M2; CO.6 adds the underpowered/failure-to-find boundary)"
+    },
+    {
+      "claim": "UncResCEO measure named descriptively (no DWZ cite in abstract; named + pointed to Section 2 in intro)",
+      "subsection": "abstract",
+      "tables": [],
+      "status": "COVERED (AB.4, 'residual measure of CEO question-and-answer uncertainty ... net of persistent speaking style'; zero citations)"
+    },
+    {
+      "claim": "UncResCEO measure named",
+      "subsection": "1",
+      "tables": [],
+      "status": "COVERED (IN.7, named + DWZ origin + pointed to Section 2; not re-derived)"
+    },
+    {
+      "claim": "UncResCEO measure named",
+      "subsection": "5",
+      "tables": [],
+      "status": "COVERED (CO.1, named descriptively, mirrors intro)"
+    },
+    {
+      "claim": "Cash-acquisition setting + stock placebo named",
+      "subsection": "abstract",
+      "tables": [],
+      "status": "COVERED (AB.4)"
+    },
+    {
+      "claim": "Cash-acquisition setting + stock placebo named",
+      "subsection": "1",
+      "tables": [],
+      "status": "COVERED (IN.8)"
+    },
+    {
+      "claim": "Cash-acquisition setting named",
+      "subsection": "5",
+      "tables": [],
+      "status": "COVERED (CO.1/CO.2)"
+    },
+    {
+      "claim": "Sample 2002 to 2018 (sample-scale numbers only)",
+      "subsection": "abstract",
+      "tables": [
+        "tab:summary_stats"
+      ],
+      "status": "COVERED (AB.3; years + optional 88,205/1,884 anchor)"
+    },
+    {
+      "claim": "Sample 2002 to 2018",
+      "subsection": "1",
+      "tables": [
+        "tab:summary_stats"
+      ],
+      "status": "COVERED (IN.8; 2002 to 2018, 88,205 calls / 1,884 firms)"
+    },
+    {
+      "claim": "Sample 2002 to 2018",
+      "subsection": "5",
+      "tables": [],
+      "status": "N/A (conclusion drops data-construction detail; covered by mirror to intro)"
+    },
+    {
+      "claim": "H1 (run-up) reflected",
+      "subsection": "1",
+      "tables": [
+        "tab:empire_building_did"
+      ],
+      "status": "COVERED (via C2 in IN.9; H1 is the run-up hypothesis)"
+    },
+    {
+      "claim": "H1a (cash-concentration) reflected",
+      "subsection": "1",
+      "tables": [
+        "tab:empire_cashspec"
+      ],
+      "status": "COVERED (via C6 in IN.11; formal pooled difference)"
+    },
+    {
+      "claim": "H1b (differential-timing/resolution) reflected",
+      "subsection": "1",
+      "tables": [
+        "tab:empire_drop_matched"
+      ],
+      "status": "COVERED (via C1 in IN.10; two-clocks resolution)"
+    },
+    {
+      "claim": "Explicit no-identification / correlational caveat (intro AND conclusion)",
+      "subsection": "1",
+      "tables": [],
+      "status": "COVERED (IN.13, standalone caveat prop)"
+    },
+    {
+      "claim": "Explicit no-identification / correlational caveat",
+      "subsection": "5",
+      "tables": [],
+      "status": "COVERED (CO.5, standalone limitations prop)"
+    },
+    {
+      "claim": "Roadmap present in intro, ABSENT in abstract and conclusion",
+      "subsection": "abstract",
+      "tables": [],
+      "status": "COVERED (no roadmap; convention honored)"
+    },
+    {
+      "claim": "Roadmap",
+      "subsection": "1",
+      "tables": [],
+      "status": "COVERED (IN.14, matches II/III/IV/V; scrutiny in Section 4)"
+    },
+    {
+      "claim": "Roadmap dropped",
+      "subsection": "5",
+      "tables": [],
+      "status": "COVERED (no roadmap; CO.7 ends on future research)"
+    },
+    {
+      "claim": "E1: no Pagan/generated-regressand disclaimer in any of the three units (incl. not as future work)",
+      "subsection": "5",
+      "tables": [],
+      "status": "COVERED (plan3 K8 two-step-correction item DROPPED; CO.7 clean)"
+    },
+    {
+      "claim": "Citations high in intro Move 1; ~zero in abstract and conclusion",
+      "subsection": "abstract",
+      "tables": [],
+      "status": "COVERED (zero \\citet)"
+    },
+    {
+      "claim": "Citations",
+      "subsection": "1",
+      "tables": [],
+      "status": "COVERED (10 SUPPORTED external-NLM cites in M1 + DWZ named in M2; all live bibitems)"
+    },
+    {
+      "claim": "Citations",
+      "subsection": "5",
+      "tables": [],
+      "status": "COVERED (~zero; measure named descriptively only)"
+    },
+    {
+      "claim": "C3 (discriminant, DROPPED 2026-06-14), C5 (convergent validity), C7 (presentation texture) NOT elevated in any unit",
+      "subsection": "abstract",
+      "tables": [],
+      "status": "COVERED (none appear; abstract findings capped to C2/C1/C6/C4)"
+    },
+    {
+      "claim": "C3/C5/C7 not elevated",
+      "subsection": "1",
+      "tables": [],
+      "status": "COVERED (C5 clause omitted from M2 per synthesis decision; C3/C7 absent)"
+    },
+    {
+      "claim": "C3/C5/C7 not elevated",
+      "subsection": "5",
+      "tables": [],
+      "status": "COVERED (none raised)"
+    },
+    {
+      "claim": "Qualitative results only: no coefficient/SE/p-value/t-stat/economic-magnitude percentage in any statement",
+      "subsection": "abstract",
+      "tables": [],
+      "status": "COVERED (numbers confined to numbers[]/evidence basis fields; statements qualitative)"
+    },
+    {
+      "claim": "Qualitative results only",
+      "subsection": "1",
+      "tables": [],
+      "status": "COVERED (statements qualitative; sample-scale numerals only)"
+    },
+    {
+      "claim": "Qualitative results only",
+      "subsection": "5",
+      "tables": [],
+      "status": "COVERED (statements qualitative; no numerals in CO statements)"
+    }
+  ]
+}

@@ -1,0 +1,315 @@
+{
+  "subsection_id": "1",
+  "title": "Introduction (four moves: context/gap; objective+method/sample; preview; roadmap)",
+  "purpose": {
+    "statement": "Deliver the four introduction convention moves in order: M1 (context + the disclosure-bind phenomenon + the literature gap, with HIGH-density external-NLM positioning cites drawn only from the 16 live bibitems); M2 (the research question + the UncResCEO measure named and pointed to Section 2 + the cash-acquisition setting + sample 2002 to 2018); M3 (the longest move: a QUALITATIVE 'First/Second/Finally' preview of C2 run-up, C1 two-clocks timing, C6 formal cash-concentration, plus the C4 scrutiny rule-out, with an EXPLICIT no-identification / correlational caveat as its own proposition); M4 (the section roadmap matching the real II/III/IV/V structure, scrutiny in Section 4). We-voice for our actions/findings; present tense for findings/structure; past tense for data construction; impersonal voice for the paper and prior literature.",
+    "reason": "DraftTemplate's INTRODUCTION convention requires these four moves at the stated depth, HIGH citation density in M1, the longest part being the findings preview (M3), and the near-universal roadmap (M4). The claim ceiling caps M3 to C1/C2/C6 + the C4 rule-out; the intro states the no-identification caveat explicitly (the convention's honesty requirement); the measure/equations are NAMED and pointed to Section 2, not re-derived.",
+    "evidence": [
+      "DraftTemplate.txt L66-93 (INTRODUCTION: 4 moves in order; M1 high-citation context+gap; M2 objective+method/sample; M3 longest enumerated preview; M4 roadmap; we-voice; QUALITATIVE preview matching table sign/significance)",
+      "claim_findings_ledger.json thin_claim_ceiling + register_that_stands (correlational/no-identification/concentration-not-specificity/supportive-not-definitive/mechanism-open)",
+      "thesis_draft.tex L130-178 (16 live bibitems; four dropped keys absent)",
+      "section2.1 P1-P7 final_prose (the body framing the intro motivates)"
+    ]
+  },
+  "delivers_claims": [
+    "C2",
+    "C1",
+    "C6",
+    "C4"
+  ],
+  "tables_referenced": [
+    "tab:empire_building_did",
+    "tab:empire_drop_matched",
+    "tab:empire_cashspec",
+    "tab:reason_gating",
+    "tab:cash_scrutiny_channel",
+    "tab:summary_stats"
+  ],
+  "proposition_chain": [
+    {
+      "prop_id": "IN.1",
+      "statement": "Earnings calls, and especially the unscripted question-and-answer session, are a setting in which managers' language carries information beyond the scripted presentation.",
+      "role": "premise",
+      "type": "external-NLM",
+      "reason": "M1 opening context: establishes the venue and that Q&A language is informative, the apparatus the paper inherits. SUPPORTED in the 2.1 ledger.",
+      "evidence": [
+        "DraftTemplate.txt L74-75 (M1 = context + phenomenon, HIGH citation density)",
+        "section2.1 P2 final_prose (matsumoto2011: discussion carries information content beyond the presentation)",
+        "section2.1 P2.1 verification SUPPORTED (matsumoto2011 nlm_source_id a1dacc9f-2bee-46ba-9261-496fd687c8e6)"
+      ],
+      "register_locks": [
+        "correlational"
+      ],
+      "depends_on": []
+    },
+    {
+      "prop_id": "IN.2",
+      "statement": "Disclosure theory holds that an informed manager may rationally withhold private information when disclosure is costly, and that non-disclosure can persist in equilibrium because outside investors cannot distinguish a manager who is uninformed from one who is informed but silent, so a withholding state is itself informative.",
+      "role": "premise",
+      "type": "external-NLM",
+      "reason": "M1 context (cont.): installs the disclosure-state lens, the theoretical foundation that a withholding state is meaningful. Theory is the LENS (voluntary withholding); the legal cites in IN.3 establish THIS firm is in such a state (do not conflate).",
+      "evidence": [
+        "DraftTemplate.txt L74-75 (M1 cluster prior studies, HIGH citation density)",
+        "section2.1 P1 final_prose (Verrecchia threshold withholding; Dye non-disclosure sustained)",
+        "section2.1 P1.1 verification SUPPORTED (verrecchia1983 b919b243-8399-4230-8bbc-c352fffb47d7)",
+        "section2.1 P1.2 verification SUPPORTED (dye1985 1fd937e7-d055-4b0e-8c17-ea6df60969d4)"
+      ],
+      "register_locks": [
+        "correlational"
+      ],
+      "depends_on": [
+        "IN.1"
+      ]
+    },
+    {
+      "prop_id": "IN.3",
+      "statement": "A firm privately committed to an acquisition it has not announced sits in a concrete such state: preliminary merger negotiations can be material before any definitive agreement, and although the firm may stay silent it may not mislead once it speaks, so the executive can neither confirm nor deny the pending deal and is left to answer around it.",
+      "role": "premise",
+      "type": "external-NLM",
+      "reason": "M1 core phenomenon (the disclosure bind), the paper's organizing primitive, grounded in the legal setting. Materiality scoped to the acquirer (Basic = 'can be material', not 'every deal is MNPI'); no legal-gag overclaim.",
+      "evidence": [
+        "DraftTemplate.txt L74-75 (M1 establish the phenomenon)",
+        "section2.1 P1 final_prose + _plan guardrails (no legal gag; scope to acquirer; compliance-vs-strategic OPEN)",
+        "section2.1 P1.3 verification SUPPORTED (basic1988 98028735-470d-40b3-ae45-bbca761271f9: materiality probability x magnitude)",
+        "section2.1 P1.4 verification SUPPORTED (basic1988 silence-not-misleading + rule10b5 half-truth)"
+      ],
+      "register_locks": [
+        "correlational",
+        "mechanism-open"
+      ],
+      "depends_on": [
+        "IN.2"
+      ]
+    },
+    {
+      "prop_id": "IN.4",
+      "statement": "When a manager cannot answer directly, the constraint can surface in the words themselves; non-answers are common and not informationally empty, since in a large share of calls managers leave requested information undisclosed and silence itself speaks.",
+      "role": "inference",
+      "type": "external-NLM",
+      "reason": "M1 mechanism bridge: connects the bind to elevated uncertainty language, motivating measuring language rather than the incidence of silence. SUPPORTED in 2.1.",
+      "evidence": [
+        "DraftTemplate.txt L74-75 (M1 phenomenon)",
+        "section2.1 P3 final_prose (hollander2010: roughly six of ten calls withhold requested information; silence speaks)",
+        "section2.1 P3.1 verification SUPPORTED (hollander2010 62b15593-80b6-4fbe-a304-c74553ded616)"
+      ],
+      "register_locks": [
+        "correlational"
+      ],
+      "depends_on": [
+        "IN.3"
+      ]
+    },
+    {
+      "prop_id": "IN.5",
+      "statement": "The nearest prior work reads deal-related language along other dimensions, acquirers managing disclosure tone before stock-for-stock deals and the volume of strategy vocabulary on the calls of acquisitive firms, and documents that much of a merger's price reaction precedes its public announcement, but in prices and managed tone rather than in unscripted uncertainty language.",
+      "role": "premise",
+      "type": "external-NLM",
+      "reason": "M1 gap setup: positions against the closest neighbors (thewissen2024, ragozzino2024, keown1981) to expose the empty cell. keown cited for the PRICE-RUN-UP FACT only, not its insider-trading mechanism (per 2.1 guardrail). All three SUPPORTED in 2.1.",
+      "evidence": [
+        "DraftTemplate.txt L74-75 (M1 expose the gap)",
+        "section2.1 P6 final_prose (thewissen2024 tone management before stock deals; ragozzino2024 strategy vocabulary; keown1981 pre-announcement price run-up)",
+        "section2.1 P6.1 SUPPORTED (thewissen2024 731d56ed-c42a-4280-84eb-eec23f8be9b3); P6.2 SUPPORTED (ragozzino2024 f84c6cd2-859a-4053-9ad9-873f1b3f5a08); P6.3 SUPPORTED (keown1981 6dc00775-74d4-43e7-8af8-60376e877533)"
+      ],
+      "register_locks": [
+        "correlational",
+        "supportive-not-definitive"
+      ],
+      "depends_on": [
+        "IN.4"
+      ]
+    },
+    {
+      "prop_id": "IN.6",
+      "statement": "To our knowledge no prior work reads uncertainty language in the unscripted Q&A in the anticipatory window before a withheld deal; we offer this as a positioning claim about where the contribution sits, not a tested mechanism.",
+      "role": "inference",
+      "type": "framing",
+      "reason": "M1 gap close: the explicit gap statement. Typed framing because a negative cannot be NLM-proven; flagged 'to our knowledge'. The most likely claim to need walking back (the everhart/gokkaya scar), so kept hedged.",
+      "evidence": [
+        "DraftTemplate.txt L74-75 (M1 gap)",
+        "section2.1 P6 final_prose / P6.4 (framing-nonverifiable, INCONCLUSIVE_MANUAL: 'to our knowledge' gap, keep)",
+        "Task external-literature rule (the gap statement is typed framing; mark and keep)"
+      ],
+      "register_locks": [
+        "correlational",
+        "supportive-not-definitive"
+      ],
+      "depends_on": [
+        "IN.5"
+      ]
+    },
+    {
+      "prop_id": "IN.7",
+      "statement": "The purpose of this study is to ask whether CEO question-and-answer uncertainty tracks a deal's passage from private to public: whether it is elevated while an acquisition is withheld and recedes once it is announced. We construct a residual measure of CEO question-and-answer uncertainty (UncResCEO) that nets out each CEO's persistent speaking style, following the decomposition of the call-language literature, and defer its construction and the estimating equations to Section 2.",
+      "role": "transition",
+      "type": "design-method",
+      "reason": "M2 objective + method: the explicit pivot ('The purpose of this study is to...'), states the research question (the mirror target for the conclusion's M1), and NAMES the measure pointing to Section 2 (boundary: names, does not re-derive). DWZ may be named here as the measure's origin (allowed in the intro, unlike the abstract).",
+      "evidence": [
+        "DraftTemplate.txt L76-77 (M2 = objective + method/sample; 'The purpose of this study is to...')",
+        "section2.2 P1 final_prose (predictions about where/when the signal appears)",
+        "section2.3 P2 final_prose (UncResCEO = eq-4 residual net of persistent style; DWZ construct it, our contribution is the reading)",
+        "variable_ledger.json UncResCEO.definition",
+        "Task boundary rule (intro NAMES measure + equations and points to Section 2)"
+      ],
+      "register_locks": [
+        "correlational",
+        "no-identification"
+      ],
+      "depends_on": [
+        "IN.6"
+      ]
+    },
+    {
+      "prop_id": "IN.8",
+      "statement": "We study how this measure behaves around cash acquisitions, using cash deals against a stock-acquisition placebo that shares the same withholding setting, on United States public, non-financial, non-utility firms' earnings calls from 2002 to 2018.",
+      "role": "premise",
+      "type": "design-method",
+      "reason": "M2 method/sample: names the cash-acquisition setting, the stock-placebo logic, and the sample (past tense for data construction). Sample-scale numbers permitted. C5 convergent validity is NOT inserted here (kept out of the intro preview; see synthesis decision SD3).",
+      "evidence": [
+        "DraftTemplate.txt L76-77 + L88 (M2 sample; past tense for data)",
+        "section2.1 P5 / section2.2 P3 final_prose (cash vs stock placebo: same bind minus the cash commitment)",
+        "section3.1 P0 + P3 + P4 final_prose (Capital IQ + SDC, U.S. public non-financial non-utility, 2002 to 2018; 88,205 calls / 1,884 firms)"
+      ],
+      "register_locks": [
+        "concentration-not-strict-specificity"
+      ],
+      "depends_on": [
+        "IN.7"
+      ]
+    },
+    {
+      "prop_id": "IN.9",
+      "statement": "First, residual CEO uncertainty is elevated in the quarter before a cash acquisition, relative to the same firm's other quarters, with no comparable rise before stock acquisitions.",
+      "role": "result",
+      "type": "result-number",
+      "reason": "M3 preview finding 1 (C2, H1): the run-up, enumerated 'First'. The cash-vs-stock side here is the descriptive side-by-side, distinct from the formal test (IN.11). Qualitative; matches table sign/significance.",
+      "evidence": [
+        "DraftTemplate.txt L78-79 + L89-92 (M3 enumerated preview, QUALITATIVE, must match sign/significance)",
+        "section3.2 P1 + P4 final_prose (cash residual elevated, survives two-tailed; stock arm not significant)",
+        "claim_findings_ledger.json C2"
+      ],
+      "numbers": [
+        "cash UncResCEO positive + sig, two-tailed p=.0074 (tab:empire_building_did col 2); stock null (col 6)"
+      ],
+      "register_locks": [
+        "correlational",
+        "no-identification",
+        "concentration-not-strict-specificity"
+      ],
+      "depends_on": [
+        "IN.8"
+      ]
+    },
+    {
+      "prop_id": "IN.10",
+      "statement": "Second, this elevation is anticipatory: it becomes indistinguishable from zero as soon as the deal is announced, even before it closes, whereas the cash that funds the purchase persists on the balance sheet until completion, two paths on different clocks; this round-trip contrast is the study's strongest result.",
+      "role": "result",
+      "type": "result-number",
+      "reason": "M3 preview finding 2 (C1, H1b, strongest): signals C1's strength within the timing item rather than by reordering. C-trap C1: 'indistinguishable from zero once announced' at the GAP, NEVER 'falls/reverses'; the negative POST is not read.",
+      "evidence": [
+        "DraftTemplate.txt L78-79 (M3)",
+        "section3.3 P2 + P3 + P5 final_prose (residual spikes PRE1, ~0 at GAP; cash persists; claim is the contrast; do not over-read negative POST)",
+        "claim_findings_ledger.json C1 (STRONGEST; PRE1 0.0473***, GAP 0.0018 n.s.; PRE1-minus-POST 0.0723***)"
+      ],
+      "numbers": [
+        "residual GAP ~0 n.s., PRE1-minus-GAP 0.0455** (tab:empire_drop_matched col 1); cash GAP persists, GAP-minus-POST 0.0210*** (col 2)"
+      ],
+      "register_locks": [
+        "correlational",
+        "no-identification",
+        "mechanism-open"
+      ],
+      "depends_on": [
+        "IN.9"
+      ]
+    },
+    {
+      "prop_id": "IN.11",
+      "statement": "Finally, the run-up concentrates in cash acquisitions rather than stock acquisitions, a difference that survives a formal pooled test of cash-specificity, though we read it as concentration rather than strict specificity, and the cash-accumulation mechanism behind it is left open.",
+      "role": "result",
+      "type": "result-number",
+      "reason": "M3 preview finding 3 (C6, H1a): cash-concentration, enumerated 'Finally'. C-trap C6: the FORMAL pooled (Wald) difference, NEVER Gelman-Stern side-by-side; concentration-not-strict-specificity; supportive-not-definitive; EFFECT separated from the open CAUSE (cause leg n.s.).",
+      "evidence": [
+        "DraftTemplate.txt L78-79 (M3)",
+        "section3.4 P2 + P3 + P4 final_prose (formal Wald diff 0.0983, p=.039; supported but fragile; cause not cash-specific; mechanism open)",
+        "claim_findings_ledger.json C6 (EFFECT_diff 0.0983**, p=.039 two-tailed; CAUSE matched 0.0064 n.s.)"
+      ],
+      "numbers": [
+        "cash-minus-stock Wald diff positive + sig at 5% two-tailed (tab:empire_cashspec col 1); cause leg n.s. (col 2)"
+      ],
+      "register_locks": [
+        "correlational",
+        "concentration-not-strict-specificity",
+        "supportive-not-definitive",
+        "mechanism-open"
+      ],
+      "depends_on": [
+        "IN.10"
+      ]
+    },
+    {
+      "prop_id": "IN.12",
+      "statement": "We also rule out the most immediate alternative: the run-up is not accounted for by analysts devoting more of the call to cash questions, since with a direct scrutiny measure and its interaction entered alongside the pre-announcement indicator the elevation survives and scrutiny does not amplify it; this means scrutiny does not account for this particular run-up, not that scrutiny never matters.",
+      "role": "result",
+      "type": "result-number",
+      "reason": "M3 preview (C4 rule-out): the scrutiny side-test. C-trap C4: 'does not account for THIS run-up', NEVER 'scrutiny never matters'; the underpowered null is not upgraded to a powered equivalence.",
+      "evidence": [
+        "DraftTemplate.txt L78-79 (M3 preview)",
+        "section4.1 P3 + P4 final_prose (pre-announce indicator stays significant with scrutiny + interaction; scrutiny does not account for THIS run-up; not that scrutiny never matters)",
+        "claim_findings_ledger.json C4 (gating_PreAnnounceQtr 0.0413***; interaction -0.0056 n.s.)"
+      ],
+      "numbers": [
+        "pre-announce coef stays positive + sig with scrutiny in model; interaction n.s. (tab:reason_gating); scrutiny direct effect ~0 n.s. (tab:cash_scrutiny_channel)"
+      ],
+      "register_locks": [
+        "correlational",
+        "no-identification",
+        "mechanism-open",
+        "supportive-not-definitive"
+      ],
+      "depends_on": [
+        "IN.11"
+      ]
+    },
+    {
+      "prop_id": "IN.13",
+      "statement": "Throughout, we read these patterns as correlational and within-firm: the design supports no causal identification, establishes no mechanism, and leaves open why uncertainty language concentrates in cash deals, with compliance-constrained inability to speak and strategically chosen reticence remaining observationally equivalent.",
+      "role": "caveat",
+      "type": "framing",
+      "reason": "M3 explicit caveat (convention honesty): the dedicated, standalone no-identification / correlational / mechanism-open caveat the intro must state explicitly, so it cannot be buried in a result prop. E1: NO generated-regressand/two-step-SE disclaimer here.",
+      "evidence": [
+        "DraftTemplate.txt L89-92 (preview must respect register) + Task rule (intro states no-identification/correlational caveat EXPLICITLY)",
+        "section2.1 P7 / section2.2 P5 final_prose (two observationally equivalent readings; no causal channel; descriptive throughout)",
+        "claim_findings_ledger.json register_that_stands",
+        "AUDIT_PROTOCOL E1 (no Pagan/generated-regressand disclaimer)"
+      ],
+      "register_locks": [
+        "correlational",
+        "no-identification",
+        "mechanism-open"
+      ],
+      "depends_on": [
+        "IN.12"
+      ]
+    },
+    {
+      "prop_id": "IN.14",
+      "statement": "The remainder of the paper proceeds as follows. Section 2 develops the conceptual framework and empirical strategy; Section 3 presents the three main analyses, the pre-announcement run-up, the differential timing around announcement, and the cash-specificity test; Section 4 reports the additional analysis ruling out analyst scrutiny; and Section 5 concludes.",
+      "role": "roadmap",
+      "type": "framing",
+      "reason": "M4 roadmap (near-universal): matches the real structure; scrutiny is in Section 4 (Additional Analyses), NOT Section 3. Impersonal voice.",
+      "evidence": [
+        "DraftTemplate.txt L80-82 (M4 roadmap, 50-80 words, impersonal voice, near-universal)",
+        "DraftTemplate.txt L97-155 (real structure: II framework+strategy, III main analyses, IV additional analyses, V conclusion)",
+        "section3.2/3.3/3.4 + section4.1 titles (run-up; differential timing; cash-specificity; ruling out analyst scrutiny in Section 4)"
+      ],
+      "register_locks": [],
+      "depends_on": [
+        "IN.13"
+      ]
+    }
+  ],
+  "coverage": {
+    "purpose_fully_delivered": "The chain delivers all four introduction moves in order with no gap. M1 (context + gap, high citation density) = IN.1 (venue, matsumoto2011) -> IN.2 (disclosure theory, verrecchia1983/dye1985) -> IN.3 (the legal disclosure bind, basic1988/rule10b5, scoped to acquirer, no gag) -> IN.4 (language-surfacing bridge, hollander2010) -> IN.5 (nearest neighbors, thewissen2024/ragozzino2024/keown1981, keown for the price-fact only) -> IN.6 (explicit gap, typed framing, 'to our knowledge'). All ten external cites are live bibitems and SUPPORTED in the 2.1 ledger with keyed source_ids; none of the four dropped keys appear. M2 (objective + method/sample) = IN.7 ('The purpose of this study is to...' + UncResCEO named and pointed to Section 2, DWZ named as origin) -> IN.8 (cash setting + stock placebo + 2002 to 2018 sample; C5 convergent validity kept out). M3 (longest, enumerated preview + explicit caveat) = IN.9 (First: C2 run-up with stock side-by-side) -> IN.10 (Second: C1 two-clocks, signaled strongest, led by 'indistinguishable from zero') -> IN.11 (Finally: C6 formal cash-concentration, EFFECT/CAUSE split) -> IN.12 (C4 scrutiny rule-out, hedged to this run-up) -> IN.13 (dedicated standalone correlational/no-identification/mechanism-open caveat with the two equivalent readings). M4 (roadmap) = IN.14 (matches real structure, scrutiny in Section 4, impersonal voice). Each result prop is qualitative, matches its table's sign/significance via the recorded cell, and pre-empts its C-trap. No generated-regressand/E1 disclaimer, no coefficient/SE/p-value, no economic-magnitude percentage appears in any statement. Findings capped to C1/C2/C6 + C4; C3 (dropped)/C5/C7 not elevated.",
+    "gaps": []
+  }
+}
