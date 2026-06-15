@@ -62,7 +62,7 @@ sCFO & C & 83,662 & 0.0619 & 0.2233 & 0.0014 & 0.0236 & 0.0395 & 0.0664 & 32.403
 \end{longtable}
 
 \noindent
-\begin{minipage}{\linewidth}\footnotesize\parindent=0pt \textit{Notes:} Summary statistics for variables used in the hypothesis tests. Sample period: 2002--2018. Anchor sample (H1, Main): 88,205 earnings-call observations across 1,884 firms. Unit column: C = call-level, F = firm-year. N varies by row because each variable is summarized on its anchor panel's Main sample (complete cases per variable); per-suite samples differ due to lags, control availability, and merges. \texttt{PRisk} is \citet{hassan2020}'s scaled political-risk score (a weighted, capped bigram index), not a percentage.\end{minipage}
+\begin{minipage}{\linewidth}\footnotesize\parindent=0pt \textit{Notes:} Summary statistics for the main estimation sample (United States public, non-financial, non-utility firms, 2002--2018). Each variable is summarized on the complete cases of its own estimation universe, so the number of observations varies by row; never-acquirer firm-quarters are included as the fixed-effects baseline and treated firms' post-announcement quarters are excluded. All variables are defined in the main text and in Appendices~I and~II.\end{minipage}
 \endgroup
 \clearpage
 
@@ -112,8 +112,7 @@ $R^2$ & 0.665 & 0.001 & 0.002 & 0.002 & 0.672 & 0.001 & 0.002 & 0.002 \\
 \end{adjustbox}
 \begin{minipage}{\linewidth}
 \vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the treatment coefficient, $\beta > 0$; two-tailed for controls). 
-Significant coefficients in \textbf{bold}. Standard errors (in parentheses) clustered at firm level. CashScrutiny (cols 3, 7) and HighCashScrutiny (cols 4, 8) are estimated on the UncResCEO call universe. HighCashScrutiny is an LPM on $\mathbf{1}$[CashScrutiny $>$ median]; the median is $0$ (89\% of calls raise no cash turns), so it flags any cash scrutiny ($\approx$11\% of calls). The CashRatio columns (1, 5) add CashRatio's own one-quarter lag (partial-adjustment for the sticky DV), so the PreAnnounceQtr coefficient there tracks the \emph{change} in cash, not its level; the other DVs take no lag.
+\textit{Notes:} Pre-announcement run-up test. $\mathrm{PreAnnounceQtr}$ marks the quarter before a firm's first qualifying acquisition; post-announcement quarters are dropped and never-acquirers form the baseline. The cash arm is acquisitions at least half in cash; the stock arm is the at-least-half-in-stock placebo. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the treatment coefficient, $\beta>0$; two-tailed for controls).
 \end{minipage}
 \end{table}
 \end{landscape}
@@ -170,7 +169,7 @@ Firms & 1,320 & 1,320 \\
 \end{tabular}
 \end{adjustbox}
 \begin{minipage}{\linewidth}\vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed).
+\textit{Notes:} Disclosure-window event study on the matched universe, where $\mathrm{UncResCEO}$ and $\mathrm{CashRatio}$ are defined on the identical firm-quarters. Bins: $\mathrm{PRE2}$ ($e{=}{-}2$), $\mathrm{PRE1}$ ($e{=}{-}1$), $\mathrm{GAP}$ (announced, not yet closed), $\mathrm{POST}$ (completed); the omitted baseline is $e\le-3$ with never-acquirers. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
 \end{minipage}
 \end{table}
 \clearpage
@@ -227,7 +226,7 @@ Firms & 1,326 & 1,363 \\
 \end{tabular}
 \end{adjustbox}
 \begin{minipage}{\linewidth}\vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed).
+\textit{Notes:} Disclosure-window event study estimated separately for cash acquirers and, as a placebo, stock acquirers, each on its own complete-case universe. Bins and baseline as in the matched event study. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
 \end{minipage}
 \end{table}
 \clearpage
@@ -280,7 +279,7 @@ Firms & 1,191 & 1,176 & 2,141 \\
 \end{tabular}
 \end{adjustbox}
 \begin{minipage}{\linewidth}\vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed).
+\textit{Notes:} Pooled cash-specificity test: both treatments enter one regression and the cash-minus-stock difference is evaluated by a Wald test; the baseline is firms making neither a cash nor a stock acquisition. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
 \end{minipage}
 \end{table}
 \clearpage
@@ -335,11 +334,7 @@ Adj.~$R^2$ & 0.002 & 0.043 & -0.030 & -0.004 \\
 \end{adjustbox}
 \begin{minipage}{\linewidth}
 \vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
- Significant coefficients in \textbf{bold}.
- Standard errors (in parentheses) clustered at firm level.
- Main sample (excludes financial and utility firms). Firms with fewer than 5 calls are excluded.
- $R^2$ includes absorbed fixed effects (not within-$R^2$).
+\textit{Notes:} Convergent-validity check: residual CEO uncertainty regressed on firm-level political risk. Columns (1)--(2) use industry (FF12) and calendar-year fixed effects; columns (3)--(4) use firm and calendar-year fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the independent variable, $\beta>0$; two-tailed for controls).
 \end{minipage}
 \end{table}
 \clearpage
@@ -396,11 +391,7 @@ Adj.~$R^2$ & -0.000 & 0.291 & -0.035 & 0.057 \\
 \end{adjustbox}
 \begin{minipage}{\linewidth}
 \vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
- Significant coefficients in \textbf{bold}.
- Standard errors (in parentheses) two-way clustered (firm, calendar quarter).
- Main sample (excludes financial and utility firms). Firms with fewer than 5 calls are excluded.
- $R^2$ includes absorbed fixed effects (not within-$R^2$).
+\textit{Notes:} Convergent-validity check: residual CEO uncertainty regressed on United States economic policy uncertainty. Columns (1)--(2) use industry (FF12) and calendar-year fixed effects; columns (3)--(4) use firm and calendar-year fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the independent variable, $\beta>0$; two-tailed for controls).
 \end{minipage}
 \end{table}
 \clearpage
@@ -457,11 +448,7 @@ Adj.~$R^2$ & -0.000 & 0.291 & -0.035 & 0.057 \\
 \end{adjustbox}
 \begin{minipage}{\linewidth}
 \vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
- Significant coefficients in \textbf{bold}.
- Standard errors (in parentheses) two-way clustered (firm, calendar quarter).
- Main sample (excludes financial and utility firms). Firms with fewer than 5 calls are excluded.
- $R^2$ includes absorbed fixed effects (not within-$R^2$).
+\textit{Notes:} Convergent-validity check: residual CEO uncertainty regressed on global economic policy uncertainty. Columns (1)--(2) use industry (FF12) and calendar-year fixed effects; columns (3)--(4) use firm and calendar-year fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the independent variable, $\beta>0$; two-tailed for controls).
 \end{minipage}
 \end{table}
 \clearpage
@@ -511,9 +498,7 @@ $R^2$ & 0.002 & 0.005 & 0.001 & 0.004 \\
 \end{adjustbox}
 \begin{minipage}{\linewidth}
 \vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the cash coefficient, $\beta>0$; two-tailed for controls).
-Significant coefficients in \textbf{bold}.
-Standard errors (in parentheses) clustered at firm level.
+\textit{Notes:} Validity check that a firm's cash position predicts analyst cash scrutiny. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the cash coefficient, $\beta>0$; two-tailed for controls).
 \end{minipage}
 \end{table}
 \clearpage
@@ -548,7 +533,7 @@ Cal. Year-Quarter FE & Yes & Yes \\
 \end{tabular}
 \end{adjustbox}
 \begin{minipage}{\linewidth}\vspace{2pt}\scriptsize
-\textit{Notes:} DV is CEO Q\&A uncertainty as the DWZ residual (\texttt{UncResCEO}, firm/linguistic component removed) or the raw measure (\texttt{UncAnsCEO}, pooled-1\% winsorized). \texttt{CashScrutiny} $=$ the share (\%) of a call's Q\&A turns devoted to cash topics (validated in the Link~1 table). Panel~A is OLS on the continuous DV; Panel~B is a logit on $\mathbf{1}$[DV $\geq$ sample median]. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed); significant coefficients in \textbf{bold}; SE (parentheses) clustered at firm level. Coarser scrutiny measures (any-turn, raw count, log count) give the same null.
+\textit{Notes:} Analyst cash scrutiny as a candidate driver of residual CEO uncertainty. Panel~A is OLS on the continuous measure; Panel~B is a logit on an above-median indicator. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
 \end{minipage}
 \end{table}
 \clearpage
@@ -585,7 +570,7 @@ $R^2$ & 0.001 & 0.001 \\
 \end{adjustbox}
 \begin{minipage}{\linewidth}
 \vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed, $\beta>0$, for the directional terms); significant coefficients in \textbf{bold}. Standard errors (in parentheses) clustered at firm level. Estimated on cash-acquirer firms ($\geq$50\%-cash acquisitions; SDC, US public, 2002--2018) over their pre-announcement and earlier quarters (post-announcement quarters dropped); \texttt{PreAnnounceQtr} $=$ $\mathbf{1}$[the single quarter before announcement]. Sample restricted to calls with both \texttt{CashScrutiny} and \texttt{UncResCEO} (the matched universe). \texttt{CashScrutiny} $=$ \% of a call's analyst Q\&A turns on cash/liquidity. The reason (\texttt{PreAnnounceQtr}) raises CEO residual uncertainty; analyst cash-scrutiny does not, and the interaction is insignificant.
+\textit{Notes:} The pre-announcement run-up estimated with analyst cash scrutiny and its interaction with the pre-announcement window, on the matched universe (calls with both $\mathrm{CashScrutiny}$ and $\mathrm{UncResCEO}$). Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the directional terms, $\beta>0$; two-tailed otherwise).
 \end{minipage}
 \end{table}
 \clearpage
@@ -649,12 +634,7 @@ Adj.~$R^2$ & 0.703 & 0.501 & 0.721 & 0.535 & 0.730 & 0.532 & 0.700 & 0.482 & 0.7
 \end{adjustbox}
 \begin{minipage}{\linewidth}
 \vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for IVs, $\beta > 0$; two-tailed for controls).
- Significant coefficients in \textbf{bold}.
- Standard errors (in parentheses) clustered at firm level.
- Main sample (excludes financial and utility firms). DWZ Full decomposition: Clarity = -CEO FE; UncRes = call-level residual.
- $R^2$ includes absorbed fixed effects (not within-$R^2$).
- Spread$_{25D}$ values rescaled by $10^4$ (basis points) for readability; multiply coefficients by $10^{-4}$ to recover raw fraction units.
+\textit{Notes:} Post-call bid-ask spread regressed on the three speech components across twelve specifications; the fixed-effect grid (industry or firm, by year or year-quarter) and the contemporaneous-versus-one-quarter-ahead window vary by column as indicated, and a lagged dependent variable is included. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the speech components, $\beta>0$; two-tailed for controls).
 \end{minipage}
 \end{table}
 \clearpage
@@ -711,7 +691,7 @@ Firms & 1,321 & 1,321 \\
 \end{tabular}
 \end{adjustbox}
 \begin{minipage}{\linewidth}\vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed).
+\textit{Notes:} Robustness for the matched event study with the post bin redefined to count any resolution, completion or withdrawal (quarters at and after a withdrawal enter $\mathrm{POST}$). Bins, baseline, and estimator as in the matched event study. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
 \end{minipage}
 \end{table}
 \clearpage
@@ -768,7 +748,7 @@ Firms & 1,320 & 1,320 \\
 \end{tabular}
 \end{adjustbox}
 \begin{minipage}{\linewidth}\vspace{2pt}\scriptsize
-\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed).
+\textit{Notes:} Robustness for the cash column with static fixed effects, dropping the lagged dependent variable; the residual column is unchanged, since it carries no lag, and without the lag the coefficients describe the cash-ratio level rather than its change. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
 \end{minipage}
 \end{table}
 \clearpage
