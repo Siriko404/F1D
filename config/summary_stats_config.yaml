@@ -32,6 +32,7 @@ summary_stats_suites:
 extra_panels:
   EMPIRE: h1_cash_holdings   # outputs/variables/<dir>/*/<dir>_panel.parquet
   RESID: "outputs/econometric/ceo_clarity_extended/*/ceo_clarity_residual.parquet"
+  SPREAD: h14_bidask_spread  # 2026-06-15: re-added for Section 4.2 reaction analysis (BGTLevel_Spread DV)
 
 # Anchor panel per variable — the canonical all-universe source for shared vars.
 # Firm-financial controls + CashRatio -> EMPIRE (the h1 call universe every empire/
@@ -160,6 +161,7 @@ extra_vars:
   - {name: HighCashScrutiny, anchor: EMPIRE, panel: "A. Independent Variables", note: "1[CashScrutiny > median]; median=0 -> any cash scrutiny"}
   - {name: HighCash,         anchor: EMPIRE, panel: "C. Firm Controls", note: "1[CashRatio >= top tercile]"}
   - {name: UncAnsCEO,        anchor: EMPIRE, panel: "B. Dependent Variables", note: "raw CEO Q&A uncertainty (DWZ eq-2 LHS); residual = UncResCEO; reported in tab:cash_scrutiny_channel"}
+  - {name: BGTLevel_Spread,  anchor: SPREAD, panel: "B. Dependent Variables", note: "25-day post-call quoted bid-ask spread (Section 4.2 reaction DV, tab:h14c_ceo2_decomp); Main sample"}
   - {name: CashRatio_lag,    anchor: EMPIRE, panel: "C. Firm Controls", note: "CashRatio one-quarter lag (partial-adjustment control in MA1/MA2/MA3)"}
   - {name: Leverage,         anchor: EMPIRE, panel: "C. Firm Controls", note: "H1 control set; not in convergent specs"}
   - {name: Capex,            anchor: EMPIRE, panel: "C. Firm Controls", note: "H1 control set; not in convergent specs"}

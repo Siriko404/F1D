@@ -596,6 +596,23 @@ def main() -> int:
         else:
             print(f"  [warn] RESID panel {extra_panels['RESID']} not found")
 
+    # Generic anchor panels: any extra_panels key beyond EMPIRE/RESID. Loaded
+    # read-only as anchor targets for extra_vars (their columns do NOT enter the
+    # variable set). Value is a full glob, or a variables/<dir> name expanded to
+    # outputs/variables/<dir>/*/<dir>_panel.parquet. Added 2026-06-15 to source
+    # the H14c bid-ask spread (SPREAD) for the Section 4.2 reaction analysis.
+    for key, pat in extra_panels.items():
+        if key in ("EMPIRE", "RESID") or key in panels:
+            continue
+        pat = str(pat)
+        glob_pat = pat if "*" in pat else f"outputs/variables/{pat}/*/{pat}_panel.parquet"
+        path = _latest_glob(glob_pat)
+        if path is not None:
+            panels[key] = pd.read_parquet(path)
+            print(f"  [extra] {key} ({path.name}): {len(panels[key]):,} rows")
+        else:
+            print(f"  [warn] extra panel {key} ({glob_pat}) not found")
+
     stats = build_panels(include_suites, specs, panels, runner_stats_map, anchor_overrides, exclude_vars)
     stats = append_extra_vars(stats, extra_vars, panels)
     print(f"\nVariables summarized: {len(stats)}")
