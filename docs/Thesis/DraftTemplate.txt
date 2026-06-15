@@ -24,6 +24,36 @@
 
 [Insert abstract here]
 
+<!-- ==========================================================================
+SECTION-WRITING CONVENTION — ABSTRACT  (agents drafting the Abstract FOLLOW this)
+Source: unscoped NotebookLM synthesis -> tmp/nlm_abstract_structure_detailed.json
+(2026-06-14). NLM caveat: only one FULL abstract (Loughran-McDonald 2011) was
+contiguous in the corpus, so the word-count is a thin-sample estimate.
+
+CONTENT -- ONE single paragraph, five elements in order:
+  1. Motivation / prior practice  -- frame the concept or what prior work does.
+  2. Core objective / the gap     -- our main argument or the tension we resolve.
+  3. Data + sample                -- dataset + time period (e.g. "2002 to 2018").
+  4. Method / measure             -- what we construct (the UncResCEO residual).
+  5. Contribution / findings      -- the outcomes, stated QUALITATIVELY.
+
+LENGTH: single paragraph. The corpus's one full example is 72 words / 5 sentences;
+  that is short -- treat it as a FLOOR, not a ceiling. A single paragraph up to
+  roughly 150 words stays within convention (the 72-word figure is NLM's lone
+  sample; the upper range is general convention, flagged as beyond that sample).
+  Highly compressed: no background exposition.
+
+STYLE:
+  - Present tense; first-person "we" for our actions + findings.
+  - QUALITATIVE results only: NO regression coefficients, SEs, p-values, or
+    t-stats. Numbers allowed ONLY for sample scale (years, N) or broad proportions.
+
+MUST NOT:
+  - No literature citations (use "previous research", not \citet).
+  - No econometric outputs (coefficients/SEs), no equations or notation.
+  - No structural roadmap (that belongs only to the end of the Introduction).
+========================================================================== -->
+
 **Keywords:** [Insert keywords]
 **JEL Classification:** [Insert JEL codes]
 
@@ -56,11 +86,10 @@ STYLE:
     itself ("The rest of the paper is organized as follows") and for prior literature.
   - Present tense for findings + structure; past tense for sample/data construction.
   - Citation density: HIGH, especially in Move 1.
-  - RESULTS PREVIEW -- DECISION REQUIRED (do NOT auto-resolve): the corp-fin
-    convention previews results QUALITATIVELY / directionally; specific coefficients
-    are saved for the tables. Our prior intro draft quoted exact numbers (0.0461***,
-    0.0983**). Pick ONE before drafting: (i) follow convention -> qualitative only;
-    or (ii) keep specific numbers -> each must match the final Section 3/4 value.
+  - RESULTS PREVIEW -- RESOLVED 2026-06-14: QUALITATIVE ONLY. Preview/summarize
+    results directionally, in words; NO specific regression coefficients or SEs in
+    the Introduction or Conclusion (those live in the Section 3/4 tables). Each
+    directional claim must still match the SIGN + SIGNIFICANCE the table reports.
 ========================================================================== -->
 
 ---
