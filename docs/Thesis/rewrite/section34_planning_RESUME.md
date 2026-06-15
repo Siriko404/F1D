@@ -4,6 +4,37 @@
 
 ---
 
+## 🆕 LATEST STATUS (2026-06-15) — Intro/Conclusion/Abstract + DWZ replication + Phase D  ← READ FIRST
+
+This session extended past §3/§4 (those are done; their audit trail is below).
+
+### DONE + COMMITTED this session
+- **Intro / Conclusion / Abstract — full pipeline, now in the PDF (56 pp).**
+  - A→B→C mirrored the §3/§4 workflow: `rewrite/introconcl_phase{A,B,C}_workflow.js` (3 opus planners + 1 opus red-team each).
+  - Phase A → `rewrite/section_abstract/section1/section5_subsection_plan.json` (abstract 8 / intro 14 / conclusion 7 props). Phase B → `…_paragraph_ledger.json`.
+  - **Inline expansion** (skipped re-running A/B, saved ~50 min): intro 6→9 ¶, conclusion 3→7 ¶ via `tmp/build_introconcl_expanded.py` — every verified prop kept VERBATIM; 5 new "filler" props added (significance, contributions, implications-by-audience, measurement-limits, future) per the NLM verbose menu. The 2 ceiling-breach props (contributions, implications) hand-hedged + advisor-checked.
+  - Phase C → final prose, gate-clean: **QUALITATIVE** (NO coefficients in intro/concl/abstract — user rule), dash-free, reason+evidence atomic. Filled into `final_prose`.
+  - **Phase D** → `tmp/build_introconcl_body.py` → `_abstract_body.tex/_intro_body.tex/_conclusion_body.tex` → wired into `thesis_draft_uottawa.tex` (Abstract env, Ch1, Ch5). Compiles 56 pp, all cites resolved.
+  - Commits: `620b5eaf`(scripts)→`566ac2e9`(A)→`19321a84`(B)→`698b64ce`(expand)→`8983eac5`(C-prompt)→`7de45a41`(C-prose)→`e5d9d1da`(D).
+- **DWZ Eq-4 construct-validity replication.**
+  - Table `tab:dwz_replication` (`docs/Thesis/_dwz_replication.tex`, after the bible tables): DWZ Table 3(2) | our CEO Baseline | our CEO Extended. Paragraph = **§2.5 first validity check** ("We begin with the measure's construction…"). Commits `c50824d3`(table)+`d4bb56e2`(¶).
+  - **Numbers verified (NOT memory):** DWZ col = paper Table 3 col 2, **user-confirmed vs the PDF** + NLM (`tmp/nlm_dwz_repl_numbers.json`). Ours = canonical run `outputs/econometric/ceo_clarity_extended/2026-04-29_141644/ceo_clarity_extended_table.tex`.
+  - **Verified fact:** DWZ Eq-4 is **CEO-level** (CEO = main; CFO = DWZ's separate analysis we never use). Our spec = DWZ Eq-4 variable-for-variable. UncPreCEO 0.089 (ours) vs 0.093 (DWZ); total R² 0.369 ≈ DWZ 0.31 base + 0.054 incr.
+  - **Honest caveats (in notes + ¶):** 3 SPEECH controls (UncPreCEO/UncQue/NegCall) RAW in both → comparable; 4 FIRM controls standardized in ours (`run_h0_3_ceo_clarity_extended.py` L344-357) → sign-comparable only; DWZ 2003-2015 vs ours 2002-2018 non-fin/non-util, smaller N.
+- **NLM section conventions** → `DraftTemplate.txt` (abstract 5-element; intro verbose 6-9¶; conclusion implications/limits/future). Receipts: `tmp/nlm_*_structure*.json`, `tmp/nlm_verbose_intro_conclusion.json`.
+
+### DEFERRED — the one open task (user: "leave additional analyses for later review")
+- **Additional measure-study analyses** = "the residual must also behave like X", as the paragraphs FOLLOWING the DWZ ¶ in **§2.5** (placement = §2 measurement validity, NOT §4 — user corrected firmly).
+- **CCCL** = confirmed candidate (user): SEC comment-letters flag a firm's *presentation* disclosure, NOT the CEO Q&A residual → residual orthogonal to regulatory attention. **Marginal significance → HEDGE.** Table `tab:h18_ceo2_decomp` exists (`docs/Draft/thesis_tables.tex` ~L557-621; CCCL var marked DROPPED 2026-06-14 in variable_ledger — reviving for this).
+- **TODO:** finish surveying the arsenal (`docs/Draft/thesis_tables.tex` = curated; more in `outputs/econometric/`), pick checks DISTINCT from §2.5's existing convergent validity (PRisk/EPU already used), least-friction → write §2.5 verification ¶(s) + wire tables, hedged.
+
+### OPEN ITEMS / caveats
+- **QA-gap (pre-submission):** the new intro/concl/abstract prose is gate-verified (prose↔chain) but NOT human-domain-read sentence-by-sentence. Same as the §3/§4 QA item — a human read is the real pre-submission step.
+- **DWZ §2.5 ¶** authored INLINE (not the verify pipeline); numbers verified vs the canonical run + user-confirmed DWZ Table 3.
+- **Canonical-run dependency:** DWZ table + empire tables both source `UncResCEO` from `ceo_clarity_extended` via `_latest` (gen_empire_did_table.py:67). Consistent now; if a NEWER ceo_clarity_extended run appears, re-verify both still point to the same run.
+
+---
+
 ## STATUS (2026-06-14)
 
 - **🎉 FULL PIPELINE A→B→C→D COMPLETE + user-approved (2026-06-14).** §3 + §4 were proposition-planned (A), paragraph-allocated (B), prose-drafted (C) — all on opus, each gate-verified — and assembled into the uOttawa-convention PDF (D). Live state + remaining polish = **NEXT ACTION items 4-7**. Everything below this line (manifest, blocker, per-phase) is the audit trail.
