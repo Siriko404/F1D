@@ -6,8 +6,8 @@
       "para_id": "3.1-PARA1",
       "order": 1,
       "intent": {
-        "statement": "Establish data provenance: the four sources the whole section rests on (Capital IQ transcripts, quarterly Compustat fundamentals, CRSP/IBES return-and-surprise records, SDC M&A records) and the acquirer-six-digit-CUSIP-to-gvkey link table that fuses SDC deals onto the call panel.",
-        "reason": "Every downstream number originates in one of these four sources, and the deal-to-call match is a material researcher degree of freedom; the ratified 3.1 purpose statement groups item (1) as 'the four data sources AND the CUSIP6->gvkey link that fuses them', so sources+link are ONE provenance job, and the old draft breaks at L103 with them together. Merging 3.1-P1 and 3.1-P2 into one paragraph is the faithful atomic grouping, not a re-plan.",
+        "statement": "Establish data provenance: the five sources the whole section rests on (Capital IQ transcripts, quarterly Compustat fundamentals, CRSP/IBES return-and-surprise records, SDC M&A records, Execucomp CEO tenure) and the acquirer-six-digit-CUSIP-to-gvkey link table that fuses SDC deals onto the call panel.",
+        "reason": "Every downstream number originates in one of these five sources, and the deal-to-call match is a material researcher degree of freedom; the ratified 3.1 purpose statement groups item (1) as 'the four data sources AND the CUSIP6->gvkey link that fuses them', so sources+link are ONE provenance job, and the old draft breaks at L103 with them together. Merging 3.1-P1 and 3.1-P2 into one paragraph is the faithful atomic grouping, not a re-plan.",
         "evidence": [
           "section3.1_subsection_plan.json purpose item 1 ('four data sources and the CUSIP6->gvkey link that fuses them')",
           "section3.1_subsection_plan.json 3.1-P1, 3.1-P2",
@@ -18,7 +18,7 @@
         "data-foundation premise for C1/C2/C4/C6; the provenance the sample (PARA4) and every results subsection build on"
       ],
       "boundary": "Provenance + record-linkage MECHANIC only; does NOT define UncResCEO/CashRatio/CashScrutiny (2.3/2.5/Appendix), does NOT re-enter the eq-4 decomposition (2.3); build mechanics belong to PARA2.",
-      "thin_claim": "Four named sources fused through the acquirer six-digit CUSIP to gvkey; provenance disclosure, no claim.",
+      "thin_claim": "Five named sources, the deal records fused through the acquirer six-digit CUSIP to gvkey; provenance disclosure, no claim.",
       "guardrails": [
         "No construct definitions here (routed to PARA3 and 2.3/2.5/Appendix).",
         "Record linkage disclosed as a degree of freedom, not assumed."
@@ -28,7 +28,7 @@
         {
           "prop_id": "3.1-PARA1-a",
           "from_phaseA_prop": "3.1-P1",
-          "statement": "The analysis combines four data sources: Capital IQ earnings-call transcripts (US public firms, 2002-2018, parsed to speaker role and presentation-vs-Q&A segment); quarterly Compustat North America fundamentals (most recent fiscal quarter ending on or before the call); CRSP daily and IBES earnings records (supplying the stock-return, market-return, and earnings-surprise controls the eq-4 decomposition requires); and SDC M&A records (announcement date, completion/withdrawal date, cash-vs-stock payment composition).",
+          "statement": "The analysis combines five data sources: Capital IQ earnings-call transcripts (US public firms, 2002-2018, parsed to speaker role and presentation-vs-Q&A segment); quarterly Compustat North America fundamentals (most recent fiscal quarter ending on or before the call); CRSP daily and IBES earnings records (supplying the stock-return, market-return, and earnings-surprise controls the eq-4 decomposition requires); SDC M&A records (announcement date, completion/withdrawal date, cash-vs-stock payment composition); and Execucomp annual CEO records, aggregated into a monthly tenure panel identifying which executive holds the CEO role in each quarter (the input to the eq-4 manager fixed effect of Section 2.3).",
           "role_in_paragraph": "premise -- opens the section by naming the four sources every downstream number originates in",
           "type": "design-method",
           "reason": "The data-provenance premise the whole section leans on; first because nothing downstream is readable without it, and Section 2 deferred provenance here.",
@@ -36,7 +36,8 @@
             "old_draft_81efc78.tex L101-103",
             "variable_ledger.json UncResCEO.upstream (Capital IQ + LM dict; CRSP/IBES feed eq-4)",
             "variable_ledger.json CashRatio.raw_source 'Compustat (cheq, atq)'",
-            "variable_ledger.json tab:empire_building_did design (SDC deal fields)"
+            "variable_ledger.json tab:empire_building_did design (SDC deal fields)",
+            "src/f1d/sample/build_tenure_map.py Step 1.3 -- monthly CEO tenure panel built FROM Execucomp (input inputs/Execucomp/comp_execucomp.parquet); VERIFIED primary-source 2026-06-14"
           ],
           "numbers": [
             "2002-2018 (sample period, tab:summary_stats Notes)"
@@ -69,7 +70,7 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "The analysis combines four data sources. Capital IQ supplies the earnings-call transcripts of United States public firms over 2002 to 2018, parsed to speaker role and to the presentation and question-and-answer segments of each call. Quarterly Compustat North America fundamentals supply firm financials, taken from the most recent fiscal quarter ending on or before the call. CRSP daily records and IBES earnings records supply the stock-return, market-return, and earnings-surprise controls that the decomposition of Section~2.3 requires. SDC supplies the merger and acquisition records, including each deal's announcement date, its completion or withdrawal date, and its cash-versus-stock payment composition. These sources are keyed to different identifier systems, so they must be linked: SDC keys deals by the acquirer's six-digit CUSIP while the call panel is keyed by Compustat firm identifier (gvkey), and we join deals to calls through the acquirer's six-digit CUSIP via the CRSP-Compustat link table recorded in the master-sample manifest. The cash-versus-stock classification and the event clock that the designs below depend on exist only through this match, which we record as a researcher degree of freedom rather than assume away.",
+      "final_prose": "The analysis combines five data sources. Capital IQ supplies the earnings-call transcripts of United States public firms over 2002 to 2018, parsed to speaker role and to the presentation and question-and-answer segments of each call. Quarterly Compustat North America fundamentals supply firm financials, taken from the most recent fiscal quarter ending on or before the call. CRSP daily records and IBES earnings records supply the stock-return, market-return, and earnings-surprise controls that the decomposition of Section~2.3 requires. SDC supplies the merger and acquisition records, including each deal's announcement date, its completion or withdrawal date, and its cash-versus-stock payment composition. The identity of the chief executive on each call, the input to the manager fixed effect of Section~2.3, comes from Execucomp, whose annual records we aggregate into a monthly panel of which executive holds the CEO role in each quarter. These sources are keyed to different identifier systems, so they must be linked: SDC keys deals by the acquirer's six-digit CUSIP while the call panel is keyed by Compustat firm identifier (gvkey), and we join deals to calls through the acquirer's six-digit CUSIP via the CRSP-Compustat link table recorded in the master-sample manifest. The cash-versus-stock classification and the event clock that the designs below depend on exist only through this match, which we record as a researcher degree of freedom rather than assume away.",
       "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
       "number_audit": [
         {
@@ -222,7 +223,7 @@
         {
           "prop_id": "3.1-PARA4-a",
           "from_phaseA_prop": "3.1-P5",
-          "statement": "The estimation samples are built in three layers: (a) the base call panel (every matched Capital IQ call of a US public, non-financial, non-utility firm 2002-2018, excluding CEOs with fewer than five calls, for whom no style and hence no residual is estimable); (b) the SDC deal universe (US public acquirer 2002-2018, status in {completed, pending, withdrawn}, known payment composition; >=50%-cash deals form the cash arm, >=50%-stock the stock placebo arm, each firm's first qualifying deal setting its event clock); and (c) design-specific trims (the run-up test drops treated post-announcement quarters; the event studies cap the post-window at four quarters and truncate at the firm's next announcement; the scrutiny validity/channel tests require at least three analyst Q&A turns per call). The >=5-call filter is stated here as a MECHANIC; its selection-THREAT framing is homed in 2.4 P5.5.",
+          "statement": "The estimation samples are built in three layers: (a) the base call panel (every matched Capital IQ call of a US public, non-financial, non-utility firm 2002-2018, excluding CEOs with fewer than five calls, for whom no style and hence no residual is estimable, and bounded to Execucomp-covered firms, the S\\&P 1500, since the CEO identity feeds the eq-4 manager fixed effect); (b) the SDC deal universe (US public acquirer 2002-2018, status in {completed, pending, withdrawn}, known payment composition; >=50%-cash deals form the cash arm, >=50%-stock the stock placebo arm, each firm's first qualifying deal setting its event clock); and (c) design-specific trims (the run-up test drops treated post-announcement quarters; the event studies cap the post-window at four quarters and truncate at the firm's next announcement; the scrutiny validity/channel tests require at least three analyst Q&A turns per call). The >=5-call filter is stated here as a MECHANIC; its selection-THREAT framing is homed in 2.4 P5.5.",
           "role_in_paragraph": "premise -- the sole three-layer-sample proposition; the single explanation for varying N",
           "type": "design-method",
           "reason": "Without the three-layer logic the varying counts read as inconsistency; placed after sources/link/build/routing because the layers are filters on the linked, built panel, and it must precede Table 1.",
@@ -230,7 +231,8 @@
             "old_draft_81efc78.tex L109",
             "section2.4_paragraph_ledger.json P5.5",
             "variable_ledger.json tab:empire_building_did design.deal_filter + tab:empire_drop_matched design.window_hygiene (+4 cap, post-withdrawal drop, truncation at 2nd announcement)",
-            "variable_ledger.json tab:cash_scrutiny_validity design.sample (>=3 analyst Q&A turns)"
+            "variable_ledger.json tab:cash_scrutiny_validity design.sample (>=3 analyst Q&A turns)",
+            "src/f1d/sample/build_tenure_map.py (CEO identity from Execucomp) + USER-CONFIRMED 2026-06-14: estimation sample bounded to the S&P 1500 (Execucomp coverage)"
           ],
           "numbers": [
             "five calls (>=5-call filter, variable_ledger run_h0_3 MIN_CALLS=5)",
@@ -250,7 +252,7 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "The estimation samples are built in three layers, and it is this layering that makes the number of observations vary from one table to the next. The base call panel comprises every matched Capital IQ call of a United States public, non-financial, non-utility firm over 2002 to 2018, excluding CEOs with fewer than five calls, for whom no speaking style and hence no residual can be estimated. On top of it sits the SDC deal universe: United States public acquirers over the same period with deal status in completed, pending, or withdrawn and a known payment composition, where deals at least half in cash form the cash arm and deals at least half in stock the stock placebo arm, each firm's first qualifying deal setting its event clock. The third layer is a set of design-specific trims: the run-up test drops treated firms' post-announcement quarters, the event studies cap the post-window at four quarters and truncate it at the firm's next announcement, and the scrutiny validity and channel tests require at least three analyst question-and-answer turns per call. Each test thus keeps only the firms for which its particular comparison is defined. The five-call requirement enters here as a build mechanic; its consequences for what the residual subsample represents are treated as a selection question in Section~2.4.",
+      "final_prose": "The estimation samples are built in three layers, and it is this layering that makes the number of observations vary from one table to the next. The base call panel comprises every matched Capital IQ call of a United States public, non-financial, non-utility firm over 2002 to 2018, excluding CEOs with fewer than five calls, for whom no speaking style and hence no residual can be estimated. Because the manager fixed effect of Section~2.3 identifies each CEO from Execucomp, whose coverage is the S\\&P~1500, the residual sample is bounded to firms in that index, which skews the uncertainty regressions toward larger, more heavily covered firms. On top of it sits the SDC deal universe: United States public acquirers over the same period with deal status in completed, pending, or withdrawn and a known payment composition, where deals at least half in cash form the cash arm and deals at least half in stock the stock placebo arm, each firm's first qualifying deal setting its event clock. The third layer is a set of design-specific trims: the run-up test drops treated firms' post-announcement quarters, the event studies cap the post-window at four quarters and truncate it at the firm's next announcement, and the scrutiny validity and channel tests require at least three analyst question-and-answer turns per call. Each test thus keeps only the firms for which its particular comparison is defined. The five-call requirement enters here as a build mechanic; its consequences for what the residual subsample represents are treated as a selection question in Section~2.4.",
       "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
       "number_audit": [
         {

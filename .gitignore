@@ -263,3 +263,14 @@ tmp/openalex_trump_cash_*/
 # MemPalace per-project files (issue #185)
 mempalace.yaml
 entities.json
+
+# uOttawa thesis: downloaded template + generated build artifacts (regenerable; not source)
+docs/Thesis/uo-ethesis/
+docs/Thesis/uo-ethesis-20200624.zip
+docs/Thesis/thesis_draft_uottawa.pdf
+docs/Thesis/*.aux
+docs/Thesis/*.log
+docs/Thesis/*.toc
+docs/Thesis/*.lof
+docs/Thesis/*.lot
+docs/Thesis/*.out
