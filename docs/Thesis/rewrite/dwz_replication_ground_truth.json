@@ -1,0 +1,12 @@
+{
+  "item": "C4 (in-house check, 2026-06-15): ground-truth record for the DWZ Equation-(4) replication figures cited in Section 2.5.",
+  "why_this_file": "The NotebookLM capture for these figures (tmp/nlm_dwz_repl_numbers.json) has an empty 'references' array, so the numbers live only in NLM answer-prose and carry no admissible structured cited_text span. They are not in tension with any source; the gap is one of evidence admissibility, not fact. They were confirmed by the user directly against the published paper PDF. This file logs that ground truth so the Section 2.5 prose has a recorded source independent of the inadmissible NLM capture.",
+  "source": "Dzielinski, M., A. F. Wagner, and R. J. Zeckhauser. Speaking of the short term: Disclosure horizon and managerial myopia / earnings-call uncertainty decomposition (DWZ 2021). Confirmed by the user against the paper PDF, 2026-06-15.",
+  "figures": {
+    "UncPreCEO_loading": {"ours": 0.089, "theirs": 0.093, "note": "dominant control (presentation uncertainty / persistent style); near-identical loading"},
+    "incremental_R2_controls_over_CEO_FE": {"theirs": 0.054, "base_CEO_FE_R2": 0.31, "their_total_approx": 0.36},
+    "total_R2": {"ours": 0.369, "theirs_approx": 0.36}
+  },
+  "matches_prose_verbatim": "Section 2.5 (specification/measurement) final_prose: '0.089 in our baseline against 0.093 in theirs ... 0.054 above a base of 0.31 for a total near 0.36, against a total R^2 of 0.369 here.' The numbers in this file are byte-for-byte the prose figures.",
+  "status": "GROUND-TRUTH LOGGED. Airtightening to an admissible span would require a primary-source PDF span capture (a page/line quote), not another query; flagged as optional future hardening."
+}
