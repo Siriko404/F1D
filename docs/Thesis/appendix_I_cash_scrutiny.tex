@@ -1,21 +1,14 @@
-% Appendix I -- Cash-Scrutiny Measure: Variable Construction.
-% RELOCATED 2026-06-14 (user) from the mid-draft "Link 1" page that trailed the
-% cash_scrutiny_validity table; titled "Appendix I" per user request. This file is now
-% DECOUPLED from the auto-generated bible: tmp/extract_draft_tables.py truncates the
-% construction page out of _cash_scrutiny_validity.tex, so edit THIS file directly.
-% FLAG (pending edits, user 2026-06-14): "we have to do some changes to it" -- NOT yet revised.
-\section*{Appendix I\quad Cash-Scrutiny Measure: Variable Construction}
+% Appendix I -- Cash-Scrutiny Measure: definition and word lists.
+% Simplified 2026-06-15 (user): holds ONLY the cash-scrutiny variable definitions and
+% the search-term word lists. The regression specification and the CashRatio / firm-
+% financial-control definitions were removed -- they live in the main text and Appendix II.
+\section*{Appendix I\quad Cash-Scrutiny Measure: Definition and Word Lists}
 \vspace{4pt}\noindent\textbf{Variable definitions.}
 \begin{itemize}\setlength\itemsep{2pt}
-\item \textbf{CashScrutiny}$_{i,t}$ --- share (\%) of call $i$'s analyst Q\&A turns whose text contains at least one \emph{cash level} or \emph{liquidity} term (listed below); a turn-level binary averaged over the call's analyst Q\&A turns.
-\item \textbf{CashRatio}$_{i,t}$ = cheq/atq (cash \& equivalents $\div$ total assets).
-\item \textbf{High Cash}$_{i,t}$ = $\mathbf{1}[\text{CashRatio}_{i,t}\geq$ top tercile$]$.
-\item \textbf{Controls} $X_{i,t}$: Leverage, ln(Assets), Tobin's Q, ROA, Capex, Dividend Payer, Cash-Flow Volatility (sCFO).
+\item \textbf{CashScrutiny}$_{i,t}$ --- the share of call $i$'s analyst question-and-answer turns whose text contains at least one \emph{cash-level} or \emph{liquidity} term (listed below); a turn-level indicator averaged over the call's analyst Q\&A turns.
+\item \textbf{HighCashScrutiny}$_{i,t}$ --- an indicator equal to one when $\mathrm{CashScrutiny}_{i,t}$ exceeds its sample median; because the median call draws no cash scrutiny, it flags calls with any cash scrutiny at all.
 \end{itemize}
-\vspace{2pt}\noindent\textbf{Specification.} Two-way fixed-effects OLS estimated at the call level:
-\[ \text{CashScrutiny}_{i,t} = \beta\,\text{Cash}_{i,t} + \gamma' X_{i,t} + \alpha_i + \delta_{q(t)} + \varepsilon_{i,t}, \]
-\noindent where $\text{Cash}_{i,t}$ = CashRatio (cols 1--2) or High Cash (cols 3--4); $\alpha_i$ = firm fixed effects, $\delta_{q(t)}$ = calendar year-quarter fixed effects; standard errors clustered by firm. The cash coefficient $\beta$ is the external-validity test.
-\vspace{6pt}\noindent\textbf{Search terms.} An analyst Q\&A turn is flagged if, after the \emph{excluded} phrases are blanked out, its lower-cased text contains any phrase below, matched on a word boundary (case-insensitive). Every literal spelling actually searched is listed: where a phrase has a singular/plural or hyphenated/closed variant (e.g.\ \texttt{'noncash'} and \texttt{'non-cash'}), both forms appear. Disposition/payout terms (dividends, buybacks) are deliberately \emph{not} used here: they load on firm size and maturity and would correlate with CashRatio spuriously rather than through cash attention.
+\vspace{4pt}\noindent\textbf{Search terms.} An analyst Q\&A turn is flagged if, after the \emph{excluded} phrases are blanked out, its lower-cased text contains any phrase below, matched on a word boundary (case-insensitive). Every literal spelling actually searched is listed: where a phrase has a singular/plural or hyphenated/closed variant (e.g.\ \texttt{'noncash'} and \texttt{'non-cash'}), both forms appear. Disposition/payout terms (dividends, buybacks) are deliberately \emph{not} used here: they load on firm size and maturity and would correlate with the cash position spuriously rather than through cash attention.
 \begin{itemize}\setlength\itemsep{3pt}
 \item \textbf{Cash level} (22 forms) --- \emph{why:} they name the firm's cash stockpile or balance itself, the direct object of attention to how much cash the firm holds. \\ \texttt{'cash holding'}, \texttt{'cash holdings'}, \texttt{'cash balance'}, \texttt{'cash balances'}, \texttt{'cash position'}, \texttt{'cash on hand'}, \texttt{'cash on the balance sheet'}, \texttt{'cash reserve'}, \texttt{'cash reserves'}, \texttt{'cash and cash equivalents'}, \texttt{'cash and equivalents'}, \texttt{'cash and shortterm investments'}, \texttt{'cash and short-term investments'}, \texttt{'net cash'}, \texttt{'cash pile'}, \texttt{'cash hoard'}, \texttt{'cash stockpile'}, \texttt{'war chest'}, \texttt{'dry powder'}, \texttt{'excess cash'}, \texttt{'idle cash'}, \texttt{'surplus cash'}
 \item \textbf{Liquidity} (5 forms) --- \emph{why:} standard analyst synonyms for the same liquid-asset buffer. \\ \texttt{'liquidity'}, \texttt{'liquid assets'}, \texttt{'shortterm investments'}, \texttt{'short-term investments'}, \texttt{'marketable securities'}

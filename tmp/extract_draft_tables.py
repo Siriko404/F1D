@@ -90,11 +90,11 @@ parts = [
 # The deal-spec page rides with the run-up table. pdflscape's landscape env issues its own
 # \clearpage at both ends, so no extra \clearpage is added around landscaped blocks.
 LANDSCAPE = {"tab:empire_building_did"}
+# 2026-06-15: the "Empire-Building Run-Up Test -- Regression Specification" page
+# (_empire_building_spec.tex) is no longer inserted -- it duplicated Section 2.4's
+# equations and carried stale framing (empire-building, war-chest, one-tailed,
+# call-level). Control-variable formulas moved to Appendix II.
 for lab in order:
-    if lab == "tab:empire_building_did":
-        spec = (BIBLE_DIR / "_empire_building_spec.tex").read_text(encoding="utf-8")
-        parts += ["% --- deal-specification page (landscape; precedes the run-up table)",
-                  "\\begin{landscape}", shrink_wide_tabulars(spec.rstrip()), "\\end{landscape}", ""]
     if lab in FRAGMENT:
         body = (BIBLE_DIR / FRAGMENT[lab]).read_text(encoding="utf-8").rstrip()
     else:

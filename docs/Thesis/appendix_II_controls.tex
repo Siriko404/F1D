@@ -1,0 +1,26 @@
+% Appendix II -- Variable Definitions (firm-financial controls + CashRatio).
+% Created 2026-06-15: holds the control-variable formula catalog moved out of the
+% removed "Empire-Building Run-Up Test -- Regression Specification" page. Referenced
+% by Section 3.1 ("catalogued in Appendix II"). Hand-maintained; not auto-generated.
+\section*{Appendix II\quad Variable Definitions}
+\vspace{4pt}\noindent The cash ratio and the firm-financial controls $X_{i,t}$ are constructed from quarterly Compustat North America fundamentals as follows.
+\vspace{6pt}
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+Variable & Definition & Interpretation \\
+\midrule
+CashRatio & $\mathrm{cheq}/\mathrm{atq}$ & cash and equivalents over total assets \\
+\midrule
+\multicolumn{3}{l}{\textit{Firm-financial controls $X_{i,t}$}} \\
+Leverage & $(\mathrm{dlcq}+\mathrm{dlttq})/\mathrm{atq}$ & interest-bearing debt over assets \\
+lnAssets & $\ln(\mathrm{atq})$ & firm size \\
+Tobin's $Q$ & $(\mathrm{atq}+\mathrm{cshoq}\cdot\mathrm{prccq}-\mathrm{ceqq})/\mathrm{atq}$ & market-to-book \\
+ROA & $\mathrm{iby}/\overline{\mathrm{assets}}$ & profitability \\
+Capex & $\mathrm{capxy}/\mathrm{atq}$ & investment intensity \\
+DivDummy & $\mathbf{1}[\mathrm{dvy}>0]$ & dividend payer \\
+sCFO & five-year rolling standard deviation of $\mathrm{oancfy}/\mathrm{atq}_{t-1}$ & cash-flow volatility \\
+\bottomrule
+\end{tabular}
+\end{center}
