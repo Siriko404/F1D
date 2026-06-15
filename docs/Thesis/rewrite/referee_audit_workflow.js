@@ -152,13 +152,13 @@ NOT yours: internal inference validity (logic), flow (cohesion), agreement (cohe
   {
     key: 'citation', phase: 'Citation',
     rubric: `ASPECT = CITATION ACCURACY (every \\citet/\\citep claim vs what the paper actually says).
-Ground truth = our SAVED NLM RECEIPTS (verbatim cited_text spans). Read:
+Ground truth = our SAVED NLM RECEIPTS (verbatim cited_text spans). Receipts live in THREE places -- you MUST check all three before calling anything unverifiable:
   ${R}/tmp/nlm_*.json
   ${R}/docs/Thesis/_archive/audit_20260612/p3_citation_ledger.json
-  ${R}/docs/Thesis/rewrite/section2.1_paragraph_ledger.json + section2.3_paragraph_ledger.json (anchors_verified / verification blocks hold receipts for dye, bertrand_schoar, etc.)
-For EACH in-text claim attributed to a cited paper: find the receipt span; verdict SUPPORTED / OVERCLAIM / UNSUPPORTED.
-If NO receipt exists for that paper (known gaps: matsumoto2011, keown1981, verrecchia1983; legal: basic1988, rule10b5) -> verdict UNVERIFIABLE, severity MINOR, recommendation "fresh NLM capture needed" -- do NOT guess, do NOT call NLM (you have no auth and the guide forbids parallel NLM).
-Only the structured cited_text span is admissible evidence; never the receipt's answer-prose.
+  ${R}/docs/Thesis/rewrite/section*_paragraph_ledger.json -- MOST receipts live here: each paragraph proposition carries a "verification" block { source, query, quotes:[{cited_text,...}], verdict }. Confirmed examples in section2.1/2.3: matsumoto2011, keown1981, verrecchia1983, dye1985, bertrand_schoar2003 each have cited_text spans + verdict SUPPORTED. Search by the paper's bibkey AND title, NOT by author surname (the cited_text span is the paper's content and rarely contains the author name).
+For EACH in-text claim attributed to a cited paper: locate the matching cited_text span across those files; verdict SUPPORTED / OVERCLAIM / UNSUPPORTED.
+Only the structured cited_text span is admissible evidence; never the answer-prose. Do NOT call NLM (everything is already captured; the guide forbids parallel NLM).
+Mark UNVERIFIABLE (MINOR) ONLY if, after checking all three locations, no span supports the claim. Legal refs (basic1988, rule10b5) verify the same way if a span exists.
 NOT yours: anything that is not a citation attribution.`,
   },
 ]
