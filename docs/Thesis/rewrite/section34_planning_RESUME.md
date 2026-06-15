@@ -87,6 +87,13 @@ TOTAL = 8 agents.
 ---
 
 ## NEXT ACTION
-1. **GATE — user ratifies the 5 Phase-A subsection plans** (`section{3.1,3.2,3.3,3.4,4.1}_subsection_plan.json`). On amend requests, edit the affected plan file(s) directly (or re-run via `Workflow({scriptPath: sec34_phaseA_workflow.js, resumeFromRunId: "wf_7fca1f54-86c"})` after editing the script).
-2. **After ratification → Phase B (paragraphs):** clone the Phase-A workflow shape — 3 opus planners + 1 opus red-team — but TASK = allocate each ratified chain into paragraphs, give each paragraph an atomic purpose + its own proposition chain (reason+evidence atomic). Output = the 5 paragraph ledgers, modeled on `section2.2_paragraph_ledger.json`. The 8-agent total (4+4) is now half-spent.
-3. Open decisions: ALL 4 RESOLVED 2026-06-14 (see the OPEN DECISIONS section above + claim_findings_ledger `_open_decisions_resolved_2026_06_14`). Only the Appendix-I content edits remain, unspecified — surface to the user before 3.1/4.1 prose.
+1. **Phase A ✅ DONE + verified + ratified** (run `wf_7fca1f54-86c`). 5 plans in `section{3.1,3.2,3.3,3.4,4.1}_subsection_plan.json`; red-team audit in `section34_phaseA_redteam.json`.
+2. **Phase B 🔄 RUNNING** (`wf_d47aa9b8-235`) — paragraph allocation. **ON RETURN, extraction gate (advisor — diff-to-ratified, do NOT trust the red-team's allocation_matrix self-report):**
+   - **(a) FILENAME LOCK — CRITICAL:** name the 5 output files EXACTLY `section{3.1,3.2,3.3,3.4,4.1}_paragraph_ledger.json` (NOT `_paragraph_plan` — Phase C's manifest + the §2 `section2.X_paragraph_ledger.json` convention both require `_paragraph_ledger`). If you pick another name, fix the Phase C manifest to match and verify all 5 paths resolve before launching C.
+   - (b) set-completeness: collect every Phase-A `prop_id` from the 5 subsection plans; assert each is covered by some `from_phaseA_prop`; review any covered >once (legit split vs dup bug).
+   - (c) force `final_prose=""` + `prose_status` BLOCKED on every paragraph (schema doesn't enforce it); flag any non-empty (planner went off-task).
+   - (d) per-prop fidelity diff: sampled paragraph props' `numbers` + `register_locks` match their `from_phaseA_prop` source verbatim.
+   - Then write the 5 ledgers, commit, SHOW user, ratify.
+3. **Phase C 📦 DESIGNED + COMMITTED** (`sec34_phaseC_workflow.js`, `4ba91d4f`; voice-exemplar fix `<this commit>`): 3 opus drafters + 1 opus red-team (scrutinize→synthesize), delivers §3+§4 prose, fills `final_prose` in the 5 paragraph ledgers. Runs ONLY after B verified. **ON RETURN, extraction gate (advisor):** dash scan (grep `--` in every `final_prose`), number diff (every number in the prose ∈ that paragraph's ledger `numbers[]`), prop coverage (`delivers_props` covers the chain), non-empty assert.
+4. **Phase D (integration — NOT built yet):** assemble the drafted `final_prose` into `thesis_draft.tex`, compile dash-free with resolved `\ref`. "Phase C done" ≠ "prose in the draft"; D is the real verification (compile, not JSON).
+5. Open decisions: ALL 4 RESOLVED 2026-06-14 (see OPEN DECISIONS section + claim_findings_ledger `_open_decisions_resolved_2026_06_14`). Only the Appendix-I content edits remain, unspecified — surface to the user before 3.1/4.1 prose.
