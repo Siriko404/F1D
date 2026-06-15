@@ -182,7 +182,7 @@ def write_tex(res: dict, counts: dict) -> None:
         r" & CashRatio & UncResCEO & CashScrutiny & HighCashScrutiny & CashRatio & UncResCEO & CashScrutiny & HighCashScrutiny \\",
         r"\midrule",
         "PreAnnounceQtr & "
-        + " & ".join(cell(res[k]["beta"], res[k]["p1"]) for k in cols) + r" \\",
+        + " & ".join(cell(res[k]["beta"], res[k]["p2"]) for k in cols) + r" \\",
         " & " + " & ".join(f"({res[k]['se']:.4f})" for k in cols) + r" \\",
         r"CashRatio$_{t-1}$ (partial adj.) & "
         + " & ".join((cell(res[k]["lag"]["beta"], res[k]["lag"]["p2"]) if "lag" in res[k] else "---") for k in cols) + r" \\",
@@ -206,7 +206,7 @@ def write_tex(res: dict, counts: dict) -> None:
         r"\end{tabular}",
         r"\begin{minipage}{\linewidth}",
         r"\vspace{2pt}\scriptsize",
-        r"\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the treatment coefficient, $\beta > 0$; two-tailed for controls). ",
+        r"\textit{Notes:} $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed). ",
         r"Significant coefficients in \textbf{bold}. Standard errors (in parentheses) clustered at firm level. "
         r"CashScrutiny (cols 3, 7) and HighCashScrutiny (cols 4, 8) are estimated on the UncResCEO call universe. HighCashScrutiny is an LPM on $\mathbf{1}$[CashScrutiny $>$ median]; the median is $0$ (89\% of calls raise no cash turns), so it flags any cash scrutiny ($\approx$11\% of calls). The CashRatio columns (1, 5) add CashRatio's own one-quarter lag (partial-adjustment for the sticky DV), so the PreAnnounceQtr coefficient there tracks the \emph{change} in cash, not its level; the other DVs take no lag.",
         r"\end{minipage}",
