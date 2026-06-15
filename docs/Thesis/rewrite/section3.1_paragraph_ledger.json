@@ -1,0 +1,337 @@
+{
+  "subsection_id": "3.1",
+  "title": "Data, Sample, and Variable Construction",
+  "paragraphs": [
+    {
+      "para_id": "3.1-PARA1",
+      "order": 1,
+      "intent": {
+        "statement": "Establish data provenance: the four sources the whole section rests on (Capital IQ transcripts, quarterly Compustat fundamentals, CRSP/IBES return-and-surprise records, SDC M&A records) and the acquirer-six-digit-CUSIP-to-gvkey link table that fuses SDC deals onto the call panel.",
+        "reason": "Every downstream number originates in one of these four sources, and the deal-to-call match is a material researcher degree of freedom; the ratified 3.1 purpose statement groups item (1) as 'the four data sources AND the CUSIP6->gvkey link that fuses them', so sources+link are ONE provenance job, and the old draft breaks at L103 with them together. Merging 3.1-P1 and 3.1-P2 into one paragraph is the faithful atomic grouping, not a re-plan.",
+        "evidence": [
+          "section3.1_subsection_plan.json purpose item 1 ('four data sources and the CUSIP6->gvkey link that fuses them')",
+          "section3.1_subsection_plan.json 3.1-P1, 3.1-P2",
+          "old_draft_81efc78.tex L101-103"
+        ]
+      },
+      "serves": [
+        "data-foundation premise for C1/C2/C4/C6; the provenance the sample (PARA4) and every results subsection build on"
+      ],
+      "boundary": "Provenance + record-linkage MECHANIC only; does NOT define UncResCEO/CashRatio/CashScrutiny (2.3/2.5/Appendix), does NOT re-enter the eq-4 decomposition (2.3); build mechanics belong to PARA2.",
+      "thin_claim": "Four named sources fused through the acquirer six-digit CUSIP to gvkey; provenance disclosure, no claim.",
+      "guardrails": [
+        "No construct definitions here (routed to PARA3 and 2.3/2.5/Appendix).",
+        "Record linkage disclosed as a degree of freedom, not assumed."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.1-PARA1-a",
+          "from_phaseA_prop": "3.1-P1",
+          "statement": "The analysis combines four data sources: Capital IQ earnings-call transcripts (US public firms, 2002-2018, parsed to speaker role and presentation-vs-Q&A segment); quarterly Compustat North America fundamentals (most recent fiscal quarter ending on or before the call); CRSP daily and IBES earnings records (supplying the stock-return, market-return, and earnings-surprise controls the eq-4 decomposition requires); and SDC M&A records (announcement date, completion/withdrawal date, cash-vs-stock payment composition).",
+          "role_in_paragraph": "premise -- opens the section by naming the four sources every downstream number originates in",
+          "type": "design-method",
+          "reason": "The data-provenance premise the whole section leans on; first because nothing downstream is readable without it, and Section 2 deferred provenance here.",
+          "evidence": [
+            "old_draft_81efc78.tex L101-103",
+            "variable_ledger.json UncResCEO.upstream (Capital IQ + LM dict; CRSP/IBES feed eq-4)",
+            "variable_ledger.json CashRatio.raw_source 'Compustat (cheq, atq)'",
+            "variable_ledger.json tab:empire_building_did design (SDC deal fields)"
+          ],
+          "numbers": [
+            "2002-2018 (sample period, tab:summary_stats Notes)"
+          ],
+          "register_locks": [],
+          "depends_on": []
+        },
+        {
+          "prop_id": "3.1-PARA1-b",
+          "from_phaseA_prop": "3.1-P2",
+          "statement": "The sources are linked across identifier systems: SDC keys deals by the acquirer's six-digit CUSIP while the call panel is keyed by Compustat firm identifier (gvkey), so deals are joined to calls through the acquirer six-digit CUSIP via the CRSP-Compustat link table (the master-sample manifest).",
+          "role_in_paragraph": "premise -- the linkage that makes the cash/stock classification and event clock exist; follows the sources because it fuses them",
+          "type": "design-method",
+          "reason": "The cash/stock-acquirer classification and the event clock exist only because SDC deals are matched to the call panel; record linkage is a degree of freedom that must be disclosed, so it sits with the sources it fuses, as the purpose groups them.",
+          "evidence": [
+            "old_draft_81efc78.tex L103",
+            "variable_ledger.json tab:empire_building_did design.firm_link ('SDC acquirer 6-digit CUSIP -> gvkey via master_sample_manifest.parquet')",
+            "variable_ledger.json PreAnnounceQtr.construction (manifest() L105-112 CUSIP6->gvkey link)"
+          ],
+          "numbers": [],
+          "register_locks": [],
+          "depends_on": [
+            "3.1-PARA1-a"
+          ]
+        }
+      ],
+      "lit_body_note": "none new",
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "BLOCKED -- planning only"
+    },
+    {
+      "para_id": "3.1-PARA2",
+      "order": 2,
+      "intent": {
+        "statement": "Deliver the in-house build mechanics of the language measures: tokenize each call, compute the Loughran-McDonald uncertainty word-share by speaker and segment, and feed the CEO Q&A share into the Section 2.3 DWZ eq-4 first stage (estimated on our sample) that residualizes UncResCEO, pointing the equation and definition back to 2.3 without re-deriving them.",
+        "reason": "2.3 defines UncResCEO and writes eq-4 but explicitly defers tokenize/match mechanics to 3.1; this paragraph discharges exactly that deferral as a single construction job, distinct from provenance (PARA1) and variable routing (PARA3). The old draft homes the build mechanic in its own paragraph at L105.",
+        "evidence": [
+          "section3.1_subsection_plan.json 3.1-P3",
+          "thesis_draft.tex 2.3 L82 ('a construction detail we defer to Section 3.1')",
+          "section2_roadmap.md 2.3 boundary ('tokenize, match -> 3.1')",
+          "old_draft_81efc78.tex L105"
+        ]
+      },
+      "serves": [
+        "supplies the construction provenance UncResCEO carries into every uncertainty regression in 3.2/3.3/3.4 and 4.1"
+      ],
+      "boundary": "Construction MECHANIC only; the eq-4 equation, the residual's definition and justification live in 2.3 and are NOT re-derived; variable routing is PARA3.",
+      "thin_claim": "UncResCEO is the eq-4 residual of the by-speaker, by-segment LM uncertainty share; defined in 2.3, built here.",
+      "guardrails": [
+        "Do NOT re-derive eq-4 or re-justify the residual (2.3 turf).",
+        "Mechanic only: tokenize + by-speaker-by-segment word-share + first stage on our sample.",
+        "No result number; no SD here (SD is Table 1, PARA5)."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.1-PARA2-a",
+          "from_phaseA_prop": "3.1-P3",
+          "statement": "The uncertainty measures are built in-house: each call is tokenized and the Loughran-McDonald uncertainty-word share computed separately by speaker and segment; the CEO's Q&A share UncAnsCEO is the input the Section 2.3 DWZ equation-4 first stage (estimated on our sample) residualizes into UncResCEO. This is the construction mechanic only; the equation and the definition/justification of UncResCEO live in Section 2.3 and are not re-derived.",
+          "role_in_paragraph": "definition -- the sole build-mechanic proposition; routes the equation back to 2.3",
+          "type": "design-method",
+          "reason": "Discharges the 2.3 tokenize/match deferral without re-entering 2.3's definitional turf, so it stands alone as one paragraph after the data are sourced and linked.",
+          "evidence": [
+            "thesis_draft.tex 2.3 L82 ('we defer to Section 3.1')",
+            "old_draft_81efc78.tex L105",
+            "variable_ledger.json UncResCEO.construction (run_h0_3_ceo_clarity_extended.py:369; residual L393-405) + upstream (LM 'Uncertainty' category)"
+          ],
+          "numbers": [],
+          "register_locks": [],
+          "depends_on": [
+            "3.1-PARA1-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "BLOCKED -- planning only"
+    },
+    {
+      "para_id": "3.1-PARA3",
+      "order": 3,
+      "intent": {
+        "statement": "Route every remaining key estimation variable to its defining home rather than re-deriving it: UncResCEO (2.3); PreAnnounceQtr = 1[e=-1] before a firm's first qualifying deal (2.2/2.4); CashRatio = cheq/atq (2.5/Appendix); CashScrutiny / HighCashScrutiny (2.5, word list in Appendix I, with the median call drawing none); firm-financial controls catalogued in the Appendix.",
+        "reason": "The boundary rule forbids 3.1 from re-defining constructs that live in 2.3/2.5/Appendix; this paragraph's single job is to discharge the routing without duplicating definitions, a distinct atomic job from the build (PARA2). The old draft homes the variable catalogue at L107.",
+        "evidence": [
+          "section3.1_subsection_plan.json 3.1-P4",
+          "thesis_draft.tex 2.5 L124 (CashRatio/PreAnnounceQtr/CashScrutiny inventory; controls -> Appendix)",
+          "old_draft_81efc78.tex L107"
+        ]
+      },
+      "serves": [
+        "orients the reader to each variable's defining home before the sample (PARA4) and the results subsections use them; supports C1/C2/C4/C6 without re-defining"
+      ],
+      "boundary": "Routing + brief construction pointers only; full definitions stay in 2.3 (UncResCEO), 2.5 (CashRatio/PreAnnounceQtr/CashScrutiny/HighCashScrutiny) and the Appendix (controls); no re-definition. The two summary-stat values cited are descriptive routing context, not new definitions.",
+      "thin_claim": "Each key variable is constructed and pointed back to its defining home; routing, not re-definition.",
+      "guardrails": [
+        "Do NOT re-define constructs owned by 2.3/2.5/Appendix.",
+        "HighCashScrutiny mean 0.1127 (~11% of calls) and CashScrutiny median 0.0000 are Panel A descriptive routing facts, not results.",
+        "HighCashScrutiny and CashRatio_lag are flagged missing from the Appendix defs table -> Appendix open item."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.1-PARA3-a",
+          "from_phaseA_prop": "3.1-P4",
+          "statement": "The remaining key estimation variables are constructed and pointed back to their defining homes, not re-derived: UncResCEO is defined in Section 2.3; PreAnnounceQtr = 1[e=-1] before a firm's first qualifying deal (defined 2.2/2.4); CashRatio = cash and equivalents over total assets, cheq/atq (defined 2.5/Appendix); CashScrutiny = share of analyst Q&A turns on cash/liquidity from the locked word list in Appendix I, with HighCashScrutiny flagging any such scrutiny since the median call draws none (construct defined 2.5); firm-financial controls (leverage, log assets, Tobin's Q, ROA, capex, dividend indicator, cash-flow volatility) are catalogued in the Appendix.",
+          "role_in_paragraph": "definition -- the sole routing proposition; routes every key variable to its home",
+          "type": "definitional",
+          "reason": "The boundary forbids re-defining 2.3/2.5/Appendix constructs; this discharges the routing in one move, so it occupies its own paragraph after the build mechanic.",
+          "evidence": [
+            "thesis_draft.tex 2.5 L124",
+            "variable_ledger.json PreAnnounceQtr.definition (e==-1, first deal, never-acquirers 0) + CashRatio.definition (cheq/atq) + CashScrutiny/HighCashScrutiny.definition (median=0)",
+            "variable_ledger.json HighCashScrutiny.flag + CashRatio_lag.flag (MISSING from appendix defs -> Appendix open item)"
+          ],
+          "numbers": [
+            "HighCashScrutiny mean 0.1127 (tab:summary_stats Panel A) ~ 11% of calls draw cash scrutiny",
+            "CashScrutiny median 0.0000 (tab:summary_stats Panel A)"
+          ],
+          "register_locks": [],
+          "depends_on": [
+            "3.1-PARA2-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "BLOCKED -- planning only"
+    },
+    {
+      "para_id": "3.1-PARA4",
+      "order": 4,
+      "intent": {
+        "statement": "Lay out the three-layer estimation sample (base call panel -> SDC deal universe -> design-specific trims) that explains why N varies table to table, stating the >=5-call filter as a MECHANIC and leaving its selection-THREAT framing in 2.4 P5.5.",
+        "reason": "N varies across every results table; without the three-layer logic the reader reads the varying counts as inconsistency rather than as each test keeping only the firms for which its comparison is defined. The boundary keeps the >=5-call selection THREAT in 2.4 P5.5 and only the mechanic here.",
+        "evidence": [
+          "section3.1_subsection_plan.json 3.1-P5",
+          "old_draft_81efc78.tex L109",
+          "section2.4_paragraph_ledger.json P5.5 (selection threat homed in 2.4; mechanic stays 3.1)"
+        ]
+      },
+      "serves": [
+        "explains the varying N across 3.2 (two-universe), 3.3 (matched 28,102), 3.4, 4.1 tables; the sample premise every result table inherits; precedes Table 1 (PARA5)"
+      ],
+      "boundary": "Sample-build MECHANIC only; the >=5-call selection THREAT is homed in 2.4 P5.5 and NOT re-disclosed here; specific result-table N-counts belong to each results table.",
+      "thin_claim": "Three layers (call panel, deal universe, design trims) make N vary because each test keeps only firms for which its comparison is defined; mechanic.",
+      "guardrails": [
+        "The >=5-call filter is a MECHANIC here; its selection-THREAT framing is 2.4 P5.5's and is not re-disclosed.",
+        "Arm thresholds (>=50% cash / >=50% stock), +4-quarter cap, >=3-turn requirement stated as build rules, not results.",
+        "No result-table N-counts here (67,590/27,622 belong to 3.2-PARA2 at empire_building_did)."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.1-PARA4-a",
+          "from_phaseA_prop": "3.1-P5",
+          "statement": "The estimation samples are built in three layers: (a) the base call panel (every matched Capital IQ call of a US public, non-financial, non-utility firm 2002-2018, excluding CEOs with fewer than five calls, for whom no style and hence no residual is estimable); (b) the SDC deal universe (US public acquirer 2002-2018, status in {completed, pending, withdrawn}, known payment composition; >=50%-cash deals form the cash arm, >=50%-stock the stock placebo arm, each firm's first qualifying deal setting its event clock); and (c) design-specific trims (the run-up test drops treated post-announcement quarters; the event studies cap the post-window at four quarters and truncate at the firm's next announcement; the scrutiny validity/channel tests require at least three analyst Q&A turns per call). The >=5-call filter is stated here as a MECHANIC; its selection-THREAT framing is homed in 2.4 P5.5.",
+          "role_in_paragraph": "premise -- the sole three-layer-sample proposition; the single explanation for varying N",
+          "type": "design-method",
+          "reason": "Without the three-layer logic the varying counts read as inconsistency; placed after sources/link/build/routing because the layers are filters on the linked, built panel, and it must precede Table 1.",
+          "evidence": [
+            "old_draft_81efc78.tex L109",
+            "section2.4_paragraph_ledger.json P5.5",
+            "variable_ledger.json tab:empire_building_did design.deal_filter + tab:empire_drop_matched design.window_hygiene (+4 cap, post-withdrawal drop, truncation at 2nd announcement)",
+            "variable_ledger.json tab:cash_scrutiny_validity design.sample (>=3 analyst Q&A turns)"
+          ],
+          "numbers": [
+            "five calls (>=5-call filter, variable_ledger run_h0_3 MIN_CALLS=5)",
+            ">=50% cash / >=50% stock (arm thresholds, tab:empire_building_did spec page)",
+            "+4 quarters (post-window cap, variable_ledger window_hygiene)",
+            ">=3 analyst Q&A turns (cash_scrutiny_validity design)"
+          ],
+          "register_locks": [],
+          "depends_on": [
+            "3.1-PARA1-a",
+            "3.1-PARA1-b"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "BLOCKED -- planning only"
+    },
+    {
+      "para_id": "3.1-PARA5",
+      "order": 5,
+      "intent": {
+        "statement": "Anchor Table 1: summary statistics for the main estimation sample (anchor 88,205 earnings-call observations across 1,884 firms, 2002-2018) with the N-varies-by-row caveat; the residual UncResCEO centers near zero with SD 0.3010 (Panel B), and because the residual exists only on the >=5-call universe the uncertainty regressions describe a more-covered, larger-firm-skewed set than the cash-ratio regressions, so every table reports its own counts.",
+        "reason": "Table 1 is the exhibit 3.1 anchors and 2.5-P5 forward-references; the residual SD reported here (Panel B all-universe 0.3010) is the basis the locked 2.5 prose uses for its FB percentages and the basis 3.2/3.3/3.4 reuse for economic magnitudes. The coverage-skew stays mechanic-level (the THREAT is 2.4 P5.5's); the 67,590/27,622 counts are NOT here (routed to 3.2-PARA2). It is the only result-bearing paragraph in 3.1, so it stands alone.",
+        "evidence": [
+          "section3.1_subsection_plan.json 3.1-P6",
+          "_tables_from_bible.tex tab:summary_stats (Panel B UncResCEO SD 0.3010 N 44,900; Panel C CashRatio mean 0.1708; Notes anchor 88,205 / 1,884 firms)",
+          "thesis_draft.tex 2.5 L124 ('Summary statistics appear in Table summary_stats')",
+          "claim_findings_ledger.json _open_decisions_resolved_2026_06_14 (SD 0.3010 resolved)"
+        ]
+      },
+      "serves": [
+        "anchors the descriptive Table 1 that 2.5-P5 forward-references; supplies the SD 0.3010 denominator every magnitude in 3.2/3.3/3.4 uses; closes the foundational subsection"
+      ],
+      "boundary": "Descriptive Table 1 only; the 67,590/27,622 result-table universes are NOT here (3.2-PARA2 at empire_building_did). UncResCEO is Panel B, CashRatio Panel C, PreAnnounceQtr Panel A. Coverage-skew is a mechanic note; the THREAT is 2.4 P5.5's.",
+      "thin_claim": "Table 1 reports the main-sample summary statistics with N varying by row; the residual is centered near zero with SD 0.3010; supportive-not-definitive descriptive anchor.",
+      "guardrails": [
+        "Number-traceability (Planner-1 MAJOR fix): 67,590/27,622 live in empire_building_did's N row, NOT in summary_stats panels; do NOT place result-table counts in Table 1.",
+        "UncResCEO SD 0.3010 is Panel B; CashRatio mean 0.1708 is Panel C; PreAnnounceQtr mean 0.0094 is Panel A: do NOT mislabel panels.",
+        "Coverage-skew is a MECHANIC note; the selection THREAT is 2.4 P5.5's."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.1-PARA5-a",
+          "from_phaseA_prop": "3.1-P6",
+          "statement": "Table 1 reports summary statistics for the main estimation sample (anchor sample 88,205 earnings-call observations across 1,884 firms, 2002-2018); N varies by row because each variable is summarized on its anchor panel's complete cases, and the residual UncResCEO is centered near zero with standard deviation 0.3010 (Panel B). Because the residual exists only on the >=5-call, non-financial/non-utility universe, the uncertainty regressions describe a more-covered, larger-firm-skewed set than the cash-ratio regressions, and every table reports its own firm and observation counts.",
+          "role_in_paragraph": "result -- the sole Table-1 anchor proposition; supplies the 0.3010 SD basis",
+          "type": "result-number",
+          "reason": "Table 1 summarizes the sample the prior four paragraphs built; the SD it reports (Panel B all-universe 0.3010, resolved) is the denominator 3.2/3.3/3.4 reuse, so it must anchor before those subsections; the coverage-skew stays a mechanic note (threat in 2.4 P5.5).",
+          "evidence": [
+            "_tables_from_bible.tex tab:summary_stats (Panel B UncResCEO SD 0.3010 N 44,900; Panel C CashRatio mean 0.1708; Notes anchor 88,205 / 1,884 firms, 'N varies by row')",
+            "section2.5_paragraph_ledger.json FB note (1-SD effect scaled by Table-1 SD UncResCEO=0.300988, all-universe)",
+            "section2.4_paragraph_ledger.json P5.5 (residual subsample skews larger/more-covered)"
+          ],
+          "numbers": [
+            "88,205 obs / 1,884 firms (tab:summary_stats Notes)",
+            "UncResCEO mean -0.0000, SD 0.3010, N 44,900 (tab:summary_stats Panel B)",
+            "CashRatio mean 0.1708, SD 0.1806 (tab:summary_stats Panel C)"
+          ],
+          "register_locks": [
+            "supportive-not-definitive"
+          ],
+          "depends_on": [
+            "3.1-PARA4-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "BLOCKED -- planning only"
+    }
+  ],
+  "allocation_coverage": {
+    "all_phaseA_props_homed": "All six ratified 3.1 props homed exactly once: 3.1-P1 and 3.1-P2 co-located in PARA1 (provenance + link, ONE atomic job per the purpose statement's item-1 grouping and old-draft L103; two proposition entries preserving both pointers, no fusion); 3.1-P3 alone in PARA2; 3.1-P4 alone in PARA3; 3.1-P5 alone in PARA4; 3.1-P6 alone in PARA5. No prop dropped, none duplicated, each from_phaseA_prop appears once.",
+    "prop_to_paragraph": [
+      {
+        "phaseA_prop": "3.1-P1",
+        "paragraph": "3.1-PARA1",
+        "note": "co-located with 3.1-P2; four-source provenance premise"
+      },
+      {
+        "phaseA_prop": "3.1-P2",
+        "paragraph": "3.1-PARA1",
+        "note": "co-located with 3.1-P1; CUSIP6->gvkey link that fuses the sources (purpose item 1 groups them)"
+      },
+      {
+        "phaseA_prop": "3.1-P3",
+        "paragraph": "3.1-PARA2",
+        "note": "sole prop; build mechanics, points back to 2.3"
+      },
+      {
+        "phaseA_prop": "3.1-P4",
+        "paragraph": "3.1-PARA3",
+        "note": "sole prop; variable routing to 2.3/2.5/Appendix"
+      },
+      {
+        "phaseA_prop": "3.1-P5",
+        "paragraph": "3.1-PARA4",
+        "note": "sole prop; three-layer sample, >=5-call as mechanic"
+      },
+      {
+        "phaseA_prop": "3.1-P6",
+        "paragraph": "3.1-PARA5",
+        "note": "sole prop; Table 1 anchor, SD 0.3010 Panel B"
+      }
+    ],
+    "gaps": [
+      "By design 3.1 makes no headline claim; variable DEFINITIONS and the >=5-call selection THREAT live in 2.3/2.5/Appendix and 2.4 P5.5, bounded-by-design.",
+      "The 67,590-vs-27,622 two-universe disclosure is routed to 3.2-PARA2 at the empire_building_did table, not stated in 3.1-PARA5."
+    ]
+  }
+}

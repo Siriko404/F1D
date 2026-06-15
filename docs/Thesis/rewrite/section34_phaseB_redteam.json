@@ -1,0 +1,440 @@
+{
+  "redteam_report": [
+    {
+      "subsection_id": "3.1",
+      "planners_compared": [
+        "Planner 1",
+        "Planner 2",
+        "Planner 3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Planner 1 allocates 3.1 into SIX paragraphs (1:1 with the six ratified props), giving the CUSIP6->gvkey record linkage (3.1-P2) its own standalone paragraph separate from the four-source provenance (3.1-P1). This is an over-split (padding): the ratified 3.1 purpose statement enumerates item (1) as 'the four data sources AND the CUSIP6->gvkey link that fuses them' -- one provenance job, not two -- and the old draft breaks them together at L103. Splitting the link into a paragraph of its own violates rubric 8 (paragraph count justified): two paragraphs sharing the single job 'where the data come from and how they are fused'.",
+          "severity": "MINOR",
+          "reason": "Rubric 8 (padding): a paragraph that should merge. The chain's own purpose-statement grouping and the old-draft break are the authority on the atomic-job count; Planner 1's 6 splits one provenance job across two paragraphs. Planner 2 and Planner 3 both correctly co-locate P1+P2 into ONE provenance paragraph (5 paragraphs total).",
+          "evidence": [
+            "section3.1_subsection_plan.json purpose item 1 ('the four data sources AND the CUSIP6->gvkey link that fuses them')",
+            "old_draft_81efc78.tex L103 (sources + CUSIP6 link in one paragraph)",
+            "Planner 1 3.1 paragraph_count_rationale ('Six paragraphs, one per ratified Phase-A proposition (1:1), no merges')",
+            "Planner 2 / Planner 3 3.1 (5 paragraphs, P1+P2 co-located)"
+          ],
+          "which_planner": "Planner 1"
+        },
+        {
+          "flaw": "Planner 1's 3.1-P6 intent and the merged number set risk mapping the empire_building_did two-universe N-counts (67,590/27,622) onto the descriptive Table 1; the Phase-A red-team already flagged this exact panel-naming collision against Planner 1. All three planners ultimately route the counts to 3.2, so the live allocations are clean, but Planner 1's guardrails are the weakest at fencing it off.",
+          "severity": "MINOR",
+          "reason": "Rubric 4 (number traceability) + rubric 6 (boundary): carried into prose it would put result-table counts inside Table 1. Inherited from the Phase-A red-team's MAJOR flaw against Planner 1; the synthesized 3.1-PARA5 fences it explicitly (67,590/27,622 NOT summary_stats; routed to 3.2-PARA2).",
+          "evidence": [
+            "section34_phaseA_redteam.json 3.1 flaw (Planner 1 maps empire_building_did N-counts onto summary_stats panels)",
+            "_tables_from_bible.tex tab:summary_stats L43 (UncResCEO Panel B N 44,900) + tab:empire_building_did L187 (N row 67,590 / 27,622)"
+          ],
+          "which_planner": "Planner 1"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Allocated 3.1 into FIVE paragraphs, co-locating ratified props 3.1-P1 and 3.1-P2 into PARA1 (provenance + link, one atomic job, two proposition entries preserving both pointers); 3.1-P3..P6 stand alone in PARA2..PARA5.",
+          "reason": "The chain's purpose statement groups sources+link as item (1) ('the four data sources AND the CUSIP6->gvkey link that fuses them'), and the old draft breaks them together at L103; one atomic provenance job warrants one paragraph. This fixes Planner 1's over-split while keeping the merge documented with reason+evidence as the task requires.",
+          "evidence": [
+            "section3.1_subsection_plan.json purpose item 1",
+            "old_draft_81efc78.tex L103",
+            "Planner 2 / Planner 3 3.1 (5-paragraph co-location)"
+          ]
+        },
+        {
+          "decision": "Took the Planner 2/3 number attributions throughout 3.1 (anchor 88,205/1,884; UncResCEO SD 0.3010 Panel B; CashRatio 0.1708 Panel C; PreAnnounceQtr 0.0094 Panel A) and routed the 67,590/27,622 two-universe disclosure OUT of 3.1 into 3.2-PARA3 at the empire_building_did N row. Verified byte-exact against the tables.",
+          "reason": "Fixes Planner 1's panel-naming collision (Phase-A red-team MAJOR); the two-universe count belongs at the result table, not in descriptive Table 1. Confirmed summary_stats panels A/B/C against _tables_from_bible.tex L30-60.",
+          "evidence": [
+            "_tables_from_bible.tex tab:summary_stats L30-60 (Panel A Independent / B Dependent UncResCEO SD 0.3010 / C Firm Controls CashRatio 0.1708)",
+            "_tables_from_bible.tex tab:empire_building_did L186-187 (N row 67,590/27,622)"
+          ]
+        },
+        {
+          "decision": "Kept the >=5-call filter as a MECHANIC in 3.1-PARA4 and left its selection-THREAT framing in 2.4 P5.5; folded HighCashScrutiny-missing and CashRatio_lag-missing-from-Appendix plus the Appendix-I-pending pointer into the open_items.",
+          "reason": "Rubric 6 (boundary): the selection threat is homed in 2.4 P5.5; all three planners agree. Rubric 10 (open decisions): variable_ledger flags both as MISSING from the Appendix defs table; all three surfaced them.",
+          "evidence": [
+            "section2.4_paragraph_ledger.json P5.5 (selection THREAT homed in 2.4; mechanic stays 3.1)",
+            "variable_ledger.json HighCashScrutiny.flag + CashRatio_lag.flag (MISSING from appendix defs)"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "3.2",
+      "planners_compared": [
+        "Planner 1",
+        "Planner 2",
+        "Planner 3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Planner 2 allocates 3.2 into FOUR paragraphs, co-locating ratified props 3.2-P2 (cash-arm result + two-tailed survival) and 3.2-P3 (two-universe N caveat) into a single paragraph (PARA2). This is cramming: the chain's coverage lists the two-universe disclosure as a DISTINCT atomic move, and the Phase-A red-team specifically isolated it to the empire_building_did N row as a load-bearing, separately-sourced caveat that pre-empts the non-identical-sample referee attack. Folding it into the positive-result paragraph makes one paragraph do two jobs (deliver the C2 positive AND disclose the sample limitation), violating rubric 8 atomicity.",
+          "severity": "MINOR",
+          "reason": "Rubric 8 (cramming) + rubric 3 (atomicity): the result and its sample caveat are distinct jobs; the red-team's emphasis on sourcing the two-universe count to the empire_building_did N row argues for keeping it atomic and separately-attributed. Planner 1 and Planner 3 both keep P3 standalone (5 paragraphs). This is the closest call of the three count deviations; the tie-breaker is consistency with the 3.3 design/pre-trend atomicity and the red-team's isolation of the disclosure.",
+          "evidence": [
+            "section3.2_subsection_plan.json coverage (P2 result, P3 N caveat as separate moves)",
+            "section34_phaseA_redteam.json 3.2 synthesis (two-universe disclosure homed at empire_building_did N row)",
+            "Planner 2 3.2 paragraph_count_rationale ('FOUR paragraphs ... 3.2-P2 and 3.2-P3 co-located')",
+            "Planner 1 / Planner 3 3.2 (5 paragraphs, P3 standalone)"
+          ],
+          "which_planner": "Planner 2"
+        },
+        {
+          "flaw": "Planner 1's 3.2-P4 (per the Phase-A red-team) carried stale old-draft pointers: the '1.4% of the sample' frequency (the live cell is PreAnnounceQtr mean 0.0094 = ~1%), and an incompletely-surfaced SD basis (omitting the cash-mean half and the 2.5-coherence pull). With the SD basis now RESOLVED to 0.3010 (claim_findings 2026-06-14), these stale pointers are dropped, not merely surfaced.",
+          "severity": "MINOR",
+          "reason": "Rubric 4 (number traceability) + stale-inheritance: a memory/old-draft number that does not trace to a current cell. Inherited from the Phase-A red-team's MINOR flaws against Planner 1; the synthesized 3.2-PARA4 uses live cells (0.3010, 0.1708, 0.0094) and drops 0.3072/0.1573/1.4%.",
+          "evidence": [
+            "section34_phaseA_redteam.json 3.2 flaws (Planner 1 '1.4% of the sample' stale; SD basis incompletely surfaced)",
+            "_tables_from_bible.tex tab:summary_stats L36 (PreAnnounceQtr mean 0.0094)",
+            "claim_findings_ledger.json _open_decisions_resolved_2026_06_14 (SD 0.3010 resolved; 0.3072 retired)"
+          ],
+          "which_planner": "Planner 1"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Allocated 3.2 into FIVE paragraphs, 1:1 with the five ratified props, keeping 3.2-P3 (two-universe caveat) as a standalone paragraph (PARA3) between the cash-arm result (PARA2) and the magnitude (PARA4).",
+          "reason": "The chain's coverage lists the two-universe disclosure as a distinct move and the Phase-A red-team isolated it to the empire_building_did N row; keeping it atomic prevents the result paragraph from doing two jobs and keeps the disclosure separately-sourced. Fixes Planner 2's cramming.",
+          "evidence": [
+            "section3.2_subsection_plan.json coverage",
+            "section34_phaseA_redteam.json 3.2 synthesis",
+            "Planner 1 / Planner 3 3.2 (P3 standalone)"
+          ]
+        },
+        {
+          "decision": "Applied the SD basis at the RESOLVED 0.3010 (all-universe Table-1 Panel B) in 3.2-PARA4: ~15.3% = 0.0461/0.3010 and ~3.0% = 0.0051/0.1708; dropped the [or /0.3072] branch and the stale 0.3072/0.1573/1.4% pointers; documented that this SUPERSEDES the Phase-A 3.2-P4 'surface, not silently picked' clause.",
+          "reason": "The task mandates applying 0.3010 and NOT re-surfacing the SD decision (claim_findings 2026-06-14). This is a documented supersession of a settled-then-resolved decision, not a re-plan of the chain. SD-surfacing never lived in a register_lock, so nothing is dropped.",
+          "evidence": [
+            "claim_findings_ledger.json _open_decisions_resolved_2026_06_14 (sd_basis RESOLVED -> 0.3010; 0.3072 RETIRED)",
+            "_tables_from_bible.tex tab:summary_stats Panel B/C cells"
+          ]
+        },
+        {
+          "decision": "Kept the two-tailed survival (p=.0074) stated WITH the cash-arm result in 3.2-PARA2, and the 3.4 forward-link in 3.2-PARA5, per all three planners and the Phase-A red-team.",
+          "reason": "Rubric 5 (C-traps): the two-tailed survival pre-empts the one-tailed-artifact referee attack at the point of claim; the 3.4 deferral seals the C6 Gelman-Stern trap.",
+          "evidence": [
+            "claim_findings_ledger.json C2 (two_tailed_check p=.0074)",
+            "_tables_from_bible.tex tab:empire_building_did note L194 (one-tailed treatment); claim_findings_ledger C6 risks (no Gelman-Stern)"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "3.3",
+      "planners_compared": [
+        "Planner 1",
+        "Planner 2",
+        "Planner 3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Planner 2 allocates 3.3 into FIVE paragraphs, co-locating ratified props 3.3-P1 (matched-universe design) and 3.3-P2 (flat pre-trend validity) into one paragraph (PARA1). This is an over-merge: the chain's coverage lists the flat pre-trend as a DISTINCT validity result the 2.4 spec promised, and for C1 -- the strongest, most-referee-proof result mandated to CARRY the paper -- clarity should win over compression. Merging the design premise with the pre-trend validity RESULT makes one paragraph carry a design-method premise and a result-number validity device, two atomic jobs, violating rubric 8.",
+          "severity": "MINOR",
+          "reason": "Rubric 8 (over-merge) + rubric 3 (atomicity): the design and the pre-trend are distinct jobs (one premise, one validity result); the 2.4 spec promised the PRE2 pre-trend check as its own validity device. Planner 1 and Planner 3 both keep the pre-trend standalone (6 paragraphs). Given C1 must carry the paper, the 6-paragraph clarity-favoring allocation is correct.",
+          "evidence": [
+            "section3.3_subsection_plan.json coverage (P1 design, P2 pre-trend as separate moves)",
+            "claim_findings_ledger.json C1 (rank 1 STRONGEST; carry the paper)",
+            "Planner 2 3.3 paragraph_count_rationale ('FIVE paragraphs ... 3.3-P1 and 3.3-P2 co-located')",
+            "Planner 1 / Planner 3 3.3 (6 paragraphs, pre-trend standalone)"
+          ],
+          "which_planner": "Planner 2"
+        },
+        {
+          "flaw": "All three planners assert the cash transaction-clock leg as 'cash persists / kappa_gap>0' -- correct only because all three (after the Phase-A red-team) anchor it to the NULL PRE1-GAP drop (0.0006 n.s.), since the GAP CashRatio LEVEL itself (0.0055) is positive but insignificant. This is not a flaw in the live allocations (all three carry the kappa_gap honesty note in 3.3-P3), recorded here only to confirm the highest-risk register cell was checked: persistence rests on the absence of a significant PRE1-GAP decline, not on a significant GAP level.",
+          "severity": "MINOR",
+          "reason": "Rubric 2 (register intact): 'cash persists through the gap' over-reads if anchored to a significant GAP coefficient. Verified byte-exact: GAP CashRatio 0.0055 (SE 0.0034, n.s.) and Drop PRE1-GAP CashRatio 0.0006 (n.s.); all three planners carry the honesty note, so no live flaw -- documentation only, per the Phase-A red-team's 'all three' note.",
+          "evidence": [
+            "_tables_from_bible.tex tab:empire_drop_matched L215 (GAP CashRatio 0.0055 n.s.) + L220 (Drop PRE1-GAP CashRatio 0.0006 n.s.)",
+            "section34_phaseA_redteam.json 3.3 (kappa_gap honesty note added to 3.3-P3)"
+          ],
+          "which_planner": "all three"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Allocated 3.3 into SIX paragraphs, 1:1 with the six ratified props, keeping 3.3-P2 (flat pre-trend validity) as a standalone paragraph (PARA2) between the design (PARA1) and the GAP contrast (PARA3).",
+          "reason": "The chain's coverage lists the pre-trend as a distinct validity result the 2.4 spec promised, and C1 is the strongest claim mandated to carry the paper, so clarity beats compression. Fixes Planner 2's over-merge.",
+          "evidence": [
+            "section3.3_subsection_plan.json coverage",
+            "claim_findings_ledger.json C1 (STRONGEST; carry the paper)",
+            "Planner 1 / Planner 3 3.3 (pre-trend standalone)"
+          ]
+        },
+        {
+          "decision": "Led the inference with the GAP contrast (3.3-PARA3), kept the negative POST (-0.0250*) as a separate do-not-over-read caveat (3.3-PARA6) with the cash-persistence-partly-mechanical note, and bound the kappa_gap honesty note (GAP CashRatio 0.0055 n.s.; persistence rests on the null PRE1-GAP drop) into PARA3's guardrails.",
+          "reason": "Rubric 5 (C1 POST not over-read; kappa_gap honesty): the GAP discriminator is separated from the POST caveat per the contrast-not-coefficient framing the ledger mandates; the kappa_gap note keeps the cash-clock claim at exactly what the table supports.",
+          "evidence": [
+            "claim_findings_ledger.json C1 thinnest_claim + risks (round-trip contrast; do not over-read POST -0.0250*)",
+            "_tables_from_bible.tex tab:empire_drop_matched (GAP CashRatio 0.0055 n.s.; PRE1-GAP drop 0.0006 n.s.)"
+          ]
+        },
+        {
+          "decision": "Used ONLY the placebo CASH column in 3.3-PARA5 with N 29,535 / 1,326 firms (distinct from the matched 28,102), reserving the placebo STOCK column and the cash-vs-stock contrast for 3.4-PARA1. Verified N byte-exact.",
+          "reason": "Rubric 6 (one home per table): the cleanest non-overlapping split for the dual-listed placebo table; the placebo cash N is 29,535 (Phase-A red-team MINOR fix), not the matched 28,102.",
+          "evidence": [
+            "_tables_from_bible.tex tab:empire_drop_placebo L303-304 (N cash 29,535 / 1,326 firms)",
+            "_tables_from_bible.tex tab:empire_drop_matched L246-247 (matched N 28,102)"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "3.4",
+      "planners_compared": [
+        "Planner 1",
+        "Planner 2",
+        "Planner 3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "No count flaw: all three planners allocate 3.4 into FIVE paragraphs, 1:1 with the five ratified props, in the order P1 (descriptive placebo stock-column) -> P2 (Wald-not-Gelman-Stern pivot) -> P3 (formal EFFECT) -> P4 (failing CAUSE) -> P5 (fragile hedge). The anti-Gelman-Stern design (P2) precedes the EFFECT number (P3), and EFFECT/CAUSE sit in separate adjacent paragraphs with opposite verdicts, honoring the C6 C-trap. Recorded MINOR-only to document that the two highest-risk cells were checked.",
+          "severity": "MINOR",
+          "reason": "Rubric default-to-flag does not warrant inventing a count flaw: 5/5 across all three is the correct atomic allocation (the chain enumerates five distinct moves and folding EFFECT+CAUSE would destroy the opposite-verdict honesty). The highest-risk cells -- CAUSE-matched DIFFERENCE 0.0064 (no stars / n.s.) vs the matched Cash-arm COEFFICIENT 0.0056** -- were verified byte-exact: all three carry 0.0064 as the difference correctly.",
+          "evidence": [
+            "_tables_from_bible.tex tab:empire_cashspec L328 (matched Cash arm 0.0056**) + L333 (Cash-Stock matched difference 0.0064 no stars; 0.0983** EFFECT; 0.0092* full) + note L362 (two-tailed)",
+            "claim_findings_ledger.json C6 (EFFECT_diff 0.0983** z=2.06 p=.039; CAUSE_diff_matched 0.0064 n.s.)"
+          ],
+          "which_planner": "none"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Allocated 3.4 into FIVE paragraphs 1:1, ordered P1 (descriptive placebo stock-column side-by-side) -> P2 (pooled Wald pre-commitment, never Gelman-Stern) -> P3 (formal EFFECT 0.0983** at 5% two-tailed) -> P4 (failing CAUSE 0.0064 n.s., mechanism open) -> P5 (supported-but-fragile hedge), with the placebo STOCK column consumed in PARA1.",
+          "reason": "Rubric 5 (C6 C-trap) + rubric 8: this order pre-commits the EFFECT/CAUSE split and the anti-Gelman-Stern logic before the numbers; the placebo stock column completes the dual-listed-table split with 3.3-PARA5. All three planners agree on the count and order.",
+          "evidence": [
+            "thesis_draft.tex 2.4 P3.2 (Wald is the formal test, not sig-vs-n.s.)",
+            "claim_findings_ledger.json C6 thinnest_claim (separate EFFECT from CAUSE)",
+            "section34_phaseA_redteam.json 3.4 synthesis (P1->P2->P3->P4->P5 order)"
+          ]
+        },
+        {
+          "decision": "Sourced the EFFECT-diff significance to the empire_cashspec two-tailed table note (L362) so 'survives a formal test at 5%' is provably accurate; applied the SD magnitude at the resolved 0.3010 (~1/3 of SD = 0.0983/0.3010 = 32.7%); added a guardrail in 3.4-PARA4 distinguishing the 0.0064 difference from the 0.0056** matched Cash-arm coefficient.",
+          "reason": "Rubric 5 (C6 not overclaimed) + rubric 4 (number traceability): the two-tailed note makes 'survives a formal test' referee-proof; the 0.0056-vs-0.0064 guardrail pre-empts the prose-phase cell-confusion Planner 1 flagged.",
+          "evidence": [
+            "_tables_from_bible.tex tab:empire_cashspec note L362 (two-tailed); L328 (0.0056**) vs L333 (0.0064 difference)",
+            "claim_findings_ledger.json _advisor_correction_2026_06_12 (survives a formal test is accurate)"
+          ]
+        },
+        {
+          "decision": "Kept the CAUSE leg failure (0.0064 n.s. matched / 0.0092* full) as the mechanism-open lock and surfaced the R2 two-way-clustering rerun as an open item (could strengthen C6; table stays firm-clustered), per all three and the resolution note.",
+          "reason": "Rubric 5 (mechanism-open) + rubric 10: the cause leg fails -> war-chest mechanism stays open; the clustering rerun on empire_cashspec is a flagged R2 option, not assumed.",
+          "evidence": [
+            "claim_findings_ledger.json C6 (CAUSE leg fails; R2 two-way clustering could strengthen)"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "4.1",
+      "planners_compared": [
+        "Planner 1",
+        "Planner 2",
+        "Planner 3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Planner 1's 4.1-P1 lists BOTH the significant HighCashScrutiny 0.0408** AND the insignificant CashScrutiny 0.0854 n.s. in its 'confound is genuine' premise without distinguishing their roles, and its numbers array presents 0.0854 alongside 0.0408 as if both support plausibility. Leading or co-billing the 'confound is real' premise with an INSIGNIFICANT coefficient self-defeats the premise: a referee inverts it ('your own volume measure shows no significant rise'), collapsing the 'real rival not strawman' register that 2.2 P5 / 2.5 P4 require.",
+          "severity": "MAJOR",
+          "reason": "Rubric 5 (C4 C-trap; thin-claim ceiling) + rubric 9 (evidence sound): a premise that the confound is genuine cannot rest on an n.s. coefficient. The fix is to lead with 0.0408** (incidence) and recast 0.0854 as 'volume does not rise significantly', never as support. Inherited from the Phase-A red-team's MAJOR flaw against Planner 1; Planner 2 and Planner 3 both lead with 0.0408** and recast 0.0854.",
+          "evidence": [
+            "section34_phaseA_redteam.json 4.1 MAJOR flaw (Planner 1 co-bills 0.0854 n.s. as support)",
+            "_tables_from_bible.tex tab:empire_building_did L163 (col 3 CashScrutiny 0.0854 n.s.; col 4 HighCashScrutiny 0.0408**)",
+            "claim_findings_ledger.json C4 (confound_is_real: HighCashScrutiny 0.0408**)"
+          ],
+          "which_planner": "Planner 1"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Built 4.1-PARA1 to lead the 'confound is genuine' premise with the SIGNIFICANT incidence rise (HighCashScrutiny 0.0408**, empire_building_did col 4) and recast the insignificant CashScrutiny 0.0854 explicitly as 'volume does not rise significantly, so the genuine confound is the incidence, not the volume.'",
+          "reason": "Rubric 5/9: makes the plausibility premise rest only on significant evidence, preserving the real-rival register; this is the advisor-flagged correction and the Phase-A red-team MAJOR fix.",
+          "evidence": [
+            "claim_findings_ledger.json C4 (confound_is_real 0.0408**)",
+            "_tables_from_bible.tex tab:empire_building_did (col 3 0.0854 n.s.; col 4 0.0408**)"
+          ]
+        },
+        {
+          "decision": "Confirmed empire_building_did col 4 belongs in 4.1's table list as the col-4 plausibility premise (a promise/delivery split, not a double-home); the cash-arm result columns (1,2,5,6) stay in 3.2. Added a guardrail in 4.1-PARA2 that the 0.1754*** validity coefficient is the col-3 (no-controls) HighCash value, not the col-4 controls value (0.1921***).",
+          "reason": "Rubric 6 (table homes): the confound-real premise needs col 4; without it 4.1 reads as a strawman. The 0.1754-vs-0.1921 guardrail pre-empts a prose-phase mis-cite (harvested from Planner 1's sharp col-3/col-4 distinction).",
+          "evidence": [
+            "claim_findings_ledger.json C4 (confound_is_real points to tab:empire_building_did col 4)",
+            "_tables_from_bible.tex tab:cash_scrutiny_validity L563 (HighCash col 3 0.1754***, col 4 0.1921***)"
+          ]
+        },
+        {
+          "decision": "Kept the C4 register verbatim (NULL-only, underpowered, CI [-0.027,+0.016], 89% no scrutiny, 'does not account for THIS run-up; not that scrutiny never matters') in 4.1-PARA5 and did not strengthen, per all three planners; surfaced the orphan-bibitem and Appendix-I open items in open_items.",
+          "reason": "Rubric 5 (C4 not strengthened): the ledger mandates the verbatim hedge. Rubric 10 (open decisions): the orphan bibitems (lerman2026, bushee2018, everhart2025, gokkaya2025) are now DROPPED per the 2026-06-14 resolution, so they are surfaced as a settled item, not a live 4.1 deliverable.",
+          "evidence": [
+            "claim_findings_ledger.json C4 referee_proof + thinnest_claim ('Do NOT strengthen')",
+            "claim_findings_ledger.json _open_decisions_resolved_2026_06_14 (orphan_bibitems DROPPED)"
+          ]
+        }
+      ]
+    }
+  ],
+  "allocation_matrix": [
+    {
+      "subsection_id": "3.1",
+      "phaseA_prop": "3.1-P1",
+      "paragraph": "3.1-PARA1",
+      "status": "HOMED (co-located with 3.1-P2; provenance leg)"
+    },
+    {
+      "subsection_id": "3.1",
+      "phaseA_prop": "3.1-P2",
+      "paragraph": "3.1-PARA1",
+      "status": "HOMED (co-located with 3.1-P1; record-linkage leg; merge justified by purpose item 1 + old-draft L103)"
+    },
+    {
+      "subsection_id": "3.1",
+      "phaseA_prop": "3.1-P3",
+      "paragraph": "3.1-PARA2",
+      "status": "HOMED (sole prop; build mechanic)"
+    },
+    {
+      "subsection_id": "3.1",
+      "phaseA_prop": "3.1-P4",
+      "paragraph": "3.1-PARA3",
+      "status": "HOMED (sole prop; variable routing)"
+    },
+    {
+      "subsection_id": "3.1",
+      "phaseA_prop": "3.1-P5",
+      "paragraph": "3.1-PARA4",
+      "status": "HOMED (sole prop; three-layer sample)"
+    },
+    {
+      "subsection_id": "3.1",
+      "phaseA_prop": "3.1-P6",
+      "paragraph": "3.1-PARA5",
+      "status": "HOMED (sole prop; Table 1 anchor, SD 0.3010)"
+    },
+    {
+      "subsection_id": "3.2",
+      "phaseA_prop": "3.2-P1",
+      "paragraph": "3.2-PARA1",
+      "status": "HOMED (sole prop; design/estimand)"
+    },
+    {
+      "subsection_id": "3.2",
+      "phaseA_prop": "3.2-P2",
+      "paragraph": "3.2-PARA2",
+      "status": "HOMED (sole prop; cash-arm result + two-tailed survival)"
+    },
+    {
+      "subsection_id": "3.2",
+      "phaseA_prop": "3.2-P3",
+      "paragraph": "3.2-PARA3",
+      "status": "HOMED (sole prop; two-universe N caveat at empire_building_did N row)"
+    },
+    {
+      "subsection_id": "3.2",
+      "phaseA_prop": "3.2-P4",
+      "paragraph": "3.2-PARA4",
+      "status": "HOMED (sole prop; economic magnitude at resolved 0.3010)"
+    },
+    {
+      "subsection_id": "3.2",
+      "phaseA_prop": "3.2-P5",
+      "paragraph": "3.2-PARA5",
+      "status": "HOMED (sole prop; stock placebo + 3.4 forward-link)"
+    },
+    {
+      "subsection_id": "3.3",
+      "phaseA_prop": "3.3-P1",
+      "paragraph": "3.3-PARA1",
+      "status": "HOMED (sole prop; matched-universe event-study design, N 28,102)"
+    },
+    {
+      "subsection_id": "3.3",
+      "phaseA_prop": "3.3-P2",
+      "paragraph": "3.3-PARA2",
+      "status": "HOMED (sole prop; flat pre-trend validity device)"
+    },
+    {
+      "subsection_id": "3.3",
+      "phaseA_prop": "3.3-P3",
+      "paragraph": "3.3-PARA3",
+      "status": "HOMED (sole prop; GAP contrast + kappa_gap honesty note)"
+    },
+    {
+      "subsection_id": "3.3",
+      "phaseA_prop": "3.3-P4",
+      "paragraph": "3.3-PARA4",
+      "status": "HOMED (sole prop; round-trip magnitude + MA1 tie)"
+    },
+    {
+      "subsection_id": "3.3",
+      "phaseA_prop": "3.3-P5",
+      "paragraph": "3.3-PARA5",
+      "status": "HOMED (sole prop; placebo cash-arm corroboration, N 29,535)"
+    },
+    {
+      "subsection_id": "3.3",
+      "phaseA_prop": "3.3-P6",
+      "paragraph": "3.3-PARA6",
+      "status": "HOMED (sole prop; contrast-is-the-claim caveat; POST not over-read)"
+    },
+    {
+      "subsection_id": "3.4",
+      "phaseA_prop": "3.4-P1",
+      "paragraph": "3.4-PARA1",
+      "status": "HOMED (sole prop; descriptive placebo stock-column side-by-side)"
+    },
+    {
+      "subsection_id": "3.4",
+      "phaseA_prop": "3.4-P2",
+      "paragraph": "3.4-PARA2",
+      "status": "HOMED (sole prop; pooled Wald design, anti-Gelman-Stern, never-either baseline)"
+    },
+    {
+      "subsection_id": "3.4",
+      "phaseA_prop": "3.4-P3",
+      "paragraph": "3.4-PARA3",
+      "status": "HOMED (sole prop; formal Wald EFFECT 0.0983** at 5%)"
+    },
+    {
+      "subsection_id": "3.4",
+      "phaseA_prop": "3.4-P4",
+      "paragraph": "3.4-PARA4",
+      "status": "HOMED (sole prop; failing CAUSE leg, mechanism open)"
+    },
+    {
+      "subsection_id": "3.4",
+      "phaseA_prop": "3.4-P5",
+      "paragraph": "3.4-PARA5",
+      "status": "HOMED (sole prop; supported-but-fragile hedge)"
+    },
+    {
+      "subsection_id": "4.1",
+      "phaseA_prop": "4.1-P1",
+      "paragraph": "4.1-PARA1",
+      "status": "HOMED (sole prop; concede genuine confound via 0.0408**; recast 0.0854 as volume-not-rising)"
+    },
+    {
+      "subsection_id": "4.1",
+      "phaseA_prop": "4.1-P2",
+      "paragraph": "4.1-PARA2",
+      "status": "HOMED (sole prop; step one, measure is real)"
+    },
+    {
+      "subsection_id": "4.1",
+      "phaseA_prop": "4.1-P3",
+      "paragraph": "4.1-PARA3",
+      "status": "HOMED (sole prop; step two, direct-effect null + non-redundancy)"
+    },
+    {
+      "subsection_id": "4.1",
+      "phaseA_prop": "4.1-P4",
+      "paragraph": "4.1-PARA4",
+      "status": "HOMED (sole prop; step three, operative reason-gating test)"
+    },
+    {
+      "subsection_id": "4.1",
+      "phaseA_prop": "4.1-P5",
+      "paragraph": "4.1-PARA5",
+      "status": "HOMED (sole prop; NULL-only underpowered verbatim hedge)"
+    }
+  ],
+  "global_notes": []
+}

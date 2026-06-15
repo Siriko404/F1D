@@ -88,7 +88,7 @@ TOTAL = 8 agents.
 
 ## NEXT ACTION
 1. **Phase A ✅ DONE + verified + ratified** (run `wf_7fca1f54-86c`). 5 plans in `section{3.1,3.2,3.3,3.4,4.1}_subsection_plan.json`; red-team audit in `section34_phaseA_redteam.json`.
-2. **Phase B 🔄 RUNNING** (`wf_d47aa9b8-235`) — paragraph allocation. **ON RETURN, extraction gate (advisor — diff-to-ratified, do NOT trust the red-team's allocation_matrix self-report):**
+2. **Phase B ✅ DONE + gate PASSED** (`wf_d47aa9b8-235`; 4 opus agents, 850K tok). Wrote `section{3.1,3.2,3.3,3.4,4.1}_paragraph_ledger.json` + `section34_phaseB_redteam.json` + `_planners_raw`. Gate via `tmp/write_phaseB_ledgers.py` (mechanical, advisor): **27/27 Phase-A props homed exactly once** (0 orphan/dup), **0 invented numbers, 0 dropped register-locks**, `final_prose` force-empty + `prose_status` BLOCKED. AWAITING user ratification, then Phase C. (Original extraction-gate spec kept for the record:)
    - **(a) FILENAME LOCK — CRITICAL:** name the 5 output files EXACTLY `section{3.1,3.2,3.3,3.4,4.1}_paragraph_ledger.json` (NOT `_paragraph_plan` — Phase C's manifest + the §2 `section2.X_paragraph_ledger.json` convention both require `_paragraph_ledger`). If you pick another name, fix the Phase C manifest to match and verify all 5 paths resolve before launching C.
    - (b) set-completeness: collect every Phase-A `prop_id` from the 5 subsection plans; assert each is covered by some `from_phaseA_prop`; review any covered >once (legit split vs dup bug).
    - (c) force `final_prose=""` + `prose_status` BLOCKED on every paragraph (schema doesn't enforce it); flag any non-empty (planner went off-task).
