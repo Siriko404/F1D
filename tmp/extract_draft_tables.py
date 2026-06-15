@@ -30,6 +30,7 @@ FRAGMENT = {
 }
 
 # 2026-06-14: the thesis table set is LOCKED (user-ratified: 11 tables, empire thesis).
+# 2026-06-15: +tab:h14c_ceo2_decomp (Section 4.2 spread reaction re-added) -> 12 tables.
 # Order is EXPLICIT here, not driven by a \ref scan of thesis_draft.tex -- §2 (the only
 # written section) cites no result tables, and the set/order is fixed. summary_stats is
 # Table 1 (corporate-finance convention). Re-running is always safe.
@@ -45,6 +46,7 @@ THESIS_TABLES = [
     "tab:cash_scrutiny_validity",
     "tab:cash_scrutiny_channel",
     "tab:reason_gating",
+    "tab:h14c_ceo2_decomp",   # 2026-06-15: Section 4.2 bid-ask spread reaction (re-added)
 ]
 order = list(THESIS_TABLES)
 
