@@ -81,6 +81,44 @@ NOTE_BY_LABEL = {
     "tab:h14c_ceo2_decomp": r"\textit{Notes:} Post-call bid-ask spread regressed on the three speech components across twelve specifications; the fixed-effect grid (industry or firm, by year or year-quarter) and the contemporaneous-versus-one-quarter-ahead window vary by column as indicated, and a lagged dependent variable is included. " + _SE + " " + _STAR + r" (one-tailed for the speech components, $\beta>0$; two-tailed for controls).",
 }
 
+# 2026-06-15: cleaner, consistent table captions (user). Internal framing words
+# ("empire-building", "Link 1/2", "reason-gating") and the overlong descriptive
+# captions are replaced; the LABELS are UNCHANGED, so prose \ref still renders the
+# table number. Injection swaps ONLY the \caption text. summary_stats keeps its
+# caption; dwz_replication is \input directly and edited in its own file.
+CAPTION_BY_LABEL = {
+    "tab:empire_building_did": "Pre-Announcement Run-Up Test: Cash versus Stock Acquirers",
+    "tab:empire_drop_matched": "Uncertainty and Cash Around the Announcement (Matched Sample)",
+    "tab:empire_drop_placebo": "Event Study by Payment Type: Cash versus Stock Acquirers",
+    "tab:empire_cashspec": "Cash-Specificity Test: Cash versus Stock Acquirers",
+    "tab:h11_prisk_uncertainty": "Convergent Validity: Firm Political Risk",
+    "tab:h24_us_epu": "Convergent Validity: US Policy Uncertainty",
+    "tab:h24b_global_epu": "Convergent Validity: Global Policy Uncertainty",
+    "tab:cash_scrutiny_validity": "Analyst Cash Scrutiny: Construct Validity",
+    "tab:cash_scrutiny_channel": "Analyst Cash Scrutiny as a Driver of CEO Uncertainty",
+    "tab:reason_gating": "Analyst Cash Scrutiny: Interaction with the Run-Up",
+    "tab:h14c_ceo2_decomp": "CEO Uncertainty and the Bid-Ask Spread",
+    "tab:empire_drop_resolution": "Robustness: Withdrawal as a Resolution Event",
+    "tab:empire_drop_staticfe": "Robustness: Static Fixed Effects without the Lagged Dependent Variable",
+}
+
+def inject_caption(body: str, lab: str) -> str:
+    """Replace the table's \\caption text with the cleaned caption (text only; the
+    \\label is untouched). Tables not in CAPTION_BY_LABEL are returned unchanged."""
+    if lab not in CAPTION_BY_LABEL:
+        return body
+    repl = ("\\caption{" + CAPTION_BY_LABEL[lab] + "}").replace("\\", "\\\\")
+    new, n = re.subn(r"\\caption(?:\[[^\]]*\])?\{[^{}]*\}", repl, body, count=1)
+    if n != 1:
+        sys.exit(f"ERROR: caption for {lab} not found (matched {n})")
+    return new
+
+def bump_notes_gap(body: str) -> str:
+    """Add a little more air between a table and its notes by raising the leading
+    \\vspace inside the notes minipage to 8pt (fragments ship 2--4pt)."""
+    return re.sub(r"(\\begin\{minipage\}\{[^}]*\}\s*)\\vspace\{[0-9.]+pt\}",
+                  r"\1\\vspace{8pt}", body, count=1)
+
 def inject_note(body: str, lab: str) -> str:
     """Replace the table's existing Notes text with the standardized note (text only;
     the data rows are untouched). Matches '\\textit{Notes:} ... ' up to the closing
@@ -149,6 +187,8 @@ for lab in order:
                 body = body[: -len("\\clearpage")].rstrip()
     body = shrink_wide_tabulars(body)
     body = inject_note(body, lab)
+    body = inject_caption(body, lab)
+    body = bump_notes_gap(body)
     if lab in LANDSCAPE:
         parts += [f"% --- {lab} (landscape)", "\\begin{landscape}", body, "\\end{landscape}", ""]
     else:

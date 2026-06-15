@@ -37,6 +37,8 @@
 \renewcommand{\baselinestretch}{1}
 % --- Let TeX stretch a tight line rather than push text past the margin (2026-06-15) ---
 \setlength{\emergencystretch}{3em}
+% --- A little more air between a table caption and its table (2026-06-15) ---
+\setlength{\belowcaptionskip}{8pt}
 
 % --- Blank verso pages carry no page number (uOttawa) ---
 \let\origdoublepage\cleardoublepage
@@ -332,6 +334,7 @@ Verrecchia, R. 1983. Discretionary disclosure. \emph{Journal of Accounting and E
 
 \cleardoublepage
 \appendix
+\phantomsection
 \addcontentsline{toc}{chapter}{Appendices}
 % Appendix I -- relocated from the mid-draft Link-1 construction page (user 2026-06-14); pending edits.
 \input{appendix_I_cash_scrutiny.tex}
