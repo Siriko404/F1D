@@ -78,14 +78,15 @@ TOTAL = 8 agents.
 | 3.4 | Cash-specificity: formal Wald diff 0.0983** (effect); cause 0.0064 n.s. (mechanism open) | C6 -> empire_cashspec + _placebo | NO Gelman-Stern; supportive-not-definitive |
 | 4.1 | Rule out analyst scrutiny (promised 2.2-P5/2.5-P4) | C4 -> reason_gating + cash_scrutiny_validity + _channel | NULL-only, underpowered; don't strengthen |
 
-## OPEN DECISIONS for the planners to SURFACE (not solve)
-- 3.2 SD-basis: estimation-sample 0.3072 (N=27,622) vs all-universe Table-1 0.3010 (N=44,900); magnitude (~15%) robust either way; old §3 "Table 1 Panel B" pointer is stale. See `_sd_basis_note`.
-- Orphan bibitems after the §4.2 drop: `lerman2026`, `bushee2018`, `everhart2025`, `gokkaya2025` -> cite-or-remove.
-- Appendix I (cash word-list) pending user edits.
+## OPEN DECISIONS — ALL RESOLVED 2026-06-14 (recorded in claim_findings_ledger `_open_decisions_resolved_2026_06_14`)
+- **SD-basis -> 0.3010** (all-universe Table-1 Panel B); 0.3072 retired; apply across 3.2/3.3/3.4. [user]
+- **Orphan bibitems DROPPED** from thesis_draft.tex (bushee2018/everhart2025/gokkaya2025/lerman2026); verified 0 `\cite` usage first. [user]
+- **Appendix I** already titled + `\input` (thesis_draft.tex L198); no rename needed; content edits still pending (unspecified). [user]
+- **C6 two-way clustering rerun DONE** (tmp/cashspec_twoway_cluster.py): EFFECT diff 0.0983, firm-clustered p=.039** vs two-way p=.043** -> HOLDS at 5%, no strengthen/no damage. Keep locked firm-clustered table; optional one-line robustness note. [user run-and-see]
 
 ---
 
 ## NEXT ACTION
 1. **GATE — user ratifies the 5 Phase-A subsection plans** (`section{3.1,3.2,3.3,3.4,4.1}_subsection_plan.json`). On amend requests, edit the affected plan file(s) directly (or re-run via `Workflow({scriptPath: sec34_phaseA_workflow.js, resumeFromRunId: "wf_7fca1f54-86c"})` after editing the script).
 2. **After ratification → Phase B (paragraphs):** clone the Phase-A workflow shape — 3 opus planners + 1 opus red-team — but TASK = allocate each ratified chain into paragraphs, give each paragraph an atomic purpose + its own proposition chain (reason+evidence atomic). Output = the 5 paragraph ledgers, modeled on `section2.2_paragraph_ledger.json`. The 8-agent total (4+4) is now half-spent.
-3. Open decisions still to settle with the user before drafting prose: 3.2/3.4 SD-basis (0.3010 vs 0.3072); orphan bibitems (lerman2026/bushee2018/everhart2025/gokkaya2025) cite-or-remove; Appendix I edits; the C6 two-way-clustering rerun-class (3.4 open_decisions[1]).
+3. Open decisions: ALL 4 RESOLVED 2026-06-14 (see the OPEN DECISIONS section above + claim_findings_ledger `_open_decisions_resolved_2026_06_14`). Only the Appendix-I content edits remain, unspecified — surface to the user before 3.1/4.1 prose.

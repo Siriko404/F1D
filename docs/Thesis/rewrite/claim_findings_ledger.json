@@ -243,5 +243,11 @@
     "live_prose_status": "SAFE. The locked Sec 2.5 prose cites only the FB percentages (5%/1.5%/2.2%), never an SD value. Verified programmatically (tmp/verify_sd_basis.py): the FB rounds to 5/1.5/2.2 under BOTH SDs (0.3010 -> 5.28/1.51/2.19; 0.3072 -> 5.17/1.48/2.15). No error in any committed prose.",
     "C5_note_kept": "The C5 risk note 'vs UncRes SD 0.3072' uses the estimation-sample SD; correct, kept as-is.",
     "SEC_3_REWRITE_DECISION": "The old Sec 3 prose (commit 81efc78) says 'fifteen percent of a SD (0.3072, Table 1 Panel B)'. That POINTER is now stale -- the all-universe Table 1 shows 0.3010 and has no Panel B. When Sec 3.2 is planned/written: pick the SD basis (estimation-sample 0.3072 with a footnote, OR all-universe Table-1 0.3010) and cite it correctly. Magnitude (~15%) is robust either way (15.0% vs 15.3%)."
+  },
+  "_open_decisions_resolved_2026_06_14": {
+    "sd_basis": "RESOLVED -> 0.3010 (all-universe Table-1 Panel B UncResCEO SD). Apply consistently across 3.2/3.3/3.4 economic-magnitude statements. The 0.3072 estimation-sample alternative is RETIRED. Coheres with the locked 2.5 FB scaling (0.300988). [user 2026-06-14]",
+    "orphan_bibitems": "DROPPED from thesis_draft.tex: bushee2018, everhart2025, gokkaya2025, lerman2026. Verified zero \\cite/\\citet/\\citep usage before removal (grep -> 0 matches). [user 2026-06-14]",
+    "appendix_I": "No rename needed: appendix_I_cash_scrutiny.tex is ALREADY titled '\\section*{Appendix I\\quad Cash-Scrutiny Measure: Variable Construction}' and \\input at thesis_draft.tex L198 (relocated 2026-06-14). Content edits remain flagged pending (unspecified). [user 2026-06-14]",
+    "c6_two_way_clustering": "RERUN executed (tmp/cashspec_twoway_cluster.py; reuses frozen production loaders; read-only; production script + table untouched). EFFECT diff point estimate identical 0.0983 both ways. firm-clustered (locked): se 0.0476, p2=.039 **. two-way (firm x cal-qtr): se 0.0485, p2=.043 ** -> HOLDS at 5%; does NOT strengthen, does NOT damage. CAUSE matched: n.s.->n.s. (p .367->.411); CAUSE full: *->* (p .095->.072); mechanism stays open. DECISION: keep the locked firm-clustered table (no regeneration); OPTIONAL one-line prose robustness note that the formal difference survives two-way clustering (p=.043). [user 2026-06-14 run-and-see; not damaging]"
   }
 }
