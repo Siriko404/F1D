@@ -1,0 +1,366 @@
+{
+  "redteam_report": [
+    {
+      "subsection_id": "abstract",
+      "planners_compared": [
+        "plan1",
+        "plan2",
+        "plan3"
+      ],
+      "flaws_found": [],
+      "synthesis_decisions": [
+        {
+          "decision": "Adopt the shared abstract text (all three plans converged on essentially identical prose).",
+          "reason": "All three abstracts deliver AB.1-AB.8 in element order, citation-free, with C1 leading 'indistinguishable from zero', C6 as the formal pooled test, C4 hedged to 'this pattern', and the ceiling implicit in the close. No discriminator separates them. Mechanical scan of the merged text confirmed: zero \\citet/\\citep, zero author names, zero coefficients, dash-free.",
+          "evidence": [
+            "mechanical scan tmp/redteam_scan.py output: abstract cites=[] name leaks=NONE; DASH SCAN CLEAN",
+            "tab:empire_building_did col 2/6; tab:empire_drop_matched col 1 GAP + col 2; tab:empire_cashspec col 1; tab:reason_gating + tab:cash_scrutiny_channel (all directions match)",
+            "DraftTemplate.txt L33-54 (abstract convention)"
+          ]
+        },
+        {
+          "decision": "Confirm the cash-leg phrasing 'persists on the balance sheet until the deal closes' is grounded, not an overclaim.",
+          "reason": "tab:empire_drop_matched col 2 shows CashRatio does NOT fall at announcement (PRE1-GAP drop 0.0006 n.s.) and falls only at completion (GAP-POST 0.0210***). The body (3.3 P2) states the persistence rests on the absence of a decline at announcement, not a significant gap level. The abstract phrasing matches.",
+          "evidence": [
+            "tab:empire_drop_matched col 2: PRE1=0.0061**, GAP=0.0055 n.s., POST=-0.0155***, GAP-POST drop 0.0210***",
+            "section3.3 P2 final_prose: 'the persistence of cash rests on the absence of a decline at announcement rather than on a significant gap-quarter level'"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "1",
+      "planners_compared": [
+        "plan1",
+        "plan2",
+        "plan3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "1-P1 introduces the number 'roughly six of ten calls' for hollander, which prop 1-P1-d states as 'a large share of calls' and which is not a sample-scale numeral.",
+          "severity": "MINOR",
+          "reason": "The task restricts numbers to sample scale (years, N) and bars introducing a number the plan does not list; prop 1-P1-d's statement says 'a large share', not a count. While 'roughly six of ten' mirrors the 2.1 P3 voice, it adds a non-sample-scale number the locked prop omits. Plans 2 and 3 deliver the prop verbatim with 'a large share of calls'.",
+          "evidence": [
+            "section1 prop 1-P1-d statement: 'in a large share of calls managers leave requested information undisclosed'",
+            "plan1 1-P1 final_prose: 'in roughly six of ten calls managers leave requested information undisclosed'",
+            "Task HARD RULE: 'Numbers are allowed ONLY for sample scale'"
+          ],
+          "which_planner": "plan1"
+        },
+        {
+          "flaw": "1-P2 makes the price-run-up empirical claim ('the price run-up already documented around mergers') without a citation, in cite-dense Move 1.",
+          "severity": "MINOR",
+          "reason": "An uncited empirical claim sits awkwardly in the high-citation-density Move 1, and the keown1981 receipt is available. Plans 2 and 3 cite \\citep{keown1981} on this exact clause; re-citing keown in 1-P3 is permitted and standard. Plan 1 leaves it uncited.",
+          "evidence": [
+            "plan1 1-P2 final_prose: 'in a channel separate from the price run-up already documented around mergers' (no cite)",
+            "plans 2/3 1-P2: '...around mergers \\citep{keown1981}'",
+            "section2.1 P6 final_prose cites keown1981 for the price-run-up fact",
+            "DraftTemplate.txt L74-75 (M1 HIGH citation density)"
+          ],
+          "which_planner": "plan1"
+        },
+        {
+          "flaw": "1-P7 and 5-P4 narrate the withholding-meets-transaction-anticipation literature bridge in near-identical wording, violating the anti-echo HARD RULE.",
+          "severity": "MAJOR",
+          "reason": "The HARD RULE requires the intro to frame the bridge as a CONTRIBUTION and the conclusion as a MATURED IMPLICATION, each stated once, cross-referencing or compressing, never echoing. Plan 1's 1-P7 says 'connecting the literature on when managers withhold private information with the evidence that markets anticipate corporate transactions' and its 5-P4 says 'the pattern connects two strands usually studied apart: the theory of when an informed manager withholds private information, and the evidence that markets anticipate corporate transactions' -- the same sentence twice. This is the specific echo the rule forbids.",
+          "evidence": [
+            "plan1 1-P7 final_prose: 'connecting the literature on when managers withhold private information with the evidence that markets anticipate corporate transactions'",
+            "plan1 5-P4 final_prose: 'the pattern connects two strands usually studied apart: the theory of when an informed manager withholds private information, and the evidence that markets anticipate corporate transactions'",
+            "Task HARD RULE: '1-P7 and 5-P4 must not both narrate the withholding-meets-anticipation literature bridge'"
+          ],
+          "which_planner": "plan1"
+        },
+        {
+          "flaw": "plan2 1-P7 first contribution compresses the back-reference to 'a window the nearest prior work leaves unread' which drops the explicit pointer to the prior dimensions, making the back-reference thinner than the gap it should point to.",
+          "severity": "MINOR",
+          "reason": "The anti-echo rule asks 1-P7 to refer BACK to the dimensions 1-P3 enumerated without re-listing them. Plan 1's 'the other dimensions of deal-related language catalogued above' is a cleaner explicit back-reference than plan 2's 'a window the nearest prior work leaves unread', which gestures at the gap without anchoring to the enumerated dimensions. Plan 3's 'the cell the nearest prior work leaves empty' is also acceptable. Adopted plan 1's back-reference clause.",
+          "evidence": [
+            "plan1 1-P7: 'where the nearest prior work has read the other dimensions of deal-related language catalogued above rather than uncertainty language'",
+            "plan2 1-P7: 'a window the nearest prior work leaves unread'",
+            "Task HARD RULE: '1-P3 states it, the contribution refers back without re-listing'"
+          ],
+          "which_planner": "plan2"
+        },
+        {
+          "flaw": "plan2 renders the measure as \\emph{UncResCEO}; the body math convention is $\\mathrm{UncResCEO}$.",
+          "severity": "MINOR",
+          "reason": "Section 2.2 P1 and the body tables render the variable in math mode ($\\mathrm{...}$ / $\\theta$ notation). \\emph{...} is the convention for conceptual emphasis, not variable names. Plans 1 and 3 use $\\mathrm{UncResCEO}$, matching the body; adopted that.",
+          "evidence": [
+            "plan2 1-P4: '\\emph{UncResCEO}'",
+            "plans 1/3 1-P4: '$\\mathrm{UncResCEO}$'",
+            "section2.2 P1 final_prose uses inline math for the measure and event-time notation"
+          ],
+          "which_planner": "plan2"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "1-P1: deliver hollander as 'a large share of calls' (plans 2/3), drop plan 1's 'roughly six of ten'.",
+          "reason": "Delivers prop 1-P1-d verbatim and sidesteps the sample-scale number rule.",
+          "evidence": [
+            "section1 prop 1-P1-d statement 'a large share of calls'",
+            "Task HARD RULE on numbers"
+          ]
+        },
+        {
+          "decision": "1-P1: cite the half-truth rule as \\citep{rule10b5, basic1988} (plans 1/2).",
+          "reason": "Mirrors the locked 2.1 P1 prose, which cites both rule10b5 and basic1988 for the silence-but-not-mislead half-truth rule. Plan 3's single-key \\citep{rule10b5} drops the basic1988 grounding.",
+          "evidence": [
+            "section2.1 P1 final_prose: '\\citep{rule10b5, basic1988}'",
+            "both keys live bibitems in thesis_draft.tex"
+          ]
+        },
+        {
+          "decision": "1-P2: cite \\citep{keown1981} on the price-run-up clause (plans 2/3).",
+          "reason": "Grounds the empirical claim in cite-dense Move 1; keown1981 receipt is live and SUPPORTED in 2.1 P6.",
+          "evidence": [
+            "live bibkey keown1981 (thesis_draft.tex L172)",
+            "section2.1 P6 final_prose cites keown1981 for the price-run-up fact"
+          ]
+        },
+        {
+          "decision": "1-P3: adopt plan 3's \\citet-led cadence for the three neighbors.",
+          "reason": "Mirrors the locked 2.1 P6 prose directly (\\citet{thewissen2024} show... \\citet{ragozzino2024} find... \\citet{keown1981} document...), more faithful to the exemplar than plan 1's \\citep parentheticals.",
+          "evidence": [
+            "section2.1 P6 final_prose uses \\citet-led sentences for all three neighbors",
+            "DraftTemplate.txt L84-88 (impersonal voice for prior literature)"
+          ]
+        },
+        {
+          "decision": "1-P4: render the measure $\\mathrm{UncResCEO}$ (plans 1/3).",
+          "reason": "Matches the body's math-mode variable convention; \\emph is reserved for conceptual emphasis.",
+          "evidence": [
+            "section2.2 P1 final_prose math notation"
+          ]
+        },
+        {
+          "decision": "1-P7: keep plan 1's explicit back-reference 'the other dimensions of deal-related language catalogued above' and the active contribution framing of the bridge; do not re-list tone/vocabulary/prices and do not redevelop the distinct-from-prices stake.",
+          "reason": "Satisfies the anti-echo rule: 1-P3 owns the enumeration, 1-P2 owns the price-channel stake, 1-P7 refers back and frames the bridge as a contribution; 5-P4 will reframe the bridge reflectively.",
+          "evidence": [
+            "Task HARD RULE on the four near-neighbor paragraphs",
+            "plan1 1-P7 back-reference clause"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "5",
+      "planners_compared": [
+        "plan1",
+        "plan2",
+        "plan3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "plan1 5-P4 narrates the literature bridge in the same wording as its own 1-P7, the second half of the cross-unit echo.",
+          "severity": "MAJOR",
+          "reason": "Same load-bearing echo flagged under subsection 1: the conclusion implication (5-P4) must reframe the bridge reflectively, not repeat the intro contribution sentence. Plan 1 repeats it. Resolved by adopting plan 3's reflective reframe.",
+          "evidence": [
+            "plan1 5-P4 final_prose: 'the pattern connects two strands usually studied apart... withholds private information... markets anticipate corporate transactions'",
+            "plan1 1-P7 final_prose: same construction",
+            "plan3 5-P4 final_prose: 'the result speaks to two strands usually studied apart... The within-firm language signature we characterize sits in the window between them' (reflective, different shape)",
+            "Task HARD RULE: '1-P7 frames it as a contribution, the conclusion as a matured implication'"
+          ],
+          "which_planner": "plan1"
+        },
+        {
+          "flaw": "All three plans assert in their 5-P6 evidence that 'approximately the S&P 1500' is 'reused verbatim from section3.1 P4 final_prose', but that phrase does not literally appear in section3.1 P4 final_prose.",
+          "severity": "MINOR",
+          "reason": "section3.1 P4 final_prose says 'a more-covered set of firms, skewed toward larger ones', not 'approximately the S&P 1500'. The phrase IS in the locked 5-P6-b (CO.L1) prop statement and is user-confirmed in the section3.1 LEDGER (line 235, Execucomp/S&P-1500 coverage), so the PROSE is in-bounds and must keep the phrase. Only the evidence-provenance attribution ('reused verbatim from section3.1 P4 final_prose') is imprecise. The prose is not changed; the flaw is recorded against the evidence array of all three plans.",
+          "evidence": [
+            "section3.1 P4 final_prose (read in full): no 'S&P 1500' string; says 'more-covered set of firms, skewed toward larger ones'",
+            "section5 CO.L1 prop statement: contains 'approximately the S\\&P~1500' verbatim",
+            "section3.1 ledger line 235: 'estimation sample bounded to the S&P 1500 (Execucomp coverage)' USER-CONFIRMED 2026-06-14",
+            "grep over rewrite/: 'S&P 1500' appears only in section5 ledger + section3.1 ledger evidence note, not in 3.1 final_prose"
+          ],
+          "which_planner": "plan1, plan2, plan3"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "5-P4: adopt plan 3's reflective reframe of the literature bridge.",
+          "reason": "Resolves the load-bearing 1-P7/5-P4 echo: 'the result speaks to two strands usually studied apart... The within-firm language signature we characterize sits in the window between them' is a matured-implication framing with a different sentence shape from the intro's active contribution framing, sharing no sentence. Plan 2's 'what the pattern now means is a bridge between' also satisfies the rule but is clunkier.",
+          "evidence": [
+            "Task HARD RULE on the withholding-anticipation bridge",
+            "plan3 5-P4 final_prose",
+            "plan1 5-P4 (rejected on echo)"
+          ]
+        },
+        {
+          "decision": "5-P6: keep 'approximately the S\\&P~1500' in the prose; record the evidence-provenance imprecision only.",
+          "reason": "The phrase is mandatory (in the locked 5-P6-b prop and user-confirmed factual provenance), so the prose is correct; only the planners' evidence claim about WHERE it is reused from is slightly wrong. No prose change.",
+          "evidence": [
+            "CO.L1 prop statement; section3.1 ledger line 235"
+          ]
+        },
+        {
+          "decision": "5-P6 E1 guard: confirm the measurement limitation stops at dictionary/bag-of-words + imperfect placebo + S&P-1500 bound and contains no generated-regressand / Pagan / two-step-SE item.",
+          "reason": "5-P6 is the temptation point for an E1 violation (it discusses the residual measure). All three plans correctly avoid the Pagan disclaimer; the merged text does too.",
+          "evidence": [
+            "AUDIT_PROTOCOL E1",
+            "merged 5-P6 final_prose contains no 'two-step', 'generated regressand', or 'Pagan' string"
+          ]
+        },
+        {
+          "decision": "5-P5: keep 'war-chest mechanism' (plans 1/3) as the unestablished-cause term.",
+          "reason": "The body and claim ledger use 'war-chest' for the cash-accumulation cause; grounded in the n.s. cause leg (cashspec col 2, 0.0064 n.s.). Plan 2's 'cash-accumulation cause' is equivalent; war-chest is the established term.",
+          "evidence": [
+            "claim_findings_ledger.json C6 cause leg 0.0064 n.s.; thin_claim_ceiling references the war-chest mechanism"
+          ]
+        }
+      ]
+    }
+  ],
+  "audit_matrix": [
+    {
+      "claim": "abstract: residual uncertainty elevated in the quarter before a cash acquisition",
+      "table_cell": "tab:empire_building_did col 2 PreAnnounceQtr (UncResCEO, cash) = 0.0461***",
+      "paragraph": "abstract-P1",
+      "status": "direction matches cell (positive, p<0.01)"
+    },
+    {
+      "claim": "abstract: no comparable rise before stock acquisitions",
+      "table_cell": "tab:empire_building_did col 6 PreAnnounceQtr (UncResCEO, stock) = -0.0429 n.s.",
+      "paragraph": "abstract-P1",
+      "status": "direction matches cell (negative, n.s.)"
+    },
+    {
+      "claim": "abstract: indistinguishable from zero once the deal is announced",
+      "table_cell": "tab:empire_drop_matched col 1 GAP (UncResCEO) = 0.0018 n.s.",
+      "paragraph": "abstract-P1",
+      "status": "direction matches cell (near zero, n.s.)"
+    },
+    {
+      "claim": "abstract: cash persists on the balance sheet until the deal closes",
+      "table_cell": "tab:empire_drop_matched col 2 (CashRatio): PRE1-GAP drop 0.0006 n.s. (no fall at announcement); GAP-POST 0.0210***",
+      "paragraph": "abstract-P1",
+      "status": "direction matches cell (no decline at announcement; falls only at completion)"
+    },
+    {
+      "claim": "abstract: elevation concentrates in cash, survives a formal pooled test",
+      "table_cell": "tab:empire_cashspec col 1 Cash-Stock Wald = 0.0983** (p=.039)",
+      "paragraph": "abstract-P1",
+      "status": "direction matches cell (positive, p<0.05 two-tailed)"
+    },
+    {
+      "claim": "abstract: not explained by analysts devoting more of the call to cash questions",
+      "table_cell": "tab:reason_gating col 1/2 PreAnnounceQtr 0.0413***/0.0439** + interaction -0.0056 n.s.; tab:cash_scrutiny_channel Panel A CashScrutiny -0.0000 n.s.",
+      "paragraph": "abstract-P1",
+      "status": "direction matches cell (pre-announce stays sig; interaction n.s.; scrutiny direct effect ~0 n.s.)"
+    },
+    {
+      "claim": "1-P5: residual chief-executive uncertainty elevated in the quarter before a cash acquisition",
+      "table_cell": "tab:empire_building_did col 2 = 0.0461***",
+      "paragraph": "1-P5",
+      "status": "direction matches cell (positive, p<0.01)"
+    },
+    {
+      "claim": "1-P5: no comparable rise before stock acquisitions",
+      "table_cell": "tab:empire_building_did col 6 = -0.0429 n.s.",
+      "paragraph": "1-P5",
+      "status": "direction matches cell (negative, n.s.)"
+    },
+    {
+      "claim": "1-P5: becomes indistinguishable from zero as soon as the deal is announced",
+      "table_cell": "tab:empire_drop_matched col 1 GAP = 0.0018 n.s.",
+      "paragraph": "1-P5",
+      "status": "direction matches cell (near zero, n.s.)"
+    },
+    {
+      "claim": "1-P5: cash persists on the balance sheet until completion",
+      "table_cell": "tab:empire_drop_matched col 2: PRE1-GAP 0.0006 n.s.; GAP-POST 0.0210***",
+      "paragraph": "1-P5",
+      "status": "direction matches cell (no decline at announcement; falls only at completion)"
+    },
+    {
+      "claim": "1-P6: run-up concentrates in cash, survives a formal pooled test of cash-specificity",
+      "table_cell": "tab:empire_cashspec col 1 Cash-Stock Wald = 0.0983** (p=.039)",
+      "paragraph": "1-P6",
+      "status": "direction matches cell (positive, p<0.05 two-tailed)"
+    },
+    {
+      "claim": "1-P6: cash-accumulation mechanism behind it is left open",
+      "table_cell": "tab:empire_cashspec col 2 Cash-Stock (CashRatio matched) = 0.0064 n.s.",
+      "paragraph": "1-P6",
+      "status": "direction matches cell (cause leg n.s.; mechanism open)"
+    },
+    {
+      "claim": "1-P6: elevation survives with scrutiny + interaction entered",
+      "table_cell": "tab:reason_gating col 1 0.0413*** / col 2 0.0439**",
+      "paragraph": "1-P6",
+      "status": "direction matches cell (positive, sig)"
+    },
+    {
+      "claim": "1-P6: scrutiny does not amplify it",
+      "table_cell": "tab:reason_gating col 2 interaction = -0.0056 n.s.",
+      "paragraph": "1-P6",
+      "status": "direction matches cell (n.s.)"
+    },
+    {
+      "claim": "1-P6: not accounted for by analysts devoting more of the call to cash questions",
+      "table_cell": "tab:cash_scrutiny_channel Panel A CashScrutiny = -0.0000 n.s.",
+      "paragraph": "1-P6",
+      "status": "direction matches cell (scrutiny direct effect ~0 n.s.)"
+    },
+    {
+      "claim": "1-P7: pattern concentrates in cash, contrast survives a formal pooled test",
+      "table_cell": "tab:empire_cashspec col 1 Cash-Stock Wald = 0.0983** (p=.039)",
+      "paragraph": "1-P7",
+      "status": "direction matches cell (positive, p<0.05 two-tailed)"
+    },
+    {
+      "claim": "5-P2: residual uncertainty elevated in the quarter before a cash acquisition",
+      "table_cell": "tab:empire_building_did col 2 = 0.0461***",
+      "paragraph": "5-P2",
+      "status": "direction matches cell (positive, p<0.01)"
+    },
+    {
+      "claim": "5-P2: no comparable rise before stock acquisitions",
+      "table_cell": "tab:empire_building_did col 6 = -0.0429 n.s.",
+      "paragraph": "5-P2",
+      "status": "direction matches cell (negative, n.s.)"
+    },
+    {
+      "claim": "5-P2: indistinguishable from zero once the deal is announced",
+      "table_cell": "tab:empire_drop_matched col 1 GAP = 0.0018 n.s.",
+      "paragraph": "5-P2",
+      "status": "direction matches cell (near zero, n.s.)"
+    },
+    {
+      "claim": "5-P2: cash persists to completion",
+      "table_cell": "tab:empire_drop_matched col 2: PRE1-GAP 0.0006 n.s.; GAP-POST 0.0210***",
+      "paragraph": "5-P2",
+      "status": "direction matches cell (no decline at announcement; falls only at completion)"
+    },
+    {
+      "claim": "5-P2: elevation concentrates in cash on a formal pooled test",
+      "table_cell": "tab:empire_cashspec col 1 Cash-Stock Wald = 0.0983** (p=.039)",
+      "paragraph": "5-P2",
+      "status": "direction matches cell (positive, p<0.05 two-tailed)"
+    },
+    {
+      "claim": "5-P3: pre-announcement elevation survives a direct scrutiny measure and its interaction",
+      "table_cell": "tab:reason_gating col 1 0.0413*** / col 2 0.0439** + interaction -0.0056 n.s.",
+      "paragraph": "5-P3",
+      "status": "direction matches cell (pre-announce positive sig; interaction n.s.)"
+    },
+    {
+      "claim": "5-P3: not accounted for by analysts devoting more of the call to cash questions",
+      "table_cell": "tab:cash_scrutiny_channel Panel A CashScrutiny = -0.0000 n.s.",
+      "paragraph": "5-P3",
+      "status": "direction matches cell (scrutiny direct effect ~0 n.s.)"
+    },
+    {
+      "claim": "5-P5: war-chest mechanism in particular is unestablished",
+      "table_cell": "tab:empire_cashspec col 2 Cash-Stock (CashRatio matched) = 0.0064 n.s.",
+      "paragraph": "5-P5",
+      "status": "direction matches cell (cause leg n.s.; mechanism open)"
+    },
+    {
+      "claim": "1-P1/1-P2/1-P3/1-P4/1-P8/1-P9, 5-P1/5-P4/5-P6/5-P7: framing/objective/caveat/roadmap/implications/limitations/future paragraphs",
+      "table_cell": "none (no directional result-claim)",
+      "paragraph": "framing paragraphs",
+      "status": "no-coefficient-ok"
+    }
+  ]
+}

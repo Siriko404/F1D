@@ -218,8 +218,50 @@
         "all_supported": true,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "Firms host quarterly earnings calls and field analysts' unscripted questions, and the language a chief executive uses in answering is increasingly read as a window into what managers know but have not yet disclosed. When a firm is privately committed to an acquisition it has not yet announced, the executive holds the routine call unable to confirm or deny the one development that matters, and whether the spoken record tracks that withholding has not been characterized. We study United States public firms' earnings-call transcripts and acquisition records from 2002 to 2018. From this language we construct a residual measure of chief-executive question-and-answer uncertainty, the component that remains once each executive's persistent speaking style is removed, and we track it around firms' cash acquisitions against stock acquisitions as a placebo. This residual uncertainty is elevated in the quarter before a cash acquisition, relative to the firm's own other quarters, with no comparable rise before stock acquisitions. It becomes indistinguishable from zero once the deal is announced, even before completion, while the cash that funds the purchase persists on the balance sheet until the deal closes. The elevation concentrates in cash acquisitions rather than stock acquisitions, a difference that survives a formal pooled test. This pattern is not explained by analysts devoting more of the call to cash questions, and we read it as call language tracking the deal's passage from private to public, a within-firm correlational regularity rather than a tested mechanism.",
+      "prose_status": "DRAFTED -- Phase C (synthesis)",
+      "_phaseC_audit": {
+        "direction_audit": [
+          {
+            "claim": "residual uncertainty is elevated in the quarter before a cash acquisition",
+            "table_cell": "tab:empire_building_did col 2 PreAnnounceQtr (UncResCEO, cash)",
+            "sign": "positive, p<0.01 (0.0461***, survives two-tailed p=.0074)"
+          },
+          {
+            "claim": "no comparable rise before stock acquisitions",
+            "table_cell": "tab:empire_building_did col 6 PreAnnounceQtr (UncResCEO, stock)",
+            "sign": "negative, n.s. (-0.0429)"
+          },
+          {
+            "claim": "it becomes indistinguishable from zero once the deal is announced",
+            "table_cell": "tab:empire_drop_matched col 1 GAP (UncResCEO)",
+            "sign": "near zero, n.s. (0.0018)"
+          },
+          {
+            "claim": "the cash that funds the purchase persists on the balance sheet until the deal closes",
+            "table_cell": "tab:empire_drop_matched col 2 (CashRatio): PRE1-GAP drop n.s. (no fall at announcement) + GAP-POST 0.0210***",
+            "sign": "no decline at announcement (PRE1-GAP 0.0006 n.s.); falls only at completion (GAP-POST 0.0210***, p<0.01)"
+          },
+          {
+            "claim": "the elevation concentrates in cash acquisitions rather than stock acquisitions, a difference that survives a formal pooled test",
+            "table_cell": "tab:empire_cashspec col 1 Cash-Stock formal Wald difference (UncResCEO)",
+            "sign": "positive, p<0.05 two-tailed (0.0983**, p=.039)"
+          },
+          {
+            "claim": "not explained by analysts devoting more of the call to cash questions",
+            "table_cell": "tab:reason_gating col 1/2 PreAnnounceQtr + interaction; tab:cash_scrutiny_channel Panel A CashScrutiny",
+            "sign": "pre-announce stays positive sig (0.0413***); interaction n.s. (-0.0056); scrutiny direct effect ~0 n.s. (-0.0000)"
+          }
+        ],
+        "number_audit": [
+          {
+            "number": "2002 to 2018",
+            "source": "sample window; tab:summary_stats note (sample period 2002--2018); section3.1 P4 final_prose"
+          }
+        ],
+        "dash_free": true,
+        "no_coefficients": true
+      }
     }
   ],
   "allocation_coverage": {
