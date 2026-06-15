@@ -31,6 +31,8 @@ body.append("\\chapter{Additional Analyses}\\label{ch:additional}")
 body.append("")
 body.append(section("4.1"))
 body.append(section("4.2"))
+body.append(section("4.3"))
+body.append(section("4.4"))
 
 OUT.write_text("\n".join(body) + "\n", encoding="utf-8")
 print("wrote", OUT.name, "-", OUT.stat().st_size, "bytes")
