@@ -1,0 +1,348 @@
+{
+  "redteam_report": [
+    {
+      "subsection_id": "abstract",
+      "planners_compared": [
+        "plan1",
+        "plan2",
+        "plan3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Sample-scale numeral inconsistency across plans for AB.3 (the data+sample element): plan1 records years only with the 88,205/1,884 anchor optional; plan2/plan3 vary in whether/how they print firm and call counts.",
+          "severity": "MINOR",
+          "reason": "All variants are within the abstract convention (sample-scale numbers permitted) and none contradict the Table 1 anchor (88,205 calls / 1,884 firms; tab:summary_stats line 64). This is a consistency choice, not a ceiling or sign error. Synthesis standardizes to years as the floor with the exact Table 1 anchor optional, recorded in numbers[] only (never as a printed coefficient).",
+          "evidence": [
+            "section3.1 P4 final_prose + tab:summary_stats (88,205 calls / 1,884 firms / 2002 to 2018)",
+            "DraftTemplate.txt L48-50 (numbers allowed only for sample scale)"
+          ],
+          "which_planner": "plan2,plan3"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Adopt the converged one-paragraph allocation: all eight AB props (AB.1..AB.8) in abstract-P1 in locked order, realizing the five elements 1->5. All three plans produced this identical structure; no split or merge.",
+          "reason": "The ABSTRACT convention forces exactly one paragraph; the locked chain is a single ordered sequence mapping cleanly onto the five elements, so a 1-to-8 homing is the only faithful allocation.",
+          "evidence": [
+            "DraftTemplate.txt L33-54 (one paragraph, five elements)",
+            "section_abstract_subsection_plan.json coverage.purpose_fully_delivered",
+            "all three input plans: abstract-P1 holds AB.1..AB.8"
+          ]
+        },
+        {
+          "decision": "Lead the C1 abstract proposition (AB.6) with 'becomes indistinguishable from zero once the deal is announced'; do NOT use 'unwound/reverses/falls' as the headline verb.",
+          "reason": "GAP-safe phrasing matches the body's pairing of 'fully unwound' with the peak-to-completion swing and pre-empts the C1 reversal trap; the cross-unit red-team flagged 'unwound at announcement' as the headline verb (plan2 AB.6 in the Phase-A redteam). All three input allocations here already used the GAP-safe lead; adopted.",
+          "evidence": [
+            "introconcl_phaseA_redteam.json abstract synthesis_decision (drop 'unwound at announcement' as headline verb)",
+            "section3.3 P3+P5 final_prose ('fully unwound' tied to peak-to-completion 0.0723)",
+            "claim_findings_ledger.json C1 risks ('do not over-read the negative POST')"
+          ]
+        },
+        {
+          "decision": "Keep the abstract's correlational/no-mechanism ceiling IMPLICIT in the AB.8 contribution close; add NO dedicated caveat sentence; carry ZERO citations and ZERO author names with the measure named descriptively.",
+          "reason": "The abstract convention has no honesty-caveat move (unlike intro M3 and conclusion M3); the ceiling is carried by the contribution wording, and the abstract-citation rule forbids any \\citet or names. All three plans agreed.",
+          "evidence": [
+            "DraftTemplate.txt L33-54 (no caveat move; no citations in the abstract)",
+            "introconcl_phaseA_redteam.json abstract synthesis_decisions (ceiling implicit; zero cites/names)"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "1",
+      "planners_compared": [
+        "plan1",
+        "plan2",
+        "plan3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Intro Move-3 seam disagreement: plan1 groups 1-P4={IN.9,IN.10,IN.11} and 1-P5={IN.12,IN.13}, putting the C4 scrutiny rule-out (IN.12) in the caveat paragraph; plans 2 and 3 group 1-P4={IN.9,IN.10,IN.11,IN.12} and 1-P5={IN.13} alone, putting the C4 rule-out in the findings preview and the no-identification caveat standalone.",
+          "severity": "MINOR",
+          "reason": "IN.12 is typed result-number ('we also rule out the most immediate alternative ... the elevation survives') -- it is a reported C4 finding, so it belongs with the findings preview as the fourth item after First/Second/Finally, keeping body order C2->C1->C6->C4 intact inside one paragraph. IN.13 is the categorically different no-identification ceiling; giving it its own paragraph is the cleanest realization of the convention's honesty move and the Phase-A 'keep IN.13 standalone' decision. Plan1's 1-P5 fails atomicity (it reports a result AND states the ceiling) and fragments the findings preview across two paragraphs. Not a hard-rule break (both home all 14 props once, paragraph count is 6 either way), but an atomicity/coherence flaw. Synthesis adopts plans 2/3's seam; only 1-P4/1-P5 membership and the depends_on wiring change (1-P5-a depends_on 1-P4-d; 1-P6-a depends_on 1-P5-a).",
+          "evidence": [
+            "section1_subsection_plan.json IN.12 (type result-number, role result, C4 rule-out) vs IN.13 (type framing, role caveat)",
+            "DraftTemplate.txt L78-79 + L89-92 (M3 enumerated preview must respect register; the explicit caveat)",
+            "introconcl_phaseA_redteam.json synthesis_decisions (keep IN.13 a STANDALONE proposition in Move 3)",
+            "plan1 1-P5 intent (groups IN.12 result + IN.13 caveat -> two jobs); plan2/plan3 1-P4 (groups IN.9-12) + 1-P5 (IN.13 alone)"
+          ],
+          "which_planner": "plan1"
+        },
+        {
+          "flaw": "C5 convergent-validity drift risk in intro Move 2: a planner could insert a PRisk/US-EPU/GEPU clause into IN.8 (the setting+sample prop), which would read as a fifth enumerated finding alongside C2/C1/C6/C4.",
+          "severity": "MINOR",
+          "reason": "C5 (convergent validity) is explicitly out of scope as a non-headline that must not be elevated in any unit. None of the three input allocations actually inserted a C5 clause into 1-P3 (all kept M2 to objective+measure+setting+sample), so this is a guardrail confirmation rather than a committed flaw; recorded so the prose-writer does not add it. Synthesis omits C5 from M2 per the Phase-A synthesis decision.",
+          "evidence": [
+            "introconcl_phaseA_redteam.json synthesis_decisions (OMIT the C5 convergent-validity clause from intro Move 2)",
+            "Task FINDINGS SCOPE (C5 not elevated in any unit)",
+            "claim_findings_ledger.json C5 (WEAK; one-tailed; led-with only at the 2.5 rewrite)"
+          ],
+          "which_planner": "none (guardrail confirmation)"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Resolve the intro M3 seam to plans 2/3: 1-P4 = {IN.9,IN.10,IN.11,IN.12} (enumerated preview incl. the C4 rule-out closer), 1-P5 = {IN.13} alone (the standalone no-identification caveat). Reject plan1's IN.12-in-the-caveat grouping.",
+          "reason": "IN.12 is a reported C4 result (typed result-number) and belongs with the findings preview as the immediate-alternative closer, preserving body order C2->C1->C6->C4 in one atomic paragraph; IN.13 is the categorically different ceiling and earns its own paragraph so it cannot be buried and the preview stays atomic.",
+          "evidence": [
+            "section1_subsection_plan.json IN.12 type result-number / IN.13 type framing role caveat",
+            "introconcl_phaseA_redteam.json synthesis_decisions (IN.13 STANDALONE in Move 3)",
+            "DraftTemplate.txt L78-79 (M3 enumerated preview)"
+          ]
+        },
+        {
+          "decision": "Split M1 into two paragraphs (1-P1 phenomenon IN.1-4; 1-P2 nearest-neighbors+gap IN.5-6); keep M2 as one paragraph (1-P3 IN.7-8); keep M4 as exactly one roadmap paragraph (1-P6 IN.14). Intro = six paragraphs.",
+          "reason": "Ten positioning cites and a clean seam (phenomenon | neighbors+gap) make two readable M1 paragraphs better than one crammed cite-dump; M2 stays one paragraph to hold the 6-paragraph ceiling; M4 is the forced single roadmap. All three plans converged on this M1/M2/M4 structure; only the M3 seam differed.",
+          "evidence": [
+            "DraftTemplate.txt L73-82 (M1 1-2 paras HIGH citation; M2 1-2; M3 longest; M4 ~1 para)",
+            "section1_subsection_plan.json coverage (M1=IN.1-6; M2=IN.7-8; M3=IN.9-13; M4=IN.14)",
+            "all three input plans: 1-P1/1-P2/1-P3/1-P6 identical structure"
+          ]
+        },
+        {
+          "decision": "Synthesize the Move-1 cite cluster exactly as the planners built it (matsumoto2011; verrecchia1983/dye1985; basic1988/rule10b5; hollander2010; thewissen2024/ragozzino2024/keown1981), each typed external-NLM with its 2.1 source_id; IN.6 gap typed framing-nonverifiable; no 'needs NLM verification' note added.",
+          "reason": "All ten Move-1 external cites carry keyed source_ids and SUPPORTED verdicts in the 2.1 ledger (the red-team cleared the fabrication concern; the 'support_not_uploaded' list is stale); the gap is the one negative, correctly typed framing. All ten are live bibitems (thesis_draft.tex L130-178); the four dropped keys are absent.",
+          "evidence": [
+            "section2.1 P1.1/P1.2/P1.3/P1.4/P2.1/P3.1/P6.1/P6.2/P6.3 verifications all SUPPORTED",
+            "section2.1 P6.4 (gap, framing-nonverifiable)",
+            "thesis_draft.tex L130-178 (matsumoto2011/basic1988/ragozzino2024/rule10b5/thewissen2024/dye1985/harford1999/hollander2010/keown1981/verrecchia1983 live bibitems)"
+          ]
+        },
+        {
+          "decision": "OMIT the C5 convergent-validity clause from intro Move 2; signal C1's strength WITHIN the timing item (IN.10), preserving body order C2->C1->C6->C4 rather than reordering C1 to first.",
+          "reason": "Task scope keeps C5 out of all units as a non-headline; signaling C1 strength in-place keeps the enumerated preview aligned to the section structure (3.2->3.3->3.4->4.1). All input allocations did both.",
+          "evidence": [
+            "introconcl_phaseA_redteam.json synthesis_decisions (omit C5; signal C1 in-place, body order preserved)",
+            "claim_findings_ledger.json rank 1 = C1 (STRONGEST)",
+            "section3.2/3.3/3.4/4.1 final_prose order"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "5",
+      "planners_compared": [
+        "plan1",
+        "plan2",
+        "plan3"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "E1 risk in the future-research close (CO.7): plan3's Phase-A K8 listed 'applying a two-step correction to confirm the inference' as future work, explicitly framed as 'NOT a generated-regressand disclaimer, framed as future work'.",
+          "severity": "MINOR",
+          "reason": "E1 keeps the Pagan/generated-regressand/two-step-SE issue OUT of the abstract, intro, and conclusion entirely; framing the two-step correction as future work still imports the generated-regressand concern into the conclusion, which the convention and E1 keep clean (it lives in Sections 2.3/2.4). The three allocations under review here all already drop it from CO.7 (the cross-unit red-team dropped plan3 K8), so this is the inherited decision; recorded so the prose-writer does not re-introduce it.",
+          "evidence": [
+            "introconcl_phaseA_redteam.json conclusion synthesis_decision (DROP plan3 K8 two-step-correction future-work item)",
+            "AUDIT_PROTOCOL E1 (no Pagan/generated-regressand disclaimer in these units)",
+            "section2.3 P3 final_prose (the two-step caveat is a body-only disclosure)"
+          ],
+          "which_planner": "plan3 (via inherited Phase-A K8)"
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Adopt the converged three-paragraph allocation: 5-P1 (CO.1 restate, standalone short), 5-P2 (CO.2 merged C2+C1+C6 + CO.3 C4 rule-out), 5-P3 (CO.4 implication + CO.5 core limitations + CO.6 further boundaries + CO.7 future, compressed into one). All three input plans produced this identical structure.",
+          "reason": "The conclusion convention mandates three moves at heavy compression; one paragraph per move maps the seven props cleanly (M1=CO.1; M2=CO.2-3; M3=CO.4-7), and M3 stays one paragraph to honor the <500-word mandate.",
+          "evidence": [
+            "DraftTemplate.txt L157-179 (3 moves, under 500 words)",
+            "section5_subsection_plan.json coverage (M1=CO.1; M2=CO.2-3; M3=CO.4-7)",
+            "all three input plans: 5-P1/5-P2/5-P3 identical structure"
+          ]
+        },
+        {
+          "decision": "Keep CO.2 as ONE merged result prop (C2+C1+C6) per the locked chain; do NOT split it into three or harmonize it to the abstract's four separate finding props.",
+          "reason": "Granularity is preserved per unit, not normalized: the abstract enumerates (AB.5/6/7/8) while the conclusion deliberately merges (CO.2). Re-planning the chain to match the abstract would violate the no-re-planning rule. All three plans kept CO.2 merged.",
+          "evidence": [
+            "section5_subsection_plan.json CO.2 (single merged result prop)",
+            "Task HARD RULE (allocation not re-planning; do not re-number/merge Phase-A props without explicit reason)"
+          ]
+        },
+        {
+          "decision": "Include BOTH the core limitations (CO.5) AND the further boundaries (CO.6: CEO >=5-call selection toward larger firms; the underpowered scrutiny null) in 5-P3; keep the conclusion at ~zero citations, drop the roadmap, do NOT re-run the literature review; E1-clean future-research close.",
+          "reason": "The body discloses both boundary classes (selection in 3.1/3.2; failure-to-find-not-equivalence in 4.1), so the conclusion's limitations move must voice them; the convention drops the roadmap and lit review. The cross-unit red-team adopted both CO.5 and CO.6 and dropped the two-step item.",
+          "evidence": [
+            "introconcl_phaseA_redteam.json conclusion synthesis_decisions (include both CO.5 and CO.6; drop K8; ~zero cites; drop roadmap)",
+            "section3.1 P4 / section3.2 P2 final_prose (selection); section4.1 P4 final_prose (underpowered null)",
+            "DraftTemplate.txt L175-178 (drops roadmap; no lit review)"
+          ]
+        }
+      ]
+    }
+  ],
+  "allocation_matrix": [
+    {
+      "subsection_id": "abstract",
+      "phaseA_prop": "AB.1",
+      "paragraph": "abstract-P1",
+      "status": "HOMED (element 1 motivation; opener)"
+    },
+    {
+      "subsection_id": "abstract",
+      "phaseA_prop": "AB.2",
+      "paragraph": "abstract-P1",
+      "status": "HOMED (element 2 objective/gap)"
+    },
+    {
+      "subsection_id": "abstract",
+      "phaseA_prop": "AB.3",
+      "paragraph": "abstract-P1",
+      "status": "HOMED (element 3 data+sample; sample-scale numerals only)"
+    },
+    {
+      "subsection_id": "abstract",
+      "phaseA_prop": "AB.4",
+      "paragraph": "abstract-P1",
+      "status": "HOMED (element 4 measure+setting; descriptive, no cite)"
+    },
+    {
+      "subsection_id": "abstract",
+      "phaseA_prop": "AB.5",
+      "paragraph": "abstract-P1",
+      "status": "HOMED (element 5a C2 run-up)"
+    },
+    {
+      "subsection_id": "abstract",
+      "phaseA_prop": "AB.6",
+      "paragraph": "abstract-P1",
+      "status": "HOMED (element 5b C1 two-clocks, strongest, GAP-safe lead)"
+    },
+    {
+      "subsection_id": "abstract",
+      "phaseA_prop": "AB.7",
+      "paragraph": "abstract-P1",
+      "status": "HOMED (element 5c C6 formal pooled difference)"
+    },
+    {
+      "subsection_id": "abstract",
+      "phaseA_prop": "AB.8",
+      "paragraph": "abstract-P1",
+      "status": "HOMED (element 5d C4 rule-out + contribution close; ceiling implicit)"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.1",
+      "paragraph": "1-P1",
+      "status": "HOMED (M1 venue, matsumoto2011)"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.2",
+      "paragraph": "1-P1",
+      "status": "HOMED (M1 disclosure theory, verrecchia1983/dye1985)"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.3",
+      "paragraph": "1-P1",
+      "status": "HOMED (M1 legal bind, basic1988/rule10b5; scoped to acquirer)"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.4",
+      "paragraph": "1-P1",
+      "status": "HOMED (M1 language-surfacing bridge, hollander2010)"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.5",
+      "paragraph": "1-P2",
+      "status": "HOMED (M1 nearest neighbors, thewissen2024/ragozzino2024/keown1981 price-fact only)"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.6",
+      "paragraph": "1-P2",
+      "status": "HOMED (M1 explicit gap, framing, 'to our knowledge')"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.7",
+      "paragraph": "1-P3",
+      "status": "HOMED (M2 objective + measure named + Section 2 pointer, DWZ origin)"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.8",
+      "paragraph": "1-P3",
+      "status": "HOMED (M2 cash setting + stock placebo + sample; C5 omitted)"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.9",
+      "paragraph": "1-P4",
+      "status": "HOMED (M3 First, C2 run-up + stock side-by-side)"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.10",
+      "paragraph": "1-P4",
+      "status": "HOMED (M3 Second, C1 two-clocks, strongest in-place)"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.11",
+      "paragraph": "1-P4",
+      "status": "HOMED (M3 Finally, C6 formal pooled, EFFECT/CAUSE split)"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.12",
+      "paragraph": "1-P4",
+      "status": "HOMED (M3 C4 rule-out closer; adopted plans 2/3 grouping over plan1)"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.13",
+      "paragraph": "1-P5",
+      "status": "HOMED (M3 STANDALONE no-identification/correlational caveat, own paragraph)"
+    },
+    {
+      "subsection_id": "1",
+      "phaseA_prop": "IN.14",
+      "paragraph": "1-P6",
+      "status": "HOMED (M4 roadmap, scrutiny in Section 4)"
+    },
+    {
+      "subsection_id": "5",
+      "phaseA_prop": "CO.1",
+      "paragraph": "5-P1",
+      "status": "HOMED (M1 restate objective, mirror IN.7, standalone short)"
+    },
+    {
+      "subsection_id": "5",
+      "phaseA_prop": "CO.2",
+      "paragraph": "5-P2",
+      "status": "HOMED (M2 merged C2+C1+C6 qualitative summary)"
+    },
+    {
+      "subsection_id": "5",
+      "phaseA_prop": "CO.3",
+      "paragraph": "5-P2",
+      "status": "HOMED (M2 C4 scrutiny rule-out)"
+    },
+    {
+      "subsection_id": "5",
+      "phaseA_prop": "CO.4",
+      "paragraph": "5-P3",
+      "status": "HOMED (M3 implication: readable anticipatory trace, within ceiling)"
+    },
+    {
+      "subsection_id": "5",
+      "phaseA_prop": "CO.5",
+      "paragraph": "5-P3",
+      "status": "HOMED (M3 core limitations: correlational/no-identification/mechanism-open)"
+    },
+    {
+      "subsection_id": "5",
+      "phaseA_prop": "CO.6",
+      "paragraph": "5-P3",
+      "status": "HOMED (M3 further boundaries: CEO >=5-call selection + underpowered null)"
+    },
+    {
+      "subsection_id": "5",
+      "phaseA_prop": "CO.7",
+      "paragraph": "5-P3",
+      "status": "HOMED (M3 future research; E1-clean, no two-step item)"
+    }
+  ]
+}
