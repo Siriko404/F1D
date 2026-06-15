@@ -175,16 +175,20 @@ function redteamPrompt(a, finders) {
   return `You are the adversarial RED-TEAM for the ${a.key} aspect. Three independent finders audited it. Your PRIMARY job is to CULL, not to merge.\n\n${MANIFEST}\n\n${GLOBAL_RULES}\n\n${a.rubric}\n\nFor every finding the finders raised: (1) reproduce its draft_quote verbatim in the draft -- if you cannot, KILL it; (2) test its precondition before its mechanism (E1) -- if the trigger does not hold, KILL it; (3) check it is not the draft's deliberate, correct hedging (register locks) -- if it is, KILL it; (4) dedup. Keep ONLY survivors, each with verdict CONFIRMED (or UNVERIFIABLE for citations with no receipt). Record what you killed and why. Assert whether coverage is complete.\n\nThe three finder reports:\n${JSON.stringify(finders)}\n\nReturn REDTEAM_OUTPUT.`
 }
 
-const teamReports = await parallel(ASPECTS.map(a => async () => {
+// Teams run SEQUENTIALLY to avoid the server rate-limit burst: firing all 5
+// teams at once = 15 finders concurrently, which trips "Server is temporarily
+// limiting requests" and kills the whole run. One team at a time caps peak
+// concurrency at 3 (the 3 finders within a team still run in parallel).
+const reports = []
+for (const a of ASPECTS) {
   const finders = (await parallel([1, 2, 3].map(i => () =>
     agent(finderPrompt(a, i), { label: `${a.key}-finder-${i}`, phase: a.phase, schema: FINDER_OUTPUT })
   ))).filter(Boolean)
   log(`${a.key}: ${finders.length}/3 finders returned`)
-  if (!finders.length) return null
-  return agent(redteamPrompt(a, finders), { label: `${a.key}-redteam`, phase: a.phase, schema: REDTEAM_OUTPUT })
-}))
-
-const reports = teamReports.filter(Boolean)
+  if (!finders.length) { log(`${a.key}: all finders failed, skipping team`); continue }
+  const rt = await agent(redteamPrompt(a, finders), { label: `${a.key}-redteam`, phase: a.phase, schema: REDTEAM_OUTPUT })
+  if (rt) reports.push(rt)
+}
 log(`${reports.length}/${ASPECTS.length} aspect teams completed`)
 
 phase('Synthesize')
