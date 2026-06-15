@@ -5,7 +5,7 @@
   "spine": "P1 the design property: the post bin is dated to completion, so the completion-reaching legs are estimated only over deals that complete (the peak-to-gap leg is exempt). P2 the supplementary check and its modest rationale: a withdrawal resolves the disclosure state too, so redefine the post bin to count any resolution and re-estimate. P3 result: the decline holds (peak-to-completion 0.0687 against 0.0723; peak-to-gap 0.0457 against 0.0455; cash 0.0204). P4 the honest bound: the sample adds only 89 firm-quarters and one firm (about 0.3 percent), so survival is near mechanical; the real reassurance is the structural peak-to-gap leg; read as consistent with the main specification, not as an independent test.",
   "register_global": [
     "correlational, no causal identification; coefficients in the table's units (the same scale as tab:empire_drop_matched), reported as shown; two-tailed throughout.",
-    "Author voice: state the concern as a design property (because the post bin is dated to completion, the peak-to-completion leg is estimated only over deals that complete). No mention of a reader, a referee, an audit, or a hypothetical critic, in any prose or the title. The work has not been refereed.",
+    "Author voice: state each concern as a design property and as the author's own methodological point (because the post bin is dated to completion, the peak-to-completion leg is estimated only over deals that complete), never as the objection of an outside party, in any prose or the title.",
     "Do not oversell: adding 89 firm-quarters and one firm is about 0.3 percent of the sample, so the decline is near-mechanically unchanged; survival is a weak attenuation check, not strong evidence against selection (advisor, 2026-06-15).",
     "The load-bearing reassurance is structural: the peak-to-gap (announcement) leg never conditions on which deals complete, so paragraph four leads with it. Use consistent with, never robust.",
     "Use the word peak only for the residual; the cash column has no single peak here, so name cash contrasts plainly (from its pre-announcement level to resolution)."
@@ -14,7 +14,7 @@
     "numbers": "outputs/econometric/robustness_drop_sec43_44/2026-06-15_070702/summary.json, key sec43_resolution, is the authoritative source; the bins reproduce the committed baseline exactly.",
     "table": "docs/Draft/_empire_drop_resolution.tex, label tab:empire_drop_resolution, built programmatically by robustness_drop_sec43_44.py (no hand-typed cells).",
     "baseline": "tab:empire_drop_matched (Section 3.3): residual pre-announcement-to-completion 0.0723 (p<.01), pre-announcement-to-gap 0.0455 (p<.05); cash pre-announcement-to-completion 0.0216 (p<.01). N 28,102 over 1,320 firms.",
-    "internal_provenance": "In-house review note (AUDIT_FINDINGS_2026_06_15.md, the completed-only post-bin item). Provenance only; never surfaced in the thesis prose."
+    "internal_provenance": "Internal methodological note; the completed-only post-bin point. Provenance only; never surfaced in the thesis prose."
   },
   "paragraphs": [
     {
@@ -35,7 +35,7 @@
       "boundary": "Design property only; no result, no check yet. Author voice; no external critic.",
       "thin_claim": "The post bin is dated to completion, so the peak-to-completion and gap-to-completion legs are estimated only over deals that complete; the peak-to-gap leg is exempt (measured at announcement).",
       "guardrails": [
-        "Author voice (because the post bin is dated to completion); no reader, worry, referee, or audit.",
+        "Author voice (because the post bin is dated to completion); state it as the author's own methodological point, not an outside party's.",
         "Name the peak-to-gap leg as exempt and measured at the public announcement.",
         "correlational, no identification."
       ],

@@ -5,7 +5,7 @@
   "spine": "P1 the design property: the cash regressions are a dynamic fixed-effects panel, subject to the Nickell bias, which is not confined to the lag coefficient, so the guard is to remove the dynamic term (the residual carries no lag and is the anchor). P2 the test: drop the lag, re-estimate with static fixed effects, a level estimand, so read the timing pattern not the magnitude. P3 result: timing preserved (no fall at announcement, 0.0012 below zero and insignificant; fall at completion 0.0318; pre-announcement-to-completion 0.0305), magnitudes larger because level not change; residual unchanged. P4 reading: the lag stays in the main specification (cash is sticky); the static specification has no lag and hence no dynamic-panel bias, so the timing conclusion holds with or without the dynamic term.",
   "register_global": [
     "correlational, no causal identification; two-tailed throughout.",
-    "Author voice. No mention of a reader, a referee, an audit, or a hypothetical critic, in any prose or the title. The work has not been refereed.",
+    "Author voice: every concern is the author's own methodological point, in the first person, never attributed to an outside party, in any prose or the title.",
     "Do not quantify or call the Nickell bias small or negligible (the large-T trap). Name it as a standard concept (an eponym), with no citation, matching how Section 2.4 treats clustering methods.",
     "The Nickell bias is not confined to the lag coefficient: the within transformation contaminates correlated regressors, including the bins, since cash trends up before the deal. Do not argue that not interpreting the lag immunizes the bins. The real guard is removing the dynamic term (advisor, 2026-06-15).",
     "Dropping the lag sidesteps the bias (the static specification has no lagged dependent variable, hence no dynamic-panel bias); it does not fix the bias. The honest claim is that the timing conclusion holds with or without the dynamic term.",
@@ -17,7 +17,7 @@
     "numbers": "outputs/econometric/robustness_drop_sec43_44/2026-06-15_070702/summary.json, key sec44_static_fe, is the authoritative source.",
     "table": "docs/Draft/_empire_drop_staticfe.tex, label tab:empire_drop_staticfe, built programmatically by robustness_drop_sec43_44.py; the lag row is blank in both columns to signal the lag is dropped.",
     "baseline": "tab:empire_drop_matched (Section 3.3): cash pre-announcement-to-gap 0.0006 (ns), gap-to-completion 0.0210 (p<.01), pre-announcement-to-completion 0.0216 (p<.01), lag coefficient 0.7547. The residual column is identical (no lag).",
-    "internal_provenance": "In-house review note (AUDIT_FINDINGS_2026_06_15.md, the lagged-dependent-variable item). Provenance only; never surfaced in the thesis prose. The Section 2.4 disclosure points forward here."
+    "internal_provenance": "Internal methodological note; the lagged-dependent-variable point. Provenance only; never surfaced in the thesis prose. The Section 2.4 disclosure points forward here."
   },
   "paragraphs": [
     {
