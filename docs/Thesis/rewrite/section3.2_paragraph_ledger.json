@@ -52,8 +52,14 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "The first main analysis tests H1 with the single-indicator, two-way fixed-effects regression of Section~2.4, carrying firm and calendar year-quarter fixed effects and standard errors clustered by firm. It is estimated four times, once for each outcome, the cash ratio and the residual $\\mathrm{UncResCEO}$, in each arm, the cash acquirers (at least half in cash) and the stock acquirers (at least half in stock) that serve as a placebo. Treated firms' post-announcement quarters are dropped, so the design observes only the run-up and not the aftermath. Identification is within firm, setting a treated firm's pre-announcement quarter against its own ordinary quarters; the estimating equation is the one given in Section~2.4 and is not restated. The coefficient on $\\mathrm{PreAnnounceQtr}$ estimates the pre-announcement shift $\\theta_{-1}$, and we read it descriptively, as an anticipation contrast, with no causal or parallel-trends claim.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "half in cash / half in stock",
+          "table_cell": "tab:empire_building_did spec page (>=50% cash / >=50% stock arm thresholds)"
+        }
+      ]
     },
     {
       "para_id": "3.2-PARA2",
@@ -112,8 +118,30 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "In the cash arm both clocks move in the final pre-announcement quarter. Residual question-and-answer uncertainty is elevated (coefficient $0.0461$, $p<0.01$; column~2 of Table~\\ref{tab:empire_building_did}), and the cash ratio is rising (coefficient $0.0051$, $p<0.01$; column~1). The cash-ratio coefficient tracks the change in cash rather than its level, because that regression carries the cash ratio's own one-quarter lag as a partial-adjustment term (coefficient $0.7990$, $p<0.01$; column~1). The residual elevation is the load-bearing result, and although the table reports the treatment coefficient one-tailed, it survives a two-tailed test as well ($t=2.68$, $p=0.0074$), so the result does not rest on the reporting convention.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "0.0461",
+          "table_cell": "tab:empire_building_did col 2 PreAnnounceQtr (UncResCEO, cash)"
+        },
+        {
+          "number": "0.0051",
+          "table_cell": "tab:empire_building_did col 1 PreAnnounceQtr (CashRatio, cash)"
+        },
+        {
+          "number": "0.7990",
+          "table_cell": "tab:empire_building_did col 1 CashRatio_{t-1} partial adj."
+        },
+        {
+          "number": "2.68",
+          "table_cell": "derived t = 0.0461/0.0172 (tab:empire_building_did col 2 coeff/SE)"
+        },
+        {
+          "number": "0.0074",
+          "table_cell": "claim_findings_ledger C2 two_tailed_check (t=2.68, p=.0074)"
+        }
+      ]
     },
     {
       "para_id": "3.2-PARA3",
@@ -170,8 +198,26 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "The two cash-arm columns are not estimated on the same set of firms, because the residual exists only for CEOs with at least five calls. The uncertainty test in column~2 uses $27{,}622$ firm-quarters across $1{,}248$ firms, whereas the cash-ratio test in column~1 uses $67{,}590$ firm-quarters across $2{,}232$ firms. The uncertainty test is therefore the more demanding of the two, run on the smaller and more heavily covered universe, a comparability limit we disclose so the two columns are not read as a single sample.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "27,622",
+          "table_cell": "tab:empire_building_did col 2 N row (firm-quarters)"
+        },
+        {
+          "number": "1,248",
+          "table_cell": "tab:empire_building_did col 2 Firms row"
+        },
+        {
+          "number": "67,590",
+          "table_cell": "tab:empire_building_did col 1 N row (firm-quarters)"
+        },
+        {
+          "number": "2,232",
+          "table_cell": "tab:empire_building_did col 1 Firms row"
+        }
+      ]
     },
     {
       "para_id": "3.2-PARA4",
@@ -231,8 +277,30 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "The effect is material but modest. The uncertainty coefficient equals roughly fifteen percent of a residual standard deviation, about $15.3$ percent against the standard deviation of $0.3010$ in Panel~B of Table~\\ref{tab:summary_stats}, for a variable from which everything persistent has already been removed, and it appears in a quarter that is itself about one percent of the sample (the mean of $\\mathrm{PreAnnounceQtr}$ is $0.0094$, Panel~A). The cash coefficient adds roughly half a percentage point of assets to the cash stock in a single quarter, about $3.0$ percent of the mean cash ratio of $0.1708$ (Panel~C). The magnitudes are economically meaningful without being large, which is the register in which we read them.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "15.3 percent",
+          "table_cell": "0.0461 (tab:empire_building_did col 2) / 0.3010 (tab:summary_stats Panel B)"
+        },
+        {
+          "number": "0.3010",
+          "table_cell": "tab:summary_stats Panel B UncResCEO SD"
+        },
+        {
+          "number": "0.0094",
+          "table_cell": "tab:summary_stats Panel A PreAnnounceQtr Mean"
+        },
+        {
+          "number": "3.0 percent",
+          "table_cell": "0.0051 (tab:empire_building_did col 1) / 0.1708 (tab:summary_stats Panel C)"
+        },
+        {
+          "number": "0.1708",
+          "table_cell": "tab:summary_stats Panel C CashRatio Mean"
+        }
+      ]
     },
     {
       "para_id": "3.2-PARA5",
@@ -289,8 +357,26 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "The stock arm is the placebo. Under the same disclosure constraint, and with an otherwise nearly identical model, neither outcome shows a comparable positive run-up: residual uncertainty is, if anything, lower (coefficient $-0.0429$, not significant; column~6 of Table~\\ref{tab:empire_building_did}) and the cash ratio is flat (coefficient $-0.0036$, not significant; column~5). The two models are close to identical in their dynamics, the stock partial-adjustment lag of $0.8013$ standing almost exactly where the cash lag of $0.7990$ does, so what differs at the pre-announcement quarter is the response and not the specification. A side-by-side reading of this kind is not yet a formal test of the cash-versus-stock difference; that test is supplied in Section~3.4, the third main analysis.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "-0.0429",
+          "table_cell": "tab:empire_building_did col 6 PreAnnounceQtr (UncResCEO, stock)"
+        },
+        {
+          "number": "-0.0036",
+          "table_cell": "tab:empire_building_did col 5 PreAnnounceQtr (CashRatio, stock)"
+        },
+        {
+          "number": "0.8013",
+          "table_cell": "tab:empire_building_did col 5 CashRatio_{t-1} partial adj. (stock)"
+        },
+        {
+          "number": "0.7990",
+          "table_cell": "tab:empire_building_did col 1 CashRatio_{t-1} partial adj. (cash)"
+        }
+      ]
     }
   ],
   "allocation_coverage": {

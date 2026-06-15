@@ -1,0 +1,833 @@
+{
+  "redteam_report": [
+    {
+      "subsection_id": "3.1",
+      "planners_compared": [
+        "Planner-1 (Draft 1)",
+        "Planner-2 (Draft 2)",
+        "Planner-3 (Draft 3)"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Draft 2 (3.1-PARA3) and Draft 3 (3.1-PARA3) state the CashScrutiny median 0.0000 explicitly as a printed statistic ('a median CashScrutiny of 0.0000'); the ledger guardrail wants it realized as descriptive routing context, and stating a bare 0.0000 alongside 0.1127 reads as a stats dump rather than the 2.5-voice inventory.",
+          "severity": "MINOR",
+          "reason": "The chain lists CashScrutiny median 0.0000 as a number, so printing it is not a completeness error, but Section 2.5 voice phrases this as prose ('the median call draws none'); Draft 1 does exactly that and is cleaner. Synthesis keeps the verbal 'the median call draws none' and drops the bare 0.0000 print.",
+          "which_planner": "Planner-2, Planner-3",
+          "evidence": [
+            "section3.1_paragraph_ledger 3.1-PARA3 guardrail ('descriptive routing facts, not results')",
+            "Draft 1 3.1-PARA3 ('since the median call draws none')",
+            "voice: thesis_draft.tex 2.5 L124"
+          ]
+        },
+        {
+          "flaw": "Draft 1 (3.1-PARA5) omits the UncResCEO mean (-0.0000) and the CashRatio mean (0.1708) and PreAnnounceQtr mean (0.0094) that Drafts 2/3 include; the chain's numbers list for 3.1-PARA5-a includes UncResCEO mean -0.0000 and CashRatio mean 0.1708.",
+          "severity": "MINOR",
+          "reason": "3.1-PARA5-a's numbers list names UncResCEO mean -0.0000 and CashRatio mean 0.1708; Draft 1 realizes 'centered near zero' verbally but does not print the cash mean, leaving a chain number unrealized. Drafts 2/3 print all three. Synthesis adopts the Draft 2/3 fuller version so every chain number is realized, while keeping the supportive-not-definitive close.",
+          "which_planner": "Planner-1",
+          "evidence": [
+            "section3.1_paragraph_ledger 3.1-PARA5-a numbers (UncResCEO mean -0.0000, SD 0.3010; CashRatio mean 0.1708)",
+            "Draft 2 3.1-PARA5 (prints -0.0000, 0.1708, 0.0094)"
+          ]
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "For 3.1-PARA1 adopt Draft 2's source-led ordering (Capital IQ, Compustat, CRSP/IBES, SDC) which matches the chain order, but keep Draft 1's degree-of-freedom closing sentence; drop the bare 'six-digit CUSIP using' repetition.",
+          "reason": "Chain 3.1-PARA1-a fixes the four-source order; Draft 2 follows it most cleanly while still disclosing the link as a researcher degree of freedom.",
+          "evidence": [
+            "section3.1_paragraph_ledger 3.1-PARA1-a (source order)",
+            "Draft 2 3.1-PARA1"
+          ]
+        },
+        {
+          "decision": "Spell the period as 'over 2002 to 2018' / 'from 2002 to 2018' everywhere; never '2002--2018'.",
+          "reason": "Dash-free rule; the only en-dash temptation in 3.1 is the date span, resolved with 'to'.",
+          "evidence": [
+            "HARD RULE dash-free",
+            "tab:summary_stats Notes (period rendered 2002--2018 in the table, prose must avoid the en-dash)"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "3.2",
+      "planners_compared": [
+        "Planner-1 (Draft 1)",
+        "Planner-2 (Draft 2)",
+        "Planner-3 (Draft 3)"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Draft 2 prints inline standard errors on nearly every coefficient in 3.2-PARA2 ('SE 0.0172'), 3.2-PARA4, and 3.2-PARA5 ('standard error 0.0307'); Section 2.2-2.5 prose never prints an inline SE.",
+          "severity": "MINOR",
+          "reason": "This is register drift, not an added number (the SEs are in the chain's number lists), but Section 2 renders 'coefficient 0.0001, p<0.01; Table~ref' with no SE. Drafts 1 and 3 keep the prose SE-free except where a derived quantity needs it. Synthesis follows the economical voice: SE surfaced only at 3.2-PARA2 (to back t=2.68/p=0.0074, and even there the SE itself is not printed, only the t and p).",
+          "which_planner": "Planner-2",
+          "evidence": [
+            "voice: thesis_draft.tex 2.5 L120 (no inline SE)",
+            "Draft 1 3.2-PARA2 (SE only in number_audit)",
+            "Draft 3 3.2 (p-value rendering, SE in audit)"
+          ]
+        },
+        {
+          "flaw": "Draft 1 (3.2-PARA2) renders 'p=.0074' without a leading zero ('survives ... p=0.0074' is wanted); minor LaTeX/style.",
+          "severity": "MINOR",
+          "reason": "Section 2 writes 'p<0.01' with the leading zero; '.0074' is inconsistent with that house style. Synthesis writes 'p=0.0074'.",
+          "which_planner": "Planner-1",
+          "evidence": [
+            "voice: thesis_draft.tex 2.5 L120 ('p<0.01')"
+          ]
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "Render the two-tailed survival in 3.2-PARA2 as '$t=2.68$, $p=0.0074$' at the point of claim; do not print the backing SE 0.0172 inline.",
+          "reason": "The t and p ARE the derived quantities the chain calls for to pre-empt the one-tailed-artifact attack; the SE is the input, kept in number_audit per the SE-free Section 2 voice.",
+          "evidence": [
+            "section3.2_paragraph_ledger 3.2-PARA2-a (two-tailed p=.0074, t=2.68)",
+            "advisor enumeration of derived-quantity points"
+          ]
+        },
+        {
+          "decision": "Keep the cash-ratio coefficient framed as tracking the CHANGE in cash via the 0.7990 partial-adjustment lag in every version.",
+          "reason": "Guardrail: CashRatio coefficient tracks the change, not the level; all three drafts do this and it must survive the merge.",
+          "evidence": [
+            "section3.2_paragraph_ledger 3.2-PARA2-a guardrail",
+            "tab:empire_building_did note L195"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "3.3",
+      "planners_compared": [
+        "Planner-1 (Draft 1)",
+        "Planner-2 (Draft 2)",
+        "Planner-3 (Draft 3)"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Draft 2 (3.3-PARA3) prints inline SEs on every bin coefficient and drop (SE 0.0178, 0.0187, 0.0225, 0.0190, etc.), nine of them; this is the heaviest register drift in the task.",
+          "severity": "MINOR",
+          "reason": "All SEs are chain-listed (not added numbers), so it is register, not completeness; but the paragraph becomes a numbers wall unlike anything in Section 2.2-2.5. Drafts 1 and 3 keep the bins SE-free. Synthesis takes the economical version: coefficients + significance as p-values + the drop magnitudes, no inline SE.",
+          "which_planner": "Planner-2",
+          "evidence": [
+            "voice: thesis_draft.tex 2.5 L120",
+            "Draft 1 3.3-PARA3 (SE-free prose, SEs in number_audit)"
+          ]
+        },
+        {
+          "flaw": "All three drafts correctly use PRE1-POST 0.0723 for the uncertainty 'peak to completion' swing rather than the GAP-POST drop 0.0268; no flaw, but a near-miss worth recording since GAP-POST 0.0268 is n.s. and would be wrong if substituted.",
+          "severity": "MINOR",
+          "reason": "The uncertainty GAP-POST drop is 0.0268 (n.s.) in the matched table; the significant 'peak to completion' swing is PRE1-POST 0.0723***. A careless merge could grab GAP-POST. Recording the correct cell prevents that. Synthesis uses 0.0723 (PRE1-POST).",
+          "which_planner": "none (all correct; recorded as a guard)",
+          "evidence": [
+            "tab:empire_drop_matched col 1 Drop PRE1-POST 0.0723***; Drop GAP-POST 0.0268 n.s.",
+            "section3.3_paragraph_ledger 3.3-PARA3-a numbers"
+          ]
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "In 3.3-PARA3 lead with the GAP contrast (PRE1-GAP 0.0455, p<0.05) and state the GAP cash coefficient 0.0055 as positive-but-not-significant, with cash persistence resting on the NULL PRE1-GAP drop 0.0006.",
+          "reason": "kappa_gap honesty note (2.4 P2.2 Wald discriminator): persistence rests on the absence of a decline, not on a significant gap level; all drafts honor it, synthesis preserves it verbatim.",
+          "evidence": [
+            "section3.3_paragraph_ledger 3.3-PARA3-a guardrail (kappa_gap honesty)",
+            "tab:empire_drop_matched col 2 GAP 0.0055 n.s., Drop PRE1-GAP 0.0006 n.s."
+          ]
+        },
+        {
+          "decision": "POST uncertainty -0.0250 (p<0.10) appears ONLY in 3.3-PARA6 as the not-over-read item, never in 3.3-PARA3.",
+          "reason": "C1 trap: the negative POST is flagged, not a finding; PARA3 carries the cash POST -0.0155*** (a real finding) but not the uncertainty POST.",
+          "evidence": [
+            "section3.3_paragraph_ledger 3.3-PARA6-a (POST -0.0250 flagged); claim_findings_ledger C1 risks",
+            "all three drafts keep -0.0250 out of PARA3"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "3.4",
+      "planners_compared": [
+        "Planner-1 (Draft 1)",
+        "Planner-2 (Draft 2)",
+        "Planner-3 (Draft 3)"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "All three drafts correctly route the CAUSE leg (3.4-PARA4) to the Cash-MINUS-Stock DIFFERENCE row 0.0064 (n.s., col 2) and 0.0092 (p<0.10, col 3), never the cash-arm coefficient 0.0056**; this is the single highest-risk number and no draft erred, but it is recorded as a guard because a careless merge could substitute 0.0056.",
+          "severity": "MAJOR",
+          "reason": "tab:empire_cashspec has a cash-ARM coefficient 0.0056** (col 2) AND a Cash-Stock DIFFERENCE 0.0064 (col 2, n.s.); the CAUSE claim requires the difference, and using 0.0056 would falsely make the cause look cash-specific and significant, breaking the mechanism-open lock. Recorded MAJOR because the consequence of an error here is a register breach, even though no draft committed it.",
+          "which_planner": "none (all correct; recorded as the top guard)",
+          "evidence": [
+            "tab:empire_cashspec col 2 (cash-arm 0.0056**, Cash-Stock difference 0.0064 n.s.), col 3 (Cash-Stock 0.0092*)",
+            "section3.4_paragraph_ledger 3.4-PARA4-a guardrail ('Do NOT confuse with the matched Cash-arm coefficient 0.0056**')",
+            "claim_findings_ledger C6 (CAUSE_diff_matched 0.0064 n.s.)"
+          ]
+        },
+        {
+          "flaw": "Draft 2 (3.4-PARA3) prints the cash and stock arm SEs inline (SE 0.0185, SE 0.0436) in addition to the Wald-difference SE 0.0476; Section 2 voice would surface only the difference SE that backs the derived z/p.",
+          "severity": "MINOR",
+          "reason": "The arm SEs are chain-listed but printing all three SEs is register drift; only the Cash-Stock SE 0.0476 is needed to back z=2.07/p=0.039. Synthesis prints only the difference SE (and only as backing for z/p), keeping the arm SEs in number_audit. The stock SE 0.0436 IS printed later in 3.4-PARA5 because the fragility claim turns on the stock arm's imprecision.",
+          "which_planner": "Planner-2",
+          "evidence": [
+            "voice: thesis_draft.tex 2.5 L120",
+            "section3.4_paragraph_ledger 3.4-PARA3-a (z~2.07, p=.039); 3.4-PARA5-a (stock SE 0.0436 the imprecise arm)"
+          ]
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "In 3.4-PARA3 surface only the Wald-difference SE 0.0476 to back $z\\approx2.07$, $p=0.039$, and anchor 'significant at the five percent level on a two-tailed test' to the empire_cashspec two-tailed note (L362).",
+          "reason": "The two-tailed note makes 'survives a formal test' provably accurate (not an overclaim, not Gelman-Stern); the z/p are the derived quantities the chain lists.",
+          "evidence": [
+            "tab:empire_cashspec note L362 (two-tailed); section3.4_paragraph_ledger 3.4-PARA3-a",
+            "claim_findings_ledger C6 ('survives a formal test' ACCURATE)"
+          ]
+        },
+        {
+          "decision": "Pre-commit the Wald-is-the-test logic in 3.4-PARA2 (verbatim 2.4-L110 'not a comparison of one significant coefficient against one insignificant one') BEFORE the 0.0983 difference appears in PARA3; do NOT pull 0.0983 into PARA1 or PARA2.",
+          "reason": "C6 C-trap order: the anti-Gelman-Stern pre-commitment must be on record before any coefficient; all drafts honor it, synthesis preserves the order.",
+          "evidence": [
+            "section3.4_paragraph_ledger 3.4-PARA2 guardrail (state before the number)",
+            "voice: thesis_draft.tex 2.4 P3 (L110)"
+          ]
+        },
+        {
+          "decision": "Do NOT add the optional two-way-clustering robustness note (p=0.043) anywhere in 3.4.",
+          "reason": "It is outside every ratified chain's number list; the ledger marks it OPTIONAL and the 'deliver the plan, nothing more' rule bars it.",
+          "evidence": [
+            "claim_findings_ledger c6_two_way_clustering (OPTIONAL, not in chain)",
+            "section3.4_paragraph_ledger gaps (table stays firm-clustered, not assumed into the chain)"
+          ]
+        }
+      ]
+    },
+    {
+      "subsection_id": "4.1",
+      "planners_compared": [
+        "Planner-1 (Draft 1)",
+        "Planner-2 (Draft 2)",
+        "Planner-3 (Draft 3)"
+      ],
+      "flaws_found": [
+        {
+          "flaw": "Draft 1 (4.1-PARA1) writes 'The continuous volume of cash questions rises too, but not significantly (0.0854 ...)' which is correct, but its phrasing could be read as co-billing the n.s. 0.0854 with the significant 0.0408 as joint support; the ledger demands 0.0854 be recast as 'volume does not rise significantly', never co-billed.",
+          "severity": "MAJOR",
+          "reason": "The Planner-1 MAJOR flaw flagged in the Phase-A red-team is exactly this: leading with or co-billing the insignificant continuous-volume coefficient self-defeats the 'real rival' premise. All three drafts ultimately lead with HighCashScrutiny 0.0408** and recast 0.0854 as volume-not-rising, but the synthesis must make the recast explicit ('what rises reliably ... is the incidence ... not its volume') so 0.0854 is never read as support.",
+          "which_planner": "Planner-1 (phrasing risk), resolved in all",
+          "evidence": [
+            "section4.1_paragraph_ledger 4.1-PARA1 guardrail (MAJOR: lead with 0.0408**, recast 0.0854 as volume-not-rising, NEVER co-billed)",
+            "claim_findings_ledger C4 (confound_is_real: HighCashScrutiny 0.0408**)",
+            "tab:empire_building_did col 4 (0.0408**), col 3 (0.0854 n.s.)"
+          ]
+        },
+        {
+          "flaw": "Draft 1 (4.1-PARA3) prints the parenthetical '(its mean of 0.1127 ... means roughly eleven percent ...)' style elsewhere, but in 4.1-PARA5 all drafts source the '89 percent' to slightly different cells; Draft 3 sources it to tab:summary_stats Panel A (mean 0.1127 -> ~89% none) AND the empire_building_did note, Draft 1 to the empire_building_did note L195.",
+          "severity": "MINOR",
+          "reason": "The cleanest single source for '89 percent of calls draw no cash scrutiny' is the empire_building_did note L195 ('89% of calls raise no cash turns'), which states it verbatim; deriving it from the summary_stats mean is a second route but the verbatim note is preferred. Synthesis sources 89 percent to the L195 note.",
+          "which_planner": "Planner-3 (dual-source)",
+          "evidence": [
+            "tab:empire_building_did note L195 ('89% of calls raise no cash turns')",
+            "section4.1_paragraph_ledger 4.1-PARA5-a numbers (89% from notes; CashScrutiny median 0)"
+          ]
+        },
+        {
+          "flaw": "Draft 2 (4.1-PARA4) prints the interaction SE 0.0111 inline; the SE is better held to 4.1-PARA5 where it backs the CI [-0.027, 0.016].",
+          "severity": "MINOR",
+          "reason": "Printing SE 0.0111 in PARA4 is register drift and slightly pre-empts PARA5's CI computation; the SE-free voice keeps PARA4 to the surviving run-up coefficients and the null interaction, with the SE surfacing only in PARA5 as the CI input. Synthesis holds 0.0111 to PARA5's number_audit (the CI is the realized quantity).",
+          "which_planner": "Planner-2",
+          "evidence": [
+            "voice: thesis_draft.tex 2.5 L120",
+            "section4.1_paragraph_ledger 4.1-PARA5-a (CI from -0.0056 +/- 1.96*0.0111)"
+          ]
+        }
+      ],
+      "synthesis_decisions": [
+        {
+          "decision": "4.1-PARA1 leads with HighCashScrutiny 0.0408 (p<0.05, col 4) and recasts CashScrutiny 0.0854 (n.s., col 3) as 'rises too but not significantly ... what rises reliably ... is the incidence ... not its volume', never co-billed as support.",
+          "reason": "Closes the Planner-1 MAJOR flaw; the honest concession requires the significant incidence rise as the plausibility evidence, with the n.s. volume explicitly demoted.",
+          "evidence": [
+            "section4.1_paragraph_ledger 4.1-PARA1 guardrail",
+            "tab:empire_building_did col 4 (0.0408**), col 3 (0.0854 n.s.)"
+          ]
+        },
+        {
+          "decision": "Keep the verbatim C4 hedge in 4.1-PARA5: 'scrutiny does not account for this particular run-up, not that scrutiny never matters anywhere'; do NOT strengthen the null into equivalence; no E1 Pagan disclaimer.",
+          "reason": "C4 thinnest_claim ('Do NOT strengthen'); the CI [-0.027, 0.016], the 89 percent, and 'sig-vs-n.s. is not a test' bound the null without claiming equivalence.",
+          "evidence": [
+            "claim_findings_ledger C4 thinnest_claim + referee_proof",
+            "section4.1_paragraph_ledger 4.1-PARA5 guardrail (verbatim hedge)"
+          ]
+        },
+        {
+          "decision": "4.1-PARA2 cites the col 3 HighCash 0.1754 (no controls), NOT the col 4 controls 0.1921; the cash coefficient's one-tailed test is a secondary qualifier.",
+          "reason": "Guardrail: 0.1754*** is the col 3 value; mis-citing col 4's 0.1921 would be a wrong-cell error.",
+          "evidence": [
+            "tab:cash_scrutiny_validity col 3 (0.1754), col 4 (0.1921); section4.1_paragraph_ledger 4.1-PARA2 guardrail"
+          ]
+        }
+      ]
+    }
+  ],
+  "number_audit_matrix": [
+    {
+      "number": "2002 to 2018",
+      "table_cell": "tab:summary_stats Notes (sample period 2002--2018)",
+      "paragraph": "3.1-PARA1",
+      "status": "OK"
+    },
+    {
+      "number": "0.1127",
+      "table_cell": "tab:summary_stats Panel A HighCashScrutiny Mean",
+      "paragraph": "3.1-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "eleven percent",
+      "table_cell": "tab:summary_stats Panel A HighCashScrutiny Mean 0.1127 (~11%)",
+      "paragraph": "3.1-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "five calls",
+      "table_cell": "variable_ledger run_h0_3 MIN_CALLS=5",
+      "paragraph": "3.1-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "half in cash / half in stock",
+      "table_cell": "tab:empire_building_did spec page (>=50% cash / >=50% stock)",
+      "paragraph": "3.1-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "four quarters",
+      "table_cell": "variable_ledger tab:empire_drop_matched window_hygiene (+4 cap)",
+      "paragraph": "3.1-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "three analyst question-and-answer turns",
+      "table_cell": "tab:cash_scrutiny_validity design (>=3 turns)",
+      "paragraph": "3.1-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "88,205",
+      "table_cell": "tab:summary_stats Notes (anchor 88,205 obs)",
+      "paragraph": "3.1-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "1,884",
+      "table_cell": "tab:summary_stats Notes (1,884 firms)",
+      "paragraph": "3.1-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "-0.0000",
+      "table_cell": "tab:summary_stats Panel B UncResCEO Mean",
+      "paragraph": "3.1-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "0.3010",
+      "table_cell": "tab:summary_stats Panel B UncResCEO SD",
+      "paragraph": "3.1-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "0.1708",
+      "table_cell": "tab:summary_stats Panel C CashRatio Mean",
+      "paragraph": "3.1-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "0.0094",
+      "table_cell": "tab:summary_stats Panel A PreAnnounceQtr Mean",
+      "paragraph": "3.1-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "half in cash / half in stock",
+      "table_cell": "tab:empire_building_did spec page (>=50% cash / >=50% stock)",
+      "paragraph": "3.2-PARA1",
+      "status": "OK"
+    },
+    {
+      "number": "0.0461",
+      "table_cell": "tab:empire_building_did col 2 PreAnnounceQtr (UncResCEO, cash)",
+      "paragraph": "3.2-PARA2",
+      "status": "OK"
+    },
+    {
+      "number": "0.0051",
+      "table_cell": "tab:empire_building_did col 1 PreAnnounceQtr (CashRatio, cash)",
+      "paragraph": "3.2-PARA2",
+      "status": "OK"
+    },
+    {
+      "number": "0.7990",
+      "table_cell": "tab:empire_building_did col 1 CashRatio_{t-1} partial adj. (cash)",
+      "paragraph": "3.2-PARA2",
+      "status": "OK"
+    },
+    {
+      "number": "2.68",
+      "table_cell": "derived t = 0.0461/0.0172 (tab:empire_building_did col 2)",
+      "paragraph": "3.2-PARA2",
+      "status": "OK"
+    },
+    {
+      "number": "0.0074",
+      "table_cell": "claim_findings_ledger C2 two_tailed_check (t=2.68, p=.0074)",
+      "paragraph": "3.2-PARA2",
+      "status": "OK"
+    },
+    {
+      "number": "27,622",
+      "table_cell": "tab:empire_building_did col 2 N row",
+      "paragraph": "3.2-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "1,248",
+      "table_cell": "tab:empire_building_did col 2 Firms row",
+      "paragraph": "3.2-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "67,590",
+      "table_cell": "tab:empire_building_did col 1 N row",
+      "paragraph": "3.2-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "2,232",
+      "table_cell": "tab:empire_building_did col 1 Firms row",
+      "paragraph": "3.2-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "15.3 percent",
+      "table_cell": "0.0461 (empire_building_did col 2) / 0.3010 (summary_stats Panel B)",
+      "paragraph": "3.2-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "0.3010",
+      "table_cell": "tab:summary_stats Panel B UncResCEO SD",
+      "paragraph": "3.2-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "0.0094",
+      "table_cell": "tab:summary_stats Panel A PreAnnounceQtr Mean",
+      "paragraph": "3.2-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "3.0 percent",
+      "table_cell": "0.0051 (empire_building_did col 1) / 0.1708 (summary_stats Panel C)",
+      "paragraph": "3.2-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "0.1708",
+      "table_cell": "tab:summary_stats Panel C CashRatio Mean",
+      "paragraph": "3.2-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "-0.0429",
+      "table_cell": "tab:empire_building_did col 6 PreAnnounceQtr (UncResCEO, stock)",
+      "paragraph": "3.2-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "-0.0036",
+      "table_cell": "tab:empire_building_did col 5 PreAnnounceQtr (CashRatio, stock)",
+      "paragraph": "3.2-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "0.8013",
+      "table_cell": "tab:empire_building_did col 5 CashRatio_{t-1} partial adj. (stock)",
+      "paragraph": "3.2-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "0.7990",
+      "table_cell": "tab:empire_building_did col 1 CashRatio_{t-1} partial adj. (cash)",
+      "paragraph": "3.2-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "28,102",
+      "table_cell": "tab:empire_drop_matched N row",
+      "paragraph": "3.3-PARA1",
+      "status": "OK"
+    },
+    {
+      "number": "1,320",
+      "table_cell": "tab:empire_drop_matched Firms row",
+      "paragraph": "3.3-PARA1",
+      "status": "OK"
+    },
+    {
+      "number": "0.0068",
+      "table_cell": "tab:empire_drop_matched col 1 PRE2 (UncResCEO)",
+      "paragraph": "3.3-PARA2",
+      "status": "OK"
+    },
+    {
+      "number": "0.0008",
+      "table_cell": "tab:empire_drop_matched col 2 PRE2 (CashRatio)",
+      "paragraph": "3.3-PARA2",
+      "status": "OK"
+    },
+    {
+      "number": "0.0473",
+      "table_cell": "tab:empire_drop_matched col 1 PRE1 (UncResCEO)",
+      "paragraph": "3.3-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.0018",
+      "table_cell": "tab:empire_drop_matched col 1 GAP (UncResCEO)",
+      "paragraph": "3.3-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.0455",
+      "table_cell": "tab:empire_drop_matched col 1 Drop PRE1-GAP (UncResCEO)",
+      "paragraph": "3.3-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.0723",
+      "table_cell": "tab:empire_drop_matched col 1 Drop PRE1-POST (UncResCEO)",
+      "paragraph": "3.3-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.0061",
+      "table_cell": "tab:empire_drop_matched col 2 PRE1 (CashRatio)",
+      "paragraph": "3.3-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.0006",
+      "table_cell": "tab:empire_drop_matched col 2 Drop PRE1-GAP (CashRatio)",
+      "paragraph": "3.3-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.0210",
+      "table_cell": "tab:empire_drop_matched col 2 Drop GAP-POST (CashRatio)",
+      "paragraph": "3.3-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "-0.0155",
+      "table_cell": "tab:empire_drop_matched col 2 POST (CashRatio)",
+      "paragraph": "3.3-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.0055",
+      "table_cell": "tab:empire_drop_matched col 2 GAP (CashRatio)",
+      "paragraph": "3.3-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.0473",
+      "table_cell": "tab:empire_drop_matched col 1 PRE1 (UncResCEO)",
+      "paragraph": "3.3-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "0.0461",
+      "table_cell": "tab:empire_building_did col 2 PreAnnounceQtr (UncResCEO, cash)",
+      "paragraph": "3.3-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "15.7 percent",
+      "table_cell": "0.0473 (empire_drop_matched col 1) / 0.3010 (summary_stats Panel B)",
+      "paragraph": "3.3-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "0.3010",
+      "table_cell": "tab:summary_stats Panel B UncResCEO SD",
+      "paragraph": "3.3-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "0.0723",
+      "table_cell": "tab:empire_drop_matched col 1 Drop PRE1-POST (UncResCEO)",
+      "paragraph": "3.3-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "0.7547",
+      "table_cell": "tab:empire_drop_matched col 2 CashRatio_{t-1} partial adj.",
+      "paragraph": "3.3-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "29,535",
+      "table_cell": "tab:empire_drop_placebo col 1 N row (cash)",
+      "paragraph": "3.3-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "1,326",
+      "table_cell": "tab:empire_drop_placebo col 1 Firms row (cash)",
+      "paragraph": "3.3-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "0.0486",
+      "table_cell": "tab:empire_drop_placebo col 1 PRE1 (cash)",
+      "paragraph": "3.3-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "0.0058",
+      "table_cell": "tab:empire_drop_placebo col 1 GAP (cash)",
+      "paragraph": "3.3-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "0.0428",
+      "table_cell": "tab:empire_drop_placebo col 1 Drop PRE1-GAP (cash)",
+      "paragraph": "3.3-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "0.0681",
+      "table_cell": "tab:empire_drop_placebo col 1 Drop PRE1-POST (cash)",
+      "paragraph": "3.3-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "-0.0250",
+      "table_cell": "tab:empire_drop_matched col 1 POST (UncResCEO)",
+      "paragraph": "3.3-PARA6",
+      "status": "OK"
+    },
+    {
+      "number": "0.0105",
+      "table_cell": "tab:empire_drop_placebo col 1 PRE2 (cash)",
+      "paragraph": "3.4-PARA1",
+      "status": "OK"
+    },
+    {
+      "number": "-0.0056",
+      "table_cell": "tab:empire_drop_placebo col 2 PRE2 (stock)",
+      "paragraph": "3.4-PARA1",
+      "status": "OK"
+    },
+    {
+      "number": "0.0486",
+      "table_cell": "tab:empire_drop_placebo col 1 PRE1 (cash)",
+      "paragraph": "3.4-PARA1",
+      "status": "OK"
+    },
+    {
+      "number": "0.0681",
+      "table_cell": "tab:empire_drop_placebo col 1 Drop PRE1-POST (cash)",
+      "paragraph": "3.4-PARA1",
+      "status": "OK"
+    },
+    {
+      "number": "-0.0404",
+      "table_cell": "tab:empire_drop_placebo col 2 PRE1 (stock)",
+      "paragraph": "3.4-PARA1",
+      "status": "OK"
+    },
+    {
+      "number": "-0.0756",
+      "table_cell": "tab:empire_drop_placebo col 2 Drop PRE1-GAP (stock)",
+      "paragraph": "3.4-PARA1",
+      "status": "OK"
+    },
+    {
+      "number": "0.0459",
+      "table_cell": "tab:empire_cashspec col 1 Pre-announce Cash (UncResCEO)",
+      "paragraph": "3.4-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "-0.0524",
+      "table_cell": "tab:empire_cashspec col 1 Pre-announce Stock (UncResCEO)",
+      "paragraph": "3.4-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.0983",
+      "table_cell": "tab:empire_cashspec col 1 Cash-Stock formal test",
+      "paragraph": "3.4-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.0476",
+      "table_cell": "tab:empire_cashspec col 1 Cash-Stock SE",
+      "paragraph": "3.4-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "2.07",
+      "table_cell": "derived z = 0.0983/0.0476 (tab:empire_cashspec col 1)",
+      "paragraph": "3.4-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.039",
+      "table_cell": "claim_findings_ledger C6 EFFECT_diff (z~2.07, p=.039 two-tailed; note L362)",
+      "paragraph": "3.4-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "32.7 percent",
+      "table_cell": "0.0983 (empire_cashspec col 1) / 0.3010 (summary_stats Panel B)",
+      "paragraph": "3.4-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.3010",
+      "table_cell": "tab:summary_stats Panel B UncResCEO SD",
+      "paragraph": "3.4-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.0064",
+      "table_cell": "tab:empire_cashspec col 2 Cash-Stock (matched difference, CashRatio)",
+      "paragraph": "3.4-PARA4",
+      "status": "OK -- DIFFERENCE row, NOT cash-arm 0.0056"
+    },
+    {
+      "number": "0.0092",
+      "table_cell": "tab:empire_cashspec col 3 Cash-Stock (full-panel difference, CashRatio)",
+      "paragraph": "3.4-PARA4",
+      "status": "OK -- DIFFERENCE row, NOT cash-arm 0.0049"
+    },
+    {
+      "number": "-0.0524",
+      "table_cell": "tab:empire_cashspec col 1 Pre-announce Stock (UncResCEO)",
+      "paragraph": "3.4-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "0.0436",
+      "table_cell": "tab:empire_cashspec col 1 Pre-announce Stock SE",
+      "paragraph": "3.4-PARA5",
+      "status": "OK -- backs the fragility (imprecise stock arm)"
+    },
+    {
+      "number": "0.0408",
+      "table_cell": "tab:empire_building_did col 4 PreAnnounceQtr (HighCashScrutiny, cash)",
+      "paragraph": "4.1-PARA1",
+      "status": "OK"
+    },
+    {
+      "number": "0.0854",
+      "table_cell": "tab:empire_building_did col 3 PreAnnounceQtr (CashScrutiny, cash)",
+      "paragraph": "4.1-PARA1",
+      "status": "OK -- recast as volume-not-rising, never co-billed"
+    },
+    {
+      "number": "0.7530",
+      "table_cell": "tab:cash_scrutiny_validity col 1 CashRatio (one-tailed, note L593)",
+      "paragraph": "4.1-PARA2",
+      "status": "OK"
+    },
+    {
+      "number": "0.8519",
+      "table_cell": "tab:cash_scrutiny_validity col 2 CashRatio + controls",
+      "paragraph": "4.1-PARA2",
+      "status": "OK"
+    },
+    {
+      "number": "0.1754",
+      "table_cell": "tab:cash_scrutiny_validity col 3 HighCash (no controls; NOT col 4 0.1921)",
+      "paragraph": "4.1-PARA2",
+      "status": "OK"
+    },
+    {
+      "number": "-0.0000",
+      "table_cell": "tab:cash_scrutiny_channel Panel A CashScrutiny (UncResCEO)",
+      "paragraph": "4.1-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.0013",
+      "table_cell": "tab:cash_scrutiny_channel Panel A CashScrutiny SE (UncResCEO)",
+      "paragraph": "4.1-PARA3",
+      "status": "OK -- backs 'zero to four decimal places'"
+    },
+    {
+      "number": "41,512",
+      "table_cell": "tab:cash_scrutiny_channel N (calls)",
+      "paragraph": "4.1-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "-0.0003",
+      "table_cell": "tab:cash_scrutiny_channel Panel B CashScrutiny log-odds (UncResCEO)",
+      "paragraph": "4.1-PARA3",
+      "status": "OK"
+    },
+    {
+      "number": "0.0413",
+      "table_cell": "tab:reason_gating col 1 PreAnnounceQtr",
+      "paragraph": "4.1-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "0.0439",
+      "table_cell": "tab:reason_gating col 2 PreAnnounceQtr",
+      "paragraph": "4.1-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "0.0000",
+      "table_cell": "tab:reason_gating col 1 CashScrutiny",
+      "paragraph": "4.1-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "0.0001",
+      "table_cell": "tab:reason_gating col 2 CashScrutiny",
+      "paragraph": "4.1-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "-0.0056",
+      "table_cell": "tab:reason_gating col 2 CashScrutiny x PreAnnounceQtr",
+      "paragraph": "4.1-PARA4",
+      "status": "OK"
+    },
+    {
+      "number": "[-0.027, 0.016]",
+      "table_cell": "claim_findings_ledger C4 (interaction CI; from -0.0056 +/- 1.96*0.0111, tab:reason_gating col 2)",
+      "paragraph": "4.1-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "0.04",
+      "table_cell": "tab:reason_gating PreAnnounceQtr magnitude (run-up near 0.04, cf. 0.0413/0.0439)",
+      "paragraph": "4.1-PARA5",
+      "status": "OK"
+    },
+    {
+      "number": "eighty-nine percent",
+      "table_cell": "tab:empire_building_did note L195 (89% of calls raise no cash turns)",
+      "paragraph": "4.1-PARA5",
+      "status": "OK"
+    }
+  ],
+  "global_notes": []
+}

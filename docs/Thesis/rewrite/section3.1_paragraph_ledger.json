@@ -69,8 +69,14 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "The analysis combines four data sources. Capital IQ supplies the earnings-call transcripts of United States public firms over 2002 to 2018, parsed to speaker role and to the presentation and question-and-answer segments of each call. Quarterly Compustat North America fundamentals supply firm financials, taken from the most recent fiscal quarter ending on or before the call. CRSP daily records and IBES earnings records supply the stock-return, market-return, and earnings-surprise controls that the decomposition of Section~2.3 requires. SDC supplies the merger and acquisition records, including each deal's announcement date, its completion or withdrawal date, and its cash-versus-stock payment composition. These sources are keyed to different identifier systems, so they must be linked: SDC keys deals by the acquirer's six-digit CUSIP while the call panel is keyed by Compustat firm identifier (gvkey), and we join deals to calls through the acquirer's six-digit CUSIP via the CRSP-Compustat link table recorded in the master-sample manifest. The cash-versus-stock classification and the event clock that the designs below depend on exist only through this match, which we record as a researcher degree of freedom rather than assume away.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "2002 to 2018",
+          "table_cell": "tab:summary_stats Notes (sample period 2002--2018)"
+        }
+      ]
     },
     {
       "para_id": "3.1-PARA2",
@@ -121,8 +127,9 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "The uncertainty measures are built in-house from the language of the call. Each transcript is tokenized, and the Loughran and McDonald uncertainty-word share is computed separately by speaker and by segment. The CEO's question-and-answer share, $\\mathrm{UncAnsCEO}$, is the input that the first stage of the Section~2.3 decomposition, Equation~(4) of \\citet{dwz} estimated on our sample, residualizes into $\\mathrm{UncResCEO}$, the call-varying component net of the CEO's persistent speaking style. What we discharge here is the construction mechanic only: the equation itself, and the definition and justification of the residual, are set out in Section~2.3 and are not re-derived.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": []
     },
     {
       "para_id": "3.1-PARA3",
@@ -175,8 +182,18 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "The remaining key estimation variables are constructed and pointed back to their defining homes rather than re-derived here. $\\mathrm{UncResCEO}$ is defined in Section~2.3. $\\mathrm{PreAnnounceQtr}=\\mathbf{1}[e=-1]$ marks the quarter before a firm's first qualifying deal, as defined in Sections~2.2 and~2.4. $\\mathrm{CashRatio}$ is cash and equivalents over total assets, $\\mathrm{cheq}/\\mathrm{atq}$, as defined in Section~2.5 and the Appendix. $\\mathrm{CashScrutiny}$ is the share of analyst question-and-answer turns devoted to cash and liquidity, read from the locked word list in Appendix~I, and $\\mathrm{HighCashScrutiny}$ flags any such scrutiny at all, since the median call draws none; both are defined in Section~2.5, and only about eleven percent of calls draw cash scrutiny (the $\\mathrm{HighCashScrutiny}$ mean is $0.1127$, Panel~A). The firm-financial controls, leverage, log assets, Tobin's $Q$, return on assets, capital expenditure, a dividend indicator, and cash-flow volatility, are catalogued in the Appendix.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "0.1127",
+          "table_cell": "tab:summary_stats Panel A HighCashScrutiny Mean"
+        },
+        {
+          "number": "eleven percent",
+          "table_cell": "tab:summary_stats Panel A HighCashScrutiny Mean 0.1127 (~11% of calls)"
+        }
+      ]
     },
     {
       "para_id": "3.1-PARA4",
@@ -233,8 +250,26 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "The estimation samples are built in three layers, and it is this layering that makes the number of observations vary from one table to the next. The base call panel comprises every matched Capital IQ call of a United States public, non-financial, non-utility firm over 2002 to 2018, excluding CEOs with fewer than five calls, for whom no speaking style and hence no residual can be estimated. On top of it sits the SDC deal universe: United States public acquirers over the same period with deal status in completed, pending, or withdrawn and a known payment composition, where deals at least half in cash form the cash arm and deals at least half in stock the stock placebo arm, each firm's first qualifying deal setting its event clock. The third layer is a set of design-specific trims: the run-up test drops treated firms' post-announcement quarters, the event studies cap the post-window at four quarters and truncate it at the firm's next announcement, and the scrutiny validity and channel tests require at least three analyst question-and-answer turns per call. Each test thus keeps only the firms for which its particular comparison is defined. The five-call requirement enters here as a build mechanic; its consequences for what the residual subsample represents are treated as a selection question in Section~2.4.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "five calls",
+          "table_cell": "variable_ledger run_h0_3 MIN_CALLS=5 (>=5-call filter)"
+        },
+        {
+          "number": "half in cash / half in stock",
+          "table_cell": "tab:empire_building_did spec page (>=50% cash / >=50% stock arm thresholds)"
+        },
+        {
+          "number": "four quarters",
+          "table_cell": "variable_ledger tab:empire_drop_matched window_hygiene (+4 cap)"
+        },
+        {
+          "number": "three analyst question-and-answer turns",
+          "table_cell": "tab:cash_scrutiny_validity design.sample (>=3 analyst Q&A turns)"
+        }
+      ]
     },
     {
       "para_id": "3.1-PARA5",
@@ -291,8 +326,34 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "Table~\\ref{tab:summary_stats} reports summary statistics for the main estimation sample, an anchor of $88{,}205$ earnings-call observations across $1{,}884$ firms over 2002 to 2018. The number of observations varies by row because each variable is summarized on the complete cases of its own anchor panel. The residual $\\mathrm{UncResCEO}$ is centered near zero, with a mean of $-0.0000$ and a standard deviation of $0.3010$ (Panel~B); the cash ratio has a mean of $0.1708$ (Panel~C) and the pre-announcement indicator a mean of $0.0094$ (Panel~A). Because the residual exists only on the at-least-five-call, non-financial and non-utility universe, the uncertainty regressions describe a more-covered set of firms, skewed toward larger ones, than the cash-ratio regressions, and for that reason every table that follows reports its own firm and observation counts. We read these statistics descriptively, as the foundation the results sections build on rather than as findings in themselves.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "88,205",
+          "table_cell": "tab:summary_stats Notes (anchor sample 88,205 obs)"
+        },
+        {
+          "number": "1,884",
+          "table_cell": "tab:summary_stats Notes (1,884 firms)"
+        },
+        {
+          "number": "-0.0000",
+          "table_cell": "tab:summary_stats Panel B UncResCEO Mean"
+        },
+        {
+          "number": "0.3010",
+          "table_cell": "tab:summary_stats Panel B UncResCEO SD"
+        },
+        {
+          "number": "0.1708",
+          "table_cell": "tab:summary_stats Panel C CashRatio Mean"
+        },
+        {
+          "number": "0.0094",
+          "table_cell": "tab:summary_stats Panel A PreAnnounceQtr Mean"
+        }
+      ]
     }
   ],
   "allocation_coverage": {

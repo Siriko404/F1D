@@ -56,8 +56,18 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "The most immediate rival to the anticipatory reading is analyst scrutiny: that the quarters before a deal draw harder analyst questions about cash, and that the hard questioning, rather than the deal itself, produces the hedged answers. This is a genuine confound and not a strawman. The incidence of cash scrutiny itself rises in the quarter before a cash acquisition (the indicator $\\mathrm{HighCashScrutiny}$ carries a coefficient of $0.0408$, $p<0.05$; column~4 of Table~\\ref{tab:empire_building_did}), so it co-moves with both the cash position and the event and could in principle generate the run-up mechanically. The continuous volume of cash questions rises too but not significantly (coefficient $0.0854$, not significant; column~3), so what rises reliably before a cash deal is the incidence of cash scrutiny, not its volume. We address this rival in three steps.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "0.0408",
+          "table_cell": "tab:empire_building_did col 4 PreAnnounceQtr (HighCashScrutiny, cash)"
+        },
+        {
+          "number": "0.0854",
+          "table_cell": "tab:empire_building_did col 3 PreAnnounceQtr (CashScrutiny, cash)"
+        }
+      ]
     },
     {
       "para_id": "4.1-PARA2",
@@ -113,8 +123,22 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "The first step is to confirm that the scrutiny measure is real. The share of analyst question-and-answer turns devoted to cash and liquidity rises strongly with the firm's cash ratio (coefficient $0.7530$, $p<0.01$, in a one-tailed test, rising to $0.8519$, $p<0.01$, with the full control set; columns~1 and~2 of Table~\\ref{tab:cash_scrutiny_validity}) and with a high-cash indicator (coefficient $0.1754$, $p<0.01$; column~3), so it tracks what it is built to track and the nulls that follow are not the artifact of a dead measure.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "0.7530",
+          "table_cell": "tab:cash_scrutiny_validity col 1 CashRatio"
+        },
+        {
+          "number": "0.8519",
+          "table_cell": "tab:cash_scrutiny_validity col 2 CashRatio + controls"
+        },
+        {
+          "number": "0.1754",
+          "table_cell": "tab:cash_scrutiny_validity col 3 HighCash"
+        }
+      ]
     },
     {
       "para_id": "4.1-PARA3",
@@ -170,8 +194,26 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "The second step asks whether scrutiny alone moves the residual, and it does not. Its direct effect on $\\mathrm{UncResCEO}$ is zero to four decimal places (coefficient $-0.0000$, not significant; standard error $0.0013$; $41{,}512$ calls; Panel~A of Table~\\ref{tab:cash_scrutiny_channel}), and the null holds under a logit on the dichotomized residual (log-odds coefficient $-0.0003$, not significant; Panel~B) and under the raw uncertainty measure and coarser scrutiny proxies alike. This test is not redundant with the way the residual is built: $\\mathrm{CashScrutiny}$ is the volume of cash questions, whereas the uncertainty wording of those questions, $\\mathrm{UncQue}$, is already netted out inside the residual by the decomposition of Section~2.3, so the null speaks to a path the residual does not already absorb.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "-0.0000",
+          "table_cell": "tab:cash_scrutiny_channel Panel A CashScrutiny (UncResCEO)"
+        },
+        {
+          "number": "0.0013",
+          "table_cell": "tab:cash_scrutiny_channel Panel A CashScrutiny SE (UncResCEO)"
+        },
+        {
+          "number": "41,512",
+          "table_cell": "tab:cash_scrutiny_channel N (calls)"
+        },
+        {
+          "number": "-0.0003",
+          "table_cell": "tab:cash_scrutiny_channel Panel B CashScrutiny log-odds (UncResCEO)"
+        }
+      ]
     },
     {
       "para_id": "4.1-PARA4",
@@ -229,8 +271,30 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "The third and operative step puts scrutiny and the pre-announcement indicator in the same model, estimated over the cash acquirers' pre-announcement and earlier quarters. The pre-announcement indicator stays significant, both with scrutiny entered (coefficient $0.0413$, $p<0.01$; column~1 of Table~\\ref{tab:reason_gating}) and with the scrutiny-by-pre-announcement interaction added (coefficient $0.0439$, $p<0.05$; column~2), while scrutiny's own effect remains null ($0.0000$ and $0.0001$, neither significant) and the interaction is insignificant (coefficient $-0.0056$, not significant; column~2). The reason raises residual uncertainty; the questioning does not, and the questioning does not amplify the reason.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "0.0413",
+          "table_cell": "tab:reason_gating col 1 PreAnnounceQtr"
+        },
+        {
+          "number": "0.0439",
+          "table_cell": "tab:reason_gating col 2 PreAnnounceQtr"
+        },
+        {
+          "number": "0.0000",
+          "table_cell": "tab:reason_gating col 1 CashScrutiny"
+        },
+        {
+          "number": "0.0001",
+          "table_cell": "tab:reason_gating col 2 CashScrutiny"
+        },
+        {
+          "number": "-0.0056",
+          "table_cell": "tab:reason_gating col 2 CashScrutiny x PreAnnounceQtr"
+        }
+      ]
     },
     {
       "para_id": "4.1-PARA5",
@@ -291,8 +355,22 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "The register here should stay honest. This is a failure to find, paired with a within-model dissociation, and not a powered test of equivalence. The interaction's confidence interval, approximately $[-0.027, 0.016]$, does not exclude effects that would matter against a run-up near $0.04$; about eighty-nine percent of calls draw no cash scrutiny at all; and the contrast between a significant and an insignificant coefficient is not itself a test. The claim is that scrutiny does not account for this particular run-up, not that scrutiny never matters anywhere.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "[-0.027, 0.016]",
+          "table_cell": "claim_findings_ledger C4 referee_proof (interaction CI; from -0.0056 +/- 1.96*0.0111, tab:reason_gating col 2)"
+        },
+        {
+          "number": "0.04",
+          "table_cell": "tab:reason_gating PreAnnounceQtr magnitude (run-up near 0.04, cf. 0.0413/0.0439)"
+        },
+        {
+          "number": "eighty-nine percent",
+          "table_cell": "tab:empire_building_did note L195 (89% of calls raise no cash turns)"
+        }
+      ]
     }
   ],
   "allocation_coverage": {

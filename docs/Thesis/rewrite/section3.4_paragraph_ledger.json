@@ -60,8 +60,34 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "A first step reruns the event study side by side on the stock placebo arm, using the stock column of Table~\\ref{tab:empire_drop_placebo} that was held back from the previous analysis. Neither arm trends into the event: the pre-trend coefficient two quarters out is small and insignificant in both, $0.0105$ for the cash arm and $-0.0056$ for the stock arm. From there the two diverge. The cash arm reproduces the run-up, with a spike one quarter before announcement (coefficient $0.0486$, $p<0.01$) and a swing from the peak to completion (drop $0.0681$, $p<0.01$), while the stock arm shows none of it (coefficient one quarter before announcement of $-0.0404$, not significant) and, if anything, moves the other way across announcement (decline from the pre-announcement quarter to the gap of $-0.0756$, $p<0.10$). This is a descriptive comparison; it motivates a formal test rather than standing in for one.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "0.0105",
+          "table_cell": "tab:empire_drop_placebo col 1 PRE2 (cash)"
+        },
+        {
+          "number": "-0.0056",
+          "table_cell": "tab:empire_drop_placebo col 2 PRE2 (stock)"
+        },
+        {
+          "number": "0.0486",
+          "table_cell": "tab:empire_drop_placebo col 1 PRE1 (cash)"
+        },
+        {
+          "number": "0.0681",
+          "table_cell": "tab:empire_drop_placebo col 1 Drop PRE1-POST (cash)"
+        },
+        {
+          "number": "-0.0404",
+          "table_cell": "tab:empire_drop_placebo col 2 PRE1 (stock)"
+        },
+        {
+          "number": "-0.0756",
+          "table_cell": "tab:empire_drop_placebo col 2 Drop PRE1-GAP (stock)"
+        }
+      ]
     },
     {
       "para_id": "3.4-PARA2",
@@ -117,8 +143,9 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "A side-by-side display of this kind implies a comparison it never actually runs. The formal test instead uses the pooled, interacted model of Section~2.4, which carries both treatments at once and tests the cash-minus-stock difference directly through a single Wald linear restriction, $\\beta_c-\\beta_s>0$. That restriction is what estimates $\\theta_{-1}^{\\,\\mathrm{cash}}-\\theta_{-1}^{\\,\\mathrm{stock}}$ in H1a, and it is this difference, not a comparison of one significant coefficient against one insignificant one, that constitutes the cash-specificity test. The pooled baseline is the set of firms that make neither a cash nor a stock acquisition. The reading remains correlational, with no identification claim, and the framing is one of concentration rather than strict specificity.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": []
     },
     {
       "para_id": "3.4-PARA3",
@@ -179,8 +206,42 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "On the effect, the pooled model delivers the formal cash-specificity result. The cash arm's pre-announcement uncertainty coefficient is significant (coefficient $0.0459$, $p<0.05$; column~1 of Table~\\ref{tab:empire_cashspec}) and the stock arm's is insignificant and negative (coefficient $-0.0524$, not significant). The formal cash-minus-stock difference, evaluated as the single Wald restriction, is $0.0983$ (standard error $0.0476$, $z\\approx2.07$, $p=0.039$), significant at the five percent level on a two-tailed test. Because the two arms move in opposite directions, the difference is larger than either coefficient, roughly a third of a residual standard deviation, about $32.7$ percent against the $0.3010$ in Panel~B of Table~\\ref{tab:summary_stats}. It is this formal linear restriction, and not the contrast between a significant and an insignificant coefficient, that carries the cash-specificity claim.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "0.0459",
+          "table_cell": "tab:empire_cashspec col 1 Pre-announce Cash (UncResCEO)"
+        },
+        {
+          "number": "-0.0524",
+          "table_cell": "tab:empire_cashspec col 1 Pre-announce Stock (UncResCEO)"
+        },
+        {
+          "number": "0.0983",
+          "table_cell": "tab:empire_cashspec col 1 Cash-Stock formal test"
+        },
+        {
+          "number": "0.0476",
+          "table_cell": "tab:empire_cashspec col 1 Cash-Stock SE"
+        },
+        {
+          "number": "2.07",
+          "table_cell": "derived z = 0.0983/0.0476 (tab:empire_cashspec col 1)"
+        },
+        {
+          "number": "0.039",
+          "table_cell": "claim_findings_ledger C6 EFFECT_diff (z~2.07, p=.039 two-tailed; tab:empire_cashspec note L362)"
+        },
+        {
+          "number": "32.7 percent",
+          "table_cell": "0.0983 (tab:empire_cashspec col 1) / 0.3010 (tab:summary_stats Panel B)"
+        },
+        {
+          "number": "0.3010",
+          "table_cell": "tab:summary_stats Panel B UncResCEO SD"
+        }
+      ]
     },
     {
       "para_id": "3.4-PARA4",
@@ -237,8 +298,18 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "On the proposed cause, the picture is weaker. The cash build-up itself is only faintly cash-sided: the cash-minus-stock difference in the cash ratio is insignificant on the matched universe (difference $0.0064$, not significant; column~2 of Table~\\ref{tab:empire_cashspec}) and reaches only marginal significance on the full panel (difference $0.0092$, $p<0.10$; column~3). The effect concentrates in cash deals, but the war-chest mechanism that might explain it is therefore not established, and the mechanism is left open.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "0.0064",
+          "table_cell": "tab:empire_cashspec col 2 Cash-Stock (matched difference, CashRatio)"
+        },
+        {
+          "number": "0.0092",
+          "table_cell": "tab:empire_cashspec col 3 Cash-Stock (full-panel difference, CashRatio)"
+        }
+      ]
     },
     {
       "para_id": "3.4-PARA5",
@@ -297,8 +368,18 @@
         "all_supported": false,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "BLOCKED -- planning only"
+      "final_prose": "We therefore read the result as supported but fragile. One formal test at the five percent level supports H1a's claim of concentration in cash, but its significance rides on the imprecise, negative stock estimate (coefficient $-0.0524$, standard error $0.0436$; column~1 of Table~\\ref{tab:empire_cashspec}), and the cause's own cash-specificity is weaker still, marginal and only on the full panel. The wording stays with concentration rather than strict specificity, the difference between a significant and an insignificant coefficient is not treated as the test, and no cause is asserted.",
+      "prose_status": "DRAFTED (Phase C); gate-passed; pending .tex assembly (Phase D)",
+      "number_audit": [
+        {
+          "number": "-0.0524",
+          "table_cell": "tab:empire_cashspec col 1 Pre-announce Stock (UncResCEO)"
+        },
+        {
+          "number": "0.0436",
+          "table_cell": "tab:empire_cashspec col 1 Pre-announce Stock SE"
+        }
+      ]
     }
   ],
   "allocation_coverage": {
