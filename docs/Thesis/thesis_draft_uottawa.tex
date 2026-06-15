@@ -13,6 +13,8 @@
 % --- Fonts + math (our convention, kept) ---
 \usepackage{newtxtext,newtxmath}
 \usepackage{amsmath}
+% --- Microtypography: char protrusion + font expansion to curb margin overflow (2026-06-15) ---
+\usepackage{microtype}
 
 % --- Tables / graphics (our convention, kept) ---
 \usepackage{booktabs}
@@ -33,6 +35,8 @@
 \raggedbottom
 \setlength{\parskip}{\medskipamount}
 \renewcommand{\baselinestretch}{1}
+% --- Let TeX stretch a tight line rather than push text past the margin (2026-06-15) ---
+\setlength{\emergencystretch}{3em}
 
 % --- Blank verso pages carry no page number (uOttawa) ---
 \let\origdoublepage\cleardoublepage
