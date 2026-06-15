@@ -82,11 +82,71 @@ def sample(q):
 
 
 def slim(r):
-    """Keep only what the comparison needs."""
-    return {"bins": {b: {"b": r["bins"][b]["b"], "se": r["bins"][b]["se"], "p2": r["bins"][b]["p2"]}
-                     for b in BINS if b in r["bins"]},
-            "pre1_post": r["pre1_post"], "gap_post": r["gap_post"], "pre1_gap": r["pre1_gap"],
-            "n": r["n"], "n_firms": r["n_firms"]}
+    """Keep bins + drops + controls (+lag) -- everything the comparison AND the
+    mirror tables need (controls were previously dropped; advisor #1 2026-06-15)."""
+    pick = lambda d: {"b": d["b"], "se": d["se"], "p2": d["p2"]}
+    out = {"bins": {b: pick(r["bins"][b]) for b in BINS if b in r["bins"]},
+           "pre1_post": r["pre1_post"], "gap_post": r["gap_post"], "pre1_gap": r["pre1_gap"],
+           "controls": {c: pick(v) for c, v in r.get("controls", {}).items()},
+           "n": r["n"], "n_firms": r["n_firms"]}
+    if "lag" in r:
+        out["lag"] = pick(r["lag"])
+    return out
+
+
+# ---- LaTeX fragment writer: byte-format-identical to empire_drop_matched_universe.write_tex ----
+def _stars(p):
+    return "***" if p < 0.01 else ("**" if p < 0.05 else ("*" if p < 0.10 else ""))
+
+
+def _cell(coef, p):
+    s = _stars(p)
+    return f"\\textbf{{{coef:.4f}}}$^{{{s}}}$" if s else f"{coef:.4f}"
+
+
+_BIN_LABEL = {"PRE2": r"PRE2 ($t{-}2$, pre-trend)",
+              "PRE1": r"PRE1 ($t{-}1$, pre-announce)",
+              "GAP":  r"GAP (announced, pre-close)",
+              "POST": r"POST (completed)"}
+
+
+def write_tex_robust(res, caption, label, out_path):
+    """Build a thesis table fragment from a {dv: slim(run_on)} dict, mirroring the
+    matched-universe table exactly (4 bins, 3 drops, controls, lag, N/firms; two-tailed)."""
+    dvs = DVS
+    L = [r"\begin{table}[htbp]", r"\centering",
+         f"\\caption{{{caption}}}", f"\\label{{{label}}}", r"\scriptsize",
+         r"\begin{tabular}{lcc}", r"\toprule",
+         r" & (1) UncResCEO & (2) CashRatio \\", r"\midrule"]
+    for b in BINS:
+        cells = " & ".join(_cell(res[dv]["bins"][b]["b"], res[dv]["bins"][b]["p2"]) for dv in dvs)
+        ses = " & ".join(f"({res[dv]['bins'][b]['se']:.4f})" for dv in dvs)
+        L += [f"{_BIN_LABEL[b]} & {cells} \\\\", f" & {ses} \\\\"]
+    L.append(r"\midrule")
+    for key, lab in (("pre1_gap", r"Drop: PRE1 $-$ GAP"), ("gap_post", r"Drop: GAP $-$ POST"),
+                     ("pre1_post", r"Drop: PRE1 $-$ POST")):
+        cells = " & ".join(_cell(res[dv][key]["diff"], res[dv][key]["p2"]) for dv in dvs)
+        ses = " & ".join(f"({res[dv][key]['se']:.4f})" for dv in dvs)
+        L += [f"{lab} & {cells} \\\\", f" & {ses} \\\\"]
+    L += [r"\midrule", r"\multicolumn{3}{l}{\textit{Controls}} \\"]
+    for c in CTRL:
+        cv = " & ".join((_cell(res[dv]["controls"][c]["b"], res[dv]["controls"][c]["p2"])
+                         if c in res[dv].get("controls", {}) else "---") for dv in dvs)
+        cs = " & ".join((f"({res[dv]['controls'][c]['se']:.4f})"
+                        if c in res[dv].get("controls", {}) else "") for dv in dvs)
+        L += [f"{c} & {cv} \\\\", f" & {cs} \\\\"]
+    lag_cells = " & ".join((_cell(res[dv]["lag"]["b"], res[dv]["lag"]["p2"]) if "lag" in res[dv] else "---") for dv in dvs)
+    lag_ses = " & ".join((f"({res[dv]['lag']['se']:.4f})" if "lag" in res[dv] else "") for dv in dvs)
+    L += [r"CashRatio$_{t-1}$ (partial adj.) & " + lag_cells + r" \\", f" & {lag_ses} \\\\"]
+    n, nf = res["CashRatio"]["n"], res["CashRatio"]["n_firms"]
+    L += [r"\midrule", r"Firm FE / Year-Qtr FE / Controls & Yes & Yes \\",
+          f"N (firm-quarters) & {n:,} & {n:,} \\\\",
+          f"Firms & {nf:,} & {nf:,} \\\\",
+          r"\bottomrule", r"\end{tabular}",
+          r"\begin{minipage}{\linewidth}\vspace{2pt}\scriptsize",
+          r"\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed).",
+          r"\end{minipage}", r"\end{table}"]
+    out_path.write_text("\n".join(L), encoding="utf-8")
 
 
 def main():
@@ -132,6 +192,14 @@ def main():
                "timestamp": ts}
     (out / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(f"\nwrote {out / 'summary.json'}")
+
+    drv = ROOT / "docs" / "Draft"
+    write_tex_robust(res43, "Resolution-Inclusive POST: Withdrawal Treated as a Resolution Event (robustness)",
+                     "tab:empire_drop_resolution", drv / "_empire_drop_resolution.tex")
+    write_tex_robust(res44, "Static Fixed Effects: the Cash Result Without the Lagged Dependent Variable (robustness)",
+                     "tab:empire_drop_staticfe", drv / "_empire_drop_staticfe.tex")
+    print(f"wrote {drv / '_empire_drop_resolution.tex'}")
+    print(f"wrote {drv / '_empire_drop_staticfe.tex'}")
 
 
 if __name__ == "__main__":
