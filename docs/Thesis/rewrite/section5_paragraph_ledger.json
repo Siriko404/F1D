@@ -207,7 +207,7 @@
           ]
         }
       ],
-      "final_prose": "The pattern is not accounted for by analysts devoting more of the call to cash questions; the pre-announcement elevation survives a direct measure of analyst cash scrutiny and its interaction with the pre-announcement window. A further analysis finds the residual unrelated to the firm's post-call bid-ask spread, while the scripted presentation is positively associated with it, consistent with the two parts of the call relating to the outside information environment in different ways. The differential-timing result holds when a withdrawal is treated as a resolution of the deal and when the cash specification is estimated without its dynamic term.",
+      "final_prose": "The pattern is not accounted for by analysts devoting more of the call to cash questions; the pre-announcement elevation survives a direct measure of analyst cash scrutiny and its interaction with the pre-announcement window. A further analysis finds the residual unrelated to the firm's post-call bid-ask spread, while the scripted presentation is positively associated with it, consistent with the scripted and unscripted segments relating to the outside information environment differently. The differential-timing result holds when a withdrawal is treated as a resolution of the deal and when the cash specification is estimated without its dynamic term.",
       "prose_status": "DRAFTED -- Phase C (synthesis)",
       "_phaseC_audit": {
         "direction_audit": [
