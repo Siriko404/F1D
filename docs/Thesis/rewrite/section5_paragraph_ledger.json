@@ -1,6 +1,6 @@
 {
   "subsection_id": "5",
-  "title": "Conclusion (three moves: restate objective; qualitative summary; implications+limitations+future)",
+  "title": "Conclusion (verbose, seven paragraphs: restate; findings; rule-out; implications; core limitations; further boundaries; future research)",
   "paragraphs": [
     {
       "para_id": "5-P1",
@@ -26,6 +26,11 @@
         "Does NOT re-run the literature review or the opening context."
       ],
       "lit_body": "none new (conclusion is ~zero citations; no lit review re-run)",
+      "prose_gate": {
+        "rule": "restate homed + mirrors intro + ~zero cites; planning-only",
+        "all_supported": true,
+        "unlocked": false
+      },
       "proposition_chain": [
         {
           "prop_id": "5-P1-a",
@@ -47,11 +52,6 @@
           "depends_on": []
         }
       ],
-      "prose_gate": {
-        "rule": "restate homed + mirrors intro + ~zero cites; planning-only",
-        "all_supported": true,
-        "unlocked": false
-      },
       "final_prose": "",
       "prose_status": "BLOCKED -- planning only"
     },
@@ -59,27 +59,31 @@
       "para_id": "5-P2",
       "order": 2,
       "intent": {
-        "statement": "Deliver Move 2 (qualitative findings summary) in one paragraph: synthesize the three main findings (C2 run-up with no comparable stock rise, C1 indistinguishable from zero once announced while the funding cash persists to completion, C6 cash-concentration on a formal pooled test) (CO.2), and add the C4 scrutiny rule-out (CO.3), qualitatively and with no methodological heavy lifting.",
-        "reason": "M2 is the one-paragraph qualitative summary of the same four results; CO.2 keeps the three main findings merged (as the locked chain has them, deliberately not split to the abstract's granularity) and CO.3 adds the C4 rule-out, with no methodological heavy lifting.",
+        "statement": "Deliver Move 2 qualitative findings summary in one paragraph: the three main findings (C2 run-up with no comparable stock rise, C1 indistinguishable from zero once announced while the funding cash persists to completion, C6 cash-concentration on a formal pooled test), synthesized in one merged prop, qualitatively (CO.2).",
+        "reason": "The verbose conclusion gives the findings summary its own paragraph, separate from the rule-out; CO.2 stays the single merged result prop per the locked chain (not split to the abstract's granularity).",
         "evidence": [
-          "DraftTemplate.txt L165-166 (M2 = synthesize results qualitatively, one paragraph, no methodological heavy lifting)",
-          "section5_subsection_plan.json CO.2-CO.3 (C2/C1/C6 synthesized; C4 rule-out)",
-          "introconcl_phaseA_redteam.json coverage_matrix (CO.2 covers C2/C1/C6; CO.3 covers C4)"
+          "DraftTemplate.txt L165-166 (M2 qualitative summary)",
+          "section3.2/3.3/3.4 final_prose",
+          "claim_findings_ledger.json C2, C1, C6"
         ]
       },
       "serves": [
-        "Move 2 qualitative findings summary: C2 run-up, C1 two-clocks timing, C6 formal cash-concentration (CO.2), and the C4 scrutiny rule-out (CO.3); sets up the implications/limitations in 5-P3"
+        "Move 2 findings summary: C2 run-up, C1 two-clocks timing, C6 formal cash-concentration (CO.2); hands the rule-out to 5-P3"
       ],
-      "boundary": "Qualitative synthesis only; NO coefficients/SEs/p-values; no methodological heavy lifting. CO.2 stays a single merged result prop (C2+C1+C6); do NOT split it into three or harmonize it with the abstract's four separate finding props. Each direction tied to its table cell. ~Zero citations.",
-      "thin_claim": "Three within-firm correlational findings synthesized plus the C4 rule-out; C-traps held in compressed form; mechanism open.",
+      "boundary": "Qualitative synthesis only; NO coefficients/SEs/p-values. CO.2 stays ONE merged result prop (C2+C1+C6); do NOT split or harmonize to the abstract's four props. Each direction tied to its table cell. ~Zero citations. The rule-out is 5-P3.",
+      "thin_claim": "Three within-firm correlational findings synthesized; C-traps held in compressed form; mechanism open.",
       "guardrails": [
-        "C1 (within CO.2): 'indistinguishable from zero once announced'; NEVER 'unwound/falls'; negative POST not read; 'fully unwound' = peak-to-completion, not GAP.",
+        "C1 (within CO.2): 'indistinguishable from zero once announced'; NEVER 'unwound/falls'; negative POST not read.",
         "C6 (within CO.2): the formal pooled test; NEVER side-by-side; concentration-not-strict-specificity.",
-        "C4 (CO.3): 'not accounted for by analysts devoting more of the call to cash questions' = does not account for THIS run-up; NEVER 'scrutiny never matters'.",
-        "Keep CO.2 as ONE merged prop (do not split C2/C1/C6 apart; do not normalize to the abstract's granularity) per the locked chain.",
-        "QUALITATIVE: no coefficients/SEs/p-values; no economic-magnitude percentages; body order C2->C1->C6->C4. C5/C3/C7 not raised."
+        "Keep CO.2 as ONE merged prop (do not split C2/C1/C6) per the locked chain.",
+        "QUALITATIVE: no coefficients/SEs/p-values; body order C2 -> C1 -> C6."
       ],
       "lit_body": "none new",
+      "prose_gate": {
+        "rule": "all props homed + reason+evidence atomic + qualitative; planning-only",
+        "all_supported": true,
+        "unlocked": false
+      },
       "proposition_chain": [
         {
           "prop_id": "5-P2-a",
@@ -106,9 +110,42 @@
           "depends_on": [
             "5-P1-a"
           ]
-        },
+        }
+      ],
+      "final_prose": "",
+      "prose_status": "BLOCKED -- planning only"
+    },
+    {
+      "para_id": "5-P3",
+      "order": 3,
+      "intent": {
+        "statement": "Deliver the analyst-scrutiny rule-out as its own paragraph: the pre-announcement elevation is not accounted for by analysts devoting more of the call to cash questions, surviving a direct scrutiny measure and its interaction, hedged to this run-up (CO.3).",
+        "reason": "The verbose conclusion gives the rule-out its own paragraph after the findings summary; it is a distinct move (an additional analysis result), kept hedged per the C4 trap.",
+        "evidence": [
+          "DraftTemplate.txt L165-166",
+          "section4.1 P3 + P4 final_prose",
+          "claim_findings_ledger.json C4"
+        ]
+      },
+      "serves": [
+        "Move 2 (cont.): the C4 scrutiny rule-out (CO.3); sets up the implications in 5-P4"
+      ],
+      "boundary": "The C4 rule-out only; 'not accounted for by analysts devoting more of the call to cash questions' = does not account for THIS run-up; NEVER 'scrutiny never matters'. Qualitative; ~zero citations.",
+      "thin_claim": "The pre-announcement elevation survives a direct scrutiny measure and its interaction; underpowered null, hedged to this run-up.",
+      "guardrails": [
+        "C4 (CO.3): does not account for THIS run-up; NEVER 'scrutiny never matters'.",
+        "Underpowered null not upgraded to a powered equivalence (that boundary is voiced in 5-P6).",
+        "QUALITATIVE: no coefficients/SEs/p-values."
+      ],
+      "lit_body": "none new",
+      "prose_gate": {
+        "rule": "all props homed + reason+evidence atomic + qualitative; planning-only",
+        "all_supported": true,
+        "unlocked": false
+      },
+      "proposition_chain": [
         {
-          "prop_id": "5-P2-b",
+          "prop_id": "5-P3-a",
           "from_phaseA_prop": "CO.3",
           "statement": "The pattern is not accounted for by analysts devoting more of the call to cash questions; the pre-announcement elevation survives a direct scrutiny measure and its interaction.",
           "role_in_paragraph": "result -- M2 (cont.): the C4 scrutiny rule-out, summarized and hedged to this run-up.",
@@ -132,42 +169,41 @@
           ]
         }
       ],
-      "prose_gate": {
-        "rule": "all findings homed in body order + C-traps honored + qualitative; planning-only",
-        "all_supported": true,
-        "unlocked": false
-      },
       "final_prose": "",
       "prose_status": "BLOCKED -- planning only"
     },
     {
-      "para_id": "5-P3",
-      "order": 3,
+      "para_id": "5-P4",
+      "order": 4,
       "intent": {
-        "statement": "Deliver Move 3 (implications + limitations + future research) in one compressed paragraph: the broader takeaway that the unscripted language carries a readable, anticipatory trace of a deal's passage from private to public (CO.4); the explicit core limitations (correlational/within-firm, no causal identification, no established mechanism, the war-chest cause unestablished, the two observationally equivalent readings) (CO.5); two further boundaries (the residual is estimated only for CEOs with enough calls, skewing toward larger more-covered firms, and the scrutiny rule-out is a failure to find rather than a powered equivalence) (CO.6); and the future-research close (whether the same signature appears around other classes of withheld events, and designs that separate compliance-constrained from strategic silence) (CO.7).",
-        "reason": "M3 is the move the conclusion ADDS over the intro: implications + limitations + future research. The four props (CO.4 implication, CO.5+CO.6 limitations, CO.7 future) form one logically connected closing arc that voices the boundaries explicitly and ends on next steps; it does not overload enough to justify a fourth paragraph, so it stays one, honoring the <500-word mandate and landing the conclusion at exactly three paragraphs.",
+        "statement": "Deliver Move 3 implications in one paragraph: the broader takeaway that the unscripted language carries a readable, anticipatory trace of a deal's passage from private to public (CO.4), developed by audience, that for the literature it bridges the withholding and transaction-anticipation strands, with an explicit no-prescription hedge for investors, managers, and regulators (CO.I1).",
+        "reason": "The verbose conclusion develops implications by audience; CO.4 opens with the readable-trace takeaway within the ceiling, and the new CO.I1 adds the literature bridge plus an explicit no-prescription hedge. CEILING-BREACH PIECE: the hedge forecloses correlational-to-prescriptive creep.",
         "evidence": [
-          "DraftTemplate.txt L167-168 + L178 (M3 = broader takeaway + explicitly voice the boundaries + future research; conclusion DROPS the roadmap)",
-          "section5_subsection_plan.json CO.4-CO.7 (implication; core limitations; further boundaries; future research)",
-          "introconcl_phaseA_redteam.json synthesis_decisions (include BOTH CO.5 core limitations AND CO.6 further boundaries; DROP the two-step future-work item)"
+          "DraftTemplate.txt L167-168 (M3 implications) + verbose implications-FOR-WHOM component",
+          "section2.1 P1/P6/P7 final_prose",
+          "claim_findings_ledger.json thin_claim_ceiling"
         ]
       },
       "serves": [
-        "Move 3 implications + limitations + future: the readable-trace takeaway (CO.4), the core no-identification/mechanism-open limitations (CO.5), the selection + underpowered-null boundaries (CO.6), and the future-research close (CO.7); ends on future research, drops the roadmap"
+        "Move 3 implications: the readable-trace takeaway (CO.4) and the literature-bridge + no-prescription implication by audience (CO.I1)"
       ],
-      "boundary": "Implications/limitations/future only; no new findings, no roadmap, no lit-review re-run. Implications within the ceiling (a readable trace, not a tested mechanism); limitations stated EXPLICITLY. ~Zero citations. E1: NO generated-regressand/two-step-SE/Pagan disclaimer, including disguised as a future-work item.",
-      "thin_claim": "Implication is a readable anticipatory trace (not a mechanism); limitations voice correlational/no-identification/mechanism-open + selection + underpowered null explicitly; future research is other withheld events + designs separating the two readings.",
+      "boundary": "Implications within the ceiling: a readable trace and a literature bridge, NOT a tested mechanism or a prescription. Explicit 'we draw no prescription ... not to recommend acting on it'. No new finding. ~Zero citations.",
+      "thin_claim": "Implication is a readable anticipatory trace that bridges two literatures; explicitly no prescription for any stakeholder; correlational, mechanism-open.",
       "guardrails": [
-        "CO.4 implication kept within the ceiling: a readable, anticipatory TRACE, not a tested mechanism (supportive-not-definitive, mechanism-open).",
-        "CO.5 limitations EXPLICIT: correlational, within-firm, no causal identification, mechanism-open, war-chest unestablished, two observationally-equivalent readings.",
-        "CO.6 C4 boundary: 'failure to find', NOT a powered test of equivalence; CEO >=5-call selection skews toward larger, more-covered firms (~89% of calls draw no cash scrutiny).",
-        "E1: CO.7 future research deliberately EXCLUDES any 'two-step correction'/generated-regressand item (red-team dropped plan3 K8); no Pagan disclaimer even as future work.",
-        "~Zero citations; NO roadmap; do NOT re-run the literature review. C5/C3/C7 not raised."
+        "CO.4 kept within the ceiling: a readable, anticipatory TRACE, not a tested mechanism.",
+        "CO.I1 NO-PRESCRIPTION hedge explicit: 'we draw no prescription for investors, managers, or regulators ... not to recommend acting on it'.",
+        "correlational + no-identification + supportive-not-definitive + mechanism-open; no causal channel.",
+        "~Zero citations; no roadmap."
       ],
       "lit_body": "none new",
+      "prose_gate": {
+        "rule": "all props homed + reason+evidence atomic + qualitative; planning-only",
+        "all_supported": true,
+        "unlocked": false
+      },
       "proposition_chain": [
         {
-          "prop_id": "5-P3-a",
+          "prop_id": "5-P4-a",
           "from_phaseA_prop": "CO.4",
           "statement": "Taken together, these patterns suggest that the unscripted language of earnings calls carries a readable, anticipatory trace of a deal's passage from private to public, a signature investors and researchers can in principle observe before the announcement.",
           "role_in_paragraph": "inference -- M3 implications (broader economic takeaway); kept within the ceiling.",
@@ -185,11 +221,67 @@
             "mechanism-open"
           ],
           "depends_on": [
-            "5-P2-b"
+            "5-P3-a"
           ]
         },
         {
-          "prop_id": "5-P3-b",
+          "from_phaseA_prop": "new-implications",
+          "statement": "For the academic literature, the pattern connects two strands usually studied apart: the theory of when an informed manager withholds private information, and the evidence that markets anticipate corporate transactions before they are announced. It locates a within-firm language signature in the window between the two. We draw no prescription for investors, managers, or regulators from a correlational pattern that identifies no causal channel; the contribution is to characterize a regularity, not to recommend acting on it.",
+          "role_in_paragraph": "inference -- M3 implications, developed by audience: the literature-bridge implication and an explicit no-prescription hedge, extending CO.4.",
+          "type": "framing",
+          "reason": "Develops the implications move the verbose convention asks for, split by audience, while staying inside the ceiling. The explicit 'we draw no prescription ... not to recommend acting on it' forecloses the correlational-to-prescriptive creep the Phase C red-team is not tuned to catch. CEILING-BREACH PIECE. Follows the readable-trace implication (CO.4).",
+          "evidence": [
+            "DraftTemplate.txt (verbose CONCLUSION: implications FOR WHOM -- literature, investors, regulators, managers)",
+            "section2.1 P1 final_prose (withholding theory: verrecchia1983/dye1985) and section2.1 P6 final_prose (keown1981: market anticipation of deals) -- the two bridged strands",
+            "claim_findings_ledger.json thin_claim_ceiling (correlational; no causal channel; no prescription)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "no-identification",
+            "supportive-not-definitive",
+            "mechanism-open"
+          ],
+          "prop_id": "5-P4-b",
+          "depends_on": [
+            "5-P4-a"
+          ]
+        }
+      ],
+      "final_prose": "",
+      "prose_status": "BLOCKED -- planning only"
+    },
+    {
+      "para_id": "5-P5",
+      "order": 5,
+      "intent": {
+        "statement": "Deliver Move 3 core limitations as its own paragraph: the evidence is correlational and within-firm, the design supports no causal identification and establishes no mechanism, the war-chest cause is unestablished, and the two readings (compliance-constrained inability to speak and strategically chosen reticence) remain observationally equivalent (CO.5).",
+        "reason": "The verbose conclusion gives the core limitations their own paragraph, voicing the no-identification/correlational/mechanism-open boundaries explicitly, mirroring the intro caveat (IN.13).",
+        "evidence": [
+          "DraftTemplate.txt L167-168 + Task rule (conclusion states no-identification/correlational caveat EXPLICITLY)",
+          "section2.1 P7 / section2.2 P5 final_prose",
+          "claim_findings_ledger.json register_that_stands; AUDIT_PROTOCOL E1"
+        ]
+      },
+      "serves": [
+        "Move 3 core limitations: correlational/within-firm, no causal identification, mechanism-open, war-chest unestablished, two observationally-equivalent readings (CO.5)"
+      ],
+      "boundary": "Core limitations only; stated EXPLICITLY. E1: NO generated-regressand/Pagan/two-step-SE disclaimer. ~Zero citations.",
+      "thin_claim": "Correlational, within-firm; no causal identification; no established mechanism; war-chest unestablished; two readings observationally equivalent.",
+      "guardrails": [
+        "CO.5 EXPLICIT: correlational, within-firm, no causal identification, mechanism-open, war-chest unestablished, two observationally-equivalent readings.",
+        "E1: NO generated-regressand / Pagan / two-step-SE disclaimer.",
+        "Do NOT soften or upgrade the register."
+      ],
+      "lit_body": "none new",
+      "prose_gate": {
+        "rule": "all props homed + reason+evidence atomic + qualitative; planning-only",
+        "all_supported": true,
+        "unlocked": false
+      },
+      "proposition_chain": [
+        {
+          "prop_id": "5-P5-a",
           "from_phaseA_prop": "CO.5",
           "statement": "These findings carry clear limitations. The evidence is correlational and within-firm, the design supports no causal identification, and we do not establish why the signal concentrates in cash deals, the war-chest mechanism in particular being unestablished, so two readings, a compliance-constrained inability to speak and a strategically chosen reticence, remain observationally equivalent.",
           "role_in_paragraph": "caveat -- M3 core limitations (convention honesty); EXPLICIT no-identification/correlational/mechanism-open.",
@@ -210,11 +302,46 @@
             "concentration-not-strict-specificity"
           ],
           "depends_on": [
-            "5-P3-a"
+            "5-P4-b"
           ]
-        },
+        }
+      ],
+      "final_prose": "",
+      "prose_status": "BLOCKED -- planning only"
+    },
+    {
+      "para_id": "5-P6",
+      "order": 6,
+      "intent": {
+        "statement": "Deliver Move 3 further boundaries in one paragraph: the residual is estimated only for CEOs with enough calls to fix a speaking style, skewing the sample toward larger, more heavily covered firms, and the scrutiny rule-out is a failure to find rather than a powered test of equivalence since most calls draw no cash scrutiny (CO.6); plus the measurement and external-validity bounds, the dictionary-based bag-of-words measure, the imperfect stock placebo, and the 2002 to 2018 sample approximately the S&P 1500 (CO.L1).",
+        "reason": "The verbose conclusion develops limitations with the specific measurement and external-validity bounds the convention favors; CO.6 carries the selection + underpowered-null boundaries, and the new CO.L1 adds the measure and sample bounds, reusing the settled 'approximately the S&P 1500' hedge. Low-risk, additive.",
+        "evidence": [
+          "DraftTemplate.txt verbose limitations (measurement + external validity)",
+          "section3.1 P4 + section3.2 P2 final_prose (selection; approximately the S&P 1500)",
+          "section4.1 P4 final_prose (failure to find; ~89% no cash scrutiny)",
+          "section2.2 P2 final_prose (lm2011 word list; bag-of-words); section2.3 P2 (residual operationalization)"
+        ]
+      },
+      "serves": [
+        "Move 3 further boundaries: selection toward larger firms + underpowered null (CO.6); dictionary-based measure, imperfect placebo, sample bound (CO.L1)"
+      ],
+      "boundary": "Boundaries only; specific and accurate. C4 boundary = 'failure to find', NOT equivalence. 'approximately the S&P 1500' reused verbatim. No new finding. ~Zero citations.",
+      "thin_claim": "Selection toward larger more-covered firms; underpowered scrutiny null; dictionary-based measure abstracting from context; imperfect placebo; sample bounded approximately to the S&P 1500.",
+      "guardrails": [
+        "CO.6 C4 boundary: 'failure to find', NOT a powered test of equivalence; CEO >=5-call selection skews toward larger, more-covered firms.",
+        "CO.L1: measure is a finance-specific word-list / bag-of-words abstracting from context; residual is one operationalization; stock placebo imperfect.",
+        "Reuse 'approximately the S&P 1500' verbatim (section3.1 P4); sample-scale numerals only (2002 to 2018).",
+        "correlational + no-identification + supportive-not-definitive."
+      ],
+      "lit_body": "none new",
+      "prose_gate": {
+        "rule": "all props homed + reason+evidence atomic + qualitative; planning-only",
+        "all_supported": true,
+        "unlocked": false
+      },
+      "proposition_chain": [
         {
-          "prop_id": "5-P3-c",
+          "prop_id": "5-P6-a",
           "from_phaseA_prop": "CO.6",
           "statement": "Two further boundaries qualify the evidence: the residual is estimated only for CEOs with enough calls to fix a speaking style, which skews the language sample toward larger, more heavily covered firms, and the scrutiny rule-out is a failure to find rather than a powered test of equivalence, since most calls draw no cash scrutiny at all.",
           "role_in_paragraph": "caveat -- M3 limitations (continued): the sample-selection and underpowered-null boundaries.",
@@ -234,11 +361,69 @@
             "no-identification"
           ],
           "depends_on": [
-            "5-P3-b"
+            "5-P5-a"
           ]
         },
         {
-          "prop_id": "5-P3-d",
+          "from_phaseA_prop": "new-limitations-measurement",
+          "statement": "The measure itself bounds the inference. Uncertainty is captured by applying a finance-specific word list to the transcripts, a count of words that abstracts from their context, and the residual is one operationalization of call-specific uncertainty rather than a direct reading of what a CEO knows. The stock-financed placebo shares the disclosure bind but is an imperfect counterfactual, and the sample, United States public firms from 2002 to 2018, approximately the S\\&P~1500, may not extend to other periods, other markets, or the smaller firms outside it.",
+          "role_in_paragraph": "caveat -- M3 limitations, measurement and external validity: the dictionary-based measure, the imperfect placebo, and the sample bound, extending CO.6.",
+          "type": "framing",
+          "reason": "Develops the limitations move with the measurement and external-validity bounds the verbose convention asks authors to state specifically. Reuses the settled 'approximately the S&P 1500' hedge verbatim and the finance-specific word-list / bag-of-words characterization from Section 2.2. Low-risk, additive to CO.6.",
+          "evidence": [
+            "DraftTemplate.txt (verbose CONCLUSION: limitations -- measurement, identification, external validity, stated specifically)",
+            "section2.2 P2 final_prose (lm2011 finance-specific uncertainty word list; bag-of-words applied to the Q&A)",
+            "section2.3 P2 final_prose (the residual as an operationalization net of style)",
+            "section3.1 P4 final_prose (estimation sample bounded to Execucomp-covered firms, approximately the S&P 1500)"
+          ],
+          "numbers": [
+            "sample window 2002 to 2018 (sample-scale only); 'approximately the S&P 1500' reused verbatim from section3.1 P4"
+          ],
+          "register_locks": [
+            "correlational",
+            "no-identification",
+            "supportive-not-definitive"
+          ],
+          "prop_id": "5-P6-b",
+          "depends_on": [
+            "5-P6-a"
+          ]
+        }
+      ],
+      "final_prose": "",
+      "prose_status": "BLOCKED -- planning only"
+    },
+    {
+      "para_id": "5-P7",
+      "order": 7,
+      "intent": {
+        "statement": "Deliver Move 3 future research as the closing paragraph: whether the same anticipatory language signature appears around other classes of withheld material events and designs separating compliance-constrained from strategic silence (CO.7); plus other corporate transactions (divestitures, joint ventures, alliances), settings outside the United States, richer measures of spoken uncertainty, and establishing the open cash-accumulation mechanism (CO.F1). Drops the roadmap; E1-clean.",
+        "reason": "The verbose conclusion develops future research with specific, actionable directions; CO.7 supplies the withheld-events and separating-the-readings directions, and the new CO.F1 adds adjacent transactions, markets, measures, and the open mechanism. Deliberately excludes any two-step / generated-regressand item (E1).",
+        "evidence": [
+          "DraftTemplate.txt verbose future-research (specific, adjacent settings)",
+          "section5 CO.7; section2.1 P6 / ragozzino2024 (adjacent transactions)",
+          "section2.2 P5 final_prose (design cannot distinguish the two readings); AUDIT_PROTOCOL E1"
+        ]
+      },
+      "serves": [
+        "Move 3 future research close: other withheld events + separating the two readings (CO.7); other transactions/markets/measures + the open mechanism (CO.F1); drops the roadmap"
+      ],
+      "boundary": "Future research only; specific and actionable. E1: NO two-step-correction/generated-regressand item, even as future work. No roadmap; no lit-review re-run. ~Zero citations.",
+      "thin_claim": "Future work: other withheld events; designs separating the two readings; other transactions, markets, and measures; establishing the cash-accumulation mechanism.",
+      "guardrails": [
+        "E1: deliberately EXCLUDE any 'two-step correction' / generated-regressand item (red-team dropped plan3 K8); no Pagan disclaimer even as future work.",
+        "Directions specific and adjacent (divestitures/JVs/alliances; non-US; richer measures; the open mechanism).",
+        "~Zero citations; NO roadmap; do NOT re-run the literature review."
+      ],
+      "lit_body": "none new",
+      "prose_gate": {
+        "rule": "all props homed + reason+evidence atomic + qualitative; planning-only",
+        "all_supported": true,
+        "unlocked": false
+      },
+      "proposition_chain": [
+        {
+          "prop_id": "5-P7-a",
           "from_phaseA_prop": "CO.7",
           "statement": "Future work could ask whether the same anticipatory language signature appears around other classes of withheld material events, and could pursue designs able to separate compliance-constrained from strategic silence, which our setting cannot distinguish.",
           "role_in_paragraph": "transition -- M3 future research: the next-steps close.",
@@ -255,67 +440,99 @@
             "no-identification"
           ],
           "depends_on": [
-            "5-P3-c"
+            "5-P6-b"
+          ]
+        },
+        {
+          "from_phaseA_prop": "new-future",
+          "statement": "Several extensions follow. The same residual-uncertainty reading could be applied to other classes of withheld material events and to other corporate transactions, such as divestitures, joint ventures, and strategic alliances, and to settings outside the United States; richer measures of spoken uncertainty could replace the word-list count; and establishing why the signal concentrates in cash acquisitions, the cash-accumulation channel this study leaves open, would require a design the present setting does not provide.",
+          "role_in_paragraph": "transition -- M3 future research, developed: additional settings, transactions, measures, and the open cash-concentration mechanism, extending CO.7.",
+          "type": "framing",
+          "reason": "Develops the future-research move with the specific, actionable directions the verbose convention favors, complementing CO.7 ('other withheld events'; 'separate the two readings'). Deliberately EXCLUDES any two-step-correction / generated-regressand item (E1; the locked red-team decision dropped it).",
+          "evidence": [
+            "DraftTemplate.txt (verbose CONCLUSION: directions for future research -- specific, actionable, adjacent settings)",
+            "section5_paragraph_ledger.json CO.7 (other withheld events; designs separating compliance-constrained from strategic silence)",
+            "section2.1 P6 final_prose / ragozzino2024 (other corporate transactions as adjacent settings)",
+            "AUDIT_PROTOCOL E1 (no generated-regressand / two-step item, even as future work)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "mechanism-open",
+            "no-identification"
+          ],
+          "prop_id": "5-P7-b",
+          "depends_on": [
+            "5-P7-a"
           ]
         }
       ],
-      "prose_gate": {
-        "rule": "implications/limitations/future homed + E1 honored + roadmap dropped; planning-only",
-        "all_supported": true,
-        "unlocked": false
-      },
       "final_prose": "",
       "prose_status": "BLOCKED -- planning only"
     }
   ],
   "allocation_coverage": {
-    "all_phaseA_props_homed": "All 7 conclusion Phase-A props (CO.1..CO.7) land in exactly one paragraph each, in locked chain order, with no prop split, merged, orphaned, or duplicated. Move order is preserved: M1 = CO.1 (5-P1, standalone short restate); M2 = CO.2-CO.3 (5-P2, qualitative summary); M3 = CO.4-CO.7 (5-P3, implications+limitations+future). CO.2 is kept as ONE merged result prop (C2+C1+C6) per the locked chain, NOT split or harmonized to the abstract's four separate finding props. Both CO.5 (core limitations) and CO.6 (further boundaries) are homed per the red-team decision. The depends_on chain is unbroken across paragraph boundaries (5-P2-a on 5-P1-a; 5-P3-a on 5-P2-b). The roadmap is absent and the literature review is not re-run.",
+    "all_phaseA_props_homed": "All original Phase-A props homed exactly once; new additive props (significance/contributions/implications/measurement-limitations/future) carry from_phaseA_prop='new-*'.",
     "prop_to_paragraph": [
       {
         "phaseA_prop": "CO.1",
         "paragraph": "5-P1",
-        "note": "M1 restate objective; mirrors IN.7; standalone short."
+        "note": "verified Phase-A prop, re-homed verbatim"
       },
       {
         "phaseA_prop": "CO.2",
         "paragraph": "5-P2",
-        "note": "M2 merged C2+C1+C6 qualitative summary."
+        "note": "verified Phase-A prop, re-homed verbatim"
       },
       {
         "phaseA_prop": "CO.3",
-        "paragraph": "5-P2",
-        "note": "M2 C4 scrutiny rule-out."
+        "paragraph": "5-P3",
+        "note": "verified Phase-A prop, re-homed verbatim"
       },
       {
         "phaseA_prop": "CO.4",
-        "paragraph": "5-P3",
-        "note": "M3 implication: readable anticipatory trace, within ceiling."
+        "paragraph": "5-P4",
+        "note": "verified Phase-A prop, re-homed verbatim"
+      },
+      {
+        "phaseA_prop": "new-implications",
+        "paragraph": "5-P4",
+        "note": "ADDED filler"
       },
       {
         "phaseA_prop": "CO.5",
-        "paragraph": "5-P3",
-        "note": "M3 core limitations: correlational/no-identification/mechanism-open."
+        "paragraph": "5-P5",
+        "note": "verified Phase-A prop, re-homed verbatim"
       },
       {
         "phaseA_prop": "CO.6",
-        "paragraph": "5-P3",
-        "note": "M3 further boundaries: CEO >=5-call selection + underpowered null."
+        "paragraph": "5-P6",
+        "note": "verified Phase-A prop, re-homed verbatim"
+      },
+      {
+        "phaseA_prop": "new-limitations-measurement",
+        "paragraph": "5-P6",
+        "note": "ADDED filler"
       },
       {
         "phaseA_prop": "CO.7",
-        "paragraph": "5-P3",
-        "note": "M3 future research; E1-clean (no two-step item)."
+        "paragraph": "5-P7",
+        "note": "verified Phase-A prop, re-homed verbatim"
+      },
+      {
+        "phaseA_prop": "new-future",
+        "paragraph": "5-P7",
+        "note": "ADDED filler"
       }
     ],
     "gaps": []
   },
   "paragraph_count_rationale": {
-    "statement": "The conclusion is THREE paragraphs: 5-P1 (M1 restate, CO.1), 5-P2 (M2 qualitative summary, CO.2+CO.3), 5-P3 (M3 implications+limitations+future, CO.4+CO.5+CO.6+CO.7).",
-    "reason": "The conclusion convention mandates three moves at heavy compression (under ~500 words, ~zero citations, roadmap dropped, lit review not re-run): M1 restate (1-2 sentences), M2 summary (1 paragraph), M3 implications+limitations+future (1-2 paragraphs). Mapping one paragraph per move yields three: the restate is short but kept distinct because the task enumerates it as its own step and the convention says M1 stands alone; the summary holds the two results props (CO.2 merged + CO.3); and M3's four props form one coherent closing arc that reads cohesively without overloading, so it stays one paragraph rather than splitting to four total. Three matches the task's explicit ~3-paragraph steer with no padding.",
+    "statement": "Seven paragraphs (user-set verbose target): restate; findings; rule-out; implications; core limitations; further boundaries; future research.",
+    "reason": "Expanded inline from three to the user's seven-paragraph verbose target using the NLM verbose-conclusion menu: un-crammed the merged paragraphs (findings vs rule-out; implications vs limitations vs future) and developed implications by audience (CO.I1), measurement/external-validity limitations (CO.L1), and future directions (CO.F1). Every original CO.1-CO.7 prop is preserved verbatim.",
     "evidence": [
-      "DraftTemplate.txt L157-179 (3 moves, under 500 words, ~zero citations, drops roadmap, ADDS implications+limitations+future, MUST NOT re-do literature review)",
-      "section5_subsection_plan.json proposition_chain CO.1..CO.7 + coverage (M1=CO.1; M2=CO.2-CO.3; M3=CO.4-CO.7)",
-      "introconcl_phaseA_redteam.json synthesis_decisions (include BOTH CO.5 and CO.6; drop K8 two-step item)"
+      "DraftTemplate.txt verbose CONCLUSION (implications FOR WHOM; specific limitations; future research)",
+      "tmp/nlm_verbose_intro_conclusion.json",
+      "user directive 2026-06-15 (conclusion = 7 paragraphs)"
     ]
   },
   "prose_status": "BLOCKED -- planning only",

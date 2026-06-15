@@ -16,27 +16,33 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 NB = "63e3b970-7976-47bc-8291-37ce7ac9bf74"
 EXE = shutil.which("notebooklm")
-OUT = Path(__file__).with_name("nlm_abstract_structure_detailed.json")
+OUT = Path(__file__).with_name("nlm_verbose_intro_conclusion.json")
 
 QUERY = (
     "Across the corporate finance empirical research papers in this notebook, "
-    "synthesize a thorough, decisive description of how the ABSTRACT is "
-    "written, so I can follow it as a convention. Report: "
-    "(a) the ordered CONTENT the abstract must contain (for example: the "
-    "motivation or question, the data and sample, the method or measure, the "
-    "main findings, and the contribution or implication) and the order these "
-    "elements appear in; "
-    "(b) its typical LENGTH in words and in sentences, and whether it is a "
-    "single paragraph or more; "
-    "(c) style conventions: verb tense, first-person 'we' versus impersonal "
-    "voice, whether it states SPECIFIC numerical results or coefficients or "
-    "only qualitative/directional findings, and how compressed the language "
-    "is; "
-    "(d) what an abstract MUST NOT do. "
-    "Base every figure on the actual papers in this notebook; where papers "
-    "vary, give the common range, and note where the convention is "
-    "near-universal versus where it varies. Do not invent a template; report "
-    "what these papers actually do."
+    "I want the VERBOSE, fully-developed version of the Introduction and the "
+    "Conclusion: how the LONGER, well-developed ones expand beyond a minimal "
+    "skeleton. For EACH of the two sections, report: "
+    "(a) the FULL set of components a well-developed version contains, "
+    "including the expansion components that lengthen it. For the CONCLUSION, "
+    "cover discussion of IMPLICATIONS (and explicitly FOR WHOM: investors, "
+    "managers, regulators, and the academic literature), LIMITATIONS (data, "
+    "measurement, identification/causality, external validity/generalizability), "
+    "and DIRECTIONS FOR FUTURE RESEARCH. For the INTRODUCTION, cover expansion "
+    "components such as institutional or background context, a fuller "
+    "literature-positioning, an enumerated contribution paragraph, and a 'why "
+    "it matters' significance paragraph; "
+    "(b) for EACH component, what it typically CONTAINS and roughly how many "
+    "sentences or paragraphs it occupies; "
+    "(c) the ORDER these components usually appear in; "
+    "(d) for the CONCLUSION specifically, how authors keep the "
+    "implications/limitations/future-work paragraphs SUBSTANTIVE and accurate "
+    "rather than padding: what makes a limitation paragraph credible, and what "
+    "a good future-research direction looks like; "
+    "(e) how many PARAGRAPHS a fully-developed introduction and a "
+    "fully-developed conclusion typically run to. "
+    "Base everything on the actual papers in this notebook; give the common "
+    "range; report what they actually do, not an invented template."
 )
 
 
