@@ -33,6 +33,36 @@
 
 [Insert introduction]
 
+<!-- ==========================================================================
+SECTION-WRITING CONVENTION — INTRODUCTION  (agents drafting the Intro FOLLOW this)
+Source: unscoped NotebookLM synthesis across the corporate-finance papers in the
+project notebook -> tmp/nlm_intro_conclusion_structure_detailed.json (2026-06-14).
+NLM caveat: the corpus is fragmented extracts, so lengths are conventions/estimates,
+not exact counts.
+
+OVERALL: substantial, multi-page. Four moves, in order:
+  Move 1 -- Context + Literature Gap        | 1-2 paragraphs | HIGH citation density
+            (cluster prior studies); establish the phenomenon, expose the gap.
+  Move 2 -- Objective + Method/Sample       | 1-2 paragraphs | pivot to THIS study
+            ("The purpose of this study is to..."); name the sample + approach.
+  Move 3 -- Preview of Main Findings        | longest part   | enumerate the findings
+            ("First... Second... Finally...").
+  Move 4 -- Structural Roadmap              | ~1 paragraph, 4-6 sentences, 50-80 words
+            "The remainder of the paper proceeds as follows. Section 2... Section N
+            concludes." NEAR-UNIVERSAL: the single most consistent move in the corpus.
+
+STYLE:
+  - First-person "we" for our own actions/findings; impersonal voice for the paper
+    itself ("The rest of the paper is organized as follows") and for prior literature.
+  - Present tense for findings + structure; past tense for sample/data construction.
+  - Citation density: HIGH, especially in Move 1.
+  - RESULTS PREVIEW -- DECISION REQUIRED (do NOT auto-resolve): the corp-fin
+    convention previews results QUALITATIVELY / directionally; specific coefficients
+    are saved for the tables. Our prior intro draft quoted exact numbers (0.0461***,
+    0.0983**). Pick ONE before drafting: (i) follow convention -> qualitative only;
+    or (ii) keep specific numbers -> each must match the final Section 3/4 value.
+========================================================================== -->
+
 ---
 
 # II. CONCEPTUAL FRAMEWORK AND EMPIRICAL STRATEGY
@@ -94,6 +124,30 @@
 # V. CONCLUSION
 
 [Insert conclusion]
+
+<!-- ==========================================================================
+SECTION-WRITING CONVENTION — CONCLUSION  (agents drafting the Conclusion FOLLOW this)
+Source: same NLM synthesis -> tmp/nlm_intro_conclusion_structure_detailed.json.
+
+OVERALL: DRASTICALLY shorter than the Introduction -- a few paragraphs, often under
+500 words. Three moves, in order:
+  Move 1 -- Restate Objective + Scope   | 1-2 sentences | mirror the intro's objective
+            ("In this study, we examine...").
+  Move 2 -- Summary of Key Findings     | 1 paragraph   | synthesize the results
+            qualitatively, no methodological heavy lifting.
+  Move 3 -- Implications + Limitations + Future Research | 1-2 paragraphs | broader
+            economic takeaway; explicitly voice the boundaries + next steps.
+
+STYLE:
+  - Same "we" + tense conventions as the intro.
+  - Citation density: ~ZERO (focus solely on our own completed work).
+  - Results stay QUALITATIVE (the intro's RESULTS-PREVIEW decision applies here too).
+
+DIFFERS FROM THE INTRODUCTION:
+  - ADDS the meaning of the findings (implications) + limitations + future research.
+  - MUST NOT re-do the literature review or the opening context.
+  - DROPS the structural roadmap entirely (the paper is already complete).
+========================================================================== -->
 
 ---
 

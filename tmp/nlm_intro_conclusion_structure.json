@@ -1,0 +1,151 @@
+{
+  "query": "Across the corporate finance empirical research papers in this notebook, what is the conventional structure of (1) the Introduction section and (2) the Conclusion section? For each of the two sections, describe the typical sequence of components or rhetorical 'moves' in the order they usually appear, and note which components appear most consistently across the papers. Base the description on the actual papers in this notebook. Do not invent a template; report what these papers actually do.",
+  "answer": "Based on the empirical corporate finance research papers in the provided notebook, the Introduction and Conclusion sections follow a highly conventional and structured sequence of rhetorical moves. \n\nHere is the typical structure and sequence of components for each section, as demonstrated by the authors:\n\n### 1. The Introduction Section\nThe Introduction sections across these papers reliably transition from establishing the broad context to explicitly defining the paper's value, before ending with a highly formalized structural roadmap. The typical sequence is:\n\n*   **Move 1: Contextualizing the Phenomenon and Literature Gap.** Papers generally begin by establishing the real-world phenomenon under investigation and reviewing the \"extant literature\" to identify a gap or tension. For example, authors will discuss what prior literature focuses on, and then explicitly state their aim to link or extend different types of literature to address an unanswered question [1, 2].\n*   **Move 2: Stating the Research Questions and Methodology.** The authors then pivot to their specific study, stating their research questions and introducing the unique data, text-based analytics, or empirical framework they use to answer them [2]. \n*   **Move 3: Enumerating the Contributions.** Next, authors explicitly list how their paper advances the field. This is routinely structured using sequential transition words, outlining the paper's value piece-by-piece (e.g., *\"First, we contribute to... Second, we contribute to... Furthermore, we use... Finally, our study contributes to...\"*) [1, 3, 4]. \n*   **Move 4: The Structural Roadmap.** \n    **Most Consistent Component:** The single most consistent rhetorical move across almost every paper in the notebook is the **final paragraph of the Introduction, which provides a sequential, section-by-section outline of the remainder of the paper.** This move is virtually identical across the sample, typically opening with *\"The remainder of the paper proceeds as follows\"* or *\"The rest of the paper is organized as follows,\"* followed by a list of what each subsequent section does (e.g., *\"Section 2 reviews the relevant prior literature... Section 3 describes our research design... Section 4 presents the main results... Section 5 concludes\"*) [5-25]. \n\n### 2. The Conclusion Section\nThe Conclusion section (often titled \"Conclusion\" or \"Concluding Remarks\") serves to synthesize the paper's purpose and findings, reflecting back on the issues raised in the Introduction. Its sequence is typically:\n\n*   **Move 1: Restatement of the Research Problem and Objective.** Conclusions routinely begin by reminding the reader of the core problem or gap in the literature, followed immediately by a summary statement of what the paper set out to do. For example, authors will state, *\"Considerable accounting and finance research has attempted to identify whether [X]... In this paper, we take a different approach...\"* [26] or simply, *\"In this article, we examine how firms choose...\"* [27].\n*   **Move 2: Summary of the Empirical Approach.** Authors briefly recap the specific methodology, novel metrics, or data they used to tackle the problem (e.g., reminding the reader that they used linguistic features to develop classification models, or constructed an index from 10-K disclosures) [26, 28].\n*   **Move 3: Synthesis of Main Findings and Robustness.** The authors then restate their primary empirical results and highlight the advantages of their approach. They also frequently use the conclusion to reassure the reader of the validity of their findings by explicitly noting that their results survive various placebo tests, alternative specifications, and robustness checks [27-29]. \n*   **Move 4: Limitations and Future Research.** Finally, the conclusion often closes by acknowledging the boundaries of the current study and explicitly offering suggestions or identifying avenues for future research [14]. \n\n**Most Consistent Component:** In the Conclusion, the most consistent feature is the **opening restatement of the paper's primary objective and methodology** combined with a summary of the main results [26-28]. Unlike the Introduction, the Conclusion does not rely on a rigid boilerplate paragraph (like the roadmap), but instead strictly mirrors the introduction's initial setup to provide closure on the research question.",
+  "references": [
+    {
+      "n": 1,
+      "source_id": "4f8af3c9-c711-4bac-8b1a-4f518de3fb24",
+      "cited_text": "adaptations aremade."
+    },
+    {
+      "n": 2,
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "cited_text": "2.3. Research Questions The conference call literature focuses on how the calls affect investors and analysts but places less emphasis"
+    },
+    {
+      "n": 3,
+      "source_id": "4f8af3c9-c711-4bac-8b1a-4f518de3fb24",
+      "cited_text": "increasingly saturated and complex, we demonstrate how managers have even more tools to influence the market."
+    },
+    {
+      "n": 4,
+      "source_id": "4f8af3c9-c711-4bac-8b1a-4f518de3fb24",
+      "cited_text": "disclosure without saying a word themselves. Our study demonstrates the potential of textual analyses to investi-"
+    },
+    {
+      "n": 5,
+      "source_id": "10779842-a40b-4692-af75-460cda437f1b",
+      "cited_text": "The remainder of the paper proceeds as follows. Section 2 develops the testable hypotheses. Section 3 describes the research design. Section 4 presents the main results. Section 5 presents some sensitivity analyses. Section 6 concludes."
+    },
+    {
+      "n": 6,
+      "source_id": "4eef3c88-1dbb-41f1-a9a6-57493c557064",
+      "cited_text": "The organization of this paper is as follows. The next section presents hypotheses and proxy variables. Section 3 describes the data. Section 4 conducts an empirical analysis and presents the results. Section 5 concludes the paper."
+    },
+    {
+      "n": 7,
+      "source_id": "d9a83421-22f8-41b1-a35f-6a38a972621f",
+      "cited_text": "The remainder of the paper proceeds as follows. Section 2 reviews the pecking order hypothesis, and constructs our empirical model and testing strategy. Section 3 describes the simulation experiment and presents the results of a power study comparing our testing strategy with those of previous studies. Section 4 discusses the data and sample selection. Section 5 presents and discusses the primary results. Section 6 concludes."
+    },
+    {
+      "n": 8,
+      "source_id": "dc4cd3f0-2042-4871-ade6-f59a709ac1f9",
+      "cited_text": "ysis to address economic and financial theories, product markets, and mergers and acquisitions. Hoberg and Phillips (2010) show that merging firms with more similar product descriptions in their 10-Ks experience more successful outcomes. Hanley andHoberg (2010) use document sim-ilarity measures to examine prospectus disclosures from the SEC Edgar website to address theories of initial public offering pricing. In other con-texts, Gentzkow and Shapiro (2010) measure the Republican versus Dem-ocratic slant of US daily newspapers and document a preference among readers for like-minded news. Papers such as Antweiler and Frank (2004), Tetlock(2007),Tetlock,Saar-Tsechanksy, andMacskassy(2008),andLough-ran and McDonald (2011) examine the tone of various documents and link them, for example, to stock price movements. The remainder of the paper is organized as follows. We describe the"
+    },
+    {
+      "n": 9,
+      "source_id": "4f8af3c9-c711-4bac-8b1a-4f518de3fb24",
+      "cited_text": "around share repurchases would find the results from our study useful."
+    },
+    {
+      "n": 10,
+      "source_id": "c7073378-855d-4a1a-bccd-c63ba2bd5445",
+      "cited_text": "In Section 4, we conduct a number of additional tests designed to check the robustness of our results."
+    },
+    {
+      "n": 11,
+      "source_id": "5f348ced-c548-45f5-b61a-817163bb49eb",
+      "cited_text": "hypotheses. Section 3 discusses the conference call data. Section 4 shows how to parse the"
+    },
+    {
+      "n": 12,
+      "source_id": "91d762ae-edc3-4829-99a4-de5b98ef2bc1",
+      "cited_text": "review process."
+    },
+    {
+      "n": 13,
+      "source_id": "62b15593-80b6-4fbe-a304-c74553ded616",
+      "cited_text": "1475679x, 2010, 3, D ow"
+    },
+    {
+      "n": 14,
+      "source_id": "e184e45b-97dc-47b6-b10b-e2f42f86a9da",
+      "cited_text": "The remainder of the paper consists of six sections. Section 2 provides a review of prior accounting and finance work analyzing the linguistic fea-tures of press releases, formal Securities and Exchange Commission (SEC) filings, and other similar text documents. Section 3 discusses the theoreti-cal background used to justify our choice of word categories. The sample construction is discussed in section 4, and measurement and econometric choices are developed in sections 4 and 5. Our primary results for the lin-guistic prediction models are presented in section 6. Concluding remarks, limitations, and suggestions for future research are provided in section 7."
+    },
+    {
+      "n": 15,
+      "source_id": "e8dfb696-ed47-465f-bbb6-a3e253626a20",
+      "cited_text": "The remainder of the paper proceeds as follows. Section 2 reviews the relevant prior literature. Section 3 describes our research design. Section 4 presents the sample and descriptive statistics. Section 5 presents our find-ings, and section 6 concludes."
+    },
+    {
+      "n": 16,
+      "source_id": "0ea6901c-4ce4-4962-88c6-99d074f4e043",
+      "cited_text": "/term s-and-conditions) on W"
+    },
+    {
+      "n": 17,
+      "source_id": "105d4cef-bf78-45d2-b88f-5cc395b81298",
+      "cited_text": "The nature of word usage in firm-related news is not identical across me-dia. Whether our results hold for samples beyond 10-Ks is an important question. We provide preliminary evidence in alternative contexts showing that in comparison with the Harvard list, the Fin-Neg list has larger cor-relations with returns in samples of seasoned equity offerings and news articles."
+    },
+    {
+      "n": 18,
+      "source_id": "ab7904c6-87ff-47eb-b96d-7d52d23b4e73",
+      "cited_text": "The rest of the paper proceeds as follows. Section I describes the data. Section II computes leverage in each country after implementing the necessary accounting adjustments. Section III overviews the major institutional differ- ences across the G-7 countries and examines how these relate to differences in leverage. In Section IV, we undertake a comparative study of the cross- sectional determinants of capital structure choices and attempt to rationalize the observed regularities. Section V concludes."
+    },
+    {
+      "n": 19,
+      "source_id": "6dc00775-74d4-43e7-8af8-60376e877533",
+      "cited_text": "The- remainder of the paper is organized as follows. Section I reviews the existing work pertaining to trading on inside information in general, and pre-"
+    },
+    {
+      "n": 20,
+      "source_id": "d55d5f4d-ab5a-4726-8071-56ed23f49fb2",
+      "cited_text": "The remainder of this article is organized as follows: The next section develops our"
+    },
+    {
+      "n": 21,
+      "source_id": "d7f80601-6a84-4a21-8d12-4fba3298f077",
+      "cited_text": "The rest of the paper is organized as follows: Section 2 provides the related literature. Section 3 presents the hypothesis development and research design. Section 4 contains descriptive statistics of the sample and the statistical properties of market uncertainty derived from implied volatility. Section 5 presents the main test results for the hypotheses proposed earlier and Section 6 provides additional robustness test results. Section 7 concludes the paper."
+    },
+    {
+      "n": 22,
+      "source_id": "ed9bffb7-a8a4-4c8d-acfd-155593b4492d",
+      "cited_text": "The rest of the paper is organized as follow. Section 2 discusses the background. Sec-tion 3 describe the sample of data, variables, and summary statistics. Empirical results are"
+    },
+    {
+      "n": 23,
+      "source_id": "d64c95f5-ec5a-4f03-83a5-2c8294239b50",
+      "cited_text": "The rest of the paper is structured as follows: Sect. 2 reviews the literature and devel-ops the hypothesis. Section  3 discusses the data and sample statistics. Section  4 reports the baseline empirical findings. Section 5 addresses the endogeneity concerns, and Sect. 6 highlights the robustness tests. Finally, Sect. 7 concludes the paper."
+    },
+    {
+      "n": 24,
+      "source_id": "57227a1c-43b2-41e5-a21b-afdcff8ade1a",
+      "cited_text": null
+    },
+    {
+      "n": 25,
+      "source_id": "0c5c8280-dc0c-42d9-b9da-cc19cb1a0125",
+      "cited_text": "The paper is organized as follows. In the next section we present a numerical example to ex-plain the basic intuition for why cash and negative debt are not perfect substitutes for financially constrained firms. This example makes several simplifying assumptions so as to make the analy-sis as transparent as possible. These assumptions are relaxed in the general model of Section 3, where we also explicitly derive and discuss our empirical predictions. Section 4 describes our empirical methods and presents our main findings. Section 5 concludes the paper. Appendix A collects all the proofs."
+    },
+    {
+      "n": 26,
+      "source_id": "e184e45b-97dc-47b6-b10b-e2f42f86a9da",
+      "cited_text": "8. Concluding Remarks"
+    },
+    {
+      "n": 27,
+      "source_id": "e56185f7-7a40-44a5-9215-01a6812c4420",
+      "cited_text": "4. Conclusion"
+    },
+    {
+      "n": 28,
+      "source_id": "57227a1c-43b2-41e5-a21b-afdcff8ade1a",
+      "cited_text": "closures regarding firm liquidity in 10-K statements. We focus on discussions in"
+    },
+    {
+      "n": 29,
+      "source_id": "e8dfb696-ed47-465f-bbb6-a3e253626a20",
+      "cited_text": "iley O nline L"
+    }
+  ]
+}
