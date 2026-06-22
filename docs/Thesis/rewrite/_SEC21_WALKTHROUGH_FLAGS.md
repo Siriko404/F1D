@@ -26,7 +26,7 @@ Nothing here is edited yet; these are parked for a later decision pass.
 - NEXT (user instruction): RESTART §2.1 from the very beginning, sentence by sentence, verbatim.
 - Format that works for him: short, one idea, a small visual; stop-and-check each sentence.
 
-## RESOLVED understanding from this session (do NOT re-litigate)
+## Agent analysis from this session (NOT ratified -- Sina still working through it)
 - Where cash enters: ¶1-¶4 build Dimension 1 (timing) with NO cash. Cash is a SEPARATE second
   dimension introduced fresh at ¶5, justified ONLY as a design contrast (stock = same disclosure
   bind, minus cash). Ledger P1 boundary literally says "No cash yet (P5)."
@@ -38,11 +38,14 @@ Nothing here is edited yet; these are parked for a later decision pass.
   run-up) that the stock placebo can refute. The "reason to suspect" = the single asymmetry in ¶5
   S2 (a cash bid draws on an accumulated cash position; a stock exchange need not). That motivates
   the guess; it does not prove a cause.
-- The cash-hoarding worry, resolved against the findings: cash IS elevated one quarter before the
-  deal (CashRatio PRE1 = 0.0061**, sec34 §3.3) -- but "elevated" != "hoarded for THIS deal". The
-  cause-leg test (is the cash build-up itself cash-specific?) is NOT significant: cash-minus-stock
-  difference in the cash ratio = 0.0064 n.s. (matched), 0.0092 p<.10 (full panel), §3.4. The prose
-  states it: "the war-chest mechanism that might explain it is therefore not established, and the
-  mechanism is left open." So ¶5 S4's fence ("not that firms stockpile to fund planned acquisitions")
-  is CONFIRMED by our own data. EFFECT (uncertainty) is cash-specific (diff 0.0983, p=.039); CAUSE
-  (cash build-up) is not.
+- The cash-hoarding worry, examined against the findings: cash IS elevated one quarter before the
+  deal (CashRatio PRE1 = 0.0061**, sec34 §3.3) -- which is WEAKLY CONSISTENT with some pre-positioning,
+  so Sina's instinct is PARTLY RIGHT, not wrong. What we CANNOT show is that the build-up is
+  cash-SPECIFIC: the cause-leg test (cash-minus-stock difference in the cash ratio) is NOT significant
+  = 0.0064 n.s. (matched), 0.0092 p<.10 (full panel), §3.4. CAREFUL: a null FAILS TO ESTABLISH
+  cash-specificity; it does NOT confirm the build-up is non-deal-specific (absence of evidence, not
+  evidence of absence -- the same discipline §4.1 uses for scrutiny). So ¶5 S4's fence ("not that firms
+  stockpile to fund planned acquisitions") is CONSERVATIVE CAUTION, not a finding our data confirms;
+  the thesis correctly stays "mechanism left open." Bottom line, matching the prose: EFFECT
+  (uncertainty) is cash-specific (diff 0.0983, p=.039); CAUSE (cash build-up) is NOT established and is
+  LEFT OPEN.
