@@ -40,6 +40,13 @@ Total = 157 style findings. Each = aspect + ≥2 exemplar quotes (≥2 papers) +
 - Resolved: synced the 3 summary plans (added props `abstract-P1-i`, `1-P6-c`, `1-P7-b`, `5-P3-b`, `5-P3-c`; abstract guardrail #7 amended). METADATA ONLY — no thesis prose touched. JSON-validated. User-authorized KEEP for both bid-ask + robustness.
 - Lesson locked: the style harness `guardrail_collision` flag is ADVISORY, never the gate; Phase-2 gates on `number_audit` + guardrail-string survival (number-in-prose ⊆ number_audit) across 100% of edits.
 
+### Phase 2 (REWRITE) — DESIGN LOCKED 2026-06-24 → see `_PHASE2_PLAN.md`
+- **Inline rewrite (NOT a multi-agent harness)** — Sina's call; harness meaning-safety relied on an LLM-verifier that failed 3× this session.
+- **NO microreview** — Sina reviews ONCE at the very end over the full diff.
+- Constrained edit (remove named anti-pattern; keep proposition + protected strings; splits ok, no reorder/merge). Deterministic gate (numbers + protected phrases survive verbatim).
+- Pilot drafted on the abstract → `_PHASE2_PILOT_abstract.md`.
+- Compaction-safe state + progress table live in `_PHASE2_PLAN.md`.
+
 ### Phase-2 prerequisites (carry forward — NOT started)
 - **Number-survival gate (load-bearing):** results has 14/32 findings touching real numbers; 6 have guardrail_flag=FALSE → the collision flag MISSES numbers. Phase-2 rewrite must mechanically verify every `number_audit` value + guardrail string survives, scanning ALL findings not just flagged ones.
 - **Guardrail-completeness pass** (human-ratified) before guardrails can auto-gate — current guardrails are concept-notes, not exact protected strings.
