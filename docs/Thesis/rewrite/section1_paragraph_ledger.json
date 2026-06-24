@@ -469,7 +469,7 @@
       "para_id": "1-P6",
       "order": 6,
       "intent": {
-        "statement": "Deliver the second half of the Move 3 findings preview: Finally the C6 formal pooled cash-specificity test, the run-up concentrating in cash rather than stock, read as concentration not strict specificity with the cash-accumulation mechanism left open (IN.11); and the C4 'we also rule out' closer, the run-up not accounted for by analysts devoting more of the call to cash questions (IN.12). Qualitative; body order C6 -> C4.",
+        "statement": "Deliver the second half of the Move 3 findings preview: Finally the C6 formal pooled cash-specificity test, the run-up concentrating in cash rather than stock, read as concentration not strict specificity with the cash-accumulation mechanism left open (IN.11); and the C4 'we also rule out' closer, the run-up not accounted for by analysts devoting more of the call to cash questions (IN.12). Qualitative; body order C6 -> C4. [RECONCILED 2026-06-24: final_prose also appends the Section 4.2 bid-ask channel sentence (prop 1-P6-c).]",
         "reason": "Continues the split findings preview: the formal pooled test upgrades the descriptive cash-vs-stock contrast, and the scrutiny rule-out closes the enumeration, keeping body order C2->C1->C6->C4 across 1-P5 and 1-P6.",
         "evidence": [
           "DraftTemplate.txt L78-79+L89-92",
@@ -480,8 +480,8 @@
       "serves": [
         "Move 3 findings (2 of 2): C6 formal cash-concentration (3.4) and the C4 scrutiny rule-out (4.1); closes the findings, hands to contributions (1-P7)"
       ],
-      "boundary": "Qualitative preview only; NO coefficients/SEs/p-values. Holds C6 and C4 only. C6 is the FORMAL pooled (Wald) difference, never a side-by-side; C4 hedged to this run-up.",
-      "thin_claim": "The formal pooled cash-concentration (concentration not strict specificity, cause open) and the scrutiny rule-out (does not account for THIS run-up).",
+      "boundary": "Qualitative preview only; NO coefficients/SEs/p-values. Holds C6 and C4 only. C6 is the FORMAL pooled (Wald) difference, never a side-by-side; C4 hedged to this run-up. [RECONCILED 2026-06-24: final_prose ALSO appends the Section 4.2 bid-ask channel sentence (prop 1-P6-c); see _DRIFT_AUDIT_2026-06-24.md.]",
+      "thin_claim": "The formal pooled cash-concentration (concentration not strict specificity, cause open) and the scrutiny rule-out (does not account for THIS run-up). [RECONCILED 2026-06-24: plus the Section 4.2 bid-ask channel finding (prop 1-P6-c).]",
       "guardrails": [
         "C6 (IN.11): the FORMAL pooled (Wald) difference; NEVER Gelman-Stern side-by-side; concentration-not-strict-specificity; supportive-not-definitive; EFFECT separated from the open CAUSE (cause leg n.s.).",
         "C4 (IN.12): survives scrutiny + interaction; 'does not account for THIS run-up', NEVER 'scrutiny never matters'; underpowered null not upgraded.",
@@ -544,6 +544,28 @@
           "depends_on": [
             "1-P6-a"
           ]
+        },
+        {
+          "prop_id": "1-P6-c",
+          "from_phaseA_prop": "ADDED 2026-06-24 (drift reconciliation; NOT an original IN prop -- Phase-C synthesis appended this Section 4.2 bid-ask sentence to 1-P6 final_prose and never homed it; user confirmed KEEP 2026-06-24)",
+          "statement": "A further analysis turns to the firm's post-call information environment, measured by the bid-ask spread: the residual is unrelated to it, while the scripted presentation is positively associated with it, a pattern consistent with the scripted and unscripted segments reaching the outside environment in different ways.",
+          "role_in_paragraph": "result -- M3 preview (added): the Section 4.2 outsider-reaction channel split, appended after the C4 scrutiny rule-out.",
+          "type": "result-number",
+          "reason": "Phase-1 drift audit (2026-06-24) found this sentence in final_prose with no backing proposition; it realizes the Section 4.2 result (residual null on the post-call spread; scripted presentation positive). Homed here to sync spine to prose. KEEP authorized by user 2026-06-24.",
+          "evidence": [
+            "section4.2_paragraph_ledger.json (Outsider Reactions: the Bid-Ask Spread; residual null all 12 specs; presentation positive 4/6 contemporaneous)",
+            "claim_findings_ledger.json C5_convergent_validity / C7 presentation",
+            "tab:h14c_ceo2_decomp (12 cols; FE grid; lagged DV)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "no-identification",
+            "channel-difference-NOT-tested-directly (two per-component facts, never a tested between-component difference -- Section 4.2 register_global)"
+          ],
+          "depends_on": [
+            "1-P6-b"
+          ]
         }
       ],
       "final_prose": "Finally, the run-up concentrates in cash acquisitions rather than stock acquisitions, a difference that survives a formal pooled test of cash-specificity, though we read it as concentration rather than strict specificity, and the cash-accumulation mechanism behind it is left open. We also rule out the most immediate alternative. The run-up is not accounted for by analysts devoting more of the call to cash questions: with a direct measure of analyst cash scrutiny and its interaction entered alongside the pre-announcement indicator, the elevation survives and scrutiny does not amplify it. This means that scrutiny does not account for this particular run-up, not that scrutiny never matters. A further analysis turns to the firm's post-call information environment, measured by the bid-ask spread: the residual is unrelated to it, while the scripted presentation is positively associated with it, a pattern consistent with the scripted and unscripted segments reaching the outside environment in different ways.",
@@ -574,6 +596,11 @@
             "claim": "the run-up is not accounted for by analysts devoting more of the call to cash questions (scrutiny direct effect)",
             "table_cell": "tab:cash_scrutiny_channel Panel A CashScrutiny on UncResCEO",
             "sign": "~0, n.s. (-0.0000)"
+          },
+          {
+            "claim": "the residual is unrelated to the firm's post-call bid-ask spread, while the scripted presentation is positively associated with it (1-P6-c, added 2026-06-24)",
+            "table_cell": "tab:h14c_ceo2_decomp (Section 4.2): residual UncResCEO on the 25-day post-call spread n.s. all 12 specs (baseline -0.0594, SE 0.1068); scripted presentation UncPreCEO positive (one-tailed; 4/6 contemporaneous; all 3 firm-FE)",
+            "sign": "residual: null (n.s.); presentation: positive (one-tailed). Two per-component facts, NOT a tested between-component difference."
           }
         ],
         "number_audit": [],
@@ -585,7 +612,7 @@
       "para_id": "1-P7",
       "order": 7,
       "intent": {
-        "statement": "Deliver the Move 3 enumerated contributions in one paragraph, in the correlational register: First, reading the residual uncertainty measure in the anticipatory pre-announcement window where prior work read tone/vocabulary/prices; Second, documenting the cash-vs-stock concentration that survives a formal pooled test; Third, reading the unscripted Q&A as tracking a deal's passage from private to public and connecting the withholding and transaction-anticipation literatures, while claiming no causal channel (IN.C1).",
+        "statement": "Deliver the Move 3 enumerated contributions in one paragraph, in the correlational register: First, reading the residual uncertainty measure in the anticipatory pre-announcement window where prior work read tone/vocabulary/prices; Second, documenting the cash-vs-stock concentration that survives a formal pooled test; Third, reading the unscripted Q&A as tracking a deal's passage from private to public and connecting the withholding and transaction-anticipation literatures, while claiming no causal channel (IN.C1). [RECONCILED 2026-06-24: a FOURTH contribution -- the Section 4.2 bid-ask channel finding, prop 1-P7-b -- is also delivered in final_prose; the enumeration here is pre-reconciliation.]",
         "reason": "The verbose intro convention adds an enumerated-contributions paragraph; placed after the findings and before the caveat, it states the value-add. CEILING-BREACH PIECE: drafted maximally hedged to avoid novelty/causality overclaim the Phase C red-team is not tuned to catch.",
         "evidence": [
           "DraftTemplate.txt (verbose INTRO enumerated contributions)",
@@ -593,10 +620,10 @@
         ]
       },
       "serves": [
-        "Move 3 enumerated contributions: extends the residual reading to the anticipatory window; documents cash-concentration; bridges two literatures; all descriptive"
+        "Move 3 enumerated contributions: extends the residual reading to the anticipatory window; documents cash-concentration; bridges two literatures; all descriptive; and (added 2026-06-24) the Section 4.2 bid-ask channel finding (prop 1-P7-b)"
       ],
-      "boundary": "Contributions only; stated as 'reads / documents / reads', NOT 'first to'; 'while claiming no causal channel'. No new finding, no coefficient. Sits within the no-identification ceiling; the explicit caveat follows in 1-P8.",
-      "thin_claim": "Three descriptive contributions, each within the correlational ceiling, mirroring the 'to our knowledge' register of the gap; no causal channel claimed.",
+      "boundary": "Contributions only; stated as 'reads / documents / reads', NOT 'first to'; 'while claiming no causal channel'. No new finding, no coefficient. Sits within the no-identification ceiling; the explicit caveat follows in 1-P8. [RECONCILED 2026-06-24: a FOURTH 'documents' contribution (Section 4.2 bid-ask, prop 1-P7-b) was added in final_prose; 'no new finding' = no new empirical result beyond Sections 3-4, which the bid-ask sentence restates qualitatively, no coefficient.]",
+      "thin_claim": "Four descriptive contributions [RECONCILED 2026-06-24: was 'three'; the fourth is the Section 4.2 bid-ask channel finding, prop 1-P7-b], each within the correlational ceiling, mirroring the 'to our knowledge' register of the gap; no causal channel claimed.",
       "guardrails": [
         "NOVELTY HEDGE: 'reads/documents/reads', 'each descriptive'; do NOT write 'first to show' or assert the gap as established fact (the everhart/gokkaya scar).",
         "CAUSALITY HEDGE: 'while claiming no causal channel'; correlational + no-identification + mechanism-open.",
@@ -636,6 +663,28 @@
           "prop_id": "1-P7-a",
           "depends_on": [
             "1-P6-b"
+          ]
+        },
+        {
+          "prop_id": "1-P7-b",
+          "from_phaseA_prop": "ADDED 2026-06-24 (drift reconciliation; 1-P7-a + this paragraph's intent/thin_claim still read 'three contributions' -- Phase-C synthesis added a FOURTH (bid-ask) contribution to final_prose; the count is reconciled to FOUR here; user confirmed KEEP 2026-06-24)",
+          "statement": "Fourth, it documents that this residual uncertainty is unrelated to the firm's post-call bid-ask spread while the scripted presentation is positively associated with it, consistent with a difference between the scripted and unscripted segments in how they relate to the outside information environment.",
+          "role_in_paragraph": "framing -- M3 enumerated contributions (added 4th): the Section 4.2 channel finding as a descriptive contribution, after the third.",
+          "type": "framing",
+          "reason": "Phase-1 drift audit (2026-06-24) found final_prose enumerates FOUR contributions while 1-P7-a carries only three; the fourth realizes the Section 4.2 bid-ask channel result. Homed here to sync spine to prose. KEEP authorized by user 2026-06-24.",
+          "evidence": [
+            "section4.2_paragraph_ledger.json (Outsider Reactions: the Bid-Ask Spread)",
+            "claim_findings_ledger.json C5_convergent_validity / C7 presentation",
+            "tab:h14c_ceo2_decomp (12 cols; FE grid; lagged DV)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "no-identification",
+            "channel-difference-NOT-tested-directly (two per-component facts, never a tested between-component difference -- Section 4.2 register_global)"
+          ],
+          "depends_on": [
+            "1-P7-a"
           ]
         }
       ],
@@ -778,7 +827,7 @@
     }
   ],
   "allocation_coverage": {
-    "all_phaseA_props_homed": "All original Phase-A props homed exactly once; new additive props (significance/contributions/implications/measurement-limitations/future) carry from_phaseA_prop='new-*'.",
+    "all_phaseA_props_homed": "All original Phase-A props homed exactly once; new additive props (significance/contributions/implications/measurement-limitations/future) carry from_phaseA_prop='new-*'. [RECONCILED 2026-06-24: two further additive props were homed, 1-P6-c (bid-ask) and 1-P7-b (4th contribution), with from_phaseA_prop='ADDED 2026-06-24'; see _DRIFT_AUDIT_2026-06-24.md.]",
     "prop_to_paragraph": [
       {
         "phaseA_prop": "IN.1",

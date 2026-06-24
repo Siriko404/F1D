@@ -35,6 +35,11 @@ Total = 157 style findings. Each = aspect + ≥2 exemplar quotes (≥2 papers) +
 
 > ✅ **SCHEMA UNIFIED (2026-06-24):** all 8 profiles are describe-only + carry `guardrail_collision` — verified `grep`: 0 with `aim`, 0 missing the flag. lit_review was re-run under the locked master (`wf_57e48372-712`, 18 findings) to replace the stale original-pilot profile; the old pre-patch version is kept as `_lit_review_profile_OLDSCHEMA.json` for reference.
 
+### Spine↔prose drift audit — ✅ DONE 2026-06-24 (see `_DRIFT_AUDIT_2026-06-24.md`)
+- Found: abstract + intro + conclusion prose carried real findings (§4.2 bid-ask; §4.3/4.4 robustness) that their frozen plans never logged. 11 body subsections clean.
+- Resolved: synced the 3 summary plans (added props `abstract-P1-i`, `1-P6-c`, `1-P7-b`, `5-P3-b`, `5-P3-c`; abstract guardrail #7 amended). METADATA ONLY — no thesis prose touched. JSON-validated. User-authorized KEEP for both bid-ask + robustness.
+- Lesson locked: the style harness `guardrail_collision` flag is ADVISORY, never the gate; Phase-2 gates on `number_audit` + guardrail-string survival (number-in-prose ⊆ number_audit) across 100% of edits.
+
 ### Phase-2 prerequisites (carry forward — NOT started)
 - **Number-survival gate (load-bearing):** results has 14/32 findings touching real numbers; 6 have guardrail_flag=FALSE → the collision flag MISSES numbers. Phase-2 rewrite must mechanically verify every `number_audit` value + guardrail string survives, scanning ALL findings not just flagged ones.
 - **Guardrail-completeness pass** (human-ratified) before guardrails can auto-gate — current guardrails are concept-notes, not exact protected strings.

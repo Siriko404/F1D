@@ -157,7 +157,7 @@
       "para_id": "5-P3",
       "order": 3,
       "intent": {
-        "statement": "Deliver the analyst-scrutiny rule-out as its own paragraph: the pre-announcement elevation is not accounted for by analysts devoting more of the call to cash questions, surviving a direct scrutiny measure and its interaction, hedged to this run-up (CO.3).",
+        "statement": "Deliver the analyst-scrutiny rule-out as its own paragraph: the pre-announcement elevation is not accounted for by analysts devoting more of the call to cash questions, surviving a direct scrutiny measure and its interaction, hedged to this run-up (CO.3). [RECONCILED 2026-06-24: this paragraph's final_prose also carries the Section 4.2 bid-ask channel sentence (prop 5-P3-b) and the Section 4.3/4.4 robustness sentence (prop 5-P3-c).]",
         "reason": "The verbose conclusion gives the rule-out its own paragraph after the findings summary; it is a distinct move (an additional analysis result), kept hedged per the C4 trap.",
         "evidence": [
           "DraftTemplate.txt L165-166",
@@ -166,10 +166,10 @@
         ]
       },
       "serves": [
-        "Move 2 (cont.): the C4 scrutiny rule-out (CO.3); sets up the implications in 5-P4"
+        "Move 2 (cont.): the C4 scrutiny rule-out (CO.3); sets up the implications in 5-P4; ALSO (added 2026-06-24) the Section 4.2 bid-ask channel finding (5-P3-b) and the Section 4.3/4.4 robustness check (5-P3-c)"
       ],
-      "boundary": "The C4 rule-out only; 'not accounted for by analysts devoting more of the call to cash questions' = does not account for THIS run-up; NEVER 'scrutiny never matters'. Qualitative; ~zero citations.",
-      "thin_claim": "The pre-announcement elevation survives a direct scrutiny measure and its interaction; underpowered null, hedged to this run-up.",
+      "boundary": "The C4 rule-out only; 'not accounted for by analysts devoting more of the call to cash questions' = does not account for THIS run-up; NEVER 'scrutiny never matters'. Qualitative; ~zero citations. [RECONCILED 2026-06-24: final_prose ALSO carries the Section 4.2 bid-ask channel sentence (prop 5-P3-b) and the Section 4.3/4.4 robustness sentence (prop 5-P3-c); see _DRIFT_AUDIT_2026-06-24.md.]",
+      "thin_claim": "The pre-announcement elevation survives a direct scrutiny measure and its interaction; underpowered null, hedged to this run-up. [RECONCILED 2026-06-24: plus the Section 4.2 bid-ask channel finding (prop 5-P3-b) and the Section 4.3/4.4 robustness check (prop 5-P3-c).]",
       "guardrails": [
         "C4 (CO.3): does not account for THIS run-up; NEVER 'scrutiny never matters'.",
         "Underpowered null not upgraded to a powered equivalence (that boundary is voiced in 5-P6).",
@@ -205,6 +205,48 @@
           "depends_on": [
             "5-P2-a"
           ]
+        },
+        {
+          "prop_id": "5-P3-b",
+          "from_phaseA_prop": "ADDED 2026-06-24 (drift reconciliation; NOT an original CO prop -- Phase-C synthesis appended this Section 4.2 bid-ask sentence to 5-P3 final_prose; user confirmed KEEP 2026-06-24)",
+          "statement": "A further analysis finds the residual unrelated to the firm's post-call bid-ask spread, while the scripted presentation is positively associated with it, consistent with the scripted and unscripted segments relating to the outside information environment differently.",
+          "role_in_paragraph": "result -- M2 (added): the Section 4.2 outsider-reaction channel split, appended after the C4 scrutiny rule-out.",
+          "type": "result-number",
+          "reason": "Phase-1 drift audit (2026-06-24): sentence present in final_prose with no backing proposition; realizes the Section 4.2 result (residual null on the post-call spread; presentation positive). Homed to sync spine to prose. KEEP authorized by user 2026-06-24.",
+          "evidence": [
+            "section4.2_paragraph_ledger.json (Outsider Reactions: the Bid-Ask Spread)",
+            "claim_findings_ledger.json C5_convergent_validity / C7 presentation",
+            "tab:h14c_ceo2_decomp"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "no-identification",
+            "channel-difference-NOT-tested-directly (two per-component facts, never a tested between-component difference -- Section 4.2 register_global)"
+          ],
+          "depends_on": [
+            "5-P3-a"
+          ]
+        },
+        {
+          "prop_id": "5-P3-c",
+          "from_phaseA_prop": "ADDED 2026-06-24 (drift reconciliation; NOT an original CO prop -- Phase-C synthesis appended this Section 4.3/4.4 robustness sentence to 5-P3 final_prose; user confirmed KEEP 2026-06-24)",
+          "statement": "The differential-timing result holds when a withdrawal is treated as a resolution of the deal and when the cash specification is estimated without its dynamic term.",
+          "role_in_paragraph": "result -- M2 (added): the robustness of the differential-timing finding to (a) treating a withdrawal as a resolution (Section 4.3) and (b) dropping the dynamic term (Section 4.4).",
+          "type": "result-number",
+          "reason": "Phase-1 drift audit (2026-06-24): sentence present in final_prose with no backing proposition; realizes the Section 4.3 (withdrawal-as-resolution) and Section 4.4 (static-FE, no-lag) robustness checks. Homed to sync spine to prose. KEEP authorized by user 2026-06-24.",
+          "evidence": [
+            "section4.3_paragraph_ledger.json (withdrawal treated as resolution: residual peak-to-resolution 0.0687 vs main 0.0723; peak-to-gap 0.0457 vs 0.0455)",
+            "section4.4_paragraph_ledger.json (static FE, lag dropped: cash timing unchanged -- no fall at announcement, fall at completion)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "no-identification"
+          ],
+          "depends_on": [
+            "5-P3-b"
+          ]
         }
       ],
       "final_prose": "The pattern is not accounted for by analysts devoting more of the call to cash questions; the pre-announcement elevation survives a direct measure of analyst cash scrutiny and its interaction with the pre-announcement window. A further analysis finds the residual unrelated to the firm's post-call bid-ask spread, while the scripted presentation is positively associated with it, consistent with the scripted and unscripted segments relating to the outside information environment differently. The differential-timing result holds when a withdrawal is treated as a resolution of the deal and when the cash specification is estimated without its dynamic term.",
@@ -220,6 +262,16 @@
             "claim": "not accounted for by analysts devoting more of the call to cash questions (scrutiny direct effect)",
             "table_cell": "tab:cash_scrutiny_channel Panel A CashScrutiny on UncResCEO",
             "sign": "~0, n.s. (-0.0000)"
+          },
+          {
+            "claim": "the residual is unrelated to the firm's post-call bid-ask spread, while the scripted presentation is positively associated with it (5-P3-b, added 2026-06-24)",
+            "table_cell": "tab:h14c_ceo2_decomp (Section 4.2): residual UncResCEO on the 25-day post-call spread n.s. all 12 specs (baseline -0.0594, SE 0.1068); presentation UncPreCEO positive (one-tailed; 4/6 contemporaneous; all 3 firm-FE)",
+            "sign": "residual: null (n.s.); presentation: positive (one-tailed). Two per-component facts, NOT a tested between-component difference."
+          },
+          {
+            "claim": "the differential-timing result holds when a withdrawal is treated as a resolution and without the dynamic term (5-P3-c, added 2026-06-24)",
+            "table_cell": "section4.3 (withdrawal-as-resolution): residual peak-to-resolution 0.0687 (p<.01) vs main 0.0723; peak-to-gap 0.0457 (p<.05) vs 0.0455 | section4.4 (static FE, no lag): cash timing unchanged",
+            "sign": "robust -- the round trip and the differential timing survive both alternatives"
           }
         ],
         "number_audit": [],
@@ -565,7 +617,7 @@
     }
   ],
   "allocation_coverage": {
-    "all_phaseA_props_homed": "All original Phase-A props homed exactly once; new additive props (significance/contributions/implications/measurement-limitations/future) carry from_phaseA_prop='new-*'.",
+    "all_phaseA_props_homed": "All original Phase-A props homed exactly once; new additive props (significance/contributions/implications/measurement-limitations/future) carry from_phaseA_prop='new-*'. [RECONCILED 2026-06-24: two further additive props were homed in 5-P3, 5-P3-b (bid-ask) and 5-P3-c (robustness), with from_phaseA_prop='ADDED 2026-06-24'; see _DRIFT_AUDIT_2026-06-24.md.]",
     "prop_to_paragraph": [
       {
         "phaseA_prop": "CO.1",

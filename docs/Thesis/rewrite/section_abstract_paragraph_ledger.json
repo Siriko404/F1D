@@ -6,7 +6,7 @@
       "para_id": "abstract-P1",
       "order": 1,
       "intent": {
-        "statement": "Deliver the abstract as exactly ONE self-contained paragraph carrying the five abstract elements in convention order: motivation (unscripted Q&A language read as a window into what managers know but have not disclosed); objective/gap (whether CEO Q&A language tracks an acquisition the firm is still withholding, an uncharacterized cell); data+sample (U.S. public firms' earnings-call transcripts and acquisition records, 2002 to 2018); measure+setting (a residual measure of CEO Q&A uncertainty net of each executive's persistent speaking style, studied around cash acquisitions against a stock placebo); and qualitative findings + contribution (the pre-cash run-up, indistinguishable from zero once announced, cash-concentrated on a formal pooled test, not explained by analyst scrutiny, read as call language tracking the disclosure state).",
+        "statement": "Deliver the abstract as exactly ONE self-contained paragraph carrying the five abstract elements in convention order: motivation (unscripted Q&A language read as a window into what managers know but have not disclosed); objective/gap (whether CEO Q&A language tracks an acquisition the firm is still withholding, an uncharacterized cell); data+sample (U.S. public firms' earnings-call transcripts and acquisition records, 2002 to 2018); measure+setting (a residual measure of CEO Q&A uncertainty net of each executive's persistent speaking style, studied around cash acquisitions against a stock placebo); and qualitative findings + contribution (the pre-cash run-up, indistinguishable from zero once announced, cash-concentrated on a formal pooled test, not explained by analyst scrutiny, read as call language tracking the disclosure state). [RECONCILED 2026-06-24: final_prose also carries the Section 4.2 bid-ask channel sentence, homed as prop abstract-P1-i.]",
         "reason": "The ABSTRACT convention mandates exactly one single highly-compressed paragraph delivering five elements in order, qualitative and citation-free; the locked AB chain already realizes all five in sequence (AB.1=el.1, AB.2=el.2, AB.3=el.3, AB.4=el.4, AB.5..AB.8=el.5), so the only allocation decision is to home the entire chain in one paragraph in element order, with the correlational ceiling carried implicitly by the AB.8 contribution close (the abstract convention has no honesty-caveat move).",
         "evidence": [
           "DraftTemplate.txt L33-54 (ABSTRACT = one single paragraph, 5 elements in order, QUALITATIVE, no citations/coefficients/equations/roadmap, numbers only for sample scale)",
@@ -20,7 +20,7 @@
         "Mirror target for the conclusion CO.1 restate and the intro IN.7 objective"
       ],
       "boundary": "NAMES the measure DESCRIPTIVELY and the cash/stock setting; carries ZERO citations and ZERO author names (no DWZ); no equations or notation; no coefficients/SEs/p-values/t-stats/economic-magnitude percentages; no roadmap. Points at nothing in Section 2 (the abstract stands alone). Sample-scale numerals only (years; optional 88,205 calls / 1,884 firms). No standalone caveat sentence; the ceiling stays implicit in AB.8.",
-      "thin_claim": "A within-firm correlational regularity: residual CEO Q&A uncertainty is elevated before cash acquisitions (not stock), indistinguishable from zero once announced, cash-concentrated on a formal pooled test, not explained by analyst scrutiny; read as call language tracking the disclosure state, no tested mechanism, no identification. Ceiling kept IMPLICIT (abstract convention has no honesty move).",
+      "thin_claim": "A within-firm correlational regularity: residual CEO Q&A uncertainty is elevated before cash acquisitions (not stock), indistinguishable from zero once announced, cash-concentrated on a formal pooled test, not explained by analyst scrutiny; read as call language tracking the disclosure state, no tested mechanism, no identification. [RECONCILED 2026-06-24: ALSO carries the Section 4.2 bid-ask channel sentence (prop abstract-P1-i); findings = C2/C1/C6/C4 + this channel finding; see _DRIFT_AUDIT_2026-06-24.md.] Ceiling kept IMPLICIT (abstract convention has no honesty move).",
       "guardrails": [
         "ZERO citations and ZERO author names (abstract-citation rule); measure named descriptively only (DWZ and all names live in the intro and Section 2).",
         "C1 (AB.6): lead with 'indistinguishable from zero once the deal is announced' at the GAP; NEVER 'unwound/reverses/falls' as the headline verb (red-team flagged this on plan2 AB.6); 'fully unwound' is the peak-to-completion swing in the body, NOT the GAP; do NOT read the negative POST.",
@@ -28,7 +28,7 @@
         "C4 (AB.8): 'not explained by analysts devoting more of the call to cash questions' = does not account for THIS run-up; NEVER 'scrutiny never matters'.",
         "E1: no generated-regressand / Pagan / two-step-SE disclaimer anywhere in the abstract.",
         "No coefficient/SE/p-value/t-stat/economic-magnitude percentage in any statement; numbers confined to sample scale (years; optional N).",
-        "C3 (dropped 2026-06-14)/C5 convergent validity/C7 presentation NOT elevated; findings capped to C2/C1/C6/C4.",
+        "C3 (dropped 2026-06-14) and C5 EPU/PRisk-index convergent validity NOT elevated (the abstract carries no EPU/PRisk sentence). EXCEPTION added 2026-06-24 (user-authorized): the Section 4.2 bid-ask CHANNEL finding (residual inert to the post-call spread; scripted presentation positively associated) IS carried, homed as abstract-P1-i, stated as two per-component facts and NEVER as a tested between-component difference (Section 4.2 register_global). Findings capped to C2/C1/C6/C4 PLUS this channel sentence.",
         "Ceiling kept IMPLICIT: add NO standalone caveat sentence (abstract convention has no honesty move)."
       ],
       "lit_body": "none new (abstract carries no citations)",
@@ -211,6 +211,28 @@
           "depends_on": [
             "abstract-P1-g"
           ]
+        },
+        {
+          "prop_id": "abstract-P1-i",
+          "from_phaseA_prop": "ADDED 2026-06-24 (drift reconciliation; NOT an original AB.1-AB.8 prop -- this bid-ask channel sentence was woven into final_prose during Phase-C synthesis from Section 4.2 and never homed in the chain; user confirmed KEEP 2026-06-24)",
+          "statement": "The residual is also unrelated to the firm's post-call bid-ask spread, a standard gauge of information asymmetry, while the scripted presentation is positively associated with it, consistent with the two parts of the call relating to the outside information environment in different ways.",
+          "role_in_paragraph": "result -- element 5 (added): the Section 4.2 outsider-reaction channel split (residual inert to the post-call spread; scripted presentation positively associated). In PROSE it sits between the C4 rule-out clause and the contribution-close clause, i.e. between the two sentences realized from abstract-P1-h.",
+          "type": "result-number",
+          "reason": "Phase-1 drift audit (2026-06-24) found this sentence in final_prose with no backing proposition; it realizes the Section 4.2 result (C5-spread residual null + C7 presentation positive). Homed here, qualitatively, to sync spine to prose. KEEP authorized by user 2026-06-24.",
+          "evidence": [
+            "section4.2_paragraph_ledger.json (Outsider Reactions: the Bid-Ask Spread; residual null all 12 specs; presentation positive 4/6 contemporaneous)",
+            "claim_findings_ledger.json C5_convergent_validity / C7 presentation",
+            "tab:h14c_ceo2_decomp (12 cols; FE grid; lagged DV)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "no-identification",
+            "channel-difference-NOT-tested-directly (two per-component facts, never a tested between-component difference -- Section 4.2 register_global)"
+          ],
+          "depends_on": [
+            "abstract-P1-h"
+          ]
         }
       ],
       "prose_gate": {
@@ -251,6 +273,11 @@
             "claim": "not explained by analysts devoting more of the call to cash questions",
             "table_cell": "tab:reason_gating col 1/2 PreAnnounceQtr + interaction; tab:cash_scrutiny_channel Panel A CashScrutiny",
             "sign": "pre-announce stays positive sig (0.0413***); interaction n.s. (-0.0056); scrutiny direct effect ~0 n.s. (-0.0000)"
+          },
+          {
+            "claim": "the residual is unrelated to the firm's post-call bid-ask spread, while the scripted presentation is positively associated with it (abstract-P1-i, added 2026-06-24)",
+            "table_cell": "tab:h14c_ceo2_decomp (Section 4.2): residual UncResCEO on the 25-day post-call spread n.s. in all 12 specs (baseline -0.0594, SE 0.1068); scripted presentation UncPreCEO positive (one-tailed; 4/6 contemporaneous; all 3 firm-FE)",
+            "sign": "residual: null (n.s.); presentation: positive (one-tailed). Stated as two per-component facts, NOT a tested between-component difference."
           }
         ],
         "number_audit": [
@@ -265,7 +292,7 @@
     }
   ],
   "allocation_coverage": {
-    "all_phaseA_props_homed": "All 8 abstract Phase-A props (AB.1..AB.8) land in the single abstract paragraph abstract-P1, in their locked chain order, each exactly once. The convention forbids any split (the abstract is one paragraph), so no prop is split or merged; none is orphaned or duplicated. Element order is preserved 1->5 (AB.1 motivation, AB.2 gap, AB.3 data, AB.4 measure, AB.5..AB.8 findings+contribution).",
+    "all_phaseA_props_homed": "All 8 abstract Phase-A props (AB.1..AB.8) land in the single abstract paragraph abstract-P1, in their locked chain order, each exactly once. The convention forbids any split (the abstract is one paragraph), so no prop is split or merged; none is orphaned or duplicated. Element order is preserved 1->5 (AB.1 motivation, AB.2 gap, AB.3 data, AB.4 measure, AB.5..AB.8 findings+contribution). UPDATE 2026-06-24 (drift reconciliation): a 9th proposition, abstract-P1-i, was added to home the Section 4.2 bid-ask channel sentence that Phase-C synthesis wove into final_prose but the original AB chain never carried; abstract-P1-i is NOT a Phase-A prop and is the documented exception to the 'each AB exactly once / none orphaned' statement above. Final_prose now maps to 9 props (AB.1-AB.8 + abstract-P1-i), with abstract-P1-i sitting between the two clauses of AB.8 in prose order.",
     "prop_to_paragraph": [
       {
         "phaseA_prop": "AB.1",
