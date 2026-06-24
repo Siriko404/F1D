@@ -70,6 +70,52 @@
           "section": "3. Data"
         }
       ]
+    },
+    "mitchell_pulvino2001": {
+      "source": {
+        "id": "e2c8fb6f-b7c9-4f9f-aa46-d2b154abb2d5",
+        "title": "The Journal of Finance - 2002 - Mitchell - Characteristics of Risk and Return in Risk Arbitrage.pdf"
+      },
+      "query": "Reading only this paper, \"Characteristics of Risk and Return in Risk Arbitrage\" by Mark Mitchell and Todd Pulvino (2001, Journal of Finance): Does the paper estimate the probability that an announced deal is completed versus terminated as a function of deal characteristics? If so, list the characteristics or variables it uses to predict completion or failure. For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+      "answer": "Yes, the paper estimates the probability of deal failure (which they define as the arbitrageur losing money on the deal) as a function of deal and market characteristics using a probit regression model. \n\nHere is the exact model and the complete list of variables used to predict deal failure:\n\n**The Model:**\nThe authors estimate a probit model specified as: \n*Fail = a + b1 RMkt + b2 RMkt-1 + b3 RMkt-2 + b4 LBO + b5 Cash Dummy + b6 Premium + b7 Size + b8 Tender + b9 Hostile* [1]\n\n**The Explanatory Variables:**\n1.  **RMkt:** The monthly return on the value-weighted CRSP index during the month of deal resolution. [1]\n2.  **RMkt-1:** The monthly market return one month prior to resolution. [1]\n3.  **RMkt-2:** The monthly market return two months prior to resolution. [1]\n4.  **LBO:** An indicator for whether the acquirer was a private company. [1]\n5.  **Cash Dummy:** An indicator for whether the acquirer offered 100 percent cash. [1]\n6.  **Premium:** The takeover premium (target stock price one day post-announcement divided by the price 30 days prior). [1]\n7.  **Size:** The logarithm of the target's market equity value. [1]\n8.  **Tender:** An indicator for whether the offer was a cash tender. [1]\n9.  **Hostile:** An indicator for whether the target management rejected the bid. [1]\n\nHere are the verbatim sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the decision to model deal failure:**\n*   \"Table V shows results from a probit regression that estimates the probability of deal failure.\" [2]\n    *   **Page:** 2155\n    *   **Section:** V. Results (Subsection A. Risk Factors)\n*   \"For purposes of this analysis, deal failure is defined to be any deal where the arbitrageur lost money.\" [2]\n    *   **Page:** 2155\n    *   **Section:** V. Results (Subsection A. Risk Factors)\n\n**On the exact model and the list of explanatory variables:**\n*   \"*Fail* = a + b1 *RMkt* + b2 *RMkt-1* + b3 *RMkt-2* + b4 *LBO* + b5 *Cash Dummy* + b6 *Premium* + b7 *Size* + *b8Tender* + *b9Hostile,*\" [1]\n    *   **Page:** 2158\n    *   **Section:** Table V\n*   \"where *Fail* is a dummy variable equal to one if the arbitrage return is negative and zero otherwise; *RMkt* is the monthly return on the value-weighted CRSP index for the month corresponding to the deal resolution date; *RMkt-1* is the monthly return on the value weighted CRSP index for the month prior to the deal resolution date; *RMkt-2* is the monthly return on the value weighted CRSP index two months prior to the deal resolution date; *LBO* is a dummy variable if the acquirer was private; *Cash Dummy* is a dummy variable if the acquirer offered to pay 100 percent cash for the target; *Premium* is the takeover premium equal to the target stock price one day after the announcement of the merger divided by the target stock price 30 days prior to the merger announcement; *Size* is the logarithm of the target’s market equity value; *Tender* is a dummy variable equal to one if the offer was a cash tender; and *Hostile* is a dummy variable equal to one if articles in the Dow Jones News Service or *Wall Street Journal* report that target management rejected the bid in question.\" [1]\n    *   **Page:** 2158\n    *   **Section:** Table V",
+      "quotes": [
+        {
+          "n": 1,
+          "cited_text": "Fail 5 a 1 b1 RMkt 1 b2 RMkt21 1 b3 RMkt22 1 b4 LBO 1 b5 Cash Dummy",
+          "start_char": 72943,
+          "end_char": 73011,
+          "chunk_id": "a49ed855-b9b4-4bc6-bbae-b456e76939c8"
+        },
+        {
+          "n": 2,
+          "cited_text": "The increase in market beta in depreciating markets is caused, at least in part, by the increased probability of deal failure following a severe market downturn. Table V shows results from a probit regression that estimates the probability of deal failure. For purposes of this analysis, deal failure is de-fined to be any deal where the arbitrageur lost money. Thus, mergers where the terms were revised downward but that were ultimately consummated are treated as failed deals. As shown in this table, the probability that a merger will fail is a decreasing function of market returns in the previous two months. That is, deals are more likely to fail following market down-turns. Based on the coefficient estimates in Table V, a 5 percent decrease in either the contemporaneous market return or the lagged market return in-creases the probability of deal failure by 2.25 percent. Table V also shows that hostile deals have a 12.8 percent greater probability of failure than friendly deals. In our data set, “hostile” refers to deals in which articles in the Dow Jones News Service or Wall Street Journal report that target man-agement rejected the bid in question.10 Leveraged buyouts also have higher failure probabilities.11",
+          "start_char": 66969,
+          "end_char": 68199,
+          "chunk_id": "38990934-f09d-4185-a93d-feb93cfaa185"
+        }
+      ],
+      "located": [
+        {
+          "quote": "Table V shows results from a probit regression that estimates the probability of deal failure.",
+          "page": "2155",
+          "section": "V. Results (Subsection A. Risk Factors)"
+        },
+        {
+          "quote": "For purposes of this analysis, deal failure is defined to be any deal where the arbitrageur lost money.",
+          "page": "2155",
+          "section": "V. Results (Subsection A. Risk Factors)"
+        },
+        {
+          "quote": "*Fail* = a + b1 *RMkt* + b2 *RMkt-1* + b3 *RMkt-2* + b4 *LBO* + b5 *Cash Dummy* + b6 *Premium* + b7 *Size* + *b8Tender* + *b9Hostile,*",
+          "page": "2158",
+          "section": "Table V"
+        },
+        {
+          "quote": "where *Fail* is a dummy variable equal to one if the arbitrage return is negative and zero otherwise; *RMkt* is the monthly return on the value-weighted CRSP index for the month corresponding to the deal resolution date; *RMkt-1* is the monthly return on the value weighted CRSP index for the month prior to the deal resolution date; *RMkt-2* is the monthly return on the value weighted CRSP index two months prior to the deal resolution date; *LBO* is a dummy variable if the acquirer was private; *Cash Dummy* is a dummy variable if the acquirer offered to pay 100 percent cash for the target; *Premium* is the takeover premium equal to the target stock price one day after the announcement of the merger divided by the target stock price 30 days prior to the merger announcement; *Size* is the logarithm of the target’s market equity value; *Tender* is a dummy variable equal to one if the offer was a cash tender; and *Hostile* is a dummy variable equal to one if articles in the Dow Jones News Service or *Wall Street Journal* report that target management rejected the bid in question.",
+          "page": "2158",
+          "section": "Table V"
+        }
+      ]
     }
   }
 }
