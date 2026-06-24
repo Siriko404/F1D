@@ -1,0 +1,75 @@
+{
+  "purpose": "completion-probability anchor selection",
+  "captures": {
+    "baker_savasoglu2002": {
+      "source": {
+        "id": "119a9aa0-0afb-4655-aaca-9c02ac83b499",
+        "title": "1-s2.0-S0304405X02000727-main.pdf"
+      },
+      "query": "Reading only this paper, \"Limited Arbitrage in Mergers and Acquisitions\" by Malcolm Baker and Serkan Savasoglu (2002, Journal of Financial Economics): Does the paper estimate or model the probability that an announced merger or acquisition is successfully completed? If it does, state the exact model and list every explanatory variable that enters it -- in particular whether payment method (cash versus stock), target attitude or hostility, target public versus private status, and relative deal size are among the predictors, and report the estimated sign of each. For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+      "answer": "Yes, the paper does estimate the probability that an announced merger or acquisition is successfully completed. The authors model this probability using a **probit regression** of the merger outcome on acquirer attitude and other deal characteristics. \n\nHere is the exact list of every explanatory variable that enters their full probit model (as reported in Table 6, Column 2), along with their estimated signs:\n1.  **Hostile (acquirer attitude):** Estimated with a **negative** sign.\n2.  **Target log market equity (target size):** Estimated with a **negative** sign.\n3.  **Acquirer log market equity (acquirer size):** Estimated with a **positive** sign.\n4.  **Target and acquirer in same industry:** Estimated with a **negative** sign.\n5.  **Takeover premium:** Estimated with a **positive** sign.\n6.  **Stock deal (payment method):** Estimated with a **positive** sign.\n\nRegarding the specific predictors you asked about:\n*   **Payment method (cash versus stock):** Yes, it is included as an indicator variable for whether the consideration is in acquirer stock (\"Stock deal\"). The estimated sign is **positive**.\n*   **Target attitude or hostility:** Yes, it is included as an indicator variable for whether the deal is classified as hostile (\"Hostile\"). The estimated sign is **negative**. \n*   **Relative deal size:** No, relative deal size is not included as a single ratio or relative predictor. Instead, the authors include the absolute log market equity of the target and the acquirer as two separate independent variables.\n*   **Target public versus private status:** No, this is not included as a predictor. The model does not test this because the authors explicitly restrict their entire sample to deals where both the target and acquirer are public companies.\n\nHere are the verbatim sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the exact model used:**\n*   \"This table shows probit regressions of merger outcome on acquirer attitude and other deal characteristics.\" [1]\n    *   **Page:** 112\n    *   **Section:** Table 6\n\n**On the specific explanatory variables and their construction:**\n*   \"In the first column, the only independent variable is a categorical variable equal to one if the deal is classified as hostile by SDC.\" [2] (Note: Table 6 shows this carries a negative coefficient, e.g., -0.38 in Column 2).\n    *   **Page:** 111\n    *   **Section:** Appendix. Predicting merger success\n*   \"First, target and acquirer firm size are the log of target and acquirer equity market value after the announcement of the merger, converted to 1996 dollars using the consumer price index from Ibbotson Associates (1999).\" [3] (Note: Table 6 shows target size has a negative coefficient of -0.04 and acquirer size has a positive coefficient of 0.10 in Column 2).\n    *   **Pages:** 111-112 (Sentence begins on 111 and ends on 112)\n    *   **Section:** Appendix. Predicting merger success\n*   \"Second, we include a categorical variable equal to one if the target and acquirer are in the same two-digit SIC code.\" [3] (Note: Table 6 shows this has a negative coefficient of -0.01 in Column 2).\n    *   **Page:** 111\n    *   **Section:** Appendix. Predicting merger success\n*   \"Third, the takeover premium is the difference between the target share price 20 days prior to the takeover announcement and the offer price scaled by the target share price two days after announcement.\" [3] (Note: Table 6 shows this has a positive coefficient of 0.00 in Column 2).\n    *   **Page:** 112\n    *   **Section:** Appendix. Predicting merger success\n*   \"Fourth, stock is equal to one if the consideration is in acquirer shares.\" [3] (Note: Table 6 shows this has a positive coefficient of 0.03 in Column 2).\n    *   **Page:** 112\n    *   **Section:** Appendix. Predicting merger success\n\n**On why target public versus private status is not modeled:**\n*   \"From this large sample, we restrict our attention to the 4,135 announced merger and tender offers where both the target firm and the acquirer firm are public companies and the target firm is listed by the Center for Research on Security Prices (CRSP).\" [4]\n    *   **Page:** 96\n    *   **Section:** 3. Data",
+      "quotes": [
+        {
+          "n": 1,
+          "cited_text": "Table 6",
+          "start_char": 68005,
+          "end_char": 68013,
+          "chunk_id": "de9bbfdc-026a-47b8-a733-1990a1f63c2e"
+        },
+        {
+          "n": 2,
+          "cited_text": "Appendix. Predicting merger success",
+          "start_char": 66114,
+          "end_char": 66150,
+          "chunk_id": "e815948a-96f2-4070-8481-012d196f62b0"
+        },
+        {
+          "n": 3,
+          "cited_text": "size are the log of target and acquirer equity market value after the announcement of the merger, converted to 1996 dollars using the consumer price index from Ibbotson Associates (1999). Larger firms may have an easier time acquiring smaller firms. Second, we include a categorical variable equal to one if the target and acquirer are in the same two-digit SIC code. Horizontal mergers may face regulatory hurdles.",
+          "start_char": 66808,
+          "end_char": 67224,
+          "chunk_id": "3d2c178a-1d83-49a1-81f1-ac29b12d6331"
+        },
+        {
+          "n": 4,
+          "cited_text": "3. Data",
+          "start_char": 20024,
+          "end_char": 20032,
+          "chunk_id": "6cbd70e1-fabf-43c4-beb7-fa5b90211712"
+        }
+      ],
+      "located": [
+        {
+          "quote": "). The estimated sign is **negative**. \n*   **Relative deal size:** No, relative deal size is not included as a single ratio or relative predictor. Instead, the authors include the absolute log market equity of the target and the acquirer as two separate independent variables.\n*   **Target public versus private status:** No, this is not included as a predictor. The model does not test this because the authors explicitly restrict their entire sample to deals where both the target and acquirer are public companies.\n\nHere are the verbatim sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the exact model used:**\n*",
+          "page": "112",
+          "section": "Table 6"
+        },
+        {
+          "quote": "In the first column, the only independent variable is a categorical variable equal to one if the deal is classified as hostile by SDC.",
+          "page": "111",
+          "section": "Appendix. Predicting merger success"
+        },
+        {
+          "quote": "Second, we include a categorical variable equal to one if the target and acquirer are in the same two-digit SIC code.",
+          "page": "111",
+          "section": "Appendix. Predicting merger success"
+        },
+        {
+          "quote": "Third, the takeover premium is the difference between the target share price 20 days prior to the takeover announcement and the offer price scaled by the target share price two days after announcement.",
+          "page": "112",
+          "section": "Appendix. Predicting merger success"
+        },
+        {
+          "quote": "Fourth, stock is equal to one if the consideration is in acquirer shares.",
+          "page": "112",
+          "section": "Appendix. Predicting merger success"
+        },
+        {
+          "quote": "From this large sample, we restrict our attention to the 4,135 announced merger and tender offers where both the target firm and the acquirer firm are public companies and the target firm is listed by the Center for Research on Security Prices (CRSP).",
+          "page": "96",
+          "section": "3. Data"
+        }
+      ]
+    }
+  }
+}
