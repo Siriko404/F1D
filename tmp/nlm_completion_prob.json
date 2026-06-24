@@ -116,6 +116,52 @@
           "section": "Table V"
         }
       ]
+    },
+    "officer2003": {
+      "source": {
+        "id": "3ed5b1a0-f8eb-4d9b-8ee5-f9bfef1d7437",
+        "title": "1-s2.0-S0304405X03001193-main.pdf"
+      },
+      "query": "Reading only this paper, \"Termination Fees in Mergers and Acquisitions\" by Micah Officer (2003, Journal of Financial Economics): Does the paper model the probability of deal completion as a function of deal characteristics? If so, list every variable in that completion model -- including whether termination fees, payment method, target attitude, target public/private status, and relative size enter -- and the sign of each. For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+      "answer": "Yes, the paper models the probability of deal completion as a function of deal characteristics using probit regressions. \n\nHere is the complete list of every explanatory variable that enters the completion model (Table 10) and the estimated sign of each coefficient:\n1.  **TTERMF** (Target termination fee): **Positive** sign.\n2.  **BTERMF** (Bidder termination fee): **Negative** sign.\n3.  **PREMIUM** (Bid premium): **Positive** sign.\n4.  **PRECOMP** (Pre-bid competition): **Negative** sign.\n5.  **POSTCOMP** (Post-bid competition): **Negative** sign.\n6.  **POISON** (Target has a poison pill): **Negative** sign.\n7.  **CASH** (Payment method involving cash): **Negative** sign.\n8.  **SIND** (Bidder and target in same industry): **Negative** sign.\n9.  **HOSTILE** (Target attitude/unsolicited bid): **Negative** sign.\n10. **TENDER** (Bid involves a tender offer): **Positive** sign.\n11. **TOEHOLD** (Bidder toehold > 5%): **Positive** sign.\n12. **CLEANUP** (Bidder toehold > 50%): **Positive** sign.\n13. **FINSERV** (Both firms in financial services industry): **Positive** sign.\n14. **Log(BMVE)** (Bidder size/market value): **Positive** sign.\n15. **Log(TMVE)** (Target size/market value): **Negative** sign.\n\nRegarding the specific predictors you asked about:\n*   **Termination fees:** Yes, both target termination fees (**TTERMF**) and bidder termination fees (**BTERMF**) enter the model. The target fee has a positive sign, while the bidder fee has a negative sign.\n*   **Payment method:** Yes, this enters the model via the **CASH** dummy variable. It carries a negative sign.\n*   **Target attitude:** Yes, target hostility/attitude enters the model via the **HOSTILE** dummy variable. It carries a negative sign.\n*   **Relative size:** No, relative deal size does not enter the model as a single ratio. Instead, the absolute sizes of the bidder and target are included separately as **Log(BMVE)** and **Log(TMVE)**.\n*   **Target public/private status:** No, this does not enter the model. The paper explicitly restricts its sample to deals where the target firm is on the CRSP and Compustat databases, meaning all targets in the sample are public companies.\n\nHere are the verbatim sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the exact model used:**\n*   \"Table 10 contains results from probit regressions explaining the likelihood that a merger bid or tender offer results in a completed transaction.\"\n    *   **Page:** 455\n    *   **Section:** 5.4. The relation between target termination fees and bid success\n*   \"The dependent variable is SUCCESS, a dummy variable equal to one if the merger or tender offer bid results in a successful acquisition and zero otherwise.\"\n    *   **Page:** 456\n    *   **Section:** Table 10\n\n**On the specific explanatory variables and their estimated signs:**\n*   \"The inclusion of a target termination fee in the deal terms is associated with a significantly higher probability that the bidder is successful in acquiring the target.\"\n    *   **Page:** 455\n    *   **Section:** 5.4. The relation between target termination fees and bid success\n*   \"The bid premium also has a significantly positive impact on the probability of success, while competing bids and hostility towards the bidder reduce the likelihood that the current bid is successful.\"\n    *   **Page:** 455\n    *   **Section:** 5.4. The relation between target termination fees and bid success\n*   \"Deals involving large target firms are less likely to be successful, all else equal, while large bidders are more likely to complete proposed transactions.\"\n    *   **Page:** 455\n    *   **Section:** 5.4. The relation between target termination fees and bid success\n\n**On the exact variables entering the model (from the Table 10 output rows):**\n*   \"Independent variable... Intercept... TTERMF... BTERMF... PREMIUM... PRECOMP... POSTCOMP... POISON... CASH... SIND... HOSTILE... TENDER... TOEHOLD... CLEANUP... FINSERV... Log(BMVE)... Log(TMVE)\"\n    *   **Page:** 456\n    *   **Section:** Table 10\n\n**On why target public/private status is not modeled:**\n*   \"I also eliminate bids if both the bidder and target are not in the CRSP and Compustat databases for the announcement year of the bid.\"\n    *   **Page:** 440\n    *   **Section:** 4. Data and descriptive statistics",
+      "quotes": [],
+      "located": [
+        {
+          "quote": "Table 10 contains results from probit regressions explaining the likelihood that a merger bid or tender offer results in a completed transaction.",
+          "page": "455",
+          "section": "5.4. The relation between target termination fees and bid success"
+        },
+        {
+          "quote": "The dependent variable is SUCCESS, a dummy variable equal to one if the merger or tender offer bid results in a successful acquisition and zero otherwise.",
+          "page": "456",
+          "section": "Table 10"
+        },
+        {
+          "quote": "The inclusion of a target termination fee in the deal terms is associated with a significantly higher probability that the bidder is successful in acquiring the target.",
+          "page": "455",
+          "section": "5.4. The relation between target termination fees and bid success"
+        },
+        {
+          "quote": "The bid premium also has a significantly positive impact on the probability of success, while competing bids and hostility towards the bidder reduce the likelihood that the current bid is successful.",
+          "page": "455",
+          "section": "5.4. The relation between target termination fees and bid success"
+        },
+        {
+          "quote": "Deals involving large target firms are less likely to be successful, all else equal, while large bidders are more likely to complete proposed transactions.",
+          "page": "455",
+          "section": "5.4. The relation between target termination fees and bid success"
+        },
+        {
+          "quote": "Independent variable... Intercept... TTERMF... BTERMF... PREMIUM... PRECOMP... POSTCOMP... POISON... CASH... SIND... HOSTILE... TENDER... TOEHOLD... CLEANUP... FINSERV... Log(BMVE)... Log(TMVE)",
+          "page": "456",
+          "section": "Table 10"
+        },
+        {
+          "quote": "I also eliminate bids if both the bidder and target are not in the CRSP and Compustat databases for the announcement year of the bid.",
+          "page": "440",
+          "section": "4. Data and descriptive statistics"
+        }
+      ]
     }
   }
 }
