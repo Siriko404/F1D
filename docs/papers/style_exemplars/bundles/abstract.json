@@ -1,0 +1,114 @@
+{
+  "type": "abstract",
+  "exemplars": [
+    {
+      "paper": "bertrand_schoar2003",
+      "venue": "QJE",
+      "head": "Abstract",
+      "paragraphs": [
+        "This paper investigates whether and how individual managers affect corporate behavior and performance. We construct a manager-firm matched panel data set which enables us to track the top managers across different firms over time. We find that manager fixed effects matter for a wide range of corporate decisions. A significant extent of the heterogeneity in investment, financial, and organizational practices of firms can be explained by the presence of manager fixed effects. We identify specific patterns in managerial decision-making that appear to indicate general differences in \"style\" across managers. Moreover, we show that management style is significantly related to manager fixed effects in performance and that managers with higher performance fixed effects receive higher compensation and are more likely to be found in better governed firms. In a final step, we tie back these findings to observable managerial characteristics. We find that executives from earlier birth cohorts appear on average to be more conservative; on the other hand, managers who hold an MBA degree seem to follow on average more aggressive strategies."
+      ]
+    },
+    {
+      "paper": "bushee2018",
+      "venue": "JAR",
+      "head": "Abstract",
+      "paragraphs": [
+        "Prior research generally interprets complex language in firms' disclosures as indicative of managerial obfuscation. However, complex language can also reflect the provision of complex information; for example, informative technical disclosure. As a consequence, linguistic complexity commingles two latent components-obfuscation and information-that are related to information asymmetry in opposite directions. We develop a novel empirical approach to estimate these two latent components within the context of quarterly earnings conference calls. We validate our estimates of these two latent components by examining their relation to information asymmetry. Consistent with our predictions, we find that our estimate of the information component is negatively associated with information asymmetry while our estimate of the obfuscation component is positively associated with information asymmetry. Our findings suggest that future research on linguistic complexity can construct more"
+      ]
+    },
+    {
+      "paper": "dwz",
+      "venue": "working(FWP)",
+      "head": "Abstract",
+      "paragraphs": [
+        "A key task for CEOs is to communicate with analysts and investors about their companies' past performance and prospects in quarterly earnings conference calls. Some CEOs speak fuzzily, frequently using words such as \"approximately\", \"probably\", and \"maybe.\" Others rarely use such tentative words. That is, they speak clearly. We show that CEO clarity is a matter of personal style; it is not driven by fundamental uncertainty in the companies' business activity. Analysts and the stock market respond more strongly to earnings news conveyed by clear CEOs. Past performance does not explain the style of a newly appointed CEO. However, when a firm does appoint a more clear-talking CEO, Tobin's Q increases and analyst recommendations become more favorable. Overall, investors and analysts appear to value clear talk."
+      ]
+    },
+    {
+      "paper": "harford1999",
+      "venue": "JF",
+      "head": "Abstract",
+      "paragraphs": [
+        "Cash-rich firms are more likely than other firms to attempt acquisitions. Stock return evidence shows that acquisitions by cash-rich firms are value decreasing. Cash-rich bidders destroy seven cents in value for every excess dollar of cash reserves held. Cash-rich firms are more likely to make diversifying acquisitions and their targets are less likely to attract other bidders. Consistent with the stock return evidence, mergers in which the bidder is cash-rich are followed by abnormal declines in operating performance. Overall, the evidence supports the agency costs of free cash f low explanation for acquisitions by cash-rich firms."
+      ]
+    },
+    {
+      "paper": "hollander2010",
+      "venue": "JAR",
+      "head": "Abstract",
+      "paragraphs": [
+        "In this paper, we exploit the open nature of conference calls to explore whether managers withhold information from the investing public. Our evidence suggests that managers regularly leave participants on the conference call in the dark by not answering their questions. We find that the best predictors of such an event are firm size, a CEO's stock price-based incentives, company age, firm performance, litigation risk, and whether analysts are actively involved during the call's Q&A section. Finally, we document strong support for the assumption maintained in the literature that investors interpret silence negatively. That is, investors seem to interpret no news as bad news."
+      ]
+    },
+    {
+      "paper": "lm2011",
+      "venue": "JF",
+      "head": "Abstract",
+      "paragraphs": [
+        "Previous research uses negative word counts to measure the tone of a text. We show that word lists developed for other disciplines misclassify common words in financial text. In a large sample of 10-Ks during 1994 to 2008, almost three-fourths of the words identified as negative by the widely used Harvard Dictionary are words typically not considered negative in financial contexts. We develop an alternative negative word list, along with five other word lists, that better reflect tone in financial text. We link the word lists to 10-K filing returns, trading volume, return volatility, fraud, material weakness, and unexpected earnings.",
+        "* Loughran and McDonald are with University of Notre Dame. We are indebted to Paul Tetlock for comments on a previous draft. We also thank"
+      ]
+    },
+    {
+      "paper": "ragozzino2024",
+      "venue": "journal(LRP)",
+      "head": "Abstract",
+      "paragraphs": [
+        "We examine the linkages between firms' M&A activity and the information exchange between executives and analysts during quarterly earnings calls. Prior M&A research has mostly focused on the considerations presented by information asymmetry between buyers and sellers themselves in M&A. However, these concerns also exist between the buying firm's executives and capital markets. We examine whether firms' M&A activity results in an information exchange between executives and analysts that highlights corporate strategy as a discussion topic. Thus, we test whether there is consistency between firms' corporate growth agendas and the information released to the public by these firms. This question is relevant, as disclosure is central to firms' ability to raise capital and compete. We also investigate the degree to which these information exchanges affect analysts' earnings forecast errors."
+      ]
+    },
+    {
+      "paper": "thewissen2024",
+      "venue": "working(SSRN)",
+      "head": "Abstract",
+      "paragraphs": [
+        "Based on a sample of 5,558 stock-for-stock mergers and acquisitions (M&As) between 2004 and 2020, we show that, in the year before the M&A announcement, stock bidders manipulate the narrative content of corporate disclosures by inflating the tone of earnings press releases in order to curtail the target acquisition cost. Furthermore, tone inflation is more pronounced in firms executing larger-scale deals, firms with weaker historical performance, and firms with limited monitoring mechanisms in place. We also find that, although tone inflation propels an upswing in the bidder's stock prices and leads to a reduction in the overall target acquisition cost, it exposes the bidder to unfavorable long-term returns after the merger and acquisition announcement. We subject our analyses to an exhaustive array of robustness and endogeneity tests, which consistently affirm the validity of our conclusions. By distorting the narrative tone, stock bidders compromise the quality and reliability of information provided to stakeholders, undermining the transparency and trust upon which effective financial reporting relies."
+      ]
+    }
+  ],
+  "ours": [
+    {
+      "ledger": "section_abstract",
+      "para_id": "abstract-P1",
+      "final_prose": "Firms host quarterly earnings calls and field analysts' unscripted questions, and the language a chief executive uses in answering is increasingly read as a window into what they know but have not yet disclosed. When a firm is privately committed to an acquisition it has not yet announced, the executive holds the routine call unable to confirm or deny the one development that matters, and whether the spoken record tracks that withholding has not been characterized. We study United States public firms' earnings-call transcripts and acquisition records from 2002 to 2018. From this language we construct a residual measure of chief-executive question-and-answer uncertainty, the component that remains once each executive's persistent speaking style is removed, and we track it around firms' cash acquisitions against stock acquisitions as a placebo. This residual uncertainty is elevated in the quarter before a cash acquisition, relative to the firm's own other quarters, with no comparable rise before stock acquisitions. It becomes indistinguishable from zero once the deal is announced, even before completion, while the cash that funds the purchase persists on the balance sheet until the deal closes. The elevation concentrates in cash acquisitions rather than stock acquisitions, a difference that survives a formal pooled test. This pattern is not explained by analysts devoting more of the call to cash questions. The residual is also unrelated to the firm's post-call bid-ask spread, a standard gauge of information asymmetry, while the scripted presentation is positively associated with it, consistent with the two parts of the call relating to the outside information environment in different ways. We read these patterns as call language tracking the deal's passage from private to public, a within-firm correlational regularity rather than a tested mechanism.",
+      "propositions": [
+        "Firms host quarterly earnings calls and field analysts' unscripted questions, and the language a CEO uses in answering is increasingly read as a window into what managers know but have not yet disclosed.",
+        "When a firm is privately committed to an acquisition it has not yet announced, the executive holds the routine call unable to confirm or deny the one development that matters, and whether the spoken record tracks that withholding has not been characterized.",
+        "We study United States public firms' earnings-call transcripts and acquisition records from 2002 to 2018.",
+        "From this language we construct a residual measure of CEO question-and-answer uncertainty, the component that remains once each executive's persistent speaking style is removed, and we track it around firms' cash acquisitions against stock acquisitions as a placebo.",
+        "This residual uncertainty is elevated in the quarter before a cash acquisition, relative to the firm's own other quarters, with no comparable rise before stock acquisitions.",
+        "It becomes indistinguishable from zero once the deal is announced, even before completion, while the cash that funds the purchase persists on the balance sheet until the deal closes.",
+        "The elevation concentrates in cash acquisitions rather than stock acquisitions, a difference that survives a formal pooled test.",
+        "This pattern is not explained by analysts devoting more of the call to cash questions, and we read it as call language tracking the deal's passage from private to public, a within-firm correlational regularity rather than a tested mechanism."
+      ],
+      "guardrails": [
+        "ZERO citations and ZERO author names (abstract-citation rule); measure named descriptively only (DWZ and all names live in the intro and Section 2).",
+        "C1 (AB.6): lead with 'indistinguishable from zero once the deal is announced' at the GAP; NEVER 'unwound/reverses/falls' as the headline verb (red-team flagged this on plan2 AB.6); 'fully unwound' is the peak-to-completion swing in the body, NOT the GAP; do NOT read the negative POST.",
+        "C6 (AB.7): phrase ONLY as the formal pooled (Wald) difference that survives; NEVER the Gelman-Stern 'significant for cash vs not for stock' side-by-side; concentration not strict specificity.",
+        "C4 (AB.8): 'not explained by analysts devoting more of the call to cash questions' = does not account for THIS run-up; NEVER 'scrutiny never matters'.",
+        "E1: no generated-regressand / Pagan / two-step-SE disclaimer anywhere in the abstract.",
+        "No coefficient/SE/p-value/t-stat/economic-magnitude percentage in any statement; numbers confined to sample scale (years; optional N).",
+        "C3 (dropped 2026-06-14)/C5 convergent validity/C7 presentation NOT elevated; findings capped to C2/C1/C6/C4.",
+        "Ceiling kept IMPLICIT: add NO standalone caveat sentence (abstract convention has no honesty move)."
+      ],
+      "number_audit": [
+        {
+          "number": "sample window 2002 to 2018; optional Table 1 anchor 88,205 calls / 1,884 firms (tab:summary_stats) -- sample-scale only"
+        },
+        {
+          "number": "cash UncResCEO coef positive + n.s. distinction: positive + sig, survives two-tailed p=.0074 (tab:empire_building_did col 2); stock null (col 6)"
+        },
+        {
+          "number": "residual GAP coef ~0 n.s.; PRE1-minus-GAP 0.0455** (tab:empire_drop_matched col 1); cash GAP persists, GAP-minus-POST 0.0210*** (col 2)"
+        },
+        {
+          "number": "cash-minus-stock Wald diff positive + sig at 5% two-tailed, p=.039 (tab:empire_cashspec col 1)"
+        },
+        {
+          "number": "pre-announce coef stays positive + sig with scrutiny in model; interaction n.s. (tab:reason_gating); scrutiny direct effect ~0 n.s. (tab:cash_scrutiny_channel)"
+        }
+      ]
+    }
+  ]
+}

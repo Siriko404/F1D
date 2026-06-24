@@ -1,0 +1,187 @@
+{
+  "type": "hypotheses",
+  "exemplars": [
+    {
+      "paper": "dwz",
+      "venue": "working(FWP)",
+      "head": "Development of hypotheses",
+      "paragraphs": [
+        "We organize our study around three main hypotheses. The first posits that CEOs differ significantly in clarity. The second addresses how a CEO's clarity affects analysts' and investors' information processing. The third examines how a firm's value responds to its CEO's clarity."
+      ]
+    },
+    {
+      "paper": "dwz",
+      "venue": "working(FWP)",
+      "head": "Clear talk as a matter of style",
+      "paragraphs": [
+        "Do CEOs consistently differ in their clarity? Are some CEOs prone to fuzzy statements, while others typically speak clearly? In other words, do they exhibit distinct and persistent styles in this regard? Communication training for CEOs might harmonize how they answer questions; hence, we adopt the null hypothesis of no systematic differences among CEOs. However, Bertrand and Schoar (2003) and numerous studies that followed, have found evidence of distinct CEO style in a range of corporate policies. 7 That makes it plausible that managers' communications 7 These include, e.g., accounting practices (Ge, Matsumoto, and Zhang, 2011), tax avoidance (Dyreng, Hanlon, and Maydew, 2010), and the provision, intensity and accuracy of earnings guidance (Bamber, Jiang, and Wang, 2010; Brochet, Faurel, and McVay, 2011; Yang, 2012).",
+        "may also vary in style. Indeed, Davis, Ge, Matsumoto, and Zhang (2015) find a significant manager-specific effect in the tone of earnings conference calls. With our focus on CEO clarity, we posit our first hypothesis:",
+        "H1: There are systematic differences (styles) in CEO clarity.",
+        "As developed more fully in Section 4, we argue that the structure of conference calls allows us to isolate style in a manner that avoids the criticism that has been levied against prior attempts in other settings. Even if we find the degree of clarity to be a persistent personal characteristic of CEOs, that would not preclude strategic deviations from it in specific calls. Indeed, several papers have studied managerial tactics on such calls. 8"
+      ]
+    },
+    {
+      "paper": "harford1999",
+      "venue": "JF",
+      "head": "A. Theory and Hypotheses",
+      "paragraphs": [
+        "Jensen ~1986! applies agency theory to the conf lict over the disposition of free cash f low. He posits that incompletely controlled managers spend free cash f low on wasteful projects. Additions to cash reserves occur when cash f low is greater than required for the firm's positive NPV projects. Firms become cash-rich when their managers stockpile free cash f low rather than spending it immediately. What begins as the accumulation of a buffer stock to guard against a downturn can eventually become large enough to afford managers ample discretion in their investment decisions. This, combined with hubris over the good performance needed to generate enough free cash f low to become cash rich, can lead to an agency conf lict over the disposition of the cash reserve. Since excess cash reserves are accumulated free cash f low, Jensen's free cash f low hypothesis makes a specific prediction about investments made by managers with stockpiled cash: These investments are value decreasing on average. This prediction follows if managers seek to increase the scale and scope of operating assets under their control. However, such a direct form of agency conf lict is not necessary. Cash provides freedom from external due diligence that could simply allow managers to make more mistakes than other better monitored firms.",
+        "An earlier paper by Lang, Stulz, and Walkling ~1991! provides support for the free cash f low hypothesis in explaining acquisitions. They use the ratio of cash f low to assets for low q firms as their proxy for free cash f low and also report \"weak\" results from using total cash in place of cash f low. This may be because they do not control for the widely differing levels of \"normal\" cash across companies documented here ~in",
+        "Table I, below! and in Opler et al. ~1999!. The definition of excess cash used here adjusts for these differences. Lang et al. ~1991! show that firms with good investment opportunities ~high q firms! and high",
+        "Table I"
+      ]
+    },
+    {
+      "paper": "harford1999",
+      "venue": "JF",
+      "head": "Predicting Bidders Using a Probit Model",
+      "paragraphs": [
+        "This table presents the results of a probit that predicts which firms will be bidders in a given year. Sales growth is the average sales growth over years t Ϫ 4 through t Ϫ 1. Noncash working capital is the net working capital ~current assets Ϫ current liabilities! minus cash and cash equivalents, normalized by total assets and averaged over years t Ϫ 4 through t Ϫ 1. Leverage is the ratio of book value of debt to market value of equity, averaged over years t Ϫ 4 to through t Ϫ 1. Market-to-book is the ratio of market value of equity to book value of equity, averaged over years t Ϫ 4 through t Ϫ 1. Price-to-earnings is the stock price divided by earnings per share, averaged over years t Ϫ 4 through t Ϫ 1. Size is the natural logarithm of total assets, measured at the beginning of year t. Cash deviation is the deviation of the firm's cash and cash equivalents from the average value predicted for its industry, measured at the beginning of year t and normalized by total assets. In the second specification, this variable is broken into three separate variables by interacting it with dummy variables for the level of insider ownership.",
+        "The results of two probits are presented here. The first is estimated on all firm years from 1977 to 1993 for which sufficient data exist. The second is estimated on a subsample of firm years from 1990 to 1993 for which Compact Disclosure had ownership data for officers and directors. In the second specification, a Wald chi-squared test cannot reject the hypothesis that all three ownership0cash deviation coefficients are equal.",
+        "Predicting Bidders ~bidder ϭ 1! Full Sample With Ownership Data Coefficient Std. Error Coefficient Std. Error Intercept Ϫ3.472*** 0.114 Ϫ3.906*** 0.454 Avg. abnormal return 0.364*** 0.138 0.524 0.575 Sales growth 0.487*** 0.085 0.096 0.315 Noncash working capital 0.654*** 0.149 0.350 0.575 Leverage 0.028 0.029 Ϫ0.054 0.210 Market-to-book 0.015 0.022 0.081* 0.047 Price-to-earnings Ϫ0.009*** 0.003 0.008 0.006 Size 0.227*** 0.013 0.170*** 0.050 Cash deviation 1.061*** 0.171 Insider ownership Յ5% 1.470** 0.732 Insider ownership .5% to Յ25% 0.355 1.077 Insider ownership .25% 0.998 1.317 Yearly dummies 1986 0.085 0.081 1987 Ϫ0.128 0.097 1988 Ϫ0.088 0.094 1989 Ϫ0.161 0.100 1990 Ϫ0.326*** 0.115 1991 Ϫ0.683*** 0.149 1992 Ϫ0.375*** 0.117 1993 Ϫ0.337*** 0.119 Number of observations 23686 2857 ***, **, * Significant at the 1, 5, and 10 percent levels, respectively.",
+        "ing Jensen and Meckling ~1976!, I use insider ownership as a measure of the degree of agency conf lict found in a corporation. To determine whether the cash-richness effect is being driven by firms with low insider ownership, as the free cash f low hypothesis suggests, I re-estimate the bidder probit on a subsample of firm years from 1991 to 1993 for which I have insider ownership data. Insider ownership is measured as the percentage share holdings of officers and directors as reported in the proxy statement in the year prior to the spending decision. The data are from Compact Disclosure and are available from 1991 onward. The shorter sample period and missing data for ownership reduce the number of observations for the second probit to 2,857. Morck et al. ~1988a! show that the relation between firm value and managerial ownership is not monotonically increasing. Therefore, to allow for a nonmonotonic relation, I follow their method by splitting the cash deviation variable into three separate variables. These new variables are constructed by interacting cash deviation with three dummy variables: firms with insider ownership less than five percent, firms with insider ownership between five and 25 percent, and firms with insider ownership greater than 25 percent. Additionally, the yearly dummy variables are dropped since the sample period does not cross any merger wave boundaries.",
+        "The results of the probit are presented in Table III. The coefficients on return, sales growth, and noncash working capital lose their significance. This could be due to the smaller sample size or to differences between the takeover market in the 1990s and the rest of the sample period. Cash deviation for low insider ownership ~less than five percent! firms is significant and positive. It is positive for the other two ownership categories, but neither coefficient is significant. Although the statistical significance of the cash deviation result is coming from firms with low insider ownership, a Wald chi-squared test cannot reject the hypothesis that the coefficients on all three ownership groups are the same. Unfortunately, the period for which I have full ownership data is a relatively inactive period for takeovers, limiting the power of the last probit and the ability to draw inferences from its results.",
+        "The results of these two probits indicate that the likelihood of being a bidder is increasing in cash-richness. Whether these bids are value increasing or decreasing cannot be determined without tests that measure the valuation consequences of the bidding decision. To this end, the next section examines the market reaction to the bids to evaluate these acquisition decisions."
+      ]
+    },
+    {
+      "paper": "harford1999",
+      "venue": "JF",
+      "head": "B.1. Method of Predicting Bidders",
+      "paragraphs": [
+        "The probit model used to predict bidders is the first specification from Table III. First, the empirical distribution of the probabilities from the probit model is constructed. Specifically, the range between zero and the maximum observed probability is divided into equal intervals and the percentage of bidders and nonbidders falling into each interval is calculated. If graphed, the two distributions cross at some point, to the left of which the nonbidder distribution dominates and to the right of which the bidder distribution dominates. Table IV presents the empirical distributions for the bidder probit of Section II.A. The intersection occurs at 0.022. Palepu ~1986! shows for takeover target prediction that this method produces the optimal prediction cutoff point for an investment strategy of being long expected targets and short firms that are not expected to become targets. Firms with probabilities above 0.022 are designated as expected bidders and those below this are not expected to be bidders. This procedure produces 356 expected and 131 unexpected bidders."
+      ]
+    },
+    {
+      "paper": "harford1999",
+      "venue": "JF",
+      "head": "A. Predicting Acquisition Targets",
+      "paragraphs": [
+        "The presence of a large cash reserve seems to lead to suboptimal behavior by management. If internal control mechanisms are failing to prevent this, then external management teams may be able to capture value by stepping in to prevent it. If so, then firms with large reserves are more likely to be targets of acquisition attempts than otherwise similar firms. Such a relation would support free cash f low concerns about large cash reserves in that other firms are signaling their belief that the current management of the corporation is inferior. Alternatively, firms with good investment opportunities but not the financial resources to fund them may seek out mergers with cash-rich firms, as suggested in Hanson ~1992! and Smith and Kim ~1994!. A model predicting targets provides evidence on whether the presence of large cash reserves is enough to trigger a takeover attempt, controlling for other factors.",
+        "This test is performed exactly like the bidder probit, except that the dependent variable is one if the firm was the target of an acquisition attempt, successful or not. The control variables and sample selection procedure are as described in Section II.A. The results are presented in Table VII.",
+        "High market-to-book firms are significantly less likely to be targeted. This is consistent with the findings of Hasbrouck ~1985! and Morck et al. ~1988b!. Firms with good growth opportunities are less likely to suffer agency problems that would lead to external intervention. Surprisingly, size, the natural logarithm of total assets in year t Ϫ 1, is not significant. Previous studies, such as Mikkelson and Partch ~1989! and Song and Walkling ~1993! have found size to be negatively related to target incidence. One possible explanation is different definitions of size; both of those studies use market value ~of equity and assets, respectively! and only Mikkelson and Partch use the log. I repeat the test using the natural log of the market value of assets ~book assets minus book equity plus market value of equity!, but size is still insignificant.",
+        "The cash deviation variable is strongly significant and negative, indicating that cash-rich firms are less likely to be targeted in a control contest. Previous studies such as Palepu ~1986! and Song and Walkling ~1993! have not found liquidity to predict targets. The difference here most likely arises from different definitions of liquidity and from controlling for cross-industry and time-series differences in the level of normal cash.",
+        "The negative coefficient on cash could indicate that a large cash stockpile is valuable in fighting ~and, hence, deterring! takeover attempts. For example, cash provides the f lexibility to initiate a defensive repurchase tender offer or the so-called Pac Man defense. The result would be that cash-rich firms would remain safe from takeover. A probit analysis similar to this one ~but not reported here! shows that cash-rich firms are more likely to be undertaking repurchases than other firms. These repurchases could serve to deter unknown or rumored acquirers by concentrating share ownership in friendly hands and eliminating shareholders with low reservation prices. These repurchases also indicate that some cash-rich firms do return part of the cash to shareholders. This study examines whether the acquisition decisions of cash-rich firms are value increasing, but there are many other ways to allocate a cash stockpile. Understanding what determines the allocation of cash stockpiles is an interesting area for future research.",
+        "A combination of additional factors could explain the target result. First, there is the issue of endogeneity; it is possible that the majority of cash-rich firms we observe are those whose managers know they can safely stockpile cash without attracting control attention. Further, because the assets are so liquid by definition, a prospective bidder could reasonably doubt whether it would ever gain control over them. Instead, one might expect that the cash would be paid out defensively or otherwise before the bidder could gain con-",
+        "Table VII Predicting Targets This table employs the same methods used in Table III to predict bidders. The variables are defined in Table III and, as it was there, the focus is on the cash deviation variable. Coefficient Standard Error Intercept Ϫ1.840 0.082 Avg. abnormal return Ϫ0.015 0.100 Sales growth Ϫ0.180 0.126 Noncash working capital 0.123 0.110 Leverage 0.010 0.025 Market-to-book Ϫ0.065*** 0.021 Price-to-earnings 0.004** 0.002 Size 0.001 0.010 Cash deviation Ϫ0.545*** 0.118 Yearly dummies 1986 0.140** 0.067 1987 0.055 0.073 1988 0.133* 0.072 1989 0.015 0.080 1990 Ϫ0.425*** 0.113 1991 Ϫ0.465*** 0.117 1992 Ϫ0.301*** 0.099 1993 Ϫ0.817*** 0.169 Number of observations 23686 ***, **, * Significant at the 1, 5, and 10 percent levels, respectively",
+        "trol. Finally, if the bidder's major contribution is that it distributes the cash stockpile, it is not bringing any unique ability to this transaction and one would expect the rents to accrue to the target shareholders. Overall, it is likely that a takeover attempt of a cash-rich target would be a high-cost, low-benefit transaction. This is consistent with the general results of Ruback ~1983! and Asquith ~1983!, which indicate that the market for corporate control is competitive enough that targets capture the gains in a transaction. If there exists a tendency for firms with good investment opportunities, but no funding for them, to merge with cash-rich firms, the transactions must usually be initiated by the cash-rich firms."
+      ]
+    },
+    {
+      "paper": "hollander2010",
+      "venue": "JAR",
+      "head": "Hypotheses Development and Variable Measurement",
+      "paragraphs": [
+        "Prior studies indicate that several firm attributes affect the demand for, and thus the equilibrium level of, corporate disclosure. We start with a classification model based on four commonly cited disclosure determinants 7 Around the time of the call, Milacron's share price declined by 2.8%. On March 11, 2004 (four days before the deadline), management finally reached a refinancing deal. The news of the refinancing sent the shares up 45% on the first trading day after the financing deal was announced. and append to this baseline model control variables believed to be associated with both our dependent variable and the explanatory variables.",
+        "Most studies primarily focus on examining the proprietary cost of disclosure. Berger and Hahn [2007] argue, however, that much of the prior evidence that is consistent with the proprietary-cost motive to withhold information is also consistent with an alternative agency cost hypothesis, which posits that disclosures are withheld because of conflicts of interest between managers and shareholders. Unlike the setting in Berger and Hahn [2007], our empirical setting does not yield opposite predictions for proprietary versus agency-cost motives to withhold information. Therefore, in this study, we make no attempt to disentangle these motives. We now turn to a discussion of our explanatory variables."
+      ]
+    },
+    {
+      "paper": "ragozzino2024",
+      "venue": "journal(LRP)",
+      "head": "Research hypotheses",
+      "paragraphs": [
+        "As discussed, earnings calls provide a unique opportunity for information discovery. Although earnings calls are discretionary and can have downsides such as a risk of information being disseminated in product markets, firms have an incentive to hold them for at least two broad reasons: First, not doing so would likely indicate an intent to withhold information from markets, with potentially adverse valuation consequences. Second, earnings calls provide executives with an opportunity to explain the drivers of their firms' performance, as well as to lay out their strategy and future pursuits. This purpose is beneficial to firms because it allows them to access capital markets, which is the main advantage of being publicly traded, but which requires transparency to providers of financial resources (Chemmanur and Fulghieri, 1999). It is therefore no surprise that a recent survey conducted by the National Investor Relations Institute reports that 97 percent of all public companies hold quarterly earnings calls on a regular basis (https://www.niri.org/ )."
+      ]
+    },
+    {
+      "paper": "thewissen2024",
+      "venue": "working(SSRN)",
+      "head": "H2: The management of tone before stock-for-stock M&As increases with the merger's deal value.",
+      "paragraphs": [
+        "Similar to deal characteristics, we further expect firm-specific characteristics to affect the relationship between tone management and stock-for-stock acquisitions. We expect profitable firms to be less likely to engage in acquisition transactions as they have a high value from their existing operations (Park, Yoon, and Kim, 2013), and therefore already benefit from a relatively high stock price. On the contrary, unprofitable firms are pro-actively looking for targets and more likely to enter acquisition transactions.",
+        "This relationship is in line with prospect theory, which argues that managers in less profitable firms are more likely to look for high-risk ventures, whereas highly profitable acquirers tend to be more risk averse and to enter M&A deals of higher quality. As a result, we hypothesize that the incentive to manage the tone of corporate disclosures before M&A announcements is stronger for firms with a low past profitability."
+      ]
+    },
+    {
+      "paper": "thewissen2024",
+      "venue": "working(SSRN)",
+      "head": "H3: The management of tone before M&As decreases with the acquirer's past profitability.",
+      "paragraphs": [
+        "Finally, firm-specific monitoring mechanisms are expected to affect the impact of stock-for-stock decisions on tone management. On the one hand, the presence of control mechanisms, such as financial analysts or leverage, have been shown to reduce managerial opportunistic behavior, such as earnings management by providing additional monitoring. For example, Hong, Huseynov, and Zhang (2014) show that the number of analysts following a firm has important monitoring effects on managerial behavior, which results in lower levels of both accrual-and real-based earnings management. Similarly, other studies finds that there exists a negative relationship between leverage and earnings manipulation (Rodriguez-Perez and van Hemmen, 2010;Alsharairi, 2012), as managers in leveraged firms may face more control from creditors, limiting the manipulation of earnings. On the other hand, the presence of financial analysts may put more pressure on managers and lead them to engage in greater tone management. For instance, Bratten, Payne, and Thomas (2016) show that managers tend to resort to opportunistic behavior when followed by a larger number of analysts. As such, higher analyst coverage increases the scrutiny of managers and leads to manipulative behavior. Other studies also show that firm leverage can be positively associated with earnings management (DeFond and Jiambalvo, 1994;Iatridis and Kadorinis, 2009). Overall, the expected impact of leverage or analysts' coverage on tone management around M&A transactions is ambiguous and remains to be empirically investigated.",
+        "H4a: Tone manipulation decreases with the number of analysts (leverage) following the firm before the stock-for-stock acquisition.",
+        "H4b: Tone manipulation increases with the number of analysts (leverage) following the firm before the stock-for-stock acquisition."
+      ]
+    }
+  ],
+  "ours": [
+    {
+      "ledger": "section2.2",
+      "para_id": "section2.2-U1",
+      "final_prose": "The preceding section isolates two dimensions of the pattern we expect. The first is an \\emph{anticipatory} dimension, in which CEO uncertainty language is elevated while an acquisition remains undisclosed and recedes once it is announced. The second is a \\emph{cash-concentrated} dimension, in which that elevation is stronger for cash acquisitions than for stock. This section turns those dimensions into formal, falsifiable predictions about \\emph{where} and \\emph{when} the signal appears in a CEO's unscripted answers, not why it appears, a mechanism the framework leaves open. The object of each prediction is the call-varying residual of CEO uncertainty language in the Q\\&A, the component that remains once a CEO's persistent speaking style is netted out (defined formally in the next section), and every prediction is read in descriptive, correlational terms. Timing is measured in event time: $e$ counts calendar quarters relative to a firm's first acquisition announcement, so that $e=-1$ denotes the call in the quarter immediately before it, and the focal pre-announcement indicator is $\\mathrm{PreAnnounceQtr}=\\mathbf{1}[e=-1]$, defined for a firm's first acquisition financed at least half in cash. To state the predictions compactly, we write $\\theta_e$ for the shift in residual Q\\&A uncertainty at event position $e$ relative to a firm's own baseline quarters (for cash acquirers, unless a deal-type superscript such as $\\mathrm{stock}$ indicates otherwise), and $\\kappa_e$ for the analogous shift in its cash-to-assets ratio; each hypothesis below is a sign restriction on these shifts, which the designs of Section~2.4 estimate. The three hypotheses, H1, H1a, and H1b, are stated both informally and formally and then confronted with the data.",
+      "propositions": [
+        "The 2.1 framework's two dimensions (anticipatory timing x cash-concentration) yield testable predictions about WHERE and WHEN a CEO Q&A language signal appears, not why.",
+        "Define PreAnnounceQtr = 1[e = -1], the call quarter immediately before the firm's first >=50%-cash acquisition announcement (e = call quarter - announce quarter).",
+        "The predictions are stated as falsifiable hypotheses (H1, H1a, H1b) and tested by the 2.4 designs, read in descriptive/correlational terms."
+      ],
+      "guardrails": [
+        "RULE-COH-2: pattern not cause.",
+        "RULE-COH-6: 'residual' is named here but DEFINED in 2.3 -> light forward-pointer only."
+      ],
+      "number_audit": []
+    },
+    {
+      "ledger": "section2.2",
+      "para_id": "section2.2-U2",
+      "final_prose": "The first hypothesis concerns timing. While the deal is withheld, the executive faces questions that bear on it but can neither address nor deny it, so residual uncertainty should run high in the quarter before the announcement and subside once the deal is public. That this is not mechanical is clear from the nearest evidence, which runs the other way. \\citet{thewissen2024} document that acquirers manage the tone of their disclosure ahead of stock-for-stock deals, a deliberate adjustment; H1 predicts a different register in a different setting, not tone managed to move the market but uncertainty language that surfaces in a cash acquirer's answers while the deal is withheld. Consistent with the bounded reading established earlier, the hypothesis takes no stance on whether that surfacing is compliance-constrained or strategically chosen; it asserts only that the language moves, and when.\n\\begin{quote}\n\\textbf{H1 (Timing).}\\\\\n\\emph{Informally:} residual Q\\&A uncertainty is higher in a cash acquirer's pre-announcement quarter than in that same firm's other quarters.\\\\\n\\emph{Formally:} $\\theta_{-1}>0$.\n\\end{quote}",
+      "propositions": [
+        "H1: residual CEO Q&A uncertainty (UncResCEO) is elevated in the pre-announcement quarter of cash acquirers, relative to their own other quarters.",
+        "Prior work shows stock bidders deliberately MANAGE disclosure tone before stock-for-stock deals (callback 2.1 P6); H1 predicts the opposite register -- unmanaged uncertainty, before cash deals.",
+        "H1 is non-obvious because the literature documents deliberate, strategic tone management, whereas H1 predicts elevated uncertainty LANGUAGE surfacing under the disclosure bind; consistent with 2.1 P7, it takes no stance on whether that surfacing is strategic or compliance-constrained."
+      ],
+      "guardrails": [
+        "RULE-COH-1: thewissen is a CALLBACK (P6) -> reference the contrast, do not re-review.",
+        "RULE-COH-6: 'residual Q&A uncertainty' forward-refs 2.3.",
+        "ONE-CLAUSE callback only -- do NOT re-cite the ~15% tone figure (lives in 2.1 P6).",
+        "DROP 'involuntary' -- 2.1 P7 holds both readings open; H1 = elevated uncertainty LANGUAGE only."
+      ],
+      "number_audit": []
+    },
+    {
+      "ledger": "section2.2",
+      "para_id": "section2.2-U3",
+      "final_prose": "The second hypothesis sharpens the first by asking where the elevation should concentrate. Cash and stock acquisitions share the disclosure setting, both material and both withheld, yet differ in one respect the design exploits: a cash purchase draws on an accumulated cash position, whereas a stock exchange need not. As developed in the framework, this makes the stock deal a natural placebo, the same withholding bind without the cash commitment, against which a cash acquirer's run-up can be read. The claim is one of concentration rather than strict specificity, and it concerns the run-up in language alone; H1a makes no claim that the underlying cash accumulation is itself peculiar to cash acquirers, and it asserts no cause.\n\\begin{quote}\n\\textbf{H1a (Concentration).}\\\\\n\\emph{Informally:} the pre-announcement elevation in residual uncertainty is larger for cash acquirers than for stock acquirers.\\\\\n\\emph{Formally:} $\\theta_{-1}^{\\,\\mathrm{cash}}>\\theta_{-1}^{\\,\\mathrm{stock}}$.\n\\end{quote}",
+      "propositions": [
+        "H1a: the pre-announcement uncertainty run-up is stronger for cash acquirers than for stock acquirers.",
+        "Cash bids draw on an accumulated cash position while stock exchanges need not, making the stock deal a placebo: the same disclosure bind, minus the cash commitment.",
+        "H1a concerns the EFFECT (the run-up concentrating in cash deals), framed as concentration not strict specificity; it does NOT claim the cash build-up itself is cash-specific, and asserts no cause."
+      ],
+      "guardrails": [
+        "RULE-COH-1: harford + placebo logic = CALLBACK P5.",
+        "EFFECT-not-CAUSE: H1a is about the run-up concentrating in cash, NOT that the cash build-up itself is cash-specific (C6 cause leg 0.0064 n.s.)."
+      ],
+      "number_audit": []
+    },
+    {
+      "ledger": "section2.2",
+      "para_id": "section2.2-U4",
+      "final_prose": "The third hypothesis concerns resolution. The residual uncertainty and the acquirer's cash run on different clocks. The uncertainty tracks the undisclosed information and should resolve at announcement, receding once the deal is public even before it closes, whereas the cash that funds the purchase persists on the balance sheet until it is paid at completion. The most discriminating window is the gap between announcement and completion, when the deal is announced but not yet closed: there the language should already have returned to baseline while the cash still sits unspent. That the cash leg is largely mechanical, since cash leaves only when the deal is paid, is by design; H1b predicts the divergence of the two paths, not the level of either.\n\\begin{quote}\n\\textbf{H1b (Resolution).}\\\\\n\\emph{Informally:} residual uncertainty returns to baseline as soon as the deal is announced, even before it closes, whereas the cash that funds it remains in place until completion.\\\\\n\\emph{Formally:} $\\theta_{-1}>0$ and $\\theta_{\\mathrm{gap}}=0$, while $\\kappa_{\\mathrm{gap}}>0$.\n\\end{quote}",
+      "propositions": [
+        "H1b: residual Q&A uncertainty resolves at announcement -- dropping even before the deal closes (the GAP window: announced, not yet completed) -- while the acquirer's cash persists until it is paid at completion; the two run on different clocks.",
+        "The cash-persistence leg is partly mechanical (cash physically leaves at closing); and the post-announcement uncertainty undershoot is not to be over-read."
+      ],
+      "guardrails": [
+        "RULE-COH-1: the two-clock concept = CALLBACK (P5); formalize into an event-time test, do not re-explain.",
+        "C1 caution: do NOT over-read POST (-0.0250*) as a finding.",
+        "GAP discriminator (C1 crux, advisor): the MNPI fingerprint is the DROP at the GAP bin (announced, NOT yet closed) -> uncertainty ~0 while cash still persists. Do NOT flatten GAP+POST into 'gone post' -- that loses the discriminator. (empire_drop_test: GAP = MNPI->~0 vs outcome->stays high.)",
+        "keown price run-up CUT from P4 (2026-06-13): it is an ANTICIPATION point (P2/H1), misplaced in a RESOLUTION-clock paragraph; the price-vs-language distinction stays in 2.1 P6."
+      ],
+      "number_audit": []
+    },
+    {
+      "ledger": "section2.2",
+      "para_id": "section2.2-U5",
+      "final_prose": "One alternative to this anticipatory reading should be flagged. The pre-announcement rise might reflect not the disclosure bind but analyst scrutiny: analysts spending more of the call on cash and liquidity, mechanically drawing out hedged answers. This is a plausible alternative driver of the run-up, distinct from the framework's two open readings rather than a third version of them, and the design treats it as an identification threat to confront. Its construction and motivation are developed in Section~2.5, and it is put directly to the data as a side analysis in Section~4.1. Flagging it here records that the run-up's most immediate competing explanation is tested, with the verdict reported there; confronting it bounds the alternatives without establishing the disclosure mechanism, which the framework leaves open.",
+      "propositions": [
+        "Competing hypothesis (analyst scrutiny): the pre-announcement uncertainty rise reflects analysts asking more cash-related questions, mechanically eliciting hedged answers, rather than the disclosure bind.",
+        "This scrutiny channel is an identification threat -- developed + motivated in 2.5 P4 and tested as a side analysis in 4.1, where it is rejected; it is distinct from the two observationally-equivalent readings of 2.1 (compliance-constrained vs strategic silence), and rejecting it does not establish a mechanism."
+      ],
+      "guardrails": [
+        "RULE-COH-5: scrutiny is a PLAUSIBLE ALTERNATIVE DRIVER (identification threat we test, motivated in 2.5 P4), tested & REJECTED in 4.1 -- NOT a P7 reading; rejecting it != establishing a mechanism.",
+        "NO DOUBLE-INTRO (advisor): 2.2 only FLAGS the rival; the why-plausible + the tables + the construct are 2.5 P4's job. Keep 2.2 P5 lean.",
+        "Verdict (the nulls + 'rejected') belongs to 4.1 -- do NOT state it as established here."
+      ],
+      "number_audit": []
+    }
+  ]
+}

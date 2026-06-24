@@ -1,0 +1,223 @@
+key	idx	auto_type	npar	nwords	head
+dwz	0	abstract	1	128	Abstract
+dwz	1	intro	22	2311	Introduction
+dwz	2	hypotheses	1	45	Development of hypotheses
+dwz	3	hypotheses	4	245	Clear talk as a matter of style
+dwz	4	results	4	563	Clear talk and earnings responses
+dwz	5	results	2	250	Clear talk and firm value
+dwz	6	data	4	354	Conference call transcripts
+dwz	7	artifact	4	58	12
+dwz	8	methods	3	207	Overview of the approach
+dwz	9	data	7	355	Uncertainty words
+dwz	10	methods	10	762	CEO clarity -an intuitive argument
+dwz	11	methods	11	700	CEO clarity -estimation
+dwz	12	results	13	842	Correlates of CEO clarity
+dwz	13	results	1	91	Summary of results so far
+dwz	14	results	1	25	CEO clarity and earnings responses
+dwz	15	methods	17	1129	Empirical strategy
+dwz	16	results	8	483	Results
+dwz	17	results	25	1675	Does the clarity of CEOs affect the response to hard or soft
+dwz	18	conclusion	16	2739	Conclusions
+dwz	19	appendix	0	0	IA Internet Appendix
+dwz	20	methods	2	452	IA.1 Further comments on the methodology of estimating style
+dwz	21	appendix	7	1788	IA-1
+thewissen2024	0	abstract	1	171	Abstract
+thewissen2024	1	untitled	1	170	
+thewissen2024	2	intro	24	2676	Introduction
+thewissen2024	3	artifact	1	127	P r e p r i n t n o t p e e r r e v i e w e d
+thewissen2024	4	hypotheses	0	0	Literature review and hypothesis development
+thewissen2024	5	lit_review	5	682	Stock-for-stock M&As and earnings management
+thewissen2024	6	results	10	1094	Stock-for-stock M&As and the manipulation of corporate discl
+thewissen2024	7	results	2	193	Economic benefits of tone management -Deal value, profitabil
+thewissen2024	8	hypotheses	2	150	H2: The management of tone before stock-for-stock M&As incre
+thewissen2024	9	hypotheses	3	272	H3: The management of tone before M&As decreases with the ac
+thewissen2024	10	data	1	16	Sample selection and variable definition
+thewissen2024	11	data	8	335	Collection of earnings press releases
+thewissen2024	12	methods	8	859	Research design
+thewissen2024	13	artifact	6	369	P r e p r i n t n o t p e e r r e v i e w e d
+thewissen2024	14	artifact	1	13	P r e p r i n t n o t p e e r r e v i e w e d
+thewissen2024	15	data	3	278	Sample selection
+thewissen2024	16	data	4	279	Summary statistics
+thewissen2024	17	results	3	141	Results
+thewissen2024	18	results	7	489	Tone management around M&A announcements
+thewissen2024	19	results	11	621	The multivariate setting of tone management
+thewissen2024	20	methods	3	227	Endogeneity concerns
+thewissen2024	21	methods	8	603	Propensity-score matching
+thewissen2024	22	methods	3	272	Entropy balancing
+thewissen2024	23	methods	8	442	Instrumental variable approach
+thewissen2024	24	methods	2	155	Restricted control function
+thewissen2024	25	artifact	1	109	P r e p r i n t n o t p e e r r e v i e w e d 29
+thewissen2024	26	methods	2	85	Pseudo-event study
+thewissen2024	27	results	3	136	Factors moderating and reinforcing the effect of stock-for-s
+thewissen2024	28	results	1	197	Deal size
+thewissen2024	29	results	1	148	Firm performance
+thewissen2024	30	results	2	150	Firm monitoring
+thewissen2024	31	results	1	87	Additional analyses -Stock market reaction and the target's 
+thewissen2024	32	results	0	0	Does tone management profit bidders?
+thewissen2024	33	results	6	643	The effect of tone management on the bidder's stock price be
+thewissen2024	34	results	3	327	The impact of tone management on the bidder's long-term retu
+thewissen2024	35	results	2	194	The tone management by the target
+thewissen2024	36	data	7	800	The structure of earnings press releases before mergers and 
+thewissen2024	37	conclusion	4	1758	Conclusion
+thewissen2024	38	results	28	6565	Appendix C: Multivariate Analysis of Bidders' Tone Around M&
+ragozzino2024	0	abstract	1	134	Abstract
+ragozzino2024	1	intro	8	1564	Introduction
+ragozzino2024	2	lit_review	1	219	Background theory
+ragozzino2024	3	lit_review	6	1197	Information economics and M&A
+ragozzino2024	4	lit_review	2	315	The role of earnings calls for information delivery to capit
+ragozzino2024	5	hypotheses	1	162	Research hypotheses
+ragozzino2024	6	results	4	629	M&A as an antecedent of corporate strategy information discl
+ragozzino2024	7	results	4	829	Consequences of corporate strategy information disclosures
+ragozzino2024	8	methods	0	0	Methods
+ragozzino2024	9	data	5	1253	Data and sample
+ragozzino2024	10	methods	1	160	Variables and specifications
+ragozzino2024	11	methods	4	979	Main models.
+ragozzino2024	12	methods	1	144	Models.
+ragozzino2024	13	results	10	1437	Results
+ragozzino2024	14	results	8	1777	Robustness checks.
+ragozzino2024	15	discussion	0	0	Discussion
+ragozzino2024	16	discussion	3	509	Contributions
+ragozzino2024	17	discussion	7	1410	Research implications and future research
+ragozzino2024	18	conclusion	1	229	Conclusion
+bushee2018	0	abstract	1	131	Abstract
+bushee2018	1	intro	11	1458	Introduction
+bushee2018	2	lit_review	6	814	Prior Literature
+bushee2018	3	methods	0	0	Research Design
+bushee2018	4	lit_review	14	1145	THEORETICAL INFORMATION STRUCTURE
+bushee2018	5	methods	8	543	EMPIRICAL ESTIMATION OF EQUATION (3)
+bushee2018	6	methods	2	284	EMPIRICAL ESTIMATION OF EQUATION (5)
+bushee2018	7	data	5	1107	Sample and Descriptive Statistics
+bushee2018	8	results	0	0	Results
+bushee2018	9	methods	13	1969	IDENTIFYING THE LATENT COMPONENTS IN COMPLEX LANGUAGE
+bushee2018	10	results	9	1702	LINGUISTIC COMPLEXITY AND INFORMATION ASYMMETRY
+bushee2018	11	methods	7	1278	ALTERNATIVE SPECIFICATIONS
+bushee2018	12	methods	2	507	MONTE CARLO PLACEBO TESTS
+bushee2018	13	results	0	0	T A B L E 6 Linguistic Complexity and Information Asymmetry:
+bushee2018	14	methods	3	169	Panel A: Monte carlo placebo test: Random non-conference cal
+bushee2018	15	methods	1	370	Controls Included Base Model Controls + Additional Controls 
+bushee2018	16	results	11	1317	VALIDATION USING EARNINGS GUIDANCE
+bushee2018	17	results	4	340	LATENT COMPONENTS OF LINGUISTIC COMPLEXITY AND EARNINGS
+bushee2018	18	conclusion	3	383	Conclusion
+bushee2018	19	appendix	0	0	APPENDIX A
+bushee2018	20	methods	1	39	Derivation of Regression Coefficients in Equation (5)
+bushee2018	21	data	9	436	A.1 EFFECT OF MEASUREMENT ERROR
+bushee2018	22	results	7	499	A.2 EFFECT OF OBFUSCATION IN LINGUISTIC COMPLEXITY OF ANALYS
+bushee2018	23	appendix	0	0	APPENDIX B
+bushee2018	24	data	5	480	Technical Note on the Perl Routine Used to Compute the Fog I
+bushee2018	25	appendix	0	0	APPENDIX C
+bushee2018	26	other	0	0	Variable Definitions
+bushee2018	27	results	2	135	Measures of linguistic complexity and information asymmetry 
+bushee2018	28	results	2	111	First principal component of Info(Present) and Info(Response
+lm2011	0	abstract	2	127	Abstract
+lm2011	1	untitled	12	1040	
+lm2011	2	methods	6	808	I. Research on Textual Analysis
+lm2011	3	data	0	0	II. Data, Variables, and Term Weights
+lm2011	4	data	3	462	A. The 10-K Sample
+lm2011	5	data	1	144	B. Parsing the 10-Ks
+lm2011	6	data	2	183	C. 10-K Subsamples
+lm2011	7	data	3	279	D. Variables
+lm2011	8	data	4	432	E. Term Weighting
+lm2011	9	data	14	1363	III. Textual Analysis and Word Lists
+lm2011	10	results	0	0	IV. Results
+lm2011	11	data	3	145	A. Sample Description
+lm2011	12	data	5	676	Summary Statistics for the 1994 to 2008 10-K Sample
+lm2011	13	results	14	1902	B. Examining the Composition of Negative Tone
+lm2011	14	data	4	355	C. 10-K Filing Period Returns and Negative Word Lists
+lm2011	15	results	9	935	Return Regressions
+lm2011	16	results	3	621	Return Regressions: MD&A Section
+lm2011	17	data	4	329	D. Additional Word Lists, Filing Date Returns, Volume, and P
+lm2011	18	results	5	796	Return Volatility
+lm2011	19	results	3	238	E. 10-b5 Filings and Material Weakness in Internal Controls
+lm2011	20	results	6	729	Logit Regressions for Shareholder Class Action Suits for Acc
+lm2011	21	data	5	299	F. Negative Word Lists and Standardized Unexpected Earnings 
+lm2011	22	results	2	414	Standardized Unexpected Earnings Regressions
+lm2011	23	results	4	372	G. Negative Words in Alternative Contexts-Some Preliminary E
+lm2011	24	conclusion	7	578	V. Conclusions
+hollander2010	0	abstract	1	108	Abstract
+hollander2010	1	intro	13	2501	Introduction
+hollander2010	2	results	2	261	Conference Calls as a Voluntary Disclosure Medium
+hollander2010	3	data	0	0	Sample Selection, the Coding Process, and Content Analysis
+hollander2010	4	data	9	1158	SAMPLE SELECTION
+hollander2010	5	artifact	1	1	Ron Brown (Chief Executive Officer of Milacron Inc.):
+hollander2010	6	artifact	1	55	Eli Lustgarten:
+hollander2010	7	artifact	1	42	Ron Brown:
+hollander2010	8	artifact	4	247	Eli Lustgarten:
+hollander2010	9	artifact	3	261	Sean Wu (from Rodman & Renshaw, analyst):
+hollander2010	10	hypotheses	2	209	Hypotheses Development and Variable Measurement
+hollander2010	11	other	0	0	EXPLANATORY VARIABLES
+hollander2010	12	results	2	423	Disclosure Agency Problem.
+hollander2010	13	methods	1	153	Proprietary Information.
+hollander2010	14	results	2	320	Firm Performance.
+hollander2010	15	methods	3	257	Litigation Risk.
+hollander2010	16	methods	1	41	CONTROL VARIABLES
+hollander2010	17	methods	1	192	Company Size.
+hollander2010	18	methods	1	116	Company Age.
+hollander2010	19	methods	2	220	Analyst Participation and Involvement during the Call.
+hollander2010	20	methods	1	422	Institutional Ownership.
+hollander2010	21	results	1	230	Interim Disclosures.
+hollander2010	22	other	0	0	Conditions under Which Corporate Executives Suppress Informa
+hollander2010	23	methods	1	119	ECONOMETRIC SPECIFICATION
+hollander2010	24	data	4	890	DESCRIPTIVE STATISTICS
+hollander2010	25	results	10	2047	MULTIVARIATE LOGISTIC ANALYSIS
+hollander2010	26	other	0	0	FURTHER TESTS
+hollander2010	27	methods	1	173	No Recent CEO Change.
+hollander2010	28	methods	1	73	Irregular Items.
+hollander2010	29	methods	1	103	Issuance of Debt or Equity.
+hollander2010	30	results	0	0	Incomplete Disclosure and Investor Trading during the Call
+hollander2010	31	data	4	624	ECONOMETRIC SPECIFICATION AND VARIABLE MEASUREMENT
+hollander2010	32	results	3	316	MULTIVARIATE ANALYSIS
+hollander2010	33	results	3	552	WOULDN'T OBFUSCATION BETTER SERVE MANAGERS' INTERESTS?
+hollander2010	34	results	3	335	Incomplete Disclosures by Type.
+hollander2010	35	methods	2	273	Uncertainty of Information Arrival.
+hollander2010	36	conclusion	3	433	Conclusion
+harford1999	0	abstract	1	102	Abstract
+harford1999	1	untitled	7	864	
+harford1999	2	results	1	111	I. Corporate Cash Holdings
+harford1999	3	hypotheses	4	334	A. Theory and Hypotheses
+harford1999	4	data	4	661	Summary Statistics for Cash Holdings of 19 Industry Grouping
+harford1999	5	methods	4	681	B. Empirical Overview and Description of the Model of Normal
+harford1999	6	artifact	3	327	~1!
+harford1999	7	data	1	124	Summary Statistics for Cash-Rich Firms
+harford1999	8	results	4	439	Cash-Rich Firms
+harford1999	9	other	0	0	II. Cash Reserves and Corporate Control
+harford1999	10	results	1	77	A. Probit Analysis of Bidders
+harford1999	11	methods	3	344	A.1. The Probit Model and Definitions of Variables Used in t
+harford1999	12	results	3	183	A.2. Cash-Richness and the Likelihood of a Bid
+harford1999	13	hypotheses	6	888	Predicting Bidders Using a Probit Model
+harford1999	14	results	1	298	B. Announcement Returns for Bidders
+harford1999	15	hypotheses	1	168	B.1. Method of Predicting Bidders
+harford1999	16	results	5	313	B.2. Announcement Return Results
+harford1999	17	results	10	1184	Empirical Distribution of the Probability of Being a Bidder
+harford1999	18	results	12	1630	Table V Analysis of Bids
+harford1999	19	results	6	502	C. Operating Performance before and after the Merger
+harford1999	20	artifact	4	282	~2!
+harford1999	21	results	2	328	Operating Performance of Merged Firms
+harford1999	22	results	1	94	III. Further Tests
+harford1999	23	hypotheses	8	928	A. Predicting Acquisition Targets
+harford1999	24	results	1	103	B. Stock-Returns during a Cash Buildup
+harford1999	25	methods	3	143	B.1. Experimental Design
+harford1999	26	artifact	2	338	~3!
+harford1999	27	results	3	275	B.2. Results
+harford1999	28	results	6	624	Market Reaction to Cash Stockpiling
+harford1999	29	conclusion	3	298	IV. Conclusions
+bertrand_schoar2003	0	abstract	1	174	Abstract
+bertrand_schoar2003	1	intro	11	1491	I. INTRODUCTION
+bertrand_schoar2003	2	lit_review	6	745	II. WHY SHOULD INDIVIDUAL MANAGERS MATTER?
+bertrand_schoar2003	3	data	0	0	III. DATA
+bertrand_schoar2003	4	data	3	477	III.A. Sample Construction
+bertrand_schoar2003	5	data	15	1193	III.B. Sample Description
+bertrand_schoar2003	6	other	0	0	IV. IS THERE HETEROGENEITY IN EXECUTIVE PRACTICES?
+bertrand_schoar2003	7	methods	9	850	IV.A. Empirical Methodology
+bertrand_schoar2003	8	results	18	2372	IV.B. Results
+bertrand_schoar2003	9	results	11	1170	IV.C. Robustness of Results
+bertrand_schoar2003	10	results	3	424	IV.D. Magnitude of the Manager Fixed Effects
+bertrand_schoar2003	11	results	13	1503	IV.E. Management Styles
+bertrand_schoar2003	12	results	1	221	V. POSSIBLE INTERPRETATIONS OF THE MANAGER FIXED EFFECTS
+bertrand_schoar2003	13	results	2	445	V.A. Sorting Based on Firm and Industry-Level Characteristic
+bertrand_schoar2003	14	results	11	1284	V.B. Governance, Compensation, and Style
+bertrand_schoar2003	15	results	4	353	VI. OBSERVABLE MANAGERIAL CHARACTERISTICS
+bertrand_schoar2003	16	data	2	172	VI.A. Sample Construction
+bertrand_schoar2003	17	methods	8	478	VI.B. Empirical Methodology
+bertrand_schoar2003	18	results	9	1133	VI.C. Results
+bertrand_schoar2003	19	conclusion	2	196	VII. CONCLUSION
+bertrand_schoar2003	20	data	5	270	DATA APPENDIX

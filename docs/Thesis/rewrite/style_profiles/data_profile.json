@@ -1,0 +1,659 @@
+{
+  "type": "data",
+  "profile": [
+    {
+      "id": "a1-f2",
+      "agent": 1,
+      "aspect": "Elegant-variation / inverted 'X supplies Y' verb pattern",
+      "exemplar_pattern": "Exemplars use the plain reader-fronted 'We use/obtain X from source' or 'Source provides X' once and consistently, in subject-verb-object order.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "The Forbes data provide information on the CEOs of the 800 largest U. S. firms."
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "we complement this dataset with financial information from Compustat quarterly data, and with information on earnings forecasts from I/B/E/S."
+        }
+      ],
+      "our_pattern": "Our prose repeatedly fronts the dataset and uses the inverted 'X supplies Y' construction four times in a row, an unusual register choice that reads heavier than the standard 'we use X for Y'.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA1",
+          "quote": "Capital IQ supplies the earnings-call transcripts of United States public firms over 2002 to 2018"
+        },
+        {
+          "para_id": "OUR 3.1-PARA1",
+          "quote": "SDC supplies the merger and acquisition records"
+        }
+      ],
+      "gap": "Exemplars keep one plain reader-as-subject verb; our repeated inverted 'supplies' construction is a less common, heavier phrasing for the same source-listing function.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f3",
+      "agent": 1,
+      "aspect": "Metaphorical / abstract nominalizations for routine constructs",
+      "exemplar_pattern": "Exemplars name timing and sampling devices in plain literal terms (window, date, period, sample restriction) without metaphor.",
+      "exemplar_quotes": [
+        {
+          "paper": "lm2011",
+          "quote": "The file date return is measured as the 4-day holding period excess return over days 0 through 3."
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "We define our conference call window as beginning at the start of the call and ending 90 minutes thereafter."
+        }
+      ],
+      "our_pattern": "Our prose uses metaphors like 'event clock' and abstract phrasings ('the event clock that the designs below depend on exist only through this match') where a plain term (event timing / event date) would carry the same function.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA1",
+          "quote": "The cash-versus-stock classification and the event clock that the designs below depend on exist only through this match, which we record as a researcher degree of freedom rather than assume away."
+        },
+        {
+          "para_id": "OUR 3.1-PARA4",
+          "quote": "each firm's first qualifying deal setting its event clock"
+        }
+      ],
+      "gap": "Exemplars use literal timing vocabulary; our 'event clock' metaphor plus the abstract 'exist only through this match' construction add an interpretive layer over the plain sampling fact.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f8",
+      "agent": 1,
+      "aspect": "Heavy pre-modifier stacking / hyphenated compound adjectives",
+      "exemplar_pattern": "Exemplars keep noun phrases short, spelling restrictions out as separate clauses rather than stacking many hyphenated qualifiers before a noun.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "we exclude firms in the banking and insurance industries as well as utilities from our sample"
+        },
+        {
+          "paper": "lm2011",
+          "quote": "firms to be listed on the NYSE, Amex, or NASDAQ with a reported stock price immediately before the file date of at least $3"
+        }
+      ],
+      "our_pattern": "Our prose stacks long hyphenated compound modifiers ('at-least-five-call, non-financial and non-utility universe', 'call-varying component') in front of nouns.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA5",
+          "quote": "Because the residual exists only on the at-least-five-call, non-financial and non-utility universe, the uncertainty regressions describe a more-covered set of firms"
+        },
+        {
+          "para_id": "OUR 3.1-PARA4",
+          "quote": "excluding CEOs with fewer than five calls, for whom no speaking style and hence no residual can be estimated"
+        }
+      ],
+      "gap": "Exemplars express the same exclusions ('exclude firms in banking and insurance... and utilities') as a plain clause; our compressed pre-noun stack 'at-least-five-call, non-financial and non-utility universe' is denser to parse.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f10",
+      "agent": 1,
+      "aspect": "Nominalization 'researcher degree of freedom' and abstract qualifier 'rather than assume away'",
+      "exemplar_pattern": "Exemplars flag methodological caveats in plain terms ('we discuss below the possible selection issues', 'we record / we note') without coining abstract noun phrases.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "We discuss below (subsection IV.A) the possible selection issues associated with this sample construction."
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "there remains a size bias, which does not affect our empirical approach, but might affect the generalizability of our findings."
+        }
+      ],
+      "our_pattern": "Our prose introduces the abstract methodological noun phrase 'researcher degree of freedom' and the philosophical contrast 'rather than assume away' to flag the same kind of caveat.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA1",
+          "quote": "which we record as a researcher degree of freedom rather than assume away"
+        }
+      ],
+      "gap": "Exemplars name a caveat plainly ('possible selection issues', 'a size bias'); our 'researcher degree of freedom rather than assume away' uses a denser abstract construction for the disclosure.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f11",
+      "agent": 1,
+      "aspect": "Cross-reference density inside a single sentence",
+      "exemplar_pattern": "Exemplars cluster cross-references lightly and usually at the end of a clause, not several per sentence interleaved with definitions.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "Table IA-9 of the online appendix shows that these alternative approaches do not affect our inferences."
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "These descriptive results are consistent with Nagar, Nanda, and Wysocki [2003] from 1995 through 1997."
+        }
+      ],
+      "our_pattern": "Our prose interleaves multiple section/appendix cross-references with each construct definition in rapid succession within one paragraph, repeating 'as defined in Section X' many times.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA3",
+          "quote": "$\\mathrm{CashRatio}$ is cash and equivalents over total assets, $\\mathrm{cheq}/\\mathrm{atq}$, as defined in Section~2.5 and the Appendix."
+        },
+        {
+          "para_id": "OUR 3.1-PARA3",
+          "quote": "both are defined in Section~2.5, and only about eleven percent of calls draw cash scrutiny (the $\\mathrm{HighCashScrutiny}$ mean is $0.1127$, Panel~A)"
+        }
+      ],
+      "gap": "Exemplars use sparse single cross-references; our paragraph repeats 'as defined in Section 2.X / Appendix' for nearly every construct, producing a dense pointer-laden texture heavier than the exemplar norm.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f6",
+      "agent": 2,
+      "aspect": "Mid-sentence parenthetical reporting a result number inside a definitional clause",
+      "exemplar_pattern": "Exemplars keep the prose narration of a descriptive number simple and as the main clause subject ('The average (median) earnings surprise ... is 0.0% (0.1%)', 'the average value ... is much higher'), rather than embedding the number as a parenthetical justification mid-definition.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "The average (median) earnings surprise (Surprise) is 0.0% (0.1%) of market value at the beginning of the quarter"
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "The mean (median) ratio of stock-based to total compensation (COMP ) is 0.42 (0.45)."
+        }
+      ],
+      "our_pattern": "Our sentence defines two indicator variables, justifies one with an embedded reason ('since the median call draws none'), and then appends the actual mean as a parenthetical aside mid-sentence, so a single sentence carries a definition, a justification, and a statistic at once.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA3",
+          "quote": "$\\mathrm{CashScrutiny}$ is the share of analyst question-and-answer turns devoted to cash and liquidity, read from the locked word list in Appendix~I, and $\\mathrm{HighCashScrutiny}$ flags any such scrutiny at all, since the median call draws none; both are defined in Section~2.5, and only about eleven percent of calls draw cash scrutiny (the $\\mathrm{HighCashScrutiny}$ mean is $0.1127$, Panel~A)."
+        }
+      ],
+      "gap": "Where exemplars present a descriptive statistic as a clean standalone clause, ours buries the same statistic inside a chain that also defines two variables and gives a 'since' justification, forcing the reader to untangle them.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f8",
+      "agent": 2,
+      "aspect": "Internal cross-reference density (multiple Section/Appendix/Equation pointers per sentence)",
+      "exemplar_pattern": "Exemplars typically carry at most one routing pointer per sentence ('see appendix C for variable definitions', 'reported in the Data Appendix'), keeping each sentence's reference load light.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "Table 1 presents descriptive statistics for variables used in our analysis; see appendix C for variable definitions."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "See the Appendix for the other variable definitions."
+        }
+      ],
+      "our_pattern": "Our sentences frequently stack two or more internal pointers at once (Section 2.3, Equation (4), and a citation in one clause; or Section 2.2, Section 2.4, Section 2.5, and the Appendix across a short span), so the reader is repeatedly bounced to other locations within a single thought.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA2",
+          "quote": "is the input that the first stage of the Section~2.3 decomposition, Equation~(4) of \\citet{dwz} estimated on our sample, residualizes into $\\mathrm{UncResCEO}$"
+        },
+        {
+          "para_id": "OUR 3.1-PARA3",
+          "quote": "$\\mathrm{PreAnnounceQtr}=\\mathbf{1}[e=-1]$ marks the quarter before a firm's first qualifying deal, as defined in Sections~2.2 and~2.4."
+        }
+      ],
+      "gap": "Exemplars defer detail with a single clean pointer; our multi-pointer clauses make the reader track several cross-references mid-sentence, which is heavier than the exemplar norm.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f1",
+      "agent": 3,
+      "aspect": "Naming the linkage problem with abstract machinery ('keyed to different identifier systems', 'researcher degree of freedom') vs. exemplars' plain narration of merging multiple keyed sources",
+      "exemplar_pattern": "Exemplars state that they take several differently-sourced datasets and merge them, in plain declarative sentences, without elevating the keying/identifier mismatch into an abstract noun phrase. They simply name the source and the join.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "We then merge this data set of observable managerial characteristics to COMPUSTAT and SDC data and construct all the relevant corporate variables"
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "we complement this dataset with financial information from Compustat quarterly data, and with information on earnings forecasts from I/B/E/S. In both cases, we use the same year and quarter as the earnings call to match all databases."
+        }
+      ],
+      "our_pattern": "Our sentence elevates the merge into an abstract framing ('keyed to different identifier systems, so they must be linked') and ends with a meta-methodological noun phrase ('record linkage disclosed as a degree of freedom'), which is denser than the exemplars' plain 'we merge X to Y' statements.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA1",
+          "quote": "These sources are keyed to different identifier systems, so they must be linked: SDC keys deals by the acquirer's six-digit CUSIP while the call panel is keyed by Compustat firm identifier (gvkey), and we join deals to calls through the acquirer's six-digit CUSIP via the CRSP-Compustat link table recorded in the master-sample manifest."
+        }
+      ],
+      "gap": "The abstract framing 'keyed to different identifier systems, so they must be linked' adds a layer of explanation that exemplars omit; they just merge. (Note: the degree-of-freedom disclosure itself is a guardrail and must not be touched — flagged below.)",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f2",
+      "agent": 3,
+      "aspect": "Em-dash / comma 'appositive stacking' that buries the operative statement behind a long inserted clause ('the input to the manager fixed effect of Section~2.3, comes from Execucomp')",
+      "exemplar_pattern": "When exemplars introduce a data source for a variable, they lead with the plain subject-verb ('We use X', 'X data provide information on Y'), keeping the source and what it does adjacent, without inserting a long descriptive apposition between subject and verb.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "The Forbes data provide information on the CEOs of the 800 largest U. S. firms. Execucomp allows us to track the names of the top five highest paid executives in 1500 publicly traded U. S. firms."
+        },
+        {
+          "paper": "dwz",
+          "quote": "We employ transcripts of quarterly earnings conference calls for publicly listed US companies from 2003 through 2015, which we obtain from Thomson Reuters Street Events."
+        }
+      ],
+      "our_pattern": "Our sentence inserts a long apposition ('the input to the manager fixed effect of Section~2.3') between the subject ('The identity of the chief executive on each call') and its verb ('comes from Execucomp'), and then trails a further relative clause, separating the source from the thing it supplies.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA1",
+          "quote": "The identity of the chief executive on each call, the input to the manager fixed effect of Section~2.3, comes from Execucomp, whose annual records we aggregate into a monthly panel of which executive holds the CEO role in each quarter."
+        }
+      ],
+      "gap": "Exemplars keep source-and-role adjacent ('Execucomp allows us to track...'); our version delays the verb behind an explanatory apposition, raising clause depth above the register's plain norm.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f8",
+      "agent": 3,
+      "aspect": "A single very long sentence packing the entire deal-arm definition (acquirer scope + status set + payment composition + arm thresholds + event clock) into one breath",
+      "exemplar_pattern": "Exemplars break multi-criterion deal-sample definitions into separate sentences, one criterion per sentence ('We start with... We then... We further require... Moreover...'), keeping each clause short.",
+      "exemplar_quotes": [
+        {
+          "paper": "thewissen2024",
+          "quote": "We further require the bidders to be publicly traded firms, which leads to 75,000 deals. Moreover, we keep the deals for which we have available information about the target's ownership status (e.g., public, private or subsidiary) and deal status (completed, withdrawn). We also request the bidder to acquire at least 50% of the target's stocks."
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "First, the absolute value of the difference between the propensity scores of active and inactive M&A firms has to be smaller than or equal to 0.1. Second, both firms have to be in the same industry 8 and the earnings call has to be in the same year and quarter. Lastly, both firms have to have the same status"
+        }
+      ],
+      "our_pattern": "Our sentence loads acquirer scope, the three-value status set, payment-composition requirement, both arm thresholds, and the per-firm event clock into one continuous sentence, where the exemplars would use three or four.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA4",
+          "quote": "On top of it sits the SDC deal universe: United States public acquirers over the same period with deal status in completed, pending, or withdrawn and a known payment composition, where deals at least half in cash form the cash arm and deals at least half in stock the stock placebo arm, each firm's first qualifying deal setting its event clock."
+        }
+      ],
+      "gap": "Thewissen and Ragozzino enumerate deal criteria as discrete short sentences; our single packed sentence raises clause count and reading load above that exemplar norm.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f10",
+      "agent": 3,
+      "aspect": "Causal-mechanism aside repeated inline ('Because the residual exists only on the at-least-five-call, non-financial and non-utility universe ... skewed toward larger ones ... and for that reason every table that follows reports its own firm and observation counts') vs. exemplars stating selection consequences in a short separate sentence",
+      "exemplar_pattern": "When exemplars note that a sample restriction skews toward larger firms, they say so in a compact sentence and stop, rather than chaining the cause, the skew, and a downstream reporting consequence into one long 'Because ... and for that reason ...' sentence.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "As expected, constraining our sample to firms where we can observe at least one executive switch leads us to select larger firms."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "This large difference in mean market values between the two samples indicates that larger firms were more likely to have MD&A sections incorporated by reference and that focusing on the MD&A section produces a nonrandom sample of the 10-Ks."
+        }
+      ],
+      "our_pattern": "Our sentence chains the cause ('Because the residual exists only on...'), the skew, and the table-reporting consequence ('and for that reason every table that follows reports its own firm and observation counts') into one extended unit, heavier than the exemplars' compact 'leads us to select larger firms'.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA5",
+          "quote": "Because the residual exists only on the at-least-five-call, non-financial and non-utility universe, the uncertainty regressions describe a more-covered set of firms, skewed toward larger ones, than the cash-ratio regressions, and for that reason every table that follows reports its own firm and observation counts."
+        }
+      ],
+      "gap": "Bertrand-Schoar state the larger-firm consequence in one short clause; our version compounds cause + skew + reporting rule, exceeding the exemplar register's compactness. (The coverage-skew-as-mechanic distinction is a guardrail — flagged.)",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f11",
+      "agent": 3,
+      "aspect": "Calling the sample size an 'anchor' and variables summarized 'on the complete cases of its own anchor panel' — coined terminology vs. exemplars' plain 'observations' / 'sample size'",
+      "exemplar_pattern": "Exemplars report sample size and the fact that observation counts differ across variables in plain terms ('Sample size refers to the maximum number of observations; not all variables are available for each year and firm'), without a coined label like 'anchor' / 'anchor panel'.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "Sample size refers to the maximum number of observations; not all variables are available for each year and firm."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "The sample consists of 60,172 firm-quarters with conference call transcripts and the necessary CRSP, Compustat, and I/B/E/S data."
+        }
+      ],
+      "our_pattern": "Our paragraph introduces the coined term 'anchor' / 'its own anchor panel' to explain varying observation counts, where the exemplars use the plain word 'observations' and a plain explanation of availability.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA5",
+          "quote": "Table~\\ref{tab:summary_stats} reports summary statistics for the main estimation sample, an anchor of $88{,}205$ earnings-call observations across $1{,}884$ firms over 2002 to 2018."
+        },
+        {
+          "para_id": "OUR 3.1-PARA5",
+          "quote": "The number of observations varies by row because each variable is summarized on the complete cases of its own anchor panel."
+        }
+      ],
+      "gap": "Bertrand-Schoar explain varying counts with the plain 'not all variables are available'; our 'anchor / anchor panel' coinage adds unexplained jargon the register avoids.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f12",
+      "agent": 3,
+      "aspect": "Dense modifier stack on the base-panel sentence ('every matched Capital IQ call of a United States public, non-financial, non-utility firm ... excluding CEOs with fewer than five calls, for whom no speaking style and hence no residual can be estimated')",
+      "exemplar_pattern": "Exemplars state the population and a restriction in plain order, and when they give the reason for an exclusion they keep it as a short clause, rather than stacking three pre-nominal qualifiers plus a trailing 'for whom ... and hence ...' rationale.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "The estimation of CEO clarity requires multiple observations for each CEO. Hence, we restrict the analysis to transcripts of conference calls with CEOs who participated in at least 5 such calls"
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "As is customary in the study of investment regressions, we exclude firms in the banking and insurance industries as well as utilities from our sample."
+        }
+      ],
+      "our_pattern": "Our sentence stacks the qualifiers ('United States public, non-financial, non-utility firm') and then appends a compressed two-step rationale ('for whom no speaking style and hence no residual can be estimated'), denser than dwz's two-sentence 'requires multiple observations ... Hence we restrict' handling.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA4",
+          "quote": "The base call panel comprises every matched Capital IQ call of a United States public, non-financial, non-utility firm over 2002 to 2018, excluding CEOs with fewer than five calls, for whom no speaking style and hence no residual can be estimated."
+        }
+      ],
+      "gap": "dwz splits the requirement and its rationale across two short sentences; bertrand_schoar gives the exclusion plainly. Our single sentence carries a triple modifier stack plus a compressed 'and hence' chain, exceeding that register.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f1",
+      "agent": 1,
+      "aspect": "Sentence length / clause-chaining in source-listing",
+      "exemplar_pattern": "Exemplars list data sources in short, mostly one-clause sentences, often one source per sentence, plainly stating provider and what it gives.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "We construct our sample using conference call transcripts from Thomson Reuters StreetEvents, analyst and management forecasts from I/B/E/S, and stock returns and accounting items from CRSP and Compustat."
+        },
+        {
+          "paper": "dwz",
+          "quote": "We employ transcripts of quarterly earnings conference calls for publicly listed US companies from 2003 through 2015, which we obtain from Thomson Reuters Street Events."
+        }
+      ],
+      "our_pattern": "Our source-linking sentence stacks many clauses with multiple semicolons and embedded sub-clauses into one very long sentence.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA1",
+          "quote": "These sources are keyed to different identifier systems, so they must be linked: SDC keys deals by the acquirer's six-digit CUSIP while the call panel is keyed by Compustat firm identifier (gvkey), and we join deals to calls through the acquirer's six-digit CUSIP via the CRSP-Compustat link table recorded in the master-sample manifest."
+        }
+      ],
+      "gap": "The exemplars convey source-to-variable mappings in compact single-clause sentences; our equivalent packs identifier systems, two keying schemes, the join key, the link table, and a manifest reference into one multi-clause sentence, raising reading load above the non-specialist bar.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f3",
+      "agent": 2,
+      "aspect": "Self-referential meta-commentary about what the section is/ is not doing ('what we discharge here is the construction mechanic only')",
+      "exemplar_pattern": "Exemplars route the reader to definitions or appendices with a short plain pointer and otherwise just state the construction; they do not narrate their own scope discipline to the reader.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "The definition and construction of the specific variables used in the analysis are reported in the Data Appendix."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "A detailed description of the parsing process is provided in the Internet Appendix."
+        }
+      ],
+      "our_pattern": "Our prose repeatedly stops to tell the reader what it is and is not doing in meta terms ('what we discharge here is the construction mechanic only', 'are constructed and pointed back to their defining homes rather than re-derived here', 'We read these statistics descriptively ... rather than as findings in themselves'), adding a layer of self-description on top of the content.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA2",
+          "quote": "What we discharge here is the construction mechanic only: the equation itself, and the definition and justification of the residual, are set out in Section~2.3 and are not re-derived."
+        },
+        {
+          "para_id": "OUR 3.1-PARA3",
+          "quote": "The remaining key estimation variables are constructed and pointed back to their defining homes rather than re-derived here."
+        }
+      ],
+      "gap": "A plain 'see Section 2.3' pointer carries the routing; our extra sentences about discharging mechanics and not re-deriving make the reader process the section's housekeeping rather than its substance.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f2",
+      "agent": 2,
+      "aspect": "Naming the mechanism abstractly ('the input that ... residualizes into') instead of plainly stating what is computed",
+      "exemplar_pattern": "Exemplars describe a variable's construction with a plain verb and a plain object: we calculate the fraction, the fitted value is given by, we use the residual. They name the operation directly rather than personifying an equation as the agent that 'residualizes' something.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "We calculate the fraction of uncertainty words among all the words spoken by the CEO, during the presentation and then when answering questions from analysts:"
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "Our empirical estimate of Info * (Obfu * ), denoted Info (Obfu), is the fitted (residual) value from a regression of LC Manager on LC Analyst:"
+        }
+      ],
+      "our_pattern": "Our prose makes the share the grammatical 'input' of a 'first stage' that 'residualizes' it into another named quantity, and qualifies that quantity as 'the call-varying component net of the CEO's persistent speaking style' all in one clause, layering a process noun, an invented verb, and a net-of qualifier.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA2",
+          "quote": "is the input that the first stage of the Section~2.3 decomposition, Equation~(4) of \\citet{dwz} estimated on our sample, residualizes into $\\mathrm{UncResCEO}$, the call-varying component net of the CEO's persistent speaking style."
+        }
+      ],
+      "gap": "Where exemplars say plainly 'X is the residual value from a regression of A on B,' we route the same idea through a personified equation that 'residualizes' an 'input,' making the reader decode the machinery to recover a simple definition.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f4",
+      "agent": 2,
+      "aspect": "Abstract metaphor for sample construction ('built in three layers', 'On top of it sits', 'The third layer is') instead of plain enumeration",
+      "exemplar_pattern": "Exemplars present sample construction as a plain sequence of concrete steps ('We begin... and conclude...', 'We then require...', 'We further require...'), or as a literal filter table; they do not introduce a spatial 'layering' metaphor that the reader must map back onto the actual steps.",
+      "exemplar_quotes": [
+        {
+          "paper": "thewissen2024",
+          "quote": "We start with 147,188 U.S."
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "We began our sample selection process by identifying via the Dow Jones \"Calendar of Corporate Events\" announcements of earnings-related conference calls held by NYSE/NASDAQ firms during trading hours"
+        }
+      ],
+      "our_pattern": "Our paragraph frames the construction as an architectural stack ('built in three layers', 'On top of it sits the SDC deal universe', 'The third layer is a set of design-specific trims') and then asks the reader to hold the layer metaphor while also tracking the literal filters inside each layer.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA4",
+          "quote": "The estimation samples are built in three layers, and it is this layering that makes the number of observations vary from one table to the next."
+        },
+        {
+          "para_id": "OUR 3.1-PARA4",
+          "quote": "On top of it sits the SDC deal universe: United States public acquirers over the same period with deal status in completed, pending, or withdrawn and a known payment composition, where deals at least half in cash form the cash arm and deals at least half in stock the stock placebo arm, each firm's first qualifying deal setting its event clock."
+        },
+        {
+          "para_id": "OUR 3.1-PARA4",
+          "quote": "The third layer is a set of design-specific trims: the run-up test drops treated firms' post-announcement quarters, the event studies cap the post-window at four quarters and truncate it at the firm's next announcement, and the scrutiny validity and channel tests require at least three analyst question-and-answer turns per call."
+        }
+      ],
+      "gap": "The exemplars require the reader only to follow steps; ours adds a metaphorical scaffolding ('layers' stacked one 'on top of' another) the reader must decode in parallel with the actual sample rules.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f7",
+      "agent": 1,
+      "aspect": "Very long compound sentence with multiple embedded conditions",
+      "exemplar_pattern": "Exemplars break tie-handling and threshold rules into short declarative sentences with explicit numbers.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "When firms conduct more than one conference call during this period, we randomly selected one of their calls for our sample."
+        },
+        {
+          "paper": "thewissen2024",
+          "quote": "We also request the bidder to acquire at least 50% of the target's stocks."
+        }
+      ],
+      "our_pattern": "Our tie-break disclosure is a single very long sentence chaining a threshold rule, an overlap consequence, a count, a magnitude qualifier, and a hypothetical, joined by semicolons and commas.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA4",
+          "quote": "Both payment thresholds are inclusive, so a deal at least half in cash and at least half in stock satisfies both; few do so, $212$ deals, well under one percent of either arm, and we impose no tie-break, so a firm whose first cash and first stock acquisitions are one such deal would enter both the cash arm and the stock placebo."
+        }
+      ],
+      "gap": "Exemplars state each sampling rule as its own short sentence; our prose compresses threshold, overlap, count, share, tie-break policy, and a hypothetical into one chained sentence, which exceeds the non-specialist parse bar.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f9",
+      "agent": 1,
+      "aspect": "Abstract framing of descriptive role ('foundation the results sections build on rather than as findings in themselves')",
+      "exemplar_pattern": "Exemplars open the summary-stat paragraph with a plain pointer sentence and then read off numbers, without philosophizing about the epistemic status of the table.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "Table 3 reports the summary statistics. For our sample of 681 calls made by S&P 1500 firms, the average (median) number of unanswered queries is 1.37 (1)."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "Table 1 presents descriptive statistics for variables used in our analysis; see appendix C for variable definitions."
+        }
+      ],
+      "our_pattern": "Our prose adds abstract epistemic framing about how to 'read' the statistics and what they are versus are not.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA5",
+          "quote": "We read these statistics descriptively, as the foundation the results sections build on rather than as findings in themselves."
+        },
+        {
+          "para_id": "OUR 3.1-PARA3",
+          "quote": "are constructed and pointed back to their defining homes rather than re-derived here"
+        }
+      ],
+      "gap": "Exemplars present the table and immediately give numbers; our prose layers a 'we read these descriptively... rather than as findings' interpretive frame on top, which is heavier than the exemplar register.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f7",
+      "agent": 2,
+      "aspect": "Latinate / abstract diction where exemplars use plain words ('residualizes', 'discharge', 'catalogued', 'anchor', 'defining homes')",
+      "exemplar_pattern": "Exemplars favor concrete everyday verbs and nouns for the same operations: 'are reported in', 'we calculate', 'we use', 'is given by'. They keep the vocabulary at a non-specialist register.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "Means and summary statistics for this sample are reported in columns 3 and 4 of Table I."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "Summary statistics for the full sample of 50,115 10-Ks and subsample of 37,287 MD&As are reported in Table II."
+        }
+      ],
+      "our_pattern": "Our prose reaches for less common abstract terms where a plain word would do: variables are 'catalogued in Appendix~II', pointed back to their 'defining homes', the section 'discharges' a mechanic, the equation 'residualizes' an input, and the sample size is described as 'an anchor of 88,205'.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.1-PARA3",
+          "quote": "The firm-financial controls, leverage, log assets, Tobin's $Q$, return on assets, capital expenditure, a dividend indicator, and cash-flow volatility, are catalogued in Appendix~II."
+        },
+        {
+          "para_id": "OUR 3.1-PARA5",
+          "quote": "Table~\\ref{tab:summary_stats} reports summary statistics for the main estimation sample, an anchor of $88{,}205$ earnings-call observations across $1{,}884$ firms over 2002 to 2018."
+        }
+      ],
+      "gap": "The exemplars' plain 'are reported in the Appendix' makes the reader work less than our 'are catalogued in Appendix II' / 'pointed back to their defining homes'; the elevated diction adds friction without adding information.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    }
+  ],
+  "guardrail_collisions": [
+    "a1-f3",
+    "a1-f10",
+    "a1-f11",
+    "a2-f6",
+    "a2-f8",
+    "a3-f1",
+    "a3-f10",
+    "a1-f1",
+    "a2-f3",
+    "a2-f2",
+    "a1-f7",
+    "a1-f9"
+  ],
+  "side_notes": [
+    "Coverage is almost entirely at the sentence/clause and word-choice level (length, chaining, nominalization, diction, cross-ref density). Inter-paragraph organization across the five 3.1 paragraphs (ordering, transitions, paragraph-level redundancy) was not examined by any of the three agents.",
+    "All findings draw from a single section (3.1, PARA1-PARA5). No agent sampled other thesis sections, so it is unknown whether the flagged complexity devices (layering metaphor, meta-commentary, 'anchor' coinage, ornate verbs) are localized to 3.1 or recur document-wide.",
+    "Guardrail-collision findings retained (a1-f3, a1-f4->merged, a1-f7, a1-f9, a1-f10, a1-f11, a2-f2->canonical, a2-f3 canonical, a2-f6, a2-f8, a3-f1, a3-f3->merged, a3-f10): each sits near load-bearing meaning (residual definition, researcher-degree-of-freedom disclosure, scope/'not re-derived', tie-break/dual-membership rule, coverage-skew mechanic, descriptive-not-findings stance). These are descriptive complexity flags only and a human must review before any edit near these spots."
+  ],
+  "gate_rejected": [
+    {
+      "id": "a2-f5",
+      "reason": "cardinality"
+    },
+    {
+      "id": "a3-f5",
+      "reason": "exemplar_quote_not_verbatim"
+    }
+  ],
+  "redteam_rejected": [],
+  "merges": [
+    {
+      "ids": [
+        "a1-f1",
+        "a2-f1"
+      ],
+      "canonical": "a1-f1"
+    },
+    {
+      "ids": [
+        "a1-f4",
+        "a2-f3",
+        "a3-f3"
+      ],
+      "canonical": "a2-f3"
+    },
+    {
+      "ids": [
+        "a2-f2",
+        "a3-f4"
+      ],
+      "canonical": "a2-f2"
+    },
+    {
+      "ids": [
+        "a1-f6",
+        "a2-f4",
+        "a3-f7"
+      ],
+      "canonical": "a2-f4"
+    },
+    {
+      "ids": [
+        "a1-f7",
+        "a2-f9",
+        "a3-f6"
+      ],
+      "canonical": "a1-f7"
+    },
+    {
+      "ids": [
+        "a1-f9",
+        "a3-f9"
+      ],
+      "canonical": "a1-f9"
+    },
+    {
+      "ids": [
+        "a1-f5",
+        "a2-f7"
+      ],
+      "canonical": "a2-f7"
+    }
+  ],
+  "unhandled": [],
+  "_provenance": {
+    "runId": "wf_0e282d00-f03",
+    "wave": "hypotheses-data REDO (richer run-2; reproducibility-confirmed superset of run-1)",
+    "tool_calls_total": 8
+  }
+}

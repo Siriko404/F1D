@@ -1,0 +1,10 @@
+=== /paragraphs/P2/propositions[0] src=EBSCO-FullText-06_12_2026.pdf ===
+STMT: The analyst-discussion (Q&A) session of a conference call carries incremental information content beyond the managers' prepared presentation. (The 'less scripted than prepared remarks' point is DEFINITIONAL background, not the queried claim.)
+QUERY: Reading only this paper, "What Makes Conference Calls Useful? The Information Content of Managers' Presentations and Analysts' Discussion Sessions" by Matsumoto, Pronk and Roelofsen (2011, The Accounting Review): does it reach a conclusion about whether the analysts' discussion (question-and-answer) portion of a conference call carries information content beyond the managers' presentation portion, and which of the two portions it finds more informative? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.
+  FULL_CITED: presents the results for the returns during the presentation (discussion). Consistent with our
+  FULL_CITED: release. Using a sample of more than 10,000 conference-call transcripts, we examine
+  FULL_CITED: We first examine the incremental information content of each segment of the call and find that
+  FULL_CITED: analysis are presented in Table 3, Panel B. The coefficient on jRETDAYB4j is negative and
+  FULL_CITED: VI. CONCLUSION
+  FULL_CITED: over the accompanying press release and, in the case of the discussion, over information released
+

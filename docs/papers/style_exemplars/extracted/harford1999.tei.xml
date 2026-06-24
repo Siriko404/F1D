@@ -1,0 +1,982 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Corporate Cash Reserves and Acquisitions</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct status="extracted">
+					<analytic>
+						<author>
+							<persName><forename type="first">Jarrad</forename><surname>Harford</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Oregon. I thank</orgName>
+								<address>
+									<settlement>Emory</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Mike</forename><surname>Barclay</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">George</forename><surname>Benston</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Jim</forename><surname>Brickley</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">John</forename><surname>Chalmers</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Larry</forename><surname>Dann</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Wayne</forename><surname>Guay</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">David</forename><surname>Haushalter</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Ludger</forename><surname>Hentschel</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Aditya</forename><surname>Kaul</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Jon</forename><surname>Lewellen</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">John</forename><surname>Long</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Rich</forename><surname>Luss</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Wayne</forename><surname>Mikkelson</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Mark</forename><surname>Mitchell</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Megan</forename><surname>Partch</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Bill</forename><surname>Schwert</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">René</forename><surname>Stulz</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Jerry</forename><surname>Warner</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Jerry</forename><surname>Zimmerman</surname></persName>
+						</author>
+						<author>
+							<affiliation key="aff1">
+								<orgName type="institution">Harvard</orgName>
+								<address>
+									<region>Indiana Pennsylvania State</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<affiliation key="aff2">
+								<orgName type="institution" key="instit1">Southern Methodist Universities</orgName>
+								<orgName type="institution" key="instit2">Uni- versities of Oregon</orgName>
+								<address>
+									<settlement>Pennsylvania</settlement>
+									<region>Pittsburgh</region>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Corporate Cash Reserves and Acquisitions</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">A73624129BF5347F5696A830DD2F1C24</idno>
+					<idno type="DOI">10.1111/0022-1082.00179</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.9.0" ident="GROBID" when="2026-06-24T16:41+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<label type="revision">0.9.0</label>
+					<label type="parameters">startPage=-1, endPage=-1, consolidateCitations=0, consolidateHeader=0, consolidateFunders=0, includeRawAffiliations=false, includeRawCitations=false, includeRawCopyrights=false, generateTeiIds=false, generateTeiCoordinates=[], flavor=null</label>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Cash-rich firms are more likely than other firms to attempt acquisitions. Stock return evidence shows that acquisitions by cash-rich firms are value decreasing. Cash-rich bidders destroy seven cents in value for every excess dollar of cash reserves held. Cash-rich firms are more likely to make diversifying acquisitions and their targets are less likely to attract other bidders. Consistent with the stock return evidence, mergers in which the bidder is cash-rich are followed by abnormal declines in operating performance. Overall, the evidence supports the agency costs of free cash f low explanation for acquisitions by cash-rich firms.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>DESPITE THE IMPORTANCE OF CASH RESERVES to theories in corporate finance, corporate holdings of cash have received relatively little direct attention in the academic literature. Much of the literature on cash reserves is older and either descriptive or concerned with corporate transaction demand for cash. <ref type="bibr">1</ref> However, the role of cash in the corporation is much broader. In the presence of capital market imperfections deriving from asymmetric information between managers and capital providers, liquidity can take on a strategic role. Managers can increase firm value by managing their cash balances as buffer stocks. These buffer stocks allow the firm to maintain the ability to finance investments even when current cash f lows are insufficient to meet the firm's investment demands.</p><p>Thus, cash reserves provide benefits to equity holders by reducing the underinvestment problem. Managers wishing to avoid the costs associated with external financing in an imperfect information environment find it optimal to maintain sufficient internal financial f lexibility to allow them to reduce the underinvestment problem. Further, since the equity holders suffer the loss from underinvestment, they find it value increasing for managers to maintain the buffer stock of cash.</p><p>However, cash reserves have large potential costs in addition to their benefits. The same freedom from external financing that makes cash reserves valuable to equity holders can be abused by managers. Easterbrook ~1984! posits that frequent trips to the capital markets help control the agency conf lict between shareholders and managers. Plentiful internal financing reduces the effectiveness of this control mechanism. Jensen and Meckling ~1976! and Jensen ~1986! have emphasized the agency conf lict that exists between owners and managers. Jensen ~1986! argues that this conf lict is most severe in the presence of large free cash f lows, or cash f lows above what is needed to meet payments to stakeholders and fund positive net present value ~NPV! projects. Equity holders would prefer that cash above the optimal buffer level of reserves be paid out. However, managers may value the freedom from monitoring by external capital providers that this capital provides them. Jensen ~1986! notes that acquisitions are a primary method by which managers can spend cash instead of paying it out to their shareholders. Managers' desire to reduce their personal undiversified risk or increase the scope of their authority may lead them to make investments that are not value increasing for the shareholders. Since excessive cash reserves are essentially stockpiled free cash f low, this agency cost of free cash f low should be severe in cash-rich firms. The main objective of this study is to determine whether the presence of excess cash leads managers with discretion to make value-decreasing investment decisions. I focus on acquisitions, which are large and observable outcomes of the investment decision process.</p><p>I begin with a brief discussion and examination of how corporations use cash. Drawing on inventory management and buffer-stock theories of cash management, a baseline model of normal cash reserves is developed. A reduced form of the model is estimated using data from U.S. corporations for the period 1950 to 1994. I use the model to identify cash-rich firms-firms that have accumulated cash reserves above the predictions of the model.</p><p>Since these cash-rich firms can shed light on the agency conf lict over firm resources, the rest of the paper examines managers' behavior with respect to determining whether their cash positions and acquisition decisions can be explained by the free cash f low hypothesis. The underlying alternative hypothesis is that capital market imperfections are costly enough that firms find it optimal to save to fund large expenditures, such as a planned acquisition.</p><p>I find that the behavior of cash-rich firms is consistent with the predictions of the free cash f low hypothesis. This conclusion is based on several pieces of evidence. Cash-richness predicts that a firm will become a bidder, even controlling for stock price performance and sales growth. Further, the abnormal stock price reaction to acquisition bid announcements by cash-rich bidders is negative and decreasing in the amount of excess cash held by the bidder. I examine the characteristics of cash-rich bids to explain this result, and find that the proportion of cash-rich firms undertaking diversifying acquisitions is significantly higher than the proportion of cash-poor firms doing so. The targets of cash-rich firms are also significantly less likely to attract other bidders. Consistent with this, the operating performance of the bidder0target combination in successful cash-rich bids declines significantly following the bid-consistent with the negative market reaction at the announcement. I conclude that cashrich firms engage in value-decreasing behavior. Furthermore, the stock market appears to partially anticipate this behavior, as evidenced by the negative stock market reaction to cash stockpiling.</p><p>In the next section, I provide an overview of the testable hypotheses regarding cash reserves, develop a model of normal cash, and present descriptive statistics on industry cash holdings and cash-rich firms. In Section II, I empirically test the predictions of the free cash f low hypothesis. Section III presents some further tests of the implications of the results of Section II, and Section IV concludes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. Corporate Cash Holdings</head><p>The largest 25 percent of U.S. nonfinancial corporations held $448 billion in cash and marketable securities at the end of 1995. On average, they held eight percent of their assets in cash reserves ~cash and short-term investments!, and 98 companies held more than $1 billion in this form. Relative to total assets, the current levels of liquid holdings are similar to those in the mid-1980s. Cash represents 20 percent or more of the equity value of many well-known companies, such as IBM and Chrysler. At this time, we do not understand how corporate managers act when such a large pool of internal financing is at their disposal.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Theory and Hypotheses</head><p>Jensen ~1986! applies agency theory to the conf lict over the disposition of free cash f low. He posits that incompletely controlled managers spend free cash f low on wasteful projects. Additions to cash reserves occur when cash f low is greater than required for the firm's positive NPV projects. Firms become cash-rich when their managers stockpile free cash f low rather than spending it immediately. What begins as the accumulation of a buffer stock to guard against a downturn can eventually become large enough to afford managers ample discretion in their investment decisions. This, combined with hubris over the good performance needed to generate enough free cash f low to become cash rich, can lead to an agency conf lict over the disposition of the cash reserve. Since excess cash reserves are accumulated free cash f low, Jensen's free cash f low hypothesis makes a specific prediction about investments made by managers with stockpiled cash: These investments are value decreasing on average. This prediction follows if managers seek to increase the scale and scope of operating assets under their control. However, such a direct form of agency conf lict is not necessary. Cash provides freedom from external due diligence that could simply allow managers to make more mistakes than other better monitored firms.</p><p>An earlier paper by Lang, Stulz, and Walkling ~1991! provides support for the free cash f low hypothesis in explaining acquisitions. They use the ratio of cash f low to assets for low q firms as their proxy for free cash f low and also report "weak" results from using total cash in place of cash f low. This may be because they do not control for the widely differing levels of "normal" cash across companies documented here ~in</p><p>Table I, below! and in Opler et al. ~1999!. The definition of excess cash used here adjusts for these differences. Lang et al. ~1991! show that firms with good investment opportunities ~high q firms! and high</p><p>Table I</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Summary Statistics for Cash Holdings of 19 Industry Groupings</head><p>This table presents the median cash reserves ~def lated by sales! held by firms in major industry groupings over the period 1950 to 1994. The median market-to-book ~M0B! ratios, volatility of cash f lows from operations ~CFO!, def lated by sales, and cash f lows from operations, def lated by sales are also presented. CFO Var. is computed as the median coefficient of variation for cash f lows for firms in the industry. The second panel contains the results of a regression of median industry cash reserves on median cash f low, market-to-book, and cash f low volatility.</p><p>t-statistics are in parentheses. Panel A: Summary Statistics Sorted by Cash0Sales Ratio Industry Cash0Sales M0B CFO Var. CFO Wholesale 0.031 1.631 0.039 0.016 Airlines 0.034 1.494 0.048 0.042 Auto Manufacturing 0.038 1.499 0.035 0.054 Construction 0.044 1.356 0.039 0.043 Retail 0.046 1.996 0.025 0.030 Tobacco 0.046 1.392 0.026 0.086 Food 0.049 1.695 0.027 0.056 Utility 0.049 1.449 0.054 0.135 Basic Materials 0.054 1.164 0.040 0.066 Lumber, Paper and Pulp 0.058 1.443 0.032 0.070 Transportation 0.064 1.417 0.040 0.074 Petroleum 0.074 1.367 0.042 0.094 Equipment Manufacturing 0.081 2.009 0.056 0.050 Recreation 0.101 2.028 0.088 0.072 Service 0.121 2.640 0.074 0.044 Chemical 0.142 2.929 0.065 0.042 Agriculture, Fishing and Mining 0.195 1.895 0.176 0.116 Computer 0.199 3.000 0.089 0.000 Financial Services 0.325 1.287 0.064 0.130 Panel B: Regression to Explain the Cash0Sales Ratios in Panel A Independent Variable All Industries Excluding Financials Intercept Ϫ0.112 Ϫ0.075*** ~Ϫ1.363! Ϫ 4.288! Cash f low from operations 0.929 0.165 ~1.658! 1.119! M0B 0.060 0.054 ~1.529! 6.575!*** Volatility of cash f low from operations 0.687 0.809 ~1.267! 9.386!*** Number of observations 19 18 Adjusted R 2 0.36 0.94 *** Significant at the 1 percent level.</p><p>current period cash f low do not suffer from free cash f low problems. In contrast, I find that once firms have accumulated a large stock of cash from previous cash f low, both high and low q firms exhibit agency costs with respect to this accumulated free cash f low. That is, in accumulating more than a normal level of cash, the firms have demonstrated that they have more cash f low than they need for their good investments, regardless of how many good investments they have to begin with. The natural alternative to the free cash f low hypothesis is that managers are reluctant to distribute funds because capital market imperfections make it costly for them to replace the funds later if they need them ~Myers and Majluf ~1984!!. Hanson ~1992! and Smith and Kim ~1994! find support for Myers and Majluf in that there are gains to an acquisition when firms with financial problems combine with firms with financial slack. Under this market imperfection hypothesis, cash-rich firms are no more likely to make bad investments than are other firms.</p><p>Distinguishing between the market imperfection and free cash f low hypotheses requires identification of firms with excess cash reserves. Financial theory implies that the value of holding cash reserves varies across firms. Therefore, if two firms have the same cash reserves, one may be cashrich while the other may have an amount appropriate for its expected financing demands. A baseline model of cash holdings rooted in financial theory is employed to identify cash-rich firms. In the following subsection, I discuss such a benchmark of normal cash holdings to use in tests of the hypotheses.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Empirical Overview and Description of the Model of Normal Cash</head><p>Firm characteristics that affect the value of cash reserves to the firm can be identified by considering cash reserves as primarily buffer stocks. Three factors driving the value of cash reserves are the degree of information asymmetry faced by the managers and the volatility and level of the firm's cash f lows. I use the market-to-book ratio of equity as an empirical proxy for the degree of information asymmetry between external capital providers and managers in a given industry. Firms in an industry with a high average market-to-book ratio derive most of their value from growth opportunities and intangibles, such as human capital and ongoing research ~Smith and Watts ~1992! and Bizjak, Brickley, and Coles ~1993!!. These firms can be expected to find it more difficult to certify the value of a particular project than firms that derive most of their value from assets-in-place. <ref type="bibr">2</ref> Table <ref type="table">I</ref> presents descriptive statistics for cash in the COMPUSTAT panel ~1950 to 1994!. Throughout this paper, cash is defined as cash and shortterm investments ~COMPUSTAT item #1!. In addition to reporting wide variation in cash reserves by industry groupings, Table <ref type="table">I</ref> confirms the expected 2 Market-to-book has also been used by authors as a proxy for good management ~Morck, Shleifer, and Vishny ~1988a!, Lang, Stulz, and Walkling ~1989!!. For the purposes of Table <ref type="table">I</ref>, however, using an industry-level value should mitigate this dual-proxy problem. That is, the average industry market-to-book should be driven primarily by the characteristics of the assets and growth opportunities of the industry.</p><p>positive relations between both market-to-book and cash and also cash-f low volatility and cash. Cash-f low volatility is calculated as the coefficient of variation for operating cash f lows. <ref type="bibr">3</ref> The table presents the median ratio of cash and short-term investments to sales from 1950 to 1994 for 19 industry groupings. <ref type="bibr">4</ref> It also lists the median market-to-book ratios and coefficients of variation for operating cash f low for the same groupings. The industries are ranked by the size of their cash holdings. Reading down the columns, one can see that higher cash reserves are associated with both higher marketto-book ratios and greater volatility of cash f lows. This observation is confirmed by the regressions in Panel B; cash holdings are significantly positively related to both the market-to-book ratio and volatility of cash f lows, even controlling for the level of cash f lows. Opler et al. ~1999! also find that the cash reserves of a firm are positively related to its market-to-book ratio. Table <ref type="table">I</ref> shows that the financial industry is an outlier in terms of cash holdings. Since financial firms are expected to have different reasons for holding cash and short-term investments from those of the rest of the population, they are excluded from the rest of the analysis.</p><p>Table <ref type="table">I</ref> is not meant to provide a model for cash holdings, but rather to highlight the importance of controlling for characteristics such as marketto-book and cash-f low volatility when developing a baseline model to identify normal cash reserves for a given firm. The model used in the rest of the analysis includes these firm characteristics as well as a time series component that allows normal cash reserves to f luctuate over time in response to planned future investment outlays net of cash f low. The time series component allows for active cash management on the part of the firm. For example, if the firm anticipates that cash f low in year t ϩ 2 will fall short of that required for planned investment, cash reserves will likely increase over years t and t ϩ 1. Similarly, in recessions, firms are likely to draw down their cash reserves to substitute for lower cash f lows.</p><p>The model that I use to establish baseline cash holdings includes marketto-book, cash-f low volatility, future cash-f lows net-of-investment outlays, and a recession indicator variable. The regression equation for the model is</p><formula xml:id="formula_0">Cash0Sales it ϭ a i ϩ b 1 NetCFO0Sales it ϩ b 2 ⌬Risk premium tϩ1 ϩ b 3 Recession t ϩ b 4 ⌬NetCFO0Sales i, tϩ1 ϩ b 5 ⌬NetCFO0Sales i, tϩ2 ϩ b 6 M0B i, t-1 ϩ b 7 CFOVar i ϩ b 8 Size i, t-1 ϩ e it ,</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>~1!</head><p>where NetCFO is operating cash f low net of investments, Risk premium is the difference between junk and AAA bond yields, Recession is a dummy variable set to one for years within recessions as defined by the National Bureau of Economic Research, M0B is the firm's asset market-to-book ratio, CFOVar is the coefficient of variation for the firm's cash f lows, and Size is the market value of the firm in 1994 dollars. <ref type="bibr">5</ref> The regression contains firmspecific fixed-effects, indicated by the subscript on the intercept. The model is implemented by splitting the firms into the industry groupings listed in Table <ref type="table">I</ref>. This split, combined with firm-specific fixed-effects, allows the model to accommodate larger normal holdings by firms or industries with higher cash-f low volatility or market-to-book ratios. Regressions are estimated on the full ~1950 to 1994! panel data in each of the 19 industry groups and are found to have good explanatory power; excluding the fixedeffects, the mean adjusted R 2 is 18.1 percent and the median is 10.8 percent. <ref type="bibr">6</ref> For the remainder of this paper, the residuals from this model of normal cash define how cash-rich a firm is.</p><p>For the purposes of Table <ref type="table">II</ref>, cash-rich firm-years are years in which a firm's cash holdings are more than 1.5 standard deviations above the value predicted by the model. The standard deviation used is the time series standard deviation of the firm's cash holdings ~although the results are similar using the error variance from the regression!. The table presents summary statistics for firms identified by the model as cash-rich ~1,821 firm years! and compares them to the rest of the population ~21,675! firm-years. Part of the table requires data from the Flow of Funds statement, available from 1972 onward. Consequently, the population here is the COMPUSTAT panel from 1972 to 1994.</p><p>Table II</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Summary Statistics for Cash-Rich Firms</head><p>The table presents the median total assets, market-to-book ratio, leverage ratio, and cash to sales ratio of cash-rich firm years and all other firm years for 1972 to 1994. The leverage ratio is the ratio of the book value of debt to the sum of the market value of equity and the book value of debt. The tests for significant differences are Wilcoxon rank-sum tests ~Z!. Firms are identified as cash-rich if their cash reserves deviate by more than 1.5 standard errors from the cash reserves predicted by the cash management model ~equation ~1!! in year t Ϫ 1. The model incorporates firm characteristics and time-series changes in funding demands to estimate an optimal level of cash holdings.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Cash-Rich Firms</head><p>Other Firms Z Test for Difference</p><p>Total assets ~$ millions! 323.724 293.372 1.043 Market-to-book 1.260 1.205 4.085*** Leverage ratio 0.326 0.359 Ϫ5.012*** Cash0Sales ratio 0.129 0.050 22.169*** Cash0Total assets ratio 0.147 0.053 25.108*** Number of observations 1821 21675 *** Significant at the 1 percent level. Corporate Cash Reserves and Acquisitions 1975 15406261, 1999, 6, Downloaded from <ref type="url" target="https://onlinelibrary.wiley.com/doi/10.1111/0022-1082.00179">https://onlinelibrary.wiley.com/doi/10.1111/0022-1082.00179</ref> by University Of Ottawa Library, Wiley Online Library on [12/06/2026]. See the Terms and Conditions (<ref type="url" target="https://onlinelibrary.wiley.com/terms-and-conditions">https://onlinelibrary.wiley.com/terms-and-conditions</ref>) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License</p><p>The table shows that the cash-rich firms are insignificantly different in size from the total population of firms. The median market-to-book ratios for the two samples are also economically similar ~1.26 vs. 1.21!, but nonetheless statistically different. These two facts indicate that the model does a reasonably good job of controlling for the empirically documented relations between market-to-book and cash reserves and size and cash reserves. <ref type="bibr">7</ref> Cashrich firms may simply have more leverage than other firms so that when their cash position is considered net-of-debt, they are actually in financial positions similar to other firms. However, Table <ref type="table">II</ref> shows that this is not the case. The leverage ratio, defined as book value of debt divided by the sum of book value of debt and market value of equity, for cash-rich firms is close to, and actually smaller than, that for the rest of the population ~0.33 vs. 0.36!. As with the market-to-book ratio, the number of observations lends statistical significance to the difference, although the economic significance is doubtful. Finally, the cash-to-sales ratio of the cash-rich firms is more than twice that of the rest of the population, indicating that these firms are truly extreme cash holders.</p><p>The vast majority of the firms identified as cash-rich remain so for only one year. Only 17 percent are still cash-rich after two years, and by four years out, only two percent remain cash-rich. The persistence of cashrichness is lower than that reported in Opler et al. ~1998!. However, they measure how long a firm remains in the highest quartile of cash holdings. The definition of cash-rich used here is stricter, produces a smaller number of cash-rich firms, and makes it more difficult for a given firm to continue to meet the definition of cash-rich.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. Cash Reserves and Corporate Control</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Probit Analysis of Bidders</head><p>To establish whether there is a relation between cash-richness and acquisition behavior, I use a sample of attempted mergers and acquisitions from 1977 through 1993. <ref type="bibr">8</ref> This sample includes all acquisition attempts involving exchange-listed targets for which announcement dates and outcome information could be obtained from the The estimation uses all firms in the COMPUSTAT database for which data are available, and uses all attempted acquisitions of an exchangelisted target instead of only successful acquisitions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.1. The Probit Model and Definitions of Variables Used in the Analysis</head><p>The dependent variable in the probit is one if the firm announces a bid in year t and zero otherwise. The remaining variables are described below.</p><p>The primary variable of interest is the cash deviation variable. Cash deviation is defined as the deviation of the firm's ratio of cash and short-term investments to total assets from the average value predicted for its industry by the cash management model given by equation ~1!. The cash deviation is measured at the end of year t Ϫ 1. In this section, the cash deviation variable is calculated as the deviation from the industry average prediction. Because the model makes use of future accounting data ~cash f lows and investment in years t ϩ 1 and t ϩ 2!, firm-specific predictions cannot be used without imposing a survival requirement, which would be especially troublesome because the study deals with merger and acquisition activity.</p><p>The model also includes the daily market-model abnormal return averaged over years t Ϫ 4 through t Ϫ 1. The market-model parameters are estimated using all of the daily data from the year prior to the calculation of abnormal returns. Several firm characteristics are included as additional controls: annual sales growth, noncash working capital normalized by total assets, the ratio of the book value of debt to market value of equity, the ratio of market value of equity to book value of equity, stock price at the end of the year divided by earnings per share for that year, and the natural logarithm of total assets. For all of the control variables except size, the specification uses the arithmetic average over years t Ϫ 4 to t Ϫ 1, where t is the prediction year. The averaging is intended to reduce yearly noise and produce a truer representation of a firm's characteristics. Size is measured at the end of year t Ϫ 1. Finally, the model also includes dummy variables for years 1986 to 1993. These are intended to capture the effects of the merger wave of the 1980s and subsequent merger drought of the early 1990s.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.2. Cash-Richness and the Likelihood of a Bid</head><p>The results of the probit estimations are given in Table <ref type="table">III</ref>. The data requirements leave 23,686 firm-years, with 487 bids. As predicted by the free cash f low hypothesis, the probability of being a bidder increases with cashrichness. Most importantly, this shows that in predicting takeover activity, being cash-rich is not simply a proxy for performance. This result is also consistent with the result in Opler et al. ~1999! that cash reserves and subsequent acquisition spending are positively correlated. Note that larger firms and firms with higher abnormal returns or higher sales growth are more likely to become bidders. This is consistent with Asquith, Bruner, and Mullins ~1983! and Roll ~1986!. Finally, the yearly dummy variables pick up the sharp decline in merger activity in the early 1990s.</p><p>The first probit establishes that the likelihood of attempting an acquisition is increasing in the cash-richness of the bidder. The free cash f low hypothesis predicts that the problems caused by the presence of free cash f low increase as the interests of the shareholders and managers diverge. Follow-</p><p>Table III</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Predicting Bidders Using a Probit Model</head><p>This table presents the results of a probit that predicts which firms will be bidders in a given year. Sales growth is the average sales growth over years t Ϫ 4 through t Ϫ 1. Noncash working capital is the net working capital ~current assets Ϫ current liabilities! minus cash and cash equivalents, normalized by total assets and averaged over years t Ϫ 4 through t Ϫ 1. Leverage is the ratio of book value of debt to market value of equity, averaged over years t Ϫ 4 to through t Ϫ 1. Market-to-book is the ratio of market value of equity to book value of equity, averaged over years t Ϫ 4 through t Ϫ 1. Price-to-earnings is the stock price divided by earnings per share, averaged over years t Ϫ 4 through t Ϫ 1. Size is the natural logarithm of total assets, measured at the beginning of year t. Cash deviation is the deviation of the firm's cash and cash equivalents from the average value predicted for its industry, measured at the beginning of year t and normalized by total assets. In the second specification, this variable is broken into three separate variables by interacting it with dummy variables for the level of insider ownership.</p><p>The results of two probits are presented here. The first is estimated on all firm years from 1977 to 1993 for which sufficient data exist. The second is estimated on a subsample of firm years from 1990 to 1993 for which Compact Disclosure had ownership data for officers and directors. In the second specification, a Wald chi-squared test cannot reject the hypothesis that all three ownership0cash deviation coefficients are equal.</p><p>Predicting Bidders ~bidder ϭ 1! Full Sample With Ownership Data Coefficient Std. Error Coefficient Std. Error Intercept Ϫ3.472*** 0.114 Ϫ3.906*** 0.454 Avg. abnormal return 0.364*** 0.138 0.524 0.575 Sales growth 0.487*** 0.085 0.096 0.315 Noncash working capital 0.654*** 0.149 0.350 0.575 Leverage 0.028 0.029 Ϫ0.054 0.210 Market-to-book 0.015 0.022 0.081* 0.047 Price-to-earnings Ϫ0.009*** 0.003 0.008 0.006 Size 0.227*** 0.013 0.170*** 0.050 Cash deviation 1.061*** 0.171 Insider ownership Յ5% 1.470** 0.732 Insider ownership .5% to Յ25% 0.355 1.077 Insider ownership .25% 0.998 1.317 Yearly dummies 1986 0.085 0.081 1987 Ϫ0.128 0.097 1988 Ϫ0.088 0.094 1989 Ϫ0.161 0.100 1990 Ϫ0.326*** 0.115 1991 Ϫ0.683*** 0.149 1992 Ϫ0.375*** 0.117 1993 Ϫ0.337*** 0.119 Number of observations 23686 2857 ***, **, * Significant at the 1, 5, and 10 percent levels, respectively.</p><p>ing Jensen and Meckling ~1976!, I use insider ownership as a measure of the degree of agency conf lict found in a corporation. To determine whether the cash-richness effect is being driven by firms with low insider ownership, as the free cash f low hypothesis suggests, I re-estimate the bidder probit on a subsample of firm years from 1991 to 1993 for which I have insider ownership data. Insider ownership is measured as the percentage share holdings of officers and directors as reported in the proxy statement in the year prior to the spending decision. The data are from Compact Disclosure and are available from 1991 onward. The shorter sample period and missing data for ownership reduce the number of observations for the second probit to 2,857. Morck et al. ~1988a! show that the relation between firm value and managerial ownership is not monotonically increasing. Therefore, to allow for a nonmonotonic relation, I follow their method by splitting the cash deviation variable into three separate variables. These new variables are constructed by interacting cash deviation with three dummy variables: firms with insider ownership less than five percent, firms with insider ownership between five and 25 percent, and firms with insider ownership greater than 25 percent. Additionally, the yearly dummy variables are dropped since the sample period does not cross any merger wave boundaries.</p><p>The results of the probit are presented in Table <ref type="table">III</ref>. The coefficients on return, sales growth, and noncash working capital lose their significance. This could be due to the smaller sample size or to differences between the takeover market in the 1990s and the rest of the sample period. Cash deviation for low insider ownership ~less than five percent! firms is significant and positive. It is positive for the other two ownership categories, but neither coefficient is significant. Although the statistical significance of the cash deviation result is coming from firms with low insider ownership, a Wald chi-squared test cannot reject the hypothesis that the coefficients on all three ownership groups are the same. Unfortunately, the period for which I have full ownership data is a relatively inactive period for takeovers, limiting the power of the last probit and the ability to draw inferences from its results.</p><p>The results of these two probits indicate that the likelihood of being a bidder is increasing in cash-richness. Whether these bids are value increasing or decreasing cannot be determined without tests that measure the valuation consequences of the bidding decision. To this end, the next section examines the market reaction to the bids to evaluate these acquisition decisions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Announcement Returns for Bidders</head><p>The results of the bidder probit of Section II.A are useful in examining how the market reacts to acquisition attempts by cash-rich firms. Acquisitions provide us with large, observable outcomes of the investment decision process. Further, an efficient market provides us with an assessment of the value of that decision relative to the value of the expected action. However, since a cash stockpile is observable, the market has some expectation about what the firm will do with the cash, incorporating the likelihood of all feasible events and their value created or destroyed. The market reaction to the announcement of an acquisition ref lects both the expectation that an acquisition would be made and an assessment of whether the particular acquisition announced was better or worse than what the market expected the firm to do with its cash, be it a repurchase or a different acquisition. Since the market assessment is relative, rather than absolute, one could find a positive reaction to announcements of value-decreasing acquisitions purely because the decision is less value decreasing than the expectation ~which may be, for example, an internal expansion!. Alternatively, if most acquisitions that the firm could make would be poor decisions and it chooses an acquisition that is better than most, that acquisition will have a negative return, even though it is better than the expected acquisition, because the market would have preferred no acquisition at all and had assigned weight to the no-acquisition outcome. To partially correct for investors' anticipation of poor acquisition choices by cash-rich firms, I use the probit model of Section II.A to model expected bidding behavior. More specifically, using the results from Table <ref type="table">III</ref> and the methodology outlined in Palepu ~1986!, I classify the 487 bidders as expected and unexpected bidders.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B.1. Method of Predicting Bidders</head><p>The probit model used to predict bidders is the first specification from Table <ref type="table">III</ref>. First, the empirical distribution of the probabilities from the probit model is constructed. Specifically, the range between zero and the maximum observed probability is divided into equal intervals and the percentage of bidders and nonbidders falling into each interval is calculated. If graphed, the two distributions cross at some point, to the left of which the nonbidder distribution dominates and to the right of which the bidder distribution dominates. Table <ref type="table">IV</ref> presents the empirical distributions for the bidder probit of Section II.A. The intersection occurs at 0.022. Palepu ~1986! shows for takeover target prediction that this method produces the optimal prediction cutoff point for an investment strategy of being long expected targets and short firms that are not expected to become targets. Firms with probabilities above 0.022 are designated as expected bidders and those below this are not expected to be bidders. This procedure produces 356 expected and 131 unexpected bidders.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B.2. Announcement Return Results</head><p>I estimate regressions with the announcement period bidder returns as the dependent variable. The announcement period is defined as days Ϫ5 to ϩ1 relative to the bid announcement. The independent variables are drawn from the acquisition literature. The first regressor is the bidder CAR from the market model from day Ϫ252 to Ϫ20. The estimation period for the market model is days Ϫ370 to Ϫ253. The other regressors are the deviation of the bidder's cash reserves from their predicted level, an interactive vari-able with the cash deviation for bidders with M0B ratios greater than one, the leverage of the bidding firm, and dummy variables for bids that are all cash and for bidders with market-to-book ratio greater than one.</p><p>Previous research by Lang et al. ~1991! and Servaes ~1991! on the free cash f low hypothesis shows that it is important to separate firms by whether their q-ratio ~or a proxy for it such as market-to-book! is greater than one. This is meant to identify firms with good investment opportunities. For example, Lang et al. ~1991! examine the returns to bidders with respect to their current cash f low and an interactive variable for firms with q-ratios less than one. I include a similar interaction variable, but with the deviation of a firm's cash reserves from their predicted level.</p><p>Research on the method of payment in mergers and acquisitions, such as Travlos ~1987!, shows that bidder returns are significantly lower for firms that pay with stock rather than with cash, so I include a dummy variable set to one for all-cash offers.</p><p>To the extent that the market expects cash-rich firms to make bids, their stock price adjusts in advance of the bid, potentially making it difficult to find an effect for cash deviation. Therefore, the cash variables are separated</p><p>Table IV</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Empirical Distribution of the Probability of Being a Bidder</head><p>This table presents the estimated probabilities of firms becoming bidders from the first probit of Table <ref type="table">III</ref>. The first column gives the range of predicted probabilities. The second gives the percentage of bidding firms that were assigned bidder probabilities in that range. The third column presents the percentage of nonbidders whose estimated probabilities were in the given range. The number of firms assigned probabilities above 0.3 is negligible, so 20 equal intervals between zero and 0.3 are presented.</p><p>Probability Bidders Nonbidders 0.000 Յ p , 0.015 17.25 56.04 0.015 Յ p , 0.030 24.02 23.14 0.030 Յ p , 0.045 20.33 9.61 0.045 Յ p , 0.060 16.22 5.38 0.060 Յ p , 0.075 7.39 2.70 0.750 Յ p , 0.090 7.60 1.38 0.090 Յ p , 0.105 1.85 0.67 0.105 Յ p , 0.120 2.26 0.44 0.120 Յ p , 0.135 1.23 0.24 0.135 Յ p , 0.150 0.62 0.12 0.150 Յ p , 0.165 0.21 0.14 0.165 Յ p , 0.180 0.21 0.07 0.180 Յ p , 0.195 0.00 0.03 0.195 Յ p , 0.210 0.62 0.01 0.210 Յ p , 0.225 0.00 0.02 0.225 Յ p , 0.240 0.00 0.00 0.240 Յ p , 0.255 0.00 0.00 0.255 Յ p , 0.270 0.00 0.00 0.270 Յ p , 0.285 0.00 0.00 0.285 Յ p , 0.300 0.00 0.00 Number of observations 487 23,199</p><p>by whether or not the bidder is characterized as expected to bid. Consequently, the cash deviation variable and the high M0B * cash deviation interaction variable are split into expected and unexpected bidder groups. A dummy variable set equal to one if the bidder is unexpected and zero otherwise is also included as a regressor. Maloney, McCormick, and Mitchell ~1993! show that announcement returns for bids are increasing in the leverage of the acquirer. Their result supports the disciplining effect of debt posited by the free cash f low hypothesis. I include the bidder's leverage ratio to control for this effect.</p><p>The last column of Table V presents the average market reaction to acquisition announcements by bidders in the probit sample. The average CAR for days Ϫ5 to ϩ1 relative to the announcement is significantly negative ~Ϫ0.6 percent!. Though many previous studies of bidder returns find either insignificant or small positive bidder returns ~see Jensen and Ruback ~1983! for a review!, most of these studies use samples drawn primarily from the 1970s. This sample covers 1977 to 1993 and this result is consistent with the bidder return results for the 1980's reported in Jarrell, Brickley, and Netter ~1988!.</p><p>The coefficient on the cash deviation variable for unexpected bidders is consistently significantly negative in Table <ref type="table">V</ref>. This supports the free cash f low hypothesis that cash-rich firms tend to make significantly worse investment decisions than other firms. An increase in cash of one percent of total assets is associated with an announcement return that is lower by 21 basis points. The same variable for expected bidders is also negative, but not Table IV are graphed in this figure. The probabilities come from the first probit of Table III. The point on the graph where the PDFs for bidders and nonbidders cross, 0.022, is the cutoff point for determining whether a firm is expected to bid or not. Firms whose estimated probability fall below this point are not expected to bid and those whose estimated probabilities fall above this point are expected to bid.</p><p>significant, indicating that the effect may have already been incorporated into the stock price. F-tests confirm that the coefficients on cash deviation for expected and unexpected bidders are significantly different in each of the regressions. <ref type="bibr">9</ref> Since the average return for the sample is negative ~Ϫ0.6 percent! and the coefficient for cash deviation is negative, it is not the case that these are value-increasing acquisitions with less positive reactions for cashrich bidders ~which may result from the anticipation problem!; they are valuedecreasing acquisition decisions.</p><p>To estimate the value destruction for each dollar of excess cash, this specification is repeated normalizing cash deviation by market value of equity rather than total assets. The untabulated results are qualitatively unchanged and indicate that an unexpected cash-rich bidder destroys seven cents of firm value for every dollar of excess cash held.</p><p>None of the market-to-book interactive terms are significant, and in the case of unexpected bidders the magnitude of the positive coefficient for the market-to-book interactive term only offsets half of the negative coefficient for cash deviation. Thus, when a firm that has accumulated an abnormally large cash stockpile unexpectedly turns outside the firm for investment opportunities, it is considered to be bad news about that firm's agency conf lict, even if the firm has generally good investment opportunities. In the secondto-last specification, the noninteracted cash deviation variable is dropped and in its place are left the cash deviations for high M0B firms and for low M0B firms. Both of these coefficients are negative and significant for unexpected bidders. For these unexpected bidders, the coefficient for high M0B firms ~Ϫ0.10! is only half that for low M0B firms ~Ϫ0.21!, but an F-test cannot reject the hypothesis that they are equal.</p><p>The coefficient on the dummy variable for offers that are all cash is positive and significant, supporting previous studies. The evidence is consistent with the hypothesis that using equity provides a negative signal about managers' valuation of it. However, there is a difference between using cash as the method of payment and paying with internal funds. A bidder can pay with cash even if it is not cash-rich if the cash is raised from external sources. The signs and magnitudes of the coefficients show that although paying cash engenders a better reaction than using stock, it does not overcome the fact that the acquisition decisions of cash-rich firms tend to be valued lower. 10 9 Alternative specifications were estimated where cash deviation was included along with an interaction variable for unexpected bidders, rather than splitting the cash deviation variable in two. In all of these specifications, the unexpected bidder0cash deviation interaction term was significantly negative.</p><p>10 Not all cash-rich bidders pay with cash. The factors determining the optimal consideration in an acquisition are complex, and cash-rich firms have the f lexibility to allocate their cash to any aspect of the acquisition process. In examining the details of the transactions in this sample, I found explicitly reported uses of cash stockpiles that included: acquiring a pre-offer stake in the market, assuming and paying down target debt, infusing cash ~funding increased capital expenditures in the target!, paying off large liability claims, and funding a protracted legal battle for the target. The use of cash in a control contest is a very interesting topic and deserves further research.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Table V Analysis of Bids</head><p>Panel A presents regressions for the cumulative abnormal returns ~market model errors! from day Ϫ5 to day ϩ1 relative to the bid announcement for bidding firms in the probit sample. Most variables are interacted with dummies for expected and unexpected bids. A bid is defined as unexpected if the bidder probit specified in Table <ref type="table">III</ref> predicted that the firm would not make a bid, but it in fact did. Cash deviation is calculated as the deviation of a bidder's cash reserves from what the cash management model predicted for its industry, scaled by the firm's assets. For example, the coefficient on Unexpected cash deviation in the first regression indicates that an increase in this deviation of one percent of total assets decreases the announcement return of an unexpected bid by 0.21 percentage points, ceteris paribus. The High M0B variables interact a dummy indicating that the firm had a M0B ratio . 1 with the two cash deviation variables. Similarly, the Low M0B variables are for firms with M0B ratios less than one. CAR ~Ϫ252, Ϫ20! is the bidder's cumulative abnormal market-model return from day Ϫ252 to day Ϫ20 relative to the announcement date. The All cash offer is a dummy variable set equal to one if the offer was all cash. Leverage is the market leverage of the bidder. Market-to-book . 1 is an indicator variable for bidders with M0B ratios greater than one. There are 430 observations in all regressions. Unexpected bid is a dummy variable set to one if the bidder was not expected to make a bid according to the first model in Table <ref type="table">III</ref>. F-tests reject the hypothesis: Exp * CashDev ϭ Unexp * CashDev for the coefficients in each specification. t-statistics are in parentheses. F-tests do not reject the hypotheses that the high and low M0B interaction coefficients are equal.</p><p>Panel B presents the proportion of all cash-rich and cash-poor bidders that bid on firms outside of their industry. It also gives the proportion initiating bids on targets that had already received bids or received other bids subsequently. The third row presents the average target return split among the two samples.</p><p>Panel A: Returns to the Announcement of a Bid ~1! Intercept Ϫ0.006 Ϫ0.012** Ϫ0.005 Ϫ0.006 Ϫ0.007** Ϫ0.006 Ϫ0.006** ~Ϫ0.787! Ϫ 2.394! Ϫ 0.665! Ϫ 0.756! Ϫ 2.026! Ϫ 0.787! Ϫ 1.981! CAR ~Ϫ252, Ϫ20! 0.020** 0.020** 0.024*** 0.020** 0.018** 0.020** ~2.484! 2.424! 2.950! 2.475! 2.269! 2.484! Cash deviation ~expected bidder! Ϫ0.016 0.004 Ϫ0.015 0.008 ~Ϫ0.332! 0.124! Ϫ 0.309! 0.286! Cash deviation ~unexpected bidder! Ϫ0.208** Ϫ0.112*** Ϫ0.207** Ϫ0.111*** ~Ϫ2.033! Ϫ 2.780! Ϫ 2.032! Ϫ 2.745! 1984 The Journal of Finance 15406261, 1999, 6, Downloaded from <ref type="url" target="https://onlinelibrary.wiley.com/doi/10.1111/0022-1082.00179">https://onlinelibrary.wiley.com/doi/10.1111/0022-1082.00179</ref> by University Of Ottawa Library, Wiley Online Library on [12/06/2026]. See the Terms and Conditions (<ref type="url" target="https://onlinelibrary.wiley.com/terms-and-conditions">https://onlinelibrary.wiley.com/terms-and-conditions</ref>) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License High M0B*cash deviation ~expected bid! 0.032 0.032 0.015 ~0.522! 0.523! 0.427! Low M0B*cash deviation ~expected bid! Ϫ0.016 ~Ϫ0.332! High M0B*cash deviation ~unexpected bid! 0.111 0.110 Ϫ0.097** ~1.019! 1.012! Ϫ 2.239! Low M0B*cash deviation ~unexpected bid! Ϫ0.208** ~Ϫ2.033! Unexpected bid Ϫ0.001 0.000 0.005 Ϫ0.001 0.001 Ϫ0.001 ~Ϫ0.13! 0.021! 0.812! Ϫ 0.122! 0.087! Ϫ 0.130! All cash offer 0.012** 0.012** 0.011** 0.012** 0.012** ~2.185! 2.090! 2.011! 2.185! 2.185! Leverage Ϫ0.003 0.000 Ϫ0.002 Ϫ0.003 Ϫ0.003 ~Ϫ0.598! Ϫ 0.054! Ϫ 0.450! Ϫ 0.649! Ϫ 0.598! High market-to-book Ϫ0.007 Ϫ0.008 Ϫ0.007 Ϫ0.007 ~Ϫ1.039! Ϫ 1.274! Ϫ 1.086! Ϫ 1.039! Adjusted R 2 0.034 0.034 0.019 0.038 0.029 0.034 0.007 Panel B: Characteristics of Bids Cash-Rich Bidders Cash-Poor Bidders t-Test for Difference Different industry 0.625 0.425 4.968*** Multiple bidders 0.132 0.204 Ϫ2.654*** Target CAR ~Ϫ20, ϩ1! 0.208 0.211 0.162 ***, ** Significant at the 1 and 5 percent levels, respectively.</p><p>This sample does not show any evidence of the leverage effect documented in Maloney et al. ~1993!. Thus, the cash effect is not a leverage effect.</p><p>Finally, the coefficient on the bidder's prior stock price performance is significantly positive. This is consistent with Morck, Shleifer, and Vishny ~1990!, who separate bidders into good and bad prior performance.</p><p>The second panel of Table <ref type="table">V</ref> presents results on three bid characteristics: whether the bid represents a diversifying acquisition, whether there are multiple bidders for the target, and the average target CAR.</p><p>An acquisition is defined as diversifying if the bid is for a firm outside the bidder's industry group, based on the 19 classifications given in Table <ref type="table">I</ref>. Morck et al. ~1990! show that diversifying acquisitions are less likely to produce value-creating synergies. If a greater proportion of cash-rich bidders make diversifying acquisitions, this may partially explain the negative returns to their bids. Table <ref type="table">V</ref> shows that cash-rich bidders are significantly more likely to bid on firms outside their industry group than are cash-poor bidders. This provides a partial explanation for why their bids are seen as value decreasing. Jensen ~1986! emphasizes the possibility that technological, regulatory, or other shocks create a situation in which firms in an industry have excess cash, but the industry has too much capacity. Support for this industry shock explanation of merger waves is found in Mitchell and Mulherin ~1996!.</p><p>Interest by other bidders is an indication of the value of a target or the premium paid by the first bidder. The presence of multiple bidders provides some certification that the transaction is value increasing. For each bidder, I determine whether its target attracted a bid prior to its bid or received a bid from another firm subsequent to its bid. If the transactions announced by cash-rich firms are systematically less valuable than those of other firms, then the proportion of those bids which attract multiple bidders should be lower than for other bidders. Alternatively, if the initial bidder for a firm is cash-rich, it may make a high opening bid and other firms may be less likely to challenge it to a bidding contest. A further possibility is that the excess cash of the bidder is the source of the synergy between it and the target, although, on average, the bidder does not seem to capture enough of these synergies to produce positive gains for itself. The results in Table <ref type="table">V</ref> show that targets of cash-rich firms are significantly less likely to attract multiple bidders than the targets of cash-poor firms. Either cash-rich bidders are very often targeting firms that are only attractive to them, or the strategic advantage of entering a control contest cash-rich is strong enough to deter other bidders.</p><p>If cash-rich firms are able to deter other bidders, then they should be able to pay, on average, lower final premiums unless they are opening with higher than average bids. The target's stock price reaction to the cash-rich firm's bid will ref lect the premium offered, the likelihood of completion, and the likelihood of higher subsequent bids. The evidence in Table <ref type="table">V</ref> shows, however, that there is no difference between the average target CAR from day Ϫ20 to ϩ1 relative to the bid in the two samples of cash-rich and cash-poor bidders. One possible explanation is that cash-rich bidders make higher initial bids and this effect is offset by the lower probability of an auction. This would provide a partial explanation for the lower announcement returns for cash-rich bidders-they are systematically paying more for their targets. However, since the target CAR is not the same as the premium, this evidence is only suggestive.</p><p>Previous research has examined the issues of method of payment, use of tender offer, and managerial resistance and may help in the interpretation of these results. Huang and Walkling ~1987! show that, controlling for method of payment, using a tender offer has no effect on target returns and managerial resistance has a positive, but insignificant effect. Resistance should be positively related to the occurrence of multiple bidders. One can infer from the results here that either target management is less likely to resist an offer by a cash-rich firm or it resists, but no other bidder emerges. Either situation would lead to lower target returns because the cash-rich bidder is not drawn into an auction. So, for cash-rich bidders, the method of payment effect could lead to higher target returns, but these may be partially offset by the lower returns due to the relative infrequency of control auctions.</p><p>The three characteristics in Panel B can be included in the announcement return regressions of Panel A without changing any inferences. In some specifications, the dummy for diversifying bids is marginally significantly negative, as is the target CAR. The multiple bidder dummy is never significant.</p><p>Overall, the evidence suggests that cash-rich bidders may be bidding high for firms that are unattractive and0or diversifying targets. If so, the market reaction is justified because the operating performance of the new firm likely suffers following the completion of the deal. The next section examines that performance, comparing acquisitions by cash-rich firms with those of other firms.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Operating Performance before and after the Merger</head><p>The previous section showed that the market reacts negatively to bids by cash-rich acquirers and that the characteristics of their bids appear to differ systematically from those of other acquirers. In this section I examine the bids in more detail by measuring operating performance after successful mergers.</p><p>Healy, Palepu, and Ruback ~1992! conduct a test of the post-merger performance of the 50 highest value mergers of 1979 to 1984. They compare the operating performance of the two independent firms prior to the merger to the post-merger performance for the combined firm. Their results indicate that, on average, there are abnormal performance increases after the mergers. They also find that the market anticipates performance improvements in its reaction to the initial merger announcement, which is positive on average in their sample. I apply their method to my sample of mergers from 1977 to 1993 to see if the negative market reaction to acquisition announcements by cash-rich firms is partially explained by expectations of poor future operating performance.</p><p>The measure of operating performance used in these tests is cash f low return-on-assets. Cash f low here is defined as operating cash f low to exclude income from short-term investments. The market value of total assets net of cash and short-term investments is used in the denominator.</p><p>Barber and Lyon ~1996! show that when studying operating performance, it is important in designing tests to control for abnormal firm characteristics prior to the event. They demonstrate that tests can give incorrect inferences if the sample of firms being studied had abnormal operating performance prior to the event and is compared to a control sample of firms experiencing normal performance. The matching procedure used here adjusts the performance of a cash-rich firm by subtracting the median performance of other cash-rich firms in its industry and likewise for cash-poor firms. This matching allows for a direct comparison between the performance of cashrich firms that engage in acquisitions and cash-rich firms that do not, while maintaining the spirit of the Barber and Lyon procedure because operating performance and cash-rich status are correlated. More pragmatically, because the firms are first matched on industry, requiring only a second level of matching ensures that the pool of matching firms remains viably large.</p><p>Average cash f low return-on-assets is calculated for both the target and bidder over the premerger period ~years Ϫ4 through Ϫ1!. The target and bidder performance numbers are combined into one figure by weighting each by their relative market values. The same industry and cash-positionadjusted measure is computed for the combined firm for years ϩ1 through ϩ4. Year 0 is excluded because, depending on the method used to account for the merger, results may be combined at the end of the year or at the time of the merger. Year 0 results are not comparable across accounting methods or to other years.</p><p>The following regression is estimated with each target0bidder pair representing one observation:</p><formula xml:id="formula_1">Postmerger Adj. CF0TA i ϭ b 0 ϩ b 1 Premerger Adj. CF0TA i ϩ e i .</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>~2!</head><p>The b 1 coefficient captures the continuation of premerger performance for the two firms. The b 0 coefficient captures any abnormal performance improvements between the premerger and postmerger periods. In the Healy et al. ~1992! study, this coefficient is significantly positive, consistent with the average positive bidder and target abnormal returns for merger announcements in their sample. Table <ref type="table">VI</ref> presents the results of this regression on the sample in this study. The regression uses all firms that completed their announced merger and for which there are sufficient pre-and postmerger data for the parties to the merger.</p><p>Panel A presents the results of the regressions on the cash position matched, adjusted performance figures. The regression for all of the firms shows that the abnormal operating performance associated with the merger is significantly negative ~at the 5 percent level!. Further, when the regression is performed on the cash-rich and cash-poor samples separately, the results indicate that although the intercept for the cash-poor firms is insignificant, for the cash-rich firms it is strongly significant ~at the 1 percent level! and negative. In fact, its magnitude is five times that of the cash-poor abnormal performance measure and is economically significant: negative two percentage points. Finally, the three regressions are repeated in Panel B without matching on prior cash position. All three intercepts are still negative, but they are not significant.</p><p>Overall, the results of this section confirm the results of the announcement return analysis. The market recognizes that cash-rich bidders make poor acquisitions. These expectations are manifested at the announcement of the bid and realized by the operating performance of the merged firm over the postacquisition period.</p><p>Table VI</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Operating Performance of Merged Firms</head><p>This table shows the results of a regression test of the effects of a merger on the operating performance of the merging firms. Premerger performance is the industry-adjusted cash f low return-on-assets of the bidder and target. The two performance numbers are combined into an average figure, where the weights are the relative market values of the bidder and target. The dependent variable is postmerger performance of the combined firm. The intercept of the regression reveals abnormal performance changes from the premerger to the postmerger period. The regressions in Panel A use cash f low return-on-assets adjusted by matching each firm with an industry and cash position portfolio and then adjusting by subtracting the median of that portfolio. The regressions in Panel B adjust by simply subtracting the industry median. The performance of a cash-rich firm is relative to the median of all other cash-rich firms in its industry.</p><p>t-statistics are in parentheses. All Firms Cash-Poor Cash-Rich Panel A: Firms Matched on Industry and Cash Position Intercept Ϫ0.009** Ϫ0.004 Ϫ0.020*** ~Ϫ2.281! Ϫ 0.797! Ϫ 2.773! Premerger performance 0.250** 0.228* 0.342** ~2.446! 1.676! 2.158! Adjusted R 2 0.050 0.029 0.103 Panel B: Firms Matched on Industry Only Intercept Ϫ0.007 Ϫ0.006 Ϫ0.009 ~Ϫ1.578! Ϫ 1.209! Ϫ 1.006! Premerger performance 0.185* 0.165 0.210 ~1.806! 1.235! 1.248! Adjusted R 2 0.024 0.009 0.019 ***, **, * Significant at the 1, 5, and 10 percent levels, respectively. Corporate Cash Reserves and Acquisitions 1989 15406261, 1999, 6, Downloaded from <ref type="url" target="https://onlinelibrary.wiley.com/doi/10.1111/0022-1082.00179">https://onlinelibrary.wiley.com/doi/10.1111/0022-1082.00179</ref> by University Of Ottawa Library, Wiley Online Library on [12/06/2026]. See the Terms and Conditions (<ref type="url" target="https://onlinelibrary.wiley.com/terms-and-conditions">https://onlinelibrary.wiley.com/terms-and-conditions</ref>) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. Further Tests</head><p>The series of tests just presented tells a consistent story of agency conf licts leading managers with excessive cash balances to make poor acquisitions. This section details two further tests related to the behavior of cash-rich firms. First, cash-rich firms make bad investment decisions. I investigate whether this failure of internal control mechanisms is countered by an active external control market. The first test determines whether cashrich firms are more likely to be targeted in a control contest. Second, I investigate how the market reacts to a firm that builds up cash.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Predicting Acquisition Targets</head><p>The presence of a large cash reserve seems to lead to suboptimal behavior by management. If internal control mechanisms are failing to prevent this, then external management teams may be able to capture value by stepping in to prevent it. If so, then firms with large reserves are more likely to be targets of acquisition attempts than otherwise similar firms. Such a relation would support free cash f low concerns about large cash reserves in that other firms are signaling their belief that the current management of the corporation is inferior. Alternatively, firms with good investment opportunities but not the financial resources to fund them may seek out mergers with cash-rich firms, as suggested in Hanson ~1992! and Smith and Kim ~1994!. A model predicting targets provides evidence on whether the presence of large cash reserves is enough to trigger a takeover attempt, controlling for other factors.</p><p>This test is performed exactly like the bidder probit, except that the dependent variable is one if the firm was the target of an acquisition attempt, successful or not. The control variables and sample selection procedure are as described in Section II.A. The results are presented in Table <ref type="table">VII</ref>.</p><p>High market-to-book firms are significantly less likely to be targeted. This is consistent with the findings of Hasbrouck ~1985! and Morck et al. ~1988b!. Firms with good growth opportunities are less likely to suffer agency problems that would lead to external intervention. Surprisingly, size, the natural logarithm of total assets in year t Ϫ 1, is not significant. Previous studies, such as Mikkelson and Partch ~1989! and Song and Walkling ~1993! have found size to be negatively related to target incidence. One possible explanation is different definitions of size; both of those studies use market value ~of equity and assets, respectively! and only Mikkelson and Partch use the log. I repeat the test using the natural log of the market value of assets ~book assets minus book equity plus market value of equity!, but size is still insignificant.</p><p>The cash deviation variable is strongly significant and negative, indicating that cash-rich firms are less likely to be targeted in a control contest. Previous studies such as Palepu ~1986! and Song and Walkling ~1993! have not found liquidity to predict targets. The difference here most likely arises from different definitions of liquidity and from controlling for cross-industry and time-series differences in the level of normal cash.</p><p>The negative coefficient on cash could indicate that a large cash stockpile is valuable in fighting ~and, hence, deterring! takeover attempts. For example, cash provides the f lexibility to initiate a defensive repurchase tender offer or the so-called Pac Man defense. The result would be that cash-rich firms would remain safe from takeover. A probit analysis similar to this one ~but not reported here! shows that cash-rich firms are more likely to be undertaking repurchases than other firms. These repurchases could serve to deter unknown or rumored acquirers by concentrating share ownership in friendly hands and eliminating shareholders with low reservation prices. These repurchases also indicate that some cash-rich firms do return part of the cash to shareholders. This study examines whether the acquisition decisions of cash-rich firms are value increasing, but there are many other ways to allocate a cash stockpile. Understanding what determines the allocation of cash stockpiles is an interesting area for future research.</p><p>A combination of additional factors could explain the target result. First, there is the issue of endogeneity; it is possible that the majority of cash-rich firms we observe are those whose managers know they can safely stockpile cash without attracting control attention. Further, because the assets are so liquid by definition, a prospective bidder could reasonably doubt whether it would ever gain control over them. Instead, one might expect that the cash would be paid out defensively or otherwise before the bidder could gain con-</p><p>Table VII Predicting Targets This table employs the same methods used in Table III to predict bidders. The variables are defined in Table III and, as it was there, the focus is on the cash deviation variable. Coefficient Standard Error Intercept Ϫ1.840 0.082 Avg. abnormal return Ϫ0.015 0.100 Sales growth Ϫ0.180 0.126 Noncash working capital 0.123 0.110 Leverage 0.010 0.025 Market-to-book Ϫ0.065*** 0.021 Price-to-earnings 0.004** 0.002 Size 0.001 0.010 Cash deviation Ϫ0.545*** 0.118 Yearly dummies 1986 0.140** 0.067 1987 0.055 0.073 1988 0.133* 0.072 1989 0.015 0.080 1990 Ϫ0.425*** 0.113 1991 Ϫ0.465*** 0.117 1992 Ϫ0.301*** 0.099 1993 Ϫ0.817*** 0.169 Number of observations 23686 ***, **, * Significant at the 1, 5, and 10 percent levels, respectively</p><p>trol. Finally, if the bidder's major contribution is that it distributes the cash stockpile, it is not bringing any unique ability to this transaction and one would expect the rents to accrue to the target shareholders. Overall, it is likely that a takeover attempt of a cash-rich target would be a high-cost, low-benefit transaction. This is consistent with the general results of Ruback ~1983! and Asquith ~1983!, which indicate that the market for corporate control is competitive enough that targets capture the gains in a transaction. If there exists a tendency for firms with good investment opportunities, but no funding for them, to merge with cash-rich firms, the transactions must usually be initiated by the cash-rich firms.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Stock-Returns during a Cash Buildup</head><p>Given that cash-rich firms simultaneously appear safe from control contests and prone to value-decreasing decisions, one might expect that stockpiling cash would be greeted negatively by the market. In this section, I examine the stock market reaction to a cash reserve buildup. If large cash stockpiles are likely to be spent on value-decreasing investments, then the stock market should partially incorporate this possible eventuality into the stock price as the firm stockpiles cash. The free cash f low hypothesis predicts that the market reacts negatively to firms that retain a large portion of their cash f lows over the year.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B.1. Experimental Design</head><p>Unfortunately, there is no well-defined event associated with the stockpiling of cash. <ref type="bibr">11</ref> However, the test used here, though less powerful than an event study, should identify the market treatment of corporate stockpiling efforts. The first step is to identify the predicted optimal end-of-year level of cash for each firm, based on the cash management model of equation ~1! in Section I. The model predicts the end-of-year cash-to-sales ratio. This is combined with the actual sales to arrive at the predicted cash level. The payout ratio required to move from the firm's beginning-of-year cash level to the predicted end-of-year cash level can be computed according to the following formula. This predicted payout ratio equals</p><p>@CFO t, tϩ1 Ϫ ~Predicted CASH tϩ1 Ϫ CASH t ! Ϫ Investments and Expenses# CFO t, tϩ1</p><p>,</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>~3!</head><p>where CFO is cash f low from operations. Once this predicted payout ratio is calculated, it can be compared to the firm's actual payout ratio. I use the results of this comparison in a regression that identifies the market's treatment of low payout ratios, controlling for cash f lows. The regression uses all firm-years for which there are sufficient data to estimate the baseline cash model, the predicted payout ratio, and the regression equation. The data requirements yield 13,154 firm-years. The results of the regression are presented in Table <ref type="table">VIII</ref>.</p><p>The dependent variable is the market-model abnormal compounded return over the year. The market model parameters are estimated using days Ϫ200 to Ϫ1 relative to the measurement year. Since companies that are doing well are likely to generate significant cash f lows, two of the regressors control for cash f lows and end-of-year cash position. One is cash f low divided by total assets. The other is a dummy variable identifying that the firm has accumulated an extreme level of cash over the year, meaning its cash holdings at the end of the year are at least 1.5 standard errors above their predicted value. The firm's stock return ref lects the market's capitalization of future uses of cash f low. If cash stockpiling on average leads to future value-destroying actions, then this should be partially captured in today's stock price. The two variables testing this are the interaction variables. One interacts a dummy variable identifying low payout firms ~firms with payout ratios at least 10 percent below the predicted level! with scaled cash f lows, and the other interacts the difference between the firm's actual and predicted payout levels and the extreme cash dummy. The first variable tests whether firms are penalized for retaining more than the predicted level of cash f low. The second tests whether firms that become cash-rich despite increasing payout levels along the way are not penalized as severely.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B.2. Results</head><p>The results show that abnormal returns are strongly positively related to how much cash the company generates over the year. However, firms that distribute little of that cash are sharply penalized. The coefficient on the low-payout and cash f low interaction term is negative and significant at the 1 percent level. The coefficients in row ~2! show that an increase in cash f low of one percent of total assets results in approximately a one percent increase in return unless the firm is stockpiling cash by keeping payouts low. In this case, row ~3! shows that the corresponding return is about 28 basis points lower for each increase in cash f low of one percent of total assets. The coefficients on both the extreme cash variable and the extreme cash with payout difference interaction variable are positive and significant. Although firms that do well enough over the year to become cash-rich have higher returns, those that do so while increasing their payouts fare even better. The final regression suggests that the market anticipates future payout changes with higher returns for firms that increase their dividends in the next year. However, reverse causality is a concern here since firms may increase dividends after abnormally good performance.</p><p>The results of this experiment support the free cash f low hypothesis in that the market reacts negatively to firms that stockpile cash through low payouts. All else equal, if two firms have the same cash f lows, the one that maintains its predicted payout ratio has a higher abnormal return than the one that hoards its cash. The results indicate that the market is partially</p><p>Table VIII</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Market Reaction to Cash Stockpiling</head><p>This table presents the results of regression equations designed to determine whether the market incorporates expectations about future wasteful spending by cash stockpilers, as predicted by the free cash f low hypothesis. The dependent variable is the market-model abnormal return over the year. Cash f low0Total assets is cash f low over the year, def lated by total assets at the beginning of the year. Low payout * Cash f lows0Total assets interacts the Cash f lows0Total assets variable with a dummy variable identifying firms with payouts at least 10 percent below that predicted by the cash management model. Extreme cash is a dummy variable identifying firms that build up cash levels over the year that are more than 1.5s from predicted levels. Payout difference * Extreme cash interacts the difference between the actual payout and the payout predicted by the model with the dummy variable for firms with extreme cash. Finally, Future dividend changes is the change in the dividend payout from the current to the next year.</p><p>t-statistics are in parentheses. Variable ~1! 2 ! 3 ! 4 ! Intercept Ϫ0.061*** Ϫ0.073*** Ϫ0.075*** Ϫ0.075*** ~Ϫ9.156! Ϫ 10.396! Ϫ 10.489! Ϫ 10.530! Cash f lows0Total assets 0.980*** 1.125*** 1.136*** 1.131*** ~23.500! 22.415! 22.402! 22.303! Low payout * ~Cash f lows0Total assets! Ϫ0.250*** Ϫ0.276*** Ϫ0.279*** ~Ϫ5.015! Ϫ 5.296! Ϫ 5.356! Extreme cash 0.010 0.034** 0.036** ~0.674! 2.117! 2.207! Payout difference * Extreme cash 0.006* 0.006* 0.006* ~1.957! 1.812! 1.863! Future dividend changes 0.342*** ~3.117! Adjusted R 2 0.041 0.043 0.043 0.044 Number of observations 13,154 13,154 13,154 13,154 ***, **, * The coefficient is significant at the 1, 5, and 10 percent levels, respectively. 1994 The Journal of Finance 15406261, 1999, 6, Downloaded from <ref type="url" target="https://onlinelibrary.wiley.com/doi/10.1111/0022-1082.00179">https://onlinelibrary.wiley.com/doi/10.1111/0022-1082.00179</ref> by University Of Ottawa Library, Wiley Online Library on [12/06/2026]. See the Terms and Conditions (<ref type="url" target="https://onlinelibrary.wiley.com/terms-and-conditions">https://onlinelibrary.wiley.com/terms-and-conditions</ref>) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License</p><p>incorporating expected wasteful spending by cash stockpilers, as predicted by the free cash f low hypothesis. This also demonstrates the importance of the attempts made to control for partial anticipation of bids by cash-rich firms. Further, it strengthens the findings of Table <ref type="table">V</ref> given that the total reaction to a cash-rich bid would be the negative anticipatory reaction plus the negative announcement reaction.</p><p>The findings here are also consistent with the results from Table <ref type="table">VII</ref> that indicate that cash-rich firms are less likely to be targeted in a control contest. If being cash-rich attracted bids, then shareholders would be less concerned to see their firm stockpiling cash.</p><p>One alternative interpretation of these results comes from the fact that firms adjust slowly toward their target payout ratio ~Lintner ~1956!!. Firms that experience high cash f lows that are not expected to continue are less likely to increase their payouts. To the extent that the market can separate those situations from permanently increased cash f lows, the stock return will be lower as well.</p><p>The two tests in this section yield mixed results. The market appears to take a dim view of cash stockpiling by corporations, supporting all of the earlier results on the poor acquisitions these firms tend to make. However, cash-rich firms are not more likely to be targeted in control contests. Preliminary evidence indicates that this may be due to the defensive value of cash reserves. More analysis of the role of cash in corporate control contests is clearly needed.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. Conclusions</head><p>Cash is an important tool for firms operating in imperfect capital markets. Cash reserves can provide a valuable source of funds for investment opportunities when current internally generated funds are insufficient. However, firms often build up much more cash than they need to meet expected financing requirements. The free cash f low hypothesis predicts that agency conf licts between managers and stockholders combined with a cash stockpile that insulates managers from monitoring by external markets produces value-decreasing investment decisions.</p><p>To test whether cash stockpiles are invested poorly, I study the acquisition behavior of cash-rich firms. I find that cash-rich firms are more likely to make acquisitions. Further, there is some evidence that cash-rich firms with greater likelihood of agency problems, as evidenced by low managerial stock ownership, account for the acquisition activity. Consistent with the free cash f low hypothesis, these acquisitions by cash-rich firms are value decreasing, as ref lected in the negative stock price reaction to the announcement and the subsequent poor operating performance of the combined firm.</p><p>The results in the first part of the paper highlight the importance of considering a firm's demand for cash balances before judging its level of liquidity. Strategic reasons for holding cash imply that two firms can have the same level of cash reserves, with only one being cash-rich. The results on acquisitions have implications for boards of directors and investors in evaluating payout policy and cash reserves. Large cash balances remove an important monitoring component from the investment process, often resulting in the destruction of shareholder value. Finally, the market appears to anticipate this, but for a variety of reasons not yet fully understood, external control mechanisms do not act to correct the failures of internal mechanisms in cash-rich firms.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><figDesc>Wall Street Journal or Dow Jones News Retrieval. Based on the methods of Comment and Schwert ~1995!, I estimate a probit equation to predict which firms become bidders. Comment and Schwert's specification draws on much of the acquisition literature ~Hasbrouck ~1985!, Palepu ~1986!, Morck, Shleifer, and Vishny ~1988b!, and Mikkelson and Partch ~1989!! and is fairly comprehensive, so it is applied with only minor modifications. I add a variable for the difference between the firm's cash reserves and what is predicted by the cash management model of equa-tion ~1!.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 1 .</head><label>1</label><figDesc>Figure 1. Empirical PDFs for bidder returns. The probabilities reported inTable IV are graphed in this figure. The probabilities come from the first probit of Table III. The point on the graph where the PDFs for bidders and nonbidders cross, 0.022, is the cutoff point for determining whether a firm is expected to bid or not. Firms whose estimated probability fall below this point are not expected to bid and those whose estimated probabilities fall above this point are expected to bid.</figDesc></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" xml:id="foot_0"><p>15406261, 1999, 6, Downloaded from https://onlinelibrary.wiley.com/doi/10.1111/0022-1082.00179 by University Of Ottawa Library, Wiley Online Library on [12/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3" xml:id="foot_1"><p>Operating cash f lows are used as defined in Dechow ~1994!. The calculation is: Operating income before depreciation Ϫ Interest Ϫ Taxes Ϫ ⌬Noncash working capital.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4" xml:id="foot_2"><p>These groupings are based on the COMPUSTAT primary SIC code and are available from the author. Descriptive names of these groupings are given in TableI.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="5" xml:id="foot_3"><p>Several different specifications are employed as robustness checks. Future investment and cash f lows are included separately and future cash f lows are included alone. The results generated by using other specifications for baseline cash are qualitatively similar to those reported here.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="6" xml:id="foot_4"><p>The full output from these regressions is available from the author upon request.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="7" xml:id="foot_5"><p>See Chudson ~1945! and Vogel and Maddala ~1967! for documentation of a positive relation between size and cash ratios, and see Opler et al. ~1999! for a negative relation.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="8" xml:id="foot_6"><p>I am indebted to Robert Comment for providing this sample.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="11" xml:id="foot_7"><p>Blanchard, Lopez-de-Silanes, and Shleifer ~1994! study an exception with a sample of 11 companies receiving large court awards.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" xml:id="foot_8"><p>The Journal of Finance 15406261, 1999, 6, Downloaded from https://onlinelibrary.wiley.com/doi/10.1111/0022-1082.00179 by University Of Ottawa Library, Wiley Online Library on [12/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License</p></note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct status="extracted" xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Merger bids, uncertainty, and stockholder returns</title>
+		<author>
+			<persName><forename type="first">Paul</forename><surname>Asquith</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="page" from="51" to="83" />
+			<date type="published" when="1983">1983</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b1">
+	<analytic>
+		<title level="a" type="main">The gains to bidding firms from merger</title>
+		<author>
+			<persName><forename type="first">Paul</forename><surname>Asquith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Robert</forename><surname>Bruner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Mullins</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="page" from="121" to="139" />
+			<date type="published" when="1983">1983</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Detecting abnormal performance: The empirical power and specification of test statistics</title>
+		<author>
+			<persName><forename type="first">Brad</forename><surname>Barber</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">John</forename><surname>Lyon</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">41</biblScope>
+			<biblScope unit="page" from="359" to="400" />
+			<date type="published" when="1996">1996</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Stock-based incentive compensation and investment behavior</title>
+		<author>
+			<persName><forename type="first">John</forename><surname>Bizjak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">James</forename><surname>Brickley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeffrey</forename><surname>Coles</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="page" from="349" to="372" />
+			<date type="published" when="1993">1993</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b4">
+	<analytic>
+		<title level="a" type="main">What do firms do with cash windfalls</title>
+		<author>
+			<persName><forename type="first">Oliver</forename><surname>Blanchard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Florencio</forename><surname>Lopez-De-Silanes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrei</forename><surname>Shleifer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="page" from="337" to="360" />
+			<date type="published" when="1994">1994</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b5">
+	<monogr>
+		<title level="m" type="main">The pattern of corporate financial structure</title>
+		<author>
+			<persName><forename type="first">Walter</forename><surname>Chudson</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1945">1945</date>
+			<publisher>National Bureau of Economic Research</publisher>
+			<pubPlace>New York, NY</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Poison or placebo? Evidence on the deterrence and wealth effects of modern antitakeover measures</title>
+		<author>
+			<persName><forename type="first">Robert</forename><surname>Comment</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">William</forename><surname>Schwert</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="page" from="3" to="43" />
+			<date type="published" when="1995">1995</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Accounting earnings and cash f lows as measures of firm performance: The role of accounting accruals</title>
+		<author>
+			<persName><forename type="first">Patricia</forename><surname>Dechow</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">18</biblScope>
+			<biblScope unit="page" from="3" to="42" />
+			<date type="published" when="1994">1994</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Two agency-cost explanations of dividends</title>
+		<author>
+			<persName><forename type="first">Frank</forename><surname>Easterbrook</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">American Economic Review</title>
+		<imprint>
+			<biblScope unit="volume">74</biblScope>
+			<biblScope unit="page" from="650" to="659" />
+			<date type="published" when="1984">1984</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b9">
+	<analytic>
+		<title level="a" type="main">On transactions and precautionary demand for money</title>
+		<author>
+			<persName><forename type="first">Jacob</forename><surname>Frenkel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Boyan</forename><surname>Jovanovic</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Quarterly Journal of Economics</title>
+		<imprint>
+			<biblScope unit="volume">95</biblScope>
+			<biblScope unit="page" from="25" to="42" />
+			<date type="published" when="1980">1980</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Tender offers and free cash f low: An empirical analysis</title>
+		<author>
+			<persName><forename type="first">Robert</forename><surname>Hanson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Financial Review</title>
+		<imprint>
+			<biblScope unit="volume">27</biblScope>
+			<biblScope unit="page" from="185" to="209" />
+			<date type="published" when="1992">1992</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b11">
+	<analytic>
+		<title level="a" type="main">The characteristics of takeover targets</title>
+		<author>
+			<persName><forename type="first">Joel</forename><surname>Hasbrouck</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Banking and Finance</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="page" from="351" to="362" />
+			<date type="published" when="1985">1985</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Does corporate performance improve after mergers</title>
+		<author>
+			<persName><forename type="first">Paul</forename><surname>Healy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Krishna</forename><surname>Palepu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Richard</forename><surname>Ruback</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="page" from="135" to="175" />
+			<date type="published" when="1992">1992</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Target abnormal returns associated with acquisition announcements: Payment, acquisition form, and managerial resistance</title>
+		<author>
+			<persName><forename type="first">Yen</forename><forename type="middle">-</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ralph</forename><surname>Sheng</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Walkling</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="page" from="329" to="349" />
+			<date type="published" when="1987">1987</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b14">
+	<analytic>
+		<title level="a" type="main">The market for corporate control: The empirical evidence since 1980</title>
+		<author>
+			<persName><forename type="first">Gregg</forename><surname>Jarrell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">James</forename><surname>Brickley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeffry</forename><surname>Netter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Economic Perspectives</title>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page" from="49" to="68" />
+			<date type="published" when="1988">1988</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Agency costs of free cash f low, corporate finance and takeovers</title>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Jensen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">American Economic Review</title>
+		<imprint>
+			<biblScope unit="volume">76</biblScope>
+			<biblScope unit="page" from="323" to="329" />
+			<date type="published" when="1986">1986</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Theory of the firm: Managerial behavior, agency costs and ownership structure</title>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Jensen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">William</forename><surname>Meckling</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="305" to="360" />
+			<date type="published" when="1976">1976</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b17">
+	<analytic>
+		<title level="a" type="main">The market for corporate control: The scientific evidence</title>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Jensen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Richard</forename><surname>Ruback</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="page" from="5" to="50" />
+			<date type="published" when="1983">1983</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Managerial performance, Tobin&apos;s q, and the gains from successful tender offers</title>
+		<author>
+			<persName><forename type="first">Larry</forename><surname>Lang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">René</forename><surname>Stulz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ralph</forename><surname>Walkling</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">24</biblScope>
+			<biblScope unit="page" from="137" to="154" />
+			<date type="published" when="1989">1989</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b19">
+	<analytic>
+		<title level="a" type="main">A test of the free cash f low hypothesis: The case of bidder returns</title>
+		<author>
+			<persName><forename type="first">Larry</forename><surname>Lang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">René</forename><surname>Stulz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ralph</forename><surname>Walkling</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="page" from="315" to="335" />
+			<date type="published" when="1991">1991</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Distribution of incomes of corporations among dividends, retained earnings, and taxes</title>
+		<author>
+			<persName><forename type="first">John</forename><surname>Lintner</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">American Economic Review</title>
+		<imprint>
+			<biblScope unit="volume">46</biblScope>
+			<biblScope unit="page" from="97" to="113" />
+			<date type="published" when="1956">1956</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Managerial decision making and capital structure</title>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Maloney</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Robert</forename><surname>Mccormick</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mark</forename><surname>Mitchell</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Business</title>
+		<imprint>
+			<biblScope unit="volume">66</biblScope>
+			<biblScope unit="page" from="189" to="217" />
+			<date type="published" when="1993">1993</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Managers&apos; voting rights and corporate control</title>
+		<author>
+			<persName><forename type="first">Wayne</forename><surname>Mikkelson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">Megan</forename><surname>Partch</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">25</biblScope>
+			<biblScope unit="page" from="263" to="290" />
+			<date type="published" when="1989">1989</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b23">
+	<analytic>
+		<title level="a" type="main">A model of the demand for money by firms</title>
+		<author>
+			<persName><forename type="first">Merton</forename><surname>Miller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniel</forename><surname>Orr</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Quarterly Journal of Economics</title>
+		<imprint>
+			<biblScope unit="volume">80</biblScope>
+			<biblScope unit="page" from="413" to="455" />
+			<date type="published" when="1966">1966</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b24">
+	<analytic>
+		<title level="a" type="main">The demand for money by firms: Extension and analytical results</title>
+		<author>
+			<persName><forename type="first">Merton</forename><surname>Miller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniel</forename><surname>Orr</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Finance</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="page" from="735" to="759" />
+			<date type="published" when="1968">1968</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b25">
+	<analytic>
+		<title level="a" type="main">The impact of industry shocks on takeover and restructuring activity</title>
+		<author>
+			<persName><forename type="first">Mark</forename><surname>Mitchell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Harold Mulherin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">41</biblScope>
+			<biblScope unit="page" from="193" to="230" />
+			<date type="published" when="1996">1996</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b26">
+	<analytic>
+		<title level="a" type="main">1988a, Management ownership and market valuation: An empirical analysis</title>
+		<author>
+			<persName><forename type="first">Randall</forename><surname>Morck</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrei</forename><surname>Shleifer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Robert</forename><surname>Vishny</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">20</biblScope>
+			<biblScope unit="page" from="293" to="315" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Characteristics of targets of hostile and friendly takeovers</title>
+		<author>
+			<persName><forename type="first">Randall</forename><surname>Morck</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrei</forename><surname>Shleifer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Robert</forename><surname>Vishny</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Corporate Takeovers: Causes and Consequences ~National Bureau of Economic Research</title>
+		<editor>
+			<persName><forename type="first">Alan</forename><forename type="middle">J</forename><surname>Auerbach</surname></persName>
+		</editor>
+		<meeting><address><addrLine>Chicago!</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1988">1988b</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Do managerial objectives drive bad acquisitions</title>
+		<author>
+			<persName><forename type="first">Randall</forename><surname>Morck</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrei</forename><surname>Shleifer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Robert</forename><surname>Vishny</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Finance</title>
+		<imprint>
+			<biblScope unit="volume">45</biblScope>
+			<biblScope unit="page" from="31" to="48" />
+			<date type="published" when="1990">1990</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Corporate financing decisions when firms have investment information that investors do not</title>
+		<author>
+			<persName><forename type="first">Stewart</forename><surname>Myers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicholas</forename><surname>Majluf</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">13</biblScope>
+			<biblScope unit="page" from="187" to="221" />
+			<date type="published" when="1984">1984</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b30">
+	<analytic>
+		<title level="a" type="main">The determinants and implications of corporate holdings of liquid assets</title>
+		<author>
+			<persName><forename type="first">Tim</forename><surname>Opler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lee</forename><surname>Pinkowitz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">René</forename><surname>Stulz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rohan</forename><surname>Williamson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">52</biblScope>
+			<biblScope unit="page" from="3" to="46" />
+			<date type="published" when="1999">1999</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Predicting takeover targets: A methodological and empirical analysis</title>
+		<author>
+			<persName><forename type="first">Krishna</forename><surname>Palepu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="page" from="3" to="35" />
+			<date type="published" when="1986">1986</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b32">
+	<analytic>
+		<title level="a" type="main">The Hubris hypothesis of corporate takeovers</title>
+		<author>
+			<persName><forename type="first">Richard</forename><surname>Roll</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Business</title>
+		<imprint>
+			<biblScope unit="volume">59</biblScope>
+			<biblScope unit="page" from="197" to="216" />
+			<date type="published" when="1986">1986</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Assessing competition in the market for corporate acquisitions</title>
+		<author>
+			<persName><forename type="first">Richard</forename><surname>Ruback</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="page" from="141" to="153" />
+			<date type="published" when="1983">1983</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Tobin&apos;s q, agency costs and corporate control: An empirical analysis of firm-specific parameters</title>
+		<author>
+			<persName><forename type="first">Henri</forename><surname>Servaes</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Finance</title>
+		<imprint>
+			<biblScope unit="volume">46</biblScope>
+			<biblScope unit="page" from="409" to="419" />
+			<date type="published" when="1991">1991</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b35">
+	<analytic>
+		<title level="a" type="main">The investment opportunity set and corporate financing, dividend and compensation policies</title>
+		<author>
+			<persName><forename type="first">Clifford</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ross</forename><surname>Watts</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="page" from="263" to="292" />
+			<date type="published" when="1992">1992</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b36">
+	<analytic>
+		<title level="a" type="main">The combined effects of free cash f low and financial slack on bidder and target stock returns</title>
+		<author>
+			<persName><forename type="first">Richard</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joo-Hyun</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Business</title>
+		<imprint>
+			<biblScope unit="volume">67</biblScope>
+			<biblScope unit="page" from="281" to="310" />
+			<date type="published" when="1994">1994</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b37">
+	<analytic>
+		<title level="a" type="main">The impact of managerial ownership on acquisition attempts and target shareholder wealth</title>
+		<author>
+			<persName><forename type="first">Moon</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ralph</forename><surname>Walkling</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial and Quantitative Analysis</title>
+		<imprint>
+			<biblScope unit="volume">28</biblScope>
+			<biblScope unit="page" from="439" to="457" />
+			<date type="published" when="1993">1993</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Corporate takeover bids, methods of payment, and bidding firms&apos; stock returns</title>
+		<author>
+			<persName><forename type="first">Nickolaos</forename><surname>Travlos</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Finance</title>
+		<imprint>
+			<biblScope unit="volume">42</biblScope>
+			<biblScope unit="page" from="943" to="963" />
+			<date type="published" when="1987">1987</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Cross-section estimates of liquid asset demand by manufacturing corporations</title>
+		<author>
+			<persName><forename type="first">Robert</forename><surname>Vogel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">S</forename><surname>Maddala</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Finance</title>
+		<imprint>
+			<biblScope unit="volume">22</biblScope>
+			<biblScope unit="page" from="557" to="575" />
+			<date type="published" when="1967">1967</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

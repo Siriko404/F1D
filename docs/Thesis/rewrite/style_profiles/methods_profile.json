@@ -1,0 +1,593 @@
+{
+  "type": "methods",
+  "profile": [
+    {
+      "id": "a1-f2",
+      "agent": 1,
+      "aspect": "Sentence-initial subordinate-clause stacking that defers the main clause",
+      "exemplar_pattern": "Exemplars typically lead with the subject and verb, stating the action first, then attach reasoning. Short declarative openings.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "To explore under what circumstances managers withhold information from the public, we employ the following ordinal logistic regression"
+        },
+        {
+          "paper": "thewissen2024",
+          "quote": "To test Hypothesis 1, we estimate the following cross-sectional regression:"
+        }
+      ],
+      "our_pattern": "Our prose front-loads a long causal/conditional clause and a callback before the main clause arrives, so the reader holds several sub-claims before learning the action.",
+      "our_quotes": [
+        {
+          "para_id": "section2.3-U2",
+          "quote": "An anticipatory, deal-tracking signal must vary from call to call within a single CEO's tenure, so, as established in Section~2.1, it can reside only in the call-varying part of this measure and not in the CEO's persistent speaking style."
+        },
+        {
+          "para_id": "section2.4-U2",
+          "quote": "H1b requires tracing the outcome across event time rather than at a single point, so the main design generalizes to an event study that replaces the single indicator with a set of event-time bins:"
+        }
+      ],
+      "gap": "Exemplars open 'To test Hypothesis 1, we estimate...' (purpose clause, then verb); ours opens with a multi-clause premise plus an interposed callback before reaching 'we adopt/the design generalizes'.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f4",
+      "agent": 1,
+      "aspect": "Long multi-clause sentences chaining several distinct points with semicolons/commas",
+      "exemplar_pattern": "Exemplars, even when listing controls, tend to break into separate sentences or a clean enumerated clause; one idea advances per sentence.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "We calculate this measure at the daily level, winsorizing at the 1st and 99th percentile, and then take the average value over the period starting the day of the call and ending 25 trading days subsequent to the call."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "The dependent variable in the probit is one if the firm announces a bid in year t and zero otherwise. The remaining variables are described below."
+        }
+      ],
+      "our_pattern": "Our sentences run several independent claims together across semicolons and subordinate clauses, so one sentence carries the spec, an exception, a rationale, and a hedge at once.",
+      "our_quotes": [
+        {
+          "para_id": "section2.4-U2",
+          "quote": "so a Wald test of $\\beta_{\\mathrm{PRE1}}-\\beta_{\\mathrm{GAP}}>0$ carries the empirical content of H1b; the same specification, estimated for the cash ratio in place of uncertainty, traces the persistence of the cash on the other clock, a persistence that is largely mechanical, since the cash is paid only at completion and so sits on the books through the gap."
+        },
+        {
+          "para_id": "section2.5-U5",
+          "quote": "On selection, the residual outcome exists only for CEOs with at least five calls, in the non-financial, non-utility sample where the decomposition is run, so the uncertainty regressions describe a larger, more-covered set of firms than the cash-ratio regressions, a limit on external validity we disclose."
+        }
+      ],
+      "gap": "Exemplars stop the sentence after one operation ('...subsequent to the call.'); ours threads spec + mechanism + hedge into a single 40-plus-word chain the reader must hold whole.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f7",
+      "agent": 1,
+      "aspect": "Compressed pre-modifier noun stacks (multiple adjectives/nouns piled before a head noun)",
+      "exemplar_pattern": "Exemplars unpack a qualified concept across words or a relative clause rather than stacking modifiers in front of the noun.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "Cash deviation is defined as the deviation of the firm's ratio of cash and short-term investments to total assets from the average value predicted for its industry"
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "a model based solely on the linguistic complexity of analysts (columns (1) and ( 4)), a model based solely on business complexity variables"
+        }
+      ],
+      "our_pattern": "Our prose front-loads dense modifier stacks ('a within-firm, two-way fixed-effects regression', 'an anticipatory, deal-tracking signal', 'the anticipatory, disclosure-state reading') that compress several qualifiers ahead of the head noun.",
+      "our_quotes": [
+        {
+          "para_id": "section2.4-U1",
+          "quote": "all three share a common panel frame: a within-firm, two-way fixed-effects regression of an outcome on event-time treatment indicators"
+        },
+        {
+          "para_id": "section2.3-U2",
+          "quote": "our contribution is not the measure but the anticipatory, disclosure-state reading we give it around undisclosed deals"
+        }
+      ],
+      "gap": "Exemplars spell a qualified object out ('the deviation of the firm's ratio of cash ... from the average value predicted for its industry'); ours compresses comparable qualification into stacked pre-modifiers the reader must unzip.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f8",
+      "agent": 1,
+      "aspect": "Abstract relational framing instead of naming the concrete quantity",
+      "exemplar_pattern": "Exemplars name the concrete coefficient/variable plainly ('the coefficient on Fog(Analyst)', 'the dependent variable', 'the primary variable of interest is the cash deviation variable').",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "The primary variable of interest is the cash deviation variable."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "The fitted values of columns (3) and ( 6) are our estimates of the latent information components"
+        }
+      ],
+      "our_pattern": "Our prose layers abstract relational descriptors ('the discriminating window is the gap', 'the object of interest is its residual term', 'is what estimates ... in H1a') that interpose an extra abstraction over the concrete object.",
+      "our_quotes": [
+        {
+          "para_id": "section2.4-U2",
+          "quote": "The discriminating window is the gap."
+        },
+        {
+          "para_id": "section2.4-U3",
+          "quote": "this difference, and not a comparison of one significant coefficient against one insignificant one, is what estimates $\\theta_{-1}^{\\,\\mathrm{cash}}-\\theta_{-1}^{\\,\\mathrm{stock}}$ in H1a"
+        }
+      ],
+      "gap": "Exemplars write 'The primary variable of interest is the cash deviation variable' (names it); ours writes 'The discriminating window is the gap' and 'is what estimates ...', adding a relational abstraction layer over the plain named quantity.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f3",
+      "agent": 2,
+      "aspect": "Spelling out variable lists in prose vs. compact set-builder notation",
+      "exemplar_pattern": "After an equation, exemplars define each symbol in plain expanded prose with the variable name attached, one clause per variable, never compressing controls into set-builder braces in running text.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "where y it stands for one of the corporate policy variables, ␣ t are year fixed effects, ␥ i are firm fixed effects, X it represents a vector of time-varying firm level controls, and ⑀ it is an error term."
+        },
+        {
+          "paper": "thewissen2024",
+          "quote": "we include firm size (measured as the logarithm of the firm's market capitalization, 𝑆𝑖𝑧𝑒), leverage (𝐿𝑒𝑣𝑒𝑟𝑎𝑔𝑒) as the long-term debt divided by total assets at the end of year t -2"
+        }
+      ],
+      "our_pattern": "We embed set-builder notation with subscripted index families directly into the prose ($\\mathrm{Speech}_{s,i,t}=\\{...\\}$, $\\mathrm{FirmChars}_{k,i,t}=\\{...\\}$), making the reader parse braces, set membership, and triple subscripts inline rather than reading a plain variable list.",
+      "our_quotes": [
+        {
+          "para_id": "section2.3-U2",
+          "quote": "$\\mathrm{Speech}_{s,i,t}=\\{\\mathrm{UncPreCEO},\\mathrm{UncQue},\\mathrm{NegCall}\\}$ collects other linguistic features of the same call, $\\mathrm{FirmChars}_{k,i,t}=\\{\\mathrm{SurpDec},\\mathrm{EPSgrowth},\\mathrm{StockRet},\\mathrm{MarketRet}\\}$ collects contemporaneous performance"
+        }
+      ],
+      "gap": "Exemplars define variables in plain words; we ask the reader to decode set-builder braces and multi-index subscripts in running text.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f7",
+      "agent": 2,
+      "aspect": "Dense semicolon-spliced enumerations inside one sentence",
+      "exemplar_pattern": "When exemplars enumerate several items or several findings, they often split them into separate sentences or a clean list, rather than packing many semicolon-joined independent clauses into one long sentence.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "We compute company size (LMV ) as the natural logarithm of a firm's beginningof-year market value. We use the logarithm specification of market value in our analysis because the variable is highly skewed."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "We measure managerial Fog separately for the presentation and Q&A portions of the call. Fog(Present) represents the Fog index of managers' language during the presentation, and Fog(Response) is the Fog of managers' responses to questions."
+        }
+      ],
+      "our_pattern": "We chain several findings or definitions across semicolons within a single sentence (three measures with coefficients and p-values strung together; multiple control-pool facts), so one sentence must be parsed as several.",
+      "our_quotes": [
+        {
+          "para_id": "section2.5-U2",
+          "quote": "It rises with firm-level political risk, \\citet{hassan2020}'s scaled measure of the share of a firm's earnings call devoted to political risk (coefficient $0.0001$, $p<0.01$; Table~\\ref{tab:h11_prisk_uncertainty}); with United States economic policy uncertainty, the newspaper-based index of \\citet{baker2016} ($0.0124$, $p<0.05$; Table~\\ref{tab:h24_us_epu}); and with global economic policy uncertainty, the GDP-weighted index of \\citet{davis2016} ($0.0181$, $p<0.05$; Table~\\ref{tab:h24b_global_epu})."
+        }
+      ],
+      "gap": "Exemplars give each finding/definition its own sentence; we compress several into one semicolon-spliced sentence the reader must segment.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f8",
+      "agent": 2,
+      "aspect": "Layered hedging and conditional caveats compounded in a single passage",
+      "exemplar_pattern": "Exemplars hedge cleanly and once per point, in a short declarative caveat sentence, rather than stacking a hedge upon a conditional upon a concession in one breath.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "Therefore, we are not hoping in this section to estimate the causal effect of managers on firm practices. Instead, our objective is more modest."
+        },
+        {
+          "paper": "thewissen2024",
+          "quote": "our current economic interpretation may either be a spurious statistical artefact (that is, our significance is a false positive), or driven by an omitted variable bias."
+        }
+      ],
+      "our_pattern": "We stack a chain of conditional hedges within one sentence (\"should some of that anticipation also reach the prepared remarks, the residual understates it and so reads as a conservative floor\"), layering counterfactual condition, consequence, and re-labeling in sequence, which the exemplars deliver as separate plain caveats.",
+      "our_quotes": [
+        {
+          "para_id": "section2.3-U2",
+          "quote": "should some of that anticipation also reach the prepared remarks, the residual understates it and so reads as a conservative floor"
+        },
+        {
+          "para_id": "section2.4-U1",
+          "quote": "We read it descriptively, as an anticipation contrast, and make no causal or parallel-trends claim."
+        }
+      ],
+      "gap": "Exemplars deliver each hedge as its own clean caveat; our hedges compound (condition + consequence + re-label) inside one sentence.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f9",
+      "agent": 2,
+      "aspect": "Multiple distinct objects introduced in one sentence (overloaded sentence scope)",
+      "exemplar_pattern": "Exemplars typically introduce one new construct per sentence and devote a full sentence to its definition before moving on.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "We employ an indicator variable, RDINT , set to one if R&D expenditures averaged over 2000-2004 are nonzero; 0 otherwise, as our measure of a firm's proprietary costs."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "Following Amihud [2002], Illiquidity, is defined as"
+        }
+      ],
+      "our_pattern": "Single sentences in our prose introduce and relate two or three distinct objects at once (the persistent component, the clarity measure, and the residual of interest all defined and contrasted in one sentence), so the reader must hold several new definitions simultaneously.",
+      "our_quotes": [
+        {
+          "para_id": "section2.3-U2",
+          "quote": "The persistent component is the CEO fixed effect, summarized as $\\mathrm{ClarityCEO}_i=-\\gamma_i$, and the object of interest is its residual term, $\\mathrm{UncResCEO}=\\varepsilon_{i,t}$, which we estimate on our data."
+        }
+      ],
+      "gap": "Exemplars give each new construct its own sentence; we introduce multiple constructs per sentence, raising simultaneous load.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f1",
+      "agent": 3,
+      "aspect": "Naming the dependent variable: plain declarative vs. layered re-framing",
+      "exemplar_pattern": "Exemplars name the dependent/key variable in one flat clause, often a single sentence, with no meta-commentary about what the sentence is doing.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "The dependent variable in the probit is one if the firm announces a bid in year t and zero otherwise."
+        },
+        {
+          "paper": "thewissen2024",
+          "quote": "We define our instrument as the percentage ownership of institutional shareholders as of the month prior to the acquisition announcement date (Inst)."
+        }
+      ],
+      "our_pattern": "Our text introduces the DV but then layers extra framing clauses about which part 'can carry an anticipatory signal' and what 'the question is', turning a definition into a staged narrative.",
+      "our_quotes": [
+        {
+          "para_id": "section2.3-U1",
+          "quote": "here the measure is taken as given, and the question is which part of it can carry an anticipatory signal"
+        }
+      ],
+      "gap": "Where exemplars state the DV and stop, our sentence appends an interpretive 'the question is which part...' rider, adding narrative weight the register does not require for a variable definition.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f5",
+      "agent": 3,
+      "aspect": "Abstract nominalizations vs. concrete verbs for the test",
+      "exemplar_pattern": "Exemplars say plainly 'we test whether' the coefficients differ, naming the test as an action.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "we test whether they are different from the coefficients on the randomly selected day"
+        },
+        {
+          "paper": "thewissen2024",
+          "quote": "The F-statistic testing whether instruments are unrelated to the endogeneous regressor indicates that our instrumental variable is sufficiently strong"
+        }
+      ],
+      "our_pattern": "Our text packages the test as an abstract noun phrase ('carries the empirical content of H1b', 'is what estimates') rather than a direct 'we test whether'.",
+      "our_quotes": [
+        {
+          "para_id": "section2.4-U2",
+          "quote": "a Wald test of $\\beta_{\\mathrm{PRE1}}-\\beta_{\\mathrm{GAP}}>0$ carries the empirical content of H1b"
+        }
+      ],
+      "gap": "Exemplars use the concrete verb 'we test whether'; our 'carries the empirical content of' is a nominalized abstraction over the same act, heavier than the register's default.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f6",
+      "agent": 3,
+      "aspect": "Density of the 'limitations/caveats' paragraph",
+      "exemplar_pattern": "Exemplars present caveats and robustness one item per sentence or short coordinate clause, each plainly labeled, rather than as a single multi-topic block.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "The signs and significance levels of our coefficients are unaffected."
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "Unreported analysis shows that the coefficients on both variables are insignificantly different from zero. Our main inferences remain unchanged."
+        }
+      ],
+      "our_pattern": "Our paragraph compresses many distinct caveats (inference, contamination, functional form, Nickell bias, selection, interpretation) into a single dense paragraph with long subordinated sentences each introduced by 'On X,'.",
+      "our_quotes": [
+        {
+          "para_id": "section2.4-U5",
+          "quote": "On functional form, the outcomes are levels or word shares rather than counts, and the cash-ratio regressions carry a partial-adjustment lag because cash is sticky whereas the residual regressions do not."
+        }
+      ],
+      "gap": "Bushee/Hollander give each robustness point its own short, flat sentence; our 'On functional form, ... whereas the residual regressions do not' bundles definition, mechanism, and contrast into one long period, exceeding the simple register's per-sentence load.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f7",
+      "agent": 3,
+      "aspect": "Compound contrastive constructions ('narrower than... not a different object')",
+      "exemplar_pattern": "Exemplars characterize a refined measure with a single plain clause about what it is, not with a doubled negative-then-positive contrast.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "Instead, our identification comes from within-firm variation in the MBA status or birth cohort of the CEO."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "The averaging is intended to reduce yearly noise and produce a truer representation of a firm's characteristics."
+        }
+      ],
+      "our_pattern": "Our text uses a stacked contrastive frame ('it is narrower than a style-only residual: a sharper version... not a different object') that states the same point through two opposed formulations.",
+      "our_quotes": [
+        {
+          "para_id": "section2.3-U2",
+          "quote": "it is narrower than a style-only residual: a sharper version of the call-varying component located in Section~2.1, not a different object"
+        }
+      ],
+      "gap": "Bertrand states the refinement in one positive clause ('our identification comes from within-firm variation'); our construction layers 'narrower than... a sharper version... not a different object', three appositive formulations where one would carry the register, adding phrasing weight.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f10",
+      "agent": 3,
+      "aspect": "Defining a variable plus its motivation and a meta-distinction in one breath",
+      "exemplar_pattern": "Exemplars define a measure, then give its rationale as a separate, plainly-worded sentence.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "We measure firm age (AGE) by the natural logarithm of the number of months the firm has been listed on CRSP. Since AGE is highly skewed, we use the natural logarithm in our analysis."
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "Total M&A deals is a count variable tracking the number of deals entered into by the focal firm during the 5 years leading up to the call. We include this control because it is plausible that the earnings of active firms may be more difficult to predict"
+        }
+      ],
+      "our_pattern": "Our text defines CashScrutiny and immediately fuses a behavioral claim, a co-movement claim, and a meta-distinction from UncQue across long compound sentences.",
+      "our_quotes": [
+        {
+          "para_id": "section2.5-U3",
+          "quote": "The measure is the volume of cash questions, not their uncertainty wording: the latter, $\\mathrm{UncQue}$, is already netted out inside the residual by the decomposition of Section~2.3, so this test addresses a distinct path that the residual does not already absorb."
+        }
+      ],
+      "gap": "Hollander/Ragozzino split definition and rationale into short successive sentences; our single colon-then-'so'-chained period carries the contrast, the cross-reference, and the consequence together, denser than the exemplar pattern for the same definitional job.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f1",
+      "agent": 1,
+      "aspect": "Metaphorical/figurative vocabulary for plain methodological actions",
+      "exemplar_pattern": "Exemplars name methodological objects with flat, literal nouns and verbs: a 'benchmark specification', 'controls', a 'model', 'fixed effects'. No figurative dress.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "From a benchmark specification we derive residual dividend payouts at the firm-year level after controlling for any average differences across firms and years"
+        },
+        {
+          "paper": "harford1999",
+          "quote": "The model used in the rest of the analysis includes these firm characteristics as well as a time series component"
+        }
+      ],
+      "our_pattern": "Our prose reaches for figurative nouns where a plain methodological term would do: 'apparatus', 'war chest', 'on the other clock', 'anchor the calendar-time effects'.",
+      "our_quotes": [
+        {
+          "para_id": "section2.3-U1",
+          "quote": "Following the apparatus adopted in Section~2.1, we measure uncertainty with the Loughran and McDonald finance-specific uncertainty word list"
+        },
+        {
+          "para_id": "section2.5-U5",
+          "quote": "cash treated as a by-product of retained free cash flow rather than a war chest built for a deal"
+        }
+      ],
+      "gap": "Where exemplars say 'model'/'specification'/'controls', we substitute a metaphor ('apparatus', 'war chest', 'clock') that a non-specialist must decode back into the literal method.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f2",
+      "agent": 3,
+      "aspect": "Self-referential meta-commentary on the prose's own structure",
+      "exemplar_pattern": "Exemplars move straight to content; they do not announce that a feature 'deserves note' or narrate the act of recording a choice.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "The remaining variables are described below."
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "We also introduce several controls, and we discuss each of them here in the order they appear in the tables."
+        }
+      ],
+      "our_pattern": "Our text repeatedly frames itself with phrases that comment on the writing act rather than the method, e.g. announcing that something 'deserves note' or that choices are 'recorded here'.",
+      "our_quotes": [
+        {
+          "para_id": "section2.3-U3",
+          "quote": "One feature of this construction deserves note."
+        },
+        {
+          "para_id": "section2.4-U5",
+          "quote": "Several choices that do not belong to a single equation are recorded here."
+        }
+      ],
+      "gap": "The exemplar register signposts with bare 'described below' / 'we discuss each here'; our 'deserves note' and 'do not belong to a single equation are recorded here' add an editorializing layer absent from the simpler models.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f9",
+      "agent": 3,
+      "aspect": "Elevated/literary diction vs. plain word choice",
+      "exemplar_pattern": "Exemplars use plain functional verbs ('we control for', 'we include', 'we add') to introduce controls and properties.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "To alleviate concerns about correlated omitted-variable bias, we control for these characteristics in our analyses."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "We control for a number of determinants of information asymmetry in our validation tests."
+        }
+      ],
+      "our_pattern": "Our text uses more elevated verbs/nouns for the same moves ('warrants a check', 'deserves separate treatment', 'the apparatus adopted').",
+      "our_quotes": [
+        {
+          "para_id": "section2.5-U1",
+          "quote": "Before the residual can carry the weight the empirical strategy places on it, its measurement warrants a check."
+        },
+        {
+          "para_id": "section2.5-U3",
+          "quote": "One channel deserves separate treatment, because it is the most immediate rival to the anticipatory reading."
+        }
+      ],
+      "gap": "Where exemplars write 'we control for' / 'we include', our 'warrants a check' and 'deserves separate treatment' raise the diction above the non-specialist plain-verb baseline without adding method content.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f1",
+      "agent": 2,
+      "aspect": "Sentence length and clause-chaining (run-on density)",
+      "exemplar_pattern": "Exemplars cap most sentences at a single idea and break compound logic across separate short sentences; even when a sentence carries a qualifier it does not stack three or four subordinate clauses joined by 'so', 'while', 'whereas', and a trailing relative clause.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "The dependent variable in the probit is one if the firm announces a bid in year t and zero otherwise. The remaining variables are described below."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "Lower values of Fog(.) correspond to less complex text."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "The dependent variable in the probit is one if the firm announces a bid in year t and zero otherwise."
+        }
+      ],
+      "our_pattern": "Several of our sentences run very long and chain multiple subordinate clauses (multiple 'so'/'while'/'whereas'/relative-clause hops inside one sentence), forcing the reader to hold several conditions at once before the sentence resolves.",
+      "our_quotes": [
+        {
+          "para_id": "section2.4-U2",
+          "quote": "If residual uncertainty has resolved by announcement, its coefficient should fall to zero at $\\mathrm{GAP}$, when the deal is public but the cash has not yet left, so a Wald test of $\\beta_{\\mathrm{PRE1}}-\\beta_{\\mathrm{GAP}}>0$ carries the empirical content of H1b; the same specification, estimated for the cash ratio in place of uncertainty, traces the persistence of the cash on the other clock, a persistence that is largely mechanical, since the cash is paid only at completion and so sits on the books through the gap."
+        },
+        {
+          "para_id": "section2.4-U1",
+          "quote": "The treatment $\\mathrm{PreAnnounceQtr}_{it}=\\mathbf{1}[e=-1]$ marks the call in the quarter before the firm's first cash acquisition; post-announcement quarters ($e\\ge 0$) are dropped, so the design reads the run-up and not the aftermath, while firms with no cash acquisition, for which $e$ is undefined, anchor the calendar-time effects."
+        }
+      ],
+      "gap": "Where exemplars deliver one fact per sentence, our sentences carry several stacked conditions, raising the reader's working-memory load.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f3",
+      "agent": 1,
+      "aspect": "Abstract nominalizations where exemplars use a plain verb",
+      "exemplar_pattern": "Exemplars prefer verb phrases ('we estimate', 'we control for', 'we measure', 'we calculate') over noun-heavy abstractions.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "We measure information asymmetry using the Amihud [2002] illiquidity construct"
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "To alleviate concerns about correlated omitted-variable bias, we control for these characteristics in our analyses."
+        }
+      ],
+      "our_pattern": "Our prose converts actions into abstract nouns and relations ('the object of interest is its residual term', 'the discriminating window is the gap', 'the estimand in each case is a within-firm pre-announcement mean shift'), piling noun on noun.",
+      "our_quotes": [
+        {
+          "para_id": "section2.3-U2",
+          "quote": "The persistent component is the CEO fixed effect, summarized as $\\mathrm{ClarityCEO}_i=-\\gamma_i$, and the object of interest is its residual term"
+        },
+        {
+          "para_id": "section2.4-U4",
+          "quote": "the estimand in each case is a within-firm pre-announcement mean shift, measured against a treated firm's own ordinary quarters"
+        }
+      ],
+      "gap": "Exemplars keep the agent-verb form ('we measure X'); ours uses copula-plus-nominalization ('the object of interest is its residual term', 'the estimand is a ... mean shift'), which is denser to parse.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    }
+  ],
+  "guardrail_collisions": [
+    "a1-f2",
+    "a1-f4",
+    "a1-f7",
+    "a1-f8",
+    "a2-f7",
+    "a2-f8",
+    "a2-f9",
+    "a3-f7",
+    "a3-f10"
+  ],
+  "side_notes": [
+    "Coverage skew toward figurative/metaphor (3 agents x same apparatus/war chest/clock instances) and self-referential meta-commentary (3 agents x same 'deserves note'/'recorded here' pair) — the same two or three source sentences are re-flagged repeatedly, so breadth of distinct devices is narrower than the finding count suggests.",
+    "All findings operate at sentence/clause level (sentence length, clause-stacking, nominalization, diction, metaphor). Paragraph-level architecture — ordering of paragraphs within 2.3/2.4/2.5, topic-sentence placement, and whether whole paragraphs are longer/denser than exemplar paragraphs — is unexamined by all three agents.",
+    "Section 2.1 prose itself is not directly sampled; our_quotes draw only from 2.3, 2.4, 2.5 (with 2.1 referenced via callbacks). Whether the originating 2.1 passages show the same complexity gap is uncovered."
+  ],
+  "gate_rejected": [
+    {
+      "id": "a1-f9",
+      "reason": "cardinality"
+    }
+  ],
+  "redteam_rejected": [
+    {
+      "id": "a2-f6",
+      "reason": "Direction/evidence not supported: the exemplar quotes (bushee 'only requirement for identification is changes in CEO characteristics', hollander 're-estimate equation (1)...CEOs in office at least one year') are not lighter or more parenthetical cross-references than our quotes; they are substantive content sentences, not a low-cross-reference baseline. The pairing does not demonstrate that our prose threads MORE inline pointers than the exemplar register for the same job, so the stated complexity gap is not established by the evidence offered."
+    }
+  ],
+  "merges": [
+    {
+      "ids": [
+        "a1-f1",
+        "a2-f2",
+        "a3-f4"
+      ],
+      "canonical": "a1-f1"
+    },
+    {
+      "ids": [
+        "a1-f5",
+        "a2-f5",
+        "a3-f2"
+      ],
+      "canonical": "a3-f2"
+    },
+    {
+      "ids": [
+        "a1-f6",
+        "a3-f9"
+      ],
+      "canonical": "a3-f9"
+    },
+    {
+      "ids": [
+        "a2-f1",
+        "a3-f3"
+      ],
+      "canonical": "a2-f1"
+    },
+    {
+      "ids": [
+        "a1-f3",
+        "a2-f4"
+      ],
+      "canonical": "a1-f3"
+    }
+  ],
+  "unhandled": [
+    "a3-f8"
+  ],
+  "_provenance": {
+    "runId": "wf_fde9fe40-9dc",
+    "wave": "methods-conclusion",
+    "tool_calls_total": 8,
+    "note": "clean under TOOL_LOCK"
+  }
+}

@@ -1,0 +1,476 @@
+{
+  "type": "intro",
+  "profile": [
+    {
+      "id": "a1-f1",
+      "agent": 1,
+      "aspect": "Abbreviation expanded: 'chief-executive' written out where peers use 'CEO'",
+      "exemplar_pattern": "Peers use the conventional compact abbreviation 'CEO(s)' as the bare subject noun for the executive.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "CEOs and other top executives are key factors"
+        },
+        {
+          "paper": "dwz",
+          "quote": "We find that CEOs differ substantially in clarity"
+        }
+      ],
+      "our_pattern": "Every instance expands the abbreviation to the longer hyphenated form 'chief-executive', embedded inside a larger compound.",
+      "our_quotes": [
+        {
+          "para_id": "1-P4",
+          "quote": "chief-executive question-and-answer uncertainty"
+        },
+        {
+          "para_id": "1-P5",
+          "quote": "residual chief-executive uncertainty"
+        }
+      ],
+      "gap": "Where peers use the two-letter conventional token 'CEO', our prose uses the spelled-out multi-syllable 'chief-executive' at every occurrence, lengthening each noun phrase it heads.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f3",
+      "agent": 1,
+      "aspect": "The measure's full multi-clause definition is restated in full at two separate points",
+      "exemplar_pattern": "Peers name the measure compactly once, then refer to it by a short label without repeating its definition.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "we measure linguistic complexity using the Gunning [1952] Fog index"
+        },
+        {
+          "paper": "dwz",
+          "quote": "It introduces a simple measure of CEO clarity"
+        }
+      ],
+      "our_pattern": "The full appositive gloss 'the call-varying component that remains once each executive's persistent speaking style is netted out' is written out twice, in 1-P4 and again in 1-P7.",
+      "our_quotes": [
+        {
+          "para_id": "1-P4",
+          "quote": "residual measure of chief-executive question-and-answer uncertainty, $\\mathrm{UncResCEO}$, the call-varying component that remains once each executive's persistent speaking style is netted out"
+        },
+        {
+          "para_id": "1-P7",
+          "quote": "a residual measure of chief-executive question-and-answer uncertainty, the call-varying component that remains once each executive's persistent speaking style is netted out"
+        }
+      ],
+      "gap": "The same multi-clause defining apposition appears twice within the intro, whereas exemplars give a compact one-time naming of the measure and thereafter use a short label.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f4",
+      "agent": 1,
+      "aspect": "'unscripted question-and-answer session' written out in full and repeated, where peers use 'Q&A' or 'the response'",
+      "exemplar_pattern": "Peers refer to the unscripted call segment with a short token ('Q&A' or 'the response portions').",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "we separately examine the presentation and the response portions of the call"
+        },
+        {
+          "paper": "dwz",
+          "quote": "the presentation and Q&A parts of the call"
+        }
+      ],
+      "our_pattern": "The five-word compound 'unscripted question-and-answer session' is spelled out in full and repeated across paragraphs.",
+      "our_quotes": [
+        {
+          "para_id": "1-P2",
+          "quote": "the unscripted question-and-answer session is one of the few recurring venues"
+        }
+      ],
+      "gap": "Our prose repeats the fully spelled-out five-word compound 'unscripted question-and-answer session' where peers name the same segment with the short forms 'Q&A' or 'the response'.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f5",
+      "agent": 1,
+      "aspect": "Meta-commentary that labels the sentence's own claim ('we offer this as a positioning claim ...')",
+      "exemplar_pattern": "Peers assert the contribution directly without an added clause that classifies what kind of claim it is.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "By decomposing linguistic complexity into its latent information and obfuscation components"
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "The novel contribution of this paper is to explicitly introduce"
+        }
+      ],
+      "our_pattern": "An added trailing clause classifies the preceding statement as 'a positioning claim about where the contribution sits, not as a tested mechanism'.",
+      "our_quotes": [
+        {
+          "para_id": "1-P3",
+          "quote": "we offer this as a positioning claim about where the contribution sits, not as a tested mechanism"
+        }
+      ],
+      "gap": "Our sentence appends a self-referential clause naming the epistemic status of its own preceding claim, an extra meta-layer the exemplars do not add when stating their contribution.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f1",
+      "agent": 2,
+      "aspect": "Opening paragraph piles up several chained doctrines before the topic settles, where the lighter exemplars integrate one concept",
+      "exemplar_pattern": "Harford and LM ease the reader in: one plain proposition, with citations used illustratively (LM: 'Examples are...') or one strategic-role idea built up conceptually with a single footnote (Harford). The reader integrates at most one concept before the research question arrives.",
+      "exemplar_quotes": [
+        {
+          "paper": "lm2011",
+          "quote": "A GROWING BODY of finance and accounting research uses textual analysis to examine the tone and sentiment of corporate 10-K reports, newspaper articles, press releases, and investor message boards."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "Examples are Antweiler and Frank (2004), Tetlock (2007), Engelberg (2008), Li (2008), and Tetlock, Saar-Tsechansky, and Macskassy (2008)."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "DESPITE THE IMPORTANCE OF CASH RESERVES to theories in corporate finance, corporate holdings of cash have received relatively little direct attention in the academic literature."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "In the presence of capital market imperfections deriving from asymmetric information between managers and capital providers, liquidity can take on a strategic role."
+        }
+      ],
+      "our_pattern": "1-P1 chains four doctrines as load-bearing dependencies (costly-disclosure withholding, then equilibrium non-disclosure, then materiality of preliminary negotiations, then the half-truth rule), each with its own citation. By the close of the paragraph the reader has had to assemble disclosure theory plus securities law before the empirical setting is fixed.",
+      "our_quotes": [
+        {
+          "para_id": "1-P1",
+          "quote": "Disclosure theory holds that an informed manager may rationally withhold private information when disclosure is costly \\citep{verrecchia1983}, and that non-disclosure can persist in equilibrium because outside investors cannot distinguish an uninformed manager from one who is informed but silent \\citep{dye1985}, so a withholding state is itself informative."
+        },
+        {
+          "para_id": "1-P1",
+          "quote": "A firm privately committed to an acquisition it has not announced sits in a concrete such state: information about preliminary merger negotiations can be material well before any definitive agreement \\citep{basic1988}, and although the firm may stay silent it may not mislead once it speaks \\citep{rule10b5, basic1988}, so the executive can neither confirm nor deny the pending deal and is left to answer around it."
+        }
+      ],
+      "gap": "The exemplars let the reader arrive at the question after holding one idea; our opening paragraph requires holding four chained doctrines (each cited) at once before the setting is stated. The extra effort is the simultaneous integration of disclosure theory and securities law in a single paragraph.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f3",
+      "agent": 2,
+      "aspect": "First mention of the measure stacks symbol, defining relative clause, citation-attribution, and deferral in one unresolved sentence (and the gloss recurs verbatim)",
+      "exemplar_pattern": "Exemplars attach at most one explanatory unit at the point of naming and offload the rest to a following sentence: DWZ names CEO clarity, then opens a separate sentence to say what is measured; Bushee names the two components, then defines each in the next sentence.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "In this paper, we propose a method for evaluating CEO clarity and test its implications for companies' stock price and long-term value."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "We develop an empirical approach to estimate the latent components of linguistic complexity within the context of quarterly earnings conference calls."
+        }
+      ],
+      "our_pattern": "At first mention in 1-P4 the measure carries a symbol, a 14-word defining relative clause, a citation-attribution, and a deferral clause, all before the sentence resolves; the same 14-word gloss then recurs verbatim in 1-P7.",
+      "our_quotes": [
+        {
+          "para_id": "1-P4",
+          "quote": "We construct a residual measure of chief-executive question-and-answer uncertainty, $\\mathrm{UncResCEO}$, the call-varying component that remains once each executive's persistent speaking style is netted out, following the earnings-call language decomposition of \\citet{dwz}, and we defer its construction and the estimating equations to Section~2."
+        },
+        {
+          "para_id": "1-P7",
+          "quote": "it reads a residual measure of chief-executive question-and-answer uncertainty, the call-varying component that remains once each executive's persistent speaking style is netted out, in the anticipatory window before an acquisition is public"
+        }
+      ],
+      "gap": "Our first naming of the measure asks the reader to hold four appended elements in one sentence before it closes, where exemplars resolve the naming sentence and define separately. The full defining clause is then re-read intact in 1-P7.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f7",
+      "agent": 2,
+      "aspect": "Intro-level sample descriptor stacks four exclusion modifiers ahead of the head noun, where exemplars state the sample plainly and defer exclusions",
+      "exemplar_pattern": "Exemplars state the intro-level sample plainly (place and span) and leave the exclusion filters to the data section.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "We analyze a sample of conference calls held by public U.S. companies from 2003 through 2015."
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "We manually reviewed call transcripts for a large sample of randomly selected earnings-related calls held by publicly listed U.S. firms between January 1 and December 31, 2004 to uncover whether managers withhold requested information."
+        }
+      ],
+      "our_pattern": "1-P4 states the sample as four stacked modifiers ahead of the head noun ('United States public, non-financial, non-utility firms' earnings calls'), front-loading the exclusion filters into the intro sentence.",
+      "our_quotes": [
+        {
+          "para_id": "1-P4",
+          "quote": "on United States public, non-financial, non-utility firms' earnings calls from 2002 to 2018."
+        }
+      ],
+      "gap": "Our intro sentence carries the non-financial and non-utility exclusion filters as a four-modifier stack before the head noun; the exemplars give only place and date range at the intro level and defer the filters, so less is parsed up front.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f3",
+      "agent": 3,
+      "aspect": "Over-long contribution sentence with embedded appositive gloss plus a 'where' relative clause, where exemplars state each contribution compactly.",
+      "exemplar_pattern": "Contribution sentences are short and front-loaded: the contribution is named in a single clause, with any gloss kept to a brief apposition, not a chain of embedded clauses.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "Our paper contributes to the large stream of literature that examines the linguistic complexity of corporate disclosures."
+        },
+        {
+          "paper": "dwz",
+          "quote": "Our study makes three contributions. It introduces a simple measure of CEO clarity, a novel dimension of oral communication whose implications have not been documented in the literature."
+        }
+      ],
+      "our_pattern": "The first contribution sentence embeds a long appositive definition of the measure, then a locational phrase, then a 'where the nearest prior work has read ...' relative clause, all in one sentence.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 1-P7",
+          "quote": "First, it reads a residual measure of chief-executive question-and-answer uncertainty, the call-varying component that remains once each executive's persistent speaking style is netted out, in the anticipatory window before an acquisition is public, where the nearest prior work has read the other dimensions of deal-related language catalogued above rather than uncertainty language."
+        }
+      ],
+      "gap": "Our contribution sentence packs the measure name, a relative-clause gloss, a setting phrase, and a comparative 'where' clause into one long sentence, while the exemplars state each contribution in a single compact clause.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f6",
+      "agent": 3,
+      "aspect": "Gap statement built from a chain of stacked prepositional/locational phrases ('in the unscripted ... session in the anticipatory window before a withheld deal'), where exemplars state the gap in one compact clause.",
+      "exemplar_pattern": "Exemplars assert the gap in a single short clause, without piling up successive prepositional qualifiers.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "the empirical literature on incomplete disclosure is scant"
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "there is a separate adverse selection problem in M&A markets that has often been neglected in previous research"
+        }
+      ],
+      "our_pattern": "The gap is stated with three stacked locational phrases in sequence ('in the unscripted question-and-answer session in the anticipatory window before a withheld deal').",
+      "our_quotes": [
+        {
+          "para_id": "OUR 1-P3",
+          "quote": "no prior work reads uncertainty language in the unscripted question-and-answer session in the anticipatory window before a withheld deal"
+        }
+      ],
+      "gap": "Our gap statement appends three consecutive prepositional qualifiers, making the clause denser than the single-clause gap statements used by the exemplars.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f1",
+      "agent": 3,
+      "aspect": "Multi-clause coordinative chaining in the motivating prose (one sentence carries theory + a second proposition + an inferential 'so' clause), where published exemplars split the same conceptual load across short, separate sentences.",
+      "exemplar_pattern": "Published intros (QJE, JF) carry a motivating idea in clipped, free-standing sentences; a claim and its consequence each get their own sentence rather than being welded together with 'and that ... , so ...'.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "How much do individual managers matter for firm behavior and economic performance? Research in finance and economics so far has given little consideration to this question."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "The main objective of this study is to determine whether the presence of excess cash leads managers with discretion to make value-decreasing investment decisions. I focus on acquisitions, which are large and observable outcomes of the investment decision process."
+        }
+      ],
+      "our_pattern": "A single sentence chains a theory clause, a second 'and that' equilibrium clause, and a closing 'so' inference; the very next sentence repeats the pattern (colon + 'and although ... so ...').",
+      "our_quotes": [
+        {
+          "para_id": "OUR 1-P1",
+          "quote": "Disclosure theory holds that an informed manager may rationally withhold private information when disclosure is costly \\citep{verrecchia1983}, and that non-disclosure can persist in equilibrium because outside investors cannot distinguish an uninformed manager from one who is informed but silent \\citep{dye1985}, so a withholding state is itself informative."
+        },
+        {
+          "para_id": "OUR 1-P1",
+          "quote": "A firm privately committed to an acquisition it has not announced sits in a concrete such state: information about preliminary merger negotiations can be material well before any definitive agreement \\citep{basic1988}, and although the firm may stay silent it may not mislead once it speaks \\citep{rule10b5, basic1988}, so the executive can neither confirm nor deny the pending deal and is left to answer around it."
+        }
+      ],
+      "gap": "Our motivating sentences run two to three coordinated clauses joined by 'and that'/'and although'/'so', producing a near-run-on, whereas the published exemplars deliver the same setup in short, one-idea sentences.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f5",
+      "agent": 2,
+      "aspect": "Roadmap is one semicolon-chained sentence with nested sub-analysis lists, where exemplars use one short sentence per section",
+      "exemplar_pattern": "Exemplars give the roadmap as a sequence of short, separate sentences, one per section, each naming only what that section does.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "The remainder of the paper proceeds as follows. Section 2 reviews the relevant prior literature. Section 3 describes our research design. Section 4 presents the sample and descriptive statistics. Section 5 presents our findings, and section 6 concludes."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "The remainder of the paper is organized as follows. Section I discusses related research on textual analysis. Section II introduces the data sources, variables, and term weighting method used in our analysis. Section III describes the various word lists and Section IV reports the empirical results. Finally, Section V concludes."
+        }
+      ],
+      "our_pattern": "1-P9 is a single sentence joining four sections with semicolons, two of which embed a comma-list naming three sub-analyses each, so the reader parses nested lists inside one period.",
+      "our_quotes": [
+        {
+          "para_id": "1-P9",
+          "quote": "Section~3 presents the three main analyses, the pre-announcement run-up, the differential timing around announcement, and the cash-specificity test; Section~4 reports additional analyses, ruling out analyst scrutiny, examining the post-call bid-ask spread, and checking the robustness of the differential-timing result; and Section~5 concludes."
+        }
+      ],
+      "gap": "Our roadmap nests two three-item lists inside a single semicolon-chained sentence; the exemplars break each section into its own short sentence with no embedded lists, so the reader tracks one section at a time.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f6",
+      "agent": 2,
+      "aspect": "A single results-preview sentence carries four distinct moves at once (claim, formal test, hedge, open mechanism), where exemplars preview one result per sentence",
+      "exemplar_pattern": "Exemplars preview one result per clause or sentence, so each previewed finding is a single self-contained claim.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "We find that CEOs differ substantially in clarity."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "Our results show that manager fixed effects are empirically important determinants of a wide range of corporate variables."
+        }
+      ],
+      "our_pattern": "The first sentence of 1-P6 stacks four moves at once: the concentration claim, the formal pooled test, the concentration-not-specificity hedge, and the open mechanism, all inside one sentence.",
+      "our_quotes": [
+        {
+          "para_id": "1-P6",
+          "quote": "Finally, the run-up concentrates in cash acquisitions rather than stock acquisitions, a difference that survives a formal pooled test of cash-specificity, though we read it as concentration rather than strict specificity, and the cash-accumulation mechanism behind it is left open."
+        }
+      ],
+      "gap": "The reader must hold a result, the test backing it, a qualifying hedge, and an open question in one sentence, where the exemplars deliver one previewed result at a time. The hedge and the open-mechanism clauses are load-bearing, so the heaviness here travels with protected meaning.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f2",
+      "agent": 2,
+      "aspect": "Central-construct label stacks three hyphenated modifiers ahead of the head noun, where exemplars use two or three plain words",
+      "exemplar_pattern": "Exemplars name the central construct in two-to-three plain words and reuse that short label throughout: 'manager fixed effects', 'CEO clarity', 'cash-rich firms', the 'information' component.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "manager fixed effects"
+        },
+        {
+          "paper": "harford1999",
+          "quote": "I focus on acquisitions, which are large and observable outcomes of the investment decision process."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "The remainder of the paper proceeds as follows. Section 2 reviews the relevant prior literature. Section 3 describes our research design. Section 4 presents the sample and descriptive statistics. Section 5 presents our findings, and section 6 concludes."
+        }
+      ],
+      "our_pattern": "Our recurring construct label stacks three hyphenated modifiers before the head noun ('chief-executive question-and-answer uncertainty'), and the same heavy nominal reappears across 1-P4, 1-P5, and 1-P7.",
+      "our_quotes": [
+        {
+          "para_id": "1-P4",
+          "quote": "The purpose of this study is to ask whether chief-executive question-and-answer uncertainty tracks a deal's passage from private to public"
+        },
+        {
+          "para_id": "1-P5",
+          "quote": "residual chief-executive uncertainty is elevated in the quarter before a cash acquisition"
+        }
+      ],
+      "gap": "The reader must parse a three-part hyphenated modifier stack each time the central construct appears, where the exemplars carry a two-or-three-word plain label. This is purely the form of the noun phrase, not the scope it names.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f4",
+      "agent": 2,
+      "aspect": "Motivation and the headline timing result are stated through figurative compressions the reader must decode, where exemplars preview literally",
+      "exemplar_pattern": "Exemplars preview findings literally, naming the variable and the direction of the result with no figure to unpack.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "Our results show that manager fixed effects are empirically important determinants of a wide range of corporate variables."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "I find that the behavior of cash-rich firms is consistent with the predictions of the free cash f low hypothesis."
+        },
+        {
+          "paper": "dwz",
+          "quote": "We find that CEOs differ substantially in clarity."
+        }
+      ],
+      "our_pattern": "Motivation and the strongest result are carried by metaphors that must be unpacked into their literal claim: 'two paths running on different clocks', 'This round-trip contrast', and the motivating image 'in the firm's own voice'.",
+      "our_quotes": [
+        {
+          "para_id": "1-P5",
+          "quote": "whereas the cash that funds the purchase persists on the balance sheet until completion, two paths running on different clocks."
+        },
+        {
+          "para_id": "1-P5",
+          "quote": "This round-trip contrast is the study's strongest result."
+        },
+        {
+          "para_id": "1-P2",
+          "quote": "that trace would mark a deal's passage from private to public in the firm's own voice"
+        }
+      ],
+      "gap": "The reader must translate a figure ('two paths running on different clocks', 'round-trip contrast') into its literal meaning to grasp the result, where the exemplars state the result in plain literal terms. The P5 figures sit directly on the load-bearing differential-timing and cash-vs-stock claims.",
+      "materiality": "major",
+      "guardrail_collision": true
+    }
+  ],
+  "guardrail_collisions": [
+    "a1-f5",
+    "a2-f1",
+    "a3-f3",
+    "a3-f6",
+    "a3-f1",
+    "a2-f6",
+    "a2-f4"
+  ],
+  "side_notes": [
+    "Coverage is almost entirely sentence-level and noun-phrase-level. Only a2-f1 reaches paragraph scope (doctrine-count in 1-P1). Inter-paragraph flow, paragraph ordering, and transitions across the full intro (1-P1 through 1-P9) were not examined by any of the three agents.",
+    "Merge {a2-f4, a3-f5}: canonical fixed to a2-f4 deliberately because a2-f4 carries guardrail_collision=true (load-bearing differential-timing / cash-vs-stock claims) while a3-f5 is guardrail_collision=false. The kept finding's collision flag must reach the human.",
+    "Five of nine guardrail_collision=true findings survive as kept/canonical (a1-f5, a2-f1, a2-f4, a2-f6, a3-f1, a3-f3, a3-f6); the two folded ones (a1-f2 into a3-f1; a3-f2 into a2-f6) merged only into other guardrail=true canonicals, so no must-see collision was dropped."
+  ],
+  "gate_rejected": [],
+  "redteam_rejected": [],
+  "merges": [
+    {
+      "ids": [
+        "a1-f2",
+        "a3-f1"
+      ],
+      "canonical": "a3-f1"
+    },
+    {
+      "ids": [
+        "a1-f6",
+        "a2-f5"
+      ],
+      "canonical": "a2-f5"
+    },
+    {
+      "ids": [
+        "a2-f6",
+        "a3-f2"
+      ],
+      "canonical": "a2-f6"
+    },
+    {
+      "ids": [
+        "a2-f2",
+        "a3-f4"
+      ],
+      "canonical": "a2-f2"
+    },
+    {
+      "ids": [
+        "a2-f4",
+        "a3-f5"
+      ],
+      "canonical": "a2-f4"
+    }
+  ],
+  "unhandled": [],
+  "_provenance": {
+    "runId": "wf_411aba26-748",
+    "wave": "abstract-intro",
+    "note": "intro succeeded; abstract redteam timed out (re-run separately)"
+  }
+}

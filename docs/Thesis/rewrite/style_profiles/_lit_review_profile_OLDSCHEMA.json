@@ -1,0 +1,164 @@
+{
+  "type": "lit_review",
+  "_provenance": {
+    "runId": "wsjmhfpr9",
+    "model": "claude-opus-4-8[1m]",
+    "panel_agents": 3,
+    "redteam_agents": 1,
+    "panel_passed_gate": 14,
+    "gate_rejected_count": 0,
+    "profile_kept": 7,
+    "totalTokens": 263881,
+    "phase": "Phase-1 ANALYSIS only — no rewriting; spine frozen"
+  },
+  "profile": [
+    {
+      "id": "a1-f4",
+      "agent": 1,
+      "aspect": "Litotes / double-negation instead of a plain positive statement",
+      "exemplar_pattern": "Exemplars assert the property directly in the positive: calls 'are informative', information 'plays a central role'. They say what something is, not what it is not-not.",
+      "exemplar_quotes": [
+        { "paper": "bushee2018", "quote": "Conference calls are informative to market participants and lead to reductions in information asymmetry" },
+        { "paper": "ragozzino2024", "quote": "this information plays a central role in influencing shareholders' future expectations of companies and hence valuations" }
+      ],
+      "our_pattern": "We make the same kind of point through double negation ('is not informationally empty', repeated across paragraphs), forcing the reader to cancel two negatives to recover the plain claim that the state is informative.",
+      "our_quotes": [
+        { "para_id": "section2.1-U1", "quote": "such a withholding state is not informationally empty" },
+        { "para_id": "section2.1-U3", "quote": "they are not informationally empty" }
+      ],
+      "gap": "Exemplars state the positive directly ('Conference calls are informative'); we use litotes ('is not informationally empty') that says the same thing but requires the reader to undo a double negative.",
+      "aim": "Where the intended meaning is simply that the state is informative, state it positively ('the withholding state is informative' / 'these non-answers are informative') instead of via double negation, keeping the claim identical.",
+      "materiality": "minor"
+    },
+    {
+      "id": "a2-f3",
+      "agent": 2,
+      "aspect": "Multiple cited results fused into one colon-led, multi-clause sentence vs one result per sentence",
+      "exemplar_pattern": "Exemplars give each cited result its own short sentence: one study, one finding, full stop, then the next. Attribution and finding are not stacked inside a single long sentence.",
+      "exemplar_quotes": [
+        { "paper": "bushee2018", "quote": "Li [2008] uses the Gunning [1952] Fog Index to measure the \"linguistic complexity\" of firms' 10-K filings." },
+        { "paper": "thewissen2024", "quote": "Erickson and Wang (1999) study the earnings of acquiring firms in the quarters before the announcement and agreement dates when the acquisitions are paid with acquirers' own stock." }
+      ],
+      "our_pattern": "Our prose fuses a framing claim and two separately cited theoretical results into a single colon-led sentence with stacked subordinate clauses, so the reader must track the lead-in, the first citation's mechanism, and the second citation's mechanism all within one sentence boundary.",
+      "our_quotes": [
+        { "para_id": "section2.1-U1", "quote": "Disclosure theory tells us such a withholding state is not informationally empty: an informed manager may rationally withhold private information when disclosure is costly, sustaining a threshold below which information is withheld \\citep{verrecchia1983}, and non-disclosure persists in equilibrium precisely because outside investors cannot distinguish a manager who is uninformed from one who is informed but silent \\citep{dye1985}." }
+      ],
+      "gap": "Where the exemplars allot one sentence per cited result, we pack a setup plus two cited mechanisms into one colon-and-comma chain; the discriminator is not raw length but the stacking of multiple attributions and clauses inside a single sentence, which raises the parse cost for a non-specialist.",
+      "aim": "Distribute the framing claim and each cited result across separate sentences (one study/one finding per sentence, as the exemplars do), rather than fusing them behind a single colon, so each result can be absorbed before the next.",
+      "materiality": "major"
+    },
+    {
+      "id": "a2-f5",
+      "agent": 2,
+      "aspect": "Formal/Latinate verb and predicate choice where a plain word would serve",
+      "exemplar_pattern": "Exemplars predicate with the plainest available verbs---is, find, show, suggest, use---keeping the connective tissue invisible so attention stays on the content.",
+      "exemplar_quotes": [
+        { "paper": "bushee2018", "quote": "He finds that firms with higher 10-K Fog have lower current earnings performance" },
+        { "paper": "thewissen2024", "quote": "Their results show that acquiring firms inflate earnings in the quarter before the deal announcement." }
+      ],
+      "our_pattern": "Our prose reaches for more formal verbs and predicates where a plainer one would carry the same meaning---a firm \"occupies\" a state, a pending acquisition \"constitutes\" information, a state is \"informationally empty\"---adding a faint layer of register the reader must see past.",
+      "our_quotes": [
+        { "para_id": "section2.1-U1", "quote": "A pending acquisition that is material to the acquirer constitutes material nonpublic information" }
+      ],
+      "gap": "Against the exemplars' plain is/find/show, our elevated verbs (occupies, constitutes) and predicates (informationally empty) raise the diction a notch above the simplest end of the register without adding meaning, making the non-specialist work slightly harder to read through the wording.",
+      "aim": "Prefer the plainest verb that carries the meaning (is, has, shows), matching the exemplars' invisible connective tissue, rather than a more formal near-synonym; do not alter any claim, number, or hedge.",
+      "materiality": "minor"
+    },
+    {
+      "id": "a1-f2",
+      "agent": 1,
+      "aspect": "Coined abstract metaphor-nouns for ordinary referents (sometimes coined-then-glossed)",
+      "exemplar_pattern": "The exemplars name the concept with the plain word for the thing and, when they explain it, flag the explanation simply ('The basic idea...', 'In a nutshell...'). The label is the ordinary term, not an invented abstraction.",
+      "exemplar_quotes": [
+        { "paper": "ragozzino2024", "quote": "The basic idea, which mirrors the market for used cars discussed by Akerlof, is that sellers in M&A often hold better information on their own firm than buyers." },
+        { "paper": "ragozzino2024", "quote": "In a nutshell, Akerlof relied on the market for used cars as the context of his analysis" },
+        { "paper": "bushee2018", "quote": "Li [2008] uses the Gunning [1952] Fog Index to measure the \"linguistic complexity\" of firms' 10-K filings." }
+      ],
+      "our_pattern": "We repeatedly invent abstract metaphor-nouns for plain referents -- the setup is 'the organizing primitive of our analysis', the LM dictionary/Q&A split is 'this established apparatus', the comparison deal is 'a natural placebo', the two timelines 'run on different clocks', the contribution gap is 'the cell these literatures leave empty', and the bounded scope is a 'deliberately bounded register' -- and we sometimes coin a term then gloss it.",
+      "our_quotes": [
+        { "para_id": "section2.1-U1", "quote": "is the organizing primitive of our analysis" },
+        { "para_id": "section2.1-U2", "quote": "We adopt this established apparatus" },
+        { "para_id": "section2.1-U5", "quote": "The two dimensions also run on different clocks" },
+        { "para_id": "section2.1-U7", "quote": "It is in this deliberately bounded register that the empirical strategy of the following sections puts the pattern to the test." }
+      ],
+      "gap": "Where exemplars name the thing plainly ('The basic idea... is that sellers... hold better information'), we substitute an invented abstraction ('the organizing primitive', 'this established apparatus', 'run on different clocks') that the non-specialist reader must translate back into the ordinary referent.",
+      "aim": "Refer to each thing by its plain name -- 'the central setup', 'the LM dictionary and Q&A split', 'a placebo comparison', 'the two run on different timelines', 'the gap these literatures leave', 'in this bounded way' -- conveying the identical content without the coined metaphor.",
+      "materiality": "major"
+    },
+    {
+      "id": "a2-f1",
+      "agent": 2,
+      "aspect": "Mid-sentence em-dash interruptions (parenthetical dashes that split the subject from its verb)",
+      "exemplar_pattern": "The top journals overwhelmingly state a claim as one uninterrupted declarative, letting subject run straight to verb to object. When Ragozzino (a working/journal piece, weighted lower) does interrupt with paired dashes, it is rare; the QJE/JAR exemplars almost never break a sentence's spine with an inserted clause, so the reader never has to hold a suspended subject across an aside.",
+      "exemplar_quotes": [
+        { "paper": "bertrand_schoar2003", "quote": "Two firms sharing similar technologies, factor, and product market conditions will make similar choices, whether or not they also share the same management team." },
+        { "paper": "bushee2018", "quote": "He finds that firms with higher 10-K Fog have lower current earnings performance and less persistent future earnings performance, consistent with managers using linguistic complexity to obfuscate poor performance." }
+      ],
+      "our_pattern": "Our prose repeatedly suspends the subject and inserts a parenthetical aside set off by paired em-dashes (---X---) before delivering the verb, so the reader must hold the subject in mind across the interruption and resume the main clause afterward. This construction recurs roughly fifteen times across the seven paragraphs, making it a structural habit rather than an occasional flourish.",
+      "our_quotes": [
+        { "para_id": "section2.1-U1", "quote": "This withholding bind---material information held back while the firm keeps fielding questions---is the organizing primitive of our analysis" },
+        { "para_id": "section2.1-U5", "quote": "the cash commitment serves the purchase itself and---mechanically---persists until it is paid at completion" }
+      ],
+      "gap": "Where the exemplars deliver a claim in one straight-through declarative, we interrupt the main clause with a dashed aside and resume it, forcing the reader to buffer the subject across the insertion. The contrast is one of density: even the exemplar that uses paired dashes does so sparingly, while we make the interruption a default sentence shape.",
+      "aim": "Match the top-journal default of carrying subject-to-verb without a mid-clause dashed interruption, so the reader does not have to suspend and resume the main clause; reserve the paired-dash insertion for the rare case rather than the recurring frame.",
+      "materiality": "major"
+    },
+    {
+      "id": "a1-f1",
+      "agent": 1,
+      "aspect": "Aim/scope stated as an abstract nominalized 'move-label' instead of a plain-verb sentence",
+      "exemplar_pattern": "When the exemplars tell the reader what the paragraph is doing, they use a plain subject + plain verb: 'We seek to...', 'Our goal is to show that...', 'While our primary goal in this paper is...'. The aim is a verb, not an abstract noun.",
+      "exemplar_quotes": [
+        { "paper": "bushee2018", "quote": "Our goal is to show that the construct validity of linguistic complexity measures like Fog can be substantially improved" },
+        { "paper": "bushee2018", "quote": "We seek to recover empirical estimates of the latent variables" },
+        { "paper": "bertrand_schoar2003", "quote": "While our primary goal in this paper is not to distinguish between these different interpretations" }
+      ],
+      "our_pattern": "We name the rhetorical move with an abstract noun ('the implication... is a locating one', 'a positioning claim about where the contribution sits') instead of just saying it with a plain verb. The reader has to decode a metaphorical noun to learn what we are claiming.",
+      "our_quotes": [
+        { "para_id": "section2.1-U4", "quote": "The implication for our purpose is a locating one." },
+        { "para_id": "section2.1-U6", "quote": "we offer it as a positioning claim about where the contribution sits" }
+      ],
+      "gap": "The exemplars say the aim with a verb a non-specialist parses instantly ('Our goal is to show...'); we state it as an abstract noun phrase ('the implication... is a locating one') that must be unpacked before its meaning is clear.",
+      "aim": "State the same scope/aim point with a plain verb sentence (e.g. 'this locates where the signal must be' / 'we offer this as positioning, not a tested mechanism') rather than as a nominalized move-label, keeping the identical claim and hedge.",
+      "materiality": "major"
+    },
+    {
+      "id": "a1-f3",
+      "agent": 1,
+      "aspect": "Fronted / inverted abstract-subject sentence openers instead of plain subject-verb",
+      "exemplar_pattern": "Exemplars open sentences with a concrete agent (we / the firm / prior literature / the thing itself) immediately followed by its verb, so the reader gets the actor and action up front.",
+      "exemplar_quotes": [
+        { "paper": "bushee2018", "quote": "We focus on the use of complex language in conference calls, rather than in mandatory SEC filings." },
+        { "paper": "thewissen2024", "quote": "Prior literature extensively analyses the implication of the method of payment on managers' M&A decisions." },
+        { "paper": "ragozzino2024", "quote": "The theory of information economics provides important insights into the structure and functioning of exchanges in various markets." }
+      ],
+      "our_pattern": "We open with an abstract noun wrapped in a relative clause and defer the real subject to the end via an 'is' inversion ('The venue in which this bind becomes observable is...', 'The cell these literatures leave empty is...'), so the reader holds the abstraction in suspense before learning what it actually is.",
+      "our_quotes": [
+        { "para_id": "section2.1-U2", "quote": "The venue in which this bind becomes observable is the quarterly earnings conference call" },
+        { "para_id": "section2.1-U6", "quote": "The cell these literatures leave empty is the one this paper occupies" }
+      ],
+      "gap": "Exemplars front the concrete actor and verb ('We focus on...', 'Prior literature extensively analyses...'); we front an abstract relative-clause subject and postpone the concrete noun behind an 'is', adding parsing load for no added content.",
+      "aim": "Lead with the concrete subject and verb (e.g. 'The earnings call is where this bind becomes observable' / 'This paper occupies the cell these literatures leave empty'), preserving the same meaning without the inverted abstract opener.",
+      "materiality": "major"
+    }
+  ],
+  "side_notes": [
+    "Coverage gap (all three agents): every finding is sentence- or phrase-level. Inter-paragraph flow, paragraph-internal ordering, and the section's overall architecture (the P1-P7 spine) were never examined -- no agent assessed whether paragraphs are sequenced or proportioned more heavily than the exemplars.",
+    "Surfaced inside rejected a2-f4 and preserved here for the human: the panel observed that abstract claims are sometimes introduced without a concrete foothold (number / familiar market / explicit gloss). That is a legitimate under-coverage observation, but it is a 'do more grounding' note, not a 'we are needlessly more complex' STYLE fix, so it cannot be emitted as a finding.",
+    "Hygiene note on the U6 sentence 'The cell these literatures leave empty is the one this paper occupies': it drew three separate hits (cleft inversion a1-f3, spatial-metaphor a3-f3, positioning-claim a1-f1). a3-f3 was merged into the a1-f1 contribution/positioning cluster and the cleft example stays with canonical a1-f3, so the surviving canonicals make distinct device complaints (grammatical inversion vs. abstract/figurative contribution phrasing) rather than flagging the same sentence twice for the same reason."
+  ],
+  "gate_rejected": [],
+  "redteam_rejected": [
+    {
+      "id": "a2-f4",
+      "reason": "Under-coverage in shape: it asks us to do MORE of a good thing (ground an abstraction with a concrete instance/gloss), not to undo needless complexity, so it belongs in side_notes rather than as a finding. It also fails STYLE-only because its aim adds a concrete instance/gloss = new content (a number, a worked example), which touches the point rather than only the wording. Its own our_quote ('A firm that has privately committed to an acquisition but not yet announced it occupies a distinct disclosure state') is already a concrete-subject sentence, so the stated 'abstraction-on-abstraction' direction is not even demonstrated by the cited evidence."
+    }
+  ],
+  "merges": [
+    { "ids": ["a1-f2", "a2-f2", "a3-f1"], "canonical": "a1-f2" },
+    { "ids": ["a2-f1", "a3-f2"], "canonical": "a2-f1" },
+    { "ids": ["a1-f1", "a3-f5", "a3-f3"], "canonical": "a1-f1" },
+    { "ids": ["a1-f3", "a3-f4"], "canonical": "a1-f3" }
+  ],
+  "unhandled": []
+}

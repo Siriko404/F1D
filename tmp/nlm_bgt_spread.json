@@ -1,0 +1,64 @@
+{
+  "answer": "Based on the provided document, here is the exact bibliographic information for the paper:\n\n*   **Authors:** BRIAN J. BUSHEE, IAN D. GOW, AND DANIEL J. TAYLOR [1] \n*   **Title:** Linguistic Complexity in Firm Disclosures: Obfuscation or Information? [1]\n*   **Journal:** Journal of Accounting Research [1]\n*   **Year:** 2018 [1]\n\nHere are the verbatim quotations addressing each of your questions using the paper's exact terminology:\n\n**(1) What the paper establishes about the relation between disclosure language (complexity, obfuscation, or uncertainty) and the bid-ask spread or information asymmetry:**\n*   \"Consistent with our pre-dictions, we find that our estimate of the information component is *negatively* associated with information asymmetry while our estimate of the obfusca-tion component is *positively* associated with information asymmetry.\" [1]\n*   \"Consistent with prior work that suggests that the linguistic complexity of 10-Ks reflects obfuscation, we find a positive relation between managerial Fog in the pre-sentation and information asymmetry. However, we find a negative relation between managerial Fog in the response and information asymmetry.\" [2]\n*   \"...we show that the relations between the two latent compo-nents of linguistic complexity and information asymmetry are theoretically unambiguous; that is, the information (obfuscation) component is nega-tively (positively) associated with information asymmetry.\" [3]\n\n**(2) Whether and how the authors use a bid-ask spread measure as a dependent variable or proxy, including any window:**\nThe authors primarily use the Amihud (2002) illiquidity construct as their main dependent variable, taking \"the average value over the period starting the day of the call and ending 25 trading days subsequent to the call\" [4, 5]. However, they use a bid-ask spread measure as an alternative dependent variable to ensure their results hold:\n*   \"In table IA-1 of the online appendix, we estimate our tests with an alternative measure of information asymmetry: the information asymmetry component of the bid-ask spread, or $\u03bb.$\" [6]\n*   \"We compute $\u03bb$ using the estimation procedure of Madhavan, Richardson, and Roomans  and Armstrong, Core, Taylor, and Verrecchia . Because this measure requires intra-day data from TAQ, it is available for only approximately 75% of our sample. Our results hold when we use this alternative measure.\" [6]\n\n**(3) Any statement that the bid-ask spread proxies for adverse selection or information asymmetry:**\nThe authors explicitly state that they use the bid-ask spread as a measure of information asymmetry in their own tests, and acknowledge its use in prior literature:\n*   \"...we estimate our tests with an alternative measure of information asymmetry: the information asymmetry component of the bid-ask spread, or $\u03bb.$\" [6]\n*   \"Since Li , a growing literature uses Fog to examine the rela-tion between linguistic complexity of mandatory disclosures (e.g., 10-Qs or 10-Ks) and a variety of firm outcomes, such as investment efficiency, bid-ask spreads, delayed pricing of accounting information, voluntary dis-closure, and short-sale constraints...\" [7]",
+  "conversation_id": "b42bb373-47a0-4909-ae49-c6a4f2eee5e2",
+  "turn_number": 1,
+  "is_follow_up": true,
+  "references": [
+    {
+      "source_id": "e8dfb696-ed47-465f-bbb6-a3e253626a20",
+      "citation_number": 1,
+      "cited_text": null,
+      "start_char": 0,
+      "end_char": 1,
+      "chunk_id": "989bfdc1-5efa-4aca-8c24-6a0d498a0fdd"
+    },
+    {
+      "source_id": "e8dfb696-ed47-465f-bbb6-a3e253626a20",
+      "citation_number": 2,
+      "cited_text": "We first follow prior work and examine the association between over-all managerial linguistic complexity and information asymmetry. Following an extensive prior literature, we measure linguistic complexity using the Gunning [1952] Fog index and information asymmetry using the Amihud [2002] measure of illiquidity. As conference calls include both scripted pre-sentations and more spontaneous responses to questions, we separately ex-amine the presentation and the response portions of the call. Consistent with prior work that suggests that the linguistic complexity of 10-Ks reflects obfuscation, we find a positive relation between managerial Fog in the pre-sentation and information asymmetry. However, we find a negative relation between managerial Fog in the response and information asymmetry. While these results suggest that the informativeness of linguistic complexity dif-fers between scripted and spontaneous language, our analysis of the latent components suggests a more nuanced conclusion.",
+      "start_char": 5568,
+      "end_char": 6573,
+      "chunk_id": "c8161241-843d-4ea7-8ed4-dc67d21ee0f4"
+    },
+    {
+      "source_id": "e8dfb696-ed47-465f-bbb6-a3e253626a20",
+      "citation_number": 3,
+      "cited_text": "In this paper, we show that linguistic complexity commingles two latent components that have opposite relations to information asymmetry: an \u201cin-formation\u201d component and an \u201cobfuscation\u201d component. The informa-tion component represents linguistic complexity attributable to informa-tive technical disclosure about the business. The obfuscation component represents linguistic complexity intended to reduce the informativeness of the disclosure. As a result of this commingling, the relation between overall linguistic complexity and information asymmetry is theoretically ambigu-ous. In contrast, we show that the relations between the two latent compo-nents of linguistic complexity and information asymmetry are theoretically unambiguous; that is, the information (obfuscation) component is nega-tively (positively) associated with information asymmetry.",
+      "start_char": 3292,
+      "end_char": 4149,
+      "chunk_id": "fc72d67f-728b-4c2d-81b7-e6b775148905"
+    },
+    {
+      "source_id": "e8dfb696-ed47-465f-bbb6-a3e253626a20",
+      "citation_number": 4,
+      "cited_text": "While no firm characteristic will perfectly capture only complexity or only reporting incentives, our information asymmetry validation tests will indicate whether measurement error or bias in these variables is large enough to invalidate the decomposition. Regardless, in subsequent anal-yses, we show that these controls are not necessary to obtain valid estimates of the two latent components.",
+      "start_char": 33105,
+      "end_char": 33501,
+      "chunk_id": "f5565986-cb1e-4f60-b863-c1c23bdf6fdc"
+    },
+    {
+      "source_id": "e8dfb696-ed47-465f-bbb6-a3e253626a20",
+      "citation_number": 5,
+      "cited_text": "Illiquidityt = |Rt | DVolumet",
+      "start_char": 33711,
+      "end_char": 33741,
+      "chunk_id": "46072835-9269-4714-bf0c-1d64611771e3"
+    },
+    {
+      "source_id": "e8dfb696-ed47-465f-bbb6-a3e253626a20",
+      "citation_number": 6,
+      "cited_text": "8 In table IA-1 of the online appendix, we estimate our tests with an alternative measure of information asymmetry: the information asymmetry component of the bid-ask spread, or \u03bb. We compute \u03bb using the estimation procedure of Madhavan, Richardson, and Roomans [1997] and Armstrong, Core, Taylor, and Verrecchia [2011]. Because this measure requires intra-day data from TAQ, it is available for only approximately 75% of our sample. Our results hold when we use this alternative measure.",
+      "start_char": 34942,
+      "end_char": 35431,
+      "chunk_id": "dc661665-84ab-4935-ab68-5c062fe3d2f2"
+    },
+    {
+      "source_id": "e8dfb696-ed47-465f-bbb6-a3e253626a20",
+      "citation_number": 7,
+      "cited_text": "Since Li [2008], a growing literature uses Fog to examine the rela-tion between linguistic complexity of mandatory disclosures (e.g., 10-Qs or 10-Ks) and a variety of firm outcomes, such as investment efficiency, bid-ask spreads, delayed pricing of accounting information, voluntary dis-closure, and short-sale constraints (see Loughran and McDonald [2016] for a review). Prior work also examines the relation between Fog and the decisions of external parties, such as trading of unsophisticated in-vestors (Miller [2010], Lawrence [2013]), analysts\u2019 outputs (Lehavy, Li, and Merkley [2012], Bozanic and Thevenot [2015]), and disagreement among credit rating agencies (Bonsall and Miller [2017]).2",
+      "start_char": 14752,
+      "end_char": 15450,
+      "chunk_id": "e611c80c-f7e5-43a9-872a-78e5c2c70131"
+    }
+  ]
+}

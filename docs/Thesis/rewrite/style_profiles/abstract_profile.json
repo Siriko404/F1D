@@ -1,0 +1,485 @@
+{
+  "type": "abstract",
+  "profile": [
+    {
+      "id": "a1-f2",
+      "agent": 1,
+      "aspect": "Figurative imagery in the opener ('a window into ...') where exemplars stay literal",
+      "exemplar_pattern": "Even when describing what speech reveals, the plain abstracts use literal, concrete language rather than a metaphor for disclosure.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "We show that CEO clarity is a matter of personal style"
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "investors seem to interpret no news as bad news"
+        }
+      ],
+      "our_pattern": "Our opener routes the idea through a spatial metaphor, casting executive language as 'a window into what they know but have not yet disclosed'.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "increasingly read as a window into what they know but have not yet disclosed"
+        }
+      ],
+      "gap": "The exemplars name the thing directly; ours adds a figurative layer ('a window into') the reader must unpack to recover the literal point about undisclosed knowledge.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f4",
+      "agent": 1,
+      "aspect": "Dramatized scene-setting in the gap-setup sentence rather than a flat factual setup",
+      "exemplar_pattern": "The plain abstracts establish the situation with a single flat declarative and move on, without narrating a scene or its stakes.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "Cash-rich firms are more likely than other firms to attempt acquisitions."
+        },
+        {
+          "paper": "dwz",
+          "quote": "A key task for CEOs is to communicate with analysts and investors"
+        }
+      ],
+      "our_pattern": "Our setup narrates the executive's predicament in dramatized terms: 'the executive holds the routine call unable to confirm or deny the one development that matters'.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "the executive holds the routine call unable to confirm or deny the one development that matters"
+        }
+      ],
+      "gap": "The exemplars state a fact; ours stages a scene with a participial modifier ('unable to confirm or deny') and an emphatic flourish ('the one development that matters'), adding rhetorical weight the plain abstracts do not carry.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f5",
+      "agent": 1,
+      "aspect": "Measure introduced through a dense, multi-clause definitional appendage",
+      "exemplar_pattern": "The plain abstracts introduce their method or data object in a short clause and defer the mechanics, naming the construct without unpacking how it is built in the same breath.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "We construct a manager-firm matched panel data set"
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "We develop a novel empirical approach to estimate these two latent components"
+        },
+        {
+          "paper": "lm2011",
+          "quote": "We develop an alternative negative word list"
+        }
+      ],
+      "our_pattern": "Our measure is named and then immediately re-explained by an appositive defining its construction inside the same sentence: 'a residual measure of chief-executive question-and-answer uncertainty, the component that remains once each executive's persistent speaking style is removed'.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "we construct a residual measure of chief-executive question-and-answer uncertainty, the component that remains once each executive's persistent speaking style is removed"
+        }
+      ],
+      "gap": "Where 'We construct a manager-firm matched panel data set' or 'We develop an alternative negative word list' name the object and stop, ours appends a long defining appositive ('the component that remains once ... is removed') plus a stacked compound modifier ('chief-executive question-and-answer'), front-loading the construction detail the exemplars hold back.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f6",
+      "agent": 1,
+      "aspect": "Closing sentence carries an added metaphor ('tracking the deal's passage') where exemplar closers are plain",
+      "exemplar_pattern": "The plain abstracts close with a short, literal takeaway sentence, often a flat 'Overall' summary, with no fresh figurative language.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "Overall, investors and analysts appear to value clear talk."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "Overall, the evidence supports the agency costs of free cash f low explanation"
+        }
+      ],
+      "our_pattern": "Our closer introduces a new metaphor in the final sentence: 'call language tracking the deal's passage from private to public'.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "We read these patterns as call language tracking the deal's passage from private to public, a within-firm correlational regularity rather than a tested mechanism."
+        }
+      ],
+      "gap": "The exemplar closers state the takeaway literally and briefly; ours adds a figurative phrase ('tracking the deal's passage from private to public') on top of the trailing qualifier, making the final sentence heavier than the plain 'Overall, ...' closers.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f8",
+      "agent": 1,
+      "aspect": "Result stated abstractly ('relating to ... in different ways') with an abstract nominal subject, where exemplars state direction concretely",
+      "exemplar_pattern": "The plain abstracts report relations with explicit, concrete direction words ('negatively associated', 'positively associated', 'abnormal declines'), naming which way each effect goes.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "negatively associated with information asymmetry while our estimate of the obfuscation component is positively associated with information asymmetry"
+        },
+        {
+          "paper": "harford1999",
+          "quote": "followed by abnormal declines in operating performance"
+        }
+      ],
+      "our_pattern": "Our prose summarizes the contrast with a vague nominalized abstraction: the two call parts 'relating to the outside information environment in different ways'.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "consistent with the two parts of the call relating to the outside information environment in different ways"
+        }
+      ],
+      "gap": "Where bushee names the two directions outright ('negatively ... while ... positively') and harford says 'declines', ours routes the same idea through an abstract noun phrase ('the outside information environment') and a non-directional gloss ('in different ways'), which is heavier to parse and less concrete than the exemplars' direction words.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f2",
+      "agent": 2,
+      "aspect": "Rhythm variance: absence of any short, punchy sentence",
+      "exemplar_pattern": "The exemplars vary sentence length sharply and deploy very short sentences as emphasis -- dropping to 5-11 words, often a plain restatement that lands the point. Their sentence-length ranges span from sub-10 up to ~35 words (DWZ: 24,13,6,5,...; Hollander includes an 11-word closer). The short beats give the reader frequent resting points and a clear takeaway.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "That is, investors seem to interpret no news as bad news."
+        },
+        {
+          "paper": "dwz",
+          "quote": "Others rarely use such tentative words."
+        },
+        {
+          "paper": "dwz",
+          "quote": "That is, they speak clearly."
+        }
+      ],
+      "our_pattern": "Our abstract has no short sentence anywhere: every sentence is a full multi-element clause, and even the shortest (S3, 15 words) is a complete data-description clause rather than a punchy restatement. There is no brief plain-language beat that hands the reader a resting point or a one-line takeaway the way the exemplars' short closers do; the reader gets ten uniformly dense sentences (15-43 words) in a row.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "We study United States public firms' earnings-call transcripts and acquisition records from 2002 to 2018."
+        }
+      ],
+      "gap": "The exemplars relieve the reader with short, plain sentences and a crisp closing beat; we never do, so the reader works through a continuous block of long sentences with no pacing relief. This concerns rhythm/variance, distinct from the per-sentence-length finding, and the cited sentence carries no hedge, scope, or number.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f4",
+      "agent": 2,
+      "aspect": "Spelled-out, hyphenated 'chief executive' vs the plain token 'CEO'",
+      "exemplar_pattern": "Every exemplar that refers to the chief executive uses the short, familiar token 'CEO(s)' and lets it stand alone or take a single short modifier. The reader never has to absorb the three-word title or a hyphenated adjective form of it.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "A key task for CEOs is to communicate with analysts and investors about their companies' past performance and prospects in quarterly earnings conference calls."
+        },
+        {
+          "paper": "dwz",
+          "quote": "Past performance does not explain the style of a newly appointed CEO."
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "We find that the best predictors of such an event are firm size, a CEO's stock price-based incentives, company age, firm performance, litigation risk, and whether analysts are actively involved during the call's Q&A section."
+        }
+      ],
+      "our_pattern": "We spell the role out as 'a chief executive' and, worse for parsing, fold it into a hyphenated adjective compound ('chief-executive question-and-answer uncertainty') and use it again bare as 'chief-executive'. The expanded, hyphen-joined form is heavier on the eye than the one-token 'CEO' the exemplars rely on throughout.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "the language a chief executive uses in answering is increasingly read as a window"
+        }
+      ],
+      "gap": "We make the reader process a three-word title (and its hyphenated adjective form) where the exemplars use the universally recognized two/three-letter token 'CEO'. This is a word-choice/token cost distinct from the broader compound-noun pile-up finding, and the cited phrase carries no hedge, scope, measure-name, or number.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f6",
+      "agent": 2,
+      "aspect": "Long abstract trailing rider vs brief concrete front-tag for an interpretive aside",
+      "exemplar_pattern": "When the exemplars attach an interpretive 'consistent with' aside, they keep it brief and put it up front as a short signpost before a concrete main clause, so the aside never bloats the sentence the reader is parsing. Harford's tag is a six-word lead-in; Bushee's is four words before the finding.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "Consistent with the stock return evidence, mergers in which the bidder is cash-rich are followed by abnormal declines in operating performance."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "Consistent with our predictions, we find that"
+        }
+      ],
+      "our_pattern": "Our 'consistent with' aside is a long, abstract trailing rider hung on the end of an already 43-word sentence: 'consistent with the two parts of the call relating to the outside information environment in different ways'. The reader reaches it only after a multi-clause sentence and then must parse an abstract 17-word interpretive clause ('the two parts... relating to the outside information environment in different ways') with no concrete anchor.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "consistent with the two parts of the call relating to the outside information environment in different ways"
+        }
+      ],
+      "gap": "The exemplars front-load a short, plain 'consistent with' signpost; we back-load a long, abstract one onto an already-long sentence, adding to the reader's load at the point they are most taxed. The cited rider is load-bearing -- it carries the presentation-vs-residual (C5 convergent-validity / C7 presentation) contrast meaning -- so observing it implicates that guardrail.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f2",
+      "agent": 3,
+      "aspect": "Subordinate-clause stacking in the second (gap) sentence",
+      "exemplar_pattern": "Even when stating motivation or the open question, exemplars keep clause depth shallow: a short condition or a plain 'whether' clause, not several subordinate units strung together.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "In this paper, we exploit the open nature of conference calls to explore whether managers withhold information from the investing public."
+        },
+        {
+          "paper": "dwz",
+          "quote": "We show that CEO clarity is a matter of personal style; it is not driven by fundamental uncertainty in the companies' business activity."
+        }
+      ],
+      "our_pattern": "Our second sentence opens with a temporal subordinate clause ('When a firm is privately committed to an acquisition it has not yet announced'), adds a participial adjunct ('unable to confirm or deny the one development that matters'), then coordinates a separate nominal clause ('and whether the spoken record tracks that withholding has not been characterized'), so three subordinate/coordinated units sit under one period.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "When a firm is privately committed to an acquisition it has not yet announced, the executive holds the routine call unable to confirm or deny the one development that matters, and whether the spoken record tracks that withholding has not been characterized."
+        }
+      ],
+      "gap": "The exemplars carry a single 'whether'-question with at most one subordinate clause; our sentence layers a fronted temporal clause, a participial phrase, and a coordinated nominal clause in one breath, which is heavier subordination than the simplest-register examples use for the same motivate-and-pose-the-question job.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f3",
+      "agent": 3,
+      "aspect": "Mid-sentence appositive definition of the constructed measure (defining inside, rather than across, sentences)",
+      "exemplar_pattern": "When an abstract introduces a constructed object and then explains/validates it, the exemplar splits the build and the gloss into separate short sentences rather than embedding the definition as an interruptive appositive.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "We develop a novel empirical approach to estimate these two latent components within the context of quarterly earnings conference calls."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "We validate our estimates of these two latent components by examining their relation to information asymmetry."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "We construct a manager-firm matched panel data set which enables us to track the top managers across different firms over time."
+        }
+      ],
+      "our_pattern": "Our construction sentence inserts a defining appositive ('the component that remains once each executive's persistent speaking style is removed') between the object and the next coordinated clause, then continues with 'and we track it...', so one period carries construct-name, an inline definition, and the tracking design.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "we construct a residual measure of chief-executive question-and-answer uncertainty, the component that remains once each executive's persistent speaking style is removed, and we track it around firms' cash acquisitions against stock acquisitions as a placebo"
+        }
+      ],
+      "gap": "Bushee uses two separate short sentences (develop, then validate) and Bertrand-Schoar appends a light 'which enables us to...' tail; our prose instead nests the definition as an interruptive appositive inside the same sentence that also names the measure and states the design, raising the clause density above the exemplars' split-sentence handling of the same job.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f5",
+      "agent": 3,
+      "aspect": "A single result sentence carrying appositive plus contrast plus an interpretive 'consistent with' gloss",
+      "exemplar_pattern": "Exemplars report each empirical result as a short, self-contained sentence; contrasts and interpretation get their own separate short sentences rather than being appended to the same period.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "Cash-rich bidders destroy seven cents in value for every excess dollar of cash reserves held."
+        },
+        {
+          "paper": "dwz",
+          "quote": "However, when a firm does appoint a more clear-talking CEO, Tobin's Q increases and analyst recommendations become more favorable."
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "That is, investors seem to interpret no news as bad news."
+        }
+      ],
+      "our_pattern": "Our bid-ask sentence bundles a result, an inline appositive definition ('a standard gauge of information asymmetry'), a 'while'-contrast with a second result, and a trailing 'consistent with...' interpretive clause, all under one period.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "The residual is also unrelated to the firm's post-call bid-ask spread, a standard gauge of information asymmetry, while the scripted presentation is positively associated with it, consistent with the two parts of the call relating to the outside information environment in different ways."
+        }
+      ],
+      "gap": "Where the exemplars give a result, a contrast, and its interpretation as separate short sentences, our prose compresses result + inline definition + contrasting result + interpretive gloss into one long multi-clause sentence, making it markedly denser than the register's one-result-per-sentence pattern.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f6",
+      "agent": 3,
+      "aspect": "Abstract nominalized phrasing where exemplars use concrete verbs and plain objects",
+      "exemplar_pattern": "Even the conceptual closing lines of exemplars stay concrete, using ordinary verbs and tangible subjects/objects rather than abstract noun-phrase machinery.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "Some CEOs speak fuzzily, frequently using words such as \"approximately\", \"probably\", and \"maybe.\""
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "Our evidence suggests that managers regularly leave participants on the conference call in the dark by not answering their questions."
+        }
+      ],
+      "our_pattern": "Our interpretive phrasing reaches for abstract nominalizations and gerund chains: 'the two parts of the call relating to the outside information environment in different ways' and 'call language tracking the deal's passage from private to public, a within-firm correlational regularity rather than a tested mechanism'.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "consistent with the two parts of the call relating to the outside information environment in different ways"
+        },
+        {
+          "para_id": "abstract-P1",
+          "quote": "We read these patterns as call language tracking the deal's passage from private to public, a within-firm correlational regularity rather than a tested mechanism."
+        }
+      ],
+      "gap": "The exemplars' conceptual sentences stay in concrete verb-object form ('speak fuzzily', 'leave participants ... in the dark'), whereas our interpretive lines lean on abstract nominal constructions ('relating to the outside information environment in different ways', 'tracking the deal's passage', 'a within-firm correlational regularity'), which read heavier than the simplest-register handling of the same interpretive job.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f1",
+      "agent": 2,
+      "aspect": "Sentence length: intra-sentence clause-chaining vs one-clause sentences",
+      "exemplar_pattern": "The published exemplars build an abstract out of short, single-clause sentences: a bare subject-verb-object statement, then stop. They average roughly 14-17 words per sentence (Harford 15.8, LM 16.8, Bertrand-Schoar 16.0) and rarely chain more than one idea inside a sentence. New ideas get a new sentence rather than another conjoined or subordinated clause.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "Cash-rich firms are more likely than other firms to attempt acquisitions."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "Stock return evidence shows that acquisitions by cash-rich firms are value decreasing."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "Previous research uses negative word counts to measure the tone of a text."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "This paper investigates whether and how individual managers affect corporate behavior and performance."
+        }
+      ],
+      "our_pattern": "Our opening sentences run roughly 70% longer (whole-abstract mean 28.4 words/sentence; S1=34, S2=42, S4=38, S9=43) by conjoining and subordinating several clauses inside a single sentence. The opener welds a setup clause to a 'the language... is increasingly read as a window into what they know but have not yet disclosed' clause with 'and', so the reader must hold two propositions across one 34-word span before the sentence resolves.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "Firms host quarterly earnings calls and field analysts' unscripted questions, and the language a chief executive uses in answering is increasingly read as a window into what they know but have not yet disclosed"
+        }
+      ],
+      "gap": "Each of our long sentences asks the reader to carry two or more conjoined/subordinated clauses at once, where the exemplars would have split them into separate short statements the reader can clear one at a time. The cited opener is pure scene-setting framing, so naming its length as excess does not touch any load-bearing hedge, scope, measure-name, or number.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f5",
+      "agent": 2,
+      "aspect": "Abstract nominalized + passive gap statement vs concrete agent-verb-object",
+      "exemplar_pattern": "When the exemplars state what is or is not known, they use a concrete actor doing a concrete action: a named firm type 'attempts acquisitions', 'word lists misclassify words', 'we show'. Subjects are tangible nouns and verbs are active, so the claim is graspable on first read.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "Cash-rich firms are more likely than other firms to attempt acquisitions."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "We show that word lists developed for other disciplines misclassify common words in financial text."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "We construct a manager-firm matched panel data set which enables us to track the top managers across different firms over time."
+        }
+      ],
+      "our_pattern": "Our gap statement is built from abstract nominalizations and a passive: an intangible subject 'the spoken record', a nominalized object 'that withholding', and the agentless passive 'has not been characterized'. The reader has to unpack three abstractions and supply the missing actor before grasping that this is the open question the paper addresses.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "whether the spoken record tracks that withholding has not been characterized"
+        }
+      ],
+      "gap": "We phrase the central knowledge gap in an abstract, nominalized, passive register that the exemplars would render with a concrete subject and an active verb, so the reader works harder to locate the actor and the action. The cited string is gap framing only -- it contains no citation, no scoped hedge, no measure-name, and no number.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f3",
+      "agent": 2,
+      "aspect": "Compound-noun pile-up when naming the central construct",
+      "exemplar_pattern": "The exemplars name their central construct with a short, plain noun phrase of two or three everyday words -- the reader parses it instantly. 'CEO clarity', 'manager fixed effects', 'negative word list' each stack at most a couple of modifiers and use ordinary words.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "We show that CEO clarity is a matter of personal style; it is not driven by fundamental uncertainty in the companies' business activity."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "We find that manager fixed effects matter for a wide range of corporate decisions."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "We develop an alternative negative word list, along with five other word lists, that better reflect tone in financial text."
+        }
+      ],
+      "our_pattern": "Our construct name stacks a long chain of hyphenated modifiers into one heavy nominal: 'a residual measure of chief-executive question-and-answer uncertainty'. The reader must parse a five-plus-element noun pile ('residual measure of' + 'chief-executive' + 'question-and-answer' + 'uncertainty') before reaching the verb, where the exemplars would have handed over a two-or-three-word label.",
+      "our_quotes": [
+        {
+          "para_id": "abstract-P1",
+          "quote": "we construct a residual measure of chief-executive question-and-answer uncertainty"
+        }
+      ],
+      "gap": "Naming the construct costs our reader a multi-stage parse of a stacked compound noun, where the exemplars cost one or two beats. The cited string is load-bearing: 'question-and-answer' encodes the Q&A-vs-scripted-presentation contrast the abstract is built on, and the phrase is the descriptive measure-name the abstract-citation guardrail mandates -- so observing it implicates those guardrails.",
+      "materiality": "major",
+      "guardrail_collision": true
+    }
+  ],
+  "guardrail_collisions": [
+    "a1-f5",
+    "a1-f6",
+    "a1-f8",
+    "a2-f6",
+    "a3-f3",
+    "a3-f5",
+    "a3-f6",
+    "a2-f3"
+  ],
+  "side_notes": [
+    "All three agents stayed at the sentence/word level; paragraph-level structure -- sentence ordering and information sequencing across the abstract -- was not examined by any agent."
+  ],
+  "gate_rejected": [],
+  "redteam_rejected": [
+    {
+      "id": "a1-f7",
+      "reason": "Evidence does not support the gap. The exemplar quotes ('leave participants in the dark', 'communicate with analysts and investors') are not simpler synonyms for the act of answering questions, so they do not establish that 'field' adds reader cost. 'To field questions' is a standard register-neutral verb; the lexical-rarity claim is contested and unsupported by the cited material."
+    }
+  ],
+  "merges": [
+    {
+      "ids": [
+        "a1-f1",
+        "a2-f1",
+        "a3-f1"
+      ],
+      "canonical": "a2-f1"
+    },
+    {
+      "ids": [
+        "a1-f3",
+        "a2-f5"
+      ],
+      "canonical": "a2-f5"
+    },
+    {
+      "ids": [
+        "a2-f3",
+        "a3-f4"
+      ],
+      "canonical": "a2-f3"
+    }
+  ],
+  "unhandled": [],
+  "_provenance": {
+    "runId": "wf_411aba26-748",
+    "resume_task": "ww14pn1i3",
+    "note": "re-run under TOOL_LOCK after original redteam idle-timeout"
+  }
+}

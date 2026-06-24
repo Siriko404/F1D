@@ -1,0 +1,72 @@
+{
+  "answer": "Based on the paper \"Straight Talkers and Vague Talkers\" by Dzielinski, Wagner, and Zeckhauser (2021), here are the precise answers to your questions:\n\n### (1) UncResCEO and Market/Investor Reactions\nThe authors find that the time-varying residual component of a CEO's uncertainty language (**UncResCEO**) does not meaningfully drive market reactions. \n\nRegarding stock price and trading volume responses, the exact verbatim quotes are:\n*   \"By contrast, residual use of uncertainty words - that is, the component of the overall frequency of uncertainty words in CEO\u2019s answers during each call that is not explained by items (1) to (3) above - explains little of the market reaction.\" [1]\n*   \"By contrast, neither **UncPreCEO** nor **UncResCEO** is significantly associated with stock price or volume responses.\" [2]\n\nRegarding return volatility, liquidity, or bid-ask spread measures: The authors do not analyze or mention **UncResCEO** against any of these metrics, so there are no sentences to quote regarding them. (Stock return volatility, defined as **DailyVola**, is only used as an independent control variable [2, 3], and the paper never mentions liquidity or bid-ask spreads).\n\n### (2) Complete List of Outcome Variables\nThe complete list of market-reaction, investor-reaction, analyst-reaction, and firm-performance outcome variables that the authors regress the speech-uncertainty components against (with their exact names as defined in Table 1, Table 5, Table 6, and Table 7) is:\n\n*   **ACAR01** (also printed as **ACAR01 (%)**): Absolute cumulative abnormal stock return over [0:1] days.\n*   **AbnVol**: Abnormal trading volume.\n*   **AnResp**: Analyst response (absolute difference in consensus forecast before and after the call).\n*   **CAR01** (also printed as **CAR01 (%)**): Cumulative abnormal return over [0:1] days.\n*   **CAR260** (also printed as **CAR260 (%)**): Cumulative abnormal return over [2:60] days (post-earnings drift).\n*   **\u2206Tobin\u2019s Q**: Difference in average Tobin's Q between successor and predecessor CEO.\n*   **\u2206ROA**: Difference in Return on Assets between successor and predecessor CEO.\n*   **\u2206MedRec**: Difference in median analyst recommendation between successor and predecessor CEO.\n*   **\u2206Comp**: Difference in (log) total CEO compensation between successor and predecessor CEO.\n\n**No**, the authors did not *ever* use a bid-ask spread or any liquidity or illiquidity measure as an outcome variable [4-7].\n\n### (3) UncPreCEO versus Analyst, Stock Price, and Volume Responses\nThe authors find that the uncertainty language in the prepared presentation (**UncPreCEO**) has no significant effect on the stock or volume response, but it does trigger a stronger response from analysts revising their forecasts. \n\nThe exact verbatim quotes are:\n*   *Versus stock price or volume responses:* \"By contrast, neither **UncPreCEO** nor **UncResCEO** is significantly associated with stock price or volume responses.\" [2]\n*   *Versus analyst responses:* \"Somewhat surprisingly, high **UncPreCEO** engenders stronger analyst responses.\" [8]",
+  "conversation_id": "b42bb373-47a0-4909-ae49-c6a4f2eee5e2",
+  "turn_number": 1,
+  "is_follow_up": true,
+  "references": [
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "citation_number": 1,
+      "cited_text": "Next, we show that CEO clarity matters for the market - investors and analysts respond",
+      "start_char": 10695,
+      "end_char": 10782,
+      "chunk_id": "d0d6353f-7b79-4fbd-bc1a-86a74d2a0f42"
+    },
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "citation_number": 2,
+      "cited_text": "26",
+      "start_char": 63178,
+      "end_char": 63180,
+      "chunk_id": "507d637a-8a93-4672-a528-9167185f2c46"
+    },
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "citation_number": 3,
+      "cited_text": "AnDispPre 0.058** -0.000 0.084*** 0.024 -0.004 0.082*** (2.07) (-0.05) (20.21) (0.52) (-0.90) (12.57)",
+      "start_char": 106400,
+      "end_char": 106502,
+      "chunk_id": "ab845787-b05f-4fac-89d7-b2f262d25bf3"
+    },
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "citation_number": 4,
+      "cited_text": "Table 1: Summary statistics",
+      "start_char": 95208,
+      "end_char": 95236,
+      "chunk_id": "fa492de5-4fe4-4431-988f-95ccebd38b34"
+    },
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "citation_number": 5,
+      "cited_text": "This table summarizes results for regressions of three measures of earnings informativeness on CEO clarity and controls. In columns (1) and (4), the dependent variable is the absolute cumulative abnormal return (ACAR) over [0:1] days relative to the call date (ACAR01). See Section 5.1 for details on how we deal with conference calls outside trading hours. In columns (2) and (5), the dependent variable is the abnormal trading volume (AbnV ol). In columns (3) and (6), the dependent variable is AnResp, which is the absolute value of the difference between analyst consensus forecast of quarter t+ 1 earnings measured one day before and three days after the call in quarter t, scaled by the stock price 5 days before the call in quarter t. ClarityCEO is the CEO clarity estimated from the language of that person\u2019s answers to analyst questions during earnings conference calls, see Section 4.4 for details. UncRes represents the residuals from Equation 4, that is deviations from Clarity. In columns (4) through (6), the sample is limited to those firms which experienced a CEO turnover during the sample period. All explanatory",
+      "start_char": 107044,
+      "end_char": 108175,
+      "chunk_id": "0976fca3-d4c4-4aff-884d-022650d23538"
+    },
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "citation_number": 6,
+      "cited_text": "AnDispPre \u00d7 SurpDec -1.021*** 0.516 -1.005*** 0.878** (-7.14) (1.53) (-4.76) (2.00)",
+      "start_char": 109212,
+      "end_char": 109296,
+      "chunk_id": "73e8e9f5-e45a-42a1-ba78-33fbe8183740"
+    },
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "citation_number": 7,
+      "cited_text": "This table summarizes results of cross-sectional weighted least squares (WLS) regressions of differences in performance on differences in CEO clarity and other variables around CEO turnover events. Each dependent variable is a difference in the average level of the respective performance measure between the successor CEO and the predecessor. For example, in column (1), the dependent variable, \u2206Tobin\u2032s Q, is the average Tobin\u2019s Q over the tenure of the successor minus average Tobin\u2019s Q over the tenure of the predecessor. We employ the combined number of quarterly observations during the successor and predecessor CEO tenure as weights in the WLS regressions. This assigns higher importance to differences that could be computed with greater precision. The other performance measures are, in this order: Return on Assets (ROA); Median analyst Recommendation (MedRec); and the natural logarithm of CEO Total Compensation (Comp). The main explanatory variable of interest is \u2206ClarityCEO, which is the difference in clarity between the successor CEO and the predecessor. All other explanatory variables are also computed as differences in averages between the successor CEO and the predecessor. Differences in Columns (1) - (4) are based on raw characteristics, while in Columns (5) - (8) the characteristics (including the explanatory variables) are first industry-adjusted. We require the interval between the last earnings call appearance of the predecessor CEO and the first appearance of the successor to be no longer than 120 days, and we require the firm to have enough data before and after the turnover to calculate CEO Clarity, valuation metrics and control variables. t statistics shown in parentheses are based on robust standard errors. Significance levels: * - 10%, ** - 5%, *** - 1%",
+      "start_char": 112743,
+      "end_char": 114543,
+      "chunk_id": "ce594980-a2d1-40c7-aaf8-1ba5c057d23b"
+    },
+    {
+      "source_id": "67b17abd-1aed-49dc-938c-ec12775df1ee",
+      "citation_number": 8,
+      "cited_text": "firms with more intangible assets (which are presumably harder to value than tangible assets)",
+      "start_char": 63681,
+      "end_char": 63775,
+      "chunk_id": "2b8c9abe-1229-4d6e-ad68-91851e0a3eb7"
+    }
+  ]
+}

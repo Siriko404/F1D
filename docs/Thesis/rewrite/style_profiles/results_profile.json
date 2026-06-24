@@ -1,0 +1,1123 @@
+{
+  "type": "results",
+  "profile": [
+    {
+      "id": "a1-f3",
+      "agent": 1,
+      "aspect": "Abstract/nominalized subjects instead of concrete actor-verb sentences",
+      "exemplar_pattern": "Exemplars favor concrete agents (we, managers, firms, the coefficient) doing things in plain verbs.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "We start with a discussion of the investment results."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "I estimate regressions with the announcement period bidder returns as the dependent variable."
+        }
+      ],
+      "our_pattern": "Our prose builds sentences on abstract nominal subjects ('Identification is within firm', 'The discriminating contrast is the drop at the gap', 'The register here should stay honest'), which read heavier than agent-verb constructions.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.2-PARA1",
+          "quote": "Identification is within firm, setting a treated firm's pre-announcement quarter against its own ordinary quarters"
+        },
+        {
+          "para_id": "OUR 3.3-PARA3",
+          "quote": "The discriminating contrast is the drop at the gap."
+        },
+        {
+          "para_id": "OUR 4.1-PARA5",
+          "quote": "The register here should stay honest."
+        }
+      ],
+      "gap": "Exemplars keep a concrete subject acting; our prose nominalizes the subject ('Identification is...', 'The discriminating contrast is...') which adds abstraction the supervisor's non-specialist bar would trip on.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f4",
+      "agent": 1,
+      "aspect": "Ornate/literary diction where a plain word exists",
+      "exemplar_pattern": "Exemplars use plain, workmanlike vocabulary ('increases', 'is positive', 'falls', 'we find').",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "the probability of being a bidder increases with cashrichness"
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "the coefficient on the information component, Info(Both), is negative and highly significant"
+        }
+      ],
+      "our_pattern": "Our prose reaches for ornate diction where a plain verb would do ('the cash leaves', 'the instant the deal is public', 'rides on', 'the round trip', 'a point every announced deal reaches'), raising the register above the exemplars.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.3-PARA3",
+          "quote": "falls to insignificance the instant the deal is public"
+        },
+        {
+          "para_id": "OUR 3.4-PARA5",
+          "quote": "its significance rides on the imprecise, negative stock estimate"
+        },
+        {
+          "para_id": "OUR 3.3-PARA4",
+          "quote": "What the event study adds is the round trip."
+        }
+      ],
+      "gap": "Exemplars say 'increases'/'falls'/'is negative'; our prose substitutes literary phrasings ('the instant the deal is public', 'rides on', 'the round trip') that are heavier than the plainest journal register.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f5",
+      "agent": 1,
+      "aspect": "Long multi-clause sentences with stacked subordinate clauses",
+      "exemplar_pattern": "Even when conveying caveats, exemplars often break them across shorter sentences.",
+      "exemplar_quotes": [
+        {
+          "paper": "lm2011",
+          "quote": "We should not overstate the regression results."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "Thus, the cash effect is not a leverage effect."
+        }
+      ],
+      "our_pattern": "Several of our sentences run very long with multiple embedded clauses chained by commas and semicolons, increasing parse load relative to the exemplars' shorter caveat sentences.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.3-PARA1",
+          "quote": "so that both outcomes are estimated on the identical rows; estimating them on the same rows is what lets the two paths be read against each other while guarding the differential-timing reading against a sample-composition artifact"
+        },
+        {
+          "para_id": "OUR 3.2-PARA5",
+          "quote": "The two models are close to identical in their dynamics, the stock partial-adjustment lag of $0.8013$ standing almost exactly where the cash lag of $0.7990$ does, so what differs at the pre-announcement quarter is the response and not the specification."
+        }
+      ],
+      "gap": "Exemplars deliver caveats in short standalone sentences ('We should not overstate the regression results.'); our prose packs the caveat plus its justification into one long multi-clause sentence.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f6",
+      "agent": 1,
+      "aspect": "Absolute-construction appositives mid-sentence",
+      "exemplar_pattern": "Exemplars typically attach a number or fact with a plain relative clause or a new sentence rather than a participial absolute.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "The adjusted R 2 for this specification is 91 percent."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "The leverage ratio, defined as book value of debt divided by the sum of book value of debt and market value of equity, for cash-rich firms is close to, and actually smaller than, that for the rest of the population"
+        }
+      ],
+      "our_pattern": "Our prose uses participial absolute constructions ('the ... lag of $0.8013$ standing almost exactly where ...', 'its one-quarter lag standing at $0.7547$') that are grammatically denser than the exemplars' relative clauses.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.3-PARA4",
+          "quote": "its one-quarter lag standing at $0.7547$ ($p<0.01$; column~2 of Table~\\ref{tab:empire_drop_matched})"
+        },
+        {
+          "para_id": "OUR 3.2-PARA5",
+          "quote": "the stock partial-adjustment lag of $0.8013$ standing almost exactly where the cash lag of $0.7990$ does"
+        }
+      ],
+      "gap": "Exemplars report the number in its own clause/sentence; our prose uses a participial 'standing' absolute that compresses two facts into a heavier construction.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f9",
+      "agent": 1,
+      "aspect": "Heavy hedge-stacking within a single sentence",
+      "exemplar_pattern": "Exemplars hedge with a single qualifier per clause and keep it lightweight.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "Thus, the coefficients on the latent components of linguistic complexity have a reasonable economic magnitude."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "This would provide a partial explanation for the lower announcement returns for cash-rich bidders"
+        }
+      ],
+      "our_pattern": "Our prose stacks several hedges/scoping qualifiers in one sentence ('supportive rather than decisive', 'consistent with ... rather than as an independent test', 'supportive of the disclosure-state pattern rather than definitive about any mechanism, which we leave open'), heavier than the exemplars' single-qualifier hedges.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.3-PARA6",
+          "quote": "The reading throughout is correlational and descriptive, supportive of the disclosure-state pattern rather than definitive about any mechanism, which we leave open."
+        },
+        {
+          "para_id": "OUR 4.3-PARA4",
+          "quote": "We read the resolution-inclusive estimates as consistent with the main specification rather than as an independent test of it."
+        }
+      ],
+      "gap": "Exemplars keep hedges single and light; our prose chains 'correlational and descriptive, supportive ... rather than definitive ... which we leave open' into one heavily qualified sentence.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f12",
+      "agent": 1,
+      "aspect": "'the one given in Section X and is not restated' boilerplate phrasing",
+      "exemplar_pattern": "Exemplars refer back to an equation/method tersely.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "The estimation method for these two variables differs slightly from the one described in subsection IV.A."
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "As stated earlier, our dependent variable is (based on) the stock-price reaction during the 90-and 120-minute windows after the start of the call."
+        }
+      ],
+      "our_pattern": "Our prose uses a recurring stiff formula 'the estimating equation is the one given in Section~2.4 and is not restated', which is wordier and more self-conscious than the exemplars' brief back-reference.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.2-PARA1",
+          "quote": "the estimating equation is the one given in Section~2.4 and is not restated"
+        },
+        {
+          "para_id": "OUR 3.3-PARA1",
+          "quote": "The estimating equation is the one given in Section~2.4 and is not restated; the reading remains within firm and correlational, with no identification claim."
+        }
+      ],
+      "gap": "Exemplars back-reference a method in a short clause; our prose uses a longer self-describing formula and announces that it is 'not restated'.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f15",
+      "agent": 1,
+      "aspect": "'register' / 'arm' / 'universe' as technical-sounding nouns for plain concepts",
+      "exemplar_pattern": "Exemplars name the comparison group and sample plainly ('the rest of the population', 'the sample', 'other firms').",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "that for the rest of the population"
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "the manager-firm matched panel data set as described in subsection III.A"
+        }
+      ],
+      "our_pattern": "Our prose labels samples with the elevated noun 'universe' repeatedly ('the matched universe', 'the smaller and more heavily covered universe', 'its own complete-case cash universe') where 'sample' would be the plainer term used by exemplars.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.2-PARA3",
+          "quote": "run on the smaller and more heavily covered universe"
+        },
+        {
+          "para_id": "OUR 3.3-PARA5",
+          "quote": "estimated on its own complete-case cash universe of $29{,}535$ firm-quarters across $1{,}326$ firms"
+        }
+      ],
+      "gap": "Exemplars say 'sample' / 'the rest of the population'; our prose elevates the same concept to 'universe' throughout, a heavier term for the non-specialist.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f16",
+      "agent": 1,
+      "aspect": "Compound hyphenated nonce-modifiers stacked before a noun",
+      "exemplar_pattern": "Exemplars use established hyphenated terms but rarely stack multiple nonce modifiers.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "we find that abnormal information asymmetry is monotonically increasing (decreasing) across quintiles of the obfuscation (information) component"
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "a positive association between a CEO's stock price-based incentives and firm disclosures"
+        }
+      ],
+      "our_pattern": "Our prose stacks bespoke hyphenated modifiers ('well-behaved partial-adjustment specification', 'resolution-inclusive sample', 'pre-announcement-to-gap change', 'the differential-timing reading'), denser noun phrases than the exemplars'.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 4.4-PARA3",
+          "quote": "the pre-announcement-to-gap change of $-0.0012$ being insignificant just as the partial-adjustment change of $0.0006$ was"
+        },
+        {
+          "para_id": "OUR 3.3-PARA4",
+          "quote": "the same well-behaved partial-adjustment specification used in the first main analysis"
+        }
+      ],
+      "gap": "Exemplars keep modifier stacks short; our prose builds long hyphen-chained nonce compounds ('pre-announcement-to-gap change', 'well-behaved partial-adjustment specification') that compress a clause into a noun.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f17",
+      "agent": 1,
+      "aspect": "Aphoristic one-liners that gesture rather than state plainly",
+      "exemplar_pattern": "Exemplars close a point with a plain, literal summary sentence.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "Thus, the cash effect is not a leverage effect."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "Textual analysis is not the ultimate key to the returns cipher."
+        }
+      ],
+      "our_pattern": "Our prose closes points with compressed aphoristic lines that rely on the metaphor scaffolding ('What the event study adds is the round trip.', 'so it serves here as an anchor.', 'The reason raises residual uncertainty; the questioning does not, and the questioning does not amplify the reason.'), more allusive than the exemplars' literal closers.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 4.4-PARA1",
+          "quote": "The residual outcome carries no lag and is unaffected, so it serves here as an anchor."
+        },
+        {
+          "para_id": "OUR 4.1-PARA4",
+          "quote": "The reason raises residual uncertainty; the questioning does not, and the questioning does not amplify the reason."
+        }
+      ],
+      "gap": "The exemplar one-liner ('Thus, the cash effect is not a leverage effect.') is literal; ours leans on figurative scaffolding ('serves here as an anchor', 'the round trip') to land the same point.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f2",
+      "agent": 2,
+      "aspect": "Two clauses of machinery between the reader and the number ('evaluated as the single Wald restriction', 'the single-indicator, two-way fixed-effects regression of')",
+      "exemplar_pattern": "Exemplars state the estimate and its size with minimal interposed methodological qualification; the method is named once and then the number is delivered cleanly.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "An increase in cash of one percent of total assets is associated with an announcement return that is lower by 21 basis points."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "The adjusted R 2 for this specification is 91 percent."
+        }
+      ],
+      "our_pattern": "Before delivering the difference we stack restating qualifiers ('The formal cash-minus-stock difference, evaluated as the single Wald restriction, is ...') and then re-assert the same point a third time in the same paragraph.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.4-PARA3",
+          "quote": "The formal cash-minus-stock difference, evaluated as the single Wald restriction, is $0.0983$ (standard error $0.0476$, $z\\approx2.07$, $p=0.039$), significant at the five percent level on a two-tailed test."
+        },
+        {
+          "para_id": "OUR 3.4-PARA3",
+          "quote": "It is this formal linear restriction, and not the contrast between a significant and an insignificant coefficient, that carries the cash-specificity claim."
+        }
+      ],
+      "gap": "The number arrives wrapped in a self-describing methodological clause and is then re-litigated within the same paragraph; exemplars deliver the magnitude first and let it stand. The reader does more parsing per number than in any exemplar.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f6",
+      "agent": 2,
+      "aspect": "Negative/contrastive framing of the conclusion ('the result does not rest on the reporting convention') rather than a plain positive statement",
+      "exemplar_pattern": "Exemplars state robustness or significance positively and plainly ('survives', 'holds', 'remain materially unchanged'), without constructing a doubled negation for the reader to resolve.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "Overall, this restriction does not affect our results."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "The essential conclusions in terms of signs and significance remain identical."
+        }
+      ],
+      "our_pattern": "We phrase survival as a negated dependency ('so the result does not rest on the reporting convention'), which the reader must invert to recover the plain claim that it is significant either way.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.2-PARA2",
+          "quote": "it survives a two-tailed test as well ($t=2.68$, $p=0.0074$), so the result does not rest on the reporting convention"
+        },
+        {
+          "para_id": "OUR 4.1-PARA2",
+          "quote": "so it tracks what it is built to track and the nulls that follow are not the artifact of a dead measure"
+        }
+      ],
+      "gap": "The reader resolves a 'does not rest on / is not the artifact of' construction to recover a simple positive fact; exemplars give the positive fact directly. Note the 'survives two-tailed' content itself is a guardrail.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f9",
+      "agent": 2,
+      "aspect": "Triple-restating the same methodological point within one paragraph (the Wald-vs-side-by-side distinction)",
+      "exemplar_pattern": "Exemplars make a methodological distinction once and then report; they do not re-state the same caveat in successive sentences of the same paragraph.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "A research design using only overall linguistic complexity (column (1)) would have led to a conclusion that the relation between linguistic complexity and information asymmetry is ambiguous or differs based on the part of the call."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "F-tests confirm that the coefficients on cash deviation for expected and unexpected bidders are significantly different in each of the regressions."
+        }
+      ],
+      "our_pattern": "Across 3.4 the 'formal Wald restriction, not a significant-vs-insignificant comparison' point is stated in PARA2, again in PARA3, and again in PARA5 — the reader meets the same distinction three times.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.4-PARA2",
+          "quote": "it is this difference, not a comparison of one significant coefficient against one insignificant one, that constitutes the cash-specificity test"
+        },
+        {
+          "para_id": "OUR 3.4-PARA3",
+          "quote": "It is this formal linear restriction, and not the contrast between a significant and an insignificant coefficient, that carries the cash-specificity claim."
+        },
+        {
+          "para_id": "OUR 3.4-PARA5",
+          "quote": "the difference between a significant and an insignificant coefficient is not treated as the test"
+        }
+      ],
+      "gap": "The same Gelman-Stern distinction recurs three times across the subsection; exemplars state such a point once. The repetition makes the reader re-process an already-made claim. (The distinction is itself a mandatory guardrail.)",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f10",
+      "agent": 2,
+      "aspect": "Heavy use of em-dash / comma-fenced appositive insertions that suspend the main clause",
+      "exemplar_pattern": "Exemplars do use appositives, but typically one short one per sentence; the main clause resolves quickly.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "The leverage ratio, defined as book value of debt divided by the sum of book value of debt and market value of equity, for cash-rich firms is close to, and actually smaller than, that for the rest of the population"
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "The adjusted R 2 of the interest coverage regression, an alternative measure of capital structure, increases by as much as 10 percent (from 31 percent to 41 percent)."
+        }
+      ],
+      "our_pattern": "We stack multiple fenced insertions inside one sentence ('the drop from the peak to the gap, is $0.0457$ ($p<0.05$), almost exactly the $0.0455$ of the main result'), suspending the subject across several interruptions.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 4.3-PARA3",
+          "quote": "and the announcement-quarter leg, the drop from the peak to the gap, is $0.0457$ ($p<0.05$), almost exactly the $0.0455$ of the main result"
+        },
+        {
+          "para_id": "OUR 4.4-PARA3",
+          "quote": "Without the lag the cash ratio does not fall when the deal is announced, the pre-announcement-to-gap change of $-0.0012$ being insignificant just as the partial-adjustment change of $0.0006$ was, and it falls only once the cash leaves at completion, by $0.0318$ from the gap to completion ($p<0.01$)"
+        }
+      ],
+      "gap": "Our sentences nest two or three appositive interruptions before the predicate resolves; exemplars resolve after one. The reader holds more suspended structure than the exemplars demand.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f11",
+      "agent": 2,
+      "aspect": "Naming the rhetorical move instead of just making it ('This is a descriptive comparison; it motivates a formal test rather than standing in for one')",
+      "exemplar_pattern": "Exemplars transition to the formal test by simply doing it ('To investigate this alternative interpretation, we ...'), without a sentence that labels the prior display as mere motivation.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "To investigate this alternative interpretation, we analyze the precise timing of the observed changes in corporate policies."
+        },
+        {
+          "paper": "thewissen2024",
+          "quote": "We next examine the tone of earnings press releases around M&As using multiple regression analyses that control for firm and deal characteristics."
+        }
+      ],
+      "our_pattern": "We insert standalone sentences classifying our own display ('it motivates a formal test rather than standing in for one', 'A side-by-side display of this kind implies a comparison it never actually runs'), which the reader parses as procedure-about-procedure.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.4-PARA1",
+          "quote": "This is a descriptive comparison; it motivates a formal test rather than standing in for one."
+        },
+        {
+          "para_id": "OUR 3.4-PARA2",
+          "quote": "A side-by-side display of this kind implies a comparison it never actually runs."
+        }
+      ],
+      "gap": "Exemplars move straight into the formal test; we narrate the status of the prior paragraph first, adding a reflexive layer. (The 'descriptive motivation only, not the test' content is a guardrail.)",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f13",
+      "agent": 2,
+      "aspect": "Self-referential disclosure verbs ('a comparability limit we disclose', 'a disclosed approximation', 'we disclose') foregrounding the act of disclosing",
+      "exemplar_pattern": "Exemplars state the limitation as a fact about the data/design; they do not add a verb foregrounding that they are disclosing it.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "Note that estimating the regression within sample partitions leads to a reduction in power, especially for the loss firms, which constitute less than 1/6th of our sample (10,074 firms-quarters)."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "Thus, the sample changes in a nonrandom way through time."
+        }
+      ],
+      "our_pattern": "We attach an explicit disclosure verb to the limitation ('a comparability limit we disclose so the two columns are not read as a single sample', 'scaling by the all-universe standard deviation is a disclosed approximation'), an extra framing beyond the fact itself.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.2-PARA3",
+          "quote": "a comparability limit we disclose so the two columns are not read as a single sample"
+        },
+        {
+          "para_id": "OUR 3.3-PARA4",
+          "quote": "scaling by the all-universe standard deviation is a disclosed approximation, and the magnitude is read as supportive rather than decisive"
+        }
+      ],
+      "gap": "Exemplars let the stated limitation do the disclosing; we add a clause naming the disclosure and its purpose, which the reader processes on top of the limitation. The underlying caveat is a guardrail.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f15",
+      "agent": 2,
+      "aspect": "Abstract process vocabulary for ordinary operations ('we guard against it directly, by removing the dynamic term', 'serves here as an anchor')",
+      "exemplar_pattern": "Exemplars describe a robustness operation in plain verbs — re-estimate, drop, replace, re-run — and state plainly that the benchmark is unaffected.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "First, we replicate the analysis above after collapsing the data at the manager/firm level."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "In columns ( 3) and ( 4) we run the same regressions with the term-weighted measures of H4N-Inf and Fin-Neg."
+        }
+      ],
+      "our_pattern": "We dress the same operation in figurative process language ('we guard against it directly', 'it serves here as an anchor', 'the residual outcome ... so it serves here as an anchor'), which the reader must map onto the literal 'we re-ran it without the lag'.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 4.4-PARA1",
+          "quote": "Rather than reason about the size of that bias, we guard against it directly, by removing the dynamic term and re-estimating without it. The residual outcome carries no lag and is unaffected, so it serves here as an anchor."
+        },
+        {
+          "para_id": "OUR 4.1-PARA1",
+          "quote": "We address this rival in three steps."
+        }
+      ],
+      "gap": "Exemplars say 'we run the same regressions'; we say 'we guard against it directly' and call the unchanged outcome 'an anchor', adding figurative cover over a plain re-estimation. The reader decodes the metaphor to recover the operation.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f4",
+      "agent": 3,
+      "aspect": "Dense single sentences chaining four-plus clauses with multiple subordinate qualifiers",
+      "exemplar_pattern": "Exemplars in the published journals break a multi-part design description into several short declarative sentences, each carrying one step, rather than packing sample size, rationale, and a comparison-purpose into one long periodic sentence.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "The results of the probit estimations are given in Table III. The data requirements leave 23,686 firm-years, with 487 bids. As predicted by the free cash f low hypothesis, the probability of being a bidder increases with cashrichness."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "Table 4 reports results from estimating regressions of information asymmetry on the measures of linguistic complexity and controls. As before, we rank all of the independent variables into deciles and scale them to range from 0 to 1."
+        }
+      ],
+      "our_pattern": "Our paragraph 3.3-PARA1 runs the sample size, the reason both outcomes share rows, and the purpose of that choice into one sentence with stacked subordinate clauses ('so that... ; estimating them on the same rows is what lets... while guarding... against...').",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.3-PARA1",
+          "quote": "The test is run on the matched universe in which both the residual and the cash ratio are defined, $28{,}102$ firm-quarters across $1{,}320$ firms, so that both outcomes are estimated on the identical rows; estimating them on the same rows is what lets the two paths be read against each other while guarding the differential-timing reading against a sample-composition artifact."
+        },
+        {
+          "para_id": "OUR 4.1-PARA4",
+          "quote": "The pre-announcement indicator stays significant, both with scrutiny entered (coefficient $0.0413$, $p<0.01$; column~1 of Table~\\ref{tab:reason_gating}) and with the scrutiny-by-pre-announcement interaction added (coefficient $0.0439$, $p<0.05$; column~2), while scrutiny's own effect remains null ($0.0000$ and $0.0001$, neither significant) and the interaction is insignificant (coefficient $-0.0056$, not significant; column~2)."
+        }
+      ],
+      "gap": "The exemplars (esp. JF/JAR) deliver one fact per sentence; our long periodic sentences with embedded purpose-clauses require the non-specialist to hold several propositions in suspension before the sentence resolves. The sample-N traceability and same-rows rationale are guarded content, so this points only at sentence packing, not at dropping any fact.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f5",
+      "agent": 3,
+      "aspect": "Elevated/literary diction where exemplars use plain words ('the instant the deal is public', 'the round trip', 'rides on', 'with the grain of', 'sits within', 'a war chest')",
+      "exemplar_pattern": "Exemplars keep verbs and nouns plain and technical: 'falls to insignificance', 'reaction', 'depends on', 'consistent with', 'is associated with'. They avoid colloquial or figurative phrasing in the results narration.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "There is no significant relation between Fog(Response) and guidance."
+        },
+        {
+          "paper": "thewissen2024",
+          "quote": "Overall, this evidence shows that, although tone inflation before the M&A announcement temporarily boosts stock prices prior to the deal announcement, investors can progressively see through this tone inflation"
+        }
+      ],
+      "our_pattern": "Our prose reaches for figurative/colloquial diction — 'the instant the deal is public', 'the round trip', 'its significance rides on', 'run with the grain of that prior work', 'the war-chest mechanism' — where the exemplars would write 'when the deal is announced', 'the rise and reversal', 'depends on', 'is consistent with'.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.3-PARA3",
+          "quote": "residual uncertainty spikes one quarter before announcement (coefficient $0.0473$, $p<0.01$; column~1 of Table~\\ref{tab:empire_drop_matched}) and falls to insignificance the instant the deal is public"
+        },
+        {
+          "para_id": "OUR 3.3-PARA4",
+          "quote": "What the event study adds is the round trip."
+        },
+        {
+          "para_id": "OUR 4.2-PARA4",
+          "quote": "both component readings run with the grain of that prior work"
+        }
+      ],
+      "gap": "Figurative phrases ('the instant', 'round trip', 'rides on', 'with the grain') are idiomatic flourishes; the exemplars narrate results in literal terms, which is the lower-complexity register the supervisor's 'non-specialist could read it' bar targets.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f6",
+      "agent": 3,
+      "aspect": "Methodological-caution clauses appended to nearly every result sentence ('read it descriptively', 'with no causal or parallel-trends claim', 'the reading remains within firm and correlational')",
+      "exemplar_pattern": "Exemplars state a caveat once, in plain language, at the point it is needed, rather than re-attaching a correlational/no-identification rider to most sentences. Harford flags an interpretive limit once ('this evidence is only suggestive'); Bushee notes a null is 'absence' once.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "However, since the target CAR is not the same as the premium, this evidence is only suggestive."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "While it is beyond the scope of this paper to fully sort out these two alternative interpretations, in the following we provide some evidence"
+        }
+      ],
+      "our_pattern": "Our paragraphs repeatedly close with a stacked epistemic rider ('we read it descriptively, as an anticipation contrast, with no causal or parallel-trends claim'; 'The contrast between these two paths is the claim, read within firm and correlationally'), recurring across nearly every paragraph rather than being stated once for the subsection.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.2-PARA1",
+          "quote": "we read it descriptively, as an anticipation contrast, with no causal or parallel-trends claim."
+        },
+        {
+          "para_id": "OUR 3.3-PARA3",
+          "quote": "The contrast between these two paths is the claim, read within firm and correlationally."
+        }
+      ],
+      "gap": "The exemplars place an interpretive caveat sparingly and plainly; our prose repeats a multi-part hedge ('descriptive / within-firm / correlational / no-identification') as a recurring sentence-tail, adding reading load. The hedges are explicitly guarded (correlational register binds the subsection), so this names the repetition/density of the rider, not its presence.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f7",
+      "agent": 3,
+      "aspect": "Nominalization of simple actions into abstract noun phrases ('a comparability limit we disclose', 'a validity device', 'a disclosed approximation', 'this is a failure to find')",
+      "exemplar_pattern": "Exemplars express the same ideas as verbs/clauses: they 'find that our results are robust', a control 'adjusts the performance', they 'cannot reject'. They report a limit by saying what it is plainly, not by nominalizing it into a labeled object.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "We find, in regressions not reported here, that our results are robust to this alternative estimation technique."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "This matching allows for a direct comparison between the performance of cashrich firms that engage in acquisitions and cash-rich firms that do not"
+        }
+      ],
+      "our_pattern": "Our prose converts actions into labeled abstract objects — 'a comparability limit we disclose', 'This is a validity device, not a proof of identification', 'the matched-universe scaling is a disclosed approximation', 'This is a failure to find' — naming the move rather than performing it in plain verbs.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.2-PARA3",
+          "quote": "a comparability limit we disclose so the two columns are not read as a single sample."
+        },
+        {
+          "para_id": "OUR 3.3-PARA2",
+          "quote": "This is a validity device, not a proof of identification."
+        },
+        {
+          "para_id": "OUR 4.2-PARA2",
+          "quote": "this is an absence of association, not a powered test of equivalence."
+        }
+      ],
+      "gap": "Nominalized labels ('comparability limit', 'validity device', 'disclosed approximation', 'failure to find') ask the reader to absorb a named abstract category; the exemplars say plainly what was done and what it shows. The scoped meaning of these caveats is guarded, so this names only the nominalized packaging.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f8",
+      "agent": 3,
+      "aspect": "Heavy use of em-dash/comma appositive insertions that interrupt the main clause to restate a quantity or definition",
+      "exemplar_pattern": "Exemplars typically give a figure and its gloss as a separate clause or in parentheses, rather than nesting an appositive mid-sentence that suspends the subject from its verb. Bertrand-Schoar: a benchmark figure stated, then the comparison in the next sentence.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "The adjusted R 2 for this specification is 91 percent. Even though the fit of this benchmark model is already very high, the adjusted R 2 increases by 3 percent when we include the CEO fixed effects"
+        },
+        {
+          "paper": "harford1999",
+          "quote": "The leverage ratio, defined as book value of debt divided by the sum of book value of debt and market value of equity, for cash-rich firms is close to, and actually smaller than, that for the rest of the population ~0.33 vs. 0.36!."
+        }
+      ],
+      "our_pattern": "Our prose interrupts the main clause with stacked appositive insertions that restate a magnitude in two forms before the verb resolves ('about $15.3$ percent against the standard deviation of $0.3010$ in Panel~B of Table~\\ref{tab:summary_stats}, for a variable from which everything persistent has already been removed, and it appears in a quarter that is itself about one percent of the sample').",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.2-PARA4",
+          "quote": "The uncertainty coefficient equals roughly fifteen percent of a residual standard deviation, about $15.3$ percent against the standard deviation of $0.3010$ in Panel~B of Table~\\ref{tab:summary_stats}, for a variable from which everything persistent has already been removed"
+        },
+        {
+          "para_id": "OUR 3.4-PARA3",
+          "quote": "the difference is larger than either coefficient, roughly a third of a residual standard deviation, about $32.7$ percent against the $0.3010$ in Panel~B of Table~\\ref{tab:summary_stats}."
+        }
+      ],
+      "gap": "The exemplars present a number then its benchmark in a clean follow-on clause; our sentences nest the value-twice ('roughly fifteen percent... about 15.3 percent against the SD of 0.3010...') plus a further qualifying clause inside one sentence, raising parse depth. The exact denominators/values are guarded number-traceability, so this names sentence structure only.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f9",
+      "agent": 3,
+      "aspect": "Double/triple negation and convoluted contrast framing ('not... rather than', 'not yet a formal test', 'not itself a test', 'never depended on', 'conditions on nothing that follows')",
+      "exemplar_pattern": "Exemplars state contrasts affirmatively and once. When distinguishing a suggestive comparison from a formal test, Harford simply says the evidence is 'only suggestive'; Bushee states 'this conclusion is biased' directly.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "However, our decomposition will show that this conclusion is biased by the commingling of the two latent components."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "the cash effect is not a leverage effect."
+        }
+      ],
+      "our_pattern": "Our prose layers negations to draw the same distinction ('A side-by-side reading of this kind is not yet a formal test...'; 'it is this difference, not a comparison of one significant coefficient against one insignificant one, that constitutes...'; 'conditions on nothing that follows'), requiring the reader to resolve what is being denied and what affirmed.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.4-PARA2",
+          "quote": "it is this difference, not a comparison of one significant coefficient against one insignificant one, that constitutes the cash-specificity test."
+        },
+        {
+          "para_id": "OUR 4.3-PARA1",
+          "quote": "a point every announced deal reaches whatever its eventual outcome, so it conditions on nothing that follows."
+        }
+      ],
+      "gap": "The negated-contrast constructions ('not X, but Y', 'conditions on nothing that follows', 'not itself a test') are syntactically heavier than the exemplars' affirmative one-shot statements. The Gelman-Stern 'sig-vs-n.s. is not the test' distinction is a guarded claim, so this names only the multi-negation phrasing used to carry it.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f10",
+      "agent": 3,
+      "aspect": "Sentence-initial abstract summary verbs that delay the concrete result ('What the event study adds is...', 'The discriminating contrast is...', 'The claim rests on...', 'The reading is therefore unchanged')",
+      "exemplar_pattern": "Exemplars lead with the concrete finding or the table, then characterize it: 'Table III reports our results...'; 'We find a positive and statistically significant relationship...'. The concrete content comes first, the framing after.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "We find a positive and statistically significant relationship between a manager's residual in his last job and his residual in his first job for all the policy variables"
+        },
+        {
+          "paper": "harford1999",
+          "quote": "The results show that abnormal returns are strongly positively related to how much cash the company generates over the year."
+        }
+      ],
+      "our_pattern": "Our paragraphs often open with an abstract framing predicate ('What the event study adds is the round trip.'; 'The claim rests on the contrast between the two paths'; 'The reading is therefore unchanged.') that states the role of the upcoming content before the content itself.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.3-PARA4",
+          "quote": "What the event study adds is the round trip."
+        },
+        {
+          "para_id": "OUR 3.3-PARA6",
+          "quote": "The claim rests on the contrast between the two paths, not on the magnitude or the sign of any single drop."
+        },
+        {
+          "para_id": "OUR 4.4-PARA4",
+          "quote": "The reading is therefore unchanged."
+        }
+      ],
+      "gap": "These topic-sentence abstractions ('what X adds is', 'the claim rests on', 'the reading is unchanged') front-load interpretation before the reader has the finding; the exemplars present the finding first and frame second, which is easier for a non-specialist to follow.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f11",
+      "agent": 3,
+      "aspect": "Abstract process nouns for the bias check ('Nickell bias', 'the within transformation induces', 'dynamic-panel bias') stated more technically than the plain-language exemplar register",
+      "exemplar_pattern": "Exemplars name an econometric concern in accessible terms and explain its consequence plainly — 'possible serial correlation concerns', 'downward bias in an OLS estimation', 'a mechanical relationship' — keeping the named-effect lightly glossed.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "Note that the right-hand-side variable in equation (2) is an estimated coefficient which is noisy by definition. This will lead to a downward bias in an OLS estimation of"
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "the correlation is sufficiently high that it induces multicolinearity in our regression when we include all four components together."
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "Petersen [2009] shows that when the residual contains information that the researcher is not using, standard errors can be biased."
+        }
+      ],
+      "our_pattern": "Our prose names 'the Nickell bias, which the within transformation induces and which is not confined to the coefficient on the lag alone' and 'no dynamic-panel bias', a denser technical register than the exemplars' 'downward bias in an OLS estimation' or 'standard errors can be biased' with a one-line gloss.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 4.4-PARA1",
+          "quote": "A dynamic panel of this kind, a lagged dependent variable estimated with fixed effects, is subject to the Nickell bias, which the within transformation induces and which is not confined to the coefficient on the lag alone."
+        },
+        {
+          "para_id": "OUR 4.4-PARA4",
+          "quote": "Because the static specification carries no lagged dependent variable, it carries no dynamic-panel bias"
+        }
+      ],
+      "gap": "'Nickell bias / within transformation induces / not confined to the coefficient on the lag' assumes the reader tracks the named effect and its scope; the exemplars gloss the mechanism in plainer cause-effect language. The guardrail forbids giving the bias a magnitude or calling it small, but naming it more accessibly is untouched — this names the technical density of the explanation only.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f14",
+      "agent": 3,
+      "aspect": "Abstract personification of variables/results as agents ('both clocks move', 'uncertainty tracks the information and reverses', 'the cash leaves at completion', 'the questioning does not amplify the reason', 'the reason raises residual uncertainty')",
+      "exemplar_pattern": "Exemplars attribute effects with measured, conventional verbs ('is associated with', 'increases', 'responds more', 'is positively related to') and keep the firm or manager as the agent, rather than personifying an abstract quantity as the actor that 'tracks', 'reverses', or 'amplifies'.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "Higher ClarityCEO increases absolute abnormal returns and abnormal trading volume, as shown in columns (1) and (2) of Table 5."
+        },
+        {
+          "paper": "thewissen2024",
+          "quote": "This positive coefficient indicates that greater the deal's value, the larger is the manager's incentive to inflate the tone of earnings press releases before stock-for-stock acquisitions."
+        }
+      ],
+      "our_pattern": "Our prose makes abstract quantities the acting subjects with vivid verbs — 'the reason raises residual uncertainty; the questioning does not', 'uncertainty tracks the information and reverses at announcement', 'the cash leaves at completion' — a more figurative agency than the exemplars' 'X increases Y' / 'X is associated with Y'.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 4.1-PARA4",
+          "quote": "The reason raises residual uncertainty; the questioning does not, and the questioning does not amplify the reason."
+        },
+        {
+          "para_id": "OUR 3.3-PARA6",
+          "quote": "Uncertainty tracks the information and reverses at announcement; cash tracks the transaction and falls at completion"
+        }
+      ],
+      "gap": "Personifying 'the reason', 'the questioning', 'uncertainty', and 'cash' as actors that raise/amplify/track/reverse is more figurative than the exemplars' plain 'X increases/ is associated with Y'; the reader must decode the metaphor of agency. The underlying mechanism-open and non-redundancy claims are guarded, so this names the personified phrasing only.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f1",
+      "agent": 1,
+      "aspect": "Clock/path metaphor for the two outcome variables",
+      "exemplar_pattern": "Exemplars name the outcome variables plainly and literally (the variable, the regression) without recurring figurative substitutes.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "The adjusted R 2 of the leverage regression increases from 39 percent to 41 percent when we include the manager fixed effects."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "As predicted by the free cash f low hypothesis, the probability of being a bidder increases with cashrichness."
+        }
+      ],
+      "our_pattern": "Our prose repeatedly substitutes figurative 'clock' and 'leg/arm/path' metaphors for the literal outcome variables (information clock = residual uncertainty; transaction clock = cash ratio; cash leg), forcing the reader to track a metaphor on top of the variable.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.3-PARA3",
+          "quote": "On the information clock, residual uncertainty spikes one quarter before announcement"
+        },
+        {
+          "para_id": "OUR 3.2-PARA2",
+          "quote": "In the cash arm both clocks move in the final pre-announcement quarter."
+        },
+        {
+          "para_id": "OUR 3.3-PARA6",
+          "quote": "Uncertainty tracks the information and reverses at announcement; cash tracks the transaction and falls at completion"
+        }
+      ],
+      "gap": "Exemplars say 'the cash ratio' or 'residual uncertainty' directly; our prose adds a metaphor layer ('information clock', 'transaction clock', 'cash leg') the reader must decode.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f1",
+      "agent": 3,
+      "aspect": "Self-referential meta-commentary labeling the analysis ('the second main analysis', 'the third main analysis', 'A first step', 'The first step', 'The second step', 'The third and operative step')",
+      "exemplar_pattern": "Exemplars open a results subsection by naming the concrete thing being estimated or the table, plainly, without a meta-label that ranks the analysis in a numbered sequence. They say 'we conduct a series of specification checks' or 'Table X reports' and move directly to substance.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "We conduct a series of specification checks to verify the robustness of the findings reported above. First, we replicate the analysis above after collapsing the data at the manager/firm level."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "To establish whether there is a relation between cash-richness and acquisition behavior, I use a sample of attempted mergers and acquisitions from 1977 through 1993."
+        }
+      ],
+      "our_pattern": "Our paragraphs repeatedly tag each analysis with an ordinal meta-label ('the first main analysis', 'the second main analysis', 'the third main analysis', 'A first step', 'The third and operative step') layered on top of the substantive description, adding a bookkeeping vocabulary the exemplars do not use.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.2-PARA1",
+          "quote": "The first main analysis tests H1 with the single-indicator, two-way fixed-effects regression of Section~2.4"
+        },
+        {
+          "para_id": "OUR 3.3-PARA1",
+          "quote": "The second main analysis replaces the single pre-announcement indicator with the four-bin event study of Section~2.4."
+        },
+        {
+          "para_id": "OUR 4.1-PARA4",
+          "quote": "The third and operative step puts scrutiny and the pre-announcement indicator in the same model"
+        }
+      ],
+      "gap": "The repeated ordinal self-labeling ('first/second/third main analysis', 'first/second/third step') is a layer of organizational scaffolding the exemplars omit; they introduce each test by what it does, not by its rank in a sequence, which a non-specialist reads more easily.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f3",
+      "agent": 3,
+      "aspect": "Abstract relabeling of plain quantities as conceptual roles ('the load-bearing result', 'an anchor', 'the operative step', 'the discriminating contrast', 'the claim')",
+      "exemplar_pattern": "Exemplars state which result matters by describing it directly ('Our main focus is on the effects of', 'Most importantly, we see that', 'The most interesting finding is') rather than abstracting a result into a structural noun like 'the load-bearing result' or 'an anchor'.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "Our main focus is on the effects of ClarityCEO. Higher ClarityCEO increases absolute abnormal returns and abnormal trading volume"
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "The most interesting finding is the positive relationship between MBA graduation and corporate performance."
+        }
+      ],
+      "our_pattern": "Our prose recasts results into abstract structural roles — 'the load-bearing result', 'serves here as an anchor', 'the discriminating contrast', 'the operative step' — vocabulary that names a result's function in the argument rather than describing the result, which the exemplars do with plainer emphasis words ('most importantly', 'main focus').",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.2-PARA2",
+          "quote": "The residual elevation is the load-bearing result"
+        },
+        {
+          "para_id": "OUR 4.4-PARA1",
+          "quote": "The residual outcome carries no lag and is unaffected, so it serves here as an anchor."
+        },
+        {
+          "para_id": "OUR 3.3-PARA3",
+          "quote": "The discriminating contrast is the drop at the gap."
+        }
+      ],
+      "gap": "'Load-bearing', 'anchor', 'discriminating contrast', 'operative' are engineering/architecture metaphors for argumentative function; the exemplars signal emphasis with plain adverbs ('most importantly', 'interestingly') that a non-specialist parses without decoding the metaphor.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f8",
+      "agent": 1,
+      "aspect": "Meta-commentary on the writing/reading register",
+      "exemplar_pattern": "Exemplars state the cautious interpretation directly without narrating that they are being cautious or naming the 'register'/'reading'.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "While it is beyond the scope of this paper to fully sort out these two alternative interpretations, in the following we provide some evidence"
+        },
+        {
+          "paper": "harford1999",
+          "quote": "However, since the target CAR is not the same as the premium, this evidence is only suggestive."
+        }
+      ],
+      "our_pattern": "Our prose adds self-referential meta-commentary about how the result is being read ('which is the register in which we read them', 'The reading is the cautious one', 'the framing is one of concentration rather than strict specificity'), an extra abstraction layer over the substantive caveat.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.2-PARA4",
+          "quote": "The magnitudes are economically meaningful without being large, which is the register in which we read them."
+        },
+        {
+          "para_id": "OUR 4.2-PARA2",
+          "quote": "The reading is the cautious one: this is an absence of association, not a powered test of equivalence."
+        },
+        {
+          "para_id": "OUR 3.4-PARA2",
+          "quote": "the framing is one of concentration rather than strict specificity"
+        }
+      ],
+      "gap": "Exemplars say 'this evidence is only suggestive' and stop; our prose adds a meta-layer ('which is the register in which we read them', 'The reading is the cautious one') describing its own stance.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f13",
+      "agent": 1,
+      "aspect": "Inverted/front-loaded clause order delaying the main verb",
+      "exemplar_pattern": "Exemplars generally lead with subject then verb in declarative order.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "The results show that abnormal returns are strongly positively related to how much cash the company generates over the year."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "Column (1) shows that the coefficient on Fog(Present) is positive and statistically significant"
+        }
+      ],
+      "our_pattern": "Our prose front-loads conditions and appositives before the main clause ('Because the gap-quarter cash coefficient itself, $0.0055$, is positive but not significant, the persistence of cash rests on ...'), delaying the verb and raising parse load.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.3-PARA3",
+          "quote": "Because the gap-quarter cash coefficient itself, $0.0055$, is positive but not significant, the persistence of cash rests on the absence of a decline at announcement rather than on a significant gap-quarter level."
+        },
+        {
+          "para_id": "OUR 4.3-PARA1",
+          "quote": "Because completing and withdrawn deals need not be alike, part of the post-completion decline could in principle reflect which deals complete rather than the resolution of the disclosure state."
+        }
+      ],
+      "gap": "Exemplars lead 'The results show that ...'; our prose opens with a 'Because ...' subordinate clause plus an embedded appositive number before reaching the main verb.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f7",
+      "agent": 2,
+      "aspect": "Inline parenthetical re-derivation of magnitudes ('about $15.3$ percent against the standard deviation of $0.3010$ in Panel~B')",
+      "exemplar_pattern": "Exemplars give the scaled magnitude and its benchmark in clean apposition — the comparison figure is stated, but not as a nested arithmetic the reader re-checks.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "the difference between a manager at the twenty-fifth percentile of the distribution of investment level and one at the seventy-fifth percentile is 0.20. To give a benchmark, the average ratio of capital expenditures to assets in our sample is about 0.30."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "The median market-to-book ratios for the two samples are also economically similar ~1.26 vs. 1.21!, but nonetheless statistically different."
+        }
+      ],
+      "our_pattern": "We embed the percent, the raw SD, and the table-panel pointer in a single nested clause ('roughly fifteen percent of a residual standard deviation, about $15.3$ percent against the standard deviation of $0.3010$ in Panel~B ...'), making the reader carry the arithmetic and the locator together.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.2-PARA4",
+          "quote": "The uncertainty coefficient equals roughly fifteen percent of a residual standard deviation, about $15.3$ percent against the standard deviation of $0.3010$ in Panel~B of Table~\\ref{tab:summary_stats}, for a variable from which everything persistent has already been removed"
+        },
+        {
+          "para_id": "OUR 3.4-PARA3",
+          "quote": "roughly a third of a residual standard deviation, about $32.7$ percent against the $0.3010$ in Panel~B of Table~\\ref{tab:summary_stats}"
+        }
+      ],
+      "gap": "Each magnitude is stated twice (as a fraction and as a percent) plus the divisor plus the panel reference, all interleaved; exemplars state the comparison once. The reader processes more numeric apparatus per claim. (Scaling basis/Panel B is a guardrail.)",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f14",
+      "agent": 2,
+      "aspect": "Dense pile-up of statistics for a single contrast (multiple drops, each with its own coefficient and p-value, in one sentence)",
+      "exemplar_pattern": "Exemplars report a contrast with one or two numbers and route the rest to the table, keeping the sentence's numeric load light.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "The adjusted R 2 of the leverage regression increases from 39 percent to 41 percent when we include the manager fixed effects."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "The coefficients in row ~2! show that an increase in cash f low of one percent of total assets results in approximately a one percent increase in return unless the firm is stockpiling cash by keeping payouts low."
+        }
+      ],
+      "our_pattern": "We chain four statistics in one sentence: the spike, the gap level, the peak-to-gap drop, and the peak-to-completion drop, each with its own coefficient and significance star.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 3.3-PARA3",
+          "quote": "residual uncertainty spikes one quarter before announcement (coefficient $0.0473$, $p<0.01$; column~1 of Table~\\ref{tab:empire_drop_matched}) and falls to insignificance the instant the deal is public (coefficient at $\\mathrm{GAP}$ of $0.0018$, not significant), a significant decline from the pre-announcement peak to the gap (drop $0.0455$, $p<0.05$) and a large significant swing from the peak to completion (drop $0.0723$, $p<0.01$)"
+        },
+        {
+          "para_id": "OUR 3.4-PARA1",
+          "quote": "with a spike one quarter before announcement (coefficient $0.0486$, $p<0.01$) and a swing from the peak to completion (drop $0.0681$, $p<0.01$), while the stock arm shows none of it (coefficient one quarter before announcement of $-0.0404$, not significant)"
+        }
+      ],
+      "gap": "Our single sentences deliver up to four parenthesized coefficient-plus-p-value bundles; exemplars deliver one or two and defer the rest. The reader integrates more numbers per sentence than in any exemplar.",
+      "materiality": "major",
+      "guardrail_collision": false
+    }
+  ],
+  "guardrail_collisions": [
+    "a1-f5",
+    "a1-f9",
+    "a1-f12",
+    "a2-f2",
+    "a2-f6",
+    "a2-f9",
+    "a2-f11",
+    "a2-f13",
+    "a3-f4",
+    "a3-f6",
+    "a3-f7",
+    "a3-f8",
+    "a3-f9",
+    "a3-f11",
+    "a3-f14",
+    "a1-f8",
+    "a1-f13",
+    "a2-f7"
+  ],
+  "side_notes": [
+    "Coverage gap: all three agents operated strictly at the sentence/clause/diction level. Paragraph-level architecture as a complexity source was not examined -- e.g. the ordering of paragraphs within a subsection, and whether the topic-sentence-then-evidence flow across consecutive paragraphs forces the reader to hold an argument open longer than the exemplars do. A human should check this layer separately.",
+    "Coverage gap: none of the three agents looked at table/figure captions or table-note prose. The exemplar comparisons were drawn from running results text only, so any complexity carried in our caption/note register is unassessed.",
+    "Debatable-but-kept-separate (flagged so a human can re-merge if desired): (a2-f9 triple-restatement vs a3-f9 negation-syntax) both circle the Gelman-Stern Wald-vs-side-by-side guardrail but name different devices (repetition density vs negated-contrast phrasing); (a1-f9 intra-sentence hedge-stacking vs a3-f6 cross-sentence caution-rider recurrence); (a2-f13 disclosure-verb foregrounding vs a3-f7 caveat nominalization) share the 'comparability limit we disclose' / 'disclosed approximation' quotes; (a2-f10 general appositive suspension vs a3-f8 quantity-restating appositive). Kept apart per the 'prefer separate when members target different devices' rule."
+  ],
+  "gate_rejected": [
+    {
+      "id": "a1-f2",
+      "reason": "our_quote_not_verbatim"
+    },
+    {
+      "id": "a1-f10",
+      "reason": "our_quote_not_verbatim"
+    },
+    {
+      "id": "a1-f11",
+      "reason": "exemplar_quote_not_verbatim"
+    },
+    {
+      "id": "a1-f14",
+      "reason": "our_quote_not_verbatim"
+    },
+    {
+      "id": "a2-f4",
+      "reason": "exemplar_quote_not_verbatim"
+    },
+    {
+      "id": "a3-f2",
+      "reason": "exemplar_quote_not_verbatim"
+    },
+    {
+      "id": "a3-f13",
+      "reason": "cardinality"
+    }
+  ],
+  "redteam_rejected": [],
+  "merges": [
+    {
+      "ids": [
+        "a1-f1",
+        "a2-f3"
+      ],
+      "canonical": "a1-f1"
+    },
+    {
+      "ids": [
+        "a2-f1",
+        "a3-f1"
+      ],
+      "canonical": "a3-f1"
+    },
+    {
+      "ids": [
+        "a2-f5",
+        "a3-f3"
+      ],
+      "canonical": "a3-f3"
+    },
+    {
+      "ids": [
+        "a1-f8",
+        "a2-f8"
+      ],
+      "canonical": "a1-f8"
+    },
+    {
+      "ids": [
+        "a1-f13",
+        "a2-f12"
+      ],
+      "canonical": "a1-f13"
+    },
+    {
+      "ids": [
+        "a1-f7",
+        "a2-f7"
+      ],
+      "canonical": "a2-f7"
+    },
+    {
+      "ids": [
+        "a2-f14",
+        "a3-f12"
+      ],
+      "canonical": "a2-f14"
+    }
+  ],
+  "unhandled": [],
+  "_provenance": {
+    "runId": "wf_1ada80a2-6b9",
+    "wave": "results",
+    "tool_calls_total": 4,
+    "note": "clean under TOOL_LOCK; number-heavy type"
+  }
+}

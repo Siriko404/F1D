@@ -6,19 +6,15 @@ Usage:
 
 rows.json = { "block": "front-matter", "rows": [ {...}, ... ] }
 Each row must include: seed_seq, id, proposition, category, role, check_route
-Optional: mapped_bibkey, p2_ref, depends_on, note, verdict, evidence
 
-Rules:
-  - Every seed_seq in the block's current range MUST be covered.
-  - Extra seed_seq values outside the block range = error.
-  - seq renumbering is automatic (handles 1-seed -> N-rows expansion).
-  - verbatim_span + file_line are carried forward from the original seed row.
-  - NEVER delete rows from other blocks.
+Positional matching: 1st seed_seq group -> 1st seed in A's block, 2nd -> 2nd, etc.
+No dependency on absolute seq numbers (which shift as prior blocks expand).
 """
 import json
 import sys
 from pathlib import Path
 from copy import deepcopy
+from collections import OrderedDict
 
 ROOT = Path(__file__).resolve().parents[1]
 FA = ROOT / "docs" / "Thesis" / "audit" / "thesis_propositions_A.json"
@@ -39,13 +35,11 @@ def main():
     block_name = sys.argv[1]
     rows_path = Path(sys.argv[2])
 
-    # load new rows
     payload = json.loads(rows_path.read_text(encoding="utf-8"))
     new_rows = payload["rows"]
     if payload.get("block") != block_name:
         fail("rows.json block='%s' != argv block='%s'" % (payload.get("block"), block_name))
 
-    # validate new rows
     for i, r in enumerate(new_rows):
         missing = REQUIRED - set(r.keys())
         if missing:
@@ -53,53 +47,52 @@ def main():
         if not r["id"] or not isinstance(r["id"], str):
             fail("row %d has missing/invalid id" % i)
 
-    # load A
     data = json.loads(FA.read_text(encoding="utf-8"))
     claims = data["claims"]
 
-    # find current rows for this block + their seed_seqs
+    # find current rows for this block
     block_rows = [(j, r) for j, r in enumerate(claims) if r["block"] == block_name]
     if not block_rows:
         fail("block '%s' not found in A" % block_name)
 
-    old_seqs = {r["seq"] for _, r in block_rows}
-    lo, hi = block_rows[0][1]["seq"], block_rows[-1][1]["seq"]
+    # ordered unique seeds from A's block
+    a_seeds = sorted(set(r["seq"] for _, r in block_rows))
+    lo, hi = a_seeds[0], a_seeds[-1]
 
-    # verify new rows cover every old seed_seq
-    new_seeds = {r["seed_seq"] for r in new_rows}
-    missing_seeds = old_seqs - new_seeds
-    extra_seeds = new_seeds - old_seqs
-    if missing_seeds:
-        fail("missing seed_seqs: %s" % sorted(missing_seeds))
-    if extra_seeds:
-        fail("extra seed_seqs not in block: %s" % sorted(extra_seeds))
+    # group new rows by seed_seq, preserving order
+    seed_order = list(OrderedDict.fromkeys(r["seed_seq"] for r in new_rows))
+    new_groups = {s: [r for r in new_rows if r["seed_seq"] == s] for s in seed_order}
 
-    # build seed -> original row lookup (for verbatim_span, file_line)
+    if len(seed_order) != len(a_seeds):
+        fail("count mismatch: %d seed-groups in JSON vs %d seeds in A block" %
+             (len(seed_order), len(a_seeds)))
+
+    # seed_map: old A seq -> original row (for verbatim_span, file_line)
     seed_map = {r["seq"]: r for _, r in block_rows}
 
-    # build replacement rows, carrying forward verbatim_span + file_line
     replacement = []
     new_seq = lo
-    for nr in new_rows:
-        orig = seed_map[nr["seed_seq"]]
-        row = deepcopy(orig)
-        row["seq"] = new_seq
-        row["id"] = nr["id"]
-        row["proposition"] = nr["proposition"]
-        row["category"] = nr["category"]
-        row["role"] = nr["role"]
-        row["check_route"] = nr["check_route"]
-        row["mapped_bibkey"] = nr.get("mapped_bibkey", orig.get("mapped_bibkey"))
-        row["p2_ref"] = nr.get("p2_ref", orig.get("p2_ref"))
-        row["depends_on"] = nr.get("depends_on", [])
-        row["verdict"] = nr.get("verdict", orig.get("verdict"))
-        row["evidence"] = nr.get("evidence", orig.get("evidence"))
-        row["note"] = nr.get("note", orig.get("note"))
-        # keep verbatim_span + file_line + block from original
-        replacement.append(row)
-        new_seq += 1
+    for gi, group_key in enumerate(seed_order):
+        orig_seq = a_seeds[gi]
+        orig = seed_map[orig_seq]
+        for nr in new_groups[group_key]:
+            row = deepcopy(orig)
+            row["seq"] = new_seq
+            row["id"] = nr["id"]
+            row["proposition"] = nr["proposition"]
+            row["category"] = nr["category"]
+            row["role"] = nr["role"]
+            row["check_route"] = nr["check_route"]
+            row["mapped_bibkey"] = nr.get("mapped_bibkey", orig.get("mapped_bibkey"))
+            row["p2_ref"] = nr.get("p2_ref", orig.get("p2_ref"))
+            row["depends_on"] = nr.get("depends_on", [])
+            row["verdict"] = nr.get("verdict", orig.get("verdict"))
+            row["evidence"] = nr.get("evidence", orig.get("evidence"))
+            row["note"] = nr.get("note", orig.get("note"))
+            replacement.append(row)
+            new_seq += 1
 
-    # splice: before + replacement + after (with renumbered seqs)
+    # splice
     first_idx = block_rows[0][0]
     last_idx = block_rows[-1][0]
     delta = len(replacement) - len(block_rows)
@@ -111,22 +104,21 @@ def main():
 
     data["claims"] = before + replacement + after
 
-    # verify no seq gaps or dups
+    # integrity checks
     all_seqs = [r["seq"] for r in data["claims"]]
     if len(all_seqs) != len(set(all_seqs)):
-        fail("DUPLICATE seqs after injection — corruption prevented")
+        fail("DUPLICATE seqs — corruption prevented")
     if all_seqs != list(range(min(all_seqs), max(all_seqs) + 1)):
-        fail("SEQ GAP after injection — corruption prevented")
+        fail("SEQ GAP — corruption prevented")
 
-    # verify B still has all other blocks untouched (compare lengths)
     expected_total = len(claims) + delta
     if len(data["claims"]) != expected_total:
-        fail("TOTAL ROW COUNT mismatch: expected %d, got %d" % (expected_total, len(data["claims"])))
+        fail("TOTAL ROW COUNT mismatch: expected %d, got %d" %
+             (expected_total, len(data["claims"])))
 
-    # write
     FA.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-    print("INJECT OK: block '%s' — %d seeds -> %d rows (delta=%+d, total=%d)" % (
-        block_name, len(old_seqs), len(replacement), delta, len(data["claims"])))
+    print("INJECT OK: block '%s' — %d seeds -> %d rows (delta=%+d, total=%d)" %
+          (block_name, len(seed_order), len(replacement), delta, len(data["claims"])))
 
 
 if __name__ == "__main__":

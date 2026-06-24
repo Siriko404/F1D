@@ -1,0 +1,91 @@
+{
+  "SESOI_pp": 5.0,
+  "note": "SUPPLEMENTARY (stock arm underpowered); confirmatory only, cannot drop on a null.",
+  "TEST_B": {
+    "n_cash": 999,
+    "n_stock": 124,
+    "cash_base_rate": 0.8895814781834372,
+    "transient_uncres": {
+      "lpm": {
+        "spec": "cash ~ zUnc",
+        "ame": 0.019278761659838203,
+        "se": 0.008387354017407032,
+        "ci": [
+          0.0028395477857204206,
+          0.03571797553395599
+        ],
+        "p": 0.021530444000191072,
+        "n": 1123,
+        "n_firms": 570
+      },
+      "lpm_controlled": {
+        "spec": "cash ~ zUnc + zSize + zLev",
+        "ame": 0.01968664995053709,
+        "se": 0.008363599751791247,
+        "ci": [
+          0.0032939944370262465,
+          0.03607930546404793
+        ],
+        "p": 0.01858016276130475,
+        "n": 1123,
+        "n_firms": 570
+      },
+      "logit_ame": {
+        "ame": 0.020323175962416548,
+        "se": 0.009260535986487524,
+        "ci": [
+          0.0021728589513639006,
+          0.03847349297346919
+        ],
+        "converged": true
+      },
+      "verdict": "SIGNIFICANT (excludes 0)",
+      "support": "SUPPORTS cash"
+    },
+    "persistent_clarityceo": {
+      "lpm": {
+        "spec": "cash ~ zClar",
+        "ame": -0.001720462422906947,
+        "se": 0.009647824627269628,
+        "ci": [
+          -0.02063019869235542,
+          0.017189273846541522
+        ],
+        "p": 0.8584665989204817,
+        "n": 1123,
+        "n_firms": 570
+      },
+      "verdict": "PRECISE NULL (rules out >=5pp -> could drop)",
+      "support": "n.s."
+    }
+  },
+  "TEST_A": {
+    "design": "all-deals stacked (locked rule); risk set = all clean firm-quarters, deal+aftermath dropped",
+    "n": 40691,
+    "n_events": 1153,
+    "event_rate": 0.02833550416554029,
+    "lpm": {
+      "spec": "deal_next ~ zUnc",
+      "ame": 0.0026634270143139956,
+      "se": 0.0008000727579802624,
+      "ci": [
+        0.0010952844086726814,
+        0.00423156961995531
+      ],
+      "p": 0.0008716434872712608,
+      "n": 40691,
+      "n_firms": 1422
+    },
+    "logit_ame": {
+      "ame": 0.0026020698915655517,
+      "se": 0.0007625763881288923,
+      "ci": [
+        0.0011074476353722853,
+        0.004096692147758818
+      ],
+      "converged": true
+    },
+    "verdict": "SIGNIFICANT (excludes 0)",
+    "support": "SUPPORTS cash"
+  }
+}

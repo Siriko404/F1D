@@ -1,0 +1,104 @@
+{
+  "answer": "Based on the paper \"Earnings Conference Calls and the SEC Comment Letter Process\" by Lerman, Steffen, and Zhang, here are the verbatim definitions, descriptions, and conclusions regarding conference-call comment letters (CCCLs), addressing each of your points precisely:\n\n**(1) What such a comment letter is and who issues it**\n*   \"The Securities and Exchange Commission (SEC) reviews firms\u2019 financial reports and issues comment letters to ensure compliance with applicable disclosure and accounting requirements\" [1]. \n*   Specifically, \"The SEC\u2019s Division of Corporation Finance (DCF) issues comment letters to firms regarding disclosures that are unclear or inconsistent with SEC reporting requirements\" [2]. \n*   The authors specifically define their focus as \"SEC comment letters that refer to information disclosed in voluntary earnings conference calls\" [1].\n\n**(2) What disclosures or conduct on the earnings conference call trigger or prompt the SEC to issue one**\n*   \"Eighty percent of the sample consists of cases in which the SEC refers to information disclosed in a conference call to support an assessment of insufficient disclosure in the periodic report under review\" [3]. \n*   \"The second largest group comprises 15% of the sample and includes comment letters highlighting that a specific disclosure in the reviewed filing is inconsistent with the disclosure in the conference call, either in facts offered or in the disclosure practice\" [3]. \n*   \"Except for comments about reporting non-generally accepted accounting principles (GAAP) figures or key performance indicators (KPIs), very few CCCLs suggest that a specific conference call disclosure is itself problematic\" [3].\n\n**(3) The typical timing relative to the call or filing**\nThe paper outlines three distinct timeline variants:\n*   \"More than half the sample (59%) fall into Variant A, in which the referenced conference call discusses the same fiscal quarter as the filing under review. For these comment letters, the call took place, on average, 14 days before the filing, and the CCCL was issued 87 days after the filing\" [4].\n*   \"In Variant B, which comprises 10% of the sample, the letters refer to calls from prior quarters... For this group, the comment letters are similarly issued roughly a quarter (83 days, on average) after the filing\" [4], [5].\n*   \"Interestingly, about a third of the letters (Variant C) refer to calls held after the filing date of the mandatory report of focus. The review process is longer in these cases, with more than six months passing between the filing and the issuance of the comment letter\" [5].\n*   \"Overall, the relatively long windows between the conference call and the comment letter issuance in all three timeline variants suggest that it is more likely that SEC staff retrieve transcripts as part of a filing review rather than listen live to conference calls\" [5].\n\n**(4) How the authors identify, construct, or measure a firm's receipt of such a comment letter, including the data source and the exact variable definition**\n*   **Data Source:** \"We use comment letter databases from Audit Analytics (AA) to collect data on SEC letters issued from 2005 through 2018\" [6].\n*   **Construction/Identification:** \"To identify CCCLs, we manually search AA for all 'UPLOAD' letters containing at least one of the following phrases: 'conference call(s),' 'conferences call(s),' 'earnings call(s),' 'earning call(s),' 'earnings transcript(s),' 'earning transcript(s),' 'conference transcript(s),' 'conferences transcript(s),' 'earnings webcast(s),' 'earning webcast(s),' 'quarterly call(s),' 'quarter call(s),' 'analyst call(s),' 'analysts call(s),' 'investor call(s),' 'investors call(s),' 'earnings telephonic call(s),' 'earning telephonic call(s),' 'conference telephonic call(s),' 'conferences telephonic call(s),' 'analyst telephonic call(s),' and 'analysts telephonic call(s)'\" [6]. \n*   **Exact Variable Definition (Appendix A):** \"*CCCL* An indicator variable that equals 1 if the comment letter conversation includes at least one comment referring to the company\u2019s earnings conference call(s), and 0 otherwise\" [7].\n\n**(5) What the paper concludes such letters signal about a firm's disclosure quality or deficiency**\n*   Regarding the initial deficiency: \"Our manual examination of comment letters shows that the SEC primarily references earnings calls to illustrate insufficient disclosures in mandatory filings\" [8]. \"...most of the comments in our sample capture scenarios in which the SEC believes either (1) that the conference call provides information that was not\u2014but should have been\u2014included in the examined SEC filings or (2) that information in the conference call indicates the firm should provide additional disclosures in its future SEC filings\" [9].\n*   Regarding subsequent disclosure quality: \"Our consequences tests suggest that CCCLs are associated with greater compliance costs for firms; moreover, relative to the typical process for non-CCCLs, SEC scrutiny of firms\u2019 conference calls materially affects firms\u2019 future mandatory disclosures and the overall information environment\" [10].\n*   \"These changes are consistent with firms making more disclosures in their mandatory filings, particularly disclosures highlighting risks and uncertainties, which could be useful for investors\" [11].\n*   However, the authors warn of mixed effects on overall information quality: \"Our findings suggest that, although SEC awareness of a firm\u2019s voluntary disclosures can improve compliance with mandatory disclosure requirements, this attention can also impose unintended negative consequences on firms\u2019 information environments\" [12].",
+  "conversation_id": "b42bb373-47a0-4909-ae49-c6a4f2eee5e2",
+  "turn_number": 1,
+  "is_follow_up": true,
+  "references": [
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 1,
+      "cited_text": "Received: July 5, 2023 Revised: October 1, 2024; June 11, 2025 Accepted: July 30, 2025 Published Online in Articles in Advance: January 30, 2026",
+      "start_char": 590,
+      "end_char": 735,
+      "chunk_id": "bab173f4-7f7a-44e1-b69c-39c51d627347"
+    },
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 2,
+      "cited_text": "investors have access to high-quality disclosures (SEC 2019a). With this goal in mind, the SEC\u2019s Divi-sion of Corporation Finance (DCF) issues comment letters to firms regarding disclosures that are unclear or inconsistent with SEC reporting requirements (SEC 2019b). In this study, we investigate the nature, determinants, and consequences of SEC comment let-ters that make reference to information voluntarily disclosed by firms in their earnings conference calls.",
+      "start_char": 3461,
+      "end_char": 3928,
+      "chunk_id": "297ac855-2421-4a7c-ac07-618120a55939"
+    },
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 3,
+      "cited_text": null,
+      "start_char": 4672,
+      "end_char": 4673,
+      "chunk_id": "4008d84f-c34c-447b-accc-3f97a9546e96"
+    },
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 4,
+      "cited_text": "disclosures rather than using the calls to obtain a gen-eral overview of the firm.",
+      "start_char": 40557,
+      "end_char": 40640,
+      "chunk_id": "a8eb6628-cac0-46e6-b9c8-fcd321aa78b9"
+    },
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 5,
+      "cited_text": "Lerman, Steffen, and Zhang: Earnings Calls and SEC Comment Letters Management Science, Articles in Advance, pp. 1\u201334, \u00a9 2026 INFORMS 9",
+      "start_char": 42054,
+      "end_char": 42189,
+      "chunk_id": "7ecd57c7-24d6-47ca-8f87-b64cf67ca2ac"
+    },
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 6,
+      "cited_text": "firms\u2019 voluntary disclosures. As a result, we do not predict the direction of the effect of CCCLs on firms\u2019 remediation costs and information environments.",
+      "start_char": 25108,
+      "end_char": 25264,
+      "chunk_id": "7c24595c-d1f4-48ed-b102-edbd7d8fbdf1"
+    },
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 7,
+      "cited_text": "CCCL An indicator variable that equals 1 if the comment letter conversation includes at least one comment referring to the company\u2019s earnings conference call(s), and 0 otherwise.",
+      "start_char": 108320,
+      "end_char": 108499,
+      "chunk_id": "a2e14a40-a5e6-4caf-bd0e-808617ac4e4f"
+    },
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 8,
+      "cited_text": "in mandatory filings, most commonly 10-Ks, and does so over a wide range of topics, with revenues and seg-ment reporting topping the list. (More descriptive information about SEC comment letters referencing conference calls can be found in the Online Appendix.)",
+      "start_char": 101187,
+      "end_char": 101449,
+      "chunk_id": "5945672e-a848-4d11-bc61-a6ca440b29fa"
+    },
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 9,
+      "cited_text": "of the comments in our sample capture scenarios in which the SEC believes either (1) that the conference call provides information that was not\u2014but should have been\u2014included in the examined SEC filings or (2) that information in the conference call indicates the firm should provide additional disclosures in its future SEC filings. The second-largest group of comments, representing 15% of the sample, pertains to incorrect or inconsistent information. These reflect instances in which the information or the disclosure practice in the conference call (categories 2a and 2b, respectively) con-flicts with SEC filings under review. Although these comments are similar to those in category 1, they cap-ture situations in which the SEC highlights perceived inconsistency in what or how things are disclosed (as opposed to just using conference call disclosures as evidence of insufficiency). Another 3% of the com-ments relate to the disclosure in the conference call itself (category 3); most of these address non-GAAP/ KPI reporting\u2014arguably, the only regulated part of conference call disclosures. The final 2% of the com-ments refer to the conference call because the SEC believes disclosures are incorrect or insufficient in both the SEC filing and the conference call (category 4). Compared with category 1, this category highlights problematic similarities between the SEC filing and the conference call.",
+      "start_char": 29704,
+      "end_char": 31114,
+      "chunk_id": "194a47c9-9127-4b1d-b5bf-94db435dd73b"
+    },
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 10,
+      "cited_text": "Table 8. (Continued)",
+      "start_char": 102451,
+      "end_char": 102472,
+      "chunk_id": "aa8eabe7-330c-470d-ba59-f116c7c796ec"
+    },
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 11,
+      "cited_text": "Finally, we investigate whether CCCLs are associ-ated with changes to the information environment. We first consider firms\u2019 subsequent mandatory filings and observe more disclosure changes following CCCLs compared with non-CCCLs. We find that mandatory filings increase in length and size, the tone becomes more negative, and both constraining and uncertain words are more frequent. These changes are consistent with firms making more disclosures in their manda-tory filings, particularly disclosures highlighting risks and uncertainties, which could be useful for investors. Notably, these results are driven by CCCLs in response to which the firms agreed to make changes to future disclosures. Firms could, however, also change other aspects of disclosure in the wake of awareness that the SEC is paying attention to voluntary confer-ence calls. In a concurrent working paper, Li et al. (2023) find less conference call disclosure after the receipt of CCCLs, resulting in slower price discovery during earnings announcement windows. Given the significance documented in prior literature of confer-ence calls to market participants, the net effect of the intended positive changes to firms\u2019 mandatory disclo-sures and the unintended negative impact on their vol-untary disclosures is unclear. To shed some light on the overall impact of CCCLs, we show that, following their receipt, firms\u2019 average long-window bid-ask spreads and levels of illiquidity increase. Interestingly, these increases in information uncertainty do not manifest for firms that significantly expand both man-datory and voluntary disclosures after receiving a CCCL; instead, the information uncertainty increases for those that reduce their disclosures. Thus, the regu-latory attention paid to firms\u2019 voluntary earnings calls appears to have a complex impact on the overall infor-mation environment.",
+      "start_char": 11506,
+      "end_char": 13379,
+      "chunk_id": "f29b5e23-a2f2-4353-8047-070b2ba6a58b"
+    },
+    {
+      "source_id": "da807d6e-27ce-4e95-9b0f-4bdf41e7c46f",
+      "citation_number": 12,
+      "cited_text": "Overall, these results are consistent with the Li et al. (2023) findings on the unintended negative conse-quences of SEC scrutiny of conference calls. Our find-ings suggest that, although SEC awareness of a firm\u2019s voluntary disclosures can improve compliance with mandatory disclosure requirements, this attention can also impose unintended negative consequences on firms\u2019 information environments.",
+      "start_char": 100296,
+      "end_char": 100695,
+      "chunk_id": "91007934-2c7f-4c07-bed7-9081c1441e89"
+    }
+  ]
+}

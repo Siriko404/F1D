@@ -1,0 +1,634 @@
+{
+  "type": "lit_review",
+  "profile": [
+    {
+      "id": "a1-f2",
+      "agent": 1,
+      "aspect": "Em-dash appositive 'definitional label' constructions",
+      "exemplar_pattern": "When exemplars name a concept they do so in a plain clause ('which we denote', 'we represent X as') rather than wrapping a long restated phrase between dashes and then attaching a noun label.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "Second, complex language can also result from intentional obfuscation, or an intentional reduction in informative language (e.g., Li [2008]), which we denote Obfu * ."
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "It is worth drawing a quick distinction between the two problems: Adverse selection concerns itself with the ex-ante problems that surface when M&A buyers and sellers hold different information on the target company."
+        }
+      ],
+      "our_pattern": "Our prose inserts a long em-dash-bracketed restatement of a concept and then labels it with an abstract coined noun, a heavier appositive than the exemplars' plain 'which we denote' form.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U1",
+          "quote": "This withholding bind---material information held back while the firm keeps fielding questions---is the organizing primitive of our analysis, which we read in descriptive, correlational terms throughout."
+        }
+      ],
+      "gap": "The dash-bracketed gloss plus coined-noun label ('the organizing primitive') packs a definition, a restatement, and a meta-register note into one heavy clause, where exemplars introduce constructs with a short 'which we denote/represent' tag.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f8",
+      "agent": 1,
+      "aspect": "Stacked self-negating 'X, not Y' / 'it does not claim' qualifiers",
+      "exemplar_pattern": "Exemplars place a single clear caveat where needed (a footnote or one clause), not a chain of 'does not / not / rather than' disclaimers attached to the same sentence.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "Our empirical results suggest that such effects are not large enough to invalidate our estimates."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "However, these models do not generally imply that corporate behavior will vary with individual managers, as they typically do not focus on idiosyncratic differences across managers."
+        }
+      ],
+      "our_pattern": "Our prose appends multiple back-to-back negative qualifiers ('does not claim', 'not that', 'rather than') so a sentence both asserts and repeatedly disclaims within the same breath.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U4",
+          "quote": "If such a component exists, it therefore cannot reside in the persistent style; it can only live in the call-varying residual that remains once persistent style is netted out. This locates where an anticipatory signal must be---it does not claim the residual is that signal, which only the research design that follows can isolate."
+        },
+        {
+          "para_id": "section2.1-U5",
+          "quote": "so we take from it only that a cash bid draws on a pre-existing cash position---not that firms stockpile in order to fund planned acquisitions."
+        }
+      ],
+      "gap": "The repeated assert-then-disclaim structure ('locates where ... must be---it does not claim ...') is heavier than the exemplars' single placed caveat; the necessary hedge is load-bearing but its stacked phrasing adds parse cost.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f9",
+      "agent": 1,
+      "aspect": "Abstract metaphor in place of literal statement ('runs on different clocks', 'natural placebo', 'cell ... leave empty')",
+      "exemplar_pattern": "Exemplars state mechanisms literally; their few figures of speech ('market for used cars', 'life or death') are conventional and immediately concrete.",
+      "exemplar_quotes": [
+        {
+          "paper": "ragozzino2024",
+          "quote": "The basic idea, which mirrors the market for used cars discussed by Akerlof, is that sellers in M&A often hold better information on their own firm than buyers."
+        },
+        {
+          "paper": "thewissen2024",
+          "quote": "They suggest that M&As are a form of arbitrage by rational managers operating in inefficient markets."
+        }
+      ],
+      "our_pattern": "Our prose substitutes abstract metaphors ('run on different clocks', 'the cell these literatures leave empty') for the literal claim, requiring the reader to unpack the figure.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U5",
+          "quote": "The two dimensions also run on different clocks: the anticipatory signal tracks the undisclosed information and resolves once the deal is announced"
+        },
+        {
+          "para_id": "section2.1-U6",
+          "quote": "The cell these literatures leave empty is the one this paper occupies: uncertainty language in the unscripted Q\\&A, in the anticipatory window before the deal is public"
+        }
+      ],
+      "gap": "The metaphors ('different clocks', 'cell ... leave empty') restate a literal timing/positioning point in figurative terms, adding an interpretive step the exemplars' literal phrasing avoids.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f2",
+      "agent": 2,
+      "aspect": "Nested qualifying clause chains inside one sentence",
+      "exemplar_pattern": "Exemplars chunk a complex idea across multiple short-to-medium sentences, each advancing one step, rather than threading several dependent clauses through a single sentence.",
+      "exemplar_quotes": [
+        {
+          "paper": "thewissen2024",
+          "quote": "In order to get to the exchange ratio, the acquiring firm usually first defines the offer to the target firm by specifying a fixed dollar value amount for each target share."
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "It is worth drawing a quick distinction between the two problems: Adverse selection concerns itself with the ex-ante problems that surface when M&A buyers and sellers hold different information on the target company."
+        }
+      ],
+      "our_pattern": "Our sentences chain multiple subordinate clauses (because/so/since/while) into a single long unit, compounding several propositions before the reader reaches a stop.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U1",
+          "quote": "A pending acquisition that is material to the acquirer constitutes material nonpublic information: information about preliminary merger negotiations can be material well before any definitive agreement, with materiality determined by balancing the probability that the transaction is consummated against its magnitude to the firm \\citep{basic1988}."
+        },
+        {
+          "para_id": "section2.1-U3",
+          "quote": "in roughly six of ten calls managers withhold requested information, leaving questions unanswered, and, in the words of that literature, silence speaks \\citep{hollander2010}."
+        }
+      ],
+      "gap": "Each of these sentences packs several claims that the exemplars would distribute across sentences, so the reader must hold more in working memory before resolving the thought.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f9",
+      "agent": 2,
+      "aspect": "Long pre-citation setup before the source is named",
+      "exemplar_pattern": "Exemplars typically name the cited author early and then state the finding (Li [2008] finds..., Erickson and Wang (1999) study..., Akerlof relied on...), so attribution and claim arrive together near the front.",
+      "exemplar_quotes": [
+        {
+          "paper": "thewissen2024",
+          "quote": "Erickson and Wang (1999) study the earnings of acquiring firms in the quarters before the announcement and agreement dates when the acquisitions are paid with acquirers' own stock."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "Li [2008] uses the Gunning [1952] Fog Index to measure the \"linguistic complexity\" of firms' 10-K filings."
+        }
+      ],
+      "our_pattern": "Our prose often runs a long reasoning clause first and defers the citation to the tail, so the reader processes the claim without knowing whose result it is until the end.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U1",
+          "quote": "an informed manager may rationally withhold private information when disclosure is costly, sustaining a threshold below which information is withheld \\citep{verrecchia1983}, and non-disclosure persists in equilibrium precisely because outside investors cannot distinguish a manager who is uninformed from one who is informed but silent \\citep{dye1985}"
+        },
+        {
+          "para_id": "section2.1-U4",
+          "quote": "A persistent style is a fixed trait of the speaker, not a signal that tracks a particular, still-undisclosed transaction; an anticipatory component, by contrast, must emerge while a given deal is pending and subside once it is announced"
+        }
+      ],
+      "gap": "The reader carries an unattributed proposition through a long clause before learning its source, where the exemplars front the author and let the claim follow.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f10",
+      "agent": 2,
+      "aspect": "Triple-stacked predicate lists",
+      "exemplar_pattern": "Exemplars use short coordinated lists and otherwise keep predicates singular, so a sentence advances one verb-idea at a time.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "Two firms sharing similar technologies, factor, and product market conditions will make similar choices, whether or not they also share the same management team."
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "At a minimum, M&A result in the additive combination of two previously independent companies"
+        }
+      ],
+      "our_pattern": "Our prose strings three parallel predicates or adjectives together (neither...nor...so; hedged, qualified, and non-committal; identify no channel, establish no intent, read descriptively), compounding the load within one clause.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U7",
+          "quote": "We identify no causal channel, establish no intent, and read the relationship descriptively throughout."
+        },
+        {
+          "para_id": "section2.1-U3",
+          "quote": "the executive can neither address the analysts' questions that bear on it nor deny that anything is afoot, so a direct answer is unavailable"
+        }
+      ],
+      "gap": "The reader must track three coordinated predicates resolving to one point, where the exemplars keep coordinate lists shorter and the predicate single.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f3",
+      "agent": 3,
+      "aspect": "Abstract metalanguage labels for the argument's own moves",
+      "exemplar_pattern": "Exemplars name what they are doing in plain, concrete words (\"we focus on\", \"our goal is to show\", \"in sum\"), not in coined abstract nouns.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "Our goal is to show that the construct validity of linguistic complexity measures like Fog can be substantially improved by decomposing the measure into its latent components."
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "It remains for us to explicate why a shift in focus from information asymmetries between buyers and sellers in M&A markets to information asymmetries between those acquirers and their shareholders is warranted and interesting."
+        }
+      ],
+      "our_pattern": "Our prose labels its own moves with abstract coined phrases (\"organizing primitive\", \"the implication for our purpose is a locating one\", \"a directional prediction we test\") where the exemplars would state the move plainly.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U4",
+          "quote": "The implication for our purpose is a locating one."
+        },
+        {
+          "para_id": "section2.1-U1",
+          "quote": "is the organizing primitive of our analysis, which we read in descriptive, correlational terms throughout."
+        }
+      ],
+      "gap": "\"a locating one\" / \"organizing primitive\" are denser self-referential abstractions than the exemplars' plain statements of purpose.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f4",
+      "agent": 3,
+      "aspect": "Heavy noun-phrase compounding (stacked nominalizations)",
+      "exemplar_pattern": "Exemplars favor verbs over chains of abstract nouns; even when discussing constructs they break them into short verbal clauses.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "While executives might differ in their preferences, risk-aversion or skill levels, none of this translates into actual corporate policies, if a single person cannot easily affect these policies."
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "a seller has a natural incentive to inflate its value by presenting the firm's resources and prospects in a favorable light"
+        }
+      ],
+      "our_pattern": "Our prose compresses several abstract nouns into a single dense modifier chain that the reader must unpack at once.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U7",
+          "quote": "an anticipatory, cash-concentrated component of CEO uncertainty language that tracks a deal's passage from private to public---and not a mechanism."
+        },
+        {
+          "para_id": "section2.1-U6",
+          "quote": "uncertainty language in the unscripted Q\\&A, in the anticipatory window before the deal is public, read for what it may reveal about a deal the firm is withholding rather than as language crafted to move the market."
+        }
+      ],
+      "gap": "Stacked qualifiers (\"anticipatory, cash-concentrated component of CEO uncertainty language\") pack more abstraction per phrase than the exemplars' verb-led clauses.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f9",
+      "agent": 3,
+      "aspect": "Colon-introduced dense summary clauses",
+      "exemplar_pattern": "Exemplars use colons sparingly and follow them with a single plain expansion, not a compressed multi-part definition.",
+      "exemplar_quotes": [
+        {
+          "paper": "ragozzino2024",
+          "quote": "It is worth drawing a quick distinction between the two problems: Adverse selection concerns itself with the ex-ante problems that surface when M&A buyers and sellers hold different information on the target company."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "We conjecture that a manager's linguistic complexity, denoted LC Manager, is determined by two forces."
+        }
+      ],
+      "our_pattern": "Our colons launch into compressed, qualifier-laden summaries that themselves carry multiple sub-claims, rather than the exemplars' single clean expansion.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U7",
+          "quote": "Both would produce the same observable signature: elevated uncertainty language in the Q\\&A while the deal is undisclosed, resolving at announcement."
+        },
+        {
+          "para_id": "section2.1-U5",
+          "quote": "yet differ in one design-relevant respect: a cash purchase draws on an accumulated cash position, whereas a stock exchange need not."
+        }
+      ],
+      "gap": "Post-colon material packs a conditional plus its resolution into one phrase, where the exemplars expand a colon with one plain idea.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f10",
+      "agent": 3,
+      "aspect": "Repetition/restatement of the same point across consecutive sentences",
+      "exemplar_pattern": "Exemplars state a point once and move on; when they recap, they do so once at a section boundary (\"In sum\"), not by re-asserting the same idea in adjacent sentences.",
+      "exemplar_quotes": [
+        {
+          "paper": "ragozzino2024",
+          "quote": "In sum, information asymmetry between company insiders and capital markets in M&A is a compelling issue for two main reasons:"
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "Thus, the the Fog of sell-side analyst reports, and Dougal et al. [2012], who examine the Fog of a firm's media coverage."
+        }
+      ],
+      "our_pattern": "Our prose re-asserts \"not a mechanism / descriptive / correlational\" multiple times within a single paragraph, restating the same scope point in back-to-back sentences.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U7",
+          "quote": "Our design cannot distinguish them."
+        },
+        {
+          "para_id": "section2.1-U7",
+          "quote": "We identify no causal channel, establish no intent, and read the relationship descriptively throughout."
+        }
+      ],
+      "gap": "The descriptive-not-causal scope is asserted several times in one paragraph; the exemplars would carry it once.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f1",
+      "agent": 1,
+      "aspect": "Mid-sentence em-dash interruptions stacking clauses",
+      "exemplar_pattern": "Exemplars overwhelmingly run subject-verb-object sentences and reserve dashes/parentheses for a single light aside; the published QJE/JAR pieces almost never break the main clause with an em-dash insertion.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "Rather, agency models attribute variations in corporate behavior to heterogene-ity in the strength of governance mechanisms across firms, i.e., heterogeneity in firms' ability to control managers."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "He finds that firms with higher 10-K Fog have lower current earnings performance and less persistent future earnings performance, consistent with managers using linguistic complexity to obfuscate poor performance."
+        }
+      ],
+      "our_pattern": "Our sentences repeatedly break the main clause with em-dash asides, sometimes two per sentence, forcing the reader to hold the subject open across an inserted clause before the verb resolves.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U3",
+          "quote": "Non-disclosure therefore need not surface as outright silence; it can surface in the words themselves, as answers that grow hedged, qualified, and non-committal---elevated uncertainty language in the Q\\&A."
+        },
+        {
+          "para_id": "section2.1-U4",
+          "quote": "an anticipatory component, by contrast, must emerge while a given deal is pending and subside once it is announced---it must vary from call to call within a single executive's tenure."
+        }
+      ],
+      "gap": "Our prose uses the em-dash as a recurring structural device for inserting restatements and qualifications mid-sentence; the exemplars carry the same information in plain consecutive sentences without the interruption, lowering reading effort.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f3",
+      "agent": 1,
+      "aspect": "Coined abstract noun phrases for plain ideas",
+      "exemplar_pattern": "Exemplars name things with ordinary nouns ('managers', 'governance mechanisms', 'conference calls', 'information asymmetry') rather than minting bespoke abstract labels.",
+      "exemplar_quotes": [
+        {
+          "paper": "ragozzino2024",
+          "quote": "In contrast, moral hazard focuses on the problem of hidden actions that emerge from principals (i.e., the shareholders) and agents (i.e., the executives) holding diverging incentives (e.g., Jensen and Meckling, 1976)."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "Two firms sharing similar technologies, factor, and product market conditions will make similar choices, whether or not they also share the same management team."
+        }
+      ],
+      "our_pattern": "Our prose coins and repeats bespoke abstract labels ('disclosure state', 'the withholding bind', 'the organizing primitive', 'the implication ... is a locating one') in place of plain nouns.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U1",
+          "quote": "A firm that has privately committed to an acquisition but not yet announced it occupies a distinct \\emph{disclosure state}."
+        },
+        {
+          "para_id": "section2.1-U4",
+          "quote": "The implication for our purpose is a locating one."
+        }
+      ],
+      "gap": "Where exemplars use everyday nouns, our prose substitutes invented abstractions that the reader must decode, raising the register above the 'non-specialist could read it' bar.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a2-f4",
+      "agent": 2,
+      "aspect": "Self-referential meta-commentary on the argument's own logical status",
+      "exemplar_pattern": "Exemplars state what a body of theory implies and move on; they do not pause to characterize the epistemic status of their own sentence (what it does and does not claim) in the same breath.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "Our goal is to show that the construct validity of linguistic complexity measures like Fog can be substantially improved by decomposing the measure into its latent components."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "While our primary goal in this paper is not to distinguish between these different interpretations but rather to first establish that individual managers do matter in the determination of firm policies, we will provide some preliminary evidence about possible efficiency implications of our findings in Section V."
+        }
+      ],
+      "our_pattern": "Our prose repeatedly appends a clause policing what the preceding statement does/does not assert (does not claim X; not a tested mechanism; this locates rather than establishes), making the reader process a commentary track alongside the claim.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U4",
+          "quote": "This locates where an anticipatory signal must be---it does not claim the residual is that signal, which only the research design that follows can isolate."
+        },
+        {
+          "para_id": "section2.1-U6",
+          "quote": "To our knowledge, no prior work reads this; we offer it as a positioning claim about where the contribution sits, not as a tested mechanism."
+        }
+      ],
+      "gap": "The reader must absorb a second-order qualification about the argument's status on top of the argument itself, where the exemplars deliver the point and let later sections handle scope; note these clauses encode load-bearing hedges (necessity-only, no-novelty, positioning-not-mechanism).",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f5",
+      "agent": 1,
+      "aspect": "Latinate / elevated single-word choices for plain verbs and nouns",
+      "exemplar_pattern": "Exemplars favor plain Anglo-Saxon verbs ('make', 'use', 'find', 'hold', 'shape', 'walk away') and concrete nouns.",
+      "exemplar_quotes": [
+        {
+          "paper": "thewissen2024",
+          "quote": "This prior evidence shows that managers tend to strategically time the moment to acquire another firm when the stock is most valuable."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "While executives might differ in their preferences, risk-aversion or skill levels, none of this translates into actual corporate policies, if a single person cannot easily affect these policies."
+        }
+      ],
+      "our_pattern": "Our prose reaches for elevated diction ('occupies', 'refuge', 'subside', 'netted out', 'fielding questions') where a plainer word would carry the same point.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U3",
+          "quote": "But silence is not a costless refuge---precisely because it speaks---and the setting is an unscripted exchange rather than prepared remarks."
+        },
+        {
+          "para_id": "section2.1-U1",
+          "quote": "This withholding bind---material information held back while the firm keeps fielding questions---is the organizing primitive of our analysis"
+        }
+      ],
+      "gap": "The heightened word choices ('refuge', 'occupies', 'subside') sit above the plain verbs the exemplars use for equivalent moves, raising effort without adding content.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f6",
+      "agent": 3,
+      "aspect": "Sentence-length / subordinate-clause stacking in a single period",
+      "exemplar_pattern": "Even the exemplars' long sentences advance one chain of reasoning; they do not pile multiple independently-qualified claims into one period joined by 'and... and... since...'.",
+      "exemplar_quotes": [
+        {
+          "paper": "ragozzino2024",
+          "quote": "While the valuation of assets in place may be relatively straightforward, it is an altogether different challenge to evaluate strategies that involve forward-looking plans (Mintzberg, 1987), complex decisions (Ghemawat, 2005;Gavetti and Rivkin, 2007) and the accumulation and deployment of bundles of resources and capabilities (Barney, 1986;Montgomery and Wernerfelt, 1988;Zenger et al., 2011)."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "In contrast, standard agency models acknowledge that managers may have discretion inside their firm, which they can use to alter corporate decisions and advance their own objectives."
+        }
+      ],
+      "our_pattern": "Our single sentences chain a legal premise, a theory premise, and a hedge across multiple semicolons and clauses, so one period carries what the exemplars would split into two or three.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U1",
+          "quote": "an informed manager may rationally withhold private information when disclosure is costly, sustaining a threshold below which information is withheld \\citep{verrecchia1983}, and non-disclosure persists in equilibrium precisely because outside investors cannot distinguish a manager who is uninformed from one who is informed but silent \\citep{dye1985}."
+        },
+        {
+          "para_id": "section2.1-U2",
+          "quote": "because general-purpose word lists misclassify financial text---nearly three-quarters of the Harvard dictionary's negative-word counts are attributable to words that are typically not negative in a financial context---\\citet{lm2011} construct dictionaries specific to financial disclosure, among them an uncertainty list of 285 words organized around imprecision rather than risk."
+        },
+        {
+          "para_id": "section2.1-U1",
+          "quote": "Securities law imposes no general duty to disclose such confidential negotiations, so silence is permitted; but once a firm speaks it may not mislead, since an untrue or half-true statement is unlawful \\citep{rule10b5, basic1988}."
+        }
+      ],
+      "gap": "Two independent theory claims (Verrecchia, Dye) are fused into one period; the exemplars would give each its own sentence.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f5",
+      "agent": 2,
+      "aspect": "Inverted / front-loaded sentence openings that delay the subject",
+      "exemplar_pattern": "Exemplars largely open sentences with the grammatical subject (a manager, firms, this research, Akerlof), so the reader meets the actor before the action.",
+      "exemplar_quotes": [
+        {
+          "paper": "thewissen2024",
+          "quote": "This prior evidence shows that managers tend to strategically time the moment to acquire another firm when the stock is most valuable."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "We focus on the use of complex language in conference calls, rather than in mandatory SEC filings."
+        }
+      ],
+      "our_pattern": "Our prose frequently fronts an abstract phrase (the venue in which..., within this venue, the implication for our purpose is) so the reader traverses a scene-setting nominal before reaching the subject and verb.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U2",
+          "quote": "The venue in which this bind becomes observable is the quarterly earnings conference call, which pairs a scripted managerial presentation with an unscripted question-and-answer session in which analysts question management directly."
+        },
+        {
+          "para_id": "section2.1-U4",
+          "quote": "The implication for our purpose is a locating one."
+        }
+      ],
+      "gap": "The reader works through a fronted abstraction before the sentence's actor and action arrive, whereas the exemplars lead with the actor.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f7",
+      "agent": 1,
+      "aspect": "Intra-paragraph restatement of the same point",
+      "exemplar_pattern": "Exemplars state a point once and move on; when they summarize they do so explicitly ('In sum', 'This prior evidence shows') rather than echoing the immediately preceding sentence in different words.",
+      "exemplar_quotes": [
+        {
+          "paper": "thewissen2024",
+          "quote": "As a result, there exists a negative relationship between the price paid for the target and the bidder's stock value."
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "These two sources of adverse selection are distinct but not mutually exclusive, and they also carry important implications for how firms may be able to raise capital and be competitive."
+        }
+      ],
+      "our_pattern": "Our prose closes paragraphs by re-stating the just-made contrast in a second, near-identical sentence.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U5",
+          "quote": "The two dimensions also run on different clocks: the anticipatory signal tracks the undisclosed information and resolves once the deal is announced, while the cash commitment serves the purchase itself and---mechanically---persists until it is paid at completion. The contrast is one of timing: the uncertainty is resolved by the announcement, the cash is not."
+        }
+      ],
+      "gap": "The final sentence ('The contrast is one of timing...') restates the timing contrast already made in the preceding sentence; exemplars do not double-state a point this way.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f8",
+      "agent": 3,
+      "aspect": "Mid-sentence inline statistic insertion breaking the clause",
+      "exemplar_pattern": "Exemplars introduce a finding's number in a clean clause, typically after the verb, without splitting the subject from its claim by a dashed numeric aside.",
+      "exemplar_quotes": [
+        {
+          "paper": "thewissen2024",
+          "quote": "In fact, they find that the unexpected accruals are significantly higher by 2 to 3% before the event."
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "He finds that firms with higher 10-K Fog have lower current earnings performance and less persistent future earnings performance, consistent with managers using linguistic complexity to obfuscate poor performance."
+        }
+      ],
+      "our_pattern": "Our prose inserts the numeric magnitude as a dashed or mid-clause interruption, splitting the finding's subject from its statement.",
+      "our_quotes": [
+        {
+          "para_id": "section2.1-U6",
+          "quote": "the volume of corporate-strategy vocabulary rises, with analysts using such terms nearly 9 percent more, and executives 7.2 percent more, than at inactive firms."
+        },
+        {
+          "para_id": "section2.1-U2",
+          "quote": "nearly three-quarters of the Harvard dictionary's negative-word counts are attributable to words that are typically not negative in a financial context"
+        }
+      ],
+      "gap": "The exemplars deliver the statistic in a single trailing clause; ours interpose it, adding clause boundaries the simpler register avoids.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    }
+  ],
+  "guardrail_collisions": [
+    "a1-f2",
+    "a1-f8",
+    "a3-f4",
+    "a3-f9",
+    "a3-f10",
+    "a2-f4",
+    "a3-f6"
+  ],
+  "side_notes": [
+    "Under-coverage: all three agents operated almost exclusively at the sentence/clause/word level (em-dashes, diction, nominalizations, embedded statistics, intra-sentence restatement). Paragraph-level architecture went unexamined -- no finding addresses the ordering of units U1-U7, inter-paragraph transitions, or whether the complexity gap is concentrated in particular paragraphs versus distributed uniformly.",
+    "Under-coverage: figurative language is thinly sampled. Only one finding (a1-f9, kept) flags metaphor ('different clocks', 'cell ... leave empty'); a systematic pass for other figurative/imagery-based constructions across the section was not performed by any agent.",
+    "Guardrail note for the human: the kept/canonical set retains every guardrail_collision=true observation (a1-f2, a1-f8, a2-f4, a3-f4, a3-f6, a3-f9, a3-f10). Several sit on load-bearing hedges -- necessity-only ('does not claim the residual is that signal'), no-novelty/positioning-not-mechanism ('positioning claim ... not a tested mechanism'), and the descriptive-not-causal scope. These are style-of-phrasing flags only; any edit here must preserve the hedge's meaning."
+  ],
+  "gate_rejected": [
+    {
+      "id": "a2-f8",
+      "reason": "cardinality"
+    }
+  ],
+  "redteam_rejected": [
+    {
+      "id": "a3-f2",
+      "reason": "Evidence does not support the stated gap. The aspect claims 'Triple em-dash chains within a single sentence' and the gap asserts 'ours layer several' dashes, but both our_quotes contain exactly one em-dash (---) each. The supplied exemplar quotes are generic and establish no triple-dash contrast. The single-dash device is already covered by the kept em-dash-interruption merge (a1-f1); this finding's specific claim (multiple stacked dashes) is unsubstantiated by its own evidence."
+    }
+  ],
+  "merges": [
+    {
+      "ids": [
+        "a1-f1",
+        "a2-f1",
+        "a3-f1"
+      ],
+      "canonical": "a1-f1"
+    },
+    {
+      "ids": [
+        "a1-f3",
+        "a2-f3"
+      ],
+      "canonical": "a1-f3"
+    },
+    {
+      "ids": [
+        "a1-f4",
+        "a2-f4",
+        "a3-f7"
+      ],
+      "canonical": "a2-f4"
+    },
+    {
+      "ids": [
+        "a1-f5",
+        "a3-f5"
+      ],
+      "canonical": "a1-f5"
+    },
+    {
+      "ids": [
+        "a1-f6",
+        "a3-f6"
+      ],
+      "canonical": "a3-f6"
+    },
+    {
+      "ids": [
+        "a1-f10",
+        "a2-f5"
+      ],
+      "canonical": "a2-f5"
+    },
+    {
+      "ids": [
+        "a1-f7",
+        "a2-f7"
+      ],
+      "canonical": "a1-f7"
+    },
+    {
+      "ids": [
+        "a2-f6",
+        "a3-f8"
+      ],
+      "canonical": "a3-f8"
+    }
+  ],
+  "unhandled": [],
+  "_provenance": {
+    "runId": "wf_57e48372-712",
+    "wave": "lit_review SCHEMA-UNIFY re-run",
+    "tool_calls_total": 4,
+    "note": "describe-only + guardrail_collision; replaces stale original-pilot profile (old kept as _lit_review_profile_OLDSCHEMA.json)"
+  }
+}

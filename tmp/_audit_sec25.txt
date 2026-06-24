@@ -1,0 +1,13 @@
+===PAPERS===
+{
+ "hassan2020": {
+  "status": "VERIFIED 2026-06-13 (LOCKED, tmp/nlm_validity_definitions.json). PRisk = weighted share of a firm's QUARTERLY earnings call devoted to political risk, capped 99th pct + standardized; firm-quarter; 'proxy for the political risk AND uncertainty individual firms face' (Hassan, Hollander, van Lent, Tahoun, QJE; NLM source qjz021). Role: convergent (firm-level -> cleanest unit match to UncRes). F5: variable_ledger says 'Hassan et al. 2019' (WP) vs QJE 2020 -> reconcile cite year at write-time."
+ },
+ "baker2016": {
+  "status": "VERIFIED 2026-06-13 (LOCKED). US-EPU = newspaper-frequency index (trio: economy + uncertainty + policy terms), 10 US papers, MONTHLY, US national; 'proxies for movements in policy-related economic uncertainty' (Baker, Bloom, Davis, QJE; NLM source qjw024). Role: convergent (macro -> weak)."
+ },
+ "davis2016": {
+  "status": "VERIFIED 2026-06-13 (PROVISIONAL per guide sec9 -- def answer-located + identity self-confirmed; acceptable, FOLD AS-IS, do not re-query). GEPU = GDP-weighted average of national EPU indices for 16 countries (~2/3 of global output), MONTHLY (Davis, NBER WP 22740; NLM source w22740). Role: convergent (global macro -> weakest)."
+ }
+}
+

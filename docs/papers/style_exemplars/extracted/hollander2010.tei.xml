@@ -1,0 +1,1789 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Does Silence Speak? An Empirical Analysis of Disclosure Choices During Conference Calls</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct status="extracted">
+					<analytic>
+						<author>
+							<persName><forename type="first">S</forename><surname>Hollander</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">M</forename><surname>Pronk</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">E</forename><surname>Roelofsen</surname></persName>
+						</author>
+						<author>
+							<affiliation key="aff0">
+								<orgName type="department">Tilburg School of Economics and Management</orgName>
+								<orgName type="institution">Tilburg University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<affiliation key="aff1">
+								<orgName type="institution" key="instit1">Erasmus Univer- sity Rotterdam; ‡ Rotterdam School of Management</orgName>
+								<orgName type="institution" key="instit2">Erasmus University</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Does Silence Speak? An Empirical Analysis of Disclosure Choices During Conference Calls</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">FA98588250BDE530D058D7F49B39FFB2</idno>
+					<idno type="DOI">10.1111/j.1475-679X.2010.00365.x</idno>
+					<note type="submission">Received 23 March 2009; accepted 31 December 2009</note>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.9.0" ident="GROBID" when="2026-06-24T16:41+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<label type="revision">0.9.0</label>
+					<label type="parameters">startPage=-1, endPage=-1, consolidateCitations=0, consolidateHeader=0, consolidateFunders=0, includeRawAffiliations=false, includeRawCitations=false, includeRawCopyrights=false, generateTeiIds=false, generateTeiCoordinates=[], flavor=null</label>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>In this paper, we exploit the open nature of conference calls to explore whether managers withhold information from the investing public. Our evidence suggests that managers regularly leave participants on the conference call in the dark by not answering their questions. We find that the best predictors of such an event are firm size, a CEO's stock price-based incentives, company age, firm performance, litigation risk, and whether analysts are actively involved during the call's Q&amp;A section. Finally, we document strong support for the assumption maintained in the literature that investors interpret silence negatively. That is, investors seem to interpret no news as bad news.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introduction</head><p>In accounting research, the issue of incomplete disclosure is a sensitive one. Early disclosure theories propound that complete (i.e., full) disclosure is optimal. The adverse-selection problem inherent in the buying and selling of company shares is said to compel the seller to fully disclose to the buyer (see <ref type="bibr" target="#b33">Grossman and Hart [1980]</ref>, <ref type="bibr" target="#b32">Grossman [1981]</ref>, <ref type="bibr" target="#b59">Milgrom [1981]</ref>). These models argue that full disclosure occurs through a process known as unraveling. This notion that the behavior of rational buyers can unravel withheld information is a "seminal result that forms the basis for nearly all of the subsequent research" <ref type="bibr">(Verrecchia [2001, p. 141]</ref>). Drawing on empirical observations of incomplete disclosure, subsequent research posits several theories for why it occurs. For instance, if disclosure comes at a cost (e.g., fixed disclosure cost in <ref type="bibr" target="#b77">Verrecchia [1983]</ref>, or variable proprietary cost in <ref type="bibr" target="#b81">Wagenhofer [1990]</ref>), then incomplete disclosure can occur in equilibrium. Nonetheless, while incomplete-disclosure equilibria can occur when firms face proprietary costs, <ref type="bibr" target="#b81">Wagenhofer [1990]</ref> shows that such equilibria arise only sporadically. <ref type="foot" target="#foot_0">1</ref>Nevertheless, the empirical literature on incomplete disclosure is scant <ref type="bibr" target="#b42">(Kothari, Shu, and Wysocki [2009]</ref>). The difficulty of measuring incomplete disclosure may, in part, account for this. Prior studies use selfconstructed measures like analyst ratings of firms' disclosures (i.e., Association for Investment Management and Research (AIMR) scores), the frequency of management earnings forecasts (e.g., <ref type="bibr" target="#b61">Nagar, Nanda, and Wysocki [2003]</ref>), segment reporting choices (e.g., <ref type="bibr" target="#b36">Harris [1998]</ref>), and the magnitude of stock-price responses <ref type="bibr" target="#b42">(Kothari, Shu, and Wysocki [2009]</ref>). Such measures, however, are problematic for two reasons. First, they are somewhat indirect. <ref type="bibr" target="#b49">Leuz and Verrecchia [2000]</ref>, for example, highlight the difficulty of basing inferences on analyst ratings analysis given that AIMR scores only measure an analyst's perception of the quality of the firm's disclosure. In the case of management earnings forecasts, a low frequency of such disclosures can be due to lack of demand. More importantly, this measure cannot be used to challenge the alternative explanation that, in fact, no news gives rise to lower frequencies of earnings guidance. Second, some of these measures make it difficult to isolate the impact of incomplete disclosure because they presume that investors expect such disclosures to occur at a particular time (and that investors would therefore react negatively when these disclosures do not occur). In their review paper, <ref type="bibr" target="#b38">Healy and Palepu [2001]</ref> conclude that problems such as endogeneity and measurement error in these studies make it "difficult to interpret their findings" (p. 407).</p><p>Given the above, our study exploits the open nature of conference calls to explore whether managers suppress information that is in demand. 2 Managers' reluctance to spoon-feed information to participants on the conference call in public avoids some of the aforementioned problems because incomplete disclosure in this context is a well-defined event and call participants' demand for information is readily discernible. We therefore address the following three questions: Do managers withhold information from conference call participants? If so, under what conditions do managers withhold information? And, finally, do investors interpret this incomplete disclosure negatively?</p><p>A survey by the Association for Investment Management and <ref type="bibr">Research (AIMR [2000]</ref>) indicates that, when analyzing a company, investment professionals consider corporate executives to be important sources of information. Oral communications with management, in particular, are deemed essential. To facilitate such meetings, firms conduct conference calls using company Web sites and/or Webcasts over the Internet. It is widely held that companies use these live meetings to bridge the information gap between managers and outside investors (e.g., <ref type="bibr">Tasker [1998a]</ref>). While this may be true, in practice managers regularly leave call participants in the dark about important issues. 3 To illustrate, consider the recent case of Apple Inc. On the Q3-2008 conference call, Apple executives refused to answer an analyst's question about CEO Steve Jobs's health, replying, "Steve's health is a private matter." Many Wall Street analysts and investors, however, were 2 We use the terms manager and firm interchangeably in the study. All things considered, it is the manager who acts on behalf of the firm. We do, however, recognize that the preferences of a manager and those of a firm are not necessarily congruent. Therefore, we also examine the relation between managers' disclosure activities and their stock price-based incentives.</p><p>3 A Boston-based company called Business Intelligence Advisors (BIA) employs a number of former CIA and other national-security operatives to perform behavior analyses of corporate executives to detect when managers are being less than open or outright lying in their communications with shareholders. Its specialists try to gauge whether, during interviews, earnings conference calls, press releases or management discussions in 10-Ks, managers definitively and directly answer questions and forthrightly address issues or tap dance around subjects. Hedge funds constitute BIA's primary customers. <ref type="bibr" target="#b43">Laing [2006]</ref> discusses several examples of assessments conducted by BIA analysts. For instance, "JPMorgan Chase CEO Jamie Dimon scores fairly well on the candor front in a recent earnings conference call by forthrightly dealing with his concerns over the bank's credit-card growth and the likely rise in nonperforming commercial loans." Kodak executives, on the other hand, "in their latest earnings conference call, were less than open about the company's back-to-school sales prospects, in-store kiosk results and campaign to boost operating margins." And, as if General Motors didn't have enough problems, "the analysts give its management low marks for openness and credibility." crying foul, saying that "Apple is Steve Jobs and Steve Jobs is Apple." Moreover, the incident was widely covered in the press (e.g., "Talk of Chief's Health Weighs on Apple's Share Price," The New York Times, July 23, 2008; "Apple's Culture of Secrecy," The New York Times, <ref type="bibr">July 26, 2008)</ref>. Although analysts disagree about the role played by the communication concerning Mr. Jobs's health, Apple's shares dropped by 2.6% that day despite an alltime high in earnings for Q3-2008. This example demonstrates that being less than candid in one's communication with the investing public can have serious economic consequences.</p><p>Practitioners and regulators agree that managers tend to withhold private information from the market, even in renowned disclosure environments like the United States. A panelist at the 2001 Stern Stewart Executive Roundtable pronounced, "all things equal, the managers of most companies would rather not disclose things if they don't have to . . . obfuscation serves their interests; it gives them another degree of freedom in producing results that are acceptable to stockholders" <ref type="bibr">(Stewart [2001, p. 37]</ref>). In Special Study: Regulation Fair Disclosure Revisited, SEC Commissioner Laura S. Unger states that "[t]o explain why less information may be publicly available, many issuers noted that, post-Reg FD [Regulation Fair Disclosure], companies have shifted disclosure oversight from the investor relations department to the legal department. Generally, the legal department adopts the conservative stance of wanting to say nothing for fear of running afoul of Reg FD" <ref type="bibr" target="#b76">(Unger [2001]</ref>).</p><p>We manually reviewed call transcripts for a large sample of randomly selected earnings-related calls held by publicly listed U.S. firms between January 1 and <ref type="bibr">December 31, 2004</ref> to uncover whether managers withhold requested information. More specifically, we determine whether or not each request for information made during the call is granted. If at least one request is not granted, we mark this call as containing incomplete disclosure. We find that managers withhold information from the public in approximately 6 out of 10 calls, with an average of two unanswered queries per call, a frequency greater than is often assumed. The replies vary from a direct "No, we do not want to provide that information" to more subtle responses that nevertheless indicate that the demand for information will not be met. Moreover, most unanswered questions concern the given company's financials (especially sales and margins), which comports with sellside financial analysts' primary task of producing earnings forecasts for the stocks they follow as part of their investment recommendations <ref type="bibr" target="#b69">(Schipper [1991]</ref>).</p><p>Next, to shed light on managerial intent, we explore under what conditions managers of firms in the Standard &amp; Poor's (S&amp;P) 1500 index (i.e., S&amp;P 500, S&amp;P 400 MidCap, and S&amp;P 600 SmallCap) withhold information. We focus our analysis on S&amp;P 1500 firms because <ref type="bibr" target="#b58">Merton's [1987]</ref> awareness model holds that for disclosures to be effective a firm must command some degree of visibility. Given that firms in the S&amp;P 1500 index have a large shareholder base (i.e., a large number of investors are aware of the firm's existence), investors are expected to trade in real-time on information released (or withheld) during a call <ref type="bibr" target="#b64">(Peng [2005]</ref>). As a consequence, the managers of these firms are strongly incentivized to align themselves with investors' disclosure preferences.</p><p>Based on prior studies on ex ante disclosure, we hypothesize that when disclosure costs are high, companies avoid publicly disclosing their private information. Measures of disclosure costs net of benefits that have explanatory power include (among others) company size, firm performance, and litigation risk. In support of the claim that analysts play an important role in uncovering (vs. simply repackaging) information about the firm, we find that when analysts are actively involved during a call (i.e., by asking an unusually large number of questions) managers are more likely to not answer these questions. We also study how stock price-based compensation might operate as an incentive mechanism for eliciting disclosure. Given that, in light of the current contingencies, stock prices impound the relevant information in managerial disclosures, <ref type="bibr" target="#b61">Nagar, Nanda, and Wysocki [2003]</ref> predict that incentives based on stock price will encourage managers to disclose both good and bad news. We support this prediction by documenting a positive association between a corporate executive's stock price-based incentives (as measured by both a CEO's stock-based compensation and share ownership) and how forthcoming firms are when it comes to disclosing information.</p><p>Assuming that analysts participate in calls to hunt for information that is relevant not only to them but likewise to the market, we dedicate the final section of the study to investigating how incomplete disclosure impacts investor trading during the time frame of the call. Several theories link incomplete disclosure with a firm's market valuation (e.g., <ref type="bibr" target="#b80">Verrecchia [2001]</ref>). One economic consequence commonly associated with a firm's disclosure choice is how severe the adverse selection problem, which is inherent in the buying and selling of firm shares, becomes. Less disclosure should exacerbate adverse selection, thereby increasing how much parties to a transaction involved in the buying or selling of firm shares need to price-protect themselves <ref type="bibr" target="#b23">(Dye [1985]</ref>, <ref type="bibr">Diamond and Verrecchia [1991]</ref>). This principle, known as unraveling , assumes that investors interpret withheld information as unfavorable news about the stock's value or quality. Consequently, no matter how inopportune this may be from the outset, investors will tend to discount the stock until it is in the firm's interest to reveal the information.</p><p>To test our hypothesis that exercising discretion in disclosing information affects a firm's market price, we partition our sample into two groups: those calls that contain incomplete disclosure and those that do not. Evidence from intra-day stock returns suggests that with regard to a stock's value investors interpret calls marked for incomplete disclosure unfavorably. A participant in the AIMR <ref type="bibr">[2000]</ref> corporate disclosure survey supports this finding, stating "Publicly traded companies have been feeling pressure to be increasingly proactive with a more informed shareholder base. Blind acceptance is no longer acceptable, and the market will punish companies that assume it is." Finally, our finding remains robust across alternative return windows.</p><p>Our study contributes to the literature in two ways. First, the transparency of a call enables us to observe the disclosure choices corporate executives make in direct response to requests for information. Prior voluntary disclosure studies (e.g., <ref type="bibr" target="#b61">Nagar, Nanda, and Wysocki [2003]</ref>, <ref type="bibr" target="#b8">Berger and Hahn [2007]</ref>) employ metrics in which the observed disclosure is the outcome of a behind-closed-doors decision process, that is, in a "managers only" environment where managers face a presentiment of, rather than a direct demand for, a certain kind of information. In a related paper, <ref type="bibr" target="#b80">Verrecchia and Weber [2006]</ref> examine the decision of small firms (i.e., those firms with a market value of equity between $50 and $100 million) to redact material contract or agreement information from their SEC filings. Our paper complements their study by investigating under what conditions managers of large S&amp;P 1500 firms decide to reduce their voluntary disclosure of private information beyond the (presumably proprietary) contract information shared in public meetings. Furthermore, our study contributes to the developing literature that investigates the content of corporate disclosures, such as news releases (e.g., <ref type="bibr">Davis, Piger, and Sedor [2008]</ref>, <ref type="bibr" target="#b75">Tetlock, Saar-Tsechansky, and Macskassy [2008]</ref>, <ref type="bibr" target="#b68">Rogers, Van Buskirk, and Zechman [2009]</ref>) and conference calls (e.g., <ref type="bibr" target="#b57">Mayew and Venkatachalam [2008]</ref>, <ref type="bibr" target="#b51">Li et al. [2009]</ref>). <ref type="bibr">Tasker [1998b]</ref> conducted one of the earliest studies of the content of conference calls, recording and transcribing the content of 12 conference calls held by small-and medium-sized technology firms and analyzing the types of questions analysts on the call asked.</p><p>Second, previous studies have emphasized the advantages, rather than the disadvantages, of the conference call as a disclosure medium. Conference calls are credited with saving time, mitigating selective disclosure problems, providing the opportunity to listen in on others' questions, providing access to more timely information, and not requiring extensive data collection (e.g., <ref type="bibr">Botosan [1997], Frankel, Johnson, and</ref><ref type="bibr" target="#b26">Skinner [1999]</ref>). More recent studies, however, recognize that from a company's perspective hosting a conference call also entails a potential disadvantage compared with more traditional (i.e., one-way) disclosure channels. The unscripted format of the question-and-answer section of the call enables participants to prompt management to reveal private information by asking any type of questions, including those requesting information that managers do not (yet) want to reveal. To avoid this undesirable event, corporate executives often discretionarily field questions from analysts of their choosing. Indeed, prior research supports the idea that managers grant sell-side analysts, who generally have more favorable views of the firm, more access to private managerial information (e.g., <ref type="bibr" target="#b18">Chen and Matsumoto [2006]</ref>, <ref type="bibr" target="#b56">Mayew [2008]</ref>). Nevertheless, despite this seemingly effective discretionary tool, participants persist in requesting private information during a conference call that management is reluctant or unable to provide at the time.</p><p>The remainder of this paper proceeds as follows. Section 2 discusses the disclosure role of earnings-related conference calls and provides a short review of the literature. Section 3 presents the procedure for selecting our sample and developing our proxies. Section 4 presents development of our hypotheses and measurement of our variables. Section 5 reports our findings on the conditions under which corporate executives withhold information from public view. Section 6 reports the results of our investigation into how incomplete disclosure impacts investor trading during the call period. Finally, section 7 concludes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Conference Calls as a Voluntary Disclosure Medium</head><p>The use of conference calls as a voluntary disclosure medium has grown enormously over the last decade. In fact, quarterly conference calls after earnings releases are now more or less routine <ref type="bibr" target="#b14">(Bowen, Davis, and Matsumoto [2002]</ref>). Earlier research examines those factors that influence a firm's decision to host a conference call (e.g., <ref type="bibr">Tasker [1998a]</ref>, <ref type="bibr" target="#b26">Frankel, Johnson, and Skinner [1999]</ref>), whether calls are informative for investors <ref type="bibr" target="#b26">(Frankel, Johnson, and Skinner [1999]</ref>), and how earnings conference calls affect analysts' forecasts <ref type="bibr" target="#b14">(Bowen, Davis, and Matsumoto [2002]</ref>), both before and after Regulation Fair Disclosure <ref type="bibr" target="#b15">(Bushee, Matsumoto, and Miller [2004]</ref>). Collectively, the evidence suggests that conference calls play an important role in resolving the information asymmetry problem between managers and outside investors.</p><p>A conference call consists of two sections: a presentation section and a question-and-answer section. During the presentation section, managers provide their interpretation of the firm's performance during the quarter, as well as any additional voluntary disclosures they wish to make to the call participants. Managers use this section of the call to share information they wish to disclose or further emphasize that they consider the market necessitates. During the question-and-answer section, analysts and other call participants have the opportunity to question management's interpretation of information disclosed thus far and/or elicit additional information that was not discussed during the presentation section or disclosed via other sources (e.g., the quarterly earnings announcement, press releases, or the company's Web site). During this section, participants may request information that management is unwilling (or unable) to release (yet).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Sample Selection, the Coding Process, and Content Analysis</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">SAMPLE SELECTION</head><p>We began our sample selection process by identifying via the Dow Jones "Calendar of Corporate Events" announcements of earnings-related conference calls held by NYSE/NASDAQ firms during trading hours (specifically, those calls beginning after 9:30 A.M. and before 2:30 P.M. EST) between January 1 and December 31, 2004. This process yields 6,370 potential conference calls. We limit our sample to calls held during trading hours because in Section 6 we investigate in real-time the market reaction to information released during conference calls. <ref type="foot" target="#foot_3">4</ref> We define the event window of our conference call as beginning at the start of the call and ending 90 minutes thereafter. <ref type="foot" target="#foot_4">5</ref> For that reason, we imposed a second time constraint on our selection criteria and require that calls start by 2:30 P.M. EST at the latest. We then gather transcripts of calls from Voxant FD Wire available through Factiva. Of our 6,370 potential calls, transcripts are not available for 1,454 of them, leaving us with a sample of 4,916 conference-call transcripts. We lost an additional 1,179 observations due to missing Trade and Quote (TAQ) data, I/B/E/S analyst forecast data, Compustat data, CRSP data, Compact D/SEC data, Securities Data Company (SDC) Global New Issues data, and/or Execucomp data. When firms conduct more than one conference call during this period, we randomly selected one of their calls for our sample. Our final sample therefore comprises 1,194 earningsrelated conference calls (see table <ref type="table">1</ref> for an overview). For our multivariate analysis, we use a random sample of 681 firms from the S&amp;P 1500 index. 6 3.2 PROXY DEVELOPMENT Three research assistants manually coded the conference call transcripts. Each research assistant coded an approximately equal number of transcripts. The coding process took place between November 2006 and June 2007. To indicate the scale of this process, for our sample firms, each call's question-and-answer section consists of an average (median) of 41 (38) questions (or remarks) by participants. The average number of analysts participating in the call is 7 (not reported in a table). One of the authors gave T A B L E 1 Sample Selection Number of Calls Number of Firms Earnings conference calls during trading hours a 6,370 Less: Transcripts not available on Voxant FD Wire 1,454 Missing data from TAQ or stock price &lt; $1.00 165 Missing analyst forecast data from I/B/E/S 598 Only one conference call per firm 2,543 1,610 Less: Missing data from Compustat 264 Missing data from CRSP 14 Missing data from Compact D/SEC 5 Missing data from SDC Global New Issues 6 Missing data from Execucomp 127 Final sample 1,194 Of which: Standard &amp; Poor's (S&amp;P) 1500-index firms b 681 Non-S&amp;P 1500 firms 513 1, <ref type="bibr">194</ref> a Announcements of earnings-related conference calls (via Dow Jones "Calendar of Corporate Events") held during trading hours (i.e., beginning after 9:30 A.M. and before 2:30 P.M. EST) by NASDAQ/NYSE firms between January 1, 2004 and December 31, 2004.  b The S&amp;P 1500 index includes S&amp;P 500, S&amp;P 400 MidCap, and S&amp;P 600 SmallCap.</p><p>the research assistants detailed instructions (including an electronic form for completion, which explained all coding steps in detail) and discussed several examples. During the coding process, the authors provided the research assistants with ongoing support and held several meetings to discuss their progress and relevant issues.</p><p>To gain insight into the nature of those questions that go unanswered during calls, we break them down according to topic. Panel A of table 2 reports descriptive statistics for the following five main information categories: industry level, firm-specific business, accounting, financials, and stock market. Since the underlying distribution of topic-related questions during a call is not known, we are reluctant to draw conclusions about managers' attitude toward such questions in general. Nonetheless, two findings are worth mentioning.</p><p>First, the number of unanswered questions relating to accounting issues is fairly small (i.e., 1%). Second, the majority of unanswered questions pertain to firm financials (i.e., 59%; especially requests for sales and margins information) and firm-specific business (i.e., 31%; for example, production and operations, R&amp;D/patents, and mergers/acquisitions). Again, without drawing conclusions based on a general and unobserved demand for both types of information, the fact that most of the questions pertain to these two classes of information (i.e., collectively, they constitute 90% of the questions asked) comports with the primary task of analysts, which is to produce earnings forecasts as part of their investment recommendations on the stocks</p><p>T A B L E 2 Breakdown of Unanswered Questions to Topic and Time Horizon Number of Unanswered Questions % of Total Panel A: Breakdown of unanswered questions to topic a Industry-level 108 6% Competition 48 Threat of new entrants 2 Bargaining power of buyers 24 Bargaining power of suppliers 8 Other 26 Firm-specific business 562 31% Marketing 20 Production/operations 210 Financing 12 Personnel 16 Legal issues 37 IT 6 R&amp;D/patents 60 Mergers/acquisitions 96 Share repurchases 21 CEO 9 Other 75 Accounting 18 1% Accounting policies 12 Other 6 Financials 1,055 59% Assets 81 Debt 33 Equity 21 Sales 294 Backlog 35 Other revenues 43 Margin 121 Expenses 117 Special items 33 Net income/EPS 71 Cash flow 28 Other financials 178 Stock market b 33 2% 1,776 100% Panel B: Breakdown of unanswered questions to time horizon a Backward looking 39 2% Forward looking 428 24% Present 1,309 74% 1,776 100% a</p><p>The reported statistics are based on a random sample of earnings-related conference calls held during trading hours (i.e., beginning after 9:30 A.M. and before 2:30 P.M. EST) by 681 S&amp;P 1500 firms and 513 non-S&amp;P 1500 firms between <ref type="bibr">January 1, 2004 and</ref><ref type="bibr">December 31, 2004</ref> (see table <ref type="table">1</ref>).</p><p>b Stock price, returns, trading volume, etcetera.</p><p>they follow <ref type="bibr" target="#b69">(Schipper [1991]</ref>). After all, to project future income, analysts need to have information on current sales, margins, investments, growth, and the like. To illustrate the average participant's interest in firm-specific financials, we offer the following excerpt from the earnings release conference call of Milacron Inc., a 120-year-old U.S. supplier of plastics-processing technologies and industrial fluids, held on February 11, 2004. For months, investors were uncertain of Milacron's future, as the firm faced a March 15, 2004 deadline to refinance $115 million in senior notes ("Behind the Milicron Deal," The Cincinnati Inquirer , <ref type="bibr">March 19, 2004)</ref>. During the call, participants unremittingly pestered management about this subject. For example, Eli Lustgarten (from J.V. Hanhour, analyst):</p><p>One question, no one wants to talk about the refinancing on a problem but you have money coming due within four weeks I guess.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Ron Brown (Chief Executive Officer of Milacron Inc.):</head><p>Yeah.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Eli Lustgarten:</head><p>Is there anything you can tell us about the ability to implement to meet that deadline or, I mean, it sounds like, you know, the time we've been hearing this now that you've been talking now for months and now we're within weeks of having to pay off the note coming due.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Ron Brown:</head><p>Yeah, the-all I can tell you with respect to the short term facilities, Eli, we are in discussions with the banks on both the accounts receivable facility and the revolver. And I cannot really discuss anything with respect to the refinancing-</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Eli Lustgarten:</head><p>And I mean that's the one that, you know, you know, we are a sitting here now as I said four weeks away effectively waiting to find out something. Is there any timetable that we should look for or anything we can do, this is no longer, you've got plenty of leisurely time. This has to be decided now, or you default on the bonds and that causes all sorts of problems.</p><p>After repeated inquiries into the refinancing process, the question came up again near the end of the call:</p><p>Mitch Lester (from Lester Brothers, analyst): While I understand your reluctance to share what the refinancing and reorganization program may look like for the company, what I don't understand what is your reluctance in setting out a time frame when all stakeholders will see kind of a clear program?</p><p>Despite this strong pressure to disclose, management stuck to its guns and withheld information on the refinancing process. 7  Next, we disaggregate the unanswered questions along a time horizon, that is, whether the questions are backward looking, forward looking, or related to present issues. Panel B of table 2 reports the descriptive statistics. Participants appear most interested in present issues, as the largest number of unanswered requests on this type (1,309 out of 1,776; 74%) attests. To illustrate, consider the following excerpt taken from Insmed Inc.'s earnings conference call held on February 11, 2004. Insmed Inc. is a research-driven biopharmaceutical company:</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Sean Wu (from Rodman &amp; Renshaw, analyst):</head><p>Can you provide an update on how many patients you have enrolled for the Phase III trial? Also do you expect to see preliminary results for trial in the middle of the year?</p><p>Geoffrey Allan (Chief Executive Officer of Insmed Inc.): Sean, as we said, we would prefer not to comment on the day-to-day execution of this trial. It is our plan, as we stated, to file the NDA by the end of this year. That clearly requires us to complete the trial, analyze the data, and compile the NDA. Prior to compiling the NDA, we would like to meet with the FDA and ensure that we have a package that is admissible. We are simply wanting at this point to be very careful about how we release data so that we don't compromise any interaction that we have with the FDA prior to the NDA submission. So I appreciate that that is not really giving you the answer to the question that you're asking, but I just hope that-if you can recognize that filing this NDA is very important to us.</p><p>Furthermore, it seems that either call participants have little or no interest in past business or managers are less reserved when it comes to making backward-looking disclosures; only 2% of the unanswered questions pertain to historical events. In the remainder of our paper, we study the conditions under which managers withhold information from public view (section 5) and whether investors interpret withheld information as reflecting unfavorably on a firm's prospects (Section 6).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Hypotheses Development and Variable Measurement</head><p>Prior studies indicate that several firm attributes affect the demand for, and thus the equilibrium level of, corporate disclosure. We start with a classification model based on four commonly cited disclosure determinants 7 Around the time of the call, Milacron's share price declined by 2.8%. On March 11, 2004 (four days before the deadline), management finally reached a refinancing deal. The news of the refinancing sent the shares up 45% on the first trading day after the financing deal was announced. and append to this baseline model control variables believed to be associated with both our dependent variable and the explanatory variables.</p><p>Most studies primarily focus on examining the proprietary cost of disclosure. <ref type="bibr" target="#b8">Berger and Hahn [2007]</ref> argue, however, that much of the prior evidence that is consistent with the proprietary-cost motive to withhold information is also consistent with an alternative agency cost hypothesis, which posits that disclosures are withheld because of conflicts of interest between managers and shareholders. Unlike the setting in <ref type="bibr" target="#b8">Berger and Hahn [2007]</ref>, our empirical setting does not yield opposite predictions for proprietary versus agency-cost motives to withhold information. Therefore, in this study, we make no attempt to disentangle these motives. We now turn to a discussion of our explanatory variables.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">EXPLANATORY VARIABLES</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.1.">Disclosure Agency Problem.</head><p>Managers acquire private information through their close proximity to firm activities. Conference call participants (including buy-and sell-side analysts, as well as institutional and individual investors) demand information to which managers are privy for several reasons, such as assessing the expected returns and uncertainty of a firm's future prospects and monitoring the manager. Despite this demand, unless they are provided with appropriate incentives, managers are often reluctant to publicly disseminate private information. After all, incomplete disclosure makes it harder for outsiders to discipline managers or (re)assess their competence. As a consequence, to reduce their chances of being replaced, managers entrench themselves <ref type="bibr" target="#b70">(Shleifer and Vishny [1989]</ref>). This behavior is especially true of managers during conference calls, where they (in particular, the CEO and the CFO; <ref type="bibr" target="#b51">Li et al. [2009]</ref>) step into the limelight and expose themselves to analysts' keen attention, especially to softer information (e.g., how management "feels" about achieving targets; <ref type="bibr" target="#b57">Mayew and Venkatachalam [2008]</ref>). <ref type="bibr" target="#b61">Nagar, Nanda, and Wysocki [2003]</ref> argue that stock price-based incentives in the form of stock-based compensation and share ownership mitigate this disclosure agency problem. They posit that "[s]tock prices impound the relevant information in managerial disclosures in light of the current contingencies. As a result, stock price-based incentives elicit both good news and bad news disclosures from managers. Managers have incentives to release good news because it boosts the stock price. On the other hand, the potential negative investor interpretation of silence <ref type="bibr" target="#b77">(Verrecchia [1983]</ref>, <ref type="bibr" target="#b59">Milgrom [1981]</ref>), and litigation costs (which reduce the value of the managers' ownership interest) are incentives to release bad news" (p. 284-285). Consistent with this prediction, Nagar et al. find that a given firm's disclosures are positively related to both the proportion of managerial compensation that stock price affects and the value of shares held by the manager.</p><p>Following <ref type="bibr" target="#b61">Nagar, Nanda, and Wysocki [2003]</ref>, we use two measures of managerial incentives that are tied to stock price: stock price-based compensation (i.e., COMP ) and stock price-based wealth (i.e., LWEALTH ). First, COMP is computed as the ratio of the average annual ex ante stock price-based compensation (i.e., the sum of the total value of stock-option grants plus the value of restricted stock grants) to total direct CEO compensation. 8 Second, LWEALTH is the natural logarithm of the value of CEO shareholdings in the firm (using the fiscal year-end closing price). Data is taken from Execucomp or hand-collected from the definitive proxy statements (DEF 14A) in the EDGAR database.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.2.">Proprietary Information.</head><p>When a manager possesses proprietary information, she faces a tension between the desire to protect this information, on the one hand, and make value-increasing disclosures, on the other. After all, such disclosures could potentially damage her firm's competitive position. 9 Regulation Fair Disclosure (Reg FD) requires firms to make material disclosures broadly available, for instance through a conference call. Opponents of Reg FD argue that prohibiting selective disclosure (i.e., disclosing material information only to select groups of market participants) ultimately compels firms to disclose less information for fear that competitors will exploit the information provided (e.g., <ref type="bibr" target="#b15">Bushee, Matsumoto, and Miller [2004]</ref>). For firms facing higher proprietary costs, an appropriate response is to replace selective disclosure with nondisclosure <ref type="bibr" target="#b82">(Wang [2007]</ref>). We employ an indicator variable, RDINT , set to one if R&amp;D expenditures averaged over 2000-2004 are nonzero; 0 otherwise, as our measure of a firm's proprietary costs.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.3.">Firm Performance.</head><p>Prior research finds that kinds of disclosures managers make depend on how well their firm is performing (e.g., Schrand and Walther <ref type="bibr">[2000]</ref>, <ref type="bibr" target="#b29">Gigler and Hemmer [2001]</ref>, <ref type="bibr" target="#b60">Miller [2002]</ref>, <ref type="bibr" target="#b50">Li [2008]</ref>). For example, <ref type="bibr" target="#b60">Miller [2002]</ref> argues that "managers of firms facing an impending decline might strategically choose to provide high levels of disclosures that focus on the current/short-term strong earnings while limiting long-term forward-looking information" (p. 179). Such disclosure strategies are expected to affect both the demand for and the supply of information during earnings-related conference calls. We control for performance by 8 Following <ref type="bibr" target="#b61">Nagar, Nanda, and Wysocki [2003]</ref>, total direct CEO compensation includes bonus, salary, other annual cash awards, value of restricted stock grants, net value of stockoption grants, long-term incentive payout, and all other annual compensation. The value of stock-option grants is based on the reported value in DEF 14A-filings. 9 The prediction regarding how competition affects managers' decisions to withhold information is theoretically ambiguous. Some models offer conflicting arguments regarding how competition affects a firm's decision to disclose proprietary information (e.g., <ref type="bibr" target="#b19">Darrough and Stoughton [1990]</ref>, <ref type="bibr">Verrecchia [1990a]</ref>, <ref type="bibr" target="#b62">Newman and Sansing [1993]</ref>, <ref type="bibr" target="#b29">Gigler [1994]</ref>). In unreported analysis, we use the Herfindahl-Hirschman index (HHI) to measure a firm's competitive environment. Following <ref type="bibr" target="#b36">Harris [1998]</ref> and <ref type="bibr" target="#b13">Botosan and Stanford [2005]</ref>, we estimate HHI by summing the squared market share of all firms in the three-digit SIC code. Replacing RDINT with HHI does not affect inferences. The coefficient on HHI is statistically insignificant at conventional significance levels.</p><p>including a firm's industry-adjusted ROE (ADJROE), computed as net income to book value of equity adjusted for the median ROE of the same fourdigit SIC code. To further capture how operating revenue affects disclosure choices, we also include SALES, which equals the current quarter sales less sales in the same quarter in the previous fiscal year, scaled by total assets.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.4.">Litigation Risk.</head><p>When choosing voluntary disclosure policies, companies consider their risk of litigation. In theory, the threat of shareholder litigation can affect a firm's disclosure decisions in two ways, each counterbalancing the other. On the one hand, the risk of legal actions taken for inadequate or untimely disclosures can encourage firms to increase voluntary disclosure. On the other, the risk of litigation can reduce firms' incentives to provide disclosure. Prior research on the relation between voluntarydisclosure decisions and litigation risk provides mixed evidence (see <ref type="bibr" target="#b38">Healy and Palepu [2001]</ref> for an overview). <ref type="bibr" target="#b25">Field, Lowry, and Shu [2005]</ref> demonstrate that this may be in part attributable to the endogenous relation between litigation risk and disclosure. Their findings suggest that disclosure deters rather than triggers (certain types of) litigation.</p><p>Despite the fact that forward-looking disclosures are protected by the Safe Harbor provisions of the 1995 Private Securities Litigation Reform Act, <ref type="bibr">Rogers and Van Buskirk [2009]</ref> report that plaintiff attorneys frequently include in their allegations boilerplate arguments for why Safe Harbor provisions do not protect management's forward-looking statements. <ref type="bibr">Rogers and Van Buskirk [2009]</ref> find that firms that have been subject to disclosurerelated litigation reduce the amount of information they provide to investors (i.e., they are less likely to host an earnings-related conference call or issue an earnings forecast).</p><p>Following <ref type="bibr" target="#b25">Field, Lowry, and Shu [2005]</ref>, we use the standard deviation of daily returns over a one year period starting (ending) 365 days (one day) before the date of the conference call (STDRET ) as our proxy for litigation risk.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">CONTROL VARIABLES</head><p>Prior research indicates that several other company characteristics determine investor demand for disclosure. In fact, some of our main variables are correlated with these characteristics. To alleviate concerns about correlated omitted-variable bias, we control for these characteristics in our analyses.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.1.">Company Size.</head><p>How company size affects a firm's willingness to disclose information during conference calls is ambiguous. Prior empirical research suggests that information quality is an increasing function of firm size (e.g., <ref type="bibr" target="#b3">Atiase [1985]</ref>, <ref type="bibr" target="#b44">Lang and Lundholm [1993]</ref>, <ref type="bibr" target="#b6">Bamber and Cheon [1998]</ref>). Analytical research provides conflicting predictions about how the quality of information available to the public prior to the conference call influences firms' disclosure decisions during the call. One camp argues that firms with good information quality will issue less expansive disclosures because information asymmetry is lower in such firms (e.g., <ref type="bibr" target="#b77">Verrecchia [1983]</ref>). Another camp shows that as information quality increases, which, in turn, increases the quality of the manager's information, managers are incentivized to disclose more because investors will deem such disclosures more credible <ref type="bibr">(Verrecchia [1990b]</ref>). Given the ambiguity, we do not attempt to predict the sign of our company-size variable. We compute company size (LMV ) as the natural logarithm of a firm's beginningof-year market value. We use the logarithm specification of market value in our analysis because the variable is highly skewed. The logarithm also captures any decreasing marginal effect of size on disclosures.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.2.">Company Age.</head><p>Evidence on the relation between a firm's age and its disclosure practice is mixed. <ref type="bibr" target="#b18">Chen, DeFond, and Park [2002]</ref> argue that future prospects are more uncertain among firms whose operations are less predictable (as is often the case with younger firms). Consequently, when evaluating younger firms, investors and analysts are more likely to demand additional disclosures. <ref type="bibr" target="#b17">Chen, Chen, and Cheng [2008]</ref>, on the other hand, find that a firm's disclosure practice varies inversely with the maturity of its public relations. We measure firm age (AGE) by the natural logarithm of the number of months the firm has been listed on CRSP. Since AGE is highly skewed, we use the natural logarithm in our analysis.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.3.">Analyst Participation and Involvement during the Call.</head><p>Analysts and the firms they follow participate in a give-and-take interaction. When firms desire the visibility that being followed by analysts brings, analysts can demand guidance from management to track a given firm <ref type="bibr" target="#b2">(Arya and Mittendorf [2007]</ref>). Prior research has documented that if a firm opts not to disclose information, it runs the risk of losing its analyst following <ref type="bibr" target="#b10">(Bhushan [1989]</ref>, <ref type="bibr" target="#b37">Healy, Hutton, and Palepu [1999]</ref>, <ref type="bibr" target="#b45">Lang and Lundholm [1996]</ref>).</p><p>We introduce several variables to capture analysts' interest in participating in (R(#AN )) and their involvement during (R(#QUES)), R(#WRDS)) the call. Consistent with prior studies, we find that the number of analysts participating in the conference call is strongly correlated with firm size, institutional ownership, and industry membership (e.g., <ref type="bibr" target="#b10">Bhushan [1989]</ref>, O <ref type="bibr">'Brien and Bhushan [1990]</ref>). To avoid strong multicollinearity, we regress the number of participating analysts on LMV , %INST , and several dummy variables that capture industry membership (using three-digit SIC codes). We include in our main regression model the residual, R(#AN ), from this regression-R(•) is by construction orthogonal to LMV , %INST , and industry membership. We similarly obtain R(#QUES) and R(#WRDS), where #QUES represents the number of questions asked (or remarks made) and #WRDS represents the number of words uttered by analysts during the call's question-and-answer section.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.4.">Institutional Ownership.</head><p>While prior studies find that institutional investors enjoy increased access to firm-specific information (i.e., they are 1475679x, 2010, 3, Downloaded from <ref type="url" target="https://onlinelibrary.wiley.com/doi/10.1111/j.1475-679X.2010.00365.x">https://onlinelibrary.wiley.com/doi/10.1111/j.1475-679X.2010.00365.x</ref> by University Of Ottawa Library, Wiley Online Library on [12/06/2026]. See the Terms and Conditions (<ref type="url" target="https://onlinelibrary.wiley.com/terms-and-conditions">https://onlinelibrary.wiley.com/terms-and-conditions</ref>) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License DOES SILENCE SPEAK? 547 better informed) and have different preferences for disclosure than other investors, extant evidence is mixed (e.g., <ref type="bibr" target="#b37">Healy, Hutton, and Palepu [1999]</ref>, <ref type="bibr" target="#b16">Bushee and Noe [2000]</ref>, <ref type="bibr" target="#b1">Ajinkya, Bhojraj, and Sengupta [2005]</ref>). Using data from Compact D/SEC, we compute the percentage of stocks held by institutional investors (%INST ) as the number of shares held by institutions over the total number of common shares outstanding. 10 4.2.5. Earnings-Announcement Return. <ref type="bibr" target="#b46">Lang and Lundholm [2000]</ref> argue that SEC registrants use their disclosure policies to influence market perceptions. Evidence from <ref type="bibr" target="#b41">Kimbrough [2005]</ref> suggests that initiating conference calls can reduce investor underreaction to earnings announcements. To capture a given firm's desire to alter investors' perceptions, we control for the market response to the earnings announcement using PDRET , which we compute as the quote midpoint at the start of the call (SMID) less the quote midpoint at the call start time one trading day before the conference call (PDMID) divided by SMID. 11 4.2.6. Missing Earnings Benchmarks. Survey evidence in <ref type="bibr" target="#b30">Graham, Harvey, and Rajgopal [2005]</ref> suggests that missing the earnings target can put surprised analysts on the defensive during the conference call. During interviews, CFOs explained to the authors, "if they meet the earnings target, they can devote the conference call to the positive aspects of the firm's future prospects. In contrast, if the company fails to meet the guided number, the tone of the conference call becomes negative. The focus shifts to talking about why the company was unable to meet the consensus estimate" (p. 32). Moreover, interviewed CFOs say that analysts begin to doubt the credibility of both the assumptions underlying the current earnings number and the forecast of future earnings. As a proxy for the atmosphere during the conference call, we include in our regression model an indicator variable MISS. MISS is set to 1 if actual EPS for the quarter is less than that quarter's mean consensus forecasted EPS (both taken from the I/B/E/S unsplit-adjusted summary file), and 0 otherwise.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.7.">Interim Disclosures.</head><p>In their seminal paper, <ref type="bibr" target="#b5">Ball and Brown [1968]</ref> document that the market, to a large extent, anticipates the information 10 Institutional ownership data from Compact D/SEC is missing for Real Estate Investment Trusts (REITs) (SIC 6798). We hand collected this information from Standard &amp; Poor's Security Owner's Stock Guide. 11 Additionally, controlling for investor sentiment during the quarter before the conference call (using a firm's market-adjusted return cumulated from day -92 to day -2 relative to the conference call date; QTRRET ) has little apparent effect. <ref type="bibr" target="#b4">Baginski, Hassell, and Kimbrough [2004]</ref> and <ref type="bibr" target="#b40">Hutton, Miller, and Skinner [2003]</ref> argue that managers have incentives to provide supplemental disclosures when forecasting bad news. Unreported analysis, however, shows no asymmetric response to negative and positive PDRET or negative and positive QTRRET . Furthermore, neither the absolute value of PDRET nor the absolute value of QTRRET is statistically significant at conventional levels in equation ( <ref type="formula">1</ref>). content of the annual earnings numbers prior to the date of release. Several studies have suggested that the information content of the annual earnings announcement is inversely related to the amount of available interim information (e.g., <ref type="bibr" target="#b31">Grant [1980]</ref>). To control for differential quantity (or quality) of interim versus annual (i.e., information disclosed in the fourth quarter of a fiscal year) information, we include indicator variables for the second, third, and fourth quarters of the fiscal year.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">Conditions under Which Corporate Executives Suppress Information</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">ECONOMETRIC SPECIFICATION</head><p>To explore under what circumstances managers withhold information from the public, we employ the following ordinal logistic regression (equation (1) hereafter): Prob.(DIDISC) = F (η X + ε), where F ( r )=e ( r )/(1 + e ( r )), wherein the dependent variable, DIDISC (an acronym for dummy incomplete disclosure), is coded as 1 in cases where at least one question per call remains unanswered, and 0 otherwise, and X is a vector that represents the explanatory and control variables, as discussed earlier. 12 Employing ordinal logistic regression techniques, however, entails a disadvantage: The information contained in the ordering (i.e., the number of unanswered questions per call) is lost. That said, using ordered logistic estimation instead leaves our inferences materially unaffected (results are untabulated).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">DESCRIPTIVE STATISTICS</head><p>Table <ref type="table">3</ref> reports the summary statistics. For our sample of 681 calls made by S&amp;P 1500 firms, the average (median) number of unanswered queries is 1.37 (1). The raw number of unanswered questions (NUQ ) ranges from 0 to a maximum of 10. Table <ref type="table">3</ref> also lists the descriptive statistics for percentage of institutional ownership (%INST ).%INST ranges from 0 to 99.99% with a mean (median) of 74.17 (78.35). Because shares that are shorted are owned by more than one party (i.e., the original lender plus the purchaser on the other side of the short sale; see also <ref type="bibr" target="#b2">Asquith, Pathak, and Ritter [2005]</ref>), for some companies, institutional ownership can be high and even exceed 100% in some instances. The mean (median) ratio of stock-based to total compensation (COMP ) is 0.42 (0.45). These descriptive results are consistent with <ref type="bibr" target="#b61">Nagar, Nanda, and Wysocki [2003]</ref> from 1995 through 1997. The 12 Alternatively, in untabulated analysis we scale the number of unanswered questions by the number of queries made during the call. Because the variable is highly skewed, we categorize this ratio by its quantiles (5, 10, and 20), with all zeroes grouped in the first quantile. Employing robust OLS estimation, replacing DIDISC in equation ( <ref type="formula">1</ref>) with this alternative variable and controlling for fixed-industry effects (based on four-digit SIC codes) leaves all inferences unaltered.</p><p>T A B L E 3 Descriptive Statistics Variable Obs. Mean Median Std. Dev. Min. Max. DIDISC (0,1) 681 0.6534 1 0.4762 0 1 NUQ 681 1.3788 1 1.5166 0 10 RDINT 681 0.4273 0 0.4950 0 1 %INST 681 74.17 78.35 20.61 0 99.99 LWEALTH 681 9.4641 9.2931 3.1957 0 20.41 COMP 681 0.4227 0.4572 0.2791 0 0.9999 LMV 681 7.4849 7.3605 1.4907 1.7316 12.50 LAGE 681 5.5457 5.6131 0.6620 3.3322 6.2576 ADJROE 681 0.0205 0.0521 0.2656 -0.7741 1.5716 STDRET 681 0.0208 0.0186 0.0086 0.0073 0.0641 CCR 681 0.0007 0.0007 0.0169 -0.0699 0.1021 SALES 681 0.0312 0.0211 0.0678 -0.1806 1.2254 PDRET 681 0.0016 0.0022 0.0454 -0.2593 0.1730 MISS 681 0.2276 0 0.4195 0 1 QTR1 681 0.2863 0 0.4523 0 1 QTR2 681 0.2745 0 0.4466 0 1 QTR3 681 0.2158 0 0.4117 0 1 QTR4 681 0.2232 0 0.4166 0 1</p><p>DIDISC is set to 1 when one or more questions remain unanswered during a call, and 0 otherwise. NUQ is the raw number of unanswered questions per call. RDINT is an indicator variable set to one if R&amp;D expenditures averaged over 2000-2004 are nonzero; 0 otherwise.%INST is the percentage of a firm's stocks held by institutional investors, calculated as the number of shares held by institutions over the total number of common shares outstanding. LWEALTH is the natural logarithm of the value of CEO shareholdings in the firm (using the fiscal year-end closing price). COMP is computed as the ratio of the average annual ex ante stock price-based compensation (i.e., the sum of total value of stock option grants plus the value of restricted stock grants) to total direct CEO compensation. LMV is the logarithm of a firm's market value of equity. LAGE is measured as the log of the number of months the firm has been listed on CRSP. ADJROE is a firm's industry-adjusted ROE, computed as net income to book value of equity adjusted for the median ROE of the same four-digit SIC code. To control for undue influence of outliers, we winsorize ADJROE at 1% from above and from below. STDRET is the standard deviation of daily returns over a one-year period starting (ending) 365 days (one day) before the date of the conference call. CCR is the stock price reaction during the conference call window, defined as the quote midpoint 60 minutes after the start of the call (AMID) less the quote midpoint at the start of the call (SMID) divided by AMID. SALES is current-quarter sales (Compustat quarterly item 2) less sales in the same quarter in the previous fiscal year, scaled by total assets (Compustat quarterly item 44). PDRET is the quote midpoint at the start of the call (SMID) less the quote midpoint at the same time one trading day before the conference call (PDMID) divided by SMID. MISS is an indicator variable set to 1 when actual EPS for the quarter is less than the mean consensus forecasted EPS for that quarter (both taken from the I/B/E/S unsplit-adjusted summary file), and 0 otherwise. QTR1-QTR4 are indicator variables for each fiscal quarter.</p><p>average value of shares held by the CEO, however, is much higher for our sample firms, which are based on 2004 data, than it was for theirs. This finding fits with the fact that over time CEO wealth has been increasingly exposed to firm stock prices; indeed, the exposure tripled between <ref type="bibr" target="#b31">1980</ref><ref type="bibr" target="#b29">and 1994</ref><ref type="bibr">and doubled again between 1994</ref><ref type="bibr">and 2000</ref><ref type="bibr" target="#b34">(Hall and Liebman [1998]</ref>, <ref type="bibr" target="#b9">Bergstresser and Philippon [2006]</ref>).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.3">MULTIVARIATE LOGISTIC ANALYSIS</head><p>Table <ref type="table">4</ref> reports the results of our multivariate analysis of DIDISC, our indicator variable for incomplete disclosure, on a large number of firmand call-specific disclosure determinants. We adjust standard errors for possible dependence in the residuals for having multiple observations per industry. <ref type="bibr" target="#b65">Petersen [2009]</ref> shows that when the residual contains information that the researcher is not using, standard errors can be biased. The way participants formulate questions suggests they are cognizant of the common disclosure practices in a given firm's industry. A priori, this awareness could discourage analysts from asking for particular kinds of information (a habit that researchers cannot observe). However, our review of call transcripts shows that participants will occasionally reference common practice while introducing their question (e.g., "I know that, competition-wise, you don't want to say exactly, but . . .") and then proceed to pursue the</p><p>T A B L E 4 Conditions under Which Corporate Executives Withhold Information from Public View # Unanswered Questions [0, 1-10] [0, 3 -10] (1) (2) (3) (4) (5) LWEALTH -0.0159 -0.0125 -0.0097 -0.0101 -0.0439 (1.13) (0.91) (0.76) (0.77) (1.63) COMP -0.3507 -0.3307 -0.3774 -0.3997 -1.0383 (1.90) (1.80) (2.05) (2.10) (2.45) RDINT 0.1164 0.0903 0.1635 0.1161 0.3677 (0.74) (0.58) (1.06) (0.75) (0.50) SALES -1.6586 -1.7437 -1.6460 -2.0520 -3.6450 (1.78) (1.90) (1.87) (2.34) (2.31) ADJROE -0.1083 -0.1003 -0.0827 -0.1018 -0.6411 (0.48) (0.45) (0.39) (0.48) (2.31) STDRET 2.4682 0.1540 0.2186 -1.3212 -29.8484 (0.40) (0.02) (0.03) (0.21) (1.81) LMV 0.1254 0.1237 0.1314 0.1229 0.2192 (3.38) (3.36) (3.50) (3.37) (2.19) LAGE -0.2195 -0.2297 -0.2468 -0.2227 -0.2465 (3.10) (3.29) (3.53) (3.02) (1.93) %INST --0.0001 -0.0001 0.0007 (0.01) (0.06) (0.13) PDRET ---1.5017 -1.0757 -1.0609 (1.77) (1.23) (0.46) MISS --0.2125 0.1821 0.6507 (1.67) (1.54) (2.21) R(#AN) ---0.0209 0.0918 (1.10) (1.78) R(#QUES) ---0.0089 0.0128 (2.56) (2.77) R(#WRDS) ----0.0001 -0.0001 (1.94) (0.68) QTR2 --0.2104 -0.2268 -0.2242 -1.3999 (1.57) (1.60) (1.52) (4.77) QTR3 --0.0157 -0.0366 -0.0174 -0.7477 (0.13) (0.31) (0.15) (2.08) QTR4 -0.0104 0.0083 0.0160 -0.5198 (0.08) (0.06) (0.11) (1.74) (Continued) 1475679x, 2010, 3, Downloaded from <ref type="url" target="https://onlinelibrary.wiley.com/doi/10.1111/j.1475-679X.2010.00365.x">https://onlinelibrary.wiley.com/doi/10.1111/j.1475-679X.2010.00365.x</ref> by University Of Ottawa Library, Wiley Online Library on [12/06/2026]. See the Terms and Conditions (<ref type="url" target="https://onlinelibrary.wiley.com/terms-and-conditions">https://onlinelibrary.wiley.com/terms-and-conditions</ref>) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License DOES SILENCE SPEAK? 551 T A B L E 4 -Continued # Unanswered Questions [0, 1-10] [0, 3 -10] (1) (2) (3) (4) (5) N 681 681 681 681 366 N groups 248 248 248 248 180 Log pseudolikelihood -471.98 -470.82 -468.75 -464.00 -84.78 Wald Chi-square 24.41 25.77 29.80 59.55 77.45 (p &lt; 0.01) (p &lt; 0.01) (p &lt; 0.01) (p &lt; 0.01) (p &lt; 0.01) Pseudo-R 2 0.0112 0.0136 0.0179 0.0279 0.1617</p><p>Reported are coefficient estimates and z-statistics (based on heteroskedasticity-robust standard errors) based on ordinal logistic estimation procedures. z-statistics are reported in parentheses below the coefficient estimates. Standard errors are corrected for clustering at the four-digit SIC industry level. Coefficients that are statistically significant at the 10% level (two-tailed) or better are reported in bold. The random sample includes 681 firms in the Standard &amp; Poor's (S&amp;P) 1500 index (S&amp;P 500, S&amp;P 400 MidCap, and S&amp;P 600 SmallCap). Column (5) includes a sample of S&amp;P 1500 firms for which the number of unanswered questions during the call exceeds two, using full-disclosure firms (i.e., DIDISC equals 0) as the benchmark. The dependent variable is DIDISC. DIDISC is set to 1 in cases where one or more questions remain unanswered during a call, and 0 otherwise. LWEALTH is the natural logarithm of the value of CEO shareholdings in the firm (using the fiscal year-end closing price). COMP is computed as the ratio of the average annual ex ante stock price-based compensation (i.e., the sum of total value of stock-option grants plus the value of restricted-stock grants) to total direct CEO compensation. RDINT is an indicator variable set to one if R&amp;D expenditures averaged over 2000-2004 are nonzero; 0 otherwise. LMV is the logarithm of a firm's market value of equity. LAGE is measured as the log of the number of months the firm has been listed on CRSP.</p><p>SALES is current quarter sales (Compustat quarterly item 2) less sales in the same quarter in the previous fiscal year, scaled by total assets (Compustat quarterly item 44). ADJROE is a firm's industry-adjusted ROE, computed as net income to book value of equity adjusted for the median ROE of the same four-digit SIC code. To control for undue influence of outliers, we winsorize ADJROE at 1% from above and from below. STDRET is the standard deviation of daily returns over a one year period starting (ending) 365 days (one day) before the date of the conference call. %INST is the percentage of a firm's stocks held by institutional investors, calculated as the number of shares held by institutions over the total number of common shares outstanding. PDRET is the quote midpoint at the start of the call (SMID) less the quote midpoint at the same time one trading day before the conference call (PDMID) divided by SMID. MISS is an indicator variable set to 1 if actual EPS for the quarter is less than the mean consensus forecasted EPS for that quarter (both taken from the I/B/E/S unsplit-adjusted summary file), and 0 otherwise. R(#AN ) is the residual from a first-stage regression of the number of analysts participating in the call (#AN ) on LMV , %INST , and indicator variables capturing industry membership (using three-digit SIC codes). Similarly, R(#QUES) and R(#WRDS) represent the residual from a first-stage regression of the number of questions asked (#QUES) or the number of words expressed (#WRDS) during the question-and-answer section of the call on LMV , %INST , and industry membership, respectively. QTR2-QTR4 are indicator variables for each fiscal quarter. information nonetheless. <ref type="foot" target="#foot_6">13</ref> Also, corporate executives regularly cite prevailing industry practice to account for their disclosure decisions. To illustrate, in response to a question on changing radio formats in the new quarter, management of Entravision Communications states during the conference call on November 4, 2004: ". . . you know, we don't disclose any format changes that we might employ in our radio division. I'm sure you understand." The reported standard errors are corrected for clustering at the four-digit SIC industry level. Although it entails a considerably reduced sample size (due to several covariates perfectly predicting the outcome of interest), using fourdigit SIC indicator variables for each cluster instead (not reported in a table) leaves our inferences materially unchanged. Diagnostic tests show that multicollinearity is not an issue in this study (untabulated).</p><p>The results reported in table 4 obtain across two different samples: one of calls in which at least one question remains unanswered (columns 1-4) and another of calls in which the number of unanswered questions exceeds two (column 5); in both cases, full-disclosure calls are used as the benchmark. Untabulated analysis indicates that investors respond equally negatively to both types of calls. Nonetheless, as a robustness check, we also present results from the second sample because this sample potentially represents firms that maintain more restrictive corporate disclosure policies. 14 One might then expect that, irrespective of the circumstances, managers of these firms will be less forthcoming when communicating with analysts.</p><p>Column 1 in table <ref type="table">4</ref> reports the results for our baseline model together with firm size and company age as our first two control variables. Consistent with evidence in <ref type="bibr" target="#b61">Nagar, Nanda, and Wysocki [2003]</ref>, we document a positive association between a CEO's stock price-based incentives and firm disclosures. While both COMP and LWEALTH have the expected negative sign, only LWEALTH 's coefficient is significantly different from zero at p &lt; 0.06 (two-sided). Firm size is significantly negatively related to a firm's willingness to disclose information during meetings with the investment public. Finally, we find that more mature firms (LAGE) and companies with sales growth ( SALES) are less likely to withhold information.</p><p>In columns 2-4, we gradually include more control variables in our model specification and find that our explanatory variables are robust to the inclusion of these covariates. Three findings in particular are worth mentioning. First, column 3 reports a significantly negative coefficient on PDRET , which suggests that, when facing a negative response to an earnings announcement, corporate executives become more reluctant to release private information during the following related conference call. Including call-specific variables (i.e., R(#AN ), R(#QUES), and R(#WRDS)) in our model, however, makes the coefficient on PDRET insignificant (column 4). Second, column 4 reports that of our three measures of analyst involvement during the call, R(#QUES) and R(#WRDS) are significantly different from zero at p &lt; 0.05 or better. Diagnostic tests indicate that the negative sign on R(#WRDS) results from the high degree of collinearity between this variable and R(#QUES). A formal F -test for the joint significance of the coefficients on R(#QUES) and R(#WRDS) is statistically significant at p &lt; 0.02. We interpret this finding as support for the idea that sell-side analysts play an active role in uncovering firm information. Third, the coefficient on MISS is significantly positive in column 3 (albeit only weakly significant in column 4), which supports the suggestion in Graham, Harvey, 14 To illustrate, Xerox Corp. mentions in its disclosure guidelines that its company's policy is to not disclose any information that could be "useful to a competitor, to someone negotiating with the company, or in litigation with Xerox; contrary to senior management statements on strategy, the state of current business, or the business outlook; an embarrassment to Xerox, its customers or suppliers; or unfair disparagement to competitors" (available at <ref type="url" target="www.xerox.com">www.xerox.com</ref>).</p><p>and Rajgopal <ref type="bibr">[2005]</ref> that missing earnings benchmarks puts surprised analysts on the defensive and gives the conference call a negative tone.</p><p>Taken together, the collective evidence suggests that incomplete disclosures occur in a nonrandom fashion.</p><p>As a test for robustness, we re-estimate equation ( <ref type="formula">1</ref>), this time only marking calls for incomplete disclosure when they contain three or more unanswered questions. Ultimately, 130 calls meet this criterion. Column 5 in table 4 reports the results using full-disclosure calls as a benchmark. Overall, this restriction does not affect our results. Several findings, however, are meaningful. First, the coefficient on STDRET , our proxy for litigation risk, is significantly negative at p &lt; 0.07 (two-sided), a finding consistent with evidence in <ref type="bibr" target="#b25">Field, Lowry, and Shu [2005]</ref> showing that disclosure potentially deters certain types of litigation. Second, this alternative measure for incomplete disclosure allows us to document strong support for the mitigating effect stock price-based incentives have on the disclosure agency problem. Specifically, both the proportion of CEO compensation affected by stock price (COMP ) and the value of shares held by the CEO (LWEALTH ) are positively related with managerial disclosure at p &lt; 0.10 or better. The statistical, as well as economic, significance for COMP in column 5 is higher than in column 4. Finally, the coefficient on ADJROE is significantly negative. That is, over and above SALES, ADJROE is positively associated with a firm's forthcoming disclosures when communicating with analysts.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.4">FURTHER TESTS</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.4.1.">No Recent CEO Change.</head><p>Given that a new CEO has spent less time in the firm, she is arguably less informed about the firm's ins and outs. To create a more homogenous sample of firms with executives who are likely to be equally informed, we re-estimate equation (1), this time including only those firms whose CEOs have been in office for at least one year. Using data from Execucomp, we find that this restriction leaves our inferences unaltered (untabulated). <ref type="bibr" target="#b48">Leuz and Schrand [2008]</ref> argue that, given SEC disclosure requirements regarding discontinued operations, any fundamental changes in a firm's operations are likely to affect that firm's willingness to disclose information. How "irregular" items (e.g., special items, discontinued operations) impact disclosures during the call, however, is ambiguous. On the one hand, the more information shared about the irregular item pre-call, the less we would expect analysts to demand additional disclosures. On the other hand, if the irregular item is mentioned in an earnings announcement, we would expect analysts to call for background information.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.4.2.">Irregular Items.</head><p>To control for fundamental changes in the firm, we include SPITEM and |DISCOP | in our analysis. |SPITEM | is the absolute value of special items (Compustat Quarterly Item 32) divided by end-of-quarter total assets. |DISCOP | is the absolute value of discontinued operations (Compustat Quarterly Item 33) divided by end-of-quarter total assets. Unreported analysis shows that the coefficients on both variables are insignificantly different from zero. Our main inferences remain unchanged.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.4.3.">Issuance of Debt or Equity.</head><p>Prior research suggests that the decision to issue securities and debt influences disclosure policy (e.g., <ref type="bibr" target="#b28">Gibbins, Richardson, and</ref><ref type="bibr">Waterhouse [1990], Frankel, McNichols, and</ref><ref type="bibr" target="#b27">Wilson [1995]</ref>, <ref type="bibr" target="#b37">Healy, Hutton, and Palepu [1999]</ref>). We measure a firm's external financing activities (EXTFIN ) as the cumulative proceeds from equity offering and public debt issuance reported in the SDC's Global New Issues database between 2003 and 2005 (i.e., surrounding our sample year 2004), scaled by total assets <ref type="bibr" target="#b27">(Frankel, McNichols, and Wilson [1995]</ref>). Untabulated analysis shows that including EXTFIN in our model does not affect our main findings. The coefficient on EXTFIN is statistically insignificant at conventional levels.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.">Incomplete Disclosure and Investor Trading during the Call</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.1">ECONOMETRIC SPECIFICATION AND VARIABLE MEASUREMENT</head><p>We divide investor responses during the conference call into two groups: calls marked for incomplete disclosure versus calls marked for full disclosure. To test whether investors negatively interpret withheld informationthat is, whether they interpret the event as "bad news"-we use ordinary least squares to estimate the following regression model (hereafter, called equation ( <ref type="formula">2</ref>)), CCR = F (η DIDISC + γ Z + ε), wherein DIDISC is our main variable of interest and CCR is the stock-price reaction during the conference call window, which is defined as the quote midpoint 90 minutes after the start of the call (AMID) less the quote midpoint at the start of the call (SMID) divided by AMID. We define our conference call window as beginning at the start of the call and ending 90 minutes thereafter. As a sensitivity test, we redefine our conference call window as ending 120 minutes after the start of the call. Although a longer window potentially introduces confounding effects, it also accounts for the possibility that news released during the call's question-and-answer section may result in trading outside of the original 90-minute call window.</p><p>We include two control variables (Z ) in an attempt to capture some drift effect (after all, the earnings press release took place shortly before the earnings-related conference call) or momentum effect. Specifically, we include PDRET (i.e., prior 24-hour return) and QTRRET (i.e., prior 90-day return) in equation ( <ref type="formula">2</ref>). PDRET is the quote midpoint at the start of the call (SMID) less the quote midpoint at the same time one trading day before the conference call (PDMID) divided by SMID. QTRRET is the marketadjusted returns cumulated from day -92 to day -2 relative to the date of the conference call.<ref type="foot" target="#foot_8">foot_8</ref> </p><p>T A B L E 5 Do Investors Interpret Silence Negatively? Return Window 90 Minutes 120 Minutes (1) (2) (3) (4) Intercept 0.0032 0.0024 0.0031 0.0027 (2.40) (1.38) (2.16) (1.42) DIDISC -0.0034 -0.0035 -0.0037 -0.0038 (2.15) (2.20) (2.20) (2.25) PDRET -0.0624 -0.0622 -0.0672 -0.0670 (2.39) (2.37) (2.34) (2.32) QTRET 0.0012 0.0015 0.0016 0.0019 (0.20) (0.23) (0.25) (0.28) QTR2-QTR4 -Included -Included N 681 681 681 681 F -value 3.87 2.51 4.10 2.51 (p-value) (&lt;0.01) (&lt;0.02) (&lt;0.01) (&lt;0.02) R 2 0.0271 0.0293 0.0277 0.0292</p><p>Reported are coefficient estimates and OLS t-statistics based on heteroskedasticity-robust standard errors (t-values are reported in parentheses below the coefficient estimates). Coefficients that are statistically significant at the 10% level (two-tailed) or better are reported in bold. CCR (the dependent variable) is the stock price reaction during the conference call window, defined as the quote midpoint 90 minutes after the start of the call (AMID) less the quote midpoint at the start of the call (SMID) divided by AMID. In columns 3-4, we report results using quote midpoints 120 minutes after the start of the call. The sample includes only firms in the Standard &amp; Poor's (S&amp;P) 1500 index (S&amp;P 500, S&amp;P 400 MidCap, and S&amp;P 600 SmallCap). DIDISC is set to 1 in cases where one or more questions remain unanswered during a call, and 0 otherwise. PDRET is the quote midpoint at the start of the call (SMID) less the quote midpoint at the same time one trading day before the conference call (PDMID) divided by SMID. QTRRET is the market-adjusted returns cumulated from day -92 to day -2 relative to the conference call date. QTR2-QTR4 are indicator variables for each fiscal quarter.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.2">MULTIVARIATE ANALYSIS</head><p>Table 5 reports our findings. Reported are coefficient estimates and OLS t-statistics based on heteroskedasticity-robust standard errors (reported in parentheses below the coefficient estimates). As stated earlier, our dependent variable is (based on) the stock-price reaction during the 90-and 120-minute windows after the start of the call. As in section 5, we report results only for our random sample of firms in the S&amp;P 1500 index. The visibility literature suggests that investors often overlook large groups of stocks because of their low visibility (e.g., "local-stock bias" in <ref type="bibr" target="#b52">Loughran and Schultz [2005]</ref>). In other words, for disclosures to be effective, the firm must enjoy some degree of visibility (e.g., <ref type="bibr" target="#b58">Merton [1987]</ref>). In fact, <ref type="bibr" target="#b47">Lehavy and Sloan [2008]</ref> suggest that, even more than its fundamentals, a firm's visibility impacts its stock price. Since S&amp;P 1500 firms have a larger "investor base" (i.e., more investors are aware of the firm's existence), it is arguable that investors are more likely to respond to information released (or withheld) during calls related to these firms.</p><p>for a description of these variables), DSPITEM , DDISCOP (see section 5 for a description), NUMEST (the number of forecasts issued for the current quarter, from the I/B/E/S summary file), R(#AN ), R(#QUES), and R(#WRDS) in equation ( <ref type="formula">2</ref>). Results are not different from those reported in table 5.</p><p>After controlling for potential drift or momentum effects, we find strong support for the assumption maintained in the literature that investors interpret "silence" negatively. For all of our tests, the coefficient on DIDISC is significantly negative at p &lt; 0.05 (two-sided) or better. This finding is consistent with the notion that investors can unravel withheld information. Moving from the 90-minute return window to 120-minute return window (columns 3 and 4 in table 5) does not materially affect our inferences.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.3">WOULDN'T OBFUSCATION BETTER SERVE MANAGERS' INTERESTS?</head><p>One important remaining question is why managers occasionally state openly during the call that they are unwilling to disclose the requested information. After all, the incomplete revelation hypothesis <ref type="bibr" target="#b11">(Bloomfield [2002]</ref>) seems to imply that investors react less severely (or at least more slowly) to obscure, as opposed to outright withheld, information. Nevertheless, in 108 of our 1,194 sample calls (9%) managers simply state they "don't disclose" the requested information. Extant evidence on the use of obfuscation in corporate disclosures is scant. <ref type="bibr" target="#b50">Li [2008]</ref> finds that firms with losses, or with transient income, fill their annual reports with long sentences and "big words." He also shows that changes in the length of a firm's annual report are negatively correlated with future returns, which suggests that by writing these longer reports managers are able to soften or delay market reactions to news. Evidence from <ref type="bibr" target="#b35">Hammersley, Myers, and Shakespeare [2008]</ref>, however, suggests that investors discount vague Section-302 disclosures more severely than they do clear ones.</p><p>To shed some light on this topic, we reread sample call transcripts from our S&amp;P 1500 firms and created an indicator variable UNABLE, which is set to 1 if an executive's response suggests she is unable to provide the information, and 0 otherwise. Using full-disclosure calls as a benchmark, we then separately re-estimate equation (2), once for calls wherein UNABLE equals 1 (N = 91) and again for calls wherein UNABLE equals 0 (indicating "unwillingness" to disclose; N = 354). In either case, DIDISC is our variable of interest. Unreported analysis shows that our main findings on DIDISC, conditional on UNABLE either being equal to 1 or 0, remain unaltered for both subsamples.</p><p>6.4 FURTHER TESTS 6.4.1. Trading Volume. <ref type="bibr" target="#b39">Holthausen and Verrecchia [1990]</ref> show that unexpected return variance and trading volume are equally valid measures of information content. To assess whether calls are informative, we also examine levels of trading volume during conference calls. For firm i, we compute ABNVOL as the total trading volume (in USD) in the 90 minutes following the start of firm i's conference call (TVOL) less the median trading volume (in USD) during a 90-minute interval beginning at the same time as firm i's call on a regular no-call trading day in the same quarter (MVOL). This reference period measures "normal" firm-specific volume levels. To control for systematic differences in trading volume across firms, we scale ABNVOL by MVOL. 16 Consistent with our primary results, we find that earnings-related conference calls convey material information, as evidenced by the unusually large volume of trading during the call. Unreported analysis shows that the average level of trading volume is noticeably higher (at p &lt; 0.01) during the conference call window than during the benchmark period. At the 1% level in two-tailed tests, the difference in means for incomplete-disclosure calls is significantly higher compared with complete-disclosure calls. These differences are also economically significant. The average trading volume of the conference-call window is roughly three times that of the benchmark period. In sum, consistent with evidence in <ref type="bibr" target="#b26">Frankel, Johnson, and Skinner [1999]</ref>, these findings show that conference calls convey to call participants information beyond that provided by the press release. Moreover, our results demonstrate that withholding information increases investor trading.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.4.2.">Incomplete Disclosures by Type.</head><p>In our primary analyses, we treat all unanswered requests for information as equally unfavorable signals about a stock's value or quality. Consequently, we implicitly expect investors to price-protect themselves evenly across all instances of withheld information. It is conceivable, however, that investors can obtain certain information about a stock from alternative sources. For instance, they might receive additional industry-related information (e.g., changes in the level of competition, a firm's current market share, bargaining power of suppliers) directly from competitors or via branch organizations. Thus, when managers withhold this type of information during a conference call, stock discounts do not necessarily follow. To investigate this further, we partition our incomplete-disclosure calls by information type using the topic classification in Panel A of table 2. We expect incomplete disclosures to have the greatest impact on stock price when the withheld information pertains to firm-specific financial disclosures (e.g., sales, margins, expenses, special items, net income) or firm-specific business (e.g., production, operations, mergers/acquisitions). <ref type="bibr" target="#b24">Fairfield, Sweeney, and Yohn [1996]</ref> find that the best predictors of future earnings are sales and the cost of goods sold, and <ref type="bibr" target="#b53">Lundholm and Sloan [2006]</ref> nominate sales as the single most important input to a forecasting model. We therefore expect that information withheld about these line items in particular will result in (negative) investor responses.</p><p>Untabulated results indicate that DIDISC in equation ( <ref type="formula">2</ref>) is significantly negative at p &lt; 0.01 for unanswered firm-specific information requests only. Consistent with our expectations, using full-disclosure calls as a benchmark and based on a sample comprising 15 (6%) calls containing unanswered questions and 236 (94%) calls containing full disclosure, we find 16 Frankel, Johnson, and Skinner [1999] do not scale their measure for trading volume. While the statistical significance of differences in medians generally improves, overall inferences remain materially unchanged when using unscaled, as opposed to scaled, trading volume (untabulated).</p><p>that DIDISC is insignificantly different from zero at conventional levels for other types of incomplete disclosure.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.4.3.">Uncertainty of Information Arrival.</head><p>The disclosure literature offers an alternative rationale for why firms withhold information in the absence of an exogenous proprietary cost: basic uncertainty about whether the manager actually possesses private information to share (see <ref type="bibr" target="#b80">Verrecchia [2001]</ref>). <ref type="bibr" target="#b23">Dye [1985]</ref> predicts that if investors believe the information has not yet arrived, they will not necessarily downwardly revise their demands for the firm's shares. As a proxy for uncertainty about the existence of information, we use the percentage of stocks held by institutional investors (%INST ). <ref type="bibr" target="#b22">Dye [1998]</ref> predicts that a firm's disclosure threshold (i.e., how likely a firm will withhold private information) decreases as the probability that investors are informed increases. This prediction assumes that informed investors are able to distinguish between attempts to hide information from the public, on the one hand, and the plain nonexistence of information, on the other, as explanations for incomplete disclosure. Findings in several studies suggest that institutional investors have increased access to firm-specific information and, hence, are better informed (e.g., <ref type="bibr" target="#b66">Piotroski and Roulstone [2004]</ref>).</p><p>To test the uncertain information arrival hypothesis, we create and include in equation ( <ref type="formula">2</ref>) an interaction term between DIDISC and DINST , which is set to 1 if %INST is greater than or equal to the sample median, and 0 otherwise. 17 Unreported analysis shows that the coefficient on DIDISC (i.e., the main effect) remains statistically significant at p &lt; 0.05. At conventional levels, the coefficient on DIDISC • DINST is statistically insignificantly different from zero. In other words, irrespective of the condition under which managers decide to withhold information, we find that investors react negatively during the call to this event.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.">Conclusion</head><p>We examine the disclosure choices firms make during public earningsrelated conference calls between managers and the investment community. The demand for disclosure arises from information asymmetry and agency conflicts between managers and outside investors. Because of their close proximity to their firm's operating activities, managers are privy to information related to these activities. While prior studies have extensively examined managerial disclosure choices, the literature on incomplete disclosure is scant. The live nature of conference calls between corporate executives 17 We acknowledge that a conference call is possibly not a particularly suitable setting to test the uncertain information arrival hypothesis. After all, participants on the call are in the position to seek out (by simply asking for the reason) why management does not disclose certain information. We hasten to add that this does not imply that corporate executives then will always announce the (true) reason. and call participants enables us to investigate whether managers withhold or fully disclose their private information.</p><p>In this study, we manually review and code a large sample of call transcripts to discover whether managers withhold requested information and, if so, under what conditions. Our evidence suggests that managers regularly leave call participants in the dark by not answering their questions. We find that the best predictors of such an event are firm size, CEO stock price-based incentives, company age, firm performance, litigation risk, and whether analysts are actively involved during the call's Q&amp;A section. Finally, we document strong support for the assumption maintained in the literature that investors interpret silence negatively, that is, they seem to equate no news with bad news. In short, the results of our study suggest that silence speaks.</p><p>A question that our paper leaves unaddressed is why some managers wait to provide information during a conference call, rather than disclosing such information in SEC filings or through other media. <ref type="bibr" target="#b26">Frankel, Johnson, and Skinner [1999]</ref> conjecture that managers may be drawn to this format because "conference calls, being less formal than written press releases, are subject to a lower standard of legal liability than statements made during press releases" (p. 136). They also claim that managers are sometimes unsure of the informational needs of investors and so prefer the flexibility of providing information in response to analysts' questions. <ref type="bibr" target="#b54">Matsumoto, Pronk, and Roelofsen [2008]</ref> argue that the combination of analysts' active involvement during a call and managers' reluctance to withhold information requested in public can result in the release of additional information. While the evidence we provide speaks somewhat to the latter argument, we ultimately leave this interesting question for future research.</p></div>			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p><ref type="bibr" target="#b72">Suijs [2005]</ref> argues that because proprietary costs are generally considered to be (much) larger than disclosure costs, the latter's influence on a firm's disclosure strategy is often negligible. In<ref type="bibr" target="#b81">Wagenhofer [1990]</ref>, firms always conceal their bad news in a partial-disclosure equilibrium; bad news disclosures only occur in a full-disclosure equilibrium.<ref type="bibr" target="#b72">Suijs [2005]</ref> documents partial-disclosure equilibria in which firms voluntarily release bad news when introducing a fixed disclosure cost besides a variable proprietary cost. He also shows that as the proprietary cost itself and/or the likelihood of incurring proprietary cost increases, such equilibria may occur more frequently.1475679x,</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" xml:id="foot_1"><p>2010, 3, Downloaded from https://onlinelibrary.wiley.com/doi/10.1111/j.1475-679X.2010.00365.x by University Of Ottawa Library, Wiley Online Library on [12/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License DOES SILENCE SPEAK?</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" xml:id="foot_2"><p>1475679x, 2010, 3, Downloaded from https://onlinelibrary.wiley.com/doi/10.1111/j.1475-679X.2010.00365.x by University Of Ottawa Library, Wiley Online Library on [12/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4" xml:id="foot_3"><p>For a sample of 36,074 earnings-related conference calls held by NYSE/NASDAQ firms betweenJanuary 1, 2003 and December 31, 2005<ref type="bibr" target="#b54">, Matsumoto, Pronk, and Roelofsen [2008]</ref> report that 39.6% of the firms always host calls during trading hours, 35.4% always host calls after trading hours, 14.6% switched just once during the three-year period either from during to after or vice versa, and 10.4% switched more than once. They then compare these four groups of firms across several dimensions (i.e., company size, analyst following, market-tobook, leverage, performance, and length of presentation and discussion). They only find that (1) firms that always host calls during trading hours are larger and have more leverage than firms that always host calls after trading hours, and (2) firms that always host calls after trading hours have higher market-to-book ratios than firms that switch once. Since no one group stands out in terms of firm performance, call length, or analyst following, we believe that studying only conference calls held during trading hours is unlikely to bias our results.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="5" xml:id="foot_4"><p>Our reaction tests assume that investors respond to call activity within a short event window. If investors take longer to impound information, our tests become biased against finding significant price reactions. As a robustness check, we widen the window to 120 minutes from the start of the call. Our inferences remain materially unchanged.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="6" xml:id="foot_5"><p>As explained in the introduction, we focus in our multivariate analysis on S&amp;P 1500 firms because these firms are likely to differ from non-S&amp;P 1500 firms on many dimensions (e.g.,<ref type="bibr" target="#b17">Cadman, Klasa, and Matsunaga [2007]</ref>). Unreported analysis shows that our findings often differ between the two samples. Detailed results are available from the authors upon request.1475679x, 2010, 3, Downloaded from https://onlinelibrary.wiley.com/doi/10.1111/j.1475-679X.2010.00365.x by University Of Ottawa Library, Wiley Online Library on [12/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License DOES SILENCE SPEAK?</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="13" xml:id="foot_6"><p>The excerpt is taken from Tetra Technologies Inc.'s conference call onApril 26, 2004.    </p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" xml:id="foot_7"><p>1475679x, 2010, 3, Downloaded from https://onlinelibrary.wiley.com/doi/10.1111/j.1475-679X.2010.00365.x by University Of Ottawa Library, Wiley Online Library on [12/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="15" xml:id="foot_8"><p>To control for other circumstances that could give rise to investor responses, in unreported analysis we further include LMV , LAGE, ADJROE, SALES, SALES, MISS (see table41475679x, 2010, 3, Downloaded from https://onlinelibrary.wiley.com/doi/10.1111/j.1475-679X.2010.00365.x by University Of Ottawa Library, Wiley Online Library on [12/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License</p></note>
+		</body>
+		<back>
+
+			<div type="contribution">
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>. We thank Mariette Hooplot, Sjalina Meewisse, and Joost Somers for their valuable research assistance. We gratefully acknowledge the comments from Christof Beuselinck, Jan Bouwens, Holger Daske, Ron Dye, Mirko Heinle, Markus Hitz, Frank Hodge, Christian Hofmann, Philip Joos, Dawn Matsumoto, Shivaram Rajgopal, Richard Sansing, Terry Shevlin, Jeroen Suijs, Laurence van Lent, Mohan Venkatachalam (discussant), and workshop participants at University of Mannheim, the AAA 2009 Financial Accounting and Reporting Section (FARS) Midyear Meeting in New Orleans, Tilburg University, and University of Washington. Special thanks go to Abbie Smith (the editor) and Russell Lundholm (the referee) for their suggestions to improve the paper. The authors thank Penelope Cray for her editorial assistance. Part of this research was completed while the first author was visiting the Sloan School of Management, MIT.</p><p>531</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct status="extracted" xml:id="b0">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">Fleishman-Hillard</forename><surname>Research</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Research</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2000">2000</date>
+			<pubPlace>St. Louis, MO</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b1">
+	<analytic>
+		<title level="a" type="main">The Association between Outside Directors, Institutional Investors and the Properties of Management Earnings Forecasts</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Ajinkya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Bhojraj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Sengupta</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">43</biblScope>
+			<biblScope unit="page" from="343" to="376" />
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b2">
+	<analytic>
+		<title level="a" type="main">The Interaction among Disclosure, Competition between Firms, and Analyst Following</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Arya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Mittendorf ; Asquith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">A</forename><surname>Pathak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">R</forename><surname>Ritter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">43</biblScope>
+			<biblScope unit="page" from="243" to="276" />
+			<date type="published" when="2005">2007. 2005</date>
+		</imprint>
+	</monogr>
+	<note>Short Interest, Institutional Ownership, and Stock Returns Journal of Financial Economics</note>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Predisclosure Information, Firm Capitalization, and Security Price Behavior Around Earnings Announcements</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">K</forename><surname>Atiase</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="page" from="21" to="36" />
+			<date type="published" when="1985">1985</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Why Do Managers Explain Their Earnings Forecasts?</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Baginski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hassell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">D</forename><surname>Kimbrough</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">42</biblScope>
+			<biblScope unit="page" from="1" to="29" />
+			<date type="published" when="2004">2004</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b5">
+	<analytic>
+		<title level="a" type="main">An Empirical Evaluation of Accounting Income Numbers</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ball</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Brown</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research Autumn</title>
+		<imprint>
+			<biblScope unit="page" from="159" to="178" />
+			<date type="published" when="1968">1968</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Discretionary Management Earnings Forecast Disclosures: Antecedents and Outcomes Associated with Forecast Venue and Forecast Specificity Choices</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Bamber</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Cheon</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="page" from="167" to="190" />
+			<date type="published" when="1998">1998</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b7">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hollander</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Pronk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">And</forename><forename type="middle">E</forename><surname>Roelofsen</surname></persName>
+		</author>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Segment Profitability and the Proprietary and Agency Costs of Disclosure</title>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">G</forename><surname>Berger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">N</forename><surname>Hahn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Accounting Review</title>
+		<imprint>
+			<biblScope unit="volume">82</biblScope>
+			<biblScope unit="page" from="869" to="906" />
+			<date type="published" when="2007">2007</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b9">
+	<analytic>
+		<title level="a" type="main">CEO Incentives and Earnings Management</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Bergstresser</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Philippon</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">80</biblScope>
+			<biblScope unit="page" from="511" to="529" />
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Firm Characteristics and Analyst Following</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Bhushan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="page" from="255" to="274" />
+			<date type="published" when="1989">1989</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b11">
+	<analytic>
+		<title level="a" type="main">The Incomplete Revelation Hypothesis and Financial Reporting</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Bloomfield</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Accounting Horizons</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="page" from="233" to="243" />
+			<date type="published" when="2002">2002</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Disclosure Level and the Cost of Equity</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">A</forename><surname>Botosan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Accounting Review</title>
+		<imprint>
+			<biblScope unit="volume">72</biblScope>
+			<biblScope unit="page" from="323" to="349" />
+			<date type="published" when="1997">1997</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Managers&apos; Motives to Withhold Segment Disclosures and the Effect of SFAS No. 131 on Analysts&apos; Information Environments</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">A</forename><surname>Botosan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Stanford</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Accounting Review</title>
+		<imprint>
+			<biblScope unit="volume">80</biblScope>
+			<biblScope unit="page" from="751" to="771" />
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Do Conference Calls Affect Analysts&apos; Forecasts?</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">M</forename><surname>Bowen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">K</forename><surname>Davis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">A</forename><surname>Matsumoto</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Accounting Review</title>
+		<imprint>
+			<biblScope unit="volume">77</biblScope>
+			<biblScope unit="page" from="285" to="316" />
+			<date type="published" when="2002">2002</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Managerial and Investor Responses to Disclosure Regulation: The Case of Reg FD and Conference Calls</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Bushee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Matsumoto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Miller</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Accounting Review</title>
+		<imprint>
+			<biblScope unit="volume">79</biblScope>
+			<biblScope unit="page" from="617" to="643" />
+			<date type="published" when="2004">2004</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Corporate Disclosure Practices, Institutional Investors, and Stock Return Volatility</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Bushee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Noe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">38</biblScope>
+			<biblScope unit="page" from="171" to="202" />
+			<date type="published" when="2000">2000</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Evidence on How CEO Compensation Functions Differ between Execucomp Firms and Non-Execucomp Firms</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Cadman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Klasa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Matsunaga ; Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Cheng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">46</biblScope>
+			<biblScope unit="page" from="499" to="536" />
+			<date type="published" when="2007">2007. 2008</date>
+		</imprint>
+	</monogr>
+	<note>Working paper, Kellogg School of Management Do Family Firms Provide More or Less Voluntary Disclosure?</note>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Favorable versus Unfavorable Recommendations: The Impact on Analyst&apos; Access to Management-Provided Information</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">L</forename><surname>Defond</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">W</forename><surname>Park ; Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Matsumoto</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="page" from="657" to="689" />
+			<date type="published" when="2002">2002. 2006</date>
+		</imprint>
+	</monogr>
+	<note>Voluntary Disclosure of Balance Sheet Information in Quarterly Earnings Announcements Journal of Accounting Research</note>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Financial Disclosure Policy in an Entry Game</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Darrough</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Stoughton</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="page" from="219" to="243" />
+			<date type="published" when="1990">1990</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b20">
+	<monogr>
+		<title level="m" type="main">Beyond the Numbers: Managers&apos; Use of Optimistic and Pessimistic Tone in Earnings Press Releases</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">K</forename><surname>Davis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Piger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sedor</surname></persName>
+		</author>
+		<imprint/>
+	</monogr>
+	<note>Working paper, Washington University in St</note>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Disclosure, Liquidity, and the Cost of Capital</title>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">W</forename><surname>Louis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">E</forename><surname>Verrecchia</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Finance</title>
+		<imprint>
+			<biblScope unit="volume">46</biblScope>
+			<biblScope unit="page" from="1325" to="1360" />
+			<date type="published" when="1991">2008. 1991</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Investor Sophistication and Voluntary Disclosures</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Dye</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Review of Accounting Studies</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="261" to="287" />
+			<date type="published" when="1998">1998</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Disclosure of Nonproprietary Information</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">A</forename><surname>Dye</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="page" from="123" to="145" />
+			<date type="published" when="1985">1985</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Accounting Classification and the Predictive Content of Earnings</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Fairfield</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Sweeney</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Yohn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Accounting Review</title>
+		<imprint>
+			<biblScope unit="volume">71</biblScope>
+			<biblScope unit="page" from="337" to="355" />
+			<date type="published" when="1996">1996</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Does Disclosure Deter or Trigger Litigation?</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Field</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lowry</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">And</forename><forename type="middle">S</forename><surname>Shu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="page" from="487" to="507" />
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b26">
+	<analytic>
+		<title level="a" type="main">An Empirical Examination of Conference Calls as a Voluntary Disclosure Medium</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Frankel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Johnson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">J</forename><surname>Skinner</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="page" from="133" to="150" />
+			<date type="published" when="1999">1999</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Discretionary Disclosure and External Financing</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Frankel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">F</forename><surname>Mcnichols</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">P</forename><surname>Wilson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Accounting Review</title>
+		<imprint>
+			<biblScope unit="volume">70</biblScope>
+			<biblScope unit="page" from="135" to="150" />
+			<date type="published" when="1995">1995</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b28">
+	<analytic>
+		<title level="a" type="main">The Management of Corporate Financial Disclosure: Opportunism, Ritualism, Policies, and Processes</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Gibbins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Richardson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Waterhouse</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">28</biblScope>
+			<biblScope unit="page" from="121" to="143" />
+			<date type="published" when="1990">1990</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Online Library for rules of use; OA articles are governed by the applicable Creative Commons License DOES SILENCE SPEAK? 561</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Gigler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">B</forename><surname>Gigler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hemmer</surname></persName>
+		</author>
+		<idno type="DOI">10.1111/j.1475-679X.2010.00365</idno>
+		<idno>12/06/2026</idno>
+		<ptr target="https://onlinelibrary.wiley.com/terms-and-conditions)onWiley" />
+	</analytic>
+	<monogr>
+		<title level="m">Conservatism, Optimal Disclosure Policy, and the Timeliness of Financial Reports</title>
+		<imprint>
+			<date type="published" when="1994">1994. 1475679x, 2010. 2001</date>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="page" from="471" to="493" />
+		</imprint>
+		<respStmt>
+			<orgName>University Of Ottawa Library, Wiley Online Library</orgName>
+		</respStmt>
+	</monogr>
+	<note>Self-Enforcing Voluntary Disclosures See the Terms and Conditions The Accounting Review</note>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b30">
+	<analytic>
+		<title level="a" type="main">The Economic Implications of Corporate Financial Reporting</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">R</forename><surname>Graham</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">R</forename><surname>Harvey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">And</forename><forename type="middle">S</forename><surname>Rajgopal</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">40</biblScope>
+			<biblScope unit="page" from="3" to="73" />
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Market Implications of Differential Amounts of Interim Information</title>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">B</forename><surname>Grant</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">18</biblScope>
+			<biblScope unit="page" from="255" to="268" />
+			<date type="published" when="1980">1980</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b32">
+	<analytic>
+		<title level="a" type="main">The Role of Warranties and Private Disclosure about Product Quality</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">J</forename><surname>Grossman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Law and Economics</title>
+		<imprint>
+			<biblScope unit="volume">24</biblScope>
+			<biblScope unit="page" from="461" to="483" />
+			<date type="published" when="1981">1981</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Disclosure Laws and Takeover Bids</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">J</forename><surname>Grossman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><forename type="middle">D</forename><surname>Hart</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Finance</title>
+		<imprint>
+			<biblScope unit="volume">35</biblScope>
+			<biblScope unit="page" from="323" to="334" />
+			<date type="published" when="1980">1980</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Are CEOs Really Paid Like Bureaucrats?</title>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">J</forename><surname>Hall</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">B</forename><surname>Liebman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Quarterly Journal of Economics</title>
+		<imprint>
+			<biblScope unit="volume">113</biblScope>
+			<biblScope unit="page" from="653" to="691" />
+			<date type="published" when="1998">1998</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Market Reactions to the Disclosure of Internal Control Weaknesses and to the Characteristics of Those Weaknesses under Section 302 of the Sarbanes Oxley Act of 2002</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hammersley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Myers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Shakespeare</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Review of Accounting Studies</title>
+		<imprint>
+			<biblScope unit="volume">13</biblScope>
+			<biblScope unit="page" from="141" to="165" />
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b36">
+	<analytic>
+		<title level="a" type="main">The Association between Competition and Managers&apos; Business Segment Reporting Decisions</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Harris</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="page" from="111" to="128" />
+			<date type="published" when="1998">1998</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Stock Performance and Intermediation Changes Surrounding Sustained Increases in Disclosure</title>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">M</forename><surname>Healy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">P</forename><surname>Hutton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">G</forename><surname>Palepu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Contemporary Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="page" from="485" to="520" />
+			<date type="published" when="1999">1999</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Information Asymmetry, Corporate Disclosure, and the Capital Markets: A Review of the Empirical Dislosure Literature</title>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">M</forename><surname>Healy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">G</forename><surname>Palepu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="page" from="405" to="440" />
+			<date type="published" when="2001">2001</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b39">
+	<analytic>
+		<title level="a" type="main">The Effect of Informedness and Consensus on Price and Volume Behavior</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">W</forename><surname>Holthausen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">E</forename><surname>Verrecchia</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Accounting Review</title>
+		<imprint>
+			<biblScope unit="volume">65</biblScope>
+			<biblScope unit="page" from="191" to="208" />
+			<date type="published" when="1990">1990</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b40">
+	<analytic>
+		<title level="a" type="main">The Role of Supplementary Statements with Management Earnings Forecasts</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">P</forename><surname>Hutton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Miller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Skinner</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">41</biblScope>
+			<biblScope unit="page" from="867" to="890" />
+			<date type="published" when="2003">2003</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b41">
+	<analytic>
+		<title level="a" type="main">The Effect of Conference Calls on Analyst and Market Underreaction to Earnings Announcements</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">D</forename><surname>Kimbrough</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Accounting Review</title>
+		<imprint>
+			<biblScope unit="volume">80</biblScope>
+			<biblScope unit="page" from="189" to="219" />
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Do Managers Withhold Bad News?</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">P</forename><surname>Kothari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Shu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">D</forename><surname>Wysocki</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">47</biblScope>
+			<biblScope unit="page" from="241" to="276" />
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b43">
+	<analytic>
+		<title level="a" type="main">Is Your CEO Lying?</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">R</forename><surname>Laing</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Barron&apos;s</title>
+		<imprint>
+			<date type="published" when="2006-06-26">June 26, 2006</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b44">
+	<analytic>
+		<title level="a" type="main">Cross-Sectional Determinants of Analyst Ratings of Corporate Disclosures</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">H</forename><surname>Lang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">J</forename><surname>Lundholm</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="page" from="246" to="271" />
+			<date type="published" when="1993">1993</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b45">
+	<analytic>
+		<title level="a" type="main">Corporate Disclosure Policy and Analyst Behavior</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">H</forename><surname>Lang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">J</forename><surname>Lundholm</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Accounting Review</title>
+		<imprint>
+			<biblScope unit="volume">71</biblScope>
+			<biblScope unit="page" from="467" to="492" />
+			<date type="published" when="1996">1996</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b46">
+	<analytic>
+		<title level="a" type="main">Voluntary Disclosure and Equity Offerings: Reducing Information Asymmetry or Hyping the Stock?</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">H</forename><surname>Lang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">J</forename><surname>Lundholm</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Contemporary Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="page" from="623" to="662" />
+			<date type="published" when="2000">2000</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b47">
+	<analytic>
+		<title level="a" type="main">Investor Recognition and Stock Returns</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Lehavy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">G</forename><surname>Sloan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Review of Accounting Studies</title>
+		<imprint>
+			<biblScope unit="volume">13</biblScope>
+			<biblScope unit="page" from="327" to="361" />
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b48">
+	<monogr>
+		<title level="m" type="main">Voluntary Disclosure and the Cost of Capital: Evidence from Firms&apos; Responses to the Enron shock</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Leuz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Schrand</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2008">2008</date>
+		</imprint>
+		<respStmt>
+			<orgName>University of Chicago</orgName>
+		</respStmt>
+	</monogr>
+	<note>Working paper</note>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b49">
+	<analytic>
+		<title level="a" type="main">The Economic Consequences of Increased Disclosure</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Leuz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">E</forename><surname>Verrecchia</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">38</biblScope>
+			<biblScope unit="page" from="91" to="124" />
+			<date type="published" when="2000">2000</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b50">
+	<analytic>
+		<title level="a" type="main">Annual Report Readability, Current Earnings, and Earnings Persistence</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">45</biblScope>
+			<biblScope unit="page" from="221" to="247" />
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b51">
+	<monogr>
+		<title level="m" type="main">Formal and Real Authority in Organizations: An Empirical Assessment</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Minnis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Nagar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Rajan</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2009">2009</date>
+		</imprint>
+		<respStmt>
+			<orgName>University of Michigan</orgName>
+		</respStmt>
+	</monogr>
+	<note>Working paper</note>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b52">
+	<analytic>
+		<title level="a" type="main">Liquidity: Urban versus Rural Firms</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Loughran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Schultz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">78</biblScope>
+			<biblScope unit="page" from="341" to="374" />
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b53">
+	<monogr>
+		<title level="m" type="main">Equity Valuation and Analysis</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Lundholm</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Sloan</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2006">2006</date>
+			<publisher>McGraw-Hill</publisher>
+			<pubPlace>New York</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b54">
+	<monogr>
+		<title level="m" type="main">Do Analysts Aid Information Discovery during Conference Calls? The Relation between Management Presentations and Analyst Discussion Periods</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Matsumoto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Pronk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Roelofsen</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+	<note>Working paper, University of Washington</note>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b55">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hollander</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Pronk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">And</forename><forename type="middle">E</forename><surname>Roelofsen</surname></persName>
+		</author>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b56">
+	<analytic>
+		<title level="a" type="main">Evidence of Management Discrimination among Analysts during Earnings Conference Calls</title>
+		<author>
+			<persName><forename type="first">W</forename><forename type="middle">J</forename><surname>Mayew</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">46</biblScope>
+			<biblScope unit="page" from="627" to="659" />
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b57">
+	<monogr>
+		<title level="m" type="main">The Power of Voice: Managerial Affective States and Future Firm Performance</title>
+		<author>
+			<persName><forename type="first">W</forename><forename type="middle">J</forename><surname>Mayew</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Venkatachalam</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2008">2008</date>
+		</imprint>
+		<respStmt>
+			<orgName>Duke University</orgName>
+		</respStmt>
+	</monogr>
+	<note>Working paper</note>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b58">
+	<analytic>
+		<title level="a" type="main">A Simple Model of Capital Market Equilibrium with Incomplete Information</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">C</forename><surname>Merton</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Finance</title>
+		<imprint>
+			<biblScope unit="volume">42</biblScope>
+			<biblScope unit="page" from="483" to="510" />
+			<date type="published" when="1987">1987</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b59">
+	<analytic>
+		<title level="a" type="main">Good News and Bad News: Representation Theorems and Applications</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Milgrom</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Bell Journal of Economics</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="page" from="380" to="391" />
+			<date type="published" when="1981">1981</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b60">
+	<analytic>
+		<title level="a" type="main">Earnings Performance and Discretionary Disclosure</title>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">S</forename><surname>Miller</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">40</biblScope>
+			<biblScope unit="page" from="173" to="204" />
+			<date type="published" when="2002">2002</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b61">
+	<analytic>
+		<title level="a" type="main">Discretionary Disclosure and Stock-Based Incentives</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Nagar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">D</forename><surname>Wysocki</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<biblScope unit="page" from="283" to="309" />
+			<date type="published" when="2003">2003</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b62">
+	<analytic>
+		<title level="a" type="main">Disclosure Policies with Multiple Users</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Newman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Sansing</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="page" from="92" to="112" />
+			<date type="published" when="1993">1993</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b63">
+	<analytic>
+		<title level="a" type="main">Analyst Following and Institutional Ownership</title>
+		<author>
+			<persName><forename type="first">O'</forename><surname>Brien</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Bhushan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting Research</title>
+		<imprint>
+			<biblScope unit="volume">28</biblScope>
+			<biblScope unit="page" from="55" to="76" />
+			<date type="published" when="1990">1990</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b64">
+	<analytic>
+		<title level="a" type="main">Learning with Information Capacity Constraints</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Peng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial and Quantitative Analysis</title>
+		<imprint>
+			<biblScope unit="volume">40</biblScope>
+			<biblScope unit="page" from="307" to="329" />
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b65">
+	<analytic>
+		<title level="a" type="main">Estimating Standard Errors in Finance Panel Data Sets: Comparing Approaches</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">A</forename><surname>Petersen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Review of Financial Studies</title>
+		<imprint>
+			<biblScope unit="volume">22</biblScope>
+			<biblScope unit="page" from="435" to="480" />
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b66">
+	<analytic>
+		<title level="a" type="main">The Influence of Analysts, Institutional Investors, and Insiders on the Incorporation of Market, Industry and Firm-Specific Information into Stock Prices</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">D</forename><surname>Piotroski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">T</forename><surname>Roulstone</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Accounting Review</title>
+		<imprint>
+			<biblScope unit="volume">79</biblScope>
+			<biblScope unit="page" from="1119" to="1151" />
+			<date type="published" when="2004">2004</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b67">
+	<analytic>
+		<title level="a" type="main">Shareholder Litigation and Changes in Disclosure Behavior</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Rogers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Van Buskirk</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">47</biblScope>
+			<biblScope unit="page" from="136" to="156" />
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b68">
+	<monogr>
+		<title level="m" type="main">Disclosure Tone and Shareholder Litigation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Rogers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Van Buskirk;</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">And</forename><forename type="middle">S</forename><surname>Zechman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2009">2009</date>
+		</imprint>
+		<respStmt>
+			<orgName>University of Chicago, Booth School of Business</orgName>
+		</respStmt>
+	</monogr>
+	<note>Working paper</note>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b69">
+	<analytic>
+		<title level="a" type="main">Strategic Benchmarks in Earnings Announcements: The Selective Disclosure of Prior-Period Earnings Components</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Schipper</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">M</forename><surname>Schrand</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">R</forename><surname>Walther</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Accounting Review</title>
+		<imprint>
+			<biblScope unit="volume">54</biblScope>
+			<biblScope unit="page" from="151" to="177" />
+			<date type="published" when="1991">1991. 2000</date>
+		</imprint>
+	</monogr>
+	<note>Accounting Horizons Commentary on Analysts&apos; Forecasts</note>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b70">
+	<analytic>
+		<title level="a" type="main">Management Entrenchment: The Case of Manager-Specific Investments</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Shleifer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">W</forename><surname>Vishny</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Economics</title>
+		<imprint>
+			<biblScope unit="volume">25</biblScope>
+			<biblScope unit="page" from="123" to="139" />
+			<date type="published" when="1989">1989</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b71">
+	<analytic>
+		<title level="a" type="main">Stern Stewart Roundtable on Capital Structure and Stock Repurchase</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Stewart</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Applied Corporate Finance</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="page" from="8" to="41" />
+			<date type="published" when="2001">2001</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b72">
+	<analytic>
+		<title level="a" type="main">Voluntary Disclosure of Bad News</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Suijs</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Business Finance &amp; Accounting</title>
+		<imprint>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="page" from="1423" to="1435" />
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b73">
+	<analytic>
+		<title level="a" type="main">Bridging the Information Gap: Quarterly Conference Calls as a Medium for Voluntary Disclosure</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">C</forename><surname>Tasker</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Review of Accounting Studies</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="137" to="167" />
+			<date type="published" when="1998">1998</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b74">
+	<analytic>
+		<title level="a" type="main">Technology Company Conference Calls: A Small Sample Study</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">C</forename><surname>Tasker</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Financial Statement Analysis</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="page" from="6" to="14" />
+			<date type="published" when="1998">1998</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b75">
+	<analytic>
+		<title level="a" type="main">More Than Words: Quantifying Language to Measure Firms&apos; Fundamentals</title>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">C</forename><surname>Tetlock</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Saar-Tsechansky;</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">And</forename><forename type="middle">S</forename><surname>Macskassy</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Finance</title>
+		<imprint>
+			<biblScope unit="volume">63</biblScope>
+			<biblScope unit="page" from="1437" to="1467" />
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b76">
+	<analytic>
+		<title level="a" type="main">Special Study: Regulation Fair Disclosure Revisited</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Unger</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">U.S. Securities and Exchange Commission</title>
+		<imprint>
+			<date type="published" when="2001-12">December 2001</date>
+			<pubPlace>Washington, DC</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b77">
+	<analytic>
+		<title level="a" type="main">Discretionary Disclosure</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">E</forename><surname>Verrecchia</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="page" from="179" to="194" />
+			<date type="published" when="1983">1983</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b78">
+	<analytic>
+		<title level="a" type="main">Endogenous Proprietary Costs through Firm Interdependence</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">E</forename><surname>Verrecchia</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="page" from="245" to="251" />
+			<date type="published" when="1990">1990</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b79">
+	<analytic>
+		<title level="a" type="main">Information Quality and Discretionary Disclosure</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">E</forename><surname>Verrecchia</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="page" from="365" to="380" />
+			<date type="published" when="1990">1990</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b80">
+	<analytic>
+		<title level="a" type="main">Essays on Disclosure</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">E</forename><surname>Verrecchia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">E</forename><surname>Verrecchia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Weber</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="page" from="791" to="814" />
+			<date type="published" when="2001">2001. 2006</date>
+		</imprint>
+	</monogr>
+	<note>Redacted Disclosure Journal of Accounting Research</note>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b81">
+	<analytic>
+		<title level="a" type="main">Voluntary Disclosure with a Strategic Opponent</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wagenhofer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Accounting and Economics</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="page" from="341" to="363" />
+			<date type="published" when="1990">1990</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct status="extracted" xml:id="b82">
+	<analytic>
+		<title level="a" type="main">Private Earnings Guidance and Its Implications for Disclosure Regulation</title>
+		<author>
+			<persName><forename type="first">I</forename><forename type="middle">Y</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Accounting Review</title>
+		<imprint>
+			<biblScope unit="volume">82</biblScope>
+			<biblScope unit="page" from="1299" to="1332" />
+			<date type="published" when="2007">2007</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

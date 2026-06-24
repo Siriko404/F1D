@@ -1,0 +1,565 @@
+{
+  "type": "conclusion",
+  "profile": [
+    {
+      "id": "a1-f3",
+      "agent": 1,
+      "aspect": "Repeating the full multi-word noun phrase instead of a short label",
+      "exemplar_pattern": "After introducing a measure, refer to it with a short fixed label (Cash, tone, ClarityCEO) rather than respelling the descriptive phrase.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "Cash is an important tool for firms operating in imperfect capital markets."
+        },
+        {
+          "paper": "dwz",
+          "quote": "This paper shows that CEOs persistently differ in the clarity of their communication."
+        }
+      ],
+      "our_pattern": "Spell out 'chief executive' and 'question-and-answer' in full repeatedly rather than using a short term.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P1",
+          "quote": "the language a chief executive uses in the unscripted question-and-answer session"
+        },
+        {
+          "para_id": "OUR 5-P1",
+          "quote": "a residual measure of chief-executive question-and-answer uncertainty"
+        }
+      ],
+      "gap": "Within two clauses the long phrase 'chief-executive question-and-answer' appears twice in full; exemplars compress repeated referents to a single short word, so ours reads heavier on repetition.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f5",
+      "agent": 1,
+      "aspect": "Latinate/nominal abstraction vs everyday verbs",
+      "exemplar_pattern": "Use plain verbs and concrete nouns ('we cannot speak to', 'add noise', 'leave in the dark') for caveats and mechanisms.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "we cannot speak to the generalizability of the approach outside of the conference call setting"
+        },
+        {
+          "paper": "lm2011",
+          "quote": "many of the misclassified words simply add noise to the tonal measure"
+        }
+      ],
+      "our_pattern": "Use abstract nominal phrasing ('two readings ... remain observationally equivalent', 'one operationalization of call-specific uncertainty') where plainer wording is available.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P5",
+          "quote": "a compliance-constrained inability to speak and a strategically chosen reticence, remain observationally equivalent"
+        },
+        {
+          "para_id": "OUR 5-P6",
+          "quote": "the residual is one operationalization of call-specific uncertainty rather than a direct reading of what a chief executive knows"
+        }
+      ],
+      "gap": "Phrases like 'observationally equivalent' and 'one operationalization of call-specific uncertainty' use technical Latinate abstraction where exemplar caveats stay in everyday verbs; the non-specialist bar is met less easily here.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f8",
+      "agent": 1,
+      "aspect": "Coining a special term for the contribution vs naming it plainly",
+      "exemplar_pattern": "Name the contribution in ordinary descriptive words (a regularity, a relation, a measurement problem) without minting a labeled construct.",
+      "exemplar_quotes": [
+        {
+          "paper": "lm2011",
+          "quote": "Our paper proposes two solutions to this measurement problem."
+        },
+        {
+          "paper": "ragozzino2024",
+          "quote": "Our objective in this project was to begin to establish a connection between M&A activity and corporate communication"
+        }
+      ],
+      "our_pattern": "Coin and repeat a labeled construct ('within-firm language signature', 'the language signature we characterize') and place it via spatial metaphor.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P4",
+          "quote": "The within-firm language signature we characterize sits in the window between them."
+        }
+      ],
+      "gap": "We mint 'within-firm language signature' and locate it with the spatial image 'sits in the window between them'; exemplars name the contribution in plain descriptive nouns, so ours adds an invented term plus a metaphor the reader must map.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f11",
+      "agent": 1,
+      "aspect": "Negation phrasing for the no-prescription stance",
+      "exemplar_pattern": "Phrase a cautionary stance in direct words ('should exercise caution', 'leave this interesting question for future research').",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "regulators and researchers should exercise caution when assuming that complex language is necessarily less informative than simple language"
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "we ultimately leave this interesting question for future research"
+        }
+      ],
+      "our_pattern": "State the no-prescription stance through a longer abstract construction ('We draw no prescription ... from a correlational pattern that identifies no causal channel; the contribution is to characterize a regularity, not to recommend acting on it').",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P4",
+          "quote": "We draw no prescription for investors, managers, or regulators from a correlational pattern that identifies no causal channel; the contribution is to characterize a regularity, not to recommend acting on it."
+        }
+      ],
+      "gap": "The stance is built from abstract phrasing ('draw no prescription ... from a correlational pattern that identifies no causal channel') plus a contrastive 'characterize a regularity, not to recommend'; exemplars deliver caution in a single plain verb phrase, so ours is wordier and more abstract.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f5",
+      "agent": 2,
+      "aspect": "Multiple qualifying conditions chained inside one sentence in the robustness recap",
+      "exemplar_pattern": "Exemplars list robustness conditions as a clean parallel series with light connectors, easy to scan.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "The results are robust to controlling for other linguistic attributes of the call; to using within-industry, within-firm, and within-manager designs; and to several placebo tests."
+        },
+        {
+          "paper": "thewissen2024",
+          "quote": "This result cannot be explained by differences in information asymmetry, earnings management, industry or time fixed effects and has been tested for endogeneity biases, which strengthens the causal relationship between stock M&As and tone inflation."
+        }
+      ],
+      "our_pattern": "Our robustness recap combines several non-parallel conditions ('survives a direct measure ... and its interaction', 'holds when a withdrawal is treated as ... and when the cash specification is estimated without its dynamic term') with mid-sentence shifts in grammatical object, so the parallelism that aids scanning is broken.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P3",
+          "quote": "The differential-timing result holds when a withdrawal is treated as a resolution of the deal and when the cash specification is estimated without its dynamic term."
+        }
+      ],
+      "gap": "Bushee's 'robust to ... ; to ... ; and to ...' is strictly parallel; our 'holds when X and when Y' mixes a treatment condition with an estimation-detail condition, so the two halves do not read in parallel.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f9",
+      "agent": 2,
+      "aspect": "Latinate / formal connectors and qualifiers raise register above the plainest exemplars",
+      "exemplar_pattern": "Exemplars use simple connectives and concrete verbs to move between claims.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "However, firms often build up much more cash than they need to meet expected financing requirements."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "Older generations of managers, on average, are financially more conservative, while managers who hold an MBA degree follow more aggressive strategies."
+        }
+      ],
+      "our_pattern": "Our prose leans on abstract relational phrasing ('two readings ... remain observationally equivalent', 'consistent with the scripted and unscripted segments relating to the outside information environment differently'), asking the reader to parse abstract relations rather than concrete statements.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P5",
+          "quote": "two readings, a compliance-constrained inability to speak and a strategically chosen reticence, remain observationally equivalent"
+        },
+        {
+          "para_id": "OUR 5-P3",
+          "quote": "consistent with the scripted and unscripted segments relating to the outside information environment differently"
+        }
+      ],
+      "gap": "Harford and Bertrand-Schoar move with plain 'However' / 'while' between concrete statements; our transitions wrap the claim in abstract relational vocabulary ('observationally equivalent', 'relating to ... differently') the reader must unpack.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f4",
+      "agent": 3,
+      "aspect": "Abstract relational nouns ('the disclosure state', 'a deal's passage from private to public', 'the outside information environment') where exemplars use concrete plain subjects",
+      "exemplar_pattern": "Exemplars name concrete things people picture: cash reserves, acquisitions, stock prices, silence, words. Abstractions, when used, are immediately cashed out in plain terms.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "Our evidence suggests that managers regularly leave call participants in the dark by not answering their questions."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "Common words like depreciation, liability, foreign, and board are not tonal when occurring in a 10-K."
+        }
+      ],
+      "our_pattern": "Our prose leans on stacked abstract nominalizations: 'the disclosure state of an acquisition', 'a readable, anticipatory trace of a deal's passage from private to public', 'the scripted and unscripted segments relating to the outside information environment differently'.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P4",
+          "quote": "the unscripted language of earnings calls carries a readable, anticipatory trace of a deal's passage from private to public"
+        },
+        {
+          "para_id": "OUR 5-P3",
+          "quote": "consistent with the scripted and unscripted segments relating to the outside information environment differently"
+        }
+      ],
+      "gap": "Where hollander2010 writes 'leave call participants in the dark', our equivalents ('passage from private to public', 'relating to the outside information environment differently') stay at the nominal-abstract level the non-specialist bar warns against; the exemplars cash such ideas out into a picture.",
+      "materiality": "major",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a3-f7",
+      "agent": 3,
+      "aspect": "Two-place abstract framing of contribution ('two strands usually studied apart ... sits in the window between them') vs. exemplars' direct statement of what was shown",
+      "exemplar_pattern": "Exemplars state the contribution as a direct claim about a relationship or a neglected gap in plain terms, without a spatial 'sits between them' metaphor layered over an abstract pairing.",
+      "exemplar_quotes": [
+        {
+          "paper": "ragozzino2024",
+          "quote": "by considering the implications of information asymmetries for acquiring firms and capital market participants that have been neglected in previous research, we conclude that previous research has understated the implications of information frictions in M&A markets"
+        },
+        {
+          "paper": "harford1999",
+          "quote": "The results in the first part of the paper highlight the importance of considering a firm's demand for cash balances before judging its level of liquidity."
+        }
+      ],
+      "our_pattern": "Our contribution is framed as an abstract bridging between two named theory strands plus a spatial metaphor: 'two strands usually studied apart ... The within-firm language signature we characterize sits in the window between them.'",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P4",
+          "quote": "the result speaks to two strands usually studied apart: the theory of when an informed manager withholds private information, and the evidence that markets anticipate corporate transactions before they are announced. The within-firm language signature we characterize sits in the window between them."
+        }
+      ],
+      "gap": "ragozzino2024 and harford1999 say in plain terms what their results imply ('understated the implications', 'importance of considering ... demand for cash'); our version routes the same contribution through a two-strand abstraction plus a 'sits in the window between them' figure, which is a heavier construction than the exemplar register requires.",
+      "materiality": "minor",
+      "guardrail_collision": false
+    },
+    {
+      "id": "a1-f1",
+      "agent": 1,
+      "aspect": "Single-clause sentence vs triple-stacked semicolon enumeration of all results",
+      "exemplar_pattern": "State each finding as its own short declarative sentence beginning with a plain 'I find / We find', one result per sentence.",
+      "exemplar_quotes": [
+        {
+          "paper": "harford1999",
+          "quote": "I find that cash-rich firms are more likely to make acquisitions."
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "We find that the best predictors of such an event are firm size, CEO stock price-based incentives, company age, firm performance, litigation risk, and whether analysts are actively involved during the call's Q&A section."
+        }
+      ],
+      "our_pattern": "Pack three distinct findings into one sentence joined by semicolons and 'while', each clause itself a multi-part claim.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P2",
+          "quote": "We find that residual uncertainty is elevated in the quarter before a cash acquisition, with no comparable rise before stock acquisitions; that it becomes indistinguishable from zero once the deal is announced, even before it closes, while the cash that funds it persists to completion; and that the elevation concentrates in cash acquisitions rather than stock on a formal pooled test."
+        }
+      ],
+      "gap": "Our single sentence carries three findings plus their qualifiers across semicolons; exemplars give each finding its own short sentence, so the reader parses one claim at a time rather than holding three.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f1",
+      "agent": 3,
+      "aspect": "Sentence length / single-breath density of the opening 'in this study' sentence",
+      "exemplar_pattern": "Exemplars open the conclusion with a short, plain declarative naming the object of study; the measure or method gets its own later sentence rather than being stuffed into the opener as a subordinate clause.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "We examine the disclosure choices firms make during public earningsrelated conference calls between managers and the investment community."
+        },
+        {
+          "paper": "thewissen2024",
+          "quote": "This paper contributes to prior literature by investigating whether stock-for-stock M&As induce managers to strategically manipulate the content of corporate disclosures by inflating the tone of earnings press releases to positively influence the stock price, and therefore reduce the target's acquisition cost."
+        }
+      ],
+      "our_pattern": "Our opener packs the research question, the unscripted-Q&A setting, the withheld-acquisition object, the measure name, and the style-netting qualifier all into one ~55-word sentence with three stacked subordinate clauses ('using a residual measure ... that nets out ...').",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P1",
+          "quote": "In this study we examine whether the language a chief executive uses in the unscripted question-and-answer session of an earnings call tracks the disclosure state of an acquisition the firm is still withholding, using a residual measure of chief-executive question-and-answer uncertainty that nets out each executive's persistent speaking style."
+        }
+      ],
+      "gap": "The single opening sentence carries five distinct ideas where hollander2010 carries one; even the heaviest exemplar opener (thewissen) front-loads only the question plus its motive, not the measure construction on top of it.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f2",
+      "agent": 3,
+      "aspect": "Repeated nominal compound 'question-and-answer' / 'chief-executive' spelled out in full instead of a plain noun",
+      "exemplar_pattern": "Exemplars use short head nouns ('managers', 'CEOs', 'the call', 'analysts') and only spell a label out once; they do not repeat a multi-hyphen compound twice inside one sentence.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "This paper shows that CEOs persistently differ in the clarity of their communication."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "To test whether cash stockpiles are invested poorly, I study the acquisition behavior of cash-rich firms."
+        }
+      ],
+      "our_pattern": "Our opener repeats the fully written-out compound 'question-and-answer' twice and 'chief executive / chief-executive' twice in one sentence, where the exemplars would use 'Q&A' once or 'CEO' once and move on.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P1",
+          "quote": "the language a chief executive uses in the unscripted question-and-answer session of an earnings call tracks the disclosure state of an acquisition the firm is still withholding, using a residual measure of chief-executive question-and-answer uncertainty"
+        }
+      ],
+      "gap": "Two full spell-outs of the same compound in 55 words reads heavier than dwz's single 'CEOs'; the register tolerates an abbreviation or a pronoun the second time.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f4",
+      "agent": 1,
+      "aspect": "Abstract metaphor for the result vs concrete plain statement",
+      "exemplar_pattern": "Summarize the takeaway in concrete, literal terms or one plain image, not layered figurative nouns.",
+      "exemplar_quotes": [
+        {
+          "paper": "hollander2010",
+          "quote": "In short, the results of our study suggest that silence speaks."
+        },
+        {
+          "paper": "harford1999",
+          "quote": "Large cash balances remove an important monitoring component from the investment process, often resulting in the destruction of shareholder value."
+        }
+      ],
+      "our_pattern": "State the takeaway through stacked abstract metaphors ('readable, anticipatory trace', 'passage from private to public', 'signature').",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P4",
+          "quote": "the unscripted language of earnings calls carries a readable, anticipatory trace of a deal's passage from private to public, a signature investors and researchers can in principle observe before the announcement"
+        }
+      ],
+      "gap": "Our takeaway sentence chains three figurative nouns ('trace', 'passage', 'signature') plus the hedge 'in principle'; the exemplars deliver the takeaway in one literal clause, so ours demands more decoding.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a1-f6",
+      "agent": 1,
+      "aspect": "Sentence-internal density of qualifiers piled in one breath",
+      "exemplar_pattern": "Limit a caveat to one or two qualifiers per sentence, splitting additional qualifications across separate sentences.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "While the framework we follow does not allow us to estimate the causal effect of managers on firm policies or performance, it provides a simple and intuitive approach to deal with many of the first-order selection problems that such a study might face."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "the existing literature on financial text does not actually determine the causal link between tone and returns."
+        }
+      ],
+      "our_pattern": "Stack five caveats into one sentence chained by 'and ... and ... ; ... in particular ... so ...'.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P5",
+          "quote": "The evidence is correlational and within-firm, the design supports no causal identification, and we do not establish why the signal concentrates in cash deals; the war-chest mechanism in particular is unestablished, so two readings, a compliance-constrained inability to speak and a strategically chosen reticence, remain observationally equivalent."
+        }
+      ],
+      "gap": "One sentence holds correlational, within-firm, no-identification, mechanism-open, war-chest, and the two-readings clause; exemplars cap caveats at a clause or two per sentence, so ours is denser to track.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f6",
+      "agent": 2,
+      "aspect": "Dense appositive insertions interrupt the main clause",
+      "exemplar_pattern": "Exemplars keep the subject and verb close, placing elaboration in a following sentence rather than mid-clause.",
+      "exemplar_quotes": [
+        {
+          "paper": "bertrand_schoar2003",
+          "quote": "We find considerable heterogeneity across managers."
+        },
+        {
+          "paper": "lm2011",
+          "quote": "Common words like depreciation, liability, foreign, and board are not tonal when occurring in a 10-K."
+        }
+      ],
+      "our_pattern": "Our sentences insert long appositive and parenthetical spans between subject and continuation ('the sample, United States public firms from 2002 to 2018, approximately the S&P 1500, may not extend'), so the reader holds the subject open across two embedded qualifiers before the verb arrives.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P6",
+          "quote": "the sample, United States public firms from 2002 to 2018, approximately the S\\&P~1500, may not extend to other periods, other markets, or the smaller firms outside it"
+        }
+      ],
+      "gap": "LM keeps subject ('Common words like ...') and predicate adjacent; our subject 'the sample' is separated from its verb 'may not extend' by two appositive insertions.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f7",
+      "agent": 2,
+      "aspect": "Long single sentence packing measure caveat, list of mechanisms, and design claim together in future-work",
+      "exemplar_pattern": "Exemplars present future-work directions as separate short prompts, frequently as a sequence of standalone questions or short sentences.",
+      "exemplar_quotes": [
+        {
+          "paper": "dwz",
+          "quote": "How do these differences originate? How influential are early career or childhood experiences, or even genetics?"
+        },
+        {
+          "paper": "hollander2010",
+          "quote": "While the evidence we provide speaks somewhat to the latter argument, we ultimately leave this interesting question for future research."
+        }
+      ],
+      "our_pattern": "Our future-work sentence chains three different directions plus an embedded list and a design caveat into one semicolon period, so several distinct prompts are bundled rather than separated.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P7",
+          "quote": "The same residual-uncertainty reading could be applied to other corporate transactions, such as divestitures, joint ventures, and strategic alliances, and to settings outside the United States; richer measures of spoken uncertainty could replace the word-list count; and establishing why the signal concentrates in cash acquisitions, the cash-accumulation channel this study leaves open, would require a design the present setting does not provide."
+        }
+      ],
+      "gap": "DWZ separates each future direction into its own short question; our P7 fuses three directions and an embedded mechanism caveat into one multi-semicolon sentence.",
+      "materiality": "major",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a3-f6",
+      "agent": 3,
+      "aspect": "Latinate / technical word choice ('anticipatory', 'operationalization', 'counterfactual', 'observationally equivalent') where exemplars prefer everyday words",
+      "exemplar_pattern": "Even when published journals describe limits and mechanisms, they reach for plain words ('we cannot speak to', 'caution', 'add noise', 'leaves unaddressed') rather than methodological Latinate terms in the conclusion's prose.",
+      "exemplar_quotes": [
+        {
+          "paper": "lm2011",
+          "quote": "However, while many of the misclassified words simply add noise to the tonal measure"
+        },
+        {
+          "paper": "bushee2018",
+          "quote": "regulators and researchers should exercise caution when assuming that complex language is necessarily less informative than simple language"
+        }
+      ],
+      "our_pattern": "Our conclusion deploys a cluster of register-heavy terms: 'anticipatory trace', 'one operationalization of call-specific uncertainty', 'an imperfect counterfactual', 'remain observationally equivalent'.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P6",
+          "quote": "the residual is one operationalization of call-specific uncertainty rather than a direct reading of what a chief executive knows"
+        },
+        {
+          "para_id": "OUR 5-P6",
+          "quote": "The stock-financed placebo shares the disclosure bind but is an imperfect counterfactual"
+        }
+      ],
+      "gap": "Where lm2011 says plainly 'simply add noise' and bushee2018 says 'exercise caution', our prose uses 'operationalization', 'counterfactual', and 'observationally equivalent' — specialist vocabulary that sits above the non-specialist bar (the underlying qualifications are load-bearing, so the word-choice density is the flagged item, not the content).",
+      "materiality": "minor",
+      "guardrail_collision": true
+    },
+    {
+      "id": "a2-f8",
+      "agent": 2,
+      "aspect": "Technical phrasing of the null result ('failure to find rather than a powered test of equivalence') over plainer wording",
+      "exemplar_pattern": "Exemplars state caveats about scope/generalizability in plain, everyday terms.",
+      "exemplar_quotes": [
+        {
+          "paper": "bushee2018",
+          "quote": "One important caveat to our decomposition approach is that we cannot speak to the generalizability of the approach outside of the conference call setting"
+        },
+        {
+          "paper": "lm2011",
+          "quote": "All textual analysis ultimately stands or falls by the categorization procedures."
+        }
+      ],
+      "our_pattern": "Our caveat uses methodological term-of-art phrasing ('a failure to find rather than a powered test of equivalence') that a non-specialist must decode, where exemplars keep caveats in lay terms.",
+      "our_quotes": [
+        {
+          "para_id": "OUR 5-P6",
+          "quote": "the scrutiny rule-out is a failure to find rather than a powered test of equivalence, since most calls draw no cash scrutiny at all"
+        }
+      ],
+      "gap": "Bushee phrases its central caveat in plain language ('we cannot speak to the generalizability'); our equivalent caveat requires the reader to parse 'powered test of equivalence'.",
+      "materiality": "minor",
+      "guardrail_collision": true
+    }
+  ],
+  "guardrail_collisions": [
+    "a1-f5",
+    "a1-f8",
+    "a1-f11",
+    "a2-f5",
+    "a2-f9",
+    "a1-f1",
+    "a3-f1",
+    "a3-f2",
+    "a1-f4",
+    "a1-f6",
+    "a2-f6",
+    "a2-f7",
+    "a3-f6",
+    "a2-f8"
+  ],
+  "side_notes": [
+    "All three agents operated almost exclusively at the sentence/clause level (sentence length, semicolon chaining, appositives, word choice). None examined paragraph-level structure: the ordering of the seven paragraphs, whether the findings/limitations/future-work sequencing itself adds load, or paragraph-to-paragraph transitions. That stratum is unexamined.",
+    "Coverage is heavily concentrated on P1 (opening), P2 (findings), P4 (takeaway), P5-P6 (limitations), and P7 (future work). P3 (robustness recap) drew only two findings (a2-f5, and a tail of a3-f4/a2-f9), so the robustness paragraph is comparatively under-probed relative to the others.",
+    "Several findings are guardrail_collision=true and sit on load-bearing caveat/qualifier content (causal-identification language, observational-equivalence of the two readings, powered-test-of-equivalence wording). These were kept per instruction; a human reviewer must confirm any future restyling does not erode the locked epistemic hedges."
+  ],
+  "gate_rejected": [],
+  "redteam_rejected": [],
+  "merges": [
+    {
+      "ids": [
+        "a1-f1",
+        "a2-f1",
+        "a3-f3"
+      ],
+      "canonical": "a1-f1"
+    },
+    {
+      "ids": [
+        "a1-f2",
+        "a2-f2",
+        "a3-f1"
+      ],
+      "canonical": "a3-f1"
+    },
+    {
+      "ids": [
+        "a2-f3",
+        "a3-f2"
+      ],
+      "canonical": "a3-f2"
+    },
+    {
+      "ids": [
+        "a1-f4",
+        "a2-f4"
+      ],
+      "canonical": "a1-f4"
+    },
+    {
+      "ids": [
+        "a1-f6",
+        "a3-f5"
+      ],
+      "canonical": "a1-f6"
+    },
+    {
+      "ids": [
+        "a1-f7",
+        "a2-f6"
+      ],
+      "canonical": "a2-f6"
+    },
+    {
+      "ids": [
+        "a1-f10",
+        "a2-f7",
+        "a3-f8"
+      ],
+      "canonical": "a2-f7"
+    },
+    {
+      "ids": [
+        "a1-f9",
+        "a3-f6"
+      ],
+      "canonical": "a3-f6"
+    },
+    {
+      "ids": [
+        "a2-f8",
+        "a3-f9"
+      ],
+      "canonical": "a2-f8"
+    }
+  ],
+  "unhandled": [],
+  "_provenance": {
+    "runId": "wf_fde9fe40-9dc",
+    "wave": "methods-conclusion",
+    "tool_calls_total": 8,
+    "note": "clean under TOOL_LOCK"
+  }
+}
