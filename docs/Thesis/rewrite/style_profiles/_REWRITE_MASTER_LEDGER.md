@@ -12,6 +12,17 @@ Next concrete step: wire `args` (load the 8 profiles' `profile[]` + types roster
 
 > **PARALLEL FORK (2026-06-25):** Phase 3 runs concurrently in a separate git worktree `../F1D-phase3` (branch `phase3/propositions`) — see `_PHASE3_KICKOFF.md`. THIS session = Phase 2 ONLY (dry-run pending Sina's go). The fork edits the proposition spine and must NOT touch `style_profiles/*` or this ledger; merge its branch back when done.
 
+### HOW TO RUN THE DRY-RUN (when — and ONLY when — Sina says go)
+⚠️ **GATE: needs Sina's EXPLICIT go.** It spawns ~30 agents (8×3 extract + 8 cull + 1 judge + 3 classify) and is BILLABLE. Do NOT auto-run on resume.
+1. **Build `args`** (the script has NO filesystem access — everything goes in via `args`):
+   - `profiles`: for each of the 8 `style_profiles/<type>_profile.json`, take its `profile[]` array → `{ type, findings: profile[] }`. Use `profile[]` ONLY (ignore `redteam_rejected`/`merges`/etc.).
+   - `types`: `["abstract","intro","lit_review","hypotheses","data","methods","results","conclusion"]`.
+   - `roster`: `{ <type>: "<one-line description of that writing situation>" }` (author from the type meanings).
+   - `convention`: a short paragraph = the corp-fin register gist from `DraftTemplate.txt`.
+2. **Invoke via the Workflow tool:** `{ scriptPath: "docs/Thesis/rewrite/style_phase2_principles_master.js", args: <the object> }`. It IS a Workflow script — run through the Workflow tool, NOT `node`.
+3. **On return:** write `result.rulebooks[<type>]` → `style_profiles/_rulebooks/<type>.json` (8 files) + `result.coverage`/`result.audit` → `style_profiles/_rulebooks/_audit.json`. Then Sina reviews the 8 rulebooks.
+4. If any stage null-degraded (`audit.*_note`), re-run that part. Then commit the rulebooks.
+
 ---
 
 ## THE 5-PHASE MAP (Sina, 2026-06-25 — replaces the old "rewrite 16 subsections now" plan)
