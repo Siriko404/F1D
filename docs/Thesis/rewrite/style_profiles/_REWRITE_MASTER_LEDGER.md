@@ -7,8 +7,8 @@
 ---
 
 ## CURRENT POSITION
-**Phase 2 — brainstorming the principles-harness internals.**
-Next concrete step: lock Phase-2 SUCCESS CRITERIA (below) with Sina → then topology falls out → then write the harness spec.
+**Phase 2 — harness BUILT.** `docs/Thesis/rewrite/style_phase2_principles_master.js` (8 type-rulebooks; pipeline extract→gate→cull→judge→classify→materialize). Syntax-checked (`node --check` PASS). Granularity LOCKED at **8 writing-types** (Sina + advisor, evidence in TOPOLOGY below).
+Next concrete step: wire `args` (load the 8 profiles' `profile[]` + types roster + convention) → **DRY-RUN** the harness → Sina reviews the 8 rulebooks.
 
 ---
 
@@ -16,7 +16,7 @@ Next concrete step: lock Phase-2 SUCCESS CRITERIA (below) with Sina → then top
 | Ph | What | Status | Writes prose? |
 |---|---|---|---|
 | 1 | **Style analysis** — 8 profiles, 157 findings (writing weaknesses vs corp-fin convention) | ✅ DONE | no |
-| 2 | **Principles harness** — analyse the Phase-1 analyses → the MINIMAL, most-effective writing-principles-per-section to abide by | ◀ IN PROGRESS (design) | **no → SAFE** |
+| 2 | **Principles harness** — analyse the Phase-1 analyses → the MINIMAL, most-effective writing principles per WRITING-TYPE (8 rulebooks) | ◀ IN PROGRESS (built; pre-dry-run) | **no → SAFE** |
 | 3 | **Propositions redesign** — insert new propositions (more robustness checks; maybe pivot cash→all deal types) | 📝 DEFERRED (record only) | no |
 | 4 | **Rewrite harness** — the actual rewriting of the whole thesis by a harness (the writing process) | 📝 DEFERRED | **YES → drift-defense lives HERE** |
 | 5 | **Audit-harness stack** — a dedicated stack to audit the thesis hardnosedly, referee-proof | 📝 DEFERRED (record only) | no |
@@ -32,22 +32,47 @@ Next concrete step: lock Phase-2 SUCCESS CRITERIA (below) with Sina → then top
 
 ---
 
-## PHASE 2 — SUCCESS CRITERIA (PROPOSED, advisor-backed — pending Sina's lock)
-Phase 2's job: turn 157 style findings → a minimal per-section ruleset. Lock these BEFORE choosing topology (topology falls out of them — Karpathy goal-driven).
-- **COVERAGE** — every Phase-1 finding maps to ≥1 principle (nothing dropped silently).
+## PHASE 2 — SUCCESS CRITERIA (LOCKED 2026-06-25 by Sina)
+Phase 2's job: turn 157 style findings → a minimal writing-principle rulebook per WRITING-TYPE (8). Locked BEFORE topology (Karpathy goal-driven).
+- **COVERAGE (two parts)** — (a) FINDING-coverage: every Phase-1 finding → ≥1 canonical principle (nothing dropped). (b) TYPE-coverage: every type's rulebook contains every principle CLASSIFY assigns it — a UNIVERSAL rule lands in all 8 rulebooks; a TYPE-SPECIFIC rule in its source type(s). Default-include → a needed rule is never missing.
 - **GROUNDING** — every principle cites the finding ID(s) it comes from. No orphan/invented rules.
-- **MINIMALITY** — the SMALLEST ruleset that achieves coverage. Hard target, not nice-to-have (Sina: "minimal of rules per section which is most effective").
-- **Phase-2 failure modes to defend against:** (1) INVENTION — a rule grounded in no finding; (2) BLOAT — 157 rules instead of the minimal set; (3) OVER-GENERALIZATION — "max 20 words" when one 45-word sentence was flagged.
-- **The Phase-2 check = grounding + minimality, NOT claim-fidelity.** Grounding is partly MECHANICAL (does finding-ID X exist? does it say what the rule claims?).
+- **MINIMALITY = WITHIN-TYPE ONLY.** Output = one self-contained rulebook PER writing-type (8); a Phase-4 subsection reads its TYPE's rulebook. Minimal = no redundant principle WITHIN a type's rulebook. A universal rule appears in ALL 8 rulebooks. **Cross-type dedup is FORBIDDEN** — it would starve a rulebook of a rule it needs.
+- **EFFECTIVE** (operationalizes Sina's "most effective") — each principle is actionable via its REAL exemplar (before = our_quote, after-register = the finding's exemplar quote), NEVER an invented threshold. Vague rules ("avoid noun pile-ups") are rejected; usable, anchored rules ("name the construct plainly as the exemplars do — 'CEO clarity', 'negative word list' — not 'a residual measure of chief-executive question-and-answer uncertainty'") pass.
+- **Phase-2 failure modes to defend against:** (1) INVENTION — a rule grounded in no finding; (2) BLOAT — redundant principles WITHIN a rulebook (cross-type repetition is NOT bloat); (3) OVER-GENERALIZATION — "max 20 words" when one 45-word sentence was flagged; (4) UNDER-TYPING — a type missing a universal rule it needs (CLASSIFY's default-include prevents this).
+- **The Phase-2 check = grounding + actionability + coverage, NOT claim-fidelity.** Coverage is partly MECHANICAL (does finding-ID X exist / is it cited?) but only counts PAIRED with the cull faithfulness check (a cited-but-unaddressed ID games the set op alone).
 - ⛔ **Do NOT port the Phase-4 meaning machinery** (writer×3 → redteam×3 → judge). That defends meaning-drift, which cannot occur in Phase 2. Dead weight here.
 
-## PHASE 2 — TOPOLOGY (CANDIDATE, not locked — brainstorm in progress)
-Likely shape (falls out of the criteria above): **per-profile extractor → synthesis that dedupes → one grounding+coverage pass.** No 3-way meaning red-team. Reuse Phase-1 mechanics where they fit (TOOL_LOCK, forced StructuredOutput, describe-only checker-by-reference).
+## PHASE 2 — TOPOLOGY (BUILT 2026-06-25 → `docs/Thesis/rewrite/style_phase2_principles_master.js`, `node --check` PASS)
+Reuse Phase-1 mechanics: TOOL_LOCK; forced StructuredOutput; describe-only checkers BY REFERENCE; null-degrade; profiles run **SEQUENTIALLY** (referee rate-limit scar — peak concurrency 3). **NO writer×3 / redteam×3** (no prose → no drift).
 
-## PHASE 2 — INPUTS (the only files the harness needs)
-- **8 style profiles** — `style_profiles/<type>_profile.json` (157 findings total; filter by `our_quotes[].para_id`).
-- **16 spine ledgers** — `section*_paragraph_ledger.json` (guardrails / register context per section).
-- **Corp-fin convention** — `DraftTemplate.txt` (the convention the findings were scored against).
+**GRANULARITY = 8 writing-types** (Sina + advisor, evidence-locked 2026-06-25). Measured findings per bucket (`_findings_dist.py`, all 157):
+- per **subsection (16):** avg 12, **3 thin ≤5** (2.5=5, 4.2=3, 4.3=4) → wasteful + uneven.
+- per **section (6):** §2=66, §3=64 → piles too big; §2 alone blends lit_review+hypotheses+methods.
+- per **writing-type (8): 14–32, avg 20, balanced — and the grain the findings ALREADY live in → CHOSEN.** A Phase-4 subsection reads its type's rulebook (3.2/3.3/3.4→results, 2.3–2.5→methods, …).
+
+**Principle schema (anti-hallucination):** `{principle_id, trigger, exemplar_anchor, gap_fix, finding_ids[], meaning_flag}` — target = the finding's OWN verbatim exemplar quote; `gap_fix` RELATIVE not absolute; `meaning_flag` = `guardrail_collision` carried to Phase 4. (See ANTI-HALLUCINATION GUARD below.)
+
+Pipeline (as built):
+1. **EXTRACT ×3 panel per profile** (8 profiles, SEQUENTIAL). Reads ONLY `profile[]`; all materialities. → candidate principles.
+2. **GATE (JS, mechanical, no LLM):** drop a rule unless its `exemplar_anchor` is a VERBATIM quote of a cited finding (proven `norm/isSub`) AND `gap_fix` has no number absent from the finding AND `finding_ids` exist. = the anti-hallucination rail, mechanized.
+3. **CULL ×1 redteam per profile** (by reference, refute-by-default): kill (F1) fabricated absolute / (F2) relative→absolute hardening / unfaithful; merge dups; KEEP `meaning_flag`. null-degrade → gate-clean.
+4. **JUDGE ×1** (cross-profile, by reference): dedup → canonical library; each canonical carries `source_types`. null-degrade → each its own canonical.
+5. **CLASSIFY ×3 panel** (the ONLY residual scope call — light): universal vs type-specific; **majority vote, default-include**. `applies_to` = universal ? all 8 types : `source_types`. null-degrade → all universal (safe over-include).
+6. **MATERIALIZE (JS):** fan-out → **8 type-rulebooks** + COVERAGE reconcile (finding-coverage + per-type counts + empty-type flag).
+
+Maps to locked criteria: COVERAGE = finding-coverage (6) + type completeness (5+6) · GROUNDING = `finding_ids` + cull faithfulness · MINIMALITY = judge canonical (within-type unique) + classify fan-out (cross-type repetition) · EFFECTIVE = the exemplar-anchored schema.
+
+### ANTI-HALLUCINATION GUARD (Sina's trap, 2026-06-25 — evidence-verified)
+**Danger:** a finding is a RELATIVE, exemplar-anchored observation ("our sentences run longer than the exemplars; Harford avg 15.8 w/sent"); an agent could fabricate an ABSOLUTE prescription ("be short / ≤35 words") the finding never made → over-shortening kills the academic register.
+**Verified against the data:** all **157** surviving findings (`profile[]`: abstract 15 · intro 14 · lit_review 18 · hypotheses 23 · data 20 · methods 18 · results 32 · conclusion 17) carry `exemplar_pattern` AND a non-empty `exemplar_quotes` (0 empty arrays) → every rule HAS a real anchor.
+**The guard: RELATIVE, never ABSOLUTE.** A rule's target = the finding's own exemplar quotes (verbatim from papers). In-finding numbers (e.g. "15.8 avg") may be cited as the exemplar average, NEVER as a cap. Fallback if a quote is ever thin: mark the rule "register-only" → extra CHECK scrutiny (empirically unused; 0 thin).
+**COVERAGE denominator** = these 157 survivors only (`profile[]`, post reject/merge).
+
+## PHASE 2 — INPUTS (the harness `args`)
+- **profiles** — 8 `style_profiles/<type>_profile.json`, each `profile[]` ONLY (157 findings). The sole finding source.
+- **types** — the 8 type ids: abstract · intro · lit_review · hypotheses · data · methods · results · conclusion.
+- **roster + convention** — one-line description per type + the `DraftTemplate.txt` gist. Context for the CLASSIFY universal-vs-specific call ONLY; never extracted as principles.
+- **NOT a Phase-2 output:** guardrails / protected-phrases / keep-jargon stay in the SPINE (Phase 4 pulls them fresh). Phase 2 = pure style/register, content-independent → survives Phase-3.
 
 ---
 
@@ -58,7 +83,7 @@ Likely shape (falls out of the criteria above): **per-profile extractor → synt
 - **NO SCRIPTS as a meaning/quality checker** (they overfit — false-passed both abstract fouls). Mechanical file ops (clone, blank, JSON edits) ARE fine — Sina authorized programmatic cleaning.
 
 **Phase-4-ONLY rules** (not relevant in Phase 2 — recorded so they survive to Ph4):
-- Clones in `_rewrite_working/` = the write target; originals frozen.
+- Clones in `_rewrite_working/` = the write target; originals frozen. Each subsection's rewrite reads its TYPE's Phase-2 rulebook (8 total; e.g. 3.2/3.3/3.4 → results, 2.3–2.5 → methods).
 - Meaning authority = a RED-TEAM layer (N describe-only agents vs each proposition), never a script.
 - **The invariant = each proposition's CLAIM MEANING, not its words.** Writers may reword freely if the claim is unchanged.
 - Safety inversion: only the writer writes; every checker is describe-only (flags BY REFERENCE).
