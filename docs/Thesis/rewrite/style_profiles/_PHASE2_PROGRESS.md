@@ -2,13 +2,14 @@
 
 > **SINGLE SOURCE OF RESUME TRUTH.** After any compaction, read THIS first, then `_PHASE2_PLAN.md` (design + locked decisions 1–7).
 > **Status now: scaffold COMPLETE · 0 / 16 rewritten · awaiting Sina's explicit "go" on the abstract.**
+> **Branch: `debug/campello-did-supervisor-interrogation`** (commit Phase-2 work here, NOT master).
 
 ---
 
 ## HOW TO RESUME (post-compaction) — do this exactly
 1. Read this file, then `_PHASE2_PLAN.md` (locked rules).
-2. Find the first `NOT STARTED` row in the STATUS table (order is FIXED, top to bottom).
-3. **Do NOT start without Sina's explicit "go".** One subsection at a time. HARD STOP at each ratify.
+2. Find the first row **not fully RATIFIED** (order FIXED, top to bottom). If that row has partial ✅ (e.g. rewritten ✅ but ratified ☐), RESUME AT ITS FIRST ☐ step — the in-flight draft is in that row's diff file; do NOT redo completed steps.
+3. **Do NOT start/continue without Sina's explicit "go".** One subsection at a time. HARD STOP at each ratify.
 4. Run the decision-2 cycle for that subsection:
    `PULL 4 files → REWRITE → BY-HAND GATE → ADVISOR closed-checklist → Sina RATIFY → write new prose into the CLONE → update this row → commit`.
 
@@ -26,12 +27,12 @@
 3. **style profile** `docs/Thesis/rewrite/style_profiles/<type>_profile.json` — anti-patterns (filter by `para_id`).
 4. **`_PHASE2_PLAN.md`** — workflow + by-hand gate + jargon rule + NEVER-traps.
 
-Regenerate the clones any time (idempotent, originals untouched): `_rewrite_working/_clone_clean_ledgers.py`.
+⚠️ **Regen script `_rewrite_working/_clone_clean_ledgers.py` = FULL RESET. Safe ONLY before any rewrite exists.** It blanks ALL 16 clones' `final_prose` unconditionally — re-running after a clone holds ratified prose WIPES that rewrite ("originals untouched" is true, but the CLONES are the output). Once any clone is rewritten, NEVER re-run it. To roll back ONE clone: `git restore <clone path>` (or `git checkout <SHA> -- <clone path>`).
 
 ---
 
 ## STATUS — 16 subsections (FIXED order). ☐ = todo · ✅ = done
-Profile column: resolve at PULL by `para_id` (8 section-level profiles span 16 subsections — confirm coverage per the advisor note). Props counted at PULL.
+Profile column: resolve at PULL by `para_id` — a finding belongs to subsection X if its `our_quotes[].para_id` starts with X's prefix (e.g. `abstract-P1`, `1-P6`, `4.2-…`). 8 section-level profiles span 16 subsections; confirm coverage per row. Props counted at PULL.
 
 | # | subsection | original ledger | profile (confirm by para_id) | rewritten | gated | advisor | RATIFIED | diff file | commit |
 |---|---|---|---|---|---|---|---|---|---|
@@ -51,6 +52,9 @@ Profile column: resolve at PULL by `para_id` (8 section-level profiles span 16 s
 | 14 | 4.3 | `section4.3` | `results` | ☐ | ☐ | ☐ | ☐ | — | — |
 | 15 | 4.4 | `section4.4` | `results` | ☐ | ☐ | ☐ | ☐ | — | — |
 | 16 | 5 — conclusion | `section5` | `conclusion` | ☐ | ☐ | ☐ | ☐ | — | — |
+| 17 | **FINAL ASSEMBLY** (terminal, after all 16 ratified) | — | — | — | — | — | ☐ | assemble 16 ratified clones → thesis draft, compile, Sina final read | — |
+
+**RATIFIED invariant:** a row's `ratified ✅` is valid ONLY with Sina's explicit approval AND a commit SHA in that row (commit happens right after ratify). `ratified ✅` with commit `—` = INVALID → treat as not-ratified, re-confirm with Sina.
 
 **NEXT ACTION:** on Sina's "go" → run the abstract (row 1). Note: `_PHASE2_diff_abstract.md` holds a PRE-GO draft (jargon-stripped, superseded) — the fresh cycle OVERWRITES it; do not present it as a head-start.
 
