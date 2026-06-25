@@ -36,7 +36,7 @@ Profile column: resolve at PULL by `para_id` — a finding belongs to subsection
 
 | # | subsection | original ledger | profile (confirm by para_id) | rewritten | gated | advisor | RATIFIED | diff file | commit |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | abstract | `section_abstract` | `abstract` (9 props) | ✅ v2 | ✅ | ✅ | ✅ Sina 2026-06-24 | `_PHASE2_diff_abstract.md` | (this commit) |
+| 1 | abstract | `section_abstract` | `abstract` (9 props) | ✅ v2 | ✅ | ✅ | ✅ Sina 2026-06-24 | `_PHASE2_diff_abstract.md` | `5a073b4b` |
 | 2 | 1 — intro | `section1` | `intro` | ☐ | ☐ | ☐ | ☐ | — | — |
 | 3 | 2.1 | `section2.1` | `lit_review` / `hypotheses` | ☐ | ☐ | ☐ | ☐ | — | — |
 | 4 | 2.2 | `section2.2` | `hypotheses` | ☐ | ☐ | ☐ | ☐ | — | — |
