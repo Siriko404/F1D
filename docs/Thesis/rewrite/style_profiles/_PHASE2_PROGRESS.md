@@ -17,7 +17,7 @@
 - **No scripts** for the gate — by hand (Sina: "scripts are worst").
 - **Clone is the write target; the ORIGINAL ledger is FROZEN** (spine source-of-truth + rollback).
 - **Keep key jargon** ("residual", "information asymmetry", "bid-ask spread", …). Simplify sentence STRUCTURE only.
-- **Per-subsection ratify** by Sina — NOT one end-review.
+- **Per-subsection ratify** = the MANUAL abstract model ONLY. **SUPERSEDED for the automated phase (subsections 2–16):** the harness red-team is the per-unit authority; Sina reviews the FINAL output (see `_PHASE2_HARNESS_DESIGN.md` principle 6).
 - **Constrained edit**: remove named anti-pattern, keep every proposition + protected string; splits ok; NO reorder / merge / add / drop.
 - **Nothing touches the thesis prose** until Sina's final approval; rewrites live in the clones + diff files.
 
