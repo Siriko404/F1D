@@ -10,6 +10,8 @@
 **Phase 2 — harness BUILT.** `docs/Thesis/rewrite/style_phase2_principles_master.js` (8 type-rulebooks; pipeline extract→gate→cull→judge→classify→materialize). Syntax-checked (`node --check` PASS). Granularity LOCKED at **8 writing-types** (Sina + advisor, evidence in TOPOLOGY below).
 Next concrete step: wire `args` (load the 8 profiles' `profile[]` + types roster + convention) → **DRY-RUN** the harness → Sina reviews the 8 rulebooks.
 
+> **PARALLEL FORK (2026-06-25):** Phase 3 runs concurrently in a separate git worktree `../F1D-phase3` (branch `phase3/propositions`) — see `_PHASE3_KICKOFF.md`. THIS session = Phase 2 ONLY (dry-run pending Sina's go). The fork edits the proposition spine and must NOT touch `style_profiles/*` or this ledger; merge its branch back when done.
+
 ---
 
 ## THE 5-PHASE MAP (Sina, 2026-06-25 — replaces the old "rewrite 16 subsections now" plan)
