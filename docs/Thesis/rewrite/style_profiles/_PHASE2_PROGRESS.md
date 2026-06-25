@@ -58,6 +58,14 @@ Profile column: resolve at PULL by `para_id` — a finding belongs to subsection
 
 **NEXT ACTION:** on Sina's "go" → run the abstract (row 1). Note: `_PHASE2_diff_abstract.md` holds a PRE-GO draft (jargon-stripped, superseded) — the fresh cycle OVERWRITES it; do not present it as a head-start.
 
+## NEXT (NOT started) — AUTOMATE via an opus-agent HARNESS. Design carefully; run NOTHING until airtight.
+Constraints (Sina 2026-06-24, after manually ratifying the abstract):
+- Manual per-subsection is too costly (reading 16× by hand is unsustainable). Automate the rewrite.
+- **NO script as the MEANING checker.** The string / claim-word check FALSE-PASSED both abstract fouls (v1 synonym swaps + v2 hedge) → it overfits to "word present" and misses meaning. Keep the claim-word list ONLY as an INPUT to the red team — never a pass/fail gate.
+- **MEANING authority = a RED-TEAM LAYER:** N independent opus agents each compare NEW prose ↔ the propositions for fidelity (foul-classes: polarity/negation · direction · hedge strength · clause re-attachment · added causation/transmission · scope/quantifier · entity swap); synthesize; ANY foul → fix. (= the proven Phase-1 panel→redteam pattern, re-aimed at meaning, not style.)
+- Sina reviews only the FINAL output, not each paragraph.
+- Still load-bearing: spine frozen (originals untouched), clones are the write target, keep jargon, propositions beat old prose on conflict.
+
 ## SCAFFOLD INVENTORY (what exists, committed)
 - 16 clones + `_README.md` + `_clone_clean_ledgers.py` in `_rewrite_working/`.
 - `_PHASE2_PLAN.md` (design, reconciled), this ledger, `_PHASE2_diff_abstract.md` (pre-go draft).
