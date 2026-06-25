@@ -240,8 +240,8 @@
         "all_supported": true,
         "unlocked": false
       },
-      "final_prose": "",
-      "prose_status": "CLEARED -- Phase-2 rewrite pending (spine frozen in original)",
+      "final_prose": "Firms hold earnings calls every quarter and take unscripted questions from analysts. How a CEO answers is increasingly read as a sign of what managers know but have not yet disclosed. Sometimes a firm has privately committed to an acquisition it has not yet announced. The CEO must still hold the routine call, but cannot confirm or deny the deal. Whether the words on these calls track that withholding has not been studied. We study earnings-call transcripts and acquisition records for United States public firms from 2002 to 2018. From this language we build a residual measure of the uncertainty in a CEO's answers to questions. It is the part that remains once we remove each CEO's persistent speaking style. We then track this measure around firms' cash acquisitions, using stock acquisitions as a placebo. This residual uncertainty is elevated in the quarter before a cash acquisition, compared with the firm's own other quarters. There is no comparable rise before stock acquisitions. Once the deal is announced, this uncertainty becomes indistinguishable from zero, even before completion. The cash that funds the purchase, by contrast, persists on the balance sheet until the deal closes. This elevation concentrates in cash acquisitions rather than stock acquisitions, a difference that survives a formal pooled test. This pattern is not explained by analysts devoting more of the call to cash questions. The residual is also unrelated to the firm's post-call bid-ask spread, a standard gauge of information asymmetry. The scripted presentation, by contrast, is positively associated with that spread. This is consistent with the two parts of the call relating to the outside information environment in different ways. We read these patterns as call language tracking the deal's move from private to public — a within-firm correlation, not a tested mechanism.",
+      "prose_status": "REWRITTEN v2 -- Phase-2 (claim-word locked; awaiting gate / advisor / Sina ratify)",
       "_phaseC_audit": {
         "direction_audit": [
           {
@@ -346,6 +346,6 @@
       "section2.2_paragraph_ledger.json (format template; one ledger paragraph per atomic job)"
     ]
   },
-  "prose_status": "CLEARED -- Phase-2 rewrite pending (spine frozen in original)",
+  "prose_status": "REWRITTEN v2 -- Phase-2 (claim-word locked; awaiting gate / advisor / Sina ratify)",
   "open_items": []
 }

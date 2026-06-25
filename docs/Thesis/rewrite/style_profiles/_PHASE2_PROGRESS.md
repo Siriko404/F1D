@@ -10,8 +10,8 @@
 1. Read this file, then `_PHASE2_PLAN.md` (locked rules).
 2. Find the first row **not fully RATIFIED** (order FIXED, top to bottom). If that row has partial ✅ (e.g. rewritten ✅ but ratified ☐), RESUME AT ITS FIRST ☐ step — the in-flight draft is in that row's diff file; do NOT redo completed steps.
 3. **Do NOT start/continue without Sina's explicit "go".** One subsection at a time. HARD STOP at each ratify.
-4. Run the decision-2 cycle for that subsection:
-   `PULL 4 files → REWRITE → BY-HAND GATE → ADVISOR closed-checklist → Sina RATIFY → write new prose into the CLONE → update this row → commit`.
+4. Run the decision-2 **v2** cycle (CONTENT-WORD LOCK is the drift block):
+   `READ PROPS → extract claim-words → READ old prose + analyses → WRITE (claim-words VERBATIM, structure-only) → write into CLONE → BY-HAND GATE (numbers + guardrail phrases + claim-words all survive) → INDEPENDENT advisor semantic check → Sina RATIFY → commit`.
 
 ## LOCKED RULES (recap — full text in `_PHASE2_PLAN.md`)
 - **No scripts** for the gate — by hand (Sina: "scripts are worst").
@@ -36,7 +36,7 @@ Profile column: resolve at PULL by `para_id` — a finding belongs to subsection
 
 | # | subsection | original ledger | profile (confirm by para_id) | rewritten | gated | advisor | RATIFIED | diff file | commit |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | abstract | `section_abstract` | `abstract` (9 props) | ☐ | ☐ | ☐ | ☐ | `_PHASE2_diff_abstract.md` | — |
+| 1 | abstract | `section_abstract` | `abstract` (9 props) | ✅ v2 | ✅ | ✅ | ✅ Sina 2026-06-24 | `_PHASE2_diff_abstract.md` | (this commit) |
 | 2 | 1 — intro | `section1` | `intro` | ☐ | ☐ | ☐ | ☐ | — | — |
 | 3 | 2.1 | `section2.1` | `lit_review` / `hypotheses` | ☐ | ☐ | ☐ | ☐ | — | — |
 | 4 | 2.2 | `section2.2` | `hypotheses` | ☐ | ☐ | ☐ | ☐ | — | — |
