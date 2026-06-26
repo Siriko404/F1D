@@ -80,7 +80,7 @@
       "trap": "P5 must never read as 'visible cash -> analysts ask more -> CEO hedges' (contradicts 4.1).",
       "mechanical_leg": "H1b cash-persists-to-completion is MECHANICAL (cash leaves when paid); H1b CONTENT is the CONTRAST (uncertainty resolves, cash does not).",
       "novelty_caveat": "P6 gap claim NOT NLM-verifiable (cannot prove a negative) -> 'to our knowledge'. Most likely to need walking back (everhart/gokkaya scar).",
-      "P4_necessity": "P4 is NECESSARY (signal must be in the residual), NOT sufficiency (residual does not ISOLATE the signal -- the P5 placebo + timing design do).",
+      "P4_necessity": "P4 is NECESSARY (signal must be in the residual), NOT sufficiency (residual does not ISOLATE the signal -- the P5 comparison + timing design motivate the concentration).",
       "P1_legal_accuracy_2026_06_12": "Reg FD REJECTED as the disclosure-constraint cite (it governs SELECTIVE disclosure; a public-call disclosure SATISFIES it -> not a gag). Correct framing: deal is MATERIAL (Basic) + nonpublic; firm may stay silent but may not MISLEAD once it speaks (Basic facts = false denials -> liability; Rule 10b-5 half-truth). This bridges to P3 deflection AND keeps can't-speak/won't-speak OPEN for P7. Scope materiality to the ACQUIRER."
     }
   },
@@ -1029,7 +1029,7 @@
       "boundary": "CONCEPTUAL only -- do NOT write eq-4 or list first-stage regressors (2.3). Do NOT draft DWZ's price-null here (it lives in 2.3 + 3).",
       "thin_claim": "States the locating logic; construction + caveats (generated regressand, UncPre) are 2.3.",
       "guardrails": [
-        "ADVISOR_FIX_necessity: NECESSARY-condition only -- the signal MUST be in the residual. Do NOT drift to 'the residual IS the deal signal'; the P5 placebo + timing design isolate it.",
+        "ADVISOR_FIX_necessity: NECESSARY-condition only -- the signal MUST be in the residual. Do NOT drift to 'the residual IS the deal signal'; the P5 comparison + timing design motivate the concentration (not identify it).",
         "ADVISOR_FIX_attribution (2026-06-12): cite DWZ STRICTLY for 'the persistent/time-varying decomposition exists, done by DWZ'. The location logic (signal must be in the residual) is THE THESIS'S OWN -- attribute it to nobody. NEVER phrase it so DWZ appears to endorse the residual as signal-bearing: DWZ found the residual carries NO market/price signal. That null is NOT P4's -- it lives in 2.3 (defensive: why we still expect signal in our conditioned cash setting) + 3 (the cash-positive contrast).",
         "B-S anchors the PREMISE only (persistent components are real, in firm POLICIES) -- NOT the language decomposition (DWZ's) and NOT any signal claim. DWZ is a WORKING paper; B-S (published) carries the premise so the argument does not rest on unpublished work."
       ],
@@ -1391,19 +1391,22 @@
     "P5": {
       "order": 5,
       "lit_body": "corporate cash holdings + cash-for-acquisitions -> CASH-CONCENTRATED dimension",
-      "intent": "Cash and stock deals differ in one design-relevant way: a cash purchase requires an accumulated, visible balance-sheet position -- a war chest -- while a stock deal carries the identical disclosure setting with no comparable visible cash commitment. That makes stock the placebo and a cash-CONCENTRATED signal informative on its own; WHY cash differs is left open. The two clocks then diverge: uncertainty tracks the information and resolves at announcement, while the cash position serves the purchase and -- mechanically -- persists until paid at completion.",
-      "serves": "Reviews cash-holdings literature; sets up CASH as a DESIGN CONTRAST (-> H1a) + the stock placebo (-> MA3); frames differential-timing CONTRAST (-> H1b), cash-persistence leg labeled mechanical.",
+      "intent": "Cash and stock acquisitions share the identical disclosure bind but differ in the medium of payment: stock pays with the acquirer's own equity (a currency whose value it is motivated to protect), cash pays with cash. Stock acquirers therefore have an incentive -- grounded in valuation theory (Shleifer-Vishny 2003) and documented pre-deal earnings management (Louis 2004) -- to manage perceptions upward; cash acquirers do not. Cash is thus the relatively UNMANAGED window in which the disclosure-strain surfaces as unscripted uncertainty language -- the ex-ante reason the run-up should CONCENTRATE in cash. This MOTIVATES the cash focus; it is not a tested mechanism.",
+      "serves": "Derives the CASH-CONCENTRATED dimension (-> H1a) via the masking asymmetry; recasts the stock deal as a managed COMPARISON (-> MA3 Wald, -> MA2 comparison arm); frames the differential as attenuation-not-suppression; keeps the two-clocks cash-persistence (-> H1b).",
       "boundary": "Do NOT assert 'cash sharpens the bind / visible cash invites the question' -- that IS the scrutiny channel 4.1 rules out. DESIGN CONTRAST only. Concentration, NOT strict specificity. Keep cash CENTRAL.",
-      "thin_claim": "A where-it-appears CONTRAST; the why stays open; the cash-persistence leg is mechanical.",
+      "thin_claim": "A where-it-concentrates MOTIVATION; the why is ex-ante reasoning, not identification; the differential is ATTENUATION (stock smaller/noisier), NEVER stock-suppression; cite the published S-V/Louis as valuation/earnings, not tone.",
       "guardrails": [
-        "ADVISOR_FIX_contrast (A2): stock = same setting minus visible cash. Mechanism OPEN (P7).",
-        "DROPPED P5.2 (Bates 2009 / Opler 1999): 'analysts watch cash' is one step from the FORBIDDEN scrutiny channel (visible cash -> analysts probe -> CEO hedges) that 4.1 rules out -- dropped on the GUARDRAIL, not availability (Bates IS in the notebook). Harford alone carries the accumulated-cash-position claim; do NOT re-add to 'strengthen' P5. (advisor 2026-06-12)"
+        "ATTENUATION-not-SUPPRESSION (advisor 2026-06-26, the load-bearing joint): masking motivates theta_cash > theta_stock as cash being the clean window AND stock attenuated/noisy -- NEVER as stock pushed below baseline. Data: cash +0.0461***, stock -0.0429 n.s. (a noisy flat null). We interpret; we do not detect stock suppression.",
+        "CROSS-CHANNEL BRIDGE (advisor 2026-06-26): the cites document management in SCRIPTED channels (earnings, press-release tone); our DV is the unscripted Q&A residual, NET OF the scripted presentation (2.3 P2.5). State this as a STRENGTH (we read the hardest-to-manage channel), not a gap -- it closes the genre-jump.",
+        "MOTIVATION-not-MECHANISM: masking is the ex-ante reason to focus on cash; register stays correlational / no-identification / concentration-not-strict-specificity / mechanism-open.",
+        "CITE DISCIPLINE: S-V 2003 = currency/valuation MOTIVE; Louis 2004 = pre-deal EARNINGS behavior; thewissen 2024 = tone (preprint, supplementary one-clause pointer only). NEVER cite S-V/Louis as 'tone'. New \\bibitem required for shleifer_vishny2003 + louis2004 (compile).",
+        "HARFORD demoted + RELOCATED: the accumulated cash position grounds the two-clocks cash-persistence, NOT the why-cash concentration (which is now the masking asymmetry)."
       ],
       "propositions": [
         {
           "prop_id": "P5.1",
-          "statement": "Firms accumulate cash reserves ahead of acquisitions, and cash-rich firms are more acquisitive -- a cash purchase reflects an accumulated balance-sheet position.",
-          "role_in_paragraph": "Grounds the 'visible accumulated cash position' that distinguishes cash from stock deals.",
+          "statement": "A cash purchase draws on an accumulated cash position (Harford 1999), whereas a stock exchange is paid in the acquirer's own equity. That accumulated cash position grounds the two-clocks cash-persistence (it serves the purchase and is paid at completion), NOT the why-cash concentration.",
+          "role_in_paragraph": "DEMOTED + RELOCATED: background payment-method premise (cash side) + two-clocks cash-persistence; no longer the why-cash rationale.",
           "type": "external-NLM",
           "source": {
             "key": "harford1999",
@@ -1505,6 +1508,55 @@
             "verdict": "SUPPORTED",
             "verdict_note": "Harford (1999): firms with cash reserves accumulated above a baseline model ('cash-rich') are more likely to make acquisitions -- verbatim spans n2 ('cash-rich firms are more likely to make acquisitions'), n3 (cash-rich = reserves above the model's predictions), n4 ('Cash-richness predicts that a firm will become a bidder'); located p.1995. DRAFTING CAVEAT: Harford finds this accumulation is free-cash-flow STOCKPILING, NOT deliberate saving to fund planned value-increasing deals -> P5 must claim only that an accumulated cash position EXISTS (the war chest), never that firms deliberately save to fund acquisitions."
           }
+        },
+        {
+          "prop_id": "P5.2",
+          "type": "external-NLM",
+          "statement": "A stock acquirer pays with its own equity, whose market value is the deal currency; acquirers therefore have an incentive to keep that valuation high -- overvalued equity is used as acquisition currency, and the relative valuations of bidder and target drive the choice between stock and cash payment.",
+          "role_in_paragraph": "The MOTIVE: why stock-payers protect their pre-deal valuation. Cite as valuation/currency, NOT tone.",
+          "source": {
+            "key": "shleifer_vishny2003",
+            "ref": "Shleifer & Vishny (2003), JFE 70:295-311"
+          },
+          "verification": {
+            "method": "NLM",
+            "evidence_file": "tmp/nlm_masking_cites.json",
+            "verdict": "SUPPORTED",
+            "verdict_note": "Verbatim cited_text: 'a powerful incentive for firms to get their equity overvalued, so that they can make acquisitions with stock' (p.308 sec.6); 'Using overvalued shares as a means of payment ... cushions the collapse of the shares in the long run' (p.300 sec.3). NLM-verified, identity-confirmed. DRAFTING: cite the currency/valuation MOTIVE only; the 'earnings manipulation' tail is S-V's aside -> motive-color, not behavioral proof."
+          }
+        },
+        {
+          "prop_id": "P5.3",
+          "type": "external-NLM",
+          "statement": "Consistent with that incentive, stock acquirers manage perceptions upward ahead of the deal: they overstate reported earnings in the quarter preceding a stock-swap announcement (Louis 2004). The disclosure channel closest to ours -- narrative tone -- shows the same management (thewissen 2024, preprint).",
+          "role_in_paragraph": "Published pre-deal BEHAVIOR (earnings), with a one-clause thewissen TONE pointer (language bridge, supplementary).",
+          "source": {
+            "key": "louis2004",
+            "ref": "Louis (2004), JFE 74:121-148"
+          },
+          "verification": {
+            "method": "NLM",
+            "evidence_file": "tmp/nlm_masking_cites.json",
+            "verdict": "SUPPORTED",
+            "verdict_note": "Verbatim cited_text: 'acquiring firms overstate their earnings reports in the quarter preceding a stock swap announcement' (p.121-122 sec.1); 'For the stock-for-stock acquirers, there is a jump in the abnormal accrual in the quarter immediately prior to the merger announcement' (p.134 sec.4.3). NLM-verified, identity-confirmed. CITE AS EARNINGS, not tone. thewissen tone = supplementary preprint pointer."
+          }
+        },
+        {
+          "prop_id": "P5.4",
+          "type": "framing-nonverifiable",
+          "statement": "A cash acquirer pays in cash, not equity, so it lacks both the currency to protect and the disposition to manage pre-deal perceptions upward. The cited management operates in scripted, numbers channels (earnings, press-release tone) that our dependent variable already strips out -- the residual is net of the scripted presentation (2.3 P2.5) -- so we read the channel hardest to manage, the unscripted Q&A, where only a genuine perception-management disposition, not a one-off scripted edit, would surface. The cross-channel inference is offered as MOTIVATION: a stock acquirer's optimism disposition partly OFFSETS the disclosure-strain in its unscripted answers, so its run-up is expected smaller and noisier (ATTENUATED), while a cash acquirer carries only the strain, so its run-up is the clean, larger one. This is attenuation, NOT suppression -- we predict no push of stock's uncertainty below baseline, and the cash-vs-stock gap is realized as the cash run-up. Not a tested mechanism.",
+          "role_in_paragraph": "THE load-bearing joint (advisor): the masking inference for the cash-vs-stock DIFFERENTIAL + the cross-channel/genre-jump bridge + the attenuation-not-suppression honesty boundary.",
+          "depends_on": [
+            "P5.2",
+            "P5.3",
+            "2.3 P2.5"
+          ]
+        },
+        {
+          "prop_id": "P5.5",
+          "type": "framing-nonverifiable",
+          "statement": "The stock deal is therefore a managed COMPARISON, not a placebo: the same disclosure bind, but carrying a currency-management incentive that cash lacks. The contrast remains one of CONCENTRATION, not strict specificity; the asymmetry motivates the cash focus and is not an identification claim.",
+          "role_in_paragraph": "placebo -> managed COMPARISON + register (concentration-not-specificity; motivation-not-identification; mechanism-open preserved)."
         }
       ],
       "prose_gate": {
@@ -1512,8 +1564,9 @@
         "all_supported": true,
         "unlocked": true
       },
-      "final_prose": "A second dimension concerns not the timing of the signal but the deals in which it should concentrate. Cash and stock acquisitions share the identical disclosure setting---both are material, both are withheld---yet differ in one design-relevant respect: a cash purchase draws on an accumulated cash position, whereas a stock exchange need not. \\citet{harford1999} documents the underlying fact: firms accumulate cash reserves above a baseline model of normal holdings, and cash-rich firms are more likely to make acquisitions. That accumulation is a by-product of retained free cash flow rather than saving toward a particular deal, so we take from it only that a cash bid draws on a pre-existing cash position---not that firms stockpile in order to fund planned acquisitions. This makes the stock deal a natural placebo: the same withholding bind, minus the cash commitment. A signal that concentrates in cash deals rather than stock deals is therefore informative on its own terms, even though why the two should differ is a question we leave open. The two dimensions also run on different clocks: the anticipatory signal tracks the undisclosed information and resolves once the deal is announced, while the cash commitment serves the purchase itself and---mechanically---persists until it is paid at completion. The contrast is one of timing: the uncertainty is resolved by the announcement, the cash is not.",
-      "prose_status": "RATIFIED 2026-06-14 (provisional, user 'consider everything ratified for now'; in LOCKED thesis_draft.tex)"
+      "final_prose": "",
+      "prose_status": "BLOCKED (chain redesigned 2026-06-26 masking; rewrite pending)",
+      "final_prose_superseded": "A second dimension concerns not the timing of the signal but the deals in which it should concentrate. Cash and stock acquisitions share the identical disclosure setting---both are material, both are withheld---yet differ in one design-relevant respect: a cash purchase draws on an accumulated cash position, whereas a stock exchange need not. \\citet{harford1999} documents the underlying fact: firms accumulate cash reserves above a baseline model of normal holdings, and cash-rich firms are more likely to make acquisitions. That accumulation is a by-product of retained free cash flow rather than saving toward a particular deal, so we take from it only that a cash bid draws on a pre-existing cash position---not that firms stockpile in order to fund planned acquisitions. This makes the stock deal a natural placebo: the same withholding bind, minus the cash commitment. A signal that concentrates in cash deals rather than stock deals is therefore informative on its own terms, even though why the two should differ is a question we leave open. The two dimensions also run on different clocks: the anticipatory signal tracks the undisclosed information and resolves once the deal is announced, while the cash commitment serves the purchase itself and---mechanically---persists until it is paid at completion. The contrast is one of timing: the uncertainty is resolved by the announcement, the cash is not."
     },
     "P6": {
       "order": 6,
@@ -1926,5 +1979,6 @@
       "verdict": "SUPPORTED",
       "verdict_note": "NLM identity self-report (guide S4, answer-sourced): Arthur J. Keown and John M. Pinkerton; The Journal of Finance; 1981. Initials A.J./J.M. recovered; title, journal, year confirmed; vol/pages out of NLM scope."
     }
-  }
+  },
+  "_phase4_masking": "§2.1 chain redesigned 2026-06-26: P5 re-derived via masking asymmetry (S-V motive + Louis behavior + thewissen tone pointer; attenuation-not-suppression; cross-channel bridge; placebo->managed comparison). P4 'isolates'->'motivates' to match. Evidence: tmp/nlm_masking_cites.json. Spec: _PHASE4_S2_MODSPEC.md. final_prose BLOCKED -> rewrite pending."
 }
