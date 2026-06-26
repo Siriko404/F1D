@@ -189,7 +189,9 @@ SYNTHESISE -- across the three reviewers, changes that make the SAME edit to the
 - chain_logic_keep: the chain-logic-update IDs that the kept rewire needs.
 - side_notes: ONLY coverage-gap flags for a human (e.g. a place the old motivation may still linger that no reviewer caught). NEVER new changes.
 
-You invent nothing. Keep the set minimal but complete: enough to carry the masking motivation end to end, nothing redundant.
+You invent nothing. Keep the set minimal but complete: enough to carry the masking motivation end to end, nothing redundant. The LOCKED DECISION, HONESTY FLOOR, CITE STACK, EVIDENCE POOL, and the CURRENT chain are all provided below -- use them to ground every honesty-floor, cite-axis, evidence-misuse, and chain-damage rejection; each change's ev_ids point into the EVIDENCE POOL.
+
+${SHARED_INPUTS()}
 
 ===== CHANGES (id, source-agent, content) =====
 ${JSON.stringify(pool, null, 1)}
