@@ -13,7 +13,7 @@ Collaboratively redesign the proposition spine to address the supervisor's criti
 ## The driver — supervisor critique
 **"The cash dimension's motivation is not justified."** The base theory (the disclosure bind: a CEO can't confirm/deny a pending deal → uncertainty language) covers **all** payment types, not only cash.
 
-## THE OPEN FORK (the next decision)
+## ~~THE OPEN FORK~~ — RESOLVED 2026-06-25 → **KEEP cash** (masking framework). Full framework + evidence + tweaks LOCKED in **`_PHASE3_CONCLUSION.md`**.
 | | KEEP cash | DOWNGRADE to all-payment-types |
 |---|---|---|
 | condition | a defensible *why-cash* theory exists | no such theory |
@@ -39,5 +39,7 @@ Rendered in the thesis convention (mirrors `_cash_scrutiny_channel.tex`): DV in 
 - **Full spine claim-map** (abstract + §1–§5). Hypotheses: **H1** run-up, **H1a** cash-concentration, **H1b** two-clocks/differential-timing. Designs: MA1 §3.2, MA2 §3.3, MA3 §3.4. Results: C1 (strongest), C2, C4 (scrutiny rule-out), C6 (cash Wald) + §4.2 bid-ask + §4.3/4.4 robustness. Register locks: correlational · no-identification · concentration-not-strict-specificity · mechanism-open.
 - **rob_ALL.pdf "thesis vs all-deals" stress test:** the core results (run-up, two-clocks, cash-Wald) all **survive** moving cash→all-payment-types; cash-Wald even slightly stronger stacked (0.1056\*\* vs 0.0983\*\*).
 
-## NEXT
-Resolve the fork: hunt a defensible *why-cash* theory, or commit to **downgrade** (main hypotheses → all payment types; cash-concentration → additional/unexplained; rewire scrutiny). Then the spine redesign per subsection follows.
+## RESOLVED + NEXT
+**Fork closed → KEEP cash.** A defensible *why-cash* framework was found by connecting evidence already in the thesis (no new tests, no new cites): the **masking asymmetry** — stock acquirers manage pre-deal tone up to protect their equity currency (thewissen2024, +15%); cash acquirers don't → cash is the *unmanaged* read where the disclosure-strain surfaces. Honesty floor: our data show **cash rising, stock flat** (no detected stock suppression); masking = motivation, NOT a tested mechanism. Full dossier + the per-section proposition tweaks: **`_PHASE3_CONCLUSION.md`**.
+
+**NEXT:** execute the proposition tweaks (§2.1 P6 · §2.2 H1a · §1 P4b/P6a/P8a · abstract) — Phase-4 rewrite, ratified per section; register locks unchanged. Then merge `phase3/propositions` → `debug/campello-did-supervisor-interrogation`.
