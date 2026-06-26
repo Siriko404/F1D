@@ -40,7 +40,14 @@
 - **§1 intro** — 1-P4-b (cash/stock placebo): name *why* cash (currency-management asymmetry); 1-P6-a (cash concentration): motivate; **1-P8-a / IN.13:** change *"leaves open why uncertainty concentrates in cash"* → *"the concentration is consistent with stock acquirers' documented pre-deal tone management (thewissen), which cash acquirers lack — offered as motivation, not identification."*
 - **Abstract** — one clause motivating the cash focus (currency-management asymmetry), citation-free per abstract convention.
 - **§4.1 scrutiny** — unaffected (rule-out stays).
+- **`placebo` → `comparison` / `benchmark` (identification framing — NOT a clause).** The spine calls stock a *placebo* (inert); the framing says stock *actively manages* its tone. Direct contradiction. Reconcile across the **LOCKED** intro / abstract / conclusion + §2.1 / 2.2 / 2.4 / 3.1–3.4 / 5 + claim/variable ledgers. (`placebo` = 716 raw hits / 68 files, but most are unrelated placebo *tests* + Phase-2 + raw-planning; **first Phase-4 step = enumerate the stock-comparison sites precisely.**) Do **NOT** "fix" it with *contaminated placebo ⇒ lower bound* — that smuggles back the deleted overclaim.
 - **Register locks — UNCHANGED.**
+
+## ADVISOR ADDENDUM (post-lock vet, 2026-06-25)
+1. **The `placebo` contradiction (advisor-caught; self-audit missed it).** Stock cannot be both an *inert placebo* and an *active tone-manager*. This **re-scopes the tweaks**: it touches **identification framing**, not just motivation (see the tweak-map item above).
+2. **Discriminating fix:** drop "placebo" → "comparison/benchmark"; state stock's flatness is **consistent with** either (a) weaker bind-sensitivity or (b) optimism-management, **which we do not separate.** Keeps mechanism-open, kills the contradiction, needs no "lower bound."
+3. **Honesty (sharpens fix #3):** the framing needs a stock bind-driven rise that management *cancels* — our data show **no such rise to cancel** (stock −0.0429 n.s.; no suppression detected in either channel). The "byproduct of broad optimism" reconciliation is **verbal, not empirical.** The dossier and the rewrite must say "**we interpret**," NEVER "resolved/shown."
+4. **Reassurance:** **C1 (the strongest result — the timing round-trip) stands entirely independent of the masking framing.** If a reader rejects the why-cash motivation, the empirical contribution survives untouched. The framing is **additive**; the paper is not bet on it.
 
 ## PROVENANCE (the in-sample test behind the honesty floor)
 `tmp/test_masking_continuous.py` — validation: cash UncResCEO reproduces **+0.0461\*\*\*** (production harness `gen_empire_did_table.G.run`); keystone: stock UncPreCEO **+0.031 n.s.** (scripted tone NOT managed down). `tmp/test_masking_binary.py` — the binary LPM+logit variant. Run from the **F1D** worktree (data + `f1d` package live there). These produced the "cash rises, stock flat — no detected stock suppression" floor.
