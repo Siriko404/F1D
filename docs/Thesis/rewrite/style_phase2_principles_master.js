@@ -189,7 +189,7 @@ async function runProfile(P) {
   })
 
   const raw = await parallel([1, 2, 3].map(v => () =>
-    agent(extractPrompt(v, P.type, findings), { schema: EXTRACT_SCHEMA, phase: `Extract:${P.type}`, label: `${P.type}/extract-${v}` })))
+    agent(extractPrompt(v, P.type, findings), { schema: EXTRACT_SCHEMA, phase: 'Extract', label: `${P.type}/extract-${v}` })))
 
   // ---- deterministic GATE: drop fabricated / unanchored principles ----
   const clean = [], rejected = []
@@ -208,7 +208,7 @@ async function runProfile(P) {
   if (clean.length === 0) return { type: P.type, principles: [], gate_rejected: rejected, culled: [], merges: [], unhandled: [], note: 'no principles survived the gate' }
 
   // ---- cull-by-reference REDTEAM (null-degrade) ----
-  const decisions = await agent(cullPrompt(P.type, clean), { schema: CULL_SCHEMA, phase: `Cull:${P.type}`, label: `${P.type}/cull` })
+  const decisions = await agent(cullPrompt(P.type, clean), { schema: CULL_SCHEMA, phase: 'Cull', label: `${P.type}/cull` })
   if (!decisions) {
     log(`[${P.type}] cull redteam returned NULL -> degrading to ${clean.length} gate-clean principles (no cull/merge)`)
     return { type: P.type, principles: clean, gate_rejected: rejected, culled: [], merges: [], unhandled: [],
