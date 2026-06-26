@@ -107,5 +107,80 @@
       }
     ],
     "verdict": "PENDING"
+  },
+  "louis2004": {
+    "id": "8ed79bba-379c-457f-a87d-e34ca0c27099",
+    "label": "\"Earnings Management and the Market Performance of Acquiring Firms\" by Louis (2004, Journal of Financial Economics)",
+    "query": "Reading only this paper, \"Earnings Management and the Market Performance of Acquiring Firms\" by Louis (2004, Journal of Financial Economics): what does it find about whether acquiring firms overstate or manage their reported earnings in the period shortly before announcing a stock-for-stock (stock-financed) acquisition, and what it reports about the timing of any such earnings management relative to the announcement? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+    "answer": "Based on the paper \"Earnings Management and the Market Performance of Acquiring Firms\" by Louis (2004), the author finds that acquiring firms explicitly overstate (manage upward) their reported earnings, and that this earnings management is specifically timed to occur in the single quarter immediately preceding the announcement of a stock-for-stock merger. By contrast, firms using cash do not exhibit this behavior. \n\nHere are the verbatim quotes detailing these findings and their timing, along with their exact printed page numbers and section headings:\n\n**On overstating earnings and the timing of the manipulation:**\n*   \"I find strong evidence suggesting that acquiring firms overstate their earnings in the quarter preceding a stock swap announcement.\" [1, 2]\n    *   **Page:** 121\n    *   **Section:** Abstract\n*   \"Consistent with Erickson and Wang (1999), I find strong evidence suggesting that acquiring firms overstate their earnings reports in the quarter preceding a stock swap announcement.\" [3, 4]\n    *   **Pages:** 121–122 \n    *   **Section:** 1. Introduction\n*   \"The median abnormal current accrual is significantly positive for bidders engaging in stock swaps, whereas it is statistically insignificant for acquirers that pay with cash.\" [5]\n    *   **Page:** 134\n    *   **Section:** 4.3. Earnings management prior to merger announcements\n*   \"For the stock-for-stock acquirers, there is a jump in the abnormal accrual in the quarter immediately prior to the merger announcement.\" [6]\n    *   **Page:** 134\n    *   **Section:** 4.3. Earnings management prior to merger announcements\n*   \"I find strong evidence suggesting that acquiring firms report significant positive abnormal accruals in the quarter preceding stock swap announcements.\" [7, 8]\n    *   **Pages:** 145–146\n    *   **Section:** 5. Summary",
+    "quotes": [
+      {
+        "n": 2,
+        "cited_text": "announcement. I also find evidence of a reversal of the stock price effects of the earnings",
+        "start_char": 568,
+        "end_char": 660,
+        "chunk_id": "237ce46f-72ed-40e5-8c70-ed9cc863553e"
+      },
+      {
+        "n": 3,
+        "cited_text": "ARTICLE IN PRESS",
+        "start_char": 1659,
+        "end_char": 1676,
+        "chunk_id": "61e6a8d4-82eb-4be9-9d8c-df8f66d5ee0e"
+      },
+      {
+        "n": 4,
+        "cited_text": "acquiring firms overstate their earnings reports in the quarter preceding a stock swap announcement. Erickson and Wang (1999) postulate that the market expects a firm to inflate its earnings prior to a stock swap and, consequently, discounts its stock price at the announcement of the stock swap whether the firm manages earnings or not. Anticipating this market behavior, an acquirer’s best response is to manage earnings. Consistent with rational market expectations, Shivakumar (2000) finds a significant negative correlation between a firm’s discretionary accruals and the market reaction to the announcement of a seasoned equity offering (SEO). In this study, I find no evidence that the market reaction over the three",
+        "start_char": 3005,
+        "end_char": 3729,
+        "chunk_id": "d68196e9-ea8b-46e5-858e-b9611754c6db"
+      },
+      {
+        "n": 5,
+        "cited_text": "stock-for-stock acquirers and positive for the cash acquirers. The Wilcoxon Rank Sum statistics comparing the performance of the two groups of acquirers are significant over all the return horizons.",
+        "start_char": 39967,
+        "end_char": 40166,
+        "chunk_id": "108c3807-2527-432a-ae84-34b27f98a022"
+      },
+      {
+        "n": 6,
+        "cited_text": "surrounding the merger announcement. The time-series pattern of the abnormal accruals suggests that the difference in the abnormal accruals between cash and stock-for-stock acquirers observed in the quarter prior to the merger announcements is conditional on the mergers. For the stock-for-stock acquirers, there is a jump in the abnormal accrual in the quarter immediately prior to the merger announcement. However, I find no evidence of a reversal in abnormal accruals after the merger.17",
+        "start_char": 40882,
+        "end_char": 41373,
+        "chunk_id": "6f0a9c07-0ec4-4392-966b-50ece6f4198f"
+      },
+      {
+        "n": 7,
+        "cited_text": "measured relative to the report dates of the forecasted earnings. The forecasted earnings is the earnings",
+        "start_char": 75227,
+        "end_char": 75333,
+        "chunk_id": "9a72b152-1b2a-40b5-963f-d1559a944f12"
+      },
+      {
+        "n": 8,
+        "cited_text": "abnormal accruals in the quarter preceding stock swap announcements. I do not find evidence that the market reaction over the three days around a stock swap announcement is correlated with prior earnings management. However, I find a significantly negative correlation between the discretionary accrual and the abnormal return when the event window is extended over the period going from 21 trading days before to 1 trading day after the merger announcement. Further analyses reveal that the reversal of the effects of prior earnings",
+        "start_char": 76089,
+        "end_char": 76623,
+        "chunk_id": "800a208a-f2ea-4097-8c2d-6e38ea50f6c9"
+      }
+    ],
+    "located": [
+      {
+        "quote": "I find strong evidence suggesting that acquiring firms overstate their earnings in the quarter preceding a stock swap announcement.",
+        "page": "121",
+        "section": "Abstract"
+      },
+      {
+        "quote": "The median abnormal current accrual is significantly positive for bidders engaging in stock swaps, whereas it is statistically insignificant for acquirers that pay with cash.",
+        "page": "134",
+        "section": "4.3. Earnings management prior to merger announcements"
+      },
+      {
+        "quote": "For the stock-for-stock acquirers, there is a jump in the abnormal accrual in the quarter immediately prior to the merger announcement.",
+        "page": "134",
+        "section": "4.3. Earnings management prior to merger announcements"
+      }
+    ],
+    "verdict": "PENDING"
   }
 }
