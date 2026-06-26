@@ -1,5 +1,6 @@
 # PHASE 3 — DURABLE STATE (resume truth for the fork)   2026-06-25
 
+> # 👉 START AT `_PHASE3_HARNESS_RESUME.md` (2026-06-26) — the single entry point (harness HOW + content WHAT + tree map). THIS file is content-detail only.
 > **Read THIS to resume Phase 3.** Self-contained. Companion: `style_profiles/_PHASE3_KICKOFF.md` (scope + isolation rules); decision doc: `_PHASE3_CONCLUSION.md`.
 
 ## ✅ VERIFY FIRST (new session — do this BEFORE acting; all memory is UNVERIFIED)
