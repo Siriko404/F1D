@@ -1,0 +1,251 @@
+{
+  "type": "abstract",
+  "principles": [
+    {
+      "id": "a1-p6",
+      "agent": 1,
+      "device": "Parallel Scope Enumeration",
+      "principle": "The breadth of the empirical net is conveyed by packing the relevant variables or outcomes into a single parallel series within one sentence.",
+      "why": "A tight parallel list communicates the full reach of the analysis economically, showing scope in one breath instead of spending a sentence on each item.",
+      "evidence": [
+        {
+          "paper": "hollander2010",
+          "para_idx": 0,
+          "quote": "firm size, a CEO's stock price-based incentives, company age, firm performance, litigation risk, and whether analysts are actively involved during the call's Q&A section"
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 0,
+          "quote": "We link the word lists to 10-K filing returns, trading volume, return volatility, fraud, material weakness, and unexpected earnings."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 0,
+          "quote": "firms executing larger-scale deals, firms with weaker historical performance, and firms with limited monitoring mechanisms in place"
+        }
+      ]
+    },
+    {
+      "id": "a2-p4",
+      "agent": 2,
+      "device": "Flat Declarative, Plain Gloss",
+      "principle": "Findings are delivered as short, unadorned subject-verb-object sentences in concrete words, and a claim is sometimes followed by a plain-English restatement introduced by 'That is,' that says the same thing even more simply. Ornament is avoided; the sentence asserts and stops.",
+      "why": "Bare declaratives are parsed at a glance and read as confident fact, and the 'That is' gloss guarantees comprehension by translating the claim into the simplest possible words, minimizing the effort the reader must spend extracting meaning.",
+      "evidence": [
+        {
+          "paper": "harford1999",
+          "para_idx": 0,
+          "quote": "Cash-rich firms are more likely than other firms to attempt acquisitions. Stock return evidence shows that acquisitions by cash-rich firms are value decreasing."
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 0,
+          "quote": "Cash-rich bidders destroy seven cents in value for every excess dollar of cash reserves held."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 0,
+          "quote": "Others rarely use such tentative words. That is, they speak clearly."
+        }
+      ]
+    },
+    {
+      "id": "a3-p5",
+      "agent": 3,
+      "device": "Balanced antithesis",
+      "principle": "Contrasts are cast in parallel, balanced constructions in which paired clauses set opposed cases directly against each other (some versus others, conservative versus aggressive, negative versus positive).",
+      "why": "The matched syntax sharpens the opposition, making a distinction vivid and easy to retain while lending the prose rhetorical poise.",
+      "evidence": [
+        {
+          "paper": "dwz",
+          "para_idx": 0,
+          "quote": "Others rarely use such tentative words. That is, they speak clearly."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 0,
+          "quote": "executives from earlier birth cohorts appear on average to be more conservative; on the other hand, managers who hold an MBA degree seem to follow on average more aggressive strategies."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 0,
+          "quote": "our estimate of the information component is negatively associated with information asymmetry while our estimate of the obfuscation component is positively associated with information asymmetry"
+        }
+      ]
+    },
+    {
+      "id": "a2-p1",
+      "agent": 2,
+      "device": "Agentive 'We'-Verb Reporting",
+      "principle": "The abstract is narrated in the first-person plural, with each move carried by an active verb naming a concrete research act or result -- construct, develop, examine, find, show, validate, document, exploit. The paper is staged as a sequence of things the authors did and found, not as an impersonal description of a topic.",
+      "why": "Active first-person verbs give the prose forward momentum and assign visible responsibility for every claim, so the reader follows an accountable, step-by-step account of the work rather than decoding agentless abstraction.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 0,
+          "quote": "We construct a manager-firm matched panel data set which enables us to track the top managers across different firms over time."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 0,
+          "quote": "We develop a novel empirical approach to estimate these two latent components within the context of quarterly earnings conference calls."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 0,
+          "quote": "We examine the linkages between firms' M&A activity and the information exchange between executives and analysts during quarterly earnings calls."
+        }
+      ]
+    },
+    {
+      "id": "a2-p2",
+      "agent": 2,
+      "device": "Signposted Itinerary with an 'Overall' Close",
+      "principle": "Sentences are stitched together with discourse connectives that mark sequence and rank -- Moreover, Furthermore, Finally, In a final step -- and the abstract is often capped by a single summarizing sentence opening with 'Overall.' The connectives turn a list of findings into an ordered tour that tells the reader which claims are additional and which are culminating.",
+      "why": "Explicit signposts let the reader track position within the argument without effort, and the closing summary hands over one consolidated takeaway, so the reader leaves holding the thesis rather than a heap of separate results.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 0,
+          "quote": "In a final step, we tie back these findings to observable managerial characteristics."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 0,
+          "quote": "Finally, we document strong support for the assumption maintained in the literature that investors interpret silence negatively."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 0,
+          "quote": "Overall, investors and analysts appear to value clear talk."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 0,
+          "quote": "Furthermore, tone inflation is more pronounced in firms executing larger-scale deals, firms with weaker historical performance, and firms with limited monitoring mechanisms in place."
+        }
+      ]
+    },
+    {
+      "id": "a2-p3",
+      "agent": 2,
+      "device": "Received-View Opening, Then Pivot",
+      "principle": "An abstract frequently opens by stating what prior or previous research holds, then immediately turns against or beyond it -- typically with 'However' or a contrasting 'We show' -- to carve out the gap the paper fills. The opening installs a shared baseline and then disrupts it.",
+      "why": "Starting in known territory orients the reader instantly, and the pivot manufactures a tension or gap within a sentence or two, motivating the contribution before any result is stated, so the reader is given a reason to care.",
+      "evidence": [
+        {
+          "paper": "bushee2018",
+          "para_idx": 0,
+          "quote": "Prior research generally interprets complex language in firms' disclosures as indicative of managerial obfuscation. However, complex language can also reflect the provision of complex information; for example, informative technical disclosure."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 0,
+          "quote": "Prior M&A research has mostly focused on the considerations presented by information asymmetry between buyers and sellers themselves in M&A. However, these concerns also exist between the buying firm's executives and capital markets."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 0,
+          "quote": "Previous research uses negative word counts to measure the tone of a text. We show that word lists developed for other disciplines misclassify common words in financial text."
+        }
+      ]
+    },
+    {
+      "id": "a1-p4",
+      "agent": 1,
+      "device": "Concrete Anchors",
+      "principle": "Claims are anchored to concrete specifics, exact point estimates, precise sample sizes, and bounded date ranges, rather than left fully general.",
+      "why": "Specific figures and bounds make the findings credible and memorable and let the reader gauge magnitude and scope at a glance instead of taking a vague generalization on faith.",
+      "evidence": [
+        {
+          "paper": "harford1999",
+          "para_idx": 0,
+          "quote": "Cash-rich bidders destroy seven cents in value for every excess dollar of cash reserves held."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 0,
+          "quote": "Based on a sample of 5,558 stock-for-stock mergers and acquisitions (M&As) between 2004 and 2020"
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 0,
+          "quote": "In a large sample of 10-Ks during 1994 to 2008, almost three-fourths of the words identified as negative by the widely used Harvard Dictionary"
+        }
+      ]
+    },
+    {
+      "id": "a1-p5",
+      "agent": 1,
+      "device": "Calibrated Assertion",
+      "principle": "Direct empirical findings are stated flatly as present-tense fact, while the single broadest interpretive takeaway is softened with a hedging verb such as 'appear' or 'seem'.",
+      "why": "Asserting the measured results plainly projects confidence, and reserving hedges for the inferential leap signals appropriate caution, so the conclusions read as credible rather than overreaching.",
+      "evidence": [
+        {
+          "paper": "harford1999",
+          "para_idx": 0,
+          "quote": "Cash-rich firms are more likely than other firms to attempt acquisitions."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 0,
+          "quote": "Overall, investors and analysts appear to value clear talk."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 0,
+          "quote": "executives from earlier birth cohorts appear on average to be more conservative"
+        }
+      ]
+    }
+  ],
+  "gate_rejected": [],
+  "redteam_rejected": [],
+  "merges": [
+    {
+      "ids": [
+        "a1-p1",
+        "a2-p1",
+        "a3-p1"
+      ],
+      "canonical": "a2-p1"
+    },
+    {
+      "ids": [
+        "a1-p2",
+        "a2-p2",
+        "a3-p3"
+      ],
+      "canonical": "a2-p2"
+    },
+    {
+      "ids": [
+        "a1-p3",
+        "a2-p3",
+        "a3-p2"
+      ],
+      "canonical": "a2-p3"
+    },
+    {
+      "ids": [
+        "a1-p4",
+        "a3-p4"
+      ],
+      "canonical": "a1-p4"
+    },
+    {
+      "ids": [
+        "a1-p5",
+        "a2-p5"
+      ],
+      "canonical": "a1-p5"
+    }
+  ],
+  "unhandled": [],
+  "side_notes": [
+    "Coverage gap: no agent examined the abstract's overall move-ordering / macro-structure (how motivation, method, results, and implication are sequenced across the whole abstract). Only the opening (foil-pivot) and the closing ('Overall' capstone) moves were analyzed, never the arc that connects them.",
+    "Coverage gap: no agent examined sentence-length or rhythm variation as a device (e.g., a long setup clause resolving into a short declarative punch). a2-p4 notes sentences are 'short' but no one analyzed long/short alternation.",
+    "Coverage gap: no agent examined punctuation-level devices (semicolon, em-dash, colon), though the evidence depends on them - e.g., the semicolon carrying bertrand_schoar2003's conservative-vs-aggressive antithesis and the em-dashes setting off the 'We show / appear, seem' clauses."
+  ],
+  "note": "ok"
+}

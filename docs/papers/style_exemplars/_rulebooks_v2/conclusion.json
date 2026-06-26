@@ -1,0 +1,246 @@
+{
+  "type": "conclusion",
+  "principles": [
+    {
+      "id": "a1-p1",
+      "agent": 1,
+      "device": "Recap-the-mission opener",
+      "principle": "The conclusion opens by making the paper itself (or 'we') the grammatical subject and restating what the study set out to do or show, before any specific result is revisited.",
+      "why": "Re-stating the goal up front re-orients a reader who arrives at the end, and frames everything that follows as the payoff to a declared mission rather than a loose pile of findings.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 0,
+          "quote": "The primary objective of this paper is to document systematic behavioral differences in corporate decision-making across managers."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 0,
+          "quote": "This paper shows that CEOs persistently differ in the clarity of their communication."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 10,
+          "quote": "In sum, this paper offers an initial attempt to bring to the fore the problem of adverse selection in corporate strategy"
+        }
+      ]
+    },
+    {
+      "id": "a1-p6",
+      "agent": 1,
+      "device": "Fronted theory-anchored result framing",
+      "principle": "Key findings are introduced by a leading phrase that ties the result to an ex ante prediction or to prior work — 'Consistent with ...,' 'in line with prior evidence ...' — placed before the finding itself.",
+      "why": "Putting the interpretive frame first tells the reader how to read a result the moment it arrives, signalling that the evidence confirms a stated expectation and binding the recap back to the paper's theory.",
+      "evidence": [
+        {
+          "paper": "harford1999",
+          "para_idx": 1,
+          "quote": "Consistent with the free cash f low hypothesis, these acquisitions by cash-rich firms are value decreasing"
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 1,
+          "quote": "Consistent with our estimates measuring the underlying latent components of linguistic complexity, we find a predicted negative (positive) relation"
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 1,
+          "quote": "which is in line with prior evidence that firms that manipulate earnings to beat expectations are still able to benefit from higher stock returns, but also larger long-term losses."
+        }
+      ]
+    },
+    {
+      "id": "a3-p1",
+      "agent": 3,
+      "device": "Agentive voice (we/I and paper-as-actor)",
+      "principle": "The summary is narrated through active first-person agents and the personified paper: research verbs take 'we'/'I' or 'this paper/our paper' as their grammatical subject, so each claim is attached to an actor who performed it rather than floated as an abstract finding.",
+      "why": "Active, attributed sentences read faster and more confidently than passive abstraction; the reader always knows who did what, and personifying the artifact lets a single subject carry the contribution cleanly while keeping the prose direct and accountable.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 0,
+          "quote": "We develop an empirical framework to analyze the importance of a manager dimension in the observed unexplained variation in several corporate practices."
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 1,
+          "quote": "To test whether cash stockpiles are invested poorly, I study the acquisition behavior of cash-rich firms. I find that cash-rich firms are more likely to make acquisitions."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 0,
+          "quote": "This paper shows that CEOs persistently differ in the clarity of their communication."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 0,
+          "quote": "This paper contributes to prior literature by investigating whether stock-for-stock M&As induce managers to strategically manipulate the content of corporate disclosures"
+        }
+      ]
+    },
+    {
+      "id": "a1-p3",
+      "agent": 1,
+      "device": "Connective signposting of an ordered recap",
+      "principle": "Findings are stitched into a staged sequence by placing additive or ordinal discourse markers — First, Second, Moreover, Further, Finally — at the head of successive sentences.",
+      "why": "The connectives tell the reader exactly where each claim sits in the argument and signal how many points remain, giving a dense results recap an easy-to-follow spine.",
+      "evidence": [
+        {
+          "paper": "lm2011",
+          "para_idx": 1,
+          "quote": "First, by examining all words that occur in at least 5% of the SEC's 10-K universe, we create a list of words that we believe typically have a negative meaning in financial reports."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 1,
+          "quote": "Moreover, managers with higher performance fixed effects receive higher levels of compensation and are more likely to be found in firms where ownership is more concentrated."
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 1,
+          "quote": "Further, there is some evidence that cash-rich firms with greater likelihood of agency problems, as evidenced by low managerial stock ownership, account for the acquisition activity."
+        }
+      ]
+    },
+    {
+      "id": "a3-p3",
+      "agent": 3,
+      "device": "Concessive caveats with calibrated verbs",
+      "principle": "Claims are routinely bounded and qualified, characteristically through a 'While X ..., Y' concessive that admits a limitation and immediately pivots to the contribution that survives it, reinforced by hedging verbs ('suggest', 'appears', 'some evidence', 'caveat').",
+      "why": "Naming the obvious objection first signals scientific caution and disarms a skeptical reader; the concessive shape converts an admitted weakness into a pivot that protects the contribution rather than undercutting it.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 0,
+          "quote": "While the framework we follow does not allow us to estimate the causal effect of managers on firm policies or performance, it provides a simple and intuitive approach to deal with many of the first-order selection problems that such a study might face."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 2,
+          "quote": "While the evidence we provide speaks somewhat to the latter argument, we ultimately leave this interesting question for future research."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 2,
+          "quote": "One important caveat to our decomposition approach is that we cannot speak to the generalizability of the approach outside of the conference call setting"
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 2,
+          "quote": "Finally, the market appears to anticipate this, but for a variety of reasons not yet fully understood, external control mechanisms do not act to correct the failures of internal mechanisms in cash-rich firms."
+        }
+      ]
+    },
+    {
+      "id": "a3-p4",
+      "agent": 3,
+      "device": "Outward-turning close (future work plus prescription)",
+      "principle": "The section ends by turning away from what was done toward what is next and what it means: open future-research questions and directives, and prescriptions that cash the findings out for practitioners ('we recommend', 'should exercise caution', 'leave ... for future research', 'we hope ... encourages future research').",
+      "why": "Closing on an agenda and on stakes gives the summary momentum and relevance instead of a flat recap, framing the paper as a foundation others will build on and giving the reader a reason to care beyond the results themselves.",
+      "evidence": [
+        {
+          "paper": "bushee2018",
+          "para_idx": 2,
+          "quote": "Regardless, our findings suggest that regulators and researchers should exercise caution when assuming that complex language is necessarily less informative than simple language."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 4,
+          "quote": "Given our results, we recommend the use of term weighting when creating word counts."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 2,
+          "quote": "we ultimately leave this interesting question for future research."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 10,
+          "quote": "we hope that our study encourages future research that better accounts for the implications of M&A for other factor markets."
+        }
+      ]
+    },
+    {
+      "id": "a3-p5",
+      "agent": 3,
+      "device": "Concrete anchors and clinching lines",
+      "principle": "Abstract constructs are made tangible with concrete exemplars (named figures, real listed words), and the prose lands short, aphoristic sentences that compress the message into a memorable phrase.",
+      "why": "Concreteness makes an intangible measure vivid and easy to grasp, while a crisp, quotable closing line gives the summary a resonant landing that an abstract restatement cannot achieve.",
+      "evidence": [
+        {
+          "paper": "dwz",
+          "para_idx": 0,
+          "quote": "Some, like former Federal Reserve Chairman Ben Bernanke, are clear talkers and thus quite informative. Others, like Alan Greenspan, are fuzzy talkers; their style clouds their message."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 0,
+          "quote": "Common words like depreciation, liability, foreign, and board are not tonal when occurring in a 10-K."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 1,
+          "quote": "In short, the results of our study suggest that silence speaks."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 6,
+          "quote": "All textual analysis ultimately stands or falls by the categorization procedures."
+        }
+      ]
+    }
+  ],
+  "gate_rejected": [],
+  "redteam_rejected": [],
+  "merges": [
+    {
+      "ids": [
+        "a1-p2",
+        "a2-p1",
+        "a3-p1"
+      ],
+      "canonical": "a3-p1"
+    },
+    {
+      "ids": [
+        "a1-p3",
+        "a2-p2",
+        "a3-p2"
+      ],
+      "canonical": "a1-p3"
+    },
+    {
+      "ids": [
+        "a1-p5",
+        "a2-p3",
+        "a3-p3"
+      ],
+      "canonical": "a3-p3"
+    },
+    {
+      "ids": [
+        "a1-p4",
+        "a2-p4",
+        "a3-p4"
+      ],
+      "canonical": "a3-p4"
+    },
+    {
+      "ids": [
+        "a2-p5",
+        "a3-p5"
+      ],
+      "canonical": "a3-p5"
+    }
+  ],
+  "unhandled": [],
+  "side_notes": [
+    "Synthesis collapses 16 principles to 7 distinct devices: (1) agentive voice [a3-p1], (2) mission-recap opener [a1-p1], (3) signposted/ordinal sequencing [a1-p3], (4) concede-and-qualify/hedging [a3-p3], (5) forward-looking close [a3-p4], (6) aphoristic clinching line + concrete anchors [a3-p5], (7) fronted theory-anchored framing [a1-p6]. Mission-recap (a1-p1) and agentive voice (a3-p1) are kept separate on purpose: one is a structural opening move, the other a pervasive sentence-construction choice; a2-p1 and a3-p2 each bundled the recap with another device, but a1-p1 is its sole clean carrier so nothing is lost by merging those bundles elsewhere.",
+    "Canonical-selection note: for the concede group (G3), forward-close group (G4), and aphoristic/concrete group (G5) the agent-3 versions were chosen because they carry the most published-journal evidence (QJE/JF/JAR) and, for a3-p5, are the superset (they also capture the concrete-exemplar device that no other principle names). For the voice group, a3-p1 was preferred over a1-p2 despite a1-p2's purer evidence, because a1-p2 captures only first-person 'we find' and omits the heavily-evidenced paper-as-actor personification ('This paper shows/contributes').",
+    "COVERAGE GAP: all three agents operated at the sentence and discourse-move level (opener, voice, connectives, concessives, closer, takeaway). None examined paragraph-level / macro-structure: how the conclusion is chunked into paragraphs, topic-sentence patterns, or the proportion of recap versus implications. A human should decide whether this level needs its own principles.",
+    "COVERAGE GAP: lexical register and diction (formality, plain-versus-latinate word choice, technical-jargon density) is unexamined except the narrow 'concrete exemplars' observation folded into a3-p5. No principle treats word choice itself as a style device.",
+    "COVERAGE GAP / TENSION: the active-voice principles (a3-p1 and merged a1-p2, a2-p1) never examined the impersonal and passive constructions that coexist in the very same conclusions and evidence -- 'there is some evidence that...', 'managers... are more likely to be found...', 'the market appears to anticipate...'. The claimed uniform active voice may be overstated; tense usage (present 'we find' vs past) is likewise unexamined.",
+    "COVERAGE GAP: sentence-level mechanics beyond connectives and aphoristic brevity -- sentence-length variation, parallel structure, and punctuation devices visible in the evidence (em-dashes, semicolons such as 'fuzzy talkers; their style clouds their message') -- were left unexamined by all three agents."
+  ],
+  "note": "ok"
+}

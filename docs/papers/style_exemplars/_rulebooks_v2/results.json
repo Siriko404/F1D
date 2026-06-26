@@ -1,0 +1,271 @@
+{
+  "type": "results",
+  "principles": [
+    {
+      "id": "a1-p1",
+      "agent": 1,
+      "device": "Exhibit-anchored sentence",
+      "principle": "Findings are reported by making a specific table, column, row, panel, or figure the grammatical subject or opening anchor of the sentence ('Table V shows...', 'Row 4 of Table VI shows...', 'Panel A of Table III demonstrates...') rather than stating the result free-floating.",
+      "why": "Pointing each claim at the exact exhibit lets the reader verify it instantly and keeps a dense run of numbers navigable; the table does the showing, so the prose stays a guided tour of the evidence instead of a recitation of figures.",
+      "evidence": [
+        {
+          "paper": "harford1999",
+          "para_idx": 31,
+          "quote": "Table V shows that cash-rich bidders are significantly more likely to bid on firms outside their industry group than are cash-poor bidders."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 4,
+          "quote": "Panel A of Table III demonstrates the considerable misclassification of negative words in 10-K documents according to the Harvard word list."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 30,
+          "quote": "Row 4 of Table VI shows that a manager in the bottom quartile reduces the number of acquisitions by Ϫ0.49, while a manager in the top quartile increases the number of acquisitions by 0.44 per year."
+        }
+      ]
+    },
+    {
+      "id": "a2-p3",
+      "agent": 2,
+      "device": "Report-then-gloss couplet",
+      "principle": "The atomic unit pairs a bare statistical fact (a coefficient's sign and significance) with an immediate interpretive clause that converts it into substantive meaning, typically hinged on 'which suggests', 'indicates that', 'is consistent with', or 'as predicted by [the] hypothesis'.",
+      "why": "Welding the number to its meaning in a single breath spares the reader the translation work and keeps the statistics tethered to the paper's argument, so each result lands as a point rather than a data dump.",
+      "evidence": [
+        {
+          "paper": "bushee2018",
+          "para_idx": 1,
+          "quote": "Column (1) shows that the coefficient on Fog(Present) is positive and statistically significant, which is consistent with prior research that finds that linguistic complexity is negatively associated with the information environment"
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 6,
+          "quote": "As predicted by the free cash f low hypothesis, the probability of being a bidder increases with cashrichness."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 25,
+          "quote": "These results are consistent with a persistence of the manager fixed effects across firms."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 16,
+          "quote": "Thus, higher proportions of negative words, as measured by the Fin-Neg list, are associated with lower excess returns."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 36,
+          "quote": "This positive coefficient indicates that greater the deal's value, the larger is the manager's incentive to inflate the tone of earnings press releases before stock-for-stock acquisitions."
+        }
+      ]
+    },
+    {
+      "id": "a1-p3",
+      "agent": 1,
+      "device": "Magnitude made concrete",
+      "principle": "Coefficients are converted into tangible, everyday units — basis points, percentage points, dollars, counts per year — and frequently set against an explicit benchmark so the reader can judge whether the effect is large.",
+      "why": "Concrete units plus a yardstick turn an abstract estimate into something the reader can feel the size of, which is what lets these papers credibly call an effect 'economically significant' rather than merely statistically detectable.",
+      "evidence": [
+        {
+          "paper": "harford1999",
+          "para_idx": 19,
+          "quote": "An increase in cash of one percent of total assets is associated with an announcement return that is lower by 21 basis points."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 25,
+          "quote": "It shows that a one-decile move in the earnings surprise category (such as from decile 1 to 2 or from -1 to -2) increases short-term ACAR by 48 basis points, all else equal."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 30,
+          "quote": "To give a benchmark, the average ratio of capital expenditures to assets in our sample is about 0.30."
+        }
+      ]
+    },
+    {
+      "id": "a2-p2",
+      "agent": 2,
+      "device": "First-person procedural voice",
+      "principle": "Authors narrate their own analytic actions in the first person ('we find', 'we estimate', 'I use', 'we next examine', 're-estimate'), presenting the results as a procedure they walk the reader through rather than as disembodied facts.",
+      "why": "The visible 'we/I + action verb' frames findings as deliberate, accountable choices, builds trust in the method, and turns a list of estimates into a guided narrative with forward momentum.",
+      "evidence": [
+        {
+          "paper": "harford1999",
+          "para_idx": 10,
+          "quote": "I estimate regressions with the announcement period bidder returns as the dependent variable."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 2,
+          "quote": "We start with a discussion of the investment results."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 22,
+          "quote": "We next examine the tone of earnings press releases around M&As using multiple regression analyses that control for firm and deal characteristics."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 23,
+          "quote": "To investigate whether the marginal effects of obfuscation and information components vary between profit and loss firms, we re-estimate the regressions in table 4, partitioning the sample into profit and loss firms."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 16,
+          "quote": "In columns (1) and ( 2), we consider the simple proportional measures for H4N-Inf and Fin-Neg."
+        }
+      ]
+    },
+    {
+      "id": "a3-p6",
+      "agent": 3,
+      "device": "Raise the rival, then refute it",
+      "principle": "The prose deliberately voices a competing interpretation or data concern on the reader's behalf ('One possible concern...', 'One alternative interpretation...', 'it is possible that...') and then dismantles it, usually by deploying an additional test, control, or placebo.",
+      "why": "By doing the skeptic's objecting for them and answering on the spot, the writing closes off escape routes and stages the results as the survivor of an adversarial process rather than a single fragile correlation.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 14,
+          "quote": "One possible concern with this latter finding is that the systematic differences in rate of return on assets across managers may not reflect actual differences in performance but rather differences in aggressiveness of accounting practices"
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 30,
+          "quote": "it is possible that the use of tone inflation stems from this upward management of earnings, instead of the approaching M&A announcement. To correct for this effect, we control for earnings management"
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 54,
+          "quote": "One alternative interpretation of these results comes from the fact that firms adjust slowly toward their target payout ratio"
+        }
+      ]
+    },
+    {
+      "id": "a3-p5",
+      "agent": 3,
+      "device": "Hedge and self-limit",
+      "principle": "Claims are voiced through soft epistemic verbs ('suggest', 'appear', 'seem') and then explicitly bounded by the authors themselves, who concede the limits of their evidence ('only suggestive', 'we should not overstate', 'we do not want to push too far').",
+      "why": "Calibrated tentativeness pre-empts the charge of overclaiming and signals that the authors see the weaknesses before a referee does, which paradoxically makes the surviving claims more credible.",
+      "evidence": [
+        {
+          "paper": "lm2011",
+          "para_idx": 19,
+          "quote": "We should not overstate the regression results."
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 33,
+          "quote": "However, since the target CAR is not the same as the premium, this evidence is only suggestive."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 54,
+          "quote": "While we do not want to push these results too far due to the crudeness of the governance variable, they appear to suggest that better governed firms select managers with performance-enhancing styles"
+        }
+      ]
+    },
+    {
+      "id": "a2-p4",
+      "agent": 2,
+      "device": "Signposted walk-through",
+      "principle": "The section advances as an explicitly marked tour: ordinal and enumerated markers ('First,... Second,...', '(i)... (ii)...') step through specifications, and findings are stitched and closed with stance-and-summary adverbials fronting sentences ('Interestingly,...', 'Overall,...', 'Taken together,...').",
+      "why": "The verbal scaffolding tells the reader where they are in the argument and how to weigh each item, so a long parade of regressions reads as an ordered, cumulative case instead of an undifferentiated heap.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 18,
+          "quote": "First, we replicate the analysis above after collapsing the data at the manager/firm level."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 14,
+          "quote": "In particular, we focus on the (i) deal size, (ii) firm performance and (iii) firm monitoring."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 8,
+          "quote": "Overall, the results from table 4 show that our empirical decomposition of linguistic complexity into latent information and obfuscation components is sufficiently powerful to detect their opposite relations with information asymmetry."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 15,
+          "quote": "Taken together, the collective evidence suggests that incomplete disclosures occur in a nonrandom fashion."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 12,
+          "quote": "Interestingly, both firm size and FracInt are significantly and positively related to ClarityCEO, as Column (5) of Table 4 shows."
+        }
+      ]
+    }
+  ],
+  "gate_rejected": [],
+  "redteam_rejected": [
+    {
+      "id": "a2-p5",
+      "reason": "Conflates two distinct devices that the other two agents correctly keep separate: 'anticipate-and-refute a rival' (a1-p5, a3-p6) and 'hedge/self-limit verbs' (a1-p7, a3-p5). Its evidence splits across both — bertrand_schoar2003 ('one might worry that...') and thewissen2024 ('it is possible that...') show rival-raising, while harford1999 ('suggests...may'), dwz ('suggest'), and lm2011 ('We should not overstate') show hedging — so it names no single underlying device and cannot be cleanly folded into either group. Both halves already survive as distinct canonical principles (a3-p6 and a3-p5), so nothing is lost by dropping it."
+    }
+  ],
+  "merges": [
+    {
+      "ids": [
+        "a1-p1",
+        "a2-p1",
+        "a3-p1"
+      ],
+      "canonical": "a1-p1"
+    },
+    {
+      "ids": [
+        "a1-p2",
+        "a2-p3",
+        "a3-p4"
+      ],
+      "canonical": "a2-p3"
+    },
+    {
+      "ids": [
+        "a1-p3",
+        "a3-p3"
+      ],
+      "canonical": "a1-p3"
+    },
+    {
+      "ids": [
+        "a1-p4",
+        "a2-p2"
+      ],
+      "canonical": "a2-p2"
+    },
+    {
+      "ids": [
+        "a1-p5",
+        "a3-p6"
+      ],
+      "canonical": "a3-p6"
+    },
+    {
+      "ids": [
+        "a1-p7",
+        "a3-p5"
+      ],
+      "canonical": "a3-p5"
+    },
+    {
+      "ids": [
+        "a1-p6",
+        "a2-p4",
+        "a3-p2"
+      ],
+      "canonical": "a2-p4"
+    }
+  ],
+  "unhandled": [],
+  "side_notes": [
+    "Coverage gap: all three agents operated at the sentence/clause level. The section-level architecture of a results section — how subsections are ordered (headline result first vs. cumulative build-up) and how one paragraph transitions into the next — was left unexamined by all three; only within-paragraph ordinal signposting (group a2-p4) was captured.",
+    "Coverage gap: verb tense/aspect as a stylistic convention — the uniform reporting-present-tense seen across the evidence ('Table V shows', 'the probability...increases', 'I estimate') — recurs throughout but was never isolated as a device by any agent.",
+    "Coverage gap: sentence-length cadence/rhythm (the alternation between short one-line verdict sentences and long multi-clause result-plus-gloss sentences) was not examined; every named device concerns sentence content or framing, none concern pacing."
+  ],
+  "note": "ok"
+}

@@ -1,0 +1,249 @@
+{
+  "type": "hypotheses",
+  "principles": [
+    {
+      "id": "a3-p1",
+      "agent": 3,
+      "device": "Set-off labeled hypothesis",
+      "principle": "Each predicted relationship is crystallized into a formal, named statement (H1, H2, H4a/H4b) written as a compact, self-contained declarative claim and typographically set apart from the surrounding derivation, so the testable prediction stands alone after the prose has built up to it.",
+      "why": "Detaching the bottom-line prediction from the discursive build-up lets a reader extract exactly what will be tested at a glance and gives later sections a stable, numbered referent to point back to.",
+      "evidence": [
+        {
+          "paper": "dwz",
+          "para_idx": 3,
+          "quote": "H1: There are systematic differences (styles) in CEO clarity."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 3,
+          "quote": "H4a: Tone manipulation decreases with the number of analysts (leverage) following the firm before the stock-for-stock acquisition."
+        }
+      ]
+    },
+    {
+      "id": "a2-p2",
+      "agent": 2,
+      "device": "Theory voiced through named scholars",
+      "principle": "Mechanisms enter as claims attributed to prior authors, who become the grammatical subject of assertive or cognitive verbs (\"He posits that\", \"Berger and Hahn argue... which posits that\", \"prospect theory, which argues that\").",
+      "why": "Borrowed authority licenses the premise without the writer asserting it bare, and recasting an abstraction as an agent-plus-verb makes theory concrete, so the literature reads like a chorus of testimony rather than a pile of propositions.",
+      "evidence": [
+        {
+          "paper": "harford1999",
+          "para_idx": 0,
+          "quote": "He posits that incompletely controlled managers spend free cash f low on wasteful projects."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 1,
+          "quote": "Berger and Hahn [2007] argue, however, that much of the prior evidence that is consistent with the proprietary-cost motive to withhold information is also consistent with an alternative agency cost hypothesis, which posits that disclosures are withheld because of conflicts of interest between managers and shareholders."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 1,
+          "quote": "This relationship is in line with prospect theory, which argues that managers in less profitable firms are more likely to look for high-risk ventures, whereas highly profitable acquirers tend to be more risk averse and to enter M&A deals of higher quality."
+        }
+      ]
+    },
+    {
+      "id": "a1-p3",
+      "agent": 1,
+      "device": "Deductive connective chaining",
+      "principle": "The reasoning advances toward a prediction through explicit logical glue — if/then, hence, therefore, as a result — that names each inferential step rather than leaving it implicit.",
+      "why": "The connectives make the derivation auditable: the reader can follow exactly how a premise turns into a prediction instead of reconstructing the leap unaided.",
+      "evidence": [
+        {
+          "paper": "harford1999",
+          "para_idx": 11,
+          "quote": "If so, then firms with large reserves are more likely to be targets of acquisition attempts than otherwise similar firms."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 1,
+          "quote": "Communication training for CEOs might harmonize how they answer questions; hence, we adopt the null hypothesis of no systematic differences among CEOs."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 1,
+          "quote": "Therefore, in this study, we make no attempt to disentangle these motives."
+        }
+      ]
+    },
+    {
+      "id": "a1-p4",
+      "agent": 1,
+      "device": "Two-sided balance",
+      "principle": "Competing mechanisms are staged against each other with explicit pivots (alternatively; on the one hand / on the other hand; however), frequently closing on a declared ambiguity that the empirical test will resolve.",
+      "why": "Presenting both directions pre-empts the skeptical reader, shows the authors have weighed rival accounts, and motivates the test by leaving the net effect genuinely open.",
+      "evidence": [
+        {
+          "paper": "thewissen2024",
+          "para_idx": 2,
+          "quote": "On the one hand, the presence of control mechanisms, such as financial analysts or leverage, have been shown to reduce managerial opportunistic behavior, such as earnings management by providing additional monitoring."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 2,
+          "quote": "Overall, the expected impact of leverage or analysts' coverage on tone management around M&A transactions is ambiguous and remains to be empirically investigated."
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 11,
+          "quote": "Alternatively, firms with good investment opportunities but not the financial resources to fund them may seek out mergers with cash-rich firms, as suggested in Hanson ~1992! and Smith and Kim ~1994!."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 1,
+          "quote": "an alternative agency cost hypothesis, which posits that disclosures are withheld because of conflicts of interest between managers and shareholders"
+        }
+      ]
+    },
+    {
+      "id": "a1-p5",
+      "agent": 1,
+      "device": "First-person signposting",
+      "principle": "The authors narrate their own analytical moves in collective 'we' with roadmap verbs (we organize, we start, we now turn, we posit) and forward/backward section references.",
+      "why": "Explicit metadiscourse tells the reader where they are in the argument and what comes next, turning a dense derivation into a guided, navigable path.",
+      "evidence": [
+        {
+          "paper": "dwz",
+          "para_idx": 0,
+          "quote": "We organize our study around three main hypotheses."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 1,
+          "quote": "We now turn to a discussion of our explanatory variables."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 0,
+          "quote": "We start with a classification model based on four commonly cited disclosure determinants"
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 4,
+          "quote": "As developed more fully in Section 4, we argue that the structure of conference calls allows us to isolate style in a manner that avoids the criticism that has been levied against prior attempts in other settings."
+        }
+      ]
+    },
+    {
+      "id": "a1-p6",
+      "agent": 1,
+      "device": "Enumerated parallel slots",
+      "principle": "Multiple reasons or hypotheses are packaged into numbered, grammatically parallel slots (The first / The second / The third; First / Second).",
+      "why": "Parallel enumeration makes a multi-part argument scannable and signals completeness — the reader can count the pieces and hold them together as a set.",
+      "evidence": [
+        {
+          "paper": "dwz",
+          "para_idx": 0,
+          "quote": "The first posits that CEOs differ significantly in clarity. The second addresses how a CEO's clarity affects analysts' and investors' information processing. The third examines how a firm's value responds to its CEO's clarity."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 0,
+          "quote": "First, not doing so would likely indicate an intent to withhold information from markets, with potentially adverse valuation consequences."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 0,
+          "quote": "Second, earnings calls provide executives with an opportunity to explain the drivers of their firms' performance, as well as to lay out their strategy and future pursuits."
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 16,
+          "quote": "First, there is the issue of endogeneity; it is possible that the majority of cash-rich firms we observe are those whose managers know they can safely stockpile cash without attracting control attention."
+        }
+      ]
+    },
+    {
+      "id": "a2-p5",
+      "agent": 2,
+      "device": "Calibrated hedging",
+      "principle": "Claims are persistently softened with modal and epistemic qualifiers (\"may\", \"might\", \"seems to\", \"can be\", \"believed to be\"), so mechanisms are stated as tendencies rather than facts.",
+      "why": "The wording matches the assertion to the uncertainty of an untested conjecture, protecting the writer from overclaiming and signaling the scientific caution a reader expects of a not-yet-tested proposition.",
+      "evidence": [
+        {
+          "paper": "harford1999",
+          "para_idx": 11,
+          "quote": "The presence of a large cash reserve seems to lead to suboptimal behavior by management."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 1,
+          "quote": "Communication training for CEOs might harmonize how they answer questions; hence, we adopt the null hypothesis of no systematic differences among CEOs."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 0,
+          "quote": "control variables believed to be associated with both our dependent variable and the explanatory variables"
+        }
+      ]
+    }
+  ],
+  "gate_rejected": [],
+  "redteam_rejected": [],
+  "merges": [
+    {
+      "ids": [
+        "a1-p1",
+        "a3-p1"
+      ],
+      "canonical": "a3-p1"
+    },
+    {
+      "ids": [
+        "a1-p2",
+        "a2-p2",
+        "a3-p3"
+      ],
+      "canonical": "a2-p2"
+    },
+    {
+      "ids": [
+        "a1-p3",
+        "a2-p3"
+      ],
+      "canonical": "a1-p3"
+    },
+    {
+      "ids": [
+        "a1-p4",
+        "a2-p4",
+        "a3-p4"
+      ],
+      "canonical": "a1-p4"
+    },
+    {
+      "ids": [
+        "a1-p5",
+        "a3-p2",
+        "a2-p1"
+      ],
+      "canonical": "a1-p5"
+    },
+    {
+      "ids": [
+        "a1-p6",
+        "a3-p6"
+      ],
+      "canonical": "a1-p6"
+    },
+    {
+      "ids": [
+        "a2-p5",
+        "a3-p5"
+      ],
+      "canonical": "a2-p5"
+    }
+  ],
+  "unhandled": [],
+  "side_notes": [
+    "All 17 principles collapse into 7 underlying devices with no unique survivors (keep is empty) - the three agents converged heavily on the same finance-hypothesis toolkit: (A) set-off labeled hypothesis capsule, (B) cited source as grammatical subject of a reporting/cognitive verb, (C) forward deductive connective chaining (if/then, hence, therefore), (D) two-sided adversative balance closing on declared ambiguity, (E) first-person 'we' signposting/metadiscourse, (F) ordinal/parallel enumeration, (G) calibrated modal hedging.",
+    "Canonical tiebreaks favored evidence from published JF (harford1999) and JAR (hollander2010) over working papers (dwz, thewissen2024, ragozzino2024); device A is the only cluster with no JF/JAR evidence available (the H-label capsule appears only in dwz/thewissen), so it was decided on purity of fit - a3-p1's two quotes are both actual H-labeled set-off statements (H1, H4a), whereas a1-p1's third quote is an unlabeled inline 'we hypothesize that...' that does not show the set-apart device.",
+    "a2-p1 ('Signposted, partitioned architecture') is a COMPOUND principle bundling two distinct devices (first-person signposting + ordinal enumeration); it was folded into the first-person cluster (E) by its headline device, with its enumeration facet separately and more cleanly covered by the standalone enumeration cluster (F, canonical a1-p6) - no coverage lost.",
+    "Coverage gap (macro level): all three agents operated at sentence-device and section-signpost granularity; none characterized the internal arc of a single hypothesis-development paragraph as a unit - how setup, mechanism, counter-mechanism, and the crystallized prediction are sequenced within one block. A human may want this paragraph-level template examined.",
+    "Coverage gap (lexical/grammatical): verb-tense and register conventions went unexamined - e.g., present tense for prior findings ('X finds/shows') vs. modal/conditional for the authors' own not-yet-tested predictions, plus nominalization and formality of word choice. The citation and hedging principles brush against this but no agent named a device at this level.",
+    "Coverage gap (rhythm): the deliberate length contrast - long multi-clause derivation sentences set against the short, self-contained labeled hypothesis sentence - was not examined as its own device by any agent."
+  ],
+  "note": "ok"
+}

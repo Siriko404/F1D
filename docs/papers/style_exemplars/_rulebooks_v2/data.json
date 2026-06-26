@@ -1,0 +1,315 @@
+{
+  "type": "data",
+  "principles": [
+    {
+      "id": "a2-p2",
+      "agent": 2,
+      "device": "The attrition funnel",
+      "principle": "Sample construction is staged as a top-down winnowing: an initial population is named, then successive requirements subtract from it, with each stage reporting the surviving count through a 'reduces / eliminates / leaves us with' tally that finally lands on the working N.",
+      "why": "The running headcount makes every exclusion auditable and shows exactly what each screen cost in observations, converting an opaque dataset into a transparent ledger that pre-empts the reader's 'where did the rest of the data go?'",
+      "evidence": [
+        {
+          "paper": "lm2011",
+          "para_idx": 0,
+          "quote": "Most notably, the requirement of a CRSP PERMNO match reduces the original sample of 121,217 10-Ks by 44,822 firms."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 0,
+          "quote": "Of our 6,370 potential calls, transcripts are not available for 1,454 of them, leaving us with a sample of 4,916 conference-call transcripts."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 10,
+          "quote": "We then follow Kisgen (2009) and require a deal to have a transaction value above $5 million, which leaves us with 98,000 deals."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 2,
+          "quote": "This leaves 6,056 CEOs, for whom we have sufficient data to estimate clarity, and 105,399 transcripts."
+        }
+      ]
+    },
+    {
+      "id": "a2-p4",
+      "agent": 2,
+      "device": "Reading the table aloud",
+      "principle": "Descriptive prose re-voices figures that already sit in the tables, narrating the headline numbers in sentences and tagging them with parenthetical glosses — a variable's code-name in parentheses, or a mean immediately shadowed by its median in an 'average (median)' couplet.",
+      "why": "Re-stating the table in prose tells the reader which numbers matter and how to read them, while the parenthetical code-names and median-shadows fold a second data point into the sentence without breaking its flow, fusing exposition with reference.",
+      "evidence": [
+        {
+          "paper": "bushee2018",
+          "para_idx": 3,
+          "quote": "Panel A shows that sample firms tend to be large (mean Size = 7.168) with high analyst coverage (mean = 9.240) and with PP&E (CapIntensity) accounting for 25% of the average firm's asset base."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 9,
+          "quote": "the average (median) number of unanswered queries is 1.37 (1)."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 12,
+          "quote": "We find that the average deal has a deal value of $65 million"
+        }
+      ]
+    },
+    {
+      "id": "a2-p6",
+      "agent": 2,
+      "device": "Detail lives elsewhere",
+      "principle": "Definitions, parsing mechanics, citations, and side-qualifications are pushed out of the running line into subordinate apparatus — appendices, internet appendices, footnotes, and 'see X' cross-references — so the main sentence states the move and points elsewhere for the fine print.",
+      "why": "Quarantining the machinery keeps the spine of the argument uncluttered and quick to read, while the explicit pointers reassure the reader that nothing is hidden: the rigor is on file, just not in the way.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 2,
+          "quote": "The definition and construction of the specific variables used in the analysis are reported in the Data Appendix."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 3,
+          "quote": "A detailed description of the parsing process is provided in the Internet Appendix."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 3,
+          "quote": "Table 1 presents descriptive statistics for variables used in our analysis; see appendix C for variable definitions."
+        }
+      ]
+    },
+    {
+      "id": "a3-p3",
+      "agent": 3,
+      "device": "Operational exactness",
+      "principle": "Every concept is pinned to an exact, reproducible form: plain-language referents are immediately tagged with their coded variable name in parentheses, and qualitative rules are committed to precise numeric thresholds, clock times, dollar cutoffs, or filing codes rather than vague language.",
+      "why": "The parenthetical tag lets prose stay readable while binding each word to the machine-level variable a replicator needs, and the insistence on exact values converts 'we cleaned the data' into a specification someone else could re-run, which is the genre's implicit contract.",
+      "evidence": [
+        {
+          "paper": "bushee2018",
+          "para_idx": 3,
+          "quote": "capital expenditures (Capex) of 1.2% of assets, R&D expense (R&D) of 1.1% of assets, and debt and equity issuances (Financing) that amounted to 3.6% of total assets"
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 6,
+          "quote": "prefile date Fama-French alpha (Pre FFAlpha)"
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 0,
+          "quote": "those calls beginning after 9:30 A.M. and before 2:30 P.M. EST"
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 8,
+          "quote": "We therefore require a press release to have at least 100 words and remove any observation otherwise."
+        }
+      ]
+    },
+    {
+      "id": "a3-p5",
+      "agent": 3,
+      "device": "Table-anchored exposition",
+      "principle": "Each exhibit is introduced by a flat, declarative 'Table X presents/reports...' sentence, after which the prose selectively narrates only the noteworthy figures, while the exhaustive variable-by-variable definitions are exiled to dense, self-contained table notes that let the table stand alone.",
+      "why": "The naming sentence orients the reader instantly and divides labor: prose highlights what matters instead of redundantly transcribing the grid, and the standalone notes guarantee any table can be lifted out and still be fully decoded, serving the genre's archival, reference-document function.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 3,
+          "quote": "Table I presents means and standard deviations for all the corporate variables of interest."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 3,
+          "quote": "Table 1 presents descriptive statistics for variables used in our analysis; see appendix C for variable definitions."
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 4,
+          "quote": "The table presents the median total assets, market-to-book ratio, leverage ratio, and cash to sales ratio of cash-rich firm years and all other firm years for 1972 to 1994."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 11,
+          "quote": "DIDISC is set to 1 when one or more questions remain unanswered during a call, and 0 otherwise."
+        }
+      ]
+    },
+    {
+      "id": "a3-p6",
+      "agent": 3,
+      "device": "Hedged interpretive register",
+      "principle": "When the prose steps from reporting numbers to reading them, it switches to a deliberately cautious register: descriptive patterns are softened with 'tend to,' 'appears,' and 'somewhat,' surprises are flagged as merely 'perhaps' surprising, and the authors openly profess reluctance to over-conclude from summary statistics.",
+      "why": "Summary tables support only tendencies, not proof, so calibrating the verbs to that epistemic limit keeps the descriptive section from overclaiming and signals scholarly restraint, reserving strong causal language for the later inferential tests.",
+      "evidence": [
+        {
+          "paper": "bushee2018",
+          "para_idx": 4,
+          "quote": "Analysts tend to use less complex language"
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 13,
+          "quote": "stock deals tend to be less profitable"
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 19,
+          "quote": "Perhaps somewhat surprisingly, the fraction of CEOs who have completed an MBA is only about 40 percent."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 2,
+          "quote": "we are reluctant to draw conclusions about managers' attitude toward such questions in general"
+        }
+      ]
+    },
+    {
+      "id": "a2-p1",
+      "agent": 2,
+      "device": "The investigator's recipe",
+      "principle": "The section is told in the first-person plural as a chronological sequence of deliberate acts: a 'we' subject bound to a concrete construction verb (construct, download, retrieve, extract, restrict, require), with the steps threaded by sequence markers (first, then, next, finally) so each sentence advances the build rather than describing a static state.",
+      "why": "Casting method as a narrated procedure lets the reader replay the construction step by step, which reads as transparent and replicable; the active 'we' assigns visible agency for every decision, and the connectives turn a pile of choices into a followable path instead of an inventory.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 1,
+          "quote": "We therefore construct a manager-firm matched panel data set that allows us to track the same top managers across different firms over time."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 0,
+          "quote": "We download all 10-Ks and 10-K405s, excluding amended documents, from the EDGAR website"
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 1,
+          "quote": "First we extract the names and titles of call participants."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 0,
+          "quote": "We then use Python to code each of the comments and build a database"
+        }
+      ]
+    },
+    {
+      "id": "a3-p2",
+      "agent": 3,
+      "device": "Choice-plus-rationale",
+      "principle": "Almost no design decision is stated bare; each filter, cutoff, or data choice is immediately yoked to its reason through a 'because / in order to / as is customary / reduces' clause, so the rule and its justification arrive in the same breath.",
+      "why": "Volunteering the motive for every screen pre-empts the reader's 'why did they do that?' and frames each restriction as principled rather than arbitrary or results-driven, which is the central credibility task of a methods section.",
+      "evidence": [
+        {
+          "paper": "hollander2010",
+          "para_idx": 0,
+          "quote": "We limit our sample to calls held during trading hours because in Section 6 we investigate in real-time the market reaction to information released during conference calls."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 1,
+          "quote": "Eliminating low-priced firms reduces the role of bid-ask bounce when we examine the market reaction to the 10-K filing."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 2,
+          "quote": "As is customary in the study of investment regressions, we exclude firms in the banking and insurance industries as well as utilities from our sample."
+        }
+      ]
+    },
+    {
+      "id": "a3-p4",
+      "agent": 3,
+      "device": "Referee-proofing",
+      "principle": "The writing anticipates the skeptical reviewer: alternative specifications are run and reported to 'not affect our inferences' or leave results 'virtually unchanged,' and the sample's own biases and limitations are conceded candidly, with much of this defensive apparatus offloaded into numbered footnotes and appendix pointers.",
+      "why": "Pre-emptively conceding weaknesses and showing the conclusions survive perturbation disarms the obvious objections before a reader can raise them, while quarantining the hedges in footnotes keeps the main narrative clean and confident without appearing to hide anything.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 5,
+          "quote": "When we include these observations in the noninvestment regressions, our results are virtually unchanged."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 1,
+          "quote": "Table IA-9 of the online appendix shows that these alternative approaches do not affect our inferences."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 1,
+          "quote": "there remains a size bias, which does not affect our empirical approach, but might affect the generalizability of our findings."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 3,
+          "quote": "Table IA.3 in the Internet Appendix shows that this restricted sample is similar to the full sample"
+        }
+      ]
+    }
+  ],
+  "gate_rejected": [
+    {
+      "id": "a1-p1",
+      "reason": "quote_not_verbatim_in_claimed_paper"
+    },
+    {
+      "id": "a1-p2",
+      "reason": "quote_not_verbatim_in_claimed_paper"
+    },
+    {
+      "id": "a1-p3",
+      "reason": "quote_not_verbatim_in_claimed_paper"
+    },
+    {
+      "id": "a1-p4",
+      "reason": "quote_not_verbatim_in_claimed_paper"
+    },
+    {
+      "id": "a1-p5",
+      "reason": "quote_not_verbatim_in_claimed_paper"
+    },
+    {
+      "id": "a1-p6",
+      "reason": "quote_not_verbatim_in_claimed_paper"
+    },
+    {
+      "id": "a1-p7",
+      "reason": "quote_not_verbatim_in_claimed_paper"
+    }
+  ],
+  "redteam_rejected": [],
+  "merges": [
+    {
+      "ids": [
+        "a2-p1",
+        "a3-p1"
+      ],
+      "canonical": "a2-p1"
+    },
+    {
+      "ids": [
+        "a2-p3",
+        "a3-p2"
+      ],
+      "canonical": "a3-p2"
+    },
+    {
+      "ids": [
+        "a2-p5",
+        "a3-p4"
+      ],
+      "canonical": "a3-p4"
+    }
+  ],
+  "unhandled": [],
+  "side_notes": [
+    "Coverage gap: no principle examines paragraph-/section-level architecture - the ordering of sub-blocks (data sources -> sample construction -> variable definitions -> descriptive stats), topic sentences, or inter-paragraph transitions. All surviving devices sit at the sentence/clause level or name isolated structural tics, so the macro-organization of the data section is left unexamined by all agents.",
+    "Coverage gap: sentence-to-sentence cohesion and cadence (given-new information flow between adjacent sentences, sentence-length variation/rhythm) is unexamined. No principle touches this level - and notably none asserts a length/word-count threshold, which is correct, but the flow level itself was never analyzed.",
+    "Synthesis note on merge {a2-p1,a3-p1}->a2-p1: a3-p1 conflates two genuinely distinct devices (procedural 'we'-narration AND the running-count attrition funnel). Canonical kept as a2-p1 (pure narration) rather than the conflated a3-p1 so the funnel device stays cleanly owned by the separately-kept a2-p2, avoiding funnel redundancy among kept principles, even though a3-p1 carries marginally more published quotes.",
+    "Synthesis note on merge {a2-p3,a3-p2}->a3-p2: same choice+rationale device; canonical is a3-p2 because its evidence is uniformly published top-tier (hollander JAR, lm JF, bertrand_schoar QJE) whereas a2-p3 dilutes with two working-paper quotes (thewissen2024, ragozzino2024).",
+    "Synthesis note on merge {a2-p5,a3-p4}->a3-p4: same referee-proofing/robustness-reflex device, equal authority (both QJE+JAR+2 WP). Canonical a3-p4 because it subsumes a2-p5's scope (robustness 'unchanged/not sensitive' + footnote-quarantine) and additionally captures candid bias/limitation concession, so keeping it loses no nuance.",
+    "Near-overlap deliberately kept separate (NOT merged): the parenthetical tag in a2-p4 folds in a DATUM (mean Size = 7.168; average (median) 1.37 (1)) while in a3-p3 it attaches a bare CODE-NAME (Capex, R&D, Pre FFAlpha); distinct micro-techniques. Likewise a3-p5 ('Table X presents...' naming + standalone notes) vs a2-p6 (general quarantine of machinery to appendices/footnotes) are distinct devices despite sharing the bushee2018 para-3 'see appendix C' sentence."
+  ],
+  "note": "ok"
+}

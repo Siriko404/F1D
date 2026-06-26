@@ -1,0 +1,248 @@
+{
+  "type": "methods",
+  "principles": [
+    {
+      "id": "a3-p1",
+      "agent": 3,
+      "device": "First-person authorial agency",
+      "principle": "The methodology is narrated as a chain of decisions owned by the authors: clauses are driven by an explicit first-person subject ('we', or 'I' for a sole author) bolted to verbs of deliberate choice (propose, estimate, use, define, decide). The design is presented as something the researchers actively did and elected, never as an impersonal procedure that merely happened.",
+      "why": "Owning each step in the first person assigns visible responsibility for every modeling decision and lets the reader follow the reasoning as a human argument rather than decode passive machinery; it frames contestable choices as considered judgments the authors stand behind.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 1,
+          "quote": "we propose to estimate the following regression"
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 3,
+          "quote": "The model that I use to establish baseline cash holdings includes"
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 0,
+          "quote": "We estimate equation (3) using the Gunning [1952] Fog index to measure linguistic complexity."
+        }
+      ]
+    },
+    {
+      "id": "a3-p2",
+      "agent": 3,
+      "device": "Define-on-introduction",
+      "principle": "No symbol or variable is left to inference. A formal equation is immediately followed by a 'where' clause that decodes every term in turn, and each constructed variable is introduced with a parenthetical mnemonic plus an operational definition (formula, units, or data source) at the very moment it first appears.",
+      "why": "Pinning every term to an explicit definition the instant it surfaces makes the specification reproducible and removes ambiguity, so the reader never has to hold an undefined symbol in mind or hunt backwards for what a label means.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 3,
+          "quote": "where y it stands for one of the corporate policy variables"
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 9,
+          "quote": "where R t is the daily return and DVolume t is the daily dollar volume (in millions)."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 5,
+          "quote": "We compute company size (LMV ) as the natural logarithm of a firm's"
+        }
+      ]
+    },
+    {
+      "id": "a3-p3",
+      "agent": 3,
+      "device": "Justify-as-you-go",
+      "principle": "Choices are never left bare; each is legitimized on the spot, either by a stated purpose (a 'because' / 'intended to' / 'to reduce…' clause naming what the move buys) or by precedent (a 'following X' / 'in line with X' citation tying the choice to prior work).",
+      "why": "Attaching a reason to every decision pre-empts the reader's 'why this and not that?' and turns a list of arbitrary-looking operations into a motivated, defensible design; precedent citations additionally borrow the authority of established practice to lower the burden of proof.",
+      "evidence": [
+        {
+          "paper": "hollander2010",
+          "para_idx": 5,
+          "quote": "We use the logarithm specification of market value in our analysis because the variable is highly skewed."
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 6,
+          "quote": "The averaging is intended to reduce yearly noise and produce a truer representation of a firm's characteristics."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 8,
+          "quote": "Following Amihud [2002], Illiquidity, is defined as"
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 6,
+          "quote": "In line with Arslan-Ayaydin et al. (2016, 2020), we also include four variables to control for the firm's performance"
+        }
+      ]
+    },
+    {
+      "id": "a3-p4",
+      "agent": 3,
+      "device": "Concede-then-counter",
+      "principle": "The prose voices the strongest objection to its own design before the reader can, using concessive framing ('however', 'one could argue', 'one challenge is', 'nevertheless'), and then either neutralizes the threat or openly scales the claim back.",
+      "why": "Raising the objection first signals that the authors have seen it and are not hiding it, which builds credibility; meeting it on the same page disarms the skeptical reader and pre-empts an obvious referee complaint.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 5,
+          "quote": "Nevertheless, one could reasonably argue that managers who are recruited from the outside are different from internally promoted ones."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 10,
+          "quote": "Employing ordinal logistic regression techniques, however, entails a disadvantage: The information contained in the ordering (i.e., the number of unanswered questions per call) is lost."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 6,
+          "quote": "One challenge in measuring business complexity is that variables that proxy for business complexity could also reflect reporting incentives (Leuz and Wysocki [2016])."
+        }
+      ]
+    },
+    {
+      "id": "a3-p5",
+      "agent": 3,
+      "device": "Robustness-reassurance refrain",
+      "principle": "Alternative specifications and side-checks are compressed into a recurring formula: state the variation, then assure that it 'does not affect', 'leaves unchanged', or is 'unaffected', frequently flagging the supporting results as untabulated or available on request rather than displaying them.",
+      "why": "This lets the authors demonstrate breadth of testing without bloating the main narrative, signaling thoroughness while keeping the line of argument lean; the stock phrasing makes each reassurance instantly recognizable and easy to skim.",
+      "evidence": [
+        {
+          "paper": "hollander2010",
+          "para_idx": 13,
+          "quote": "Untabulated analysis shows that including EXTFIN in our model does not affect our main findings."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 6,
+          "quote": "Taking the last two or three semesters before the M&A announcement does not alter our conclusions. The results are available upon request."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 1,
+          "quote": "The results of these regressions are not shown, but they are available from the authors."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 23,
+          "quote": "The signs and significance levels of our coefficients are unaffected."
+        }
+      ]
+    },
+    {
+      "id": "a2-p5",
+      "agent": 2,
+      "device": "Numbered scaffolding",
+      "principle": "The exposition is held together by explicit connective scaffolding: ordinal markers ('First… Second… Finally'), announced counts ('There are two points worth emphasizing', 'involves three steps'), and forward/backward pointers to numbered sections, equations, tables, and appendices ('see appendix B for details'). The reader is told the shape of what is coming before the detail lands.",
+      "why": "Announcing in advance how many parts there are and where each fits lowers the effort of tracking a long procedure, and the cross-references let heavy detail be parked elsewhere without breaking the main line — so the spine of the argument stays uncluttered and easy to follow.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 13,
+          "quote": "There are two points worth emphasizing about equation ( 3). First, equation (3) includes firm fixed effects."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 1,
+          "quote": "Second, we divide these sums by the total words they spoke during the call. Lastly, we multiply these proportions by 1,000 for scaling purposes."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 2,
+          "quote": "We use the Lingua::EN::Sentence Perl routine that better identifies sentence breaks (see appendix B for details)."
+        }
+      ]
+    },
+    {
+      "id": "a2-p6",
+      "agent": 2,
+      "device": "Worked instance",
+      "principle": "When a method or identifying idea is abstract, the writer pauses to walk a single concrete case — flagged by 'Consider…', 'For example…', 'For instance…' — instantiating the general rule with one specific firm, value, or scenario before returning to the general statement. The illustration precedes or accompanies the abstraction rather than replacing it.",
+      "why": "A concrete instance gives the reader something imageable to anchor an otherwise formal claim, so the abstraction is grasped through a picture first and the rule second — the quickest route to comprehension when the underlying logic is hard to hold in the abstract.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 0,
+          "quote": "The nature of our identification strategy can be most easily explained with an example. Consider the dividend payout ratio as the corporate policy of interest."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 3,
+          "quote": "For example, a Fog index of 12 indicates formal education at the level of a high school senior (i.e., 12th grade), while a Fog index of 16 indicates college education."
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 2,
+          "quote": "For example, if the firm anticipates that cash f low in year t ϩ 2 will fall short of that required for planned investment, cash reserves will likely increase over years t and t ϩ 1."
+        }
+      ]
+    }
+  ],
+  "gate_rejected": [],
+  "redteam_rejected": [],
+  "merges": [
+    {
+      "ids": [
+        "a2-p1",
+        "a3-p1"
+      ],
+      "canonical": "a3-p1"
+    },
+    {
+      "ids": [
+        "a1-p3",
+        "a2-p2",
+        "a3-p2"
+      ],
+      "canonical": "a3-p2"
+    },
+    {
+      "ids": [
+        "a1-p1",
+        "a1-p5",
+        "a2-p3",
+        "a3-p3"
+      ],
+      "canonical": "a3-p3"
+    },
+    {
+      "ids": [
+        "a1-p4",
+        "a2-p4",
+        "a3-p4"
+      ],
+      "canonical": "a3-p4"
+    },
+    {
+      "ids": [
+        "a1-p7",
+        "a3-p5"
+      ],
+      "canonical": "a3-p5"
+    },
+    {
+      "ids": [
+        "a1-p6",
+        "a2-p5",
+        "a3-p6"
+      ],
+      "canonical": "a2-p5"
+    },
+    {
+      "ids": [
+        "a1-p2",
+        "a2-p6"
+      ],
+      "canonical": "a2-p6"
+    }
+  ],
+  "unhandled": [],
+  "side_notes": [
+    "COVERAGE GAP - sentence-level mechanics unexamined: all 19 principles operate at the rhetorical-move level (purpose clauses, concession, signposting, definition cadence). None isolate sentence length, clause complexity, or parallel structure within methods prose.",
+    "COVERAGE GAP - active/passive voice tension unexamined: two agents (a2-p1, a3-p1) build principles on first-person ACTIVE agency ('we estimate'), yet the panel's own evidence repeatedly uses agentless PASSIVE for variable definitions ('Illiquidity ... is defined as'; 'Tobin's Q is approximated by'; 'MISS is set to 1'). No principle addresses when/why methods writing switches to passive.",
+    "COVERAGE GAP - paragraph-level architecture unexamined: only intra-argument ordinal signposting was analyzed. How a methods paragraph opens (topic sentence) and closes, and the ordering of successive variable definitions across a passage, were not treated as devices."
+  ],
+  "note": "ok"
+}

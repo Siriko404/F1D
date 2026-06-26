@@ -1,0 +1,301 @@
+{
+  "type": "intro",
+  "principles": [
+    {
+      "id": "a1-p2",
+      "agent": 1,
+      "device": "Contrast-driven argument",
+      "principle": "Move the argument forward by contrast: adversative connectives (However, Yet, an alternative view) set one position against another, and concessive constructions (While X, we nonetheless Y) grant a point before overturning or qualifying it.",
+      "why": "Staging competing views as a tension the paper will resolve creates forward momentum and makes the contribution feel earned rather than asserted; the reader is pulled through claim and counter-claim.",
+      "evidence": [
+        {
+          "paper": "harford1999",
+          "para_idx": 2,
+          "quote": "However, cash reserves have large potential costs in addition to their benefits."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 0,
+          "quote": "An alternative view is that complex language could be necessary to convey information about the firm's business transactions and operating strategy (e.g., Bloomfield [2008])."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 3,
+          "quote": "While measuring document tone using any word classification scheme is inherently imprecise, we provide evidence based on 50,115 firm-year 10-Ks between 1994 and 2008 that the H4N list substantially misclassifies words when gauging tone in financial applications."
+        }
+      ]
+    },
+    {
+      "id": "a2-p1",
+      "agent": 2,
+      "device": "Importance Overture",
+      "principle": "The intro opens not on the specific result but on the broad subject, asserting its importance or centrality in a sweeping, confident declarative opening — often in elevated or attention-getting diction (small-caps lead-ins, 'plays a central role', 'a growing body', 'in this day and age'). The first sentence stakes out wide territory before any narrowing to the paper's own question.",
+      "why": "Starting wide gives an unprimed reader a frame to hang everything else on, and the slightly grand, stakes-asserting register earns attention and signals that the topic matters before the technical narrowing begins.",
+      "evidence": [
+        {
+          "paper": "harford1999",
+          "para_idx": 0,
+          "quote": "DESPITE THE IMPORTANCE OF CASH RESERVES to theories in corporate finance, corporate holdings of cash have received relatively little direct attention in the academic literature."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 0,
+          "quote": "A GROWING BODY of finance and accounting research uses textual analysis to examine the tone and sentiment of corporate 10-K reports, newspaper articles, press releases, and investor message boards."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 0,
+          "quote": "In this day and age of big data, market participants have an astonishing array of company information available at the click of a mouse."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 0,
+          "quote": "Asymmetric information plays a central theoretical role in corporate strategy"
+        }
+      ]
+    },
+    {
+      "id": "a3-p3",
+      "agent": 3,
+      "device": "Results up front",
+      "principle": "The intro discloses the findings rather than holding them back for suspense, typically via a flagged 'we find / our results show' clause carrying concrete directional or numeric detail.",
+      "why": "Front-loading the answer lets the reader process the rest of the paper as confirmation and extract the contribution at low cost, while the concrete specifics signal the claims are already empirically realized rather than merely promised.",
+      "evidence": [
+        {
+          "paper": "lm2011",
+          "para_idx": 4,
+          "quote": "we find that almost three-fourths (73.8%) of the negative word counts according to the Harvard list are attributable to words that are typically not negative in a financial context."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 3,
+          "quote": "Our results show that manager fixed effects are empirically important determinants of a wide range of corporate variables."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 7,
+          "quote": "We find that CEOs differ substantially in clarity."
+        }
+      ]
+    },
+    {
+      "id": "a1-p1",
+      "agent": 1,
+      "device": "Stakes-then-gap opening",
+      "principle": "Open the intro by asserting the topic's broad importance, then in the same breath pivot to what prior work has ignored, left unexplained, or barely studied, framing the paper as filling a named void.",
+      "why": "Establishing the stakes earns the reader's attention, and naming the gap immediately gives the paper an instant reason to exist, so within a few sentences the reader knows why the work is needed.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 0,
+          "quote": "How much do individual managers matter for firm behavior and economic performance? Research in finance and economics so far has given little consideration to this question."
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 0,
+          "quote": "DESPITE THE IMPORTANCE OF CASH RESERVES to theories in corporate finance, corporate holdings of cash have received relatively little direct attention in the academic literature."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 0,
+          "quote": "the empirical literature on incomplete disclosure is scant (Kothari, Shu, and Wysocki [2009])."
+        }
+      ]
+    },
+    {
+      "id": "a1-p3",
+      "agent": 1,
+      "device": "Self-narrating first person",
+      "principle": "Speak in an active first-person authorial voice that openly narrates what the paper does and what it finds, using constructions like 'In this paper, we show/propose...' and 'I find that...'.",
+      "why": "The direct we-do/we-find voice keeps agency visible and the prose concrete and brisk, so the reader always knows who is doing what and can follow the paper's actions and results without decoding passive abstractions.",
+      "evidence": [
+        {
+          "paper": "bushee2018",
+          "para_idx": 1,
+          "quote": "In this paper, we show that linguistic complexity commingles two latent components that have opposite relations to information asymmetry"
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 1,
+          "quote": "In this paper, we propose a method for evaluating CEO clarity and test its implications for companies' stock price and long-term value."
+        },
+        {
+          "paper": "harford1999",
+          "para_idx": 5,
+          "quote": "I find that the behavior of cash-rich firms is consistent with the predictions of the free cash f low hypothesis."
+        }
+      ]
+    },
+    {
+      "id": "a2-p4",
+      "agent": 2,
+      "device": "Enumerated Parallel Scaffolding",
+      "principle": "Dense material is broken into explicitly counted, grammatically parallel slots — 'First… Second… Third…', '(1)… (2)…', 'contributes in two ways', 'makes three contributions', 'adds to the literature in several ways'. The number is announced up front and each item opens with a matching ordinal in parallel syntax.",
+      "why": "Pre-announcing the count and marching through parallel items lets the reader keep a running tally and chunk otherwise tangled claims into a clean list, lowering the effort of holding a multi-part argument in mind.",
+      "evidence": [
+        {
+          "paper": "dwz",
+          "para_idx": 16,
+          "quote": "Our study makes three contributions."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 10,
+          "quote": "Our study contributes to the literature in two ways. First, the transparency of a call enables us to observe the disclosure choices corporate executives make in direct response to requests for information."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 19,
+          "quote": "Our study adds to the literature in several ways. First, motivated by prior research on the relation between disclosure tone and stock valuation, our study provides novel empirical evidence on the impact of M&As' method of payment on managers' strategic motives."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 6,
+          "quote": "Our results are robust to a variety of sensitivity tests. First, the results hold (and in some cases become stronger) when we control for other language attributes, such as number of words, industry jargon, forward-looking statements, and tone."
+        }
+      ]
+    },
+    {
+      "id": "a3-p5",
+      "agent": 3,
+      "device": "Contribution-marking",
+      "principle": "Each intro carries an explicit, self-aware contribution statement built from a small recurring vocabulary ('novel', 'contribution(s)', 'we contribute / our study adds') that names what is new and pins it against prior work.",
+      "why": "An overt contribution clause hands editors and readers the paper's novelty claim directly instead of forcing them to infer it, which is the central currency the genre trades in.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 0,
+          "quote": "The novel contribution of this paper is to explicitly introduce such a people, or manager, dimension in an empirical study of corporate practices."
+        },
+        {
+          "paper": "dwz",
+          "para_idx": 16,
+          "quote": "Our study makes three contributions."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 4,
+          "quote": "We make several contributions to the literature on textual analysis."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 8,
+          "quote": "Our paper contributes to the large stream of literature that examines the linguistic complexity of corporate disclosures."
+        }
+      ]
+    },
+    {
+      "id": "a2-p5",
+      "agent": 2,
+      "device": "Terminal Roadmap",
+      "principle": "The introduction closes with a dedicated signpost paragraph that maps the paper section by section in a near-fixed formula — 'The remainder of the paper is organized/proceeds as follows. Section 2 …, Section 3 …' — each clause pairing a section number with a verb naming what that section does.",
+      "why": "Ending on an explicit prose table of contents hands the reader a navigation key and sets expectations for the route ahead, so the body that follows never feels disorienting.",
+      "evidence": [
+        {
+          "paper": "bushee2018",
+          "para_idx": 10,
+          "quote": "The remainder of the paper proceeds as follows. Section 2 reviews the relevant prior literature."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 11,
+          "quote": "The remainder of the paper is organized as follows. Section I discusses related research on textual analysis."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 10,
+          "quote": "The rest of this paper is organized as follows. Section II provides a brief discussion of alternative hypotheses as to why individual managers may matter for corporate decisions."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 12,
+          "quote": "The remainder of this paper proceeds as follows. Section 2 discusses the disclosure role of earnings-related conference calls and provides a short review of the literature."
+        }
+      ]
+    },
+    {
+      "id": "a1-p7",
+      "agent": 1,
+      "device": "Concrete/quoted anchor",
+      "principle": "Ground an abstract construct in a concrete particular or a borrowed authoritative voice, an epigraph, a named real-world episode, or a quotation from a dictionary, philosopher, or prior scholar.",
+      "why": "A vivid particular or quoted authority makes an otherwise dry, abstract construct tangible and memorable, hooking the reader and lending the framing outside credibility.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 0,
+          "quote": "In the old days I would have said it was capital, history, the name of the bank. Garbage-it's about the guy at the top."
+        },
+        {
+          "paper": "hollander2010",
+          "para_idx": 2,
+          "quote": "To illustrate, consider the recent case of Apple Inc."
+        },
+        {
+          "paper": "lm2011",
+          "para_idx": 2,
+          "quote": "Content analysis stands or falls by its categories."
+        }
+      ]
+    }
+  ],
+  "gate_rejected": [],
+  "redteam_rejected": [
+    {
+      "id": "a3-p4",
+      "reason": "Conflates two distinct devices under one over-broad 'explicit signposting' label: in-text ordinal enumeration (First/Second within the argument) and the terminal section-by-section roadmap ('The remainder of the paper... Section 2...'). These are separable stylistic moves serving different functions in different places, and both are retained separately here — enumeration as the canonical a2-p4 and the roadmap as the canonical a2-p5. As a single bundled principle it is redundant and too coarse to act on."
+    }
+  ],
+  "merges": [
+    {
+      "ids": [
+        "a1-p1",
+        "a2-p2",
+        "a3-p1"
+      ],
+      "canonical": "a1-p1"
+    },
+    {
+      "ids": [
+        "a1-p3",
+        "a2-p3",
+        "a3-p2"
+      ],
+      "canonical": "a1-p3"
+    },
+    {
+      "ids": [
+        "a1-p4",
+        "a2-p4"
+      ],
+      "canonical": "a2-p4"
+    },
+    {
+      "ids": [
+        "a1-p5",
+        "a3-p5"
+      ],
+      "canonical": "a3-p5"
+    },
+    {
+      "ids": [
+        "a1-p6",
+        "a2-p5"
+      ],
+      "canonical": "a2-p5"
+    },
+    {
+      "ids": [
+        "a1-p7",
+        "a3-p6"
+      ],
+      "canonical": "a1-p7"
+    }
+  ],
+  "unhandled": [],
+  "side_notes": [
+    "Coverage gap: all 18 principles operate at the discourse/rhetorical-move level (broad openings, gap-pivots, contrast, signposting/enumeration, contribution claims, section roadmaps, first-person voice, concrete anchors, results-up-front). No agent examined sentence- or micro-level style — sentence length and rhythm, hedging vs. assertive certainty, active/passive balance, paragraph length, or citation-integration mechanics (e.g., the parenthetical bracketed cite form '(Kothari, Shu, and Wysocki [2009])'). A human may want this layer probed.",
+    "Coverage gap: a rhetorical-question opener appears in the verified evidence (bertrand_schoar2003 para 0: 'How much do individual managers matter for firm behavior and economic performance?') but none of the three agents isolates 'open the intro by posing the research question directly' as its own device.",
+    "Synthesis note for the human: the kept opening trio is intentionally granular and lightly overlapping — a2-p1 (broad importance/elevated-diction overture, with standalone pure-opener evidence in lm2011/dwz/ragozzino), a1-p1 (the importance->gap funnel pivot), and a1-p2 (adversative/concessive contrast as a general argument engine: 'However...costs', 'An alternative view', 'While X, we Y'). They are kept distinct because each has independent evidence and a different rhetorical function (opener register vs. gap-naming pivot vs. competing-view staging), but a reviewer may judge a2-p1 and a1-p1 close enough to fold."
+  ],
+  "note": "ok"
+}

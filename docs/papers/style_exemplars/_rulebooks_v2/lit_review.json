@@ -1,0 +1,283 @@
+{
+  "type": "lit_review",
+  "principles": [
+    {
+      "id": "a2-p3",
+      "agent": 2,
+      "device": "Conditional hypotaxis",
+      "principle": "Claims are advanced inside subordinate conditional frames -- 'if', 'while', 'to the extent that', inverted 'Should X' -- so each assertion arrives already bounded by the condition under which it holds.",
+      "why": "Embedding the qualifier in the clause models the contingent, theory-bounded reasoning of the field and pre-empts objection; the reader receives claim and caveat as a single unit and reads the writer as precise rather than overreaching.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 0,
+          "quote": "While executives might differ in their preferences, risk-aversion or skill levels, none of this translates into actual corporate policies, if a single person cannot easily affect these policies."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 4,
+          "quote": "Should this information be incomplete or missing, investors would face adverse selection and its associated inefficiencies"
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 0,
+          "quote": "To the extent that complex language increases information processing costs for investors, managers can use complex language to \"obfuscate\" the true nature of the firms' current and future performance"
+        }
+      ]
+    },
+    {
+      "id": "a3-p5",
+      "agent": 3,
+      "device": "Calibrated hedging",
+      "principle": "Claims are pervasively softened with modal and stance qualifiers ('may,' 'might,' 'arguably,' 'tend to,' 'implicitly assume') that mark a degree of certainty instead of asserting flatly.",
+      "why": "Hedging matches assertion strength to contested or inferential evidence, preserving credibility and signaling scholarly caution while still letting the writer advance a definite position.",
+      "evidence": [
+        {
+          "paper": "bushee2018",
+          "para_idx": 4,
+          "quote": "Conference calls also arguably provide stronger managerial incentives to obfuscate than the 10-K setting."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 2,
+          "quote": "this work might still be understating the importance of information costs in M&A markets"
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 3,
+          "quote": "managers tend to strategically time the moment to acquire another firm when the stock is most valuable"
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 0,
+          "quote": "Many empirical studies of corporate decisions implicitly assume a neoclassical view of the firm"
+        }
+      ]
+    },
+    {
+      "id": "a2-p1",
+      "agent": 2,
+      "device": "Author-as-agent attribution",
+      "principle": "Cited work is folded into the sentence as its grammatical subject, driving an active reporting verb (uses, finds, propose, study, model); the researcher, not the finding, is made the actor of the clause.",
+      "why": "Putting the source in the subject slot turns a bibliography into a narrative of who did what, so the reader follows a sequence of human actors instead of decoding parenthetical tags; the active verb also commits the writer to a precise characterization of each study.",
+      "evidence": [
+        {
+          "paper": "thewissen2024",
+          "para_idx": 1,
+          "quote": "Shleifer and Vishny (2003) propose a theoretical model, where managers are completely rational, understand stock market inefficiencies, and take advantage of them"
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 0,
+          "quote": "He finds that firms with higher 10-K Fog have lower current earnings performance and less persistent future earnings performance"
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 3,
+          "quote": "One exception is Hermalin and Weisbach [1998], who model a process by which good managers can gain more discretion"
+        }
+      ]
+    },
+    {
+      "id": "a2-p5",
+      "agent": 2,
+      "device": "Dialectical typology",
+      "principle": "Prior work is partitioned into a small number of explicitly counted, contrasted positions ('two distinct interpretations', 'two main variants', 'a quick distinction between the two problems'), and the writer pivots between them with adversatives such as 'In contrast'.",
+      "why": "Organizing the literature as opposing camps gives the section a debate structure the reader can hold in mind, and the contrast carves out the exact slot the writer's own argument will later occupy.",
+      "evidence": [
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 1,
+          "quote": "But there are two distinct interpretations as to how these managerial differences translate into corporate choices."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 3,
+          "quote": "These two main variants of the \"managers matter\" view of corporate decisions have very different efficiency implications."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 2,
+          "quote": "In contrast, moral hazard focuses on the problem of hidden actions that emerge from principals (i.e., the shareholders) and agents (i.e., the executives) holding diverging incentives"
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 2,
+          "quote": "It is worth drawing a quick distinction between the two problems"
+        }
+      ]
+    },
+    {
+      "id": "a1-p3",
+      "agent": 1,
+      "device": "Connective signposting",
+      "principle": "Inferential and summative relations between sentences are made explicit with discourse markers such as 'thus,' 'hence,' 'as a result,' 'in sum,' and 'indeed,' so each step announces its logical role before delivering its content.",
+      "why": "Naming the move (consequence, summary, intensification) lets the reader follow the chain of reasoning without reconstructing it, keeping a dense argument navigable.",
+      "evidence": [
+        {
+          "paper": "thewissen2024",
+          "para_idx": 0,
+          "quote": "As a result, there exists a negative relationship between the price paid for the target and the bidder's stock value."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 6,
+          "quote": "In sum, information asymmetry between company insiders and capital markets in M&A is a compelling issue for two main reasons"
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 18,
+          "quote": "Hence, if our decomposition is empirically descriptive, we expect to decompose a single variable"
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 2,
+          "quote": "Indeed, if a given company's optimal strategy were invariant over time, an incoming manager's style would only be the continuation of the prior manager's style."
+        }
+      ]
+    },
+    {
+      "id": "a1-p4",
+      "agent": 1,
+      "device": "Abstract-then-example",
+      "principle": "General claims are immediately grounded by a concrete instance flagged with 'for example,' 'for instance,' or 'as a few illustrations,' moving from the abstraction to the specific case that exhibits it.",
+      "why": "Anchoring an abstraction in a specific case makes it tangible and checkable and shows the mechanism rather than merely asserting it.",
+      "evidence": [
+        {
+          "paper": "thewissen2024",
+          "para_idx": 0,
+          "quote": "For example, the exchange ratio is four if the acquirer agrees to exchange four of its stocks for one target firm share."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 9,
+          "quote": "For example, Charrow and Charrow [1979] find that adding more words to highlight the relationships among information items in jury instructions leads to a decrease in readability scores"
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 2,
+          "quote": "For example, a board may determine the need to go through an external growth phase and therefore hire a new manager who is more aggressive or more prone to engage in expansion strategies."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 8,
+          "quote": "As a few illustrations, some scholars have examined the roles of analyst coverage (Matsumoto et al., 2011) and information asymmetries (Bushee et al., 2018) on the content of information covered in earnings calls"
+        }
+      ]
+    },
+    {
+      "id": "a1-p5",
+      "agent": 1,
+      "device": "Field-as-body framing",
+      "principle": "The literature is portrayed collectively rather than paper-by-paper, characterized as a 'growing literature' or 'vast and growing body of work' traced from a seminal origin, with its breadth established by parenthetical citation clusters that enumerate the domains or outcomes studied.",
+      "why": "Describing the whole field locates the present work within a trajectory and conveys scope economically, signaling that the area is mature and well-trodden while keeping the running text uncluttered.",
+      "evidence": [
+        {
+          "paper": "bushee2018",
+          "para_idx": 1,
+          "quote": "Since Li [2008], a growing literature uses Fog to examine the relation between linguistic complexity of mandatory disclosures (e.g., 10-Qs or 10-Ks) and a variety of firm outcomes"
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 8,
+          "quote": "There is a vast and growing body of work that has examined earnings calls using many different theoretical lenses across these disciplines (for a review, see Gao et al., 2016)."
+        },
+        {
+          "paper": "thewissen2024",
+          "para_idx": 3,
+          "quote": "Similar evidence is provided by Louis (2004), Higgins (2013), Gong, Louis, and Sun (2008) for lawsuits in the US and Botsari and Meeks (2008) for the London Stock Exchange."
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 0,
+          "quote": "including banking and credit (Stiglitz and Weiss, 1981) and financial markets (e.g., Grossman and Stiglitz, 1980;Myers and Majluf, 1984;Healy and Palepu, 2001), insurance products (Rothschild and Stiglitz, 1976), labor market contexts (Shapiro and Stiglitz, 1984)"
+        }
+      ]
+    },
+    {
+      "id": "a3-p3",
+      "agent": 3,
+      "device": "First-person pivot to the present paper",
+      "principle": "Amid an otherwise third-person survey, the writers switch to 'we / our paper' to stake their contribution directly against the surveyed work, framed as an explicit goal or as an 'X rather than Y' / 'prior work still understates' gap.",
+      "why": "The pivot converts neutral summary into motivation: it tells the reader why the survey was assembled and exactly which slot the new study fills, fusing review and rationale in the same passage.",
+      "evidence": [
+        {
+          "paper": "bushee2018",
+          "para_idx": 2,
+          "quote": "Our goal is to show that the construct validity of linguistic complexity measures like Fog can be substantially improved by decomposing the measure into its latent components."
+        },
+        {
+          "paper": "bertrand_schoar2003",
+          "para_idx": 5,
+          "quote": "While our primary goal in this paper is not to distinguish between these different interpretations but rather to first establish that individual managers do matter in the determination of firm policies"
+        },
+        {
+          "paper": "ragozzino2024",
+          "para_idx": 3,
+          "quote": "It remains for us to explicate why a shift in focus from information asymmetries between buyers and sellers in M&A markets to information asymmetries between those acquirers and their shareholders is warranted and interesting."
+        },
+        {
+          "paper": "bushee2018",
+          "para_idx": 3,
+          "quote": "We focus on the use of complex language in conference calls, rather than in mandatory SEC filings."
+        }
+      ]
+    }
+  ],
+  "gate_rejected": [],
+  "redteam_rejected": [],
+  "merges": [
+    {
+      "ids": [
+        "a1-p1",
+        "a2-p1",
+        "a3-p1"
+      ],
+      "canonical": "a2-p1"
+    },
+    {
+      "ids": [
+        "a1-p2",
+        "a2-p5",
+        "a3-p2"
+      ],
+      "canonical": "a2-p5"
+    },
+    {
+      "ids": [
+        "a1-p3",
+        "a2-p4"
+      ],
+      "canonical": "a1-p3"
+    },
+    {
+      "ids": [
+        "a1-p4",
+        "a3-p4"
+      ],
+      "canonical": "a1-p4"
+    },
+    {
+      "ids": [
+        "a1-p5",
+        "a2-p2"
+      ],
+      "canonical": "a1-p5"
+    },
+    {
+      "ids": [
+        "a1-p6",
+        "a2-p6",
+        "a3-p3"
+      ],
+      "canonical": "a3-p3"
+    }
+  ],
+  "unhandled": [],
+  "side_notes": [
+    "Coverage gap: all three agents worked at the clause/sentence and discourse-marker level; none examined paragraph-level architecture (topic-sentence placement, how paragraphs open vs. close, given-to-new ordering across a paragraph).",
+    "Coverage gap: no agent examined verb-tense patterning as a device (e.g., present tense for established consensus / an ongoing literature vs. past tense for an individual cited study), though both recur across the evidence.",
+    "Coverage gap: active/passive voice alternation in attribution went unexamined - agents flagged active reporting verbs but not the passive variant ('Similar evidence is provided by ...') that reorders source and finding."
+  ],
+  "note": "ok"
+}
