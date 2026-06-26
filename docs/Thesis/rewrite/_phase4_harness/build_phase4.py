@@ -38,10 +38,13 @@ def skeleton(path):
             continue
         props = []
         for pr in (p.get("propositions", []) or []):
+            src = pr.get("source") or {}
+            src = src if isinstance(src, dict) else {}
             props.append({
                 "prop_id": clean(pr.get("prop_id", "")),
                 "type": clean(pr.get("type", "")),
                 "verdict": clean((pr.get("verification", {}) or {}).get("verdict") or "none"),
+                "source": {"key": clean(src.get("key", "")), "ref": clean(src.get("ref", ""))},
                 "statement": clean(pr.get("statement", "")),
                 "role": clean(pr.get("role_in_paragraph", "")),
             })
@@ -77,9 +80,14 @@ def build_evidence():
 
 def main():
     sec = (sys.argv[1:] or ["2"])[0]
+    sub = sys.argv[2] if len(sys.argv) > 2 else None   # optional single-subsection dry-run, e.g. "2.1"
     ledgers = sorted(RW.glob(f"section{sec}.*_paragraph_ledger.json"),
                      key=lambda p: [int(x) for x in re.search(r"section(\d+)\.(\d+)_", p.name).groups()])
+    if sub:
+        ledgers = [p for p in ledgers if p.name.startswith(f"section{sub}_")]
+        assert ledgers, f"no ledger for subsection {sub}"
     assert ledgers, f"no ledgers found for section {sec} in {RW}"
+    label = f"s{sec}" + (f"_{sub.replace('.', '_')}" if sub else "")
 
     # clone the originals verbatim (for finalize to annotate; originals stay pristine)
     clone_dir = HARNESS / "clones" / f"s{sec}"
@@ -96,7 +104,7 @@ def main():
     out, did_s, did_e = [], False, False
     for line in tpl.splitlines():
         if "__SECTION_ANCHOR__" in line:
-            out.append(f"const SECTION = {sec_json} // s{sec}"); did_s = True
+            out.append(f"const SECTION = {sec_json} // {label}"); did_s = True
         elif "__EVIDENCE_ANCHOR__" in line:
             out.append(f"const EVIDENCE = {ev_json} // {len(EVIDENCE)} quotes"); did_e = True
         else:
@@ -104,7 +112,7 @@ def main():
     assert did_s and did_e, f"anchors missing (section={did_s}, evidence={did_e})"
 
     run_dir = HARNESS / "_run"; run_dir.mkdir(parents=True, exist_ok=True)
-    dest = run_dir / f"phase4_s{sec}.js"
+    dest = run_dir / f"phase4_{label}.js"
     text = "\n".join(out)
     dest.write_text(text, encoding="utf-8", newline="\n")     # LF only
 
