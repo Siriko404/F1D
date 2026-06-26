@@ -7,21 +7,24 @@
 ---
 
 ## CURRENT POSITION
-**Phase 2 — harness BUILT.** `docs/Thesis/rewrite/style_phase2_principles_master.js` (8 type-rulebooks; pipeline extract→gate→cull→judge→classify→materialize). Syntax-checked (`node --check` PASS). Granularity LOCKED at **8 writing-types** (Sina + advisor, evidence in TOPOLOGY below).
-Next concrete step: wire `args` (load the 8 profiles' `profile[]` + types roster + convention) → **DRY-RUN** the harness → Sina reviews the 8 rulebooks.
+**Phase 2 — harness REARCHITECTED to 3 layers; dry-run on `results` PASSED.** `docs/Thesis/rewrite/style_phase2_principles_master.js` (`node --check` PASS). Granularity LOCKED at **8 writing-types**.
+- **Dry-run (results profile, 32 findings) ran end-to-end** (on the OLD 4-layer version): 27 principles, **32/32 coverage**, no null-degrade. Saved `style_profiles/_rulebooks/results.DRYRUN.json`. Proved extract→gate→cull→materialize. Did NOT prove cross-profile dedup (1 profile = no twins).
+- **2 bugs found + fixed in the harness:**
+  1. The runner delivers `args` as a **JSON string**, not an object → harness now `JSON.parse`s it (guard `typeof args === 'string'`).
+  2. The number-gate **false-rejected 17 good rules** because the word "Phase-**4**" carries a digit → harness now `stripScaffolding()` removes process-refs (Phase-N / Section N / Table N / H1 / column / step / equation) BEFORE the foreign-number check. (Noted hole for later: a real fake number sitting right after "Section N" could be stripped too — low odds.)
+- **Rearchitected 4 agent-layers → 3** (Sina: *"3 layers max; panel = ONE layer, for neurodiversity"*): **L1** panel×3 EXTRACT · **L2** redteam×1 CULL+within-profile-dedup · **L3** ONE FINALIZE agent = merged old JUDGE+CLASSIFY (cross-profile dedup + universal/specific tag in one pass). Profiles now run in **capped-concurrency BATCHES** (`args.maxProfiles`, default 2 → peak ~6 agents), not strict sequence.
 
-> **PARALLEL FORK (2026-06-25):** Phase 3 runs concurrently in a separate git worktree `../F1D-phase3` (branch `phase3/propositions`) — see `_PHASE3_KICKOFF.md`. THIS session = Phase 2 ONLY (dry-run pending Sina's go). The fork edits the proposition spine and must NOT touch `style_profiles/*` or this ledger; merge its branch back when done.
+Next concrete step: **2-profile validation run** (results+methods, ~9 agents) — the only run that exercises L3's cross-profile dedup + tests concurrency cap 6. Then Sina reviews; then the full 8-profile run (~33 agents).
 
-### HOW TO RUN THE DRY-RUN (when — and ONLY when — Sina says go)
-⚠️ **GATE: needs Sina's EXPLICIT go.** It spawns ~30 agents (8×3 extract + 8 cull + 1 judge + 3 classify) and is BILLABLE. Do NOT auto-run on resume.
-1. **Build `args`** (the script has NO filesystem access — everything goes in via `args`):
-   - `profiles`: for each of the 8 `style_profiles/<type>_profile.json`, take its `profile[]` array → `{ type, findings: profile[] }`. Use `profile[]` ONLY (ignore `redteam_rejected`/`merges`/etc.).
-   - `types`: `["abstract","intro","lit_review","hypotheses","data","methods","results","conclusion"]`.
-   - `roster`: `{ <type>: "<one-line description of that writing situation>" }` (author from the type meanings).
-   - `convention`: a short paragraph = the corp-fin register gist from `DraftTemplate.txt`.
-2. **Invoke via the Workflow tool:** `{ scriptPath: "docs/Thesis/rewrite/style_phase2_principles_master.js", args: <the object> }`. It IS a Workflow script — run through the Workflow tool, NOT `node`.
-3. **On return:** write `result.rulebooks[<type>]` → `style_profiles/_rulebooks/<type>.json` (8 files) + `result.coverage`/`result.audit` → `style_profiles/_rulebooks/_audit.json`. Then Sina reviews the 8 rulebooks.
-4. If any stage null-degraded (`audit.*_note`), re-run that part. Then commit the rulebooks.
+> **PARALLEL FORK (2026-06-25):** Phase 3 runs concurrently in a separate git worktree `../F1D-phase3` (branch `phase3/propositions`) — see `_PHASE3_KICKOFF.md`. THIS session = Phase 2 ONLY. The fork edits the proposition spine and must NOT touch `style_profiles/*` or this ledger; merge its branch back when done.
+
+### HOW TO RUN (the 2-profile validation, then the full 8)
+1. **Build `args`** via `scratchpad/build_args.py` (`build([...types])` reads each `style_profiles/<type>_profile.json` `profile[]` + authors roster/convention). Validation = `build(["results","methods"])`. Pass the JSON object as the Workflow `args` — **do NOT pre-stringify; the runner stringifies and the harness parses.**
+2. **Invoke via the Workflow tool:** `{ scriptPath: "docs/Thesis/rewrite/style_phase2_principles_master.js", args: <object> }`. It IS a Workflow script — Workflow tool, NOT `node`. `args.maxProfiles` caps concurrency (default 2 → peak ~6; raise ONLY after a cap proves rate-limit-safe — only 3 proven so far).
+3. **On return:** write `result.rulebooks[<type>]` → `style_profiles/_rulebooks/<type>.json` + `result.coverage`/`result.audit` → `_audit.json`. Sina reviews.
+4. **Agent counts:** validation = 9; full 8-profile = ~33 (panel 24 + redteam 8 + finalize 1). Full wall-clock UNPROVEN.
+5. If a stage null-degraded (`audit.finalize_note` / per-profile `note`), re-run. Then commit the rulebooks.
+6. ⛔ **NO external scripts to grade/audit the harness output** (Sina, strict). The harness's OWN agents + JS gate do the checking; you READ the returned object, never script-judge it. Mechanical file writes of the result = fine; `.js` workflow harness ≠ audit script.
 
 ---
 
@@ -29,7 +32,7 @@ Next concrete step: wire `args` (load the 8 profiles' `profile[]` + types roster
 | Ph | What | Status | Writes prose? |
 |---|---|---|---|
 | 1 | **Style analysis** — 8 profiles, 157 findings (writing weaknesses vs corp-fin convention) | ✅ DONE | no |
-| 2 | **Principles harness** — analyse the Phase-1 analyses → the MINIMAL, most-effective writing principles per WRITING-TYPE (8 rulebooks) | ◀ IN PROGRESS (built; pre-dry-run) | **no → SAFE** |
+| 2 | **Principles harness** — analyse the Phase-1 analyses → the MINIMAL, most-effective writing principles per WRITING-TYPE (8 rulebooks) | ◀ IN PROGRESS (3-layer; results dry-run passed; 2-profile validation pending) | **no → SAFE** |
 | 3 | **Propositions redesign** — insert new propositions (more robustness checks; maybe pivot cash→all deal types) | 📝 DEFERRED (record only) | no |
 | 4 | **Rewrite harness** — the actual rewriting of the whole thesis by a harness (the writing process) | 📝 DEFERRED | **YES → drift-defense lives HERE** |
 | 5 | **Audit-harness stack** — a dedicated stack to audit the thesis hardnosedly, referee-proof | 📝 DEFERRED (record only) | no |
@@ -56,7 +59,7 @@ Phase 2's job: turn 157 style findings → a minimal writing-principle rulebook 
 - ⛔ **Do NOT port the Phase-4 meaning machinery** (writer×3 → redteam×3 → judge). That defends meaning-drift, which cannot occur in Phase 2. Dead weight here.
 
 ## PHASE 2 — TOPOLOGY (BUILT 2026-06-25 → `docs/Thesis/rewrite/style_phase2_principles_master.js`, `node --check` PASS)
-Reuse Phase-1 mechanics: TOOL_LOCK; forced StructuredOutput; describe-only checkers BY REFERENCE; null-degrade; profiles run **SEQUENTIALLY** (referee rate-limit scar — peak concurrency 3). **NO writer×3 / redteam×3** (no prose → no drift).
+Reuse Phase-1 mechanics: TOOL_LOCK; forced StructuredOutput; describe-only checkers BY REFERENCE; null-degrade; profiles run in **capped-concurrency BATCHES** (`args.maxProfiles`, default 2 → peak ~6; rate-limit scar respected via the cap, not strict sequence). **NO writer×3 / redteam×3** (no prose → no drift).
 
 **GRANULARITY = 8 writing-types** (Sina + advisor, evidence-locked 2026-06-25). Measured findings per bucket (`_findings_dist.py`, all 157):
 - per **subsection (16):** avg 12, **3 thin ≤5** (2.5=5, 4.2=3, 4.3=4) → wasteful + uneven.
@@ -65,15 +68,14 @@ Reuse Phase-1 mechanics: TOOL_LOCK; forced StructuredOutput; describe-only check
 
 **Principle schema (anti-hallucination):** `{principle_id, trigger, exemplar_anchor, gap_fix, finding_ids[], meaning_flag}` — target = the finding's OWN verbatim exemplar quote; `gap_fix` RELATIVE not absolute; `meaning_flag` = `guardrail_collision` carried to Phase 4. (See ANTI-HALLUCINATION GUARD below.)
 
-Pipeline (as built):
-1. **EXTRACT ×3 panel per profile** (8 profiles, SEQUENTIAL). Reads ONLY `profile[]`; all materialities. → candidate principles.
-2. **GATE (JS, mechanical, no LLM):** drop a rule unless its `exemplar_anchor` is a VERBATIM quote of a cited finding (proven `norm/isSub`) AND `gap_fix` has no number absent from the finding AND `finding_ids` exist. = the anti-hallucination rail, mechanized.
-3. **CULL ×1 redteam per profile** (by reference, refute-by-default): kill (F1) fabricated absolute / (F2) relative→absolute hardening / unfaithful; merge dups; KEEP `meaning_flag`. null-degrade → gate-clean.
-4. **JUDGE ×1** (cross-profile, by reference): dedup → canonical library; each canonical carries `source_types`. null-degrade → each its own canonical.
-5. **CLASSIFY ×3 panel** (the ONLY residual scope call — light): universal vs type-specific; **majority vote, default-include**. `applies_to` = universal ? all 8 types : `source_types`. null-degrade → all universal (safe over-include).
-6. **MATERIALIZE (JS):** fan-out → **8 type-rulebooks** + COVERAGE reconcile (finding-coverage + per-type counts + empty-type flag).
+Pipeline (as REARCHITECTED 2026-06-25 — **3 agent layers, max**):
+1. **LAYER 1 — EXTRACT ×3 neurodiverse panel per profile** (different minds catch different gaps; the dry run proved it — one panelist caught a nominalized-subject gap the other two missed). Reads ONLY `profile[]`; all materialities. → candidate principles.
+2. **GATE (JS, mechanical, no LLM):** drop a rule unless its `exemplar_anchor` is a VERBATIM quote of a cited finding (proven `norm/isSub`) AND `gap_fix` has no non-scaffolding number absent from the finding (`stripScaffolding` removes Phase-N/Section/Table/H1/column/step/equation FIRST — the Phase-4-digit false-reject fix) AND `finding_ids` exist. = the anti-hallucination rail, mechanized.
+3. **LAYER 2 — CULL ×1 redteam per profile** (by reference, refute-by-default): kill (F1) fabricated absolute / (F2) relative→absolute hardening / unfaithful; merge dups WITHIN profile; KEEP `meaning_flag`. null-degrade → gate-clean.
+4. **LAYER 3 — FINALIZE ×1** (ONE global agent = merged old JUDGE+CLASSIFY): cross-profile dedup → canonical (each carries `source_types`) AND tag each universal vs type-specific in one pass (default-include). `applies_to` = universal ? all 8 types : `source_types`. null-degrade → over-include.
+5. **MATERIALIZE (JS):** fan-out → **8 type-rulebooks** + COVERAGE reconcile (finding-coverage + per-type counts + empty-type flag).
 
-Maps to locked criteria: COVERAGE = finding-coverage (6) + type completeness (5+6) · GROUNDING = `finding_ids` + cull faithfulness · MINIMALITY = judge canonical (within-type unique) + classify fan-out (cross-type repetition) · EFFECTIVE = the exemplar-anchored schema.
+Maps to locked criteria: COVERAGE = finding-coverage (5) + type completeness (4+5) · GROUNDING = `finding_ids` + cull faithfulness · MINIMALITY = finalize canonical (within-type unique) + finalize fan-out (cross-type repetition) · EFFECTIVE = the exemplar-anchored schema.
 
 ### ANTI-HALLUCINATION GUARD (Sina's trap, 2026-06-25 — evidence-verified)
 **Danger:** a finding is a RELATIVE, exemplar-anchored observation ("our sentences run longer than the exemplars; Harford avg 15.8 w/sent"); an agent could fabricate an ABSOLUTE prescription ("be short / ≤35 words") the finding never made → over-shortening kills the academic register.
@@ -132,4 +134,8 @@ The abstract was rewritten + ratified under the OLD approach (commit `5a073b4b`)
 ## COMMITS (rewrite program, this branch)
 - `5a073b4b` abstract v2 (OLD approach — now deleted)
 - `35e0b189` reconciled abstract-era decisions with harness direction (OLD)
-- _(this overhaul commit: 5-phase map + master ledger + abstract deleted + trio archived — to be appended)_
+- `ef8440b6` 5-phase map + master ledger + abstract deleted + trio archived
+- `3c36561f` Phase-2 harness built (8-type, 4-layer)
+- `65acf254` Phase-3 fork kickoff
+- `fb32de3d` durable dry-run recipe + go-gate
+- _(this commit: dry-run results PASSED + 2 bug fixes (args-string, Phase-4-digit) + rearchitect 4→3 layers + batched profiles — to be appended)_

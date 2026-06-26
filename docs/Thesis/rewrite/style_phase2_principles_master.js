@@ -1,11 +1,10 @@
 export const meta = {
   name: 'phase2-principles-harness',
-  description: 'Phase-2: turn the 157 Phase-1 style findings into a minimal, exemplar-anchored writing-principle list PER WRITING-TYPE (8 self-contained rulebooks: abstract, intro, lit_review, hypotheses, data, methods, results, conclusion). Writes NO thesis prose. The findings already live in 8 type buckets (avg ~20 each, 14-32) so 8 is the data-native grain; a Phase-4 subsection reads its type rulebook (3.2/3.3/3.4 -> results, 2.3-2.5 -> methods, ...). Battle-tested shape: per profile [3 paraphrased EXTRACT agents -> deterministic JS gate (exemplar-anchor verbatim + no foreign number) -> cull-by-reference REDTEAM], profiles run SEQUENTIALLY (rate-limit), then a cross-profile JUDGE dedups to a canonical library, a 3-agent CLASSIFY panel tags each rule universal-vs-type-specific (the only residual scope judgment), then JS MATERIALIZE fans out to 8 rulebooks with a coverage reconcile. Every agent TOOL_LOCK + forced StructuredOutput; checkers describe-only / by-reference; null-degrade never crashes.',
+  description: 'Phase-2: turn the 157 Phase-1 style findings into a minimal, exemplar-anchored writing-principle list PER WRITING-TYPE (8 self-contained rulebooks: abstract, intro, lit_review, hypotheses, data, methods, results, conclusion). Writes NO thesis prose. The findings already live in 8 type buckets (avg ~20 each, 14-32) so 8 is the data-native grain; a Phase-4 subsection reads its type rulebook (3.2/3.3/3.4 -> results, 2.3-2.5 -> methods, ...). THREE agent layers (max): LAYER 1 = neurodiverse PANEL of 3 paraphrased EXTRACT agents per profile (different minds catch different gaps) -> deterministic JS gate (exemplar-anchor verbatim + no foreign number, scaffolding-refs exempt); LAYER 2 = cull-by-reference REDTEAM (1 independent skeptic per profile, refute-by-default + within-profile dedup); LAYER 3 = a SINGLE global FINALIZE agent that dedups same-rule twins ACROSS profiles AND tags each canonical universal-vs-type-specific in one pass. Then JS MATERIALIZE fans out to 8 rulebooks with a coverage reconcile. Profiles run in capped-concurrency batches (args.maxProfiles, default 2 -> peak ~6 agents) to respect the server rate-limit scar. Every agent TOOL_LOCK + forced StructuredOutput; checkers describe-only / by-reference; null-degrade never crashes.',
   phases: [
-    { title: 'Extract',  detail: '3 paraphrased agents per profile -> candidate principles' },
-    { title: 'Cull',     detail: 'redteam culls fabricated/absolute by reference' },
-    { title: 'Judge',    detail: 'dedup across profiles -> canonical rule library' },
-    { title: 'Classify', detail: '3 agents tag each rule universal vs type-specific (default-include)' },
+    { title: 'Extract',  detail: 'LAYER 1: neurodiverse panel of 3 agents per profile -> candidate principles' },
+    { title: 'Cull',     detail: 'LAYER 2: redteam culls fabricated/absolute + dedups within profile, by reference' },
+    { title: 'Finalize', detail: 'LAYER 3: one agent dedups across profiles + tags universal vs type-specific (default-include)' },
   ],
 }
 
@@ -52,21 +51,17 @@ const CULL_SCHEMA = {
     side_notes: { type: 'array', items: { type: 'string' } },
   },
 }
-const JUDGE_SCHEMA = {
+// LAYER 3 (merged judge+classify): in ONE pass dedup same-rule twins across profiles AND tag each canonical
+// universal (every type) vs specific (its source types). Every input id lands in exactly one group OR one singleton.
+const FINALIZE_SCHEMA = {
   type: 'object', required: ['groups', 'singletons', 'side_notes'], additionalProperties: false,
   properties: {
-    groups: { type: 'array', items: { type: 'object', required: ['member_ids', 'canonical'], additionalProperties: false,
-              properties: { member_ids: { type: 'array', items: { type: 'string' } }, canonical: { type: 'string' } } } },
-    singletons: { type: 'array', items: { type: 'string' } },        // canonical ids kept as-is (no cross-profile twin)
+    groups: { type: 'array', items: { type: 'object', required: ['member_ids', 'canonical', 'universal'], additionalProperties: false,
+              properties: { member_ids: { type: 'array', items: { type: 'string' } }, canonical: { type: 'string' }, universal: { type: 'boolean' } } } },
+    singletons: { type: 'array', items: { type: 'object', required: ['id', 'universal'], additionalProperties: false,
+              properties: { id: { type: 'string' }, universal: { type: 'boolean' } } } },   // no cross-profile twin; still tagged
     side_notes: { type: 'array', items: { type: 'string' } },
   },
-}
-// the ONLY residual scope judgment at 8-grain: is a rule universal (every type) or specific (its source types)?
-const CLASSIFY_SCHEMA = {
-  type: 'object', required: ['classifications'], additionalProperties: false,
-  properties: { classifications: { type: 'array', items: {
-    type: 'object', additionalProperties: false, required: ['principle_id', 'universal', 'reason'],
-    properties: { principle_id: { type: 'string' }, universal: { type: 'boolean' }, reason: { type: 'string' } } } } },
 }
 
 // ---------- HARD execution constraint (verbatim from the proven Phase-1 harness) ----------
@@ -121,32 +116,30 @@ ${JSON.stringify(cands.map(c => ({ id: c.id, agent: c.agent, trigger: c.trigger,
 Return decisions via the structured tool.`
 }
 
-function judgePrompt(all) {
+function finalizePrompt(all, types, roster, convention) {
   return `${TOOL_LOCK}
 
-You are the cross-profile JUDGE (chief editor). Below are the surviving writing principles from ALL 8 type profiles (IDs assigned; each carries its source type). Different types often produced the SAME underlying rule in different words (e.g. "split long conjoined sentences" appears under several types).
+You are the FINALIZE editor (chief editor). Below are the surviving writing principles from the type profiles (IDs assigned; each carries its source type). Do TWO jobs in ONE pass, BY REFERENCE ONLY — you invent nothing and reword nothing:
 
-YOUR JOB: dedup into a CANONICAL library, BY REFERENCE ONLY. You invent nothing and reword nothing.
-- groups: each = {member_ids:[two or more ids that state the SAME underlying rule], canonical:<the id to keep>}. Tiebreak for canonical: more finding_ids / clearer trigger / stronger exemplar_anchor.
-- singletons: ids that have no twin — keep as their own canonical.
-- Merge ONLY genuine same-rule duplicates. If two principles target DIFFERENT writing devices, keep them SEPARATE. Do NOT merge across distinct devices just because they are both "about sentences".
-- side_notes: human-facing notes only.
+(1) DEDUP ACROSS PROFILES. Different types often produced the SAME underlying rule in different words (e.g. "split long conjoined sentences" appears under several types). Group genuine same-rule twins and name ONE canonical to keep (tiebreak: more finding_ids / clearer trigger / stronger exemplar_anchor). Merge ONLY genuine same-rule duplicates; if two principles target DIFFERENT writing devices, keep them SEPARATE even if both are "about sentences".
 
-Every id below MUST appear in exactly one group OR in singletons.
+(2) CLASSIFY each surviving canonical: UNIVERSAL (a register/structure rule every writing type should follow — sentence length, nominalization, metaphor, plain verbs) or SPECIFIC to its source type(s) (e.g. "report each coefficient's sign plainly" has no place in an abstract or a literature review). DEFAULT TO UNIVERSAL when unsure: a type ignoring an extra general rule is cheap; a type MISSING a rule it needs is the costly error. Mark universal=false ONLY when the rule clearly cannot apply outside its own content type.
 
-===== PRINCIPLES (all 8 types) =====
+OUTPUT (every id below MUST appear in exactly ONE group OR ONE singleton):
+- groups: each = {member_ids:[two+ ids stating the SAME rule], canonical:<id to keep>, universal:<bool>}.
+- singletons: each = {id:<id with no cross-profile twin>, universal:<bool>}.
+- side_notes: human-facing notes only (e.g. under-coverage); NEVER new principles.
+
+===== CONVENTION =====
+${convention}
+
+===== THE WRITING TYPES =====
+${JSON.stringify(types.map(t => ({ type: t, is: roster[t] || '' })), null, 1)}
+
+===== PRINCIPLES (all profiles) =====
 ${JSON.stringify(all.map(p => ({ id: p.id, type: p.type, trigger: p.trigger, gap_fix: p.gap_fix, finding_ids: p.finding_ids, meaning_flag: p.meaning_flag })), null, 1)}
 
 Return decisions via the structured tool.`
-}
-
-function classifyPrompt(version, canon, types, roster, convention) {
-  const head = {
-    1: `For each canonical writing principle below, decide: is it UNIVERSAL (a register/structure rule every writing type should follow) or SPECIFIC to the type(s) it was drawn from? Reason about the RULE itself.`,
-    2: `Task: tag each principle universal vs type-specific. Universal = about HOW to write (sentence length, nominalization, metaphor, plain verbs) and applies across all 8 types. Specific = only makes sense for certain types (e.g. "report each coefficient's sign plainly" has no place in an abstract or a literature review).`,
-    3: `Work rule by rule. Most style/register rules are UNIVERSAL; a minority are tied to a particular kind of content. Mark universal=true for the general ones, universal=false for the content-tied ones.`,
-  }[version]
-  return `${TOOL_LOCK}\n\n${head}\n\nDEFAULT TO UNIVERSAL when unsure: a type ignoring an extra general rule is cheap; a type MISSING a rule it needs is the costly error. Mark universal=false ONLY when the rule clearly cannot apply outside its own content type. One short reason each.\n\n===== CONVENTION =====\n${convention}\n\n===== THE 8 WRITING TYPES =====\n${JSON.stringify(types.map(t => ({ type: t, is: roster[t] || '' })), null, 1)}\n\n===== CANONICAL PRINCIPLES (with the types they were drawn from) =====\n${JSON.stringify(canon.map(p => ({ principle_id: p.id, trigger: p.trigger, gap_fix: p.gap_fix, source_types: p.source_types })), null, 1)}\n\nReturn one classification per principle via the structured tool.`
 }
 
 // ---------- deterministic in-script GATE (pure JS, no LLM) — verbatim norm/isSub from Phase-1 ----------
@@ -162,14 +155,29 @@ function norm(s) {
     .trim()
 }
 function isSub(q, hay) { const n = norm(q); return n.length > 0 && norm(hay).includes(n) }
-// digits kept (the anti-foreign-number check): every digit-run in gap_fix must appear in the finding text
+// process-scaffolding refs the agents legitimately cite (the EXTRACT prompt itself says "flag for Phase-4");
+// their incidental digits are NOT fabricated magnitudes, so strip them before the foreign-number check
+function stripScaffolding(s) {
+  return (s || '')
+    .replace(/\bphases?[\s~-]?\d+\b/gi, ' ')                 // Phase-4, Phase 3
+    .replace(/\bsections?[\s~]?\d+(?:\.\d+)*\b/gi, ' ')      // Section 2.4
+    .replace(/\btables?[\s~]?\d+\b/gi, ' ')                  // Table 3
+    .replace(/\bpanels?[\s~]?[a-z0-9]+\b/gi, ' ')            // Panel B
+    .replace(/\bcolumns?[\s~]?\(?\d+\)?\b/gi, ' ')           // column 2, column (1)
+    .replace(/\bsteps?[\s~]?\d+\b/gi, ' ')                   // step 3
+    .replace(/\bequations?[\s~]?\(?\d+\)?\b/gi, ' ')         // equation (2)
+    .replace(/\bH\d+\b/gi, ' ')                              // hypothesis refs H1, H2
+}
+// digits kept (the anti-foreign-number check): every NON-scaffolding digit-run in gap_fix must appear in the finding text
+// (this catches fabricated absolute targets like "<=35 words" / "max 2 nouns" while ignoring process refs)
 function numbersOK(gapFix, findingText) {
-  const nums = (gapFix || '').match(/\d+(?:\.\d+)?/g) || []
+  const nums = (stripScaffolding(gapFix)).match(/\d+(?:\.\d+)?/g) || []
   return nums.every(d => (findingText || '').includes(d))
 }
 
 // =====================================================================================
-//  Stage A — per profile (SEQUENTIAL across profiles; panel x3 is parallel, peak 3): extract -> gate -> cull
+//  LAYER 1 + LAYER 2 — per profile: neurodiverse panel x3 EXTRACT -> deterministic JS gate -> REDTEAM cull.
+//  (profiles themselves run in capped-concurrency batches; see the workflow body.)
 // =====================================================================================
 async function runProfile(P) {
   const findings = P.findings || []
@@ -218,55 +226,42 @@ async function runProfile(P) {
 }
 
 // =====================================================================================
-//  Stage B — cross-profile JUDGE (dedup to canonical library, by reference, null-degrade)
-//  each canonical carries source_types = the set of types its members came from (encodes applicability)
+//  LAYER 3 — FINALIZE (ONE global agent): cross-profile dedup + universal/specific tag, by reference, null-degrade.
+//  Each canonical carries source_types (the types its members came from) and applies_to (= all types if universal).
 // =====================================================================================
-async function judge(allClean) {
+async function finalize(allClean, A) {
+  const validType = new Set(A.types)
   const byId = {}; allClean.forEach(p => { byId[p.id] = p })
   const srcTypes = ids => [...new Set(ids.map(id => byId[id] && byId[id].type).filter(Boolean))]
-  const decisions = await agent(judgePrompt(allClean), { schema: JUDGE_SCHEMA, phase: 'Judge', label: 'judge/dedup' })
-  if (!decisions) {
-    log(`[judge] returned NULL -> degrading: every principle is its own canonical (no cross-profile merge)`)
-    return { canon: allClean.map(p => ({ ...p, member_ids: [p.id], source_types: [p.type] })), note: 'judge_failed', side_notes: ['JUDGE FAILED (null) — no cross-profile dedup; re-run judge'] }
+  const scoped = [], used = new Set()
+  const pushCanon = (canonId, memberIds, universal) => {
+    if (!byId[canonId] || used.has(canonId)) return
+    const members = [...new Set((memberIds || []).filter(id => byId[id]).concat(canonId))]
+    members.forEach(id => used.add(id))
+    const st = srcTypes(members)
+    const applies = universal ? A.types.slice() : [...new Set(st.filter(t => validType.has(t)))]
+    scoped.push({ ...byId[canonId], member_ids: members,
+      finding_ids: [...new Set(members.flatMap(id => byId[id].finding_ids || []))],
+      meaning_flag: members.some(id => byId[id].meaning_flag),
+      source_types: st, universal: !!universal,
+      applies_to: applies.length ? applies : (st.length ? st : [byId[canonId].type]) })   // never empty
   }
-  const canon = [], used = new Set()
+
+  const decisions = await agent(finalizePrompt(allClean, A.types, A.roster || {}, A.convention || ''),
+    { schema: FINALIZE_SCHEMA, phase: 'Finalize', label: 'finalize/dedup+classify' })
+  if (!decisions) {
+    log(`[finalize] returned NULL -> degrading: every principle its own canonical, ALL universal (safe over-include)`)
+    allClean.forEach(p => pushCanon(p.id, [p.id], true))
+    return { scoped, note: 'finalize_failed', side_notes: ['FINALIZE FAILED (null) — no cross-profile dedup; every rule marked universal (over-include); re-run finalize'] }
+  }
   ;(decisions.groups || []).forEach(g => {
     const canonId = g.canonical && byId[g.canonical] ? g.canonical : (g.member_ids || []).find(id => byId[id])
-    if (!canonId) return
-    const members = [...new Set((g.member_ids || []).filter(id => byId[id]).concat(canonId))]
-    members.forEach(id => used.add(id))
-    const mergedFindingIds = [...new Set(members.flatMap(id => byId[id].finding_ids || []))]
-    const meaning = members.some(id => byId[id].meaning_flag)
-    canon.push({ ...byId[canonId], member_ids: members, finding_ids: mergedFindingIds, meaning_flag: meaning, source_types: srcTypes(members) })
+    if (canonId) pushCanon(canonId, g.member_ids || [], g.universal)
   })
-  ;(decisions.singletons || []).forEach(id => { if (byId[id] && !used.has(id)) { used.add(id); canon.push({ ...byId[id], member_ids: [id], source_types: [byId[id].type] }) } })
-  allClean.forEach(p => { if (!used.has(p.id)) { canon.push({ ...p, member_ids: [p.id], source_types: [p.type] }); used.add(p.id) } })  // no silent drop
-  log(`[judge] ${allClean.length} principles -> ${canon.length} canonical`)
-  return { canon, side_notes: decisions.side_notes || [] }
-}
-
-// =====================================================================================
-//  Stage C — CLASSIFY panel x3 (universal vs type-specific; majority vote; default-include floor = source_types)
-// =====================================================================================
-async function classify(canon, A) {
-  const validType = new Set(A.types)
-  const raw = await parallel([1, 2, 3].map(v => () =>
-    agent(classifyPrompt(v, canon, A.types, A.roster || {}, A.convention || ''), { schema: CLASSIFY_SCHEMA, phase: 'Classify', label: `classify-${v}` })))
-  const votes = {}; canon.forEach(p => { votes[p.id] = 0 })
-  let alive = 0
-  raw.forEach(r => { if (r && r.classifications) { alive++; r.classifications.forEach(c => { if (votes[c.principle_id] !== undefined && c.universal) votes[c.principle_id]++ }) } })
-  if (alive === 0) {
-    log(`[classify] all 3 returned NULL -> degrading: every rule UNIVERSAL (safe over-include; re-run classify)`)
-    return { scoped: canon.map(p => ({ ...p, universal: true, applies_to: A.types.slice() })), note: 'classify_failed', side_notes: ['CLASSIFY FAILED (null) — every rule marked universal (over-include); re-run classify'] }
-  }
-  const need = alive >= 2 ? 2 : 1                                   // majority of survivors
-  const scoped = canon.map(p => {
-    const universal = votes[p.id] >= need
-    const applies = universal ? A.types.slice() : [...new Set((p.source_types || [p.type]).filter(t => validType.has(t)))]
-    return { ...p, universal, applies_to: applies.length ? applies : (p.source_types || [p.type]) }   // never empty
-  })
-  log(`[classify] ${scoped.filter(p => p.universal).length}/${scoped.length} rules universal (>=${need} of ${alive} votes)`)
-  return { scoped }
+  ;(decisions.singletons || []).forEach(s => { if (s && byId[s.id]) pushCanon(s.id, [s.id], s.universal) })
+  allClean.forEach(p => { if (!used.has(p.id)) pushCanon(p.id, [p.id], false) })   // no silent drop; un-returned -> keep in its own type book
+  log(`[finalize] ${allClean.length} principles -> ${scoped.length} canonical; ${scoped.filter(p => p.universal).length} universal`)
+  return { scoped, side_notes: decisions.side_notes || [] }
 }
 
 // =====================================================================================
@@ -287,34 +282,37 @@ function materialize(scoped, A) {
 
 // ================================= workflow body =================================
 phase('Extract')
+// the runner may deliver args as a JSON string (observed: typeof args === 'string'); parse so the script always sees an object
+if (typeof args === 'string') { try { args = JSON.parse(args) } catch (e) { return { error: 'args string failed to JSON.parse: ' + e.message } } }
 if (!args || !Array.isArray(args.profiles) || !Array.isArray(args.types)) {
   return { error: 'args must provide { profiles:[...8 with findings], types:[...8 type ids], roster:{}, convention:"" }' }
 }
 
-// profiles run SEQUENTIALLY to cap peak concurrency at 3 (the referee rate-limit scar: a wide concurrent fan-out trips the server limit and kills the run)
+// profiles run in capped-concurrency BATCHES (peak ~maxProfiles*3 agents): parallelizes the bulk of the work while
+// respecting the server rate-limit scar. maxProfiles is the safety knob (default 2 -> peak ~6; raise once a cap proves safe).
+const MAXP = Math.max(1, args.maxProfiles || 2)
 const perProfile = []
-for (const P of args.profiles) { perProfile.push(await runProfile(P)) }
+for (let i = 0; i < args.profiles.length; i += MAXP) {
+  const batch = await parallel(args.profiles.slice(i, i + MAXP).map(P => () => runProfile(P)))
+  perProfile.push(...batch.filter(Boolean))
+}
 
 const allClean = perProfile.flatMap(r => r.principles || [])
-log(`[wave] ${allClean.length} principles survived gate+cull across ${perProfile.length} profiles`)
+log(`[wave] ${allClean.length} principles survived gate+cull across ${perProfile.length} profiles (batch size ${MAXP})`)
 if (allClean.length === 0) return { error: 'no principles survived gate+cull', perProfile }
 
-phase('Judge')
-const J = await judge(allClean)
+phase('Finalize')
+const F = await finalize(allClean, args)
 
-phase('Classify')
-const C = await classify(J.canon, args)
-
-const out = materialize(C.scoped, args)
-log(`[done] ${C.scoped.length} canonical principles -> ${args.types.length} type-rulebooks; ${out.coverage.uncovered_finding_ids.length} findings uncovered; ${out.coverage.empty_types.length} empty types`)
+const out = materialize(F.scoped, args)
+log(`[done] ${F.scoped.length} canonical principles -> ${args.types.length} type-rulebooks; ${out.coverage.uncovered_finding_ids.length} findings uncovered; ${out.coverage.empty_types.length} empty types`)
 
 return {
   rulebooks: out.books,
-  canonical_count: C.scoped.length,
+  canonical_count: F.scoped.length,
   coverage: out.coverage,
   audit: {
     per_profile: perProfile.map(r => ({ type: r.type, kept: (r.principles || []).length, gate_rejected: r.gate_rejected || [], culled: r.culled || [], unhandled: r.unhandled || [], note: r.note, side_notes: r.side_notes || [] })),
-    judge_side_notes: J.side_notes || [], judge_note: J.note,
-    classify_side_notes: C.side_notes || [], classify_note: C.note,
+    finalize_side_notes: F.side_notes || [], finalize_note: F.note,
   },
 }

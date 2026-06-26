@@ -1,0 +1,492 @@
+{
+  "rulebooks": {
+    "results": [
+      {
+        "principle_id": "results__a3f14",
+        "trigger": "A standalone sentence classifies our own display instead of just making the move ('This is a descriptive comparison; it motivates a formal test rather than standing in for one'; 'A side-by-side display of this kind implies a comparison it never actually runs').",
+        "gap_fix": "Move toward the exemplars' practice of transitioning straight into the formal test by doing it, rather than narrating the status of the prior paragraph first. meaning_flag true: describe-only — point at the exemplar's direct transition without dropping the methodological content it carries.",
+        "exemplar_anchor": {
+          "finding_id": "a2-f11",
+          "quote": "To investigate this alternative interpretation, we analyze the precise timing of the observed changes in corporate policies."
+        },
+        "finding_ids": [
+          "a2-f11",
+          "a1-f8"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a2f1",
+        "trigger": "A sentence is built on an abstract nominalized subject ('Identification is within firm', 'The discriminating contrast is the drop at the gap', 'The register here should stay honest') instead of a concrete actor doing something.",
+        "gap_fix": "Rebuild the sentence around a concrete agent acting in a plain verb, the way the exemplars do, rather than on a nominalized subject.",
+        "exemplar_anchor": {
+          "finding_id": "a1-f3",
+          "quote": "We start with a discussion of the investment results."
+        },
+        "finding_ids": [
+          "a1-f3"
+        ],
+        "meaning_flag": false,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a3f2",
+        "trigger": "Prose reaches for ornate or figurative diction where a plain technical word exists ('falls to insignificance the instant the deal is public', 'its significance rides on', 'What the event study adds is the round trip', 'run with the grain of that prior work').",
+        "gap_fix": "Lower the register toward the exemplars' plain, workmanlike vocabulary (verbs like increases / falls / is negative), trading the literary phrasings for the plainest journal word the exemplars use. Describe-only: flag the elevated phrasing against the plain-diction exemplar; do not assert the two wordings mean the same.",
+        "exemplar_anchor": {
+          "finding_id": "a1-f4",
+          "quote": "the coefficient on the information component, Info(Both), is negative and highly significant"
+        },
+        "finding_ids": [
+          "a1-f4",
+          "a3-f5"
+        ],
+        "meaning_flag": false,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a1f3",
+        "trigger": "A results or design sentence runs long, chaining multiple subordinate/embedded clauses by commas and semicolons (sample size + reason + purpose, or a caveat plus its justification, packed into one sentence) where the exemplars would use several short declaratives.",
+        "gap_fix": "Break the chained clauses toward the exemplars' register of one fact per short declarative sentence, rather than packing several propositions into a single periodic sentence. Meaning-adjacent: describe-only — flag the long sentences for Phase-4 splitting without altering any claim, hedge, or statistic.",
+        "exemplar_anchor": {
+          "finding_id": "a3-f4",
+          "quote": "The results of the probit estimations are given in Table III. The data requirements leave 23,686 firm-years, with 487 bids. As predicted by the free cash f low hypothesis, the probability of being a bidder increases with cashrichness."
+        },
+        "finding_ids": [
+          "a1-f5",
+          "a3-f4"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a1f4",
+        "trigger": "A number is attached to the sentence via a participial absolute construction (e.g. 'the stock partial-adjustment lag of 0.8013 standing almost exactly where the cash lag does', 'its one-quarter lag standing at 0.7547').",
+        "gap_fix": "Report the number in its own clause or sentence, or attach it with a plain relative clause as the exemplars do, instead of compressing two facts into a participial 'standing' absolute. Describe-only: flag the absolute constructions for Phase-4.",
+        "exemplar_anchor": {
+          "finding_id": "a1-f6",
+          "quote": "The adjusted R 2 for this specification is 91 percent."
+        },
+        "finding_ids": [
+          "a1-f6"
+        ],
+        "meaning_flag": false,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a1f6",
+        "trigger": "A back-reference to the method uses the stiff self-describing formula 'the estimating equation is the one given in Section~2.4 and is not restated'.",
+        "gap_fix": "Back-reference the equation or method in a short terse clause as the exemplars do, without the longer self-describing formula or the announcement that it is 'not restated'. Meaning-adjacent: describe-only — flag the boilerplate for Phase-4; preserve the cross-reference itself.",
+        "exemplar_anchor": {
+          "finding_id": "a1-f12",
+          "quote": "The estimation method for these two variables differs slightly from the one described in subsection IV.A."
+        },
+        "finding_ids": [
+          "a1-f12"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a1f10",
+        "trigger": "A magnitude is delivered wrapped in a self-describing methodological clause (e.g. 'The formal cash-minus-stock difference, evaluated as the single Wald restriction, is ...') and then re-asserted again within the same paragraph.",
+        "gap_fix": "Deliver the estimate and its size first and let it stand, naming the method once as the exemplars do, rather than interposing restating qualifiers before the number and re-litigating it within the same paragraph. Meaning-adjacent: describe-only — flag the wrapped and re-asserted number for Phase-4; do not change the statistic or its qualification.",
+        "exemplar_anchor": {
+          "finding_id": "a2-f2",
+          "quote": "An increase in cash of one percent of total assets is associated with an announcement return that is lower by 21 basis points."
+        },
+        "finding_ids": [
+          "a2-f2"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a2f11",
+        "trigger": "A conclusion or contrast is framed as a negation the reader must invert ('does not rest on the reporting convention', 'not a comparison of one significant coefficient against one insignificant one', 'conditions on nothing that follows').",
+        "gap_fix": "State the conclusion or contrast affirmatively and once, the way the exemplars do, rather than as a doubled negation.",
+        "exemplar_anchor": {
+          "finding_id": "a2-f6",
+          "quote": "The essential conclusions in terms of signs and significance remain identical."
+        },
+        "finding_ids": [
+          "a2-f6",
+          "a3-f9"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a1f12",
+        "trigger": "The same methodological distinction (the formal-Wald-restriction-not-a-significant-vs-insignificant-comparison point) is stated repeatedly across one subsection (in PARA2, again in PARA3, again in PARA5).",
+        "gap_fix": "Make the methodological distinction once and then report, as the exemplars do, rather than re-stating the same caveat in successive paragraphs of the subsection. Meaning-adjacent: describe-only — flag the repetitions for Phase-4 consolidation; retain one full statement of the distinction.",
+        "exemplar_anchor": {
+          "finding_id": "a2-f9",
+          "quote": "F-tests confirm that the coefficients on cash deviation for expected and unexpected bidders are significantly different in each of the regressions."
+        },
+        "finding_ids": [
+          "a2-f9"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a1f13",
+        "trigger": "A sentence stacks several comma- or em-dash-fenced appositive insertions that suspend the subject from its verb before the predicate resolves (e.g. the announcement-quarter-leg and pre-announcement-to-gap sentences in 4.3-4.4).",
+        "gap_fix": "Let the main clause resolve quickly after a short appositive as the exemplars do, rather than nesting multiple fenced interruptions that suspend the subject from its verb. Describe-only: flag the multiply-suspended sentences for Phase-4.",
+        "exemplar_anchor": {
+          "finding_id": "a2-f10",
+          "quote": "The adjusted R 2 of the interest coverage regression, an alternative measure of capital structure, increases by as much as 10 percent (from 31 percent to 41 percent)."
+        },
+        "finding_ids": [
+          "a2-f10"
+        ],
+        "meaning_flag": false,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a1f16",
+        "trigger": "One sentence chains several coefficient-plus-p-value bundles for a single contrast (e.g. the spike, the gap level, the peak-to-gap drop, and the peak-to-completion drop all delivered in one sentence).",
+        "gap_fix": "Report the contrast with one or two numbers in-sentence and route the remaining statistics to the table, as the exemplars do, rather than packing multiple parenthesized coefficient/p-value bundles into one sentence. Describe-only: flag the statistic pile-ups for Phase-4.",
+        "exemplar_anchor": {
+          "finding_id": "a2-f14",
+          "quote": "The adjusted R 2 of the leverage regression increases from 39 percent to 41 percent when we include the manager fixed effects."
+        },
+        "finding_ids": [
+          "a2-f14"
+        ],
+        "meaning_flag": false,
+        "universal": false
+      },
+      {
+        "principle_id": "results__a1f17",
+        "trigger": "An ordinary robustness operation is dressed in figurative process language (e.g. 'we guard against it directly', 'it serves here as an anchor') instead of plain re-estimation verbs.",
+        "gap_fix": "Describe the operation in the plain verbs the exemplars use ('we replicate', 'we run the same regressions') and state plainly that the benchmark is unaffected, rather than wrapping it in figurative cover. Describe-only: flag the figurative process language for Phase-4.",
+        "exemplar_anchor": {
+          "finding_id": "a2-f15",
+          "quote": "In columns ( 3) and ( 4) we run the same regressions with the term-weighted measures of H4N-Inf and Fin-Neg."
+        },
+        "finding_ids": [
+          "a2-f15"
+        ],
+        "meaning_flag": false,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a1f19",
+        "trigger": "Each analysis is tagged with an ordinal meta-label (e.g. 'The first main analysis', 'The second main analysis') ranking it in a numbered sequence.",
+        "gap_fix": "Introduce each test by what it does or by naming the concrete thing estimated, as the exemplars do, rather than by its rank in a numbered sequence. Describe-only: flag the ordinal self-labels for Phase-4.",
+        "exemplar_anchor": {
+          "finding_id": "a3-f1",
+          "quote": "To establish whether there is a relation between cash-richness and acquisition behavior, I use a sample of attempted mergers and acquisitions from 1977 through 1993."
+        },
+        "finding_ids": [
+          "a3-f1"
+        ],
+        "meaning_flag": false,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a1f27",
+        "trigger": "Outcome variables are referred to through 'clock', 'leg', 'arm', or 'path' metaphors (e.g. 'On the information clock, residual uncertainty spikes one quarter before announcement', 'In the cash arm both clocks move').",
+        "gap_fix": "Name the outcome variables plainly and literally ('the cash ratio', 'residual uncertainty'), as the exemplars do, rather than adding a recurring metaphor layer the reader must decode. Describe-only: flag the clock/path metaphors for Phase-4.",
+        "exemplar_anchor": {
+          "finding_id": "a1-f1",
+          "quote": "As predicted by the free cash f low hypothesis, the probability of being a bidder increases with cashrichness."
+        },
+        "finding_ids": [
+          "a1-f1"
+        ],
+        "meaning_flag": false,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a3f5",
+        "trigger": "Several hedges or scoping qualifiers are stacked in one sentence ('supportive of the disclosure-state pattern rather than definitive about any mechanism, which we leave open'; 'consistent with the main specification rather than as an independent test').",
+        "gap_fix": "Move toward the exemplars' lightweight single-qualifier hedging, carrying one qualifier per clause rather than chaining multiple 'rather than / which we leave open' hedges in one sentence. meaning_flag true: the hedges are load-bearing, so describe-only — point at the single-hedge register without dropping or weakening the qualification itself.",
+        "exemplar_anchor": {
+          "finding_id": "a1-f9",
+          "quote": "Thus, the coefficients on the latent components of linguistic complexity have a reasonable economic magnitude."
+        },
+        "finding_ids": [
+          "a1-f9"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a3f7",
+        "trigger": "The sample is labeled with the elevated noun 'universe' ('the matched universe', 'the smaller and more heavily covered universe', 'its own complete-case cash universe').",
+        "gap_fix": "Move toward the exemplars' plain naming of the sample and comparison group ('the sample', 'the rest of the population'), rather than elevating the same concept to 'universe'. Describe-only: flag the heavier term against the exemplar's plainer one.",
+        "exemplar_anchor": {
+          "finding_id": "a1-f15",
+          "quote": "that for the rest of the population"
+        },
+        "finding_ids": [
+          "a1-f15"
+        ],
+        "meaning_flag": false,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a3f8",
+        "trigger": "Bespoke hyphenated modifiers are stacked before a noun ('well-behaved partial-adjustment specification', 'pre-announcement-to-gap change', 'resolution-inclusive sample', 'the differential-timing reading').",
+        "gap_fix": "Move toward the exemplars' shorter modifier stacks, which use established hyphenated terms but rarely chain multiple nonce modifiers that compress a clause into a noun. Describe-only: name the dense compound and point at the exemplar's lighter noun phrases.",
+        "exemplar_anchor": {
+          "finding_id": "a1-f16",
+          "quote": "a positive association between a CEO's stock price-based incentives and firm disclosures"
+        },
+        "finding_ids": [
+          "a1-f16"
+        ],
+        "meaning_flag": false,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a3f9",
+        "trigger": "A point is closed with a compressed aphoristic line leaning on metaphor scaffolding ('so it serves here as an anchor', 'What the event study adds is the round trip', 'The reason raises residual uncertainty; the questioning does not').",
+        "gap_fix": "Move toward the exemplars' plain literal closing summary, which states the point directly rather than landing it through figurative scaffolding. Describe-only: flag the allusive closer against the exemplar's literal one.",
+        "exemplar_anchor": {
+          "finding_id": "a1-f17",
+          "quote": "Thus, the cash effect is not a leverage effect."
+        },
+        "finding_ids": [
+          "a1-f17"
+        ],
+        "meaning_flag": false,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a1f15",
+        "trigger": "A limitation carries an explicit disclosure verb foregrounding the act of disclosing (e.g. 'a comparability limit we disclose so the two columns are not read as a single sample', 'scaling by the all-universe standard deviation is a disclosed approximation').",
+        "gap_fix": "State the limitation as a plain fact about the data or design and let it do its own disclosing, as the exemplars do, rather than adding a clause that names the disclosure and its purpose. Meaning-adjacent: describe-only — flag the disclosure-verb clauses for Phase-4; the stated limitation stays.",
+        "exemplar_anchor": {
+          "finding_id": "a2-f13",
+          "quote": "Thus, the sample changes in a nonrandom way through time."
+        },
+        "finding_ids": [
+          "a2-f13"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a3f18",
+        "trigger": "Result sentences repeatedly close with a stacked epistemic rider ('we read it descriptively, as an anticipation contrast, with no causal or parallel-trends claim'; 'read within firm and correlationally').",
+        "gap_fix": "Move toward the exemplars' practice of stating an interpretive caveat once, plainly, at the point it is needed, rather than re-attaching a multi-part correlational/no-identification rider as a recurring sentence-tail. meaning_flag true: describe-only — point at the exemplar's sparing caveat placement without weakening the caveat where it is genuinely needed.",
+        "exemplar_anchor": {
+          "finding_id": "a3-f6",
+          "quote": "However, since the target CAR is not the same as the premium, this evidence is only suggestive."
+        },
+        "finding_ids": [
+          "a3-f6"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a3f19",
+        "trigger": "An action is converted into a labeled abstract object ('a comparability limit we disclose'; 'This is a validity device, not a proof of identification').",
+        "gap_fix": "Move toward the exemplars' verb/clause expression of the same idea (they 'find that our results are robust', a matching 'allows for a direct comparison'), rather than asking the reader to absorb a named abstract category. meaning_flag true: describe-only — point at the exemplar's plain action-and-result phrasing without altering what was done or shown.",
+        "exemplar_anchor": {
+          "finding_id": "a3-f7",
+          "quote": "This matching allows for a direct comparison between the performance of cashrich firms that engage in acquisitions and cash-rich firms that do not"
+        },
+        "finding_ids": [
+          "a3-f7"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a3f21",
+        "trigger": "A paragraph opens with an abstract framing predicate before the reader has the finding ('What the event study adds is the round trip'; 'The claim rests on the contrast between the two paths').",
+        "gap_fix": "Move toward the exemplars' order of presenting the concrete finding (or the table) first and characterizing it second, rather than front-loading the interpretation in the topic sentence. Describe-only: flag the front-loaded abstraction and point at the exemplar's finding-first order.",
+        "exemplar_anchor": {
+          "finding_id": "a3-f10",
+          "quote": "The results show that abnormal returns are strongly positively related to how much cash the company generates over the year."
+        },
+        "finding_ids": [
+          "a3-f10"
+        ],
+        "meaning_flag": false,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a3f22",
+        "trigger": "An econometric concern is named technically with assumed scope ('the Nickell bias, which the within transformation induces and which is not confined to the coefficient on the lag alone').",
+        "gap_fix": "Move toward the exemplars' practice of naming an econometric concern in accessible terms and glossing its consequence in plain cause-effect language, rather than assuming the reader tracks the named effect and its scope. meaning_flag true: describe-only — point at the exemplar's plainer mechanism gloss without changing the econometric claim.",
+        "exemplar_anchor": {
+          "finding_id": "a3-f11",
+          "quote": "the correlation is sufficiently high that it induces multicolinearity in our regression when we include all four components together."
+        },
+        "finding_ids": [
+          "a3-f11"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a3f23",
+        "trigger": "Abstract quantities are made the acting subjects with vivid verbs ('The reason raises residual uncertainty; the questioning does not'; 'Uncertainty tracks the information and reverses at announcement; cash tracks the transaction and falls at completion').",
+        "gap_fix": "Move toward the exemplars' measured, conventional attribution verbs ('is associated with', 'increases', 'is positively related to') with the firm or manager kept as agent, rather than personifying 'the reason', 'uncertainty', or 'cash' as actors that raise/track/reverse. meaning_flag true: describe-only — point at the exemplar's plain attribution without changing the relationship being asserted.",
+        "exemplar_anchor": {
+          "finding_id": "a3-f14",
+          "quote": "Higher ClarityCEO increases absolute abnormal returns and abnormal trading volume, as shown in columns (1) and (2) of Table 5."
+        },
+        "finding_ids": [
+          "a3-f14"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a3f26",
+        "trigger": "Results are recast into abstract structural roles ('the load-bearing result', 'serves here as an anchor', 'the discriminating contrast', 'the operative step').",
+        "gap_fix": "Move toward the exemplars' practice of signaling which result matters by describing it directly and with plain adverbs ('Our main focus is on...', 'The most interesting finding is...'), rather than through engineering/architecture role metaphors. Describe-only: flag the role relabeling and point at the exemplar's plain emphasis.",
+        "exemplar_anchor": {
+          "finding_id": "a3-f3",
+          "quote": "The most interesting finding is the positive relationship between MBA graduation and corporate performance."
+        },
+        "finding_ids": [
+          "a3-f3"
+        ],
+        "meaning_flag": false,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a3f28",
+        "trigger": "A sentence opens with a 'Because...' subordinate clause plus an embedded appositive number before reaching the main verb ('Because the gap-quarter cash coefficient itself, $0.0055$, is positive but not significant, the persistence of cash rests on...').",
+        "gap_fix": "Move toward the exemplars' declarative subject-then-verb order ('The results show that...'; 'Column (1) shows that...'), rather than front-loading conditions and appositives before the main clause. meaning_flag true: describe-only — point at the exemplar's lead-with-subject order without altering the conditional content.",
+        "exemplar_anchor": {
+          "finding_id": "a1-f13",
+          "quote": "Column (1) shows that the coefficient on Fog(Present) is positive and statistically significant"
+        },
+        "finding_ids": [
+          "a1-f13"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      },
+      {
+        "principle_id": "results__a3f29",
+        "trigger": "A magnitude is stated twice (as a fraction and as a percent) plus its divisor plus a table-panel pointer, all interleaved in one nested clause ('roughly fifteen percent of a residual standard deviation, about $15.3$ percent against the standard deviation of $0.3010$ in Panel~B of Table...').",
+        "gap_fix": "Move toward the exemplars' clean apposition that states the scaled magnitude and its benchmark once, rather than nesting the value in two forms plus the divisor plus the panel reference inside one sentence. meaning_flag true: describe-only — point at the exemplar's state-the-comparison-once handling without changing the magnitude or benchmark.",
+        "exemplar_anchor": {
+          "finding_id": "a2-f7",
+          "quote": "The median market-to-book ratios for the two samples are also economically similar ~1.26 vs. 1.21!, but nonetheless statistically different."
+        },
+        "finding_ids": [
+          "a2-f7",
+          "a3-f8"
+        ],
+        "meaning_flag": true,
+        "universal": true
+      }
+    ]
+  },
+  "canonical_count": 27,
+  "coverage": {
+    "total_findings": 32,
+    "covered_findings": 32,
+    "uncovered_finding_ids": [],
+    "type_counts": {
+      "results": 27
+    },
+    "empty_types": []
+  },
+  "audit": {
+    "per_profile": [
+      {
+        "type": "results",
+        "kept": 28,
+        "gate_rejected": [
+          {
+            "id": "results__a1f1",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f5",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f7",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f8",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f9",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f14",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f18",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f20",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f21",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f22",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f23",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f24",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f25",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f26",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f28",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a1f29",
+            "reason": "gap_fix_has_foreign_number"
+          },
+          {
+            "id": "results__a3f1",
+            "reason": "gap_fix_has_foreign_number"
+          }
+        ],
+        "culled": [],
+        "unhandled": [],
+        "side_notes": [
+          "Under-coverage: the nominalized-subject defect (results__a2f1, e.g. 'Identification is within firm') was caught by only one of three agents and has no corroborating duplicate to merge against. A human should confirm it is a real, exemplar-anchored gap (anchor a1-f3) rather than an idiosyncratic single-agent catch, since it survives uncorroborated.",
+          "Under-coverage: the surviving set is almost entirely sentence/clause-level register (diction, sentence length, negation, hedging, metaphor, number-attachment). Subsection-level results ORGANIZATION is touched only lightly (repeated-distinction a1f12, finding-first order a3f21, rider-everywhere a3f18, display-classification a3f14). If our results prose has larger-scale ordering/structure gaps beyond these, they may be under-covered by this principle set.",
+          "Note for human routing (not a cull): three survivors lean closest to the absolute boundary because they name a count drawn from the exemplar register -- 'one fact per short declarative' (a1f3), 'single hedge per clause' (a3f5), and 'one or two numbers, route the rest to the table' (a1f16). Each is exemplar-anchored and stated relatively (a3-f4, a1-f9, a2-f14 respectively) so they pass F1/F2, but a human should confirm the count reflects the exemplar and is not hardened into a fixed cap."
+        ]
+      }
+    ],
+    "judge_side_notes": [
+      "All 28 principles carry type 'results'; the '8 types' framing did not apply to this batch, so there were no cross-type twins to merge - only one genuine within-type duplicate surfaced.",
+      "Only merge: results__a3f14 + results__a3f27 - both target self-referential metadiscourse (narrating 'This is a descriptive comparison' / 'the register in which we read them') with the same fix: make the move or state the claim directly instead of narrating it. Kept a3f14 as canonical (stronger, complete-sentence exemplars; equally clear trigger; finding count tied 1-1).",
+      "Many principles share exemplar sentences ('serves here as an anchor', 'What the event study adds is the round trip', 'a comparability limit we disclose') because the SAME multiply-flawed sentences were flagged by different analyses under DIFFERENT devices. These were deliberately NOT merged - each carries a distinct fix (e.g. a1f17 plain re-estimation verb vs a3f9 literal closer vs a3f26 plain emphasis adverb; a1f15 drop disclosure-verb vs a3f19 nominalization-to-verb).",
+      "Borderline pairs examined and kept separate as distinct devices: a1f12 vs a3f18 (re-arguing a methodological distinction across paragraphs vs a recurring multi-part hedge-tail); a3f5 vs a3f18 (intra-sentence hedge stacking vs cross-sentence rider recurrence); a3f2 vs a3f7 (figurative phrasing vs elevated-but-literal noun 'universe'); a2f1 vs a3f19 vs a3f23 (abstract nominalized copula-subject vs action-as-labeled-category vs personified vivid actor); a1f3 vs a1f13 vs a1f16 (clause-chaining vs appositive suspension vs statistic pile-up).",
+      "Few additional merges remained because the upstream had already consolidated same-construction findings across analyses a1/a2/a3 - visible as the multi-finding principles a3f2 (a1-f4,a3-f5), a1f3 (a1-f5,a3-f4), a2f11 (a2-f6,a3-f9), a3f29 (a2-f7,a3-f8)."
+    ],
+    "classify_side_notes": []
+  }
+}
