@@ -3,6 +3,8 @@
 > SINGLE ENTRY POINT. Last handoff failed: it carried the CONTENT but not the HARNESS-BUILD references → the harness session had no idea HOW to build, wasted ~1h, failed. This fixes that: read BOTH halves (A = how, B = what). Treat all memory as UNVERIFIED; the files are truth.
 
 ## READ ON RESUME — in this order
+**0. THE HARNESS DESIGN BRIEF — richest single doc, read FIRST:** `F1D-phase3\docs\Thesis\rewrite\_PHASE4_FORK_PROMPT_1.md`. AUTHORITATIVE on the harness DESIGN: the locked agent topology (PANEL-1 propose ×3 → PANEL-2 scrutinize+fix ×3 → RED-TEAM synthesize ×1), the data-model two-levels warning, the 5 traps, the open design Qs. **Its §5 OVERRIDES my handoff/modspec:** Panel-1 *decides* what+how to change (NOT fed a recipe); `_PHASE4_S2_MODSPEC.md` + `tmp\apply_s2_1_mods.py` = **validation ORACLE for §2.1 only**, NEVER a Panel-1 input. So below, A = harness mechanics, B = content/oracle — the *design* is the fork-prompt's.
+
 **A. HARNESS HOW-TO (already written — DO NOT rewrite, just follow):**
 1. `F1D\docs\Thesis\rewrite\_phase2_v2\HARNESS_DESIGN_LESSONS.md` — read **FULL**. 9 battle-scar lessons. §1–5 = extraction-pattern; **§6–9 UNIVERSAL** (Workflow gotchas, input integrity, process, collab).
 2. `F1D\docs\Thesis\rewrite\_phase2_v2\_RESUME_AFTER_COMPACTION.md` — Phase-2 status + the proven reference-impl paths.
