@@ -1,0 +1,185 @@
+[
+  {
+    "principle_id": "abstract__a2f1",
+    "trigger": "An opening/early sentence routes its point through a figurative image or metaphor for disclosure — casting executive language as 'a window into what they know but have not yet disclosed' — instead of naming the thing literally.",
+    "gap_fix": "Name what the speech reveals in literal, concrete language, the way the plain exemplars describe disclosure; drop the figurative 'a window into' layer the reader must unpack to recover the literal point about undisclosed knowledge.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f2",
+      "quote": "investors seem to interpret no news as bad news"
+    },
+    "finding_ids": [
+      "a1-f2"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "abstract__a2f2",
+    "trigger": "The gap-setup sentence stages a dramatized scene with a participial modifier ('unable to confirm or deny') and an emphatic flourish ('the one development that matters') rather than a flat factual setup.",
+    "gap_fix": "Establish the situation with a single flat declarative and move on, as the exemplars do — state the fact without narrating a scene, its stakes, or the emphatic flourish the plain abstracts do not carry.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f4",
+      "quote": "Cash-rich firms are more likely than other firms to attempt acquisitions."
+    },
+    "finding_ids": [
+      "a1-f4"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "abstract__a3f9",
+    "trigger": "The construction sentence names the measure and then re-explains its construction in the same breath via a defining appositive ('the component that remains once each executive's persistent speaking style is removed'), continuing on into the tracking design under one period.",
+    "gap_fix": "Like the exemplar that names the constructed object and stops, name the measure in a short clause and defer or separate its construction gloss into its own sentence, rather than nesting an inline appositive definition inside the same sentence that names the measure and states the design. Describe-only: keep the measure's content, only relocate the build/definition into a separate beat.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f5",
+      "quote": "We construct a manager-firm matched panel data set"
+    },
+    "finding_ids": [
+      "a1-f5",
+      "a3-f3"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "abstract__a2f4",
+    "trigger": "The closing sentence introduces a fresh metaphor — 'call language tracking the deal's passage from private to public' — on top of the takeaway.",
+    "gap_fix": "Close with a short, literal takeaway, as the exemplars' plain 'Overall, ...' closers do, with no fresh figurative language. Describe-only: keep the trailing correlational qualifier's meaning intact; only shed the metaphor.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f6",
+      "quote": "Overall, investors and analysts appear to value clear talk."
+    },
+    "finding_ids": [
+      "a1-f6"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "abstract__a2f5",
+    "trigger": "A result is summarized through an abstract nominal subject ('the outside information environment') and a non-directional gloss ('relating to ... in different ways') instead of naming which way each effect goes.",
+    "gap_fix": "State direction concretely with explicit direction words, as the exemplars do when they name each direction outright ('negatively ... while ... positively') or say 'declines'. Describe-only: report the directions the result actually states; do not invent a direction the result does not give.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f8",
+      "quote": "negatively associated with information asymmetry while our estimate of the obfuscation component is positively associated with information asymmetry"
+    },
+    "finding_ids": [
+      "a1-f8"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "abstract__a3f5",
+    "trigger": "Opening sentences conjoin and subordinate several clauses inside one sentence (e.g., 'Firms host quarterly earnings calls and field analysts' unscripted questions, and the language a chief executive uses...'), asking the reader to carry two or more clauses at once.",
+    "gap_fix": "Move the conjoined/subordinated sentences toward the exemplars' single-clause register and their per-sentence average, splitting chained ideas into separate statements rather than holding two-plus clauses under one period. Relative to a2-f1; describe-only, split rather than cut content.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f1",
+      "quote": "Previous research uses negative word counts to measure the tone of a text."
+    },
+    "finding_ids": [
+      "a2-f1"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "abstract__a3f6",
+    "trigger": "The abstract has no short sentence anywhere; every sentence is a full multi-element clause, with no punchy restatement to relieve pacing.",
+    "gap_fix": "Introduce pacing relief with short, plain restatement beats the way the exemplars do, moving the rhythm toward the exemplars' sharp length variance rather than a continuous block of long sentences. Relative to a2-f2; describe-only, a short restatement of an existing point, not new content.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f2",
+      "quote": "That is, they speak clearly."
+    },
+    "finding_ids": [
+      "a2-f2"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "abstract__a2f15",
+    "trigger": "The central construct is named by stacking a long chain of hyphenated modifiers into one heavy nominal ('a residual measure of chief-executive question-and-answer uncertainty').",
+    "gap_fix": "Name the construct with a short, plain noun phrase of a few everyday words, as the exemplars do ('CEO clarity', 'manager fixed effects'). Describe-only: simplify the name without changing what the construct is.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f3",
+      "quote": "We find that manager fixed effects matter for a wide range of corporate decisions."
+    },
+    "finding_ids": [
+      "a2-f3"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "abstract__a2f7",
+    "trigger": "The chief-executive role is spelled out as 'a chief executive' and folded into a hyphenated adjective compound ('chief-executive question-and-answer uncertainty').",
+    "gap_fix": "Use the short, familiar token 'CEO(s)', letting it stand alone or take a single short modifier, as every exemplar does, rather than the three-word title and its hyphenated adjective form.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f4",
+      "quote": "Past performance does not explain the style of a newly appointed CEO."
+    },
+    "finding_ids": [
+      "a2-f4"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "abstract__a2f14",
+    "trigger": "The knowledge gap is built from abstract nominalizations and an agentless passive — intangible subject 'the spoken record', nominalized object 'that withholding', and 'has not been characterized'.",
+    "gap_fix": "Render the gap with a concrete actor doing a concrete action — a concrete subject and an active verb — as the exemplars do, in place of the nominalized passive register.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f5",
+      "quote": "We show that word lists developed for other disciplines misclassify common words in financial text."
+    },
+    "finding_ids": [
+      "a2-f5"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "abstract__a2f8",
+    "trigger": "A 'consistent with' interpretive aside is back-loaded as a long, abstract trailing rider on the end of an already long sentence.",
+    "gap_fix": "Keep the 'consistent with' aside brief and place it up front as a short signpost before a concrete main clause, as the exemplars do. Describe-only: reposition and shorten the signpost without changing what it is consistent with.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f6",
+      "quote": "Consistent with our predictions, we find that"
+    },
+    "finding_ids": [
+      "a2-f6"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "abstract__a2f9",
+    "trigger": "The gap sentence layers a fronted temporal subordinate clause, a participial adjunct, and a coordinated nominal clause under one period — three subordinate/coordinated units in one breath.",
+    "gap_fix": "Keep clause depth shallow — carry a single 'whether'-question with at most one subordinate clause, as the exemplars do when stating the open question.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f2",
+      "quote": "In this paper, we exploit the open nature of conference calls to explore whether managers withhold information from the investing public."
+    },
+    "finding_ids": [
+      "a3-f2"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "abstract__a2f11",
+    "trigger": "One sentence bundles a result, an inline appositive definition ('a standard gauge of information asymmetry'), a 'while'-contrast carrying a second result, and a trailing 'consistent with ...' interpretive clause.",
+    "gap_fix": "Report each empirical result as a short, self-contained sentence and give the contrast and the interpretation their own separate sentences, as the exemplars do. Describe-only: re-segment without altering any result or the contrast.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f5",
+      "quote": "Cash-rich bidders destroy seven cents in value for every excess dollar of cash reserves held."
+    },
+    "finding_ids": [
+      "a3-f5"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "abstract__a2f12",
+    "trigger": "Interpretive lines lean on abstract nominalizations and gerund chains — 'the two parts of the call relating to the outside information environment in different ways'; 'call language tracking the deal's passage from private to public'.",
+    "gap_fix": "Stay in concrete verb-object form, as the exemplars' conceptual sentences do ('speak fuzzily'; managers 'leave participants on the conference call in the dark'). Describe-only: recast into concrete verbs without changing the claim.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f6",
+      "quote": "Our evidence suggests that managers regularly leave participants on the conference call in the dark by not answering their questions."
+    },
+    "finding_ids": [
+      "a3-f6"
+    ],
+    "meaning_flag": true
+  }
+]

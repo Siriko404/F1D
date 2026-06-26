@@ -184,6 +184,13 @@ async function runProfile(P) {
   const principles = [...keepIds].map(id => byId[id]).filter(Boolean)
   const handled = new Set([...keepIds, ...cullIds]); (decisions.merge || []).forEach(m => (m.ids || []).forEach(id => handled.add(id)))
   const unhandled = clean.map(p => p.id).filter(id => !handled.has(id))
+  // robustness: a non-null red-team whose keep/merge IDs don't match ANY candidate (seen on the 87-candidate
+  // results set) must NOT zero out the rulebook — degrade to gate-clean instead of returning an empty book.
+  if (principles.length === 0 && clean.length > 0) {
+    log(`[${P.type}] red-team kept 0 of ${clean.length} (decision IDs unmatched) -> degrading to gate-clean`)
+    return { type: P.type, principles: clean, gate_rejected: rejected, culled: [], merges: [], unhandled: [],
+             side_notes: ['RED-TEAM kept 0 (decision IDs did not match the candidates) — degraded to gate-clean (un-deduped); re-run this type'], note: 'redteam_zero_degraded' }
+  }
   log(`[${P.type}] ${principles.length} kept after red-team; ${cullIds.size} culled; ${unhandled.length} unhandled`)
   return { type: P.type, principles, gate_rejected: rejected, culled: decisions.cull || [], merges: decisions.merge || [], unhandled, side_notes: decisions.side_notes || [] }
 }
@@ -211,6 +218,10 @@ if (typeof args === 'string') { try { args = JSON.parse(args) } catch (e) { retu
 if (!args || !Array.isArray(args.profiles)) {
   return { error: 'args must provide { profiles:[{type, findings:[...]}], maxProfiles? }' }
 }
+
+// input-count guard: echo the per-type finding counts the harness actually received, so a lossy caller-side
+// paste (dropped findings) is visible in the journal within seconds instead of only at end-of-run coverage.
+log('[input] received -> ' + args.profiles.map(P => `${P.type}:${(P.findings || []).length}`).join('  '))
 
 // types are INDEPENDENT — run them in capped-concurrency batches (peak ~maxProfiles*3 agents) to respect the rate-limit scar
 const MAXP = Math.max(1, args.maxProfiles || 2)

@@ -1,0 +1,184 @@
+[
+  {
+    "principle_id": "intro__a3f1",
+    "trigger": "Naming the executive as a recurring subject noun — our prose spells it out as 'chief-executive' embedded in a compound at every occurrence.",
+    "gap_fix": "Shift toward the peers' compact register, which names the executive with the conventional two-letter token 'CEO(s)' rather than the spelled-out 'chief-executive' this finding flags; point the rewrite at that exemplar token, do not coin a new label.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f1",
+      "quote": "CEOs and other top executives are key factors"
+    },
+    "finding_ids": [
+      "a1-f1"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "intro__a3f2",
+    "trigger": "About to write out the measure's full multi-clause appositive definition a second time (it already appears in full in 1-P4 and recurs in 1-P7).",
+    "gap_fix": "Match the peers' one-time naming register: name the measure compactly once as the exemplars do and thereafter refer to it by a short label, rather than repeating the full defining apposition at a second point.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f3",
+      "quote": "It introduces a simple measure of CEO clarity"
+    },
+    "finding_ids": [
+      "a1-f3"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "intro__a3f3",
+    "trigger": "Referring to the unscripted call segment — our prose spells it out as the five-word compound 'unscripted question-and-answer session' and repeats it across paragraphs.",
+    "gap_fix": "Move toward the peers' short token for that segment, the register the finding's exemplars show as 'Q&A' or 'the response portions', rather than the fully spelled-out compound; point at the exemplar token without asserting it carries identical meaning.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f4",
+      "quote": "the presentation and Q&A parts of the call"
+    },
+    "finding_ids": [
+      "a1-f4"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "intro__a3f4",
+    "trigger": "A positioning/contribution sentence is about to append a trailing clause that classifies the epistemic status of its own preceding claim (our 'a positioning claim ... not as a tested mechanism').",
+    "gap_fix": "Move toward the exemplars' register, which assert the contribution directly with no added clause naming what kind of claim it is. This sits near load-bearing meaning: describe-only — flag the meta-layer for the gated rewrite, do not alter the underlying claim.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f5",
+      "quote": "The novel contribution of this paper is to explicitly introduce"
+    },
+    "finding_ids": [
+      "a1-f5"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "intro__a2f5",
+    "trigger": "The opening paragraph chains multiple cited doctrines as load-bearing dependencies (costly-disclosure withholding, equilibrium non-disclosure, materiality, the half-truth rule) before the setting or research question is stated.",
+    "gap_fix": "Measure the opening against the peers' easing-in, which carries a plain proposition (with citations used illustratively) before the research question arrives; the doctrines are load-bearing, so flag against the exemplar rather than rewrite.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f1",
+      "quote": "DESPITE THE IMPORTANCE OF CASH RESERVES to theories in corporate finance, corporate holdings of cash have received relatively little direct attention in the academic literature."
+    },
+    "finding_ids": [
+      "a2-f1"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "intro__a3f6",
+    "trigger": "At first mention the measure's sentence is accumulating appended elements before it resolves — a symbol, a defining relative clause, a citation-attribution, and a deferral, all in 1-P4.",
+    "gap_fix": "Move toward the exemplars, which attach at most one explanatory unit at the point of naming and offload the rest to a following sentence; resolve the naming sentence and define separately rather than holding the appended elements open at once.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f3",
+      "quote": "In this paper, we propose a method for evaluating CEO clarity and test its implications for companies' stock price and long-term value."
+    },
+    "finding_ids": [
+      "a2-f3"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "intro__a3f7",
+    "trigger": "Stating the sample at the intro level with exclusion modifiers stacked ahead of the head noun (our 'United States public, non-financial, non-utility firms').",
+    "gap_fix": "Match the exemplars' intro-level register, which give only place and date span and leave the exclusion filters to the data section, rather than carrying the non-financial/non-utility filters as a modifier stack before the head noun.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f7",
+      "quote": "We analyze a sample of conference calls held by public U.S. companies from 2003 through 2015."
+    },
+    "finding_ids": [
+      "a2-f7"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "intro__a2f8",
+    "trigger": "A contribution sentence packs the measure name, a relative-clause gloss, a setting phrase, and a comparative 'where the nearest prior work has read ...' clause into one sentence.",
+    "gap_fix": "Measure the contribution sentence against the peers' front-loaded form, where the contribution is named in a single clause with any gloss kept to a brief apposition; this is load-bearing positioning, so flag against the exemplar rather than rewrite.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f3",
+      "quote": "Our study makes three contributions. It introduces a simple measure of CEO clarity, a novel dimension of oral communication whose implications have not been documented in the literature."
+    },
+    "finding_ids": [
+      "a3-f3"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "intro__a3f9",
+    "trigger": "The gap statement is appending consecutive prepositional/locational qualifiers in sequence (our 'in the unscripted question-and-answer session in the anticipatory window before a withheld deal').",
+    "gap_fix": "Move toward the exemplars' register, which assert the gap in a single short clause without piling up successive prepositional qualifiers. Near load-bearing meaning: describe-only — flag the qualifier chain for the gated rewrite, preserve the gap claimed.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f6",
+      "quote": "the empirical literature on incomplete disclosure is scant"
+    },
+    "finding_ids": [
+      "a3-f6"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "intro__a3f10",
+    "trigger": "A motivating sentence is running two-to-three coordinated clauses joined by 'and that' / 'and although' / 'so' into a near-run-on (our 1-P1).",
+    "gap_fix": "Move toward the published exemplars' register, which deliver the same setup in clipped, free-standing sentences — a claim and its consequence each in its own sentence. Near load-bearing meaning: describe-only — flag the chaining for the gated rewrite without dropping any clause's content.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f1",
+      "quote": "How much do individual managers matter for firm behavior and economic performance? Research in finance and economics so far has given little consideration to this question."
+    },
+    "finding_ids": [
+      "a3-f1"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "intro__a3f11",
+    "trigger": "The roadmap is being written as a single semicolon-chained sentence and/or embedding comma-lists of sub-analyses (1-P9 nests two three-item lists).",
+    "gap_fix": "Match the exemplars' roadmap register, which give a sequence of short, separate sentences, one per section, with no embedded sub-analysis lists.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f5",
+      "quote": "The remainder of the paper proceeds as follows. Section 2 reviews the relevant prior literature. Section 3 describes our research design. Section 4 presents the sample and descriptive statistics. Section 5 presents our findings, and section 6 concludes."
+    },
+    "finding_ids": [
+      "a2-f5"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "intro__a3f12",
+    "trigger": "A results-preview sentence is carrying more than one move at once (our 1-P6 first sentence stacks a concentration claim, a formal pooled test, a hedge, and an open mechanism).",
+    "gap_fix": "Move toward the exemplars, which preview one result per clause or sentence so each previewed finding is a single self-contained claim. Near load-bearing meaning: describe-only — flag the stacking for the gated rewrite, keep each result and hedge intact.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f6",
+      "quote": "We find that CEOs differ substantially in clarity."
+    },
+    "finding_ids": [
+      "a2-f6"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "intro__a3f13",
+    "trigger": "Labelling the central construct with a stack of hyphenated modifiers ahead of the head noun (our recurring 'chief-executive question-and-answer uncertainty', repeated across 1-P4, 1-P5, 1-P7).",
+    "gap_fix": "Move toward the exemplars' register, which name the central construct in two-to-three plain words and reuse that short label throughout, rather than a three-part hyphenated modifier stack re-parsed on each appearance; point at the exemplar register, do not coin the replacement label here.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f2",
+      "quote": "manager fixed effects"
+    },
+    "finding_ids": [
+      "a2-f2"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "intro__a3f14",
+    "trigger": "Motivation or the headline result is being carried by a figure the reader must decode (our 'two paths running on different clocks', 'round-trip contrast', 'in the firm's own voice').",
+    "gap_fix": "Move toward the exemplars, which preview findings literally — naming the variable and the direction of the result with no figure to unpack. Near load-bearing meaning: describe-only — flag the metaphors for the gated rewrite, do not restate or reinterpret the result yourself.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f4",
+      "quote": "We find that CEOs differ substantially in clarity."
+    },
+    "finding_ids": [
+      "a2-f4"
+    ],
+    "meaning_flag": true
+  }
+]

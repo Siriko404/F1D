@@ -1,0 +1,250 @@
+[
+  {
+    "principle_id": "data__a3f13",
+    "trigger": "The source-linking content -- identifier systems, two keying schemes, the join key, the link table, the manifest reference -- packed into one multi-clause sentence with multiple semicolons.",
+    "gap_fix": "Convey the source-to-key mappings in compact, mostly single-clause sentences the way the exemplar lists its sources, rather than stacking the keying schemes and link table into one multi-clause sentence -- keeping the join keys and link table the passage records.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f1",
+      "quote": "We construct our sample using conference call transcripts from Thomson Reuters StreetEvents, analyst and management forecasts from I/B/E/S, and stock returns and accounting items from CRSP and Compustat."
+    },
+    "finding_ids": [
+      "a1-f1"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "data__a3f1",
+    "trigger": "Source-listing sentences that repeatedly front the dataset with the inverted 'X supplies Y' construction ('Capital IQ supplies...', 'SDC supplies...') across several consecutive sentences.",
+    "gap_fix": "Settle on the exemplar's plainer source verb used once and consistently -- the reader-fronted 'we obtain/use X from source' or the single 'Source provides X' form -- rather than repeating the heavier inverted 'supplies' frame for each source in turn.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f2",
+      "quote": "The Forbes data provide information on the CEOs of the 800 largest U. S. firms."
+    },
+    "finding_ids": [
+      "a1-f2"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "data__a3f2",
+    "trigger": "Routine timing or sampling devices named with a metaphor ('event clock') or abstract construction ('exist only through this match') where a literal term would carry the function.",
+    "gap_fix": "Name the timing device in the exemplar's plain literal vocabulary (window, date, period), rather than the 'event clock' metaphor -- a form change only that keeps the event-timing referent the surrounding designs depend on.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f3",
+      "quote": "We define our conference call window as beginning at the start of the call and ending 90 minutes thereafter."
+    },
+    "finding_ids": [
+      "a1-f3"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "data__a3f17",
+    "trigger": "The tie-break disclosure chaining a threshold rule, the overlap consequence, a count, a magnitude qualifier, and a hypothetical into one long sentence.",
+    "gap_fix": "State each sampling rule as its own short declarative sentence the way the exemplar gives its tie-handling rule, rather than compressing threshold, overlap, count, share, tie-break policy, and the hypothetical into one chained sentence -- keeping the no-tie-break policy the passage discloses.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f7",
+      "quote": "When firms conduct more than one conference call during this period, we randomly selected one of their calls for our sample."
+    },
+    "finding_ids": [
+      "a1-f7"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "data__a3f3",
+    "trigger": "Long hyphenated compound modifiers stacked in front of a noun ('at-least-five-call, non-financial and non-utility universe', 'call-varying component').",
+    "gap_fix": "Spell the stacked restrictions out as a separate plain clause the way the exemplar states its exclusions, rather than compressing them into hyphenated pre-nominal qualifiers ahead of the noun.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f8",
+      "quote": "we exclude firms in the banking and insurance industries as well as utilities from our sample"
+    },
+    "finding_ids": [
+      "a1-f8"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "data__a2f19",
+    "trigger": "When the summary-statistics paragraph adds epistemic framing about how to 'read' the statistics or what they are versus are not ('the foundation the results sections build on rather than as findings in themselves').",
+    "gap_fix": "Open with a plain pointer sentence and read off the numbers as the exemplars do, as in Hollander's plain 'reports the summary statistics' lead, without philosophizing about the table's epistemic status.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f9",
+      "quote": "Table 3 reports the summary statistics. For our sample of 681 calls made by S&P 1500 firms, the average (median) number of unanswered queries is 1.37 (1)."
+    },
+    "finding_ids": [
+      "a1-f9"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "data__a2f4",
+    "trigger": "When flagging a methodological caveat and the draft coins an abstract noun phrase ('researcher degree of freedom') or a philosophical contrast ('rather than assume away').",
+    "gap_fix": "Name the caveat plainly as the exemplars do, as in Bertrand-Schoar's 'we discuss below... the possible selection issues', without coining an abstract methodological noun phrase around it.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f10",
+      "quote": "We discuss below (subsection IV.A) the possible selection issues associated with this sample construction."
+    },
+    "finding_ids": [
+      "a1-f10"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "data__a3f5",
+    "trigger": "Sentences carrying two or more internal pointers at once -- Section/Appendix/Equation references interleaved with each construct definition or stacked mid-clause.",
+    "gap_fix": "Defer detail with a single clean routing pointer per sentence the way the exemplar does, rather than repeating 'as defined in Section/Appendix' for nearly every construct or stacking several cross-references inside one sentence.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f8",
+      "quote": "See the Appendix for the other variable definitions."
+    },
+    "finding_ids": [
+      "a1-f11",
+      "a2-f8"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "data__a2f16",
+    "trigger": "When a variable's construction is described by personifying an equation ('the input that the first stage... residualizes into') instead of stating the operation with a plain verb and object.",
+    "gap_fix": "Describe the construction with a plain verb and a plain object as the exemplars do, as in Bushee's 'is the fitted (residual) value from a regression of LC Manager on LC Analyst', rather than routing it through a personified equation that 'residualizes' an 'input'.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f2",
+      "quote": "Our empirical estimate of Info * (Obfu * ), denoted Info (Obfu), is the fitted (residual) value from a regression of LC Manager on LC Analyst:"
+    },
+    "finding_ids": [
+      "a2-f2"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "data__a3f14",
+    "trigger": "Self-referential meta-commentary about what the section is and is not doing ('What we discharge here is the construction mechanic only', 'pointed back to their defining homes rather than re-derived here').",
+    "gap_fix": "Carry the routing with the exemplar's short plain pointer to where the definitions live and otherwise just state the construction, rather than adding sentences that narrate what the section is and is not doing.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f3",
+      "quote": "The definition and construction of the specific variables used in the analysis are reported in the Data Appendix."
+    },
+    "finding_ids": [
+      "a2-f3"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "data__a3f16",
+    "trigger": "Sample construction framed as an architectural stack ('built in three layers', 'On top of it sits the SDC deal universe', 'The third layer is').",
+    "gap_fix": "Present the construction as a plain sequence of concrete steps the way the exemplar begins its sample-selection process, rather than as a metaphorical stack of layers the reader must decode alongside the actual rules.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f4",
+      "quote": "We began our sample selection process by identifying via the Dow Jones \"Calendar of Corporate Events\" announcements of earnings-related conference calls held by NYSE/NASDAQ firms during trading hours"
+    },
+    "finding_ids": [
+      "a2-f4"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "data__a1f6",
+    "trigger": "When reporting a descriptive statistic (e.g., a mean) alongside a variable definition.",
+    "gap_fix": "Present the descriptive number as a clean standalone main clause as the exemplars do, rather than appending it as a mid-sentence parenthetical inside a chain that also defines variables and gives a 'since' justification.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f6",
+      "quote": "The mean (median) ratio of stock-based to total compensation (COMP ) is 0.42 (0.45)."
+    },
+    "finding_ids": [
+      "a2-f6"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "data__a1f19",
+    "trigger": "When choosing verbs and nouns for routine operations (reporting, computing, listing in an appendix).",
+    "gap_fix": "Favor concrete everyday verbs and nouns as the exemplars do ('are reported in', 'we calculate', 'we use', 'is given by'), rather than reaching for elevated abstract diction ('catalogued', 'defining homes', 'discharge', 'residualizes', 'anchor').",
+    "exemplar_anchor": {
+      "finding_id": "a2-f7",
+      "quote": "Means and summary statistics for this sample are reported in columns 3 and 4 of Table I."
+    },
+    "finding_ids": [
+      "a2-f7"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "data__a3f7",
+    "trigger": "The merge elevated into an abstract framing ('keyed to different identifier systems, so they must be linked') before the join is stated.",
+    "gap_fix": "State the merge as a plain declarative the way the exemplar simply merges its datasets, rather than first framing the identifier mismatch as a problem that 'must be linked' -- keeping the actual join keys and link table the sentence records.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f1",
+      "quote": "We then merge this data set of observable managerial characteristics to COMPUSTAT and SDC data and construct all the relevant corporate variables"
+    },
+    "finding_ids": [
+      "a3-f1"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "data__a2f9",
+    "trigger": "When a long descriptive apposition is inserted between a source's subject and its verb (e.g. 'the input to the manager fixed effect of Section 2.3' before 'comes from Execucomp').",
+    "gap_fix": "Keep the source and what it does adjacent with a plain subject-verb lead, as in Bertrand-Schoar's 'The Forbes data provide information on...', rather than delaying the verb behind an inserted apposition.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f2",
+      "quote": "The Forbes data provide information on the CEOs of the 800 largest U. S. firms. Execucomp allows us to track the names of the top five highest paid executives in 1500 publicly traded U. S. firms."
+    },
+    "finding_ids": [
+      "a3-f2"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "data__a3f9",
+    "trigger": "The whole deal-arm definition -- acquirer scope, the three-value status set, the payment-composition requirement, both arm thresholds, and the per-firm event clock -- packed into one continuous sentence.",
+    "gap_fix": "Break the deal criteria into discrete short sentences, one criterion per sentence, the way the exemplar enumerates its deal requirements, rather than chaining them all into a single sentence.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f8",
+      "quote": "We further require the bidders to be publicly traded firms, which leads to 75,000 deals. Moreover, we keep the deals for which we have available information about the target's ownership status and deal status. We also request the bidder to acquire at least 50% of the target's stocks."
+    },
+    "finding_ids": [
+      "a3-f8"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "data__a3f10",
+    "trigger": "Cause, the larger-firm skew, and the per-table reporting consequence chained into one extended 'Because ... and for that reason ...' sentence.",
+    "gap_fix": "State the larger-firm consequence in one compact sentence the way the exemplar does and stop, rather than compounding cause, skew, and the reporting rule into a single unit -- keeping the selection consequence the sentence records.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f10",
+      "quote": "As expected, constraining our sample to firms where we can observe at least one executive switch leads us to select larger firms."
+    },
+    "finding_ids": [
+      "a3-f10"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "data__a3f11",
+    "trigger": "The coined term 'anchor' / 'its own anchor panel' used to label the estimation sample and to explain why observation counts vary.",
+    "gap_fix": "Report the sample size and the varying counts in the exemplar's plain vocabulary ('the maximum number of observations; not all variables are available'), rather than the coined 'anchor' / 'anchor panel' label.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f11",
+      "quote": "Sample size refers to the maximum number of observations; not all variables are available for each year and firm."
+    },
+    "finding_ids": [
+      "a3-f11"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "data__a3f12",
+    "trigger": "The base-panel sentence stacking three pre-nominal qualifiers ('United States public, non-financial, non-utility firm') and then appending a compressed 'for whom ... and hence ...' two-step rationale.",
+    "gap_fix": "Split the requirement and its rationale across two short sentences the way the exemplar separates its restriction from its reason, rather than carrying the triple modifier stack plus the compressed 'and hence' rationale in one sentence.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f12",
+      "quote": "The estimation of CEO clarity requires multiple observations for each CEO. Hence, we restrict the analysis to transcripts of conference calls with CEOs who participated in at least 5 such calls"
+    },
+    "finding_ids": [
+      "a3-f12"
+    ],
+    "meaning_flag": false
+  }
+]

@@ -1,0 +1,241 @@
+[
+  {
+    "principle_id": "hypotheses__a1f1",
+    "trigger": "Where our prose renders the action as an abstract process-noun or nominalization ('surfacing', 'elevation', 'register', 'that surfacing', 'the divergence of the two paths') instead of a concrete actor performing a plain-verb action.",
+    "gap_fix": "Name the concrete actor and the action with everyday verbs, as the exemplars do (firms/managers doing something), rather than substituting a nominalized abstraction the reader must unpack. Describe-only and load-bearing-adjacent: do not alter what the claim asserts, only move it off the process-noun toward the exemplars' concrete subject-verb register.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f3",
+      "quote": "Firms become cash-rich when their managers stockpile free cash f low rather than spending it immediately."
+    },
+    "finding_ids": [
+      "a1-f3",
+      "a2-f6"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "hypotheses__a1f2",
+    "trigger": "Where our prose carries the timing or sequence claim through a figurative device ('run on different clocks', 'the two clocks', 'two paths') that the reader must decode and that then needs a follow-on sentence to gloss.",
+    "gap_fix": "State the timing mechanism literally, tied to observable events, as the exemplars do, instead of encoding it in the clock metaphor. Describe-only and load-bearing-adjacent: do not change the timing relation being asserted, only point it toward the exemplars' literal temporal description.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f6",
+      "quote": "Additions to cash reserves occur when cash f low is greater than required for the firm's positive NPV projects."
+    },
+    "finding_ids": [
+      "a1-f4",
+      "a3-f6"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "hypotheses__a1f3",
+    "trigger": "Where our prose narrates its own rhetorical procedure or the bookkeeping function of the sentence itself (what each prediction 'turns', what it 'reads in', 'Flagging it here records that...') rather than stating the subject-matter content directly.",
+    "gap_fix": "Perform the move directly and talk about the subject matter, as the exemplars do (a short clause to posit, then content), instead of narrating that the prose is stating, recording, or flagging it. Describe-only and load-bearing-adjacent: keep the underlying claim, only strip the reflexive procedural layer toward the exemplars' direct register.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f6",
+      "quote": "With our focus on CEO clarity, we posit our first hypothesis:"
+    },
+    "finding_ids": [
+      "a1-f6",
+      "a2-f3"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "hypotheses__a1f4",
+    "trigger": "Where our prose follows a just-named construct (e.g. the stock-deal 'placebo') with one or more comma- or em-dash-set appositive restatements that re-describe or re-explain the same idea inside the single sentence.",
+    "gap_fix": "Name the construct or alternative once and let it stand, defining it plainly or giving it its own clean separate sentence as the exemplars do, rather than stacking appositive glosses that paraphrase it mid-sentence. Describe-only and load-bearing-adjacent: do not drop the placebo content, only relocate the repeated gloss toward the exemplars' single-statement form.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f8",
+      "quote": "an alternative agency cost hypothesis, which posits that disclosures are withheld because of conflicts of interest between managers and shareholders"
+    },
+    "finding_ids": [
+      "a3-f8",
+      "a2-f8"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "hypotheses__a1f5",
+    "trigger": "Where our sentence opens with stacked participial, prepositional, or subordinate setup clauses ('While the deal is withheld, ...', a back-referential framing clause) before the grammatical subject or the operative claim arrives.",
+    "gap_fix": "Lead with the subject and verb, or with the operative claim, and append the reasoning or detail afterward, as the exemplars do, rather than front-loading the setup clauses that delay the main clause. Describe-only: reorder toward the exemplars' subject-early structure without changing the content.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f7",
+      "quote": "The presence of a large cash reserve seems to lead to suboptimal behavior by management."
+    },
+    "finding_ids": [
+      "a2-f7",
+      "a3-f7"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "hypotheses__a1f6",
+    "trigger": "Where our sentence inserts an appositive or defining aside mid-claim that splits the subject from its predicate, so the reader holds the main clause open across the interruption.",
+    "gap_fix": "Complete the main clause before adding the next element, keeping the clause intact as the exemplars do and using subordinate asides sparingly, rather than embedding a defining gloss inside the claim. Describe-only: relocate the aside, do not remove the information.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f5",
+      "quote": "We start with a classification model based on four commonly cited disclosure determinants"
+    },
+    "finding_ids": [
+      "a1-f5"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "hypotheses__a1f7",
+    "trigger": "Where our prose italicizes ordinary connective or common words (\\emph{where}, \\emph{when}, \\emph{why}, 'anticipatory', 'cash-concentrated') to carry a contrast or distinction.",
+    "gap_fix": "Let the plain register carry the contrast without typographic emphasis, as the exemplars do (they do not italicize ordinary words and keep emphasis reserved). Describe-only: point at the exemplars' unemphasized prose, do not change the distinction being drawn.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f7",
+      "quote": "These investments are value decreasing on average."
+    },
+    "finding_ids": [
+      "a1-f7"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "hypotheses__a1f8",
+    "trigger": "Where our sentence opens with a stacked, back-referencing qualifier phrase ('Consistent with the bounded reading established earlier, ...') before the reader reaches the actual claim.",
+    "gap_fix": "State the claim first and attach the scope or qualifier after, or qualify in a separate short sentence, as the exemplars do, rather than front-loading the back-referencing qualifier. Describe-only and load-bearing-adjacent: keep the qualifier's content (it bounds the claim), only move it after the claim toward the exemplars' claim-first order.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f8",
+      "quote": "The cash deviation variable is strongly significant and negative, indicating that cash-rich firms are less likely to be targeted in a control contest."
+    },
+    "finding_ids": [
+      "a1-f8"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "hypotheses__a1f9",
+    "trigger": "Where the same scope disclaimer ('leaves the mechanism open' / 'asserts no cause' / 'takes no stance') recurs in slightly varied wording across paragraph after paragraph (U1 through U5).",
+    "gap_fix": "State the scope limit once and move on, as the exemplars do, rather than re-asserting the identical disclaimer across paragraph after paragraph. Describe-only and load-bearing-adjacent: the disclaimer is meaning-bearing, so this flags the repetition, not the disclaimer itself; do not delete the bound where it is first established.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f4",
+      "quote": "Therefore, in this study, we make no attempt to disentangle these motives."
+    },
+    "finding_ids": [
+      "a2-f4"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "hypotheses__a1f10",
+    "trigger": "Where our sentence pins an alternative with a doubled 'X rather than Y' fencing structure that makes the reader hold a prior count and then negate a near-synonymous interpretation ('distinct from the framework's two open readings rather than a third version of them').",
+    "gap_fix": "Name the alternative once, plainly, in a single clause as the exemplars do, rather than fencing it with a paired near-synonymous 'rather than' contrast. Describe-only and load-bearing-adjacent: keep the alternative being distinguished, only drop the doubled fencing toward the exemplars' single plain distinction.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f9",
+      "quote": "This could be due to the smaller sample size or to differences between the takeover market in the 1990s and the rest of the sample period."
+    },
+    "finding_ids": [
+      "a2-f9"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "hypotheses__a1f11",
+    "trigger": "Where our sentence fuses a reason, a justification tag ('is by design'), and an exclusion ('not the level of either') into one period, wrapping the rationale inside the claim.",
+    "gap_fix": "State the design choice in its own dedicated sentence or clean clause, as the exemplars isolate a parallel design choice, rather than fusing reason, justification tag, and exclusion in one sentence. Describe-only and load-bearing-adjacent: keep all three elements, only separate them toward the exemplars' isolated-clause form.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f10",
+      "quote": "Additionally, the yearly dummy variables are dropped since the sample period does not cross any merger wave boundaries."
+    },
+    "finding_ids": [
+      "a2-f10"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "hypotheses__a1f12",
+    "trigger": "Where our single sentence carries an object definition plus an appositive gloss plus a parenthetical forward-pointer plus a reading-mode qualifier at once, chained by commas, parentheticals, and subordinate clauses.",
+    "gap_fix": "Distribute the ideas across sentences toward the exemplars' register, as the exemplars keep individual sentences to one or two clauses, rather than packing definition, scope, and qualification into one period. Describe-only: split toward the exemplar register without inventing any length cap and without changing the content.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f2",
+      "quote": "Firms become cash-rich when their managers stockpile free cash f low rather than spending it immediately."
+    },
+    "finding_ids": [
+      "a3-f2"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "hypotheses__a1f13",
+    "trigger": "Where our introductory narrative front-loads inline symbol definitions (an event index, a pre-announcement indicator, two Greek shift parameters with superscripts) into the running prose before any labeled H-statement.",
+    "gap_fix": "Carry the hypothesis-introduction in words and reserve symbols for the labeled H-statements, as the exemplars do (the object stated in words), rather than interleaving formal symbol definitions into the prose stream. Describe-only and load-bearing-adjacent: the notation is meaning-bearing, so point it toward the exemplars' words-in-prose / symbols-in-H-statement split without dropping any definition.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f3",
+      "quote": "H1: There are systematic differences (styles) in CEO clarity."
+    },
+    "finding_ids": [
+      "a3-f3"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "hypotheses__a1f14",
+    "trigger": "Where our sentence chains a main clause, an em-dash placement clause, a 'not why' negation, and a trailing appositive into one breath, so the reader holds the main claim while parsing two further qualifications before it resolves.",
+    "gap_fix": "Keep one idea per sentence and break a second qualification into a new sentence, as the exemplars do (close the sentence and start a new one), rather than chaining the qualifications into one period. Describe-only and load-bearing-adjacent: keep the qualifications (they bound the claim), only split them across sentences toward the exemplars' one-idea-per-sentence register.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f1",
+      "quote": "The first posits that CEOs differ significantly in clarity. The second addresses how a CEO's clarity affects analysts' and investors' information processing."
+    },
+    "finding_ids": [
+      "a2-f1"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "hypotheses__a1f15",
+    "trigger": "Where our single sentence defines one symbol (theta_e), embeds a parenthetical deal-type scope caveat, defines a second symbol (kappa_e), then appends a forward reference, compressing multiple notation definitions and a conditional scope rule into one period.",
+    "gap_fix": "Introduce a variable or term and then stop, doling out definitions singly across sentences as the exemplars do, rather than compressing several symbol definitions, a scope rule, and a forward reference into one sentence. Describe-only: split the definitions toward the exemplars' one-definition-per-sentence pattern without changing them.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f2",
+      "quote": "Sales growth is the average sales growth over years t through t. Noncash working capital is the net working capital minus cash and cash equivalents, normalized by total assets."
+    },
+    "finding_ids": [
+      "a2-f2"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "hypotheses__a1f16",
+    "trigger": "Where our opening reaches a prediction through a stacked abstract scaffold of nominalizations ('The preceding section isolates two dimensions of the pattern we expect') before stating anything concrete.",
+    "gap_fix": "Open the move to a hypothesis with a short plain question or a direct declarative posit, as the exemplars do (concrete questions or a plain 'He posits that...'), rather than a layered abstract-noun scaffold. Describe-only: point at the exemplars' plain framing without changing what is introduced.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f1",
+      "quote": "He posits that incompletely controlled managers spend free cash f low on wasteful projects."
+    },
+    "finding_ids": [
+      "a3-f1"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "hypotheses__a1f17",
+    "trigger": "Where our prose reaches for raised or literary verbs ('surfaces', 'confronted with the data', 'recedes') to do descriptive work.",
+    "gap_fix": "Use plain everyday verbs ('find', 'posits', 'show', 'expect') that do the same descriptive work, as the exemplars do, rather than the more figurative diction. Describe-only: point at the exemplars' plain verbs without asserting the two wordings mean the same and without changing the description.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f4",
+      "quote": "We expect profitable firms to be less likely to engage in acquisition transactions as they have a high value from their existing operations"
+    },
+    "finding_ids": [
+      "a3-f4"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "hypotheses__a1f18",
+    "trigger": "Where our sentence chains two or three consecutive self-referential epistemic qualifiers on the same claim ('takes no stance on whether... ; it asserts only that the language moves, and when').",
+    "gap_fix": "Cap the scope-limit in a single brief clause and move on, as the exemplars do (one short clause), rather than stacking several meta-qualifiers in series. Describe-only and load-bearing-adjacent: the hedges are load-bearing, so this targets their stacked density only, never the removal of the hedge itself.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f5",
+      "quote": "Therefore, in this study, we make no attempt to disentangle these motives."
+    },
+    "finding_ids": [
+      "a3-f5"
+    ],
+    "meaning_flag": true
+  }
+]

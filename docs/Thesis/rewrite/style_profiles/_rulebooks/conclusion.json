@@ -1,0 +1,199 @@
+[
+  {
+    "principle_id": "conclusion__a2f1",
+    "trigger": "After a measure or actor is introduced, the conclusion respells the full multi-word compound ('chief executive', 'question-and-answer') in full on each later mention instead of using a short label.",
+    "gap_fix": "After a measure or actor is introduced, refer back with a short head noun the way the exemplars compress the same referent to a fixed short label, rather than respelling the descriptive compound.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f2",
+      "quote": "This paper shows that CEOs persistently differ in the clarity of their communication."
+    },
+    "finding_ids": [
+      "a1-f3",
+      "a3-f2"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "conclusion__a1f3",
+    "trigger": "A caveat or mechanism is phrased with Latinate/technical abstraction — e.g. 'one operationalization of call-specific uncertainty', 'remain observationally equivalent', 'anticipatory', 'counterfactual' — instead of plain verbs and everyday words.",
+    "gap_fix": "Move the caveat and mechanism wording toward the exemplars' everyday register — lm2011 says plainly that misclassified words 'simply add noise' — swapping the nominal/technical terms for plain verbs and common words while leaving the claim itself unchanged.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f5",
+      "quote": "many of the misclassified words simply add noise to the tonal measure"
+    },
+    "finding_ids": [
+      "a1-f5",
+      "a3-f6"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "conclusion__a2f3",
+    "trigger": "The conclusion mints and repeats a labeled construct ('within-firm language signature') to name its contribution and locates it with a spatial image.",
+    "gap_fix": "Name the contribution in ordinary descriptive words, as the exemplars do when they call theirs a measurement problem or a connection, instead of coining a labeled construct.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f8",
+      "quote": "Our paper proposes two solutions to this measurement problem."
+    },
+    "finding_ids": [
+      "a1-f8"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "conclusion__a1f9",
+    "trigger": "The contribution is framed as an abstract bridging of two named theory strands 'usually studied apart' plus the spatial metaphor 'sits in the window between them'.",
+    "gap_fix": "State what the result implies as a direct plain-terms claim the way the exemplars do — ragozzino2024 plainly concludes that 'previous research has understated the implications of information frictions in M&A markets' — rather than routing it through a two-strand abstraction and a spatial figure.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f7",
+      "quote": "by considering the implications of information asymmetries for acquiring firms and capital market participants that have been neglected in previous research, we conclude that previous research has understated the implications of information frictions in M&A markets"
+    },
+    "finding_ids": [
+      "a3-f7"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "conclusion__a2f4",
+    "trigger": "The no-prescription / cautionary stance is built from a long abstract construction plus a contrastive 'characterize a regularity, not to recommend'.",
+    "gap_fix": "Deliver the cautionary stance in the plain verb phrasing the exemplars use, rather than building it from abstract phrasing plus a contrastive clause.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f11",
+      "quote": "regulators and researchers should exercise caution when assuming that complex language is necessarily less informative than simple language"
+    },
+    "finding_ids": [
+      "a1-f11"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "conclusion__a2f5",
+    "trigger": "The robustness recap chains conditions that are not grammatically parallel ('holds when X and when Y'), mixing a treatment condition with an estimation-detail condition mid-sentence.",
+    "gap_fix": "Cast the robustness conditions as a clean parallel series with light repeated connectors, the way the exemplar lists its conditions, so the series stays scannable.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f5",
+      "quote": "The results are robust to controlling for other linguistic attributes of the call; to using within-industry, within-firm, and within-manager designs; and to several placebo tests."
+    },
+    "finding_ids": [
+      "a2-f5"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "conclusion__a2f6",
+    "trigger": "Transitions between claims wrap the claim in abstract relational vocabulary ('remain observationally equivalent', 'consistent with ... relating ... differently') instead of moving with a simple connective.",
+    "gap_fix": "Move between concrete statements with the plain connectives the exemplars use, rather than routing the transition through abstract relational phrasing.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f9",
+      "quote": "However, firms often build up much more cash than they need to meet expected financing requirements."
+    },
+    "finding_ids": [
+      "a2-f9"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "conclusion__a1f8",
+    "trigger": "Subjects are stacked abstract nominalizations — 'the disclosure state of an acquisition', 'a deal's passage from private to public', 'the scripted and unscripted segments relating to the outside information environment'.",
+    "gap_fix": "Replace the stacked abstract nominalizations with concrete subjects readers can picture, the way hollander2010 writes 'leave call participants in the dark' instead of staying at the nominal-abstract level.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f4",
+      "quote": "Our evidence suggests that managers regularly leave call participants in the dark by not answering their questions."
+    },
+    "finding_ids": [
+      "a3-f4"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "conclusion__a2f9",
+    "trigger": "Several distinct findings are packed into one sentence joined by semicolons and 'while', each clause itself a multi-part claim.",
+    "gap_fix": "Give each finding its own declarative sentence opening with a plain 'I find / We find', as the exemplars do.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f1",
+      "quote": "I find that cash-rich firms are more likely to make acquisitions."
+    },
+    "finding_ids": [
+      "a1-f1"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "conclusion__a1f11",
+    "trigger": "The opening 'In this study' sentence carries five distinct ideas at once — the research question, the unscripted-Q&A setting, the withheld-acquisition object, the measure name, and the style-netting qualifier.",
+    "gap_fix": "Open with a short plain declarative naming the object of study the way hollander2010 does ('We examine the disclosure choices firms make during public earnings-related conference calls...'), letting the measure get its own later sentence rather than loading every idea into the opener.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f1",
+      "quote": "We examine the disclosure choices firms make during public earnings-related conference calls between managers and the investment community."
+    },
+    "finding_ids": [
+      "a3-f1"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "conclusion__a2f11",
+    "trigger": "The takeaway is delivered through stacked figurative nouns ('readable, anticipatory trace', 'passage from private to public', 'signature') plus a hedge.",
+    "gap_fix": "State the takeaway in concrete, literal terms, or a plain image, the way the exemplars do, rather than chaining figurative nouns.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f4",
+      "quote": "In short, the results of our study suggest that silence speaks."
+    },
+    "finding_ids": [
+      "a1-f4"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "conclusion__a2f12",
+    "trigger": "A single sentence stacks many caveats chained by 'and ... and ... ; ... in particular ... so ...' (correlational, within-firm, no-identification, mechanism-open, war-chest, two-readings).",
+    "gap_fix": "Split the piled caveats across separate sentences, keeping each caveat sentence to the light qualifier load the exemplars carry.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f6",
+      "quote": "While the framework we follow does not allow us to estimate the causal effect of managers on firm policies or performance, it provides a simple and intuitive approach to deal with many of the first-order selection problems."
+    },
+    "finding_ids": [
+      "a1-f6"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "conclusion__a2f13",
+    "trigger": "Long appositive or parenthetical spans separate a subject from its verb (e.g., 'the sample, ... , may not extend').",
+    "gap_fix": "Keep the subject and verb close, placing the elaboration in a following sentence as the exemplars do, rather than between subject and predicate.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f6",
+      "quote": "Common words like depreciation, liability, foreign, and board are not tonal when occurring in a 10-K."
+    },
+    "finding_ids": [
+      "a2-f6"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "conclusion__a1f15",
+    "trigger": "The future-work sentence chains three different directions plus an embedded list and a design caveat into one multi-semicolon period.",
+    "gap_fix": "Present the future-work directions as separate short prompts the way the exemplars do — dwz poses them as standalone questions ('How do these differences originate? How influential are early career or childhood experiences, or even genetics?') — rather than fusing them into one period.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f7",
+      "quote": "How do these differences originate? How influential are early career or childhood experiences, or even genetics?"
+    },
+    "finding_ids": [
+      "a2-f7"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "conclusion__a2f15",
+    "trigger": "A null or scope caveat is phrased as a statistical term-of-art ('a failure to find rather than a powered test of equivalence').",
+    "gap_fix": "State the scope or null caveat in plain, everyday terms the way the exemplars phrase their central caveats, rather than in methodological term-of-art the reader must parse.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f8",
+      "quote": "One important caveat to our decomposition approach is that we cannot speak to the generalizability of the approach outside of the conference call setting"
+    },
+    "finding_ids": [
+      "a2-f8"
+    ],
+    "meaning_flag": true
+  }
+]

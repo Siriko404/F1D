@@ -1,0 +1,200 @@
+[
+  {
+    "principle_id": "methods__a3f1",
+    "trigger": "A sentence opens with a long causal or conditional premise (often with an interposed callback) so the main clause's subject and verb arrive only after the stacked opening clauses.",
+    "gap_fix": "Lead with the subject and verb and state the action first, then attach the reasoning, the way the exemplars open with a purpose clause and then the verb, instead of deferring the main clause behind stacked opening clauses.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f2",
+      "quote": "To test Hypothesis 1, we estimate the following cross-sectional regression:"
+    },
+    "finding_ids": [
+      "a1-f2"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "methods__a3f2",
+    "trigger": "A single sentence chains several distinct operations or claims across semicolons and subordinate clauses (e.g., spec, exception, mechanism, and hedge at once), so the reader must hold the whole chain together.",
+    "gap_fix": "Let one operation or fact advance per sentence and split compound logic across separate sentences, the way the exemplars stop the sentence after one operation, rather than threading several into one chain.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f4",
+      "quote": "The dependent variable in the probit is one if the firm announces a bid in year t and zero otherwise. The remaining variables are described below."
+    },
+    "finding_ids": [
+      "a1-f4",
+      "a2-f1"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "methods__a3f3",
+    "trigger": "Several parallel findings or definitions (e.g., multiple measures each with its coefficient and p-value) are strung together across semicolons inside one sentence.",
+    "gap_fix": "Give each enumerated item its own sentence the way the exemplars do, rather than packing the parallel list into one semicolon-spliced period the reader must segment.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f7",
+      "quote": "We measure managerial Fog separately for the presentation and Q&A portions of the call. Fog(Present) represents the Fog index of managers' language during the presentation, and Fog(Response) is the Fog of managers' responses to questions."
+    },
+    "finding_ids": [
+      "a2-f7"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "methods__a3f4",
+    "trigger": "A head noun is preceded by a stack of piled adjectives and nouns the reader must unzip (dense multi-modifier descriptors in front of the noun).",
+    "gap_fix": "Unpack the qualification across words or a relative clause the way the exemplars spell out a qualified object, instead of compressing comparable qualification into stacked pre-modifiers before the head noun.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f7",
+      "quote": "Cash deviation is defined as the deviation of the firm's ratio of cash and short-term investments to total assets from the average value predicted for its industry"
+    },
+    "finding_ids": [
+      "a1-f7"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "methods__a3f5",
+    "trigger": "A plainly nameable quantity is introduced through a relational descriptor layered over it (e.g., 'the discriminating window is the gap') rather than by its plain name.",
+    "gap_fix": "Name the concrete coefficient or variable plainly the way the exemplars do, dropping the added relational-abstraction layer over the plain named quantity.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f8",
+      "quote": "The primary variable of interest is the cash deviation variable."
+    },
+    "finding_ids": [
+      "a1-f8"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "methods__a3f6",
+    "trigger": "Set-builder notation with braced members and multi-index subscripts is embedded inline in running prose, so the reader parses set membership and triple subscripts mid-sentence.",
+    "gap_fix": "Define each variable in plain expanded prose with its name attached, one clause per variable, the way the exemplars unpack symbols after an equation, rather than asking the reader to decode braces and subscripts inline.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f3",
+      "quote": "where y it stands for one of the corporate policy variables, year fixed effects, firm fixed effects, X it represents a vector of time-varying firm level controls, and an error term."
+    },
+    "finding_ids": [
+      "a2-f3"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "methods__a3f7",
+    "trigger": "Multiple hedges are compounded inside one sentence — a counterfactual condition, its consequence, and a re-labeling stacked in sequence.",
+    "gap_fix": "Deliver each hedge as its own clean declarative caveat, hedging once per point the way the exemplars do, rather than stacking a hedge upon a conditional upon a concession in one breath.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f8",
+      "quote": "Therefore, we are not hoping in this section to estimate the causal effect of managers on firm practices. Instead, our objective is more modest."
+    },
+    "finding_ids": [
+      "a2-f8"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "methods__a3f8",
+    "trigger": "One sentence introduces and relates two or three distinct constructs at once, or fuses a variable's definition with its motivation and a meta-distinction in a single period.",
+    "gap_fix": "Introduce or define one construct per sentence and give its rationale or any meta-distinction its own separate, plainly worded sentence, the way the exemplars define a measure and then state its rationale next.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f10",
+      "quote": "We measure firm age (AGE) by the natural logarithm of the number of months the firm has been listed on CRSP. Since AGE is highly skewed, we use the natural logarithm in our analysis."
+    },
+    "finding_ids": [
+      "a2-f9",
+      "a3-f10"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "methods__a3f9",
+    "trigger": "The dependent or key variable is named but then carries an appended interpretive rider (e.g., 'the question is which part of it can carry an anticipatory signal').",
+    "gap_fix": "State the dependent variable in one flat clause and stop, the way the exemplars name it with no meta-commentary, rather than appending an interpretive 'the question is...' rider.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f1",
+      "quote": "The dependent variable in the probit is one if the firm announces a bid in year t and zero otherwise."
+    },
+    "finding_ids": [
+      "a3-f1"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "methods__a3f10",
+    "trigger": "An action is expressed as a copula-plus-nominalization (e.g., 'the object of interest is its residual term', 'carries the empirical content of') instead of an agent-verb.",
+    "gap_fix": "Keep the agent-verb form the exemplars use ('we measure', 'we test whether') rather than recasting the action as a copula-plus-noun abstraction over the same act.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f5",
+      "quote": "we test whether they are different from the coefficients on the randomly selected day"
+    },
+    "finding_ids": [
+      "a1-f3",
+      "a3-f5"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "methods__a3f11",
+    "trigger": "The limitations or robustness paragraph bundles definition, mechanism, and contrast into long subordinated sentences each opened by 'On X,'.",
+    "gap_fix": "Present each robustness or caveat point in its own flat, plainly labeled sentence the way the exemplars do, rather than bundling several distinct points into one long period.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f6",
+      "quote": "The signs and significance levels of our coefficients are unaffected."
+    },
+    "finding_ids": [
+      "a3-f6"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "methods__a3f12",
+    "trigger": "A refined measure is characterized through a stacked negative-then-positive contrast with several appositive formulations ('narrower than... a sharper version... not a different object').",
+    "gap_fix": "Characterize the refinement in a single plain positive clause about what it is, the way the exemplars state it once, rather than layering several appositive contrasts where one would carry the register.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f7",
+      "quote": "Instead, our identification comes from within-firm variation in the MBA status or birth cohort of the CEO."
+    },
+    "finding_ids": [
+      "a3-f7"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "methods__a3f13",
+    "trigger": "A plain methodological object is dressed in figurative vocabulary ('apparatus', 'war chest', 'on the other clock', 'anchor the calendar-time effects').",
+    "gap_fix": "Name the methodological object with the flat, literal terms the exemplars use ('benchmark specification', 'model', 'controls'), rather than substituting a metaphor a non-specialist must decode.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f1",
+      "quote": "From a benchmark specification we derive residual dividend payouts at the firm-year level after controlling for any average differences across firms and years"
+    },
+    "finding_ids": [
+      "a1-f1"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "methods__a3f14",
+    "trigger": "The prose comments on its own writing act ('deserves note', 'recorded here') instead of moving straight to the method or content.",
+    "gap_fix": "Move straight to the content, signposting only as plainly as the exemplars ('described below'), rather than adding an editorializing layer about the writing itself.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f2",
+      "quote": "The remaining variables are described below."
+    },
+    "finding_ids": [
+      "a3-f2"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "methods__a3f15",
+    "trigger": "An ordinary control or check is introduced with elevated diction ('warrants a check', 'deserves separate treatment') raised above the plain-verb baseline.",
+    "gap_fix": "Introduce the move with the plain functional verbs the exemplars use ('we control for', 'we include'), rather than raising the diction above the plain-verb baseline.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f9",
+      "quote": "To alleviate concerns about correlated omitted-variable bias, we control for these characteristics in our analyses."
+    },
+    "finding_ids": [
+      "a3-f9"
+    ],
+    "meaning_flag": false
+  }
+]

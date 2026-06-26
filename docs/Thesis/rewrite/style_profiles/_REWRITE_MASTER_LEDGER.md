@@ -7,24 +7,28 @@
 ---
 
 ## CURRENT POSITION
-**Phase 2 — harness REARCHITECTED to 3 layers; dry-run on `results` PASSED.** `docs/Thesis/rewrite/style_phase2_principles_master.js` (`node --check` PASS). Granularity LOCKED at **8 writing-types**.
-- **Dry-run (results profile, 32 findings) ran end-to-end** (on the OLD 4-layer version): 27 principles, **32/32 coverage**, no null-degrade. Saved `style_profiles/_rulebooks/results.DRYRUN.json`. Proved extract→gate→cull→materialize. Did NOT prove cross-profile dedup (1 profile = no twins).
-- **2 bugs found + fixed in the harness:**
-  1. The runner delivers `args` as a **JSON string**, not an object → harness now `JSON.parse`s it (guard `typeof args === 'string'`).
-  2. The number-gate **false-rejected 17 good rules** because the word "Phase-**4**" carries a digit → harness now `stripScaffolding()` removes process-refs (Phase-N / Section N / Table N / H1 / column / step / equation) BEFORE the foreign-number check. (Noted hole for later: a real fake number sitting right after "Section N" could be stripped too — low odds.)
-- **Rearchitected 4 agent-layers → 3** (Sina: *"3 layers max; panel = ONE layer, for neurodiversity"*): **L1** panel×3 EXTRACT · **L2** redteam×1 CULL+within-profile-dedup · **L3** ONE FINALIZE agent = merged old JUDGE+CLASSIFY (cross-profile dedup + universal/specific tag in one pass). Profiles now run in **capped-concurrency BATCHES** (`args.maxProfiles`, default 2 → peak ~6 agents), not strict sequence.
+**Phase 2 — ✅ DONE. All 8 type-rulebooks built: 140 principles, 100% finding coverage.** Output in `style_profiles/_rulebooks/<type>.json` — abstract 14 · intro 14 · hypotheses 18 · lit_review 18 · methods 15 · data 19 · conclusion 15 · results 27. Harness `docs/Thesis/rewrite/style_phase2_principles_master.js` (`node --check` PASS). **Next: Sina reviews the 8 rulebooks → Phase 3.**
 
-Next concrete step: **2-profile validation run** (results+methods, ~9 agents) — the only run that exercises L3's cross-profile dedup + tests concurrency cap 6. Then Sina reviews; then the full 8-profile run (~33 agents).
+**FINAL harness = 2 agent-layers PER TYPE, fully independent (NO global / cross-type step — Sina's locked spec):**
+- **L1** neurodiverse PANEL ×3 EXTRACT → deterministic JS gate (exemplar-anchor verbatim + no foreign number; scaffolding-refs Phase-N/Section/Table/H1 exempt).
+- **L2** ONE RED-TEAM agent = SCRUTINIZE (refute fabricated/absolute, by reference) **and** SYNTHESIZE (merge dups → the minimal rulebook).
+- JS materialize → each type its own rulebook. **No judge/classify/finalize** (cross-type dedup FORBIDDEN; a universal rule recurs naturally because each type's findings surface it).
+- args = `{ profiles:[{type, findings}], maxProfiles? }`. Runner stringifies args → harness `JSON.parse`s. Startup input-count guard logs received per-type counts.
+
+**3 harness bugs found + fixed (durable):** (1) args-as-string → parse. (2) "Phase-**4**" digit false-rejected 17 rules → `stripScaffolding`. (3) red-team keeps-0 when its IDs don't match candidates (hit on the 87-candidate results set) → degrade-to-gate-clean instead of empty.
+
+**Provenance:** `results.json` = the earlier validated results dry-run (27 rules, 32/32) — its 2-layer re-run tripped bug #3; the dry-run's panel→gate→cull principles are identical mechanics + complete.
+
+**PROCESS LESSON (load-bearing):** large inline arg pastes SILENTLY DROP findings. data/conclusion/results were truncated on first pass, then re-run with verified-complete args (one type per run). **For ANY future Phase-2 run: build args via `scratchpad/build_args.py`, paste the WHOLE file unabridged, then verify `coverage.total_findings == that type's profile[] count`.**
 
 > **PARALLEL FORK (2026-06-25):** Phase 3 runs concurrently in a separate git worktree `../F1D-phase3` (branch `phase3/propositions`) — see `_PHASE3_KICKOFF.md`. THIS session = Phase 2 ONLY. The fork edits the proposition spine and must NOT touch `style_profiles/*` or this ledger; merge its branch back when done.
 
-### HOW TO RUN (the 2-profile validation, then the full 8)
-1. **Build `args`** via `scratchpad/build_args.py` (`build([...types])` reads each `style_profiles/<type>_profile.json` `profile[]` + authors roster/convention). Validation = `build(["results","methods"])`. Pass the JSON object as the Workflow `args` — **do NOT pre-stringify; the runner stringifies and the harness parses.**
-2. **Invoke via the Workflow tool:** `{ scriptPath: "docs/Thesis/rewrite/style_phase2_principles_master.js", args: <object> }`. It IS a Workflow script — Workflow tool, NOT `node`. `args.maxProfiles` caps concurrency (default 2 → peak ~6; raise ONLY after a cap proves rate-limit-safe — only 3 proven so far).
-3. **On return:** write `result.rulebooks[<type>]` → `style_profiles/_rulebooks/<type>.json` + `result.coverage`/`result.audit` → `_audit.json`. Sina reviews.
-4. **Agent counts:** validation = 9; full 8-profile = ~33 (panel 24 + redteam 8 + finalize 1). Full wall-clock UNPROVEN.
-5. If a stage null-degraded (`audit.finalize_note` / per-profile `note`), re-run. Then commit the rulebooks.
-6. ⛔ **NO external scripts to grade/audit the harness output** (Sina, strict). The harness's OWN agents + JS gate do the checking; you READ the returned object, never script-judge it. Mechanical file writes of the result = fine; `.js` workflow harness ≠ audit script.
+### HOW TO RE-RUN A TYPE (if Sina wants one redone)
+1. **Build args** for that ONE type: `scratchpad/build_args.py` → `build(["<type>"], "<type>")` → `phase2_args_<type>.json` (reads `style_profiles/<type>_profile.json` `profile[]`).
+2. **Read the WHOLE file, paste it UNABRIDGED** as the Workflow `args` (do NOT pre-stringify; do NOT trim — trimming silently drops findings). One type per run keeps the paste small enough to reproduce completely.
+3. **Invoke:** `{ scriptPath: "docs/Thesis/rewrite/style_phase2_principles_master.js", args: <object> }` (Workflow tool, NOT `node`). ~4 agents (panel ×3 + redteam ×1), ~12–15 min.
+4. **On return:** `result.coverage.<type>.total_findings` MUST equal that type's `profile[]` count, else the paste dropped findings → redo. Write `result.rulebooks.<type>` (strip to the 6 fields) → `_rulebooks/<type>.json`. (See `scratchpad/finalize_rulebooks.py` for the mechanical write.)
+5. ⛔ **NO external scripts to GRADE/audit the rules** (Sina, strict). The harness's OWN agents + JS gate do the checking; READ the returned object. Mechanical file writes/extraction of the result = fine; `.js` workflow harness ≠ audit script.
 
 ---
 
@@ -32,7 +36,7 @@ Next concrete step: **2-profile validation run** (results+methods, ~9 agents) �
 | Ph | What | Status | Writes prose? |
 |---|---|---|---|
 | 1 | **Style analysis** — 8 profiles, 157 findings (writing weaknesses vs corp-fin convention) | ✅ DONE | no |
-| 2 | **Principles harness** — analyse the Phase-1 analyses → the MINIMAL, most-effective writing principles per WRITING-TYPE (8 rulebooks) | ◀ IN PROGRESS (3-layer; results dry-run passed; 2-profile validation pending) | **no → SAFE** |
+| 2 | **Principles harness** — analyse the Phase-1 analyses → the MINIMAL, most-effective writing principles per WRITING-TYPE (8 rulebooks) | ✅ DONE — 8 rulebooks, 140 principles, 100% coverage | **no → SAFE** |
 | 3 | **Propositions redesign** — insert new propositions (more robustness checks; maybe pivot cash→all deal types) | 📝 DEFERRED (record only) | no |
 | 4 | **Rewrite harness** — the actual rewriting of the whole thesis by a harness (the writing process) | 📝 DEFERRED | **YES → drift-defense lives HERE** |
 | 5 | **Audit-harness stack** — a dedicated stack to audit the thesis hardnosedly, referee-proof | 📝 DEFERRED (record only) | no |

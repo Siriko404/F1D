@@ -1,0 +1,236 @@
+[
+  {
+    "principle_id": "lit_review__a2f1",
+    "trigger": "A concept is introduced by wrapping a long restated gloss between em-dashes and then attaching an abstract coined noun label to it (e.g., a dash-bracketed restatement followed by 'the organizing primitive').",
+    "gap_fix": "Introduce the construct with a short plain naming tag the way the exemplar does ('which we denote ...'), instead of packing a definition, a restatement, and a meta-register note into one dash-bracketed clause. The clause sits near load-bearing meaning -- describe-only: name the pattern and point at the exemplar's plain tag; preserve the construct, do not alter the claim.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f2",
+      "quote": "complex language can also result from intentional obfuscation, or an intentional reduction in informative language (e.g., Li [2008]), which we denote Obfu * ."
+    },
+    "finding_ids": [
+      "a1-f2"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "lit_review__a2f2",
+    "trigger": "A sentence chains multiple back-to-back negative qualifiers ('does not claim', 'not that', 'rather than') so it asserts and repeatedly disclaims in the same breath.",
+    "gap_fix": "Carry the load-bearing hedge as a single placed caveat (a footnote or one clause), as the exemplar does, instead of stacking several assert-then-disclaim qualifiers on one sentence. The hedge is load-bearing -- describe-only: reduce only the stacking, preserve the caveat, do not delete or alter it.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f8",
+      "quote": "Our empirical results suggest that such effects are not large enough to invalidate our estimates."
+    },
+    "finding_ids": [
+      "a1-f8"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "lit_review__a2f3",
+    "trigger": "A literal timing or positioning claim is restated as an abstract metaphor ('run on different clocks', 'the cell these literatures leave empty').",
+    "gap_fix": "State the mechanism literally as the exemplars do, reserving figures of speech for conventional, immediately concrete ones (the exemplar's 'market for used cars'). Describe-only: name the metaphor and point at the exemplar's literal/concrete register; do not supply the rewrite.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f9",
+      "quote": "The basic idea, which mirrors the market for used cars discussed by Akerlof, is that sellers in M&A often hold better information on their own firm than buyers."
+    },
+    "finding_ids": [
+      "a1-f9"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "lit_review__a2f4",
+    "trigger": "A single sentence chains multiple subordinate clauses (because/so/since/while) so several claims must be held in working memory before the thought resolves.",
+    "gap_fix": "Chunk the idea across multiple short-to-medium sentences, each advancing one step, as the exemplar does. Describe-only: point at the exemplar's step-by-step chunking; do not rewrite our sentence.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f2",
+      "quote": "In order to get to the exchange ratio, the acquiring firm usually first defines the offer to the target firm by specifying a fixed dollar value amount for each target share."
+    },
+    "finding_ids": [
+      "a2-f2"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "lit_review__a2f5",
+    "trigger": "A long reasoning clause runs first and the citation is deferred to the tail, so the reader carries an unattributed proposition before learning its source.",
+    "gap_fix": "Name the cited author early and let the claim follow, so attribution and claim arrive together near the front, as the exemplar does. Describe-only: point at the exemplar's front-loaded attribution; do not rewrite the sentence.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f9",
+      "quote": "Erickson and Wang (1999) study the earnings of acquiring firms in the quarters before the announcement and agreement dates when the acquisitions are paid with acquirers' own stock."
+    },
+    "finding_ids": [
+      "a2-f9"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "lit_review__a3f6",
+    "trigger": "Three parallel predicates or adjectives are strung together to resolve one point ('identify no channel, establish no intent, read descriptively').",
+    "gap_fix": "Move toward the exemplar's shorter coordinate list resolving to a single predicate, rather than three coordinated predicates tracked at once. Describe-only; preserve the content.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f10",
+      "quote": "Two firms sharing similar technologies, factor, and product market conditions will make similar choices, whether or not they also share the same management team."
+    },
+    "finding_ids": [
+      "a2-f10"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "lit_review__a2f7",
+    "trigger": "The argument labels its own moves with abstract coined phrases ('the implication for our purpose is a locating one', 'organizing primitive').",
+    "gap_fix": "Name what the argument is doing in plain, concrete words ('Our goal is to show ...'), not in coined abstract nouns, as the exemplar does. Describe-only: point at the exemplar's plain statement of purpose; do not rewrite our label.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f3",
+      "quote": "Our goal is to show that the construct validity of linguistic complexity measures like Fog can be substantially improved by decomposing the measure into its latent components."
+    },
+    "finding_ids": [
+      "a3-f3"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "lit_review__a3f8",
+    "trigger": "Several abstract nouns are compressed into one dense modifier chain ('an anticipatory, cash-concentrated component of CEO uncertainty language').",
+    "gap_fix": "Lean on verb-led clauses the way the exemplar does, unwinding the stacked nominal modifiers toward that register. Meaning-adjacent: describe-only, keep the construct's content intact.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f4",
+      "quote": "a seller has a natural incentive to inflate its value by presenting the firm's resources and prospects in a favorable light"
+    },
+    "finding_ids": [
+      "a3-f4"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "lit_review__a2f9",
+    "trigger": "A colon launches into a compressed, qualifier-laden summary that itself carries a conditional plus its resolution ('...the same observable signature: elevated uncertainty language ... while the deal is undisclosed, resolving at announcement').",
+    "gap_fix": "Follow the colon with a single plain expansion / one idea, as the exemplar does, instead of packing multiple sub-claims after it. Sits near load-bearing meaning -- describe-only: point at the exemplar's single plain expansion; preserve the sub-claims, do not alter them.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f9",
+      "quote": "It is worth drawing a quick distinction between the two problems: Adverse selection concerns itself with the ex-ante problems that surface when M&A buyers and sellers hold different information."
+    },
+    "finding_ids": [
+      "a3-f9"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "lit_review__a2f10",
+    "trigger": "The same scope point ('not a mechanism / descriptive / correlational') is re-asserted multiple times within a single paragraph.",
+    "gap_fix": "State the point once and move on; when recapping, do so once explicitly at a section boundary ('In sum'), as the exemplar does. Sits near load-bearing meaning (the descriptive-not-causal scope) -- describe-only: collapse only the repetition, preserve the hedge, do not delete the caveat.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f10",
+      "quote": "In sum, information asymmetry between company insiders and capital markets in M&A is a compelling issue for two main reasons:"
+    },
+    "finding_ids": [
+      "a3-f10"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "lit_review__a3f11",
+    "trigger": "The main clause is broken by em-dash asides, sometimes two per sentence, to insert restatements and qualifications mid-sentence.",
+    "gap_fix": "Carry the restated or qualifying material in plain consecutive sentences as the exemplar does, reserving any dash for a single light aside. Describe-only; preserve the material.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f1",
+      "quote": "He finds that firms with higher 10-K Fog have lower current earnings performance and less persistent future earnings performance, consistent with managers using linguistic complexity to obfuscate poor performance."
+    },
+    "finding_ids": [
+      "a1-f1"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "lit_review__a3f12",
+    "trigger": "A plain idea is named with a coined, repeated abstract label ('disclosure state', 'the withholding bind').",
+    "gap_fix": "Name the idea with the ordinary nouns the exemplar uses (defining terms inline, as with 'principals (i.e., the shareholders) and agents (i.e., the executives)'), rather than minting a bespoke abstraction the reader must decode. Describe-only.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f3",
+      "quote": "moral hazard focuses on the problem of hidden actions that emerge from principals (i.e., the shareholders) and agents (i.e., the executives) holding diverging incentives"
+    },
+    "finding_ids": [
+      "a1-f3"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "lit_review__a3f13",
+    "trigger": "A clause is appended that polices what the preceding statement does or does not assert ('it does not claim the residual is that signal').",
+    "gap_fix": "State the point and move on toward the exemplar register, which characterizes its goal once ('Our goal is to show that...') rather than re-policing each sentence's epistemic status. The qualification is load-bearing: describe-only, retain the necessary hedge.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f4",
+      "quote": "Our goal is to show that the construct validity of linguistic complexity measures like Fog can be substantially improved by decomposing the measure into its latent components."
+    },
+    "finding_ids": [
+      "a2-f4"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "lit_review__a3f14",
+    "trigger": "Elevated diction is reached for ('occupies', 'refuge', 'subside', 'netted out', 'fielding questions') where a plain verb or noun would carry the same move.",
+    "gap_fix": "Choose the plain verbs and nouns the exemplar uses ('shows', 'time', 'differ'), bringing the diction down to the exemplar register without adding content. Describe-only.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f5",
+      "quote": "This prior evidence shows that managers tend to strategically time the moment to acquire another firm when the stock is most valuable."
+    },
+    "finding_ids": [
+      "a1-f5"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "lit_review__a3f15",
+    "trigger": "One period fuses multiple independently-qualified claims, such as two distinct theory claims (Verrecchia, Dye) each with its own citation.",
+    "gap_fix": "Keep a single period to one chain of reasoning the way the exemplar does, giving each independent theory claim its own sentence. Meaning-adjacent (two separately sourced claims): describe-only, preserve both claims and their citations.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f6",
+      "quote": "In contrast, standard agency models acknowledge that managers may have discretion inside their firm, which they can use to alter corporate decisions and advance their own objectives."
+    },
+    "finding_ids": [
+      "a3-f6"
+    ],
+    "meaning_flag": true
+  },
+  {
+    "principle_id": "lit_review__a3f16",
+    "trigger": "A sentence fronts an abstract phrase ('The venue in which...', 'within this venue', 'the implication for our purpose is') before the grammatical subject.",
+    "gap_fix": "Lead with the actor as the exemplar does ('We focus on...'), so the subject arrives before any fronted abstraction. Describe-only.",
+    "exemplar_anchor": {
+      "finding_id": "a2-f5",
+      "quote": "We focus on the use of complex language in conference calls, rather than in mandatory SEC filings."
+    },
+    "finding_ids": [
+      "a2-f5"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "lit_review__a3f17",
+    "trigger": "A paragraph closes by re-stating the just-made contrast in a second, near-identical sentence ('The contrast is one of timing...').",
+    "gap_fix": "State the contrast once and move on toward the exemplar register, dropping the near-duplicate closing restatement. Describe-only.",
+    "exemplar_anchor": {
+      "finding_id": "a1-f7",
+      "quote": "As a result, there exists a negative relationship between the price paid for the target and the bidder's stock value."
+    },
+    "finding_ids": [
+      "a1-f7"
+    ],
+    "meaning_flag": false
+  },
+  {
+    "principle_id": "lit_review__a3f18",
+    "trigger": "A numeric magnitude is interposed as a dashed or mid-clause interruption ('analysts using such terms nearly 9 percent more, and executives 7.2 percent more').",
+    "gap_fix": "Deliver the statistic in a single clean clause after the verb the way the exemplar does, rather than interposing the magnitude mid-clause as a dashed interruption. Describe-only; preserve the figure.",
+    "exemplar_anchor": {
+      "finding_id": "a3-f8",
+      "quote": "In fact, they find that the unexpected accruals are significantly higher by 2 to 3% before the event."
+    },
+    "finding_ids": [
+      "a3-f8"
+    ],
+    "meaning_flag": false
+  }
+]
