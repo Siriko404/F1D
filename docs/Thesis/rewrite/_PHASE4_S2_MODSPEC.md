@@ -1,5 +1,12 @@
 # PHASE 4 — Section 2 proposition-chain modification spec (pre-advisor)   2026-06-26
 
+> # ⛔ SUPERSEDED IN PART — READ `_PHASE4_HARNESS_HANDOFF.md` §5 BEFORE IMPLEMENTING
+> This file is **v1 (pre-advisor)**. Three things below are WRONG/INCOMPLETE and were fixed by the advisor:
+> 1. **P5.4 / §2.2-P3.3** must use **attenuation-not-suppression** (stock = smaller/noisier, NOT suppressed) + the **cross-channel bridge** (cites = scripted channels; our DV nets out scripted, §2.3 P2.5 → we read the hardest-to-manage channel = a STRENGTH). The P5.4 drafted below is the BROKEN version (silent on stock → unmotivated differential). Do NOT implement it.
+> 2. **§2.1-P4** and **§2.2-P2.thin_claim** ARE changed (placebo → comparison; "isolates" → "motivates concentration") — they are wrongly listed UNTOUCHED below.
+> 3. Open-Qs are RESOLVED in the handoff (Harford keep+demote+relocate; thewissen split + 1-clause P5 pointer; genre-jump = the bridge).
+> The corrected, complete spec = `_PHASE4_HARNESS_HANDOFF.md` §5–§6 + the reference application `tmp/apply_s2_1_mods.py`.
+
 > Scope: redesign the §2 proposition CHAIN for the masking why-cash framing. Design-level (purpose + propositions), NOT paragraph allocation. Source of the old chain: the 5 `section2.x_paragraph_ledger.json` (verbatim-dumped). Decision + cite lock: `_PHASE3_CONCLUSION.md` (EVIDENCE DOSSIER §C).
 
 ## Locked constraints (do not violate)
