@@ -2,6 +2,8 @@
 
 **YOU ARE THE PHASE-3 FORK** — a git worktree running in PARALLEL with the Phase-2 session. Read this first.
 
+**RESUME POINTER (2026-06-25):** the live state — work done, the cash KEEP/DOWNGRADE fork, the power verdict, next step — is in `docs/Thesis/rewrite/_PHASE3_STATE.md`. Read THAT first to resume.
+
 ## Your scope (ONLY this)
 Redesign + insert NEW proposition chains for each section, into `docs/Thesis/rewrite/section*_paragraph_ledger.json` (the spine — the `proposition_chain` arrays).
 Sina's verbatim intent (from the master ledger): *"we redesign and insert the new propositions (since we have some more robustness checks, and also we may need to change courses from cash deals to all deal types ... idk im just thinking out loud here."*
