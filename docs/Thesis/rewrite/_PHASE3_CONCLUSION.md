@@ -42,5 +42,8 @@
 - **§4.1 scrutiny** — unaffected (rule-out stays).
 - **Register locks — UNCHANGED.**
 
+## PROVENANCE (the in-sample test behind the honesty floor)
+`tmp/test_masking_continuous.py` — validation: cash UncResCEO reproduces **+0.0461\*\*\*** (production harness `gen_empire_did_table.G.run`); keystone: stock UncPreCEO **+0.031 n.s.** (scripted tone NOT managed down). `tmp/test_masking_binary.py` — the binary LPM+logit variant. Run from the **F1D** worktree (data + `f1d` package live there). These produced the "cash rises, stock flat — no detected stock suppression" floor.
+
 ## NEXT
-Advisor-vet → Sina ratifies per section → execute the tweaks (Phase-4 rewrite) → merge `phase3/propositions` into `debug/campello-did-supervisor-interrogation`.
+Execute the per-section proposition tweaks (Phase-4 rewrite), ratified per section; register locks unchanged → merge `phase3/propositions` into `debug/campello-did-supervisor-interrogation`.
