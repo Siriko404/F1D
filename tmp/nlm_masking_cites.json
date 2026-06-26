@@ -1,0 +1,111 @@
+{
+  "shleifer_vishny2003": {
+    "id": "f649faef-2fdd-4d68-be04-517447533345",
+    "label": "\"Stock Market Driven Acquisitions\" by Shleifer and Vishny (2003, Journal of Financial Economics)",
+    "query": "Reading only this paper, \"Stock Market Driven Acquisitions\" by Shleifer and Vishny (2003, Journal of Financial Economics): what does it conclude about whether acquiring firms use overvalued equity (their own stock) as the medium of payment in acquisitions, and whether the relative stock-market valuations of the acquirer and the target drive the choice between stock and cash as the method of payment? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+    "answer": "Based on the paper \"Stock Market Driven Acquisitions\" by Shleifer and Vishny (2003), the authors explicitly conclude that acquiring firms rationally use their overvalued equity as a medium of payment to cushion the long-term collapse of their shares, and that the choice between cash and stock is fundamentally driven by the relative misvaluations of the bidder and target. \n\nHere are the paper's conclusions, supported by verbatim quotations with their exact printed pages and section headings:\n\n**1. On whether acquiring firms use overvalued equity as the medium of payment:**\nThe paper concludes that managers of overvalued firms deliberately use their inflated stock to buy hard assets (other firms), thereby transferring wealth to their long-term shareholders before the market corrects the overvaluation. \n*   \"Using overvalued shares as a means of payment enhances the claim on capital of the bidding shareholders, and thereby cushions the collapse of the shares in the long run.\"\n    *   **Page:** 300\n    *   **Section:** 3. The arithmetics of returns [1]\n*   \"Stock acquisitions are used specifically by overvalued bidders who expect to see negative long-run returns on their shares, but are attempting to make these returns less negative.\"\n    *   **Pages:** 304–305\n    *   **Section:** 5.1. Implications for the cross-section of returns [2]\n*   \"For this reason as well, it might be better to use overvalued equity to buy other overvalued firms than to invest in cash.\"\n    *   **Page:** 302\n    *   **Section:** 4. Discussion [3]\n*   \"Our model takes mispricing as given. But it also points to a powerful incentive for firms to get their equity overvalued, so that they can make acquisitions with stock.\"\n    *   **Page:** 308\n    *   **Section:** 6. Conclusion [4, 5]\n\n**2. On whether relative stock-market valuations drive the choice between stock and cash:**\nThe paper concludes that the medium of payment is a direct function of relative valuation: cash is used when the target is undervalued in absolute terms, whereas stock is used when the bidder is overvalued relative to the target (even if the target is also overvalued).\n*   \"We show that the key ingredients of the answers are the relative valuations of the combining firms and the synergies that the market perceives in the merger.\"\n    *   **Page:** 296\n    *   **Section:** 1. Introduction [6]\n*   \"Both of these findings are consistent with our view that acquisitions completed with stock arise from the overvaluation of the bidder relative to the target.\"\n    *   **Page:** 304\n    *   **Section:** 5.1. Implications for the cross-section of returns [7]\n*   \"First, the model predicts that targets in cash acquisitions are undervalued in absolute terms (i.e., relative to fundamentals), but targets in stock acquisitions are undervalued relative to the bidders.\"\n    *   **Page:** 307\n    *   **Section:** 5.3. Untested predictions [8]\n*   \"To begin, we expect targets of cash acquisitions to be undervalued firms, and moreover, we predict that such acquisitions are more likely to be hostile than those for stock. We are likely to see acquisitions for stock under a combination of three circumstances. First, market valuations must be high, and there must be a supply of highly overvalued firms (bidders) as well as of relatively less overvalued ones (targets).\"\n    *   **Page:** 303\n    *   **Section:** 4. Discussion [9]",
+    "quotes": [
+      {
+        "n": 1,
+        "cited_text": "long-run returns raises a number of interesting possibilities. To begin, it may be in the long-term, but not the short-term, interest of shareholders of firm 1 to acquire firm 0. When PoS but ðS \u0004 PÞK þ ðS \u0004 Q1ÞK1o0; the shares of firm 1 drop on the announcement of the deal, but the acquisition still benefits its long-run shareholders because in the long run the shares would have fallen even more. Indeed, both short- and long-run observed returns in this range may be negative, but the acquisition still serves the interest of the long-term shareholders of the acquirer. Using overvalued shares as a means of payment enhances the claim on capital of the bidding shareholders, and thereby cushions the collapse of the shares in the long run.",
+        "start_char": 21291,
+        "end_char": 22036,
+        "chunk_id": "2832dcac-06c8-404d-804a-26acb08fe09a"
+      },
+      {
+        "n": 2,
+        "cited_text": "ARTICLE IN PRESS",
+        "start_char": 35580,
+        "end_char": 35597,
+        "chunk_id": "45feb78e-d4a3-4cd3-849c-f8ada6018ab7"
+      },
+      {
+        "n": 3,
+        "cited_text": "leads to a reduction in Q1. This signaling effect is distinct from Myers and Majluf (1984) in that the signal comes from the investment policy rather than from capital structure. The advantage of making acquisitions, aside from the positive perceived synergies, is that they contribute to the growth in earnings of the firm, and thereby help justify the high valuations. As the policies of Cisco and other technology firms illustrate, acquisitions become part of a growth strategy justifying high market multiples in a way that cash accumulation cannot. For this reason as well, it might be better to use overvalued equity to buy other overvalued firms than to invest in cash. A second important question is why would the target agree to a stock merger? In",
+        "start_char": 25916,
+        "end_char": 26673,
+        "chunk_id": "52e99582-1f50-460f-ad25-fbf09e903c08"
+      },
+      {
+        "n": 4,
+        "cited_text": "A. Shleifer, R.W. Vishny / Journal of Financial Economics 70 (2003) 295–311308",
+        "start_char": 46127,
+        "end_char": 46205,
+        "chunk_id": "e0a34274-97dd-4a5f-b0d1-4c2c8b2bb6f8"
+      },
+      {
+        "n": 5,
+        "cited_text": "firms to get their equity overvalued, so that they can make acquisitions with stock. In a more general framework, firms with overvalued equity might be able to make acquisitions, survive, and grow, while firms with undervalued, or relatively less overvalued, equity become takeover targets themselves.4 The benefit of having a high valuation for making acquisitions also points to an incentive to raise a firm’s stock price even through earnings manipulation, a phenomenon whose prevalence is becoming increasingly apparent (D’Avolio et al., 2001). This model is not intended to deny a role for real rather than just valuation",
+        "start_char": 46666,
+        "end_char": 47293,
+        "chunk_id": "0ab36ed5-d09a-4d62-ad5f-d513d9cb3702"
+      },
+      {
+        "n": 6,
+        "cited_text": "ARTICLE IN PRESS A. Shleifer, R.W. Vishny / Journal of Financial Economics 70 (2003) 295–311296",
+        "start_char": 5633,
+        "end_char": 5728,
+        "chunk_id": "b735d0ae-3fde-44c8-9b31-6c0aa061db1c"
+      },
+      {
+        "n": 7,
+        "cited_text": "acquisitions are made by overvalued acquirers of relatively less overvalued targets. Moreover, in the model, such acquisitions are likely to result in negative long-run returns, but—as long as PoS—not as negative as would have obtained without the acquisition. This prediction is consistent with Rau and Vermaelen (1998), who find that acquirers in mergers earn a statistically significant negative 4% return relative to a size and book-to-market benchmark in the three years after the merger.2 Agrawal and Jaffe (2000) list earlier papers corroborating this finding. Rau and Vermaelen also show that value bidders outperform glamour bidders in the three years after the completion of the merger, and that glamour bidders pay more frequently with stock than do value bidders. Both of these findings are consistent with our view that acquisitions completed with stock arise from the overvaluation of the bidder relative to the target. Acquisitions for stock by the glamour bidders indeed appear to be a defensive strategy we model. Interestingly, the key studies of long-run bidder returns, such as Loughran and",
+        "start_char": 33958,
+        "end_char": 35069,
+        "chunk_id": "5ae8e69b-629e-4578-b156-ff22cb4089b7"
+      },
+      {
+        "n": 8,
+        "cited_text": "5.3. Untested predictions",
+        "start_char": 44343,
+        "end_char": 44369,
+        "chunk_id": "276bfc55-c0c7-4ac6-b939-7b785417ae55"
+      },
+      {
+        "n": 9,
+        "cited_text": "ARTICLE IN PRESS A. Shleifer, R.W. Vishny / Journal of Financial Economics 70 (2003) 295–311 303",
+        "start_char": 29168,
+        "end_char": 29264,
+        "chunk_id": "030c3454-eca3-41f6-979b-a876a01216a7"
+      }
+    ],
+    "located": [
+      {
+        "quote": "Using overvalued shares as a means of payment enhances the claim on capital of the bidding shareholders, and thereby cushions the collapse of the shares in the long run.",
+        "page": "300",
+        "section": "3. The arithmetics of returns [1]"
+      },
+      {
+        "quote": "For this reason as well, it might be better to use overvalued equity to buy other overvalued firms than to invest in cash.",
+        "page": "302",
+        "section": "4. Discussion [3]"
+      },
+      {
+        "quote": "Our model takes mispricing as given. But it also points to a powerful incentive for firms to get their equity overvalued, so that they can make acquisitions with stock.",
+        "page": "308",
+        "section": "6. Conclusion [4, 5]"
+      },
+      {
+        "quote": "We show that the key ingredients of the answers are the relative valuations of the combining firms and the synergies that the market perceives in the merger.",
+        "page": "296",
+        "section": "1. Introduction [6]"
+      },
+      {
+        "quote": "Both of these findings are consistent with our view that acquisitions completed with stock arise from the overvaluation of the bidder relative to the target.",
+        "page": "304",
+        "section": "5.1. Implications for the cross-section of returns [7]"
+      },
+      {
+        "quote": "First, the model predicts that targets in cash acquisitions are undervalued in absolute terms (i.e., relative to fundamentals), but targets in stock acquisitions are undervalued relative to the bidders.",
+        "page": "307",
+        "section": "5.3. Untested predictions [8]"
+      },
+      {
+        "quote": "To begin, we expect targets of cash acquisitions to be undervalued firms, and moreover, we predict that such acquisitions are more likely to be hostile than those for stock. We are likely to see acquisitions for stock under a combination of three circumstances. First, market valuations must be high, and there must be a supply of highly overvalued firms (bidders) as well as of relatively less overvalued ones (targets).",
+        "page": "303",
+        "section": "4. Discussion [9]"
+      }
+    ],
+    "verdict": "PENDING"
+  }
+}
