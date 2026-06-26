@@ -19,15 +19,15 @@
 
 **Provenance:** `results.json` = the earlier validated results dry-run (27 rules, 32/32) — its 2-layer re-run tripped bug #3; the dry-run's panel→gate→cull principles are identical mechanics + complete.
 
-**PROCESS LESSON (load-bearing):** large inline arg pastes SILENTLY DROP findings. data/conclusion/results were truncated on first pass, then re-run with verified-complete args (one type per run). **For ANY future Phase-2 run: build args via `scratchpad/build_args.py`, paste the WHOLE file unabridged, then verify `coverage.total_findings == that type's profile[] count`.**
+**PROCESS LESSON (load-bearing):** large inline arg pastes SILENTLY DROP findings. data/conclusion/results were truncated on first pass, then re-run with verified-complete args (one type per run). **For ANY future Phase-2 run: build args via `style_profiles/_phase2_scripts/build_args.py`, paste the WHOLE file unabridged, then verify `coverage.total_findings == that type's profile[] count`.**
 
 > **PARALLEL FORK (2026-06-25):** Phase 3 runs concurrently in a separate git worktree `../F1D-phase3` (branch `phase3/propositions`) — see `_PHASE3_KICKOFF.md`. THIS session = Phase 2 ONLY. The fork edits the proposition spine and must NOT touch `style_profiles/*` or this ledger; merge its branch back when done.
 
 ### HOW TO RE-RUN A TYPE (if Sina wants one redone)
-1. **Build args** for that ONE type: `scratchpad/build_args.py` → `build(["<type>"], "<type>")` → `phase2_args_<type>.json` (reads `style_profiles/<type>_profile.json` `profile[]`).
+1. **Build args** for that ONE type: `style_profiles/_phase2_scripts/build_args.py` → `build(["<type>"], "<type>")` → `phase2_args_<type>.json` (reads `style_profiles/<type>_profile.json` `profile[]`).
 2. **Read the WHOLE file, paste it UNABRIDGED** as the Workflow `args` (do NOT pre-stringify; do NOT trim — trimming silently drops findings). One type per run keeps the paste small enough to reproduce completely.
 3. **Invoke:** `{ scriptPath: "docs/Thesis/rewrite/style_phase2_principles_master.js", args: <object> }` (Workflow tool, NOT `node`). ~4 agents (panel ×3 + redteam ×1), ~12–15 min.
-4. **On return:** `result.coverage.<type>.total_findings` MUST equal that type's `profile[]` count, else the paste dropped findings → redo. Write `result.rulebooks.<type>` (strip to the 6 fields) → `_rulebooks/<type>.json`. (See `scratchpad/finalize_rulebooks.py` for the mechanical write.)
+4. **On return:** `result.coverage.<type>.total_findings` MUST equal that type's `profile[]` count, else the paste dropped findings → redo. Write `result.rulebooks.<type>` (strip to the 6 fields) → `_rulebooks/<type>.json`. (See `style_profiles/_phase2_scripts/finalize_rulebooks.py` for the mechanical write.)
 5. ⛔ **NO external scripts to GRADE/audit the rules** (Sina, strict). The harness's OWN agents + JS gate do the checking; READ the returned object. Mechanical file writes/extraction of the result = fine; `.js` workflow harness ≠ audit script.
 
 ---
