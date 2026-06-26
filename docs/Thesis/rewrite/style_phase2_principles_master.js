@@ -1,26 +1,23 @@
 export const meta = {
   name: 'phase2-principles-harness',
-  description: 'Phase-2: turn the 157 Phase-1 style findings into a minimal, exemplar-anchored writing-principle list PER WRITING-TYPE (8 self-contained rulebooks: abstract, intro, lit_review, hypotheses, data, methods, results, conclusion). Writes NO thesis prose. The findings already live in 8 type buckets (avg ~20 each, 14-32) so 8 is the data-native grain; a Phase-4 subsection reads its type rulebook (3.2/3.3/3.4 -> results, 2.3-2.5 -> methods, ...). THREE agent layers (max): LAYER 1 = neurodiverse PANEL of 3 paraphrased EXTRACT agents per profile (different minds catch different gaps) -> deterministic JS gate (exemplar-anchor verbatim + no foreign number, scaffolding-refs exempt); LAYER 2 = cull-by-reference REDTEAM (1 independent skeptic per profile, refute-by-default + within-profile dedup); LAYER 3 = a SINGLE global FINALIZE agent that dedups same-rule twins ACROSS profiles AND tags each canonical universal-vs-type-specific in one pass. Then JS MATERIALIZE fans out to 8 rulebooks with a coverage reconcile. Profiles run in capped-concurrency batches (args.maxProfiles, default 2 -> peak ~6 agents) to respect the server rate-limit scar. Every agent TOOL_LOCK + forced StructuredOutput; checkers describe-only / by-reference; null-degrade never crashes.',
+  description: "Phase-2: turn each writing-TYPE's Phase-1 style findings into a minimal, exemplar-anchored writing-principle rulebook for THAT type. Writes NO thesis prose. TWO agent layers, run PER TYPE, fully independent (NO global / cross-type step, ever): LAYER 1 = neurodiverse PANEL of 3 paraphrased EXTRACT agents (findings -> candidate principles) -> deterministic JS gate (exemplar-anchor verbatim + no foreign number, scaffolding-refs exempt); LAYER 2 = ONE RED-TEAM agent that SCRUTINIZES (refute fabricated/absolute/unfaithful, by reference) AND SYNTHESIZES (merge near-duplicates -> the minimal final rulebook for the type). JS materialize writes each type its own rulebook. Types run in capped-concurrency batches (args.maxProfiles, default 2 -> peak ~6 agents) to respect the server rate-limit scar. Every agent TOOL_LOCK + forced StructuredOutput; the red-team is describe-only / by-reference; null-degrade never crashes. Each rulebook = ONLY its own type's findings (cross-type dedup is forbidden; a universal rule naturally recurs because each type's findings surface it).",
   phases: [
-    { title: 'Extract',  detail: 'LAYER 1: neurodiverse panel of 3 agents per profile -> candidate principles' },
-    { title: 'Cull',     detail: 'LAYER 2: redteam culls fabricated/absolute + dedups within profile, by reference' },
-    { title: 'Finalize', detail: 'LAYER 3: one agent dedups across profiles + tags universal vs type-specific (default-include)' },
+    { title: 'Extract',  detail: 'LAYER 1: neurodiverse panel of 3 agents per type -> candidate principles' },
+    { title: 'RedTeam',  detail: 'LAYER 2: one agent scrutinizes + synthesizes the minimal final rulebook, by reference' },
   ],
 }
 
 // =====================================================================================
 // args (injected by the caller; the script has NO filesystem access):
 // {
-//   profiles: [ { type, findings: [ {                         // ONLY the surviving profile[] array — NOT rejected/merged
+//   profiles: [ { type, findings: [ {                         // ONLY the surviving profile[] array
 //       id, aspect, exemplar_pattern,
 //       exemplar_quotes: [{paper, quote}],                    // the REAL published target register (the anchor)
 //       our_pattern, our_quotes: [{para_id, quote}],
-//       gap, materiality, guardrail_collision } ] } ],        // 8 profiles, 157 findings total
-//   types:    [ "abstract","intro","lit_review","hypotheses","data","methods","results","conclusion" ],  // the 8 writing-type rulebooks
-//   roster:   { "<type>": "one-line description of that writing situation" },   // context for the universal-vs-specific call
-//   convention: "short statement of the corp-fin convention (DraftTemplate gist)"
+//       gap, materiality, guardrail_collision } ] } ],
+//   maxProfiles?: 2                                           // how many TYPES run concurrently (peak ~maxProfiles*3 agents)
 // }
-// Output: { rulebooks: { <type>: [principles...] }, canonical_count, coverage:{...}, audit:{...} }
+// Output: { rulebooks: { <type>: [principles...] }, coverage: { <type>:{...} }, audit:{...} }
 // =====================================================================================
 
 // ---------- output contracts (forced via schema; no free prose) ----------
@@ -39,8 +36,8 @@ const EXTRACT_SCHEMA = {
       meaning_flag: { type: 'boolean' },                             // = the finding's guardrail_collision (near load-bearing meaning -> Phase-4 handle-with-care)
     } } } },
 }
-// by-reference checker contract (style + referee pattern): keep/merge/cull on IDs; invents nothing
-const CULL_SCHEMA = {
+// LAYER 2 red-team contract (scrutinize + synthesize, BY REFERENCE): keep/merge/cull on IDs; invents nothing.
+const REDTEAM_SCHEMA = {
   type: 'object', required: ['keep', 'merge', 'cull', 'side_notes'], additionalProperties: false,
   properties: {
     keep:  { type: 'array', items: { type: 'string' } },
@@ -48,18 +45,6 @@ const CULL_SCHEMA = {
              properties: { ids: { type: 'array', items: { type: 'string' } }, canonical: { type: 'string' } } } },
     cull:  { type: 'array', items: { type: 'object', required: ['id', 'reason'], additionalProperties: false,
              properties: { id: { type: 'string' }, reason: { type: 'string' } } } },
-    side_notes: { type: 'array', items: { type: 'string' } },
-  },
-}
-// LAYER 3 (merged judge+classify): in ONE pass dedup same-rule twins across profiles AND tag each canonical
-// universal (every type) vs specific (its source types). Every input id lands in exactly one group OR one singleton.
-const FINALIZE_SCHEMA = {
-  type: 'object', required: ['groups', 'singletons', 'side_notes'], additionalProperties: false,
-  properties: {
-    groups: { type: 'array', items: { type: 'object', required: ['member_ids', 'canonical', 'universal'], additionalProperties: false,
-              properties: { member_ids: { type: 'array', items: { type: 'string' } }, canonical: { type: 'string' }, universal: { type: 'boolean' } } } },
-    singletons: { type: 'array', items: { type: 'object', required: ['id', 'universal'], additionalProperties: false,
-              properties: { id: { type: 'string' }, universal: { type: 'boolean' } } } },   // no cross-profile twin; still tagged
     side_notes: { type: 'array', items: { type: 'string' } },
   },
 }
@@ -92,52 +77,29 @@ function extractPrompt(version, type, findings) {
   return `${TOOL_LOCK}\n\n${head}\n\n===== FINDINGS ("${type}") — these are the surviving findings; cite only these ids =====\n${JSON.stringify(findings.map(f => ({ id: f.id, aspect: f.aspect, exemplar_pattern: f.exemplar_pattern, exemplar_quotes: f.exemplar_quotes, our_pattern: f.our_pattern, our_quotes: f.our_quotes, gap: f.gap, materiality: f.materiality, guardrail_collision: f.guardrail_collision })), null, 1)}\n\n===== INSTRUCTIONS =====\n${EXTRACT_RULES}\n\nReturn principles via the structured tool. Your returned object IS the data, not a message.`
 }
 
-function cullPrompt(type, cands) {
+function redteamPrompt(type, cands) {
   return `${TOOL_LOCK}
 
-You are the REDTEAM for the "${type}" writing principles. Three extract agents produced the candidates below (IDs assigned). Every exemplar_anchor quote here has ALREADY been script-verified verbatim and every gap_fix is already free of foreign numbers — do NOT re-check those.
+You are the RED TEAM for the "${type}" writing-type. Three EXTRACT agents produced the candidate principles below (IDs assigned). Every exemplar_anchor quote is ALREADY script-verified verbatim and every gap_fix is already free of foreign numbers — do NOT re-check those.
 
-YOUR PRIMARY JOB IS TO CULL, BY REFERENCE ONLY. You do NOT write or reword any principle. You emit decisions that reference principle IDs. Refute by default: a principle survives ONLY if it passes ALL of these on judgment:
+YOUR JOB IS TWO THINGS, BY REFERENCE ONLY — you do NOT write or reword any principle; you emit decisions that reference principle IDs:
+
+(1) SCRUTINIZE — refute by default. A principle survives ONLY if it passes ALL of these on judgment:
 - (F1) NOT a fabricated absolute — it must NOT impose a target/threshold/direction the cited finding never stated ("be short", "max N words"). The legitimate target is the finding's exemplar, stated relatively.
 - (F2) NOT relative->absolute hardening — it must not turn "our prose is heavier than the exemplars" into "must be <plain absolute>".
 - FAITHFUL — gap_fix actually matches the finding's gap; exemplar_anchor is the right target for that gap.
 - DESCRIBE-only — reject any principle that rewrites our prose or claims a phrasing "means the same".
 Anything failing -> cull{id, reason}.
 
-- meaning_flag=true means the principle sits near load-bearing meaning. This is NOT a reason to cull — KEEP such principles (a human MUST see them); never silently drop them.
-- MERGE duplicates/near-duplicates across the three agents: group their IDs and name ONE canonical to keep (tiebreak: more finding_ids / better anchor). If a merge is DEBATABLE, prefer keeping them SEPARATE.
+(2) SYNTHESIZE the FINAL rulebook for this type — your kept + merged set IS the deliverable. Merge duplicates / near-duplicates across the three agents into ONE canonical (tiebreak: more finding_ids / clearer trigger / stronger anchor); if a merge is DEBATABLE, keep them SEPARATE. Aim for the MINIMAL set that still covers every distinct finding — no redundant principle within this type's rulebook.
+
+- meaning_flag=true sits near load-bearing meaning. This is NOT a reason to cull — KEEP such principles (a human MUST see them); never silently drop them.
 - keep: IDs that survive as-is.  side_notes: ONLY human-facing under-coverage flags — NEVER new principles.
 
-You invent nothing. The main loop copies kept/canonical principles verbatim.
+You invent nothing. The main loop copies kept/canonical principles VERBATIM into the "${type}" rulebook.
 
 ===== CANDIDATES =====
 ${JSON.stringify(cands.map(c => ({ id: c.id, agent: c.agent, trigger: c.trigger, gap_fix: c.gap_fix, exemplar_anchor: c.exemplar_anchor, finding_ids: c.finding_ids, meaning_flag: c.meaning_flag })), null, 1)}
-
-Return decisions via the structured tool.`
-}
-
-function finalizePrompt(all, types, roster, convention) {
-  return `${TOOL_LOCK}
-
-You are the FINALIZE editor (chief editor). Below are the surviving writing principles from the type profiles (IDs assigned; each carries its source type). Do TWO jobs in ONE pass, BY REFERENCE ONLY — you invent nothing and reword nothing:
-
-(1) DEDUP ACROSS PROFILES. Different types often produced the SAME underlying rule in different words (e.g. "split long conjoined sentences" appears under several types). Group genuine same-rule twins and name ONE canonical to keep (tiebreak: more finding_ids / clearer trigger / stronger exemplar_anchor). Merge ONLY genuine same-rule duplicates; if two principles target DIFFERENT writing devices, keep them SEPARATE even if both are "about sentences".
-
-(2) CLASSIFY each surviving canonical: UNIVERSAL (a register/structure rule every writing type should follow — sentence length, nominalization, metaphor, plain verbs) or SPECIFIC to its source type(s) (e.g. "report each coefficient's sign plainly" has no place in an abstract or a literature review). DEFAULT TO UNIVERSAL when unsure: a type ignoring an extra general rule is cheap; a type MISSING a rule it needs is the costly error. Mark universal=false ONLY when the rule clearly cannot apply outside its own content type.
-
-OUTPUT (every id below MUST appear in exactly ONE group OR ONE singleton):
-- groups: each = {member_ids:[two+ ids stating the SAME rule], canonical:<id to keep>, universal:<bool>}.
-- singletons: each = {id:<id with no cross-profile twin>, universal:<bool>}.
-- side_notes: human-facing notes only (e.g. under-coverage); NEVER new principles.
-
-===== CONVENTION =====
-${convention}
-
-===== THE WRITING TYPES =====
-${JSON.stringify(types.map(t => ({ type: t, is: roster[t] || '' })), null, 1)}
-
-===== PRINCIPLES (all profiles) =====
-${JSON.stringify(all.map(p => ({ id: p.id, type: p.type, trigger: p.trigger, gap_fix: p.gap_fix, finding_ids: p.finding_ids, meaning_flag: p.meaning_flag })), null, 1)}
 
 Return decisions via the structured tool.`
 }
@@ -168,16 +130,16 @@ function stripScaffolding(s) {
     .replace(/\bequations?[\s~]?\(?\d+\)?\b/gi, ' ')         // equation (2)
     .replace(/\bH\d+\b/gi, ' ')                              // hypothesis refs H1, H2
 }
-// digits kept (the anti-foreign-number check): every NON-scaffolding digit-run in gap_fix must appear in the finding text
-// (this catches fabricated absolute targets like "<=35 words" / "max 2 nouns" while ignoring process refs)
+// every NON-scaffolding digit-run in gap_fix must appear in the finding text (catches fabricated absolutes like "<=35 words")
 function numbersOK(gapFix, findingText) {
   const nums = (stripScaffolding(gapFix)).match(/\d+(?:\.\d+)?/g) || []
   return nums.every(d => (findingText || '').includes(d))
 }
 
 // =====================================================================================
-//  LAYER 1 + LAYER 2 — per profile: neurodiverse panel x3 EXTRACT -> deterministic JS gate -> REDTEAM cull.
-//  (profiles themselves run in capped-concurrency batches; see the workflow body.)
+//  PER TYPE — the whole pipeline for ONE writing-type, fully independent:
+//  LAYER 1 panel x3 EXTRACT -> JS gate -> LAYER 2 RED TEAM (scrutinize + synthesize) -> the type's rulebook.
+//  (types run in capped-concurrency batches; see the workflow body.)
 // =====================================================================================
 async function runProfile(P) {
   const findings = P.findings || []
@@ -188,6 +150,7 @@ async function runProfile(P) {
       ...(f.exemplar_quotes || []).map(q => q.quote), ...(f.our_quotes || []).map(q => q.quote)].join(' ')
   })
 
+  // ---- LAYER 1: neurodiverse panel x3 (parallel) ----
   const raw = await parallel([1, 2, 3].map(v => () =>
     agent(extractPrompt(v, P.type, findings), { schema: EXTRACT_SCHEMA, phase: 'Extract', label: `${P.type}/extract-${v}` })))
 
@@ -207,12 +170,12 @@ async function runProfile(P) {
   log(`[${P.type}] ${clean.length} passed gate, ${rejected.length} rejected`)
   if (clean.length === 0) return { type: P.type, principles: [], gate_rejected: rejected, culled: [], merges: [], unhandled: [], note: 'no principles survived the gate' }
 
-  // ---- cull-by-reference REDTEAM (null-degrade) ----
-  const decisions = await agent(cullPrompt(P.type, clean), { schema: CULL_SCHEMA, phase: 'Cull', label: `${P.type}/cull` })
+  // ---- LAYER 2: ONE red-team agent — scrutinize + synthesize the final rulebook (by reference, null-degrade) ----
+  const decisions = await agent(redteamPrompt(P.type, clean), { schema: REDTEAM_SCHEMA, phase: 'RedTeam', label: `${P.type}/redteam` })
   if (!decisions) {
-    log(`[${P.type}] cull redteam returned NULL -> degrading to ${clean.length} gate-clean principles (no cull/merge)`)
+    log(`[${P.type}] red-team returned NULL -> degrading to ${clean.length} gate-clean principles (no scrutiny/merge)`)
     return { type: P.type, principles: clean, gate_rejected: rejected, culled: [], merges: [], unhandled: [],
-             side_notes: ['CULL REDTEAM FAILED (null) — principles are raw gate-clean, NOT deduped/verified; re-run this profile'], note: 'cull_failed' }
+             side_notes: ['RED-TEAM FAILED (null) — principles are raw gate-clean, NOT scrutinized/synthesized; re-run this type'], note: 'redteam_failed' }
   }
   const byId = {}; clean.forEach(p => { byId[p.id] = p })
   const cullIds = new Set((decisions.cull || []).map(c => c.id))
@@ -221,98 +184,49 @@ async function runProfile(P) {
   const principles = [...keepIds].map(id => byId[id]).filter(Boolean)
   const handled = new Set([...keepIds, ...cullIds]); (decisions.merge || []).forEach(m => (m.ids || []).forEach(id => handled.add(id)))
   const unhandled = clean.map(p => p.id).filter(id => !handled.has(id))
-  log(`[${P.type}] ${principles.length} kept after cull; ${cullIds.size} culled; ${unhandled.length} unhandled`)
+  log(`[${P.type}] ${principles.length} kept after red-team; ${cullIds.size} culled; ${unhandled.length} unhandled`)
   return { type: P.type, principles, gate_rejected: rejected, culled: decisions.cull || [], merges: decisions.merge || [], unhandled, side_notes: decisions.side_notes || [] }
 }
 
 // =====================================================================================
-//  LAYER 3 — FINALIZE (ONE global agent): cross-profile dedup + universal/specific tag, by reference, null-degrade.
-//  Each canonical carries source_types (the types its members came from) and applies_to (= all types if universal).
+//  MATERIALIZE (JS) — each type gets its OWN rulebook = its kept principles. No cross-type anything.
 // =====================================================================================
-async function finalize(allClean, A) {
-  const validType = new Set(A.types)
-  const byId = {}; allClean.forEach(p => { byId[p.id] = p })
-  const srcTypes = ids => [...new Set(ids.map(id => byId[id] && byId[id].type).filter(Boolean))]
-  const scoped = [], used = new Set()
-  const pushCanon = (canonId, memberIds, universal) => {
-    if (!byId[canonId] || used.has(canonId)) return
-    const members = [...new Set((memberIds || []).filter(id => byId[id]).concat(canonId))]
-    members.forEach(id => used.add(id))
-    const st = srcTypes(members)
-    const applies = universal ? A.types.slice() : [...new Set(st.filter(t => validType.has(t)))]
-    scoped.push({ ...byId[canonId], member_ids: members,
-      finding_ids: [...new Set(members.flatMap(id => byId[id].finding_ids || []))],
-      meaning_flag: members.some(id => byId[id].meaning_flag),
-      source_types: st, universal: !!universal,
-      applies_to: applies.length ? applies : (st.length ? st : [byId[canonId].type]) })   // never empty
-  }
-
-  const decisions = await agent(finalizePrompt(allClean, A.types, A.roster || {}, A.convention || ''),
-    { schema: FINALIZE_SCHEMA, phase: 'Finalize', label: 'finalize/dedup+classify' })
-  if (!decisions) {
-    log(`[finalize] returned NULL -> degrading: every principle its own canonical, ALL universal (safe over-include)`)
-    allClean.forEach(p => pushCanon(p.id, [p.id], true))
-    return { scoped, note: 'finalize_failed', side_notes: ['FINALIZE FAILED (null) — no cross-profile dedup; every rule marked universal (over-include); re-run finalize'] }
-  }
-  ;(decisions.groups || []).forEach(g => {
-    const canonId = g.canonical && byId[g.canonical] ? g.canonical : (g.member_ids || []).find(id => byId[id])
-    if (canonId) pushCanon(canonId, g.member_ids || [], g.universal)
+function materialize(perType, A) {
+  const findingsByType = {}; (A.profiles || []).forEach(P => { findingsByType[P.type] = (P.findings || []).map(f => f.id) })
+  const books = {}, coverage = {}
+  perType.forEach(r => {
+    const t = r.type
+    books[t] = (r.principles || []).map(p => ({ principle_id: p.id, trigger: p.trigger, gap_fix: p.gap_fix, exemplar_anchor: p.exemplar_anchor, finding_ids: p.finding_ids, meaning_flag: p.meaning_flag }))
+    const all = findingsByType[t] || []
+    const covered = new Set((r.principles || []).flatMap(p => p.finding_ids || []))
+    coverage[t] = { total_findings: all.length, covered_findings: all.filter(id => covered.has(id)).length, uncovered_finding_ids: all.filter(id => !covered.has(id)), rule_count: books[t].length, note: r.note || null }
   })
-  ;(decisions.singletons || []).forEach(s => { if (s && byId[s.id]) pushCanon(s.id, [s.id], s.universal) })
-  allClean.forEach(p => { if (!used.has(p.id)) pushCanon(p.id, [p.id], false) })   // no silent drop; un-returned -> keep in its own type book
-  log(`[finalize] ${allClean.length} principles -> ${scoped.length} canonical; ${scoped.filter(p => p.universal).length} universal`)
-  return { scoped, side_notes: decisions.side_notes || [] }
-}
-
-// =====================================================================================
-//  Stage D — MATERIALIZE (JS fan-out) + COVERAGE reconcile (set ops; mechanical, paired with the agent checks above)
-// =====================================================================================
-function materialize(scoped, A) {
-  const books = {}; A.types.forEach(t => { books[t] = [] })
-  scoped.forEach(p => p.applies_to.forEach(t => {
-    if (books[t]) books[t].push({ principle_id: p.id, trigger: p.trigger, gap_fix: p.gap_fix, exemplar_anchor: p.exemplar_anchor, finding_ids: p.finding_ids, meaning_flag: p.meaning_flag, universal: p.universal })
-  }))
-  const allFindingIds = new Set((A.profiles || []).flatMap(P => (P.findings || []).map(f => f.id)))
-  const coveredFindingIds = new Set(scoped.flatMap(p => p.finding_ids || []))
-  const uncovered = [...allFindingIds].filter(id => !coveredFindingIds.has(id))
-  const typeCounts = {}; A.types.forEach(t => { typeCounts[t] = books[t].length })
-  const emptyTypes = A.types.filter(t => books[t].length === 0)
-  return { books, coverage: { total_findings: allFindingIds.size, covered_findings: coveredFindingIds.size, uncovered_finding_ids: uncovered, type_counts: typeCounts, empty_types: emptyTypes } }
+  return { books, coverage }
 }
 
 // ================================= workflow body =================================
 phase('Extract')
 // the runner may deliver args as a JSON string (observed: typeof args === 'string'); parse so the script always sees an object
 if (typeof args === 'string') { try { args = JSON.parse(args) } catch (e) { return { error: 'args string failed to JSON.parse: ' + e.message } } }
-if (!args || !Array.isArray(args.profiles) || !Array.isArray(args.types)) {
-  return { error: 'args must provide { profiles:[...8 with findings], types:[...8 type ids], roster:{}, convention:"" }' }
+if (!args || !Array.isArray(args.profiles)) {
+  return { error: 'args must provide { profiles:[{type, findings:[...]}], maxProfiles? }' }
 }
 
-// profiles run in capped-concurrency BATCHES (peak ~maxProfiles*3 agents): parallelizes the bulk of the work while
-// respecting the server rate-limit scar. maxProfiles is the safety knob (default 2 -> peak ~6; raise once a cap proves safe).
+// types are INDEPENDENT — run them in capped-concurrency batches (peak ~maxProfiles*3 agents) to respect the rate-limit scar
 const MAXP = Math.max(1, args.maxProfiles || 2)
-const perProfile = []
+const perType = []
 for (let i = 0; i < args.profiles.length; i += MAXP) {
   const batch = await parallel(args.profiles.slice(i, i + MAXP).map(P => () => runProfile(P)))
-  perProfile.push(...batch.filter(Boolean))
+  perType.push(...batch.filter(Boolean))
 }
 
-const allClean = perProfile.flatMap(r => r.principles || [])
-log(`[wave] ${allClean.length} principles survived gate+cull across ${perProfile.length} profiles (batch size ${MAXP})`)
-if (allClean.length === 0) return { error: 'no principles survived gate+cull', perProfile }
-
-phase('Finalize')
-const F = await finalize(allClean, args)
-
-const out = materialize(F.scoped, args)
-log(`[done] ${F.scoped.length} canonical principles -> ${args.types.length} type-rulebooks; ${out.coverage.uncovered_finding_ids.length} findings uncovered; ${out.coverage.empty_types.length} empty types`)
+const out = materialize(perType, args)
+log(`[done] ${perType.length} type-rulebooks -> ` + perType.map(r => `${r.type}:${(r.principles || []).length}`).join(' '))
 
 return {
   rulebooks: out.books,
-  canonical_count: F.scoped.length,
   coverage: out.coverage,
   audit: {
-    per_profile: perProfile.map(r => ({ type: r.type, kept: (r.principles || []).length, gate_rejected: r.gate_rejected || [], culled: r.culled || [], unhandled: r.unhandled || [], note: r.note, side_notes: r.side_notes || [] })),
-    finalize_side_notes: F.side_notes || [], finalize_note: F.note,
+    per_type: perType.map(r => ({ type: r.type, kept: (r.principles || []).length, gate_rejected: r.gate_rejected || [], culled: r.culled || [], unhandled: r.unhandled || [], note: r.note, side_notes: r.side_notes || [] })),
   },
 }
