@@ -1,0 +1,385 @@
+{
+  "_schema": {
+    "name": "Deterministic per-subsection paragraph + proposition verification ledger (2.4)",
+    "cloned_from": "section2.1_paragraph_ledger.json schema",
+    "gate_rule": "final_prose EMPTY + prose_status=BLOCKED until every proposition is SUPPORTED (external-NLM), confirmed-CALLBACK, verified-code (transcribed from the named source file:line), or explicitly INTERNAL/FRAMING (write-time accuracy pass).",
+    "prop_types": [
+      "verified-code (equation transcribed from bible/src file:line; primary-source, not memory)",
+      "external-NLM (deferred)",
+      "callback-verified",
+      "internal",
+      "framing-nonverifiable"
+    ],
+    "status": "RATIFIED 2026-06-13 (user ceremony). Prose BLOCKED; NEW cites (opler1999/bates2009/petersen2009/cameron2011) verify at write-time."
+  },
+  "subsection": "2.4",
+  "title": "Methodology and Empirical Design",
+  "role": "the design spine",
+  "status": "RATIFIED 2026-06-14 (user: 'consider everything ratified for now'; PROVISIONAL, from PDF -- may revisit) | prose in thesis_draft.tex (full §2, compiles clean).",
+  "created": "2026-06-13",
+  "_governing": {
+    "hard_rules": [
+      "ONE PARAGRAPH AT A TIME when verifying/writing. Do not batch.",
+      "Equations transcribed PROGRAMMATICALLY from the source code (file:line), NOT from memory.",
+      "Numbers bible-verbatim only; NLM sole authority for papers; ignore mempalace auto-recall."
+    ],
+    "coherence_rules_in_force": "RULE-COH-2 (descriptive estimand, NO identification/causal claim), RULE-COH-3 (no war-chest; cash framing mechanical). Plus the carried 2.2/2.3 seams (below).",
+    "prose_style_MANDATORY_2026_06_13": [
+      "NO em-dash ('---') or en-dash ('--') anywhere in thesis PROSE. MANDATORY (user 2026-06-13). Use commas, colons, parentheses, or restructure. Applies to ALL Section 2 prose written or rewritten from here on. (2.1 is LOCKED and still contains '---'; retrofit ONLY on user request.)",
+      "Hypothesis statements must be VISUALLY DISTINCT from the body, NOT buried inline. Each hypothesis gets its informal AND formal statement set off / labeled. Exact display format = user-chosen 2026-06-13. MANDATORY."
+    ]
+  },
+  "_plan": {
+    "section_job": "Lay out the three estimating equations + the descriptive identification logic: how each prediction hits the data and what must hold.",
+    "spine": "P1 main run-up DiD (MA1 -> H1) -> P2 event-study (MA2 -> H1b) -> P3 pooled interacted + cash-specificity Wald (MA3 -> H1a) -> P4 estimands + descriptive identifying assumptions + design->hypothesis map -> P5 homeless items (inference, contamination, functional form).",
+    "serves": "Exactly how each prediction maps to a test + the assumptions behind each estimand.",
+    "boundary": "Estimators + identification only. Variable DEFINITIONS -> 2.3/2.5/Appendix. Data/sample-build -> 3.1. No results preview.",
+    "thin_claim": "Descriptive estimand, NO identification; honest about the never-acquirer baseline, first-deal contamination, and inference choices.",
+    "equations_source": "MA1 = scripts/gen_empire_did_table.py:141 (CTRL :47). MA2 = src/f1d/econometric/empire_drop_test.py:149 (BINS :41). MA3 = src/f1d/econometric/empire_cashspec_interaction.py:90. All three share CTRL = [Leverage, lnAssets, TobinsQ, ROA, Capex, DivDummy, sCFO] (7; 'base minus Lagged_DV'). PanelOLS, two-way FE (EntityEffects=firm, TimeEffects=cal year-qtr), firm-clustered SE.",
+    "two_control_sets": "STAGE-1 (residualization, 2.3 eq-4): {UncPre, UncQue, NegCall, StockRet, MarketRet, EPSgrowth, SurpDec} + CEO FE + Year FE. STAGE-2 (these 2.4 designs): {Leverage, lnAssets, TobinsQ, ROA, Capex, DivDummy, sCFO} + firm FE + cal-year-qtr FE. DISTINCT sets -- must not be conflated.",
+    "catch3_closure": "Our eq-4 (run_h0_3_ceo_clarity_extended.py:369, CEO_Baseline) controls EXACTLY match the verified DWZ set -> it is literally eq-4 (residual = CEO_Baseline model.resid). Catch-3 CLOSED 2026-06-13.",
+    "carried_seams": [
+      "SEAM-A (sample): MA1 DROPS post-announce quarters (e>=0); MA2 KEEPS them (capped +4) for the GAP/POST bins. Different estimation samples -> state explicitly; MA1's beta is a pre-only mean shift, MA2 traces the full event path.",
+      "SEAM-B (layered time FE): stage-1 eq-4 has Year FE; stage-2 designs add cal-year-qtr FE. Different grain, two stages -> not double-absorbing; confirm intended.",
+      "SEAM-C (generated-regressand): UncRes (stage-1 residual) is the stage-2 DV -> the 2.3 P3 two-step-SE concern propagates to every 2.4 design.",
+      "SEAM-D (baselines differ): MA1/MA2 baseline = never-acquirers + own pre-quarters; MA3 baseline = never-EITHER acquirers. State the difference.",
+      "SEAM-E (notation bridge, advisor 2026-06-13): 2.2 states the hypotheses as sign restrictions on theta_e (residual-uncertainty shift vs baseline) and kappa_e (cash-ratio shift), the ESTIMANDS these designs estimate. 2.4 MUST bridge its beta notation to theta/kappa so Section 2 reads consistently: beta on PreAnnounceQtr estimates theta_-1 (MA1); beta_c - beta_s estimates theta_-1^cash - theta_-1^stock (MA3); the GAP bin estimates theta_gap (MA2); the cash-ratio column estimates kappa."
+    ]
+  },
+  "papers": {
+    "opler1999": {
+      "status": "NEW -- candidate cite (standard cash-determinants regression for the CashRatio design). Verify at write-time (NLM upload); NOT queried now."
+    },
+    "bates2009": {
+      "status": "NEW -- candidate cite (cash-holdings determinants). Verify at write-time; NOT now."
+    },
+    "petersen2009": {
+      "status": "NEW -- candidate cite (panel SE / clustering). Verify at write-time; NOT now."
+    },
+    "cameron2011": {
+      "status": "NEW -- candidate cite (two-way / multi-way clustering). Verify at write-time; NOT now."
+    }
+  },
+  "paragraphs": {
+    "P1": {
+      "order": 1,
+      "lit_body": "the main run-up DiD + the common estimand frame",
+      "intent": "Give the main estimating equation (MA1) and the common panel frame: within-firm two-way FE, firm-clustered SE, post-announce dropped, never-acquirer baseline, PreAnnounceQtr = 1[e=-1].",
+      "serves": "The template every design specializes; maps to H1 (claim C2).",
+      "boundary": "Estimator + estimand only; variable definitions -> 2.3; no results.",
+      "thin_claim": "beta is a descriptive pre-announcement (anticipation) mean shift -- no causal/identification claim (RULE-COH-2).",
+      "guardrails": [
+        "Equation transcribed from gen_empire_did_table.py:141 (CTRL :47); not memory.",
+        "SEAM-C: the DV UncRes is a generated regressand (2.3 P3) -> carry the two-step-SE caveat.",
+        "RULE-COH-2: descriptive estimand, no identification."
+      ],
+      "propositions": [
+        {
+          "prop_id": "P1.1",
+          "statement": "Main estimating equation (MA1): Y_it = beta*PreAnnounceQtr_it + gamma'X_it + alpha_i + tau_t + epsilon_it, where X = {Leverage, lnAssets, TobinsQ, ROA, Capex, DivDummy, sCFO}, alpha_i = firm FE, tau_t = calendar year-quarter FE; standard errors clustered by firm.",
+          "role_in_paragraph": "The main equation.",
+          "type": "verified-code",
+          "source": {
+            "file": "scripts/gen_empire_did_table.py",
+            "line": "141 (formula), 47 (CTRL)"
+          },
+          "verification_plan": "Transcribed from code (primary source). No NLM.",
+          "status": "PLANNED"
+        },
+        {
+          "prop_id": "P1.2",
+          "statement": "PreAnnounceQtr_it = 1[e = -1] (e = call quarter - first >=50%-cash announcement quarter). Post-announcement quarters (e >= 0) are dropped from the sample; never-acquirers (e undefined) serve as the fixed-effects baseline.",
+          "role_in_paragraph": "Treatment + sample definition.",
+          "type": "verified-code",
+          "source": {
+            "file": "scripts/gen_empire_did_table.py",
+            "line": "48, 126-127"
+          },
+          "verification_plan": "Transcribed from code. No NLM.",
+          "status": "PLANNED"
+        },
+        {
+          "prop_id": "P1.3",
+          "statement": "beta is the estimand: a within-firm pre-announcement (anticipation) shift in outcome Y, identified off the treated firm's pre-announcement quarter relative to its own earlier normal quarters; never-acquirers primarily anchor the calendar-time (year-quarter) effects rather than serving as the within-firm contrast. A descriptive contrast, not a causal effect. (Matches 2.2 H1's 'own other quarters' framing.)",
+          "role_in_paragraph": "The estimand + register.",
+          "type": "framing-nonverifiable",
+          "relation_to_2_1": "CALLBACK",
+          "anchor_2_1": [
+            "P7"
+          ],
+          "verification_plan": "Framing; RULE-COH-2 (callback P7 register); aligned to 2.2 P2.1 within-firm wording. Write-time pass.",
+          "status": "PLANNED"
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "Each hypothesis of Section~2.2 maps to an estimating equation, and all three share a common panel frame: a within-firm, two-way fixed-effects regression of an outcome on event-time treatment indicators, estimated on quarterly firm observations with standard errors clustered by firm. The main design tests H1. Writing $Y_{it}$ for the outcome of firm $i$ in quarter $t$,\n\\begin{equation}\nY_{it} = \\beta\\,\\mathrm{PreAnnounceQtr}_{it} + \\gamma' X_{it} + \\phi_i + \\tau_t + \\varepsilon_{it},\n\\end{equation}\nwhere $X_{it}$ is a vector of firm controls (leverage, log assets, Tobin's $Q$, return on assets, capital expenditure, a dividend indicator, and cash-flow volatility), $\\phi_i$ is a firm fixed effect, and $\\tau_t$ is a calendar year-quarter fixed effect. The treatment $\\mathrm{PreAnnounceQtr}_{it}=\\mathbf{1}[e=-1]$ marks the call in the quarter before the firm's first cash acquisition; post-announcement quarters ($e\\ge 0$) are dropped, so the design reads the run-up and not the aftermath, while firms with no cash acquisition, for which $e$ is undefined, anchor the calendar-time effects. The coefficient $\\beta$ is the estimand: it estimates the pre-announcement shift $\\theta_{-1}$ of Section~2.2, a within-firm contrast between a treated firm's pre-announcement quarter and its own ordinary quarters. We read it descriptively, as an anticipation contrast, and make no causal or parallel-trends claim.",
+      "prose_status": "RATIFIED 2026-06-14 (user: 'consider everything ratified for now'; PROVISIONAL, from PDF -- may revisit)"
+    },
+    "P2": {
+      "order": 2,
+      "lit_body": "the event-study (4 event-time bins) -> H1b",
+      "intent": "Give the event-study spec (MA2): replace the single indicator with four event-time bins; the GAP bin is the MNPI discriminator; PRE2 is the pre-trend validity device.",
+      "serves": "Maps to H1b (claim C1, strongest result); the GAP-vs-completion contrast.",
+      "boundary": "Estimator only; no results.",
+      "thin_claim": "The round-trip is the contrast; do NOT over-read the negative POST.",
+      "guardrails": [
+        "Equation transcribed from empire_drop_test.py:149 (BINS :41); not memory.",
+        "GAP discriminator (matches 2.2 P4): uncertainty ~0 at GAP (announced, NOT closed) while cash persists -> the MNPI fingerprint; do not flatten GAP+POST.",
+        "SEAM-A: MA2 KEEPS post-announce (capped +4) whereas MA1 drops it -> different sample."
+      ],
+      "propositions": [
+        {
+          "prop_id": "P2.1",
+          "statement": "Event-study (MA2): Y_it = sum_b beta_b * Bin_b,it + gamma'X_it + alpha_i + tau_t + epsilon_it, with bins PRE2 (e=-2), PRE1 (e=-1), GAP (e>=0 announced & not yet closed), POST (e>=0 & completed); baseline (omitted) = e<=-3 and never-acquirers. Post-window capped at +4 quarters; truncated at a firm's second announcement; withdrawn-deal post rows dropped.",
+          "role_in_paragraph": "The event-study equation + bins.",
+          "type": "verified-code",
+          "source": {
+            "file": "src/f1d/econometric/empire_drop_test.py",
+            "line": "149 (formula), 41/137-141 (bins), 42/127-133 (window)"
+          },
+          "verification_plan": "Transcribed from code. No NLM.",
+          "status": "PLANNED"
+        },
+        {
+          "prop_id": "P2.2",
+          "statement": "The discriminating contrast is the Wald test on beta(PRE1) - beta(GAP): if uncertainty drops at the GAP (announced, not yet completed), the gag-lift-at-announcement reading is supported over outcome-resolution-at-completion. PRE2 is the pre-trend validity check (expected ~0).",
+          "role_in_paragraph": "The identifying contrast + validity device.",
+          "type": "verified-code",
+          "source": {
+            "file": "src/f1d/econometric/empire_drop_test.py",
+            "line": "159-168 (Wald), 13-20 (discriminator)"
+          },
+          "verification_plan": "Transcribed from code. Framing of the contrast = write-time. No NLM.",
+          "status": "PLANNED"
+        },
+        {
+          "prop_id": "P2.3",
+          "statement": "The event study is run for cash acquirers and, as a placebo, for stock acquirers; all bin coefficients and Wald drops are reported two-tailed.",
+          "role_in_paragraph": "Cash arm + stock placebo + inference convention.",
+          "type": "verified-code",
+          "source": {
+            "file": "src/f1d/econometric/empire_drop_test.py",
+            "line": "248 (arms), 191-192/238 (two-tailed)"
+          },
+          "verification_plan": "Transcribed from code. No NLM.",
+          "status": "PLANNED"
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "H1b requires tracing the outcome across event time rather than at a single point, so the main design generalizes to an event study that replaces the single indicator with a set of event-time bins:\n\\begin{equation}\nY_{it} = \\sum_{b}\\beta_b\\,\\mathrm{Bin}_{b,it} + \\gamma' X_{it} + \\phi_i + \\tau_t + \\varepsilon_{it},\n\\end{equation}\nwith four bins: $\\mathrm{PRE2}$ ($e=-2$), $\\mathrm{PRE1}$ ($e=-1$), $\\mathrm{GAP}$ (announced but not yet completed), and $\\mathrm{POST}$ (completed). The omitted baseline is the set of quarters at $e\\le -3$ together with never-acquirers; the post-announcement window is capped at four quarters and truncated at a firm's next announcement. The discriminating window is the gap. If residual uncertainty has resolved by announcement, its coefficient should fall to zero at $\\mathrm{GAP}$, when the deal is public but the cash has not yet left, so a Wald test of $\\beta_{\\mathrm{PRE1}}-\\beta_{\\mathrm{GAP}}>0$ carries the empirical content of H1b; the same specification, estimated for the cash ratio in place of uncertainty, traces the persistence of the cash on the other clock, a persistence that is largely mechanical, since the cash is paid only at completion and so sits on the books through the gap. $\\mathrm{PRE2}$ is a pre-trend check, expected to be near zero. The bins are estimated for cash acquirers and, as a placebo, for stock acquirers, and every coefficient and Wald contrast is reported two-tailed.",
+      "prose_status": "RATIFIED 2026-06-14 (user: 'consider everything ratified for now'; PROVISIONAL, from PDF -- may revisit)"
+    },
+    "P3": {
+      "order": 3,
+      "lit_body": "the pooled interacted spec + formal cash-specificity -> H1a",
+      "intent": "Give the pooled interacted spec (MA3): both treatments in one model, with the formal cash-minus-stock Wald test.",
+      "serves": "Maps to H1a (claim C6, the formal cash-specificity test).",
+      "boundary": "Estimator only; the EFFECT/CAUSE separation framing lives with the result, not here.",
+      "thin_claim": "The Wald difference IS the formal test (avoids the Gelman-Stern 'sig vs n.s.' fallacy); supportive-not-definitive (imprecise stock arm).",
+      "guardrails": [
+        "Equation transcribed from empire_cashspec_interaction.py:90; not memory.",
+        "SEAM-D: baseline here = never-EITHER acquirers (differs from MA1/MA2).",
+        "EFFECT-not-CAUSE (matches 2.2 P3): the cash-build-up CAUSE leg is NOT cash-specific (C6); claim only the EFFECT."
+      ],
+      "propositions": [
+        {
+          "prop_id": "P3.1",
+          "statement": "Pooled interacted spec (MA3): Y_it = beta_c*PreAnn_cash_it + beta_s*PreAnn_stock_it + gamma'X_it + alpha_i + tau_t + epsilon_it, where PreAnn_cash = 1[cq = dq_cash - 1], PreAnn_stock = 1[cq = dq_stock - 1]; the sample keeps only quarters before a firm's first deal of EITHER type plus never-either firms (never-either = FE baseline).",
+          "role_in_paragraph": "The pooled equation.",
+          "type": "verified-code",
+          "source": {
+            "file": "src/f1d/econometric/empire_cashspec_interaction.py",
+            "line": "90 (formula), 63-75 (sample/indicators)"
+          },
+          "verification_plan": "Transcribed from code. No NLM.",
+          "status": "PLANNED"
+        },
+        {
+          "prop_id": "P3.2",
+          "statement": "Formal cash-specificity is the Wald test on (beta_c - beta_s) > 0 -- a single linear-restriction test, not a comparison of one significant and one non-significant coefficient.",
+          "role_in_paragraph": "The formal test (anti-Gelman-Stern).",
+          "type": "verified-code",
+          "source": {
+            "file": "src/f1d/econometric/empire_cashspec_interaction.py",
+            "line": "100-106 (Wald)"
+          },
+          "verification_plan": "Transcribed from code. No NLM.",
+          "status": "PLANNED"
+        },
+        {
+          "prop_id": "P3.3",
+          "statement": "For the CashRatio (cause) outcome the spec adds CashRatio's own one-quarter within-firm lag (partial-adjustment, consecutive quarters only) so the pre-announce coefficient tracks the CHANGE in cash; the residual UncResCEO outcome takes NO lagged DV.",
+          "role_in_paragraph": "Functional-form note for the cause column.",
+          "type": "verified-code",
+          "source": {
+            "file": "src/f1d/econometric/empire_cashspec_interaction.py",
+            "line": "78-91, 210-217"
+          },
+          "verification_plan": "Transcribed from code. No NLM.",
+          "status": "PLANNED"
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "H1a is a claim about the difference between cash and stock acquirers, so it is tested in a single pooled specification carrying both treatments at once:\n\\begin{equation}\nY_{it} = \\beta_c\\,\\mathrm{PreAnnCash}_{it} + \\beta_s\\,\\mathrm{PreAnnStock}_{it} + \\gamma' X_{it} + \\phi_i + \\tau_t + \\varepsilon_{it},\n\\end{equation}\nwhere $\\mathrm{PreAnnCash}_{it}$ and $\\mathrm{PreAnnStock}_{it}$ mark the quarter before a firm's first cash and first stock acquisition. The sample keeps only the quarters before a firm's first deal of either type, plus firms that make neither, which form the fixed-effects baseline. The formal cash-specificity test is the single linear restriction $\\beta_c-\\beta_s>0$, evaluated by a Wald test; this difference, and not a comparison of one significant coefficient against one insignificant one, is what estimates $\\theta_{-1}^{\\,\\mathrm{cash}}-\\theta_{-1}^{\\,\\mathrm{stock}}$ in H1a. When the outcome is the cash ratio rather than residual uncertainty, the specification adds the cash ratio's own one-quarter lag, so the pre-announcement coefficient tracks the change in cash rather than its level; the residual outcome takes no such lag.",
+      "prose_status": "RATIFIED 2026-06-14 (user: 'consider everything ratified for now'; PROVISIONAL, from PDF -- may revisit)"
+    },
+    "P4": {
+      "order": 4,
+      "lit_body": "estimands + descriptive identifying assumptions + design->hypothesis map",
+      "intent": "State the descriptive identifying assumptions common to the three designs and map each design to its hypothesis.",
+      "serves": "Makes the 'what must hold' explicit while staying descriptive (no identification claim).",
+      "boundary": "Identification logic only.",
+      "thin_claim": "Within-firm anticipation contrast; NO parallel-trends causal claim; PRE2 as the validity device, not a DiD identification proof.",
+      "guardrails": [
+        "RULE-COH-2: NO parallel-trends/causal claim -- the estimand is descriptive.",
+        "SEAM-A/B/D must be stated: sample differences (drop vs keep post), layered time FE (year vs cal-year-qtr), baseline differences (never-acquirer vs never-either).",
+        "design->hypothesis: MA1->H1, MA2->H1b, MA3->H1a (advisor-confirmed 1:1)."
+      ],
+      "propositions": [
+        {
+          "prop_id": "P4.1",
+          "statement": "Common identifying assumptions, stated descriptively: identification is within-firm (firm FE) and within calendar-time (year-quarter FE); the estimand is the pre-announcement mean shift relative to the firm's own normal quarters and to non-acquirers; PRE2 (the pre-trend bin) is the validity device; no parallel-trends or causal claim is made.",
+          "role_in_paragraph": "The descriptive identification statement.",
+          "type": "framing-nonverifiable",
+          "relation_to_2_1": "CALLBACK",
+          "anchor_2_1": [
+            "P7"
+          ],
+          "verification_plan": "Framing; RULE-COH-2. Write-time pass.",
+          "status": "PLANNED"
+        },
+        {
+          "prop_id": "P4.2",
+          "statement": "Design-to-hypothesis map: MA1 (single pre-announce indicator) tests H1; MA2 (event-study bins) tests H1b; MA3 (pooled cash/stock interaction + Wald) tests H1a.",
+          "role_in_paragraph": "The mapping.",
+          "type": "internal",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": [],
+          "verification_plan": "Internal mapping (advisor-confirmed). No NLM.",
+          "status": "PLANNED"
+        },
+        {
+          "prop_id": "P4.3",
+          "statement": "Two distinct control sets operate: the stage-1 residualization controls (eq-4: linguistic + performance, with CEO and year FE) and the stage-2 design controls (firm financials, with firm and year-quarter FE). The outcome UncResCEO is already net of the stage-1 set; the stage-2 designs add the firm-financial controls and finer time FE.",
+          "role_in_paragraph": "Distinguishes the two control sets (SEAM-B); pre-empts double-counting confusion.",
+          "type": "internal",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": [],
+          "source": {
+            "note": "stage-1 = run_h0_3_ceo_clarity_extended.py:369 (CEO_Baseline); stage-2 = the three design files."
+          },
+          "verification_plan": "Both control sets transcribed from code. Framing of the two-stage layering = write-time. No NLM.",
+          "status": "PLANNED"
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "The identifying assumptions are descriptive and common to the three designs. Identification is within firm, through the firm fixed effects, and within calendar time, through the year-quarter fixed effects; the estimand in each case is a within-firm pre-announcement mean shift, measured against a treated firm's own ordinary quarters; firms that never acquire anchor the calendar-time effects rather than the within-firm contrast itself. The $\\mathrm{PRE2}$ bin is a validity device rather than an identification proof: a pre-trend near zero is consistent with the reading, but we claim no parallel-trends result and no causal effect. The mapping from design to hypothesis is one to one: the single-indicator regression tests H1, the event study tests H1b, and the pooled interacted regression tests H1a. The control pool itself differs across designs: in the single-indicator and event-study regressions a firm remains in the baseline until its first cash acquisition, so stock-only acquirers sit among the controls, whereas the pooled regression restricts the baseline to firms that make neither a cash nor a stock acquisition. Two distinct control layers operate and should not be conflated. The residual outcome is already net of a first set of controls, the linguistic and performance variables of the decomposition in Section~2.3, estimated with CEO and year fixed effects; the designs here add a second set, the firm-financial controls $X_{it}$, with firm and finer year-quarter fixed effects. The two layers serve different purposes and are estimated at different stages.",
+      "prose_status": "RATIFIED 2026-06-14 (user: 'consider everything ratified for now'; PROVISIONAL, from PDF -- may revisit)"
+    },
+    "P5": {
+      "order": 5,
+      "lit_body": "homeless items: inference, contamination, functional form",
+      "intent": "Disclose/justify/flag the inference and design threats that don't belong to a single equation.",
+      "serves": "Referee-proofs the design spine; routes rerun-class risks to the user.",
+      "boundary": "Inference + design threats only.",
+      "thin_claim": "Disclose honestly; rerun-class items flagged, not silently resolved.",
+      "guardrails": [
+        "Cross-cutting risks R1 (one-tailed), R2 (clustering) from claim_findings_ledger -- numbers/labels bible-verbatim.",
+        "SEAM-C: generated-regressand (2.3 P3) -> two-step-SE concern across all designs.",
+        "NEW cites (petersen2009, cameron2011, opler1999, bates2009) = verify at write-time, NOT now."
+      ],
+      "propositions": [
+        {
+          "prop_id": "P5.1",
+          "statement": "Inference choices to disclose: standard errors are firm-clustered in MA1-MA3 (some validity tables use two-way firm x calendar-quarter); focal treatment tests are reported one-tailed in places and should be moved to two-tailed for honesty (the load-bearing results survive two-tailed: C1/C6 already two-tailed, C2 run-up survives at p=.0074).",
+          "role_in_paragraph": "Inference disclosure (R1, R2).",
+          "type": "internal",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": [],
+          "source": {
+            "key": "claim_findings_ledger",
+            "ref": "R1 one-tailed, R2 clustering (bible-verbatim)"
+          },
+          "verification_plan": "Numbers bible-verbatim. Clustering-methodology cites (petersen2009/cameron2011) deferred to write-time. Note the clustering LEVEL also shifts across stages: stage-1 eq-4 clusters on CEO, stage-2 designs cluster on firm.",
+          "status": "PLANNED"
+        },
+        {
+          "prop_id": "P5.2",
+          "statement": "Contamination/endogeneity to disclose: deal timing is endogenous; only the FIRST deal sets the event clock, so later deals can pollute the baseline -- mitigated by truncating each firm's post-window at its second announcement, but the never-acquirer baseline and first-deal focus remain assumptions, not identification.",
+          "role_in_paragraph": "Contamination disclosure.",
+          "type": "internal",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": [],
+          "source": {
+            "note": "truncation logic: empire_drop_test.py:118-133; gen_empire_did_table.py:119-128"
+          },
+          "verification_plan": "Transcribed from code + honest framing. No NLM.",
+          "status": "PLANNED"
+        },
+        {
+          "prop_id": "P5.3",
+          "statement": "Functional-form choices to disclose: outcomes are levels/word-shares (not counts); the CashRatio cause regressions use a partial-adjustment lag (cash is sticky, rho ~0.78) while residual outcomes do not; the generated-regressand status of UncResCEO (2.3) implies the two-step-SE caveat applies to every design here.",
+          "role_in_paragraph": "Functional form + generated-regressand cross-link (SEAM-C).",
+          "type": "internal",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": [],
+          "verification_plan": "Transcribed from code; cross-link to 2.3 P3. rho~0.78 bible-verbatim/code. No NLM.",
+          "status": "PLANNED"
+        },
+        {
+          "prop_id": "P5.4",
+          "statement": "The firm-financial design controls (Leverage, lnAssets, TobinsQ, ROA, Capex, DivDummy, sCFO) follow the standard cash-determinants regression; the cash-equation specification is grounded in that literature, framed mechanically (cash as a by-product of retained free cash flow), NOT as purposive war-chest saving.",
+          "role_in_paragraph": "Grounds the cash-design controls; RULE-COH-3 guard.",
+          "type": "external-NLM",
+          "relation_to_2_1": "CALLBACK",
+          "anchor_2_1": [
+            "P5"
+          ],
+          "source": {
+            "key": "opler1999 / bates2009",
+            "status": "NEW -- verify at write-time, not now"
+          },
+          "verification_plan": "opler1999/bates2009 = NEW cites, VERIFY at write-time (NLM upload). RULE-COH-3 (no war-chest) = callback P5.",
+          "status": "PLANNED"
+        },
+        {
+          "prop_id": "P5.5",
+          "statement": "Sample-selection disclosure: the residual outcome UncResCEO exists only for CEOs with >=5 conference calls in the Main (non-financial, non-utility) industry sample -- the universe in which the stage-1 eq-4 residual is estimated. Because every design drops observations lacking the DV, all focal H1/H1b/H1a uncertainty regressions run on this >=5-call, Main-industry subsample (which skews to larger, more-covered firms); the CashRatio outcomes use the full panel. Disclose this as a selection threat to external validity.",
+          "role_in_paragraph": "Selection disclosure (advisor catch A; claim C2 risk).",
+          "type": "internal",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": [],
+          "source": {
+            "note": "stage-1 universe: run_h0_3_ceo_clarity_extended.py:140 (MIN_CALLS=5), 326-329, 687 (Main); merge how='left' + dropna on DV: gen_empire_did_table.py:66-70,138. claim_findings_ledger C2 risk."
+          },
+          "verification_plan": "Selection THREAT homed here (2.4 P5); the construction MECHANIC stays in 3.1. Bible/code-grounded. No NLM.",
+          "status": "PLANNED"
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "Several choices that do not belong to a single equation are recorded here. On inference, standard errors are clustered by firm throughout, while some validity tables cluster two ways, by firm and by calendar quarter; focal treatment tests are reported two-tailed. On contamination, deal timing is endogenous, and because only a firm's first deal sets the event clock, later deals can pollute the baseline; we mitigate this by truncating each firm's post-window at its second announcement, but the never-acquirer baseline and the first-deal focus remain assumptions, not identification. On functional form, the outcomes are levels or word shares rather than counts, and the cash-ratio regressions carry a partial-adjustment lag because cash is sticky whereas the residual regressions do not. Because that lagged dependent variable is estimated with firm fixed effects, the cash design is a dynamic panel and is subject to the Nickell bias; we therefore re-estimate the cash result without the dynamic term in Section~4.4, where the timing pattern is preserved. Because the residual is a generated regressand from Section~2.3, the two-step standard-error caveat carries over to every design here. On selection, the residual outcome exists only for CEOs with at least five calls, in the non-financial, non-utility sample where the decomposition is run, so the uncertainty regressions describe a larger, more-covered set of firms than the cash-ratio regressions, a limit on external validity we disclose. On interpretation, the event clock is anchored to the public announcement rather than to a deal's initiation, so reading the pre-announcement quarter as a window in which material information is already being withheld is an interpretive assumption; we observe when a deal is announced, not when it began or became material. The firm-financial controls follow the standard cash-determinants regression, read mechanically, with cash treated as a by-product of retained free cash flow rather than a war chest built for a deal.",
+      "prose_status": "RATIFIED 2026-06-14 (user: 'consider everything ratified for now'; PROVISIONAL, from PDF -- may revisit)"
+    }
+  },
+  "next_action": "[2026-06-14 CURRENT -- read FIRST; everything below is SUPERSEDED history] 2.4 prose RATIFIED (provisional, user 'consider everything ratified for now') + in thesis_draft.tex; 3 estimating eqs; never-acquirer FE-anchor; dash-free; tables wired. || [CURRENT 2026-06-13 -- read FIRST; everything after '||' is SUPERSEDED historical log] 2.4 RATIFIED; prose pending its turn. The 'hand to user for ratification' step below is DONE/superseded || 2.4 ADVISOR-CLEAN (2026-06-13): seam cross-checks 2-5 clean (equations->file:line, design->hypothesis map, GAP, generated-regressand, two-control-sets, Catch-3). Resolved: A) added P5.5 selection disclosure (>=5-call Main-industry subsample, claim C2 risk -- homed in 2.4 P5, mechanic stays 3.1); B) tightened P1.3 to within-firm (never-acquirers anchor TIME effects, matches 2.2 H1); + noted stage-1 CEO vs stage-2 firm clustering level. FLAGS TO CARRY INTO 2.5: (1) validity papers (hassan2020, baker2016, davis2016, hoberg2010/2016) were DATA-SOURCED in the original draft -- NOT necessarily NLM-verified; if 2.5 ENGAGES them as claims, flag for write-time NLM verification (like pagan/opler), do not assume 'in bib = verified'; (2) keep C5 'consistent with' + C4 'doesn't account for THIS run-up' hedges VERBATIM; (3) GOOD: CashScrutiny = volume confirmed in code (gen_empire_did_table.py:73, stock_score*100 = % analyst Q&A turns on cash) -> RULE-COH-8 premise grounded. 2.5 is the LAST subsection -> after it, STOP + hand to user for ratification (do NOT drift into NLM/prose). Original seam plan: (vs 2.2) design->hypothesis map + GAP discriminator + PreAnnounceQtr/PreAnn_cash consistency; (vs 2.3) generated-regressand propagation + the two-control-set distinction + Catch-3 closure; (vs claims ledger) R1/R2 + C1/C2/C6 framed correctly; (vs code) every equation traces to file:line. Then resolve + move to 2.5 (the LAST subsection). NLM verification of new cites gated behind ratification."
+}
