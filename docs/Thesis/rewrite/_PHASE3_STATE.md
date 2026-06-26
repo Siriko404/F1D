@@ -1,6 +1,20 @@
 # PHASE 3 — DURABLE STATE (resume truth for the fork)   2026-06-25
 
-> **Read THIS to resume Phase 3.** Self-contained. Companion: `style_profiles/_PHASE3_KICKOFF.md` (scope + isolation rules).
+> **Read THIS to resume Phase 3.** Self-contained. Companion: `style_profiles/_PHASE3_KICKOFF.md` (scope + isolation rules); decision doc: `_PHASE3_CONCLUSION.md`.
+
+## ✅ VERIFY FIRST (new session — do this BEFORE acting; all memory is UNVERIFIED)
+Phase 3 is **LOCKED**: why-cash answered by the **masking framework** (stock manages tone to protect its currency → cash is the *unmanaged* read). Confirm it is real, not hallucinated:
+1. **Git chain** — `git -C <F1D-phase3> log --oneline -7` must show `319c27ba` (placebo-flag) → `cac03d5d` (advisor addendum) → `2a83c026` (**LOCK**) → `dcdc5a47` → `d2ad1468` → `cda638fe`, branch `phase3/propositions`.
+2. **Decision** — read `_PHASE3_CONCLUSION.md` in full (framework + evidence + tweak-map + ADVISOR ADDENDUM).
+3. **Re-confirm key numbers vs primary source:**
+   - cash run-up **+0.0461\*\*\*** / stock −0.0429 n.s. → `claim_findings_ledger.json` C2; re-runnable `tmp/test_masking_continuous.py` (run from **F1D**).
+   - cash-specificity Wald **0.0983\*\*** (p=.039) → `claim_findings_ledger.json` C6.
+   - keystone NULL: stock UncPreCEO **+0.031 n.s.** (scripted tone NOT managed down) → `tmp/test_masking_continuous.py`.
+   - thewissen **+15.32% tone, year before, stock-for-stock** → `archive/old_ars_2026-06-08/ars_artifacts/litcheck/thewissen_fulltext.txt`; §2.1 P6 prose.
+   - residual **unpriced** → `section4.2_paragraph_ledger.json` / `tmp/nlm_dwz_reactions.json`.
+4. **placebo** — supervisor-flagged, arbitrary, **unsupported**; **716 hits / 68 files** (`grep -ri placebo docs/Thesis`). MUST change → *comparison/benchmark*. Do **NOT** use "contaminated ⇒ lower bound" (re-introduces a deleted overclaim).
+5. **Honesty floor** — our data show **cash rises, stock flat**; masking = **MOTIVATION**, not a tested mechanism; `mechanism-open` + `concentration-not-strict-specificity` STAY.
+Verified → proceed to the Phase-4 tweaks (tweak-map in the conclusion), ratified per section.
 
 ## Session identity
 - This = the **Phase-3 fork**. Worktree `…/F1D-phase3`, branch `phase3/propositions`.
