@@ -5,6 +5,8 @@ Hard-won from the Phase-1 + Phase-2(v2) style-analysis harnesses. **Read this in
 Reference implementation (proven, copy it): `docs/Thesis/rewrite/style_phase2_v2_principles.js`
 Build/embed/finalize: `docs/Thesis/rewrite/_phase2_v2/{build_v2.py, prep_all.py, finalize_v2.py}`
 
+> **SCOPE — which lessons transfer.** §1–5 are specific to the *extraction* pattern (panel → gate → red-team, evidence-anchored). If the next harness is a **different shape** (e.g. generation / rewrite / multi-stage pipeline), re-judge §1–5 rather than copy them. **§6 (Workflow-tool gotchas), §7 (input integrity + validate-one-before-all), §8 (process), §9 (collaboration) are UNIVERSAL — they apply to any Workflow harness.**
+
 ---
 
 ## 1. THE PROVEN SHAPE — copy this skeleton

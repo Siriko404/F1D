@@ -1,13 +1,19 @@
 # THESIS REWRITE — MASTER LEDGER (durable, 100% compaction-safe)   2026-06-25
 
-> **SINGLE SOURCE OF RESUME TRUTH.** Read THIS file to resume — nothing else required.
+> **⛔ SUPERSEDED (2026-06-26) — DO NOT RESUME FROM THIS FILE.** Phase-2 **v1** (this ledger; 140 principles in `_rulebooks/`) was **distrusted by the user and redone from scratch**. The current resume truth is **`docs/Thesis/rewrite/_phase2_v2/_RESUME_AFTER_COMPACTION.md`** (+ `_phase2_v2/HARNESS_DESIGN_LESSONS.md`). Read THAT. This ledger is kept for history only.
 > The old `_PHASE2_PROGRESS.md` / `_PHASE2_PLAN.md` / `_PHASE2_HARNESS_DESIGN.md` are **ARCHIVED + SUPERSEDED** in `_OLD_APPROACH_SUPERSEDED/`. They describe the abandoned "Phase 2 = rewrite now" approach. **Do NOT follow them.** Kept only for history (git-recoverable anyway).
 > **Branch:** `debug/campello-did-supervisor-interrogation` (commit rewrite work here, NOT master).
 
 ---
 
-## CURRENT POSITION
-**Phase 2 — ✅ DONE. All 8 type-rulebooks built: 140 principles, 100% finding coverage.** Output in `style_profiles/_rulebooks/<type>.json` — abstract 14 · intro 14 · hypotheses 18 · lit_review 18 · methods 15 · data 19 · conclusion 15 · results 27. Harness `docs/Thesis/rewrite/style_phase2_principles_master.js` (`node --check` PASS). **Next: Sina reviews the 8 rulebooks → Phase 3.**
+## CURRENT POSITION — ⛔ SUPERSEDED BY v2
+**Phase-2 v1 (140 principles, `style_profiles/_rulebooks/`) is SUPERSEDED and DISTRUSTED.** The user did not trust the v1 approach (turning Phase-1 *findings* into rules) and had it **redone from the source corp-fin papers**. 
+**CURRENT = Phase-2 v2: 62 principles in `docs/papers/style_exemplars/_rulebooks_v2/`.** Single resume truth: **`docs/Thesis/rewrite/_phase2_v2/_RESUME_AFTER_COMPACTION.md`**; lessons: `_phase2_v2/HARNESS_DESIGN_LESSONS.md`. **Do NOT use `_rulebooks/` (v1).**
+
+<details><summary>(historical) v1 position — superseded</summary>
+
+Phase 2 v1 — all 8 type-rulebooks built: 140 principles, 100% finding coverage. Output in `style_profiles/_rulebooks/<type>.json` — abstract 14 · intro 14 · hypotheses 18 · lit_review 18 · methods 15 · data 19 · conclusion 15 · results 27. Harness `docs/Thesis/rewrite/style_phase2_principles_master.js`.
+</details>
 
 **FINAL harness = 2 agent-layers PER TYPE, fully independent (NO global / cross-type step — Sina's locked spec):**
 - **L1** neurodiverse PANEL ×3 EXTRACT → deterministic JS gate (exemplar-anchor verbatim + no foreign number; scaffolding-refs Phase-N/Section/Table/H1 exempt).
