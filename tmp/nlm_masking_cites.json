@@ -106,7 +106,8 @@
         "section": "4. Discussion [9]"
       }
     ],
-    "verdict": "PENDING"
+    "verdict": "SUPPORTED",
+    "verdict_note": "SUPPORTED -- MOTIVE leg. Verbatim cited_text: n1 'Using overvalued shares as a means of payment ... cushions the collapse of the shares in the long run' (p.300 sec.3); n3 'it might be better to use overvalued equity to buy other overvalued firms than to invest in cash' (p.302 sec.4 Discussion); n5 'a powerful incentive for firms to get their equity overvalued, so that they can make acquisitions with stock ... an incentive to raise a firm's stock price even through earnings manipulation' (p.308 sec.6 Conclusion); n7 'acquisitions completed with stock arise from the overvaluation of the bidder relative to the target' (p.304 sec.5.1). DRAFTING CAVEAT (guide sec.15): cite the currency/misvaluation MOTIVE only -- equity is the acquisition currency, so an overvalued bidder has an incentive to keep its price high to pay with stock; do NOT import the full merger-wave model. Valuation/earnings axis, NOT disclosure tone."
   },
   "louis2004": {
     "id": "8ed79bba-379c-457f-a87d-e34ca0c27099",
@@ -181,6 +182,7 @@
         "section": "4.3. Earnings management prior to merger announcements"
       }
     ],
-    "verdict": "PENDING"
+    "verdict": "SUPPORTED",
+    "verdict_note": "SUPPORTED -- BEHAVIOR+TIMING leg. Verbatim cited_text: n4 'acquiring firms overstate their earnings reports in the quarter preceding a stock swap announcement' (p.121-122 sec.1 Introduction); n6 'For the stock-for-stock acquirers, there is a jump in the abnormal accrual in the quarter immediately prior to the merger announcement' (p.134 sec.4.3); n8 'abnormal accruals in the quarter preceding stock swap announcements' (p.145-146 sec.5 Summary). DRAFTING CAVEAT (guide sec.15): EARNINGS-NUMBER management, NOT tone/language -- frame at genre level; thewissen carries the tone link. The cash-contrast (cash insignificant) is answer-only, not needed for the pillar."
   }
 }
