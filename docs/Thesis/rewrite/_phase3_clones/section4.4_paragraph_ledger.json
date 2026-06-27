@@ -1,0 +1,257 @@
+{
+  "subsection_id": "4.4",
+  "title": "Robustness: The Cash Result Without the Dynamic Term",
+  "section_job": "The cash-ratio regressions carry the cash ratio's own one-quarter lag (partial adjustment) with firm fixed effects. A dynamic panel of this kind is subject to the Nickell bias, which the within transformation induces and which is not confined to the lag coefficient alone (it also contaminates regressors correlated with lagged cash, including the event-time bins). The guard is not to reason about the size of the bias but to remove the dynamic term: re-estimate the cash column with static fixed effects (a level estimand). The timing pattern is preserved (no fall at announcement, the pre-announcement-to-gap change is 0.0012 below zero and insignificant, like the with-lag 0.0006; a fall at completion, gap-to-completion 0.0318, significant at one percent; pre-announcement-to-completion decline 0.0305 against the with-lag 0.0216). Magnitudes are larger because the specification shifts from a change to a level interpretation, so only the qualitative timing carries over. The lag stays in the main specification. The static specification carries no lagged dependent variable and hence no dynamic-panel bias, so the timing conclusion holds with or without the term that carries it; removing the lag sidesteps the bias rather than fixing it.",
+  "spine": "P1 the design property: the cash regressions are a dynamic fixed-effects panel, subject to the Nickell bias, which is not confined to the lag coefficient, so the guard is to remove the dynamic term (the residual carries no lag and is the anchor). P2 the test: drop the lag, re-estimate with static fixed effects, a level estimand, so read the timing pattern not the magnitude. P3 result: timing preserved (no fall at announcement, 0.0012 below zero and insignificant; fall at completion 0.0318; pre-announcement-to-completion 0.0305), magnitudes larger because level not change; residual unchanged. P4 reading: the lag stays in the main specification (cash is sticky); the static specification has no lag and hence no dynamic-panel bias, so the timing conclusion holds with or without the dynamic term.",
+  "register_global": [
+    "correlational, no causal identification; two-tailed throughout.",
+    "Author voice: every concern is the author's own methodological point, in the first person, never attributed to an outside party, in any prose or the title.",
+    "Do not quantify or call the Nickell bias small or negligible (the large-T trap). Name it as a standard concept (an eponym), with no citation, matching how Section 2.4 treats clustering methods.",
+    "The Nickell bias is not confined to the lag coefficient: the within transformation contaminates correlated regressors, including the bins, since cash trends up before the deal. Do not argue that not interpreting the lag immunizes the bins. The real guard is removing the dynamic term (advisor, 2026-06-15).",
+    "Dropping the lag sidesteps the bias (the static specification has no lagged dependent variable, hence no dynamic-panel bias); it does not fix the bias. The honest claim is that the timing conclusion holds with or without the dynamic term.",
+    "Magnitudes are not robust; they are about forty percent larger without the lag because the estimand shifts from a change (partial adjustment) to a level. Only the timing pattern carries over. Never write robust to dropping the lag.",
+    "The cash level specification has the gap coefficient (0.0128) above the pre-announcement one (0.0116), so the pre-announcement quarter is not the cash peak. Name cash contrasts plainly (pre-announcement-to-gap, gap-to-completion, pre-announcement-to-completion). Reserve the word peak for the residual.",
+    "The lag stays in the main specification: cash is sticky, and partial adjustment is the right model."
+  ],
+  "anchors_verified": {
+    "numbers": "outputs/econometric/robustness_drop_sec43_44/2026-06-15_070702/summary.json, key sec44_static_fe, is the authoritative source.",
+    "table": "docs/Draft/_empire_drop_staticfe.tex, label tab:empire_drop_staticfe, built programmatically by robustness_drop_sec43_44.py; the lag row is blank in both columns to signal the lag is dropped.",
+    "baseline": "tab:empire_drop_matched (Section 3.3): cash pre-announcement-to-gap 0.0006 (ns), gap-to-completion 0.0210 (p<.01), pre-announcement-to-completion 0.0216 (p<.01), lag coefficient 0.7547. The residual column is identical (no lag).",
+    "internal_provenance": "Internal methodological note; the lagged-dependent-variable point. Provenance only; never surfaced in the thesis prose. The Section 2.4 disclosure points forward here."
+  },
+  "paragraphs": [
+    {
+      "para_id": "4.4-PARA1",
+      "order": 1,
+      "intent": {
+        "statement": "State the design property. The cash-ratio regressions include the cash ratio's own one-quarter lag alongside firm fixed effects, a partial-adjustment form suited to a sticky stock like cash. A dynamic panel of this kind is subject to the Nickell bias, which the within transformation induces and which is not confined to the lag coefficient alone, so not interpreting the lag does not immunize the event-time bins. The guard is to remove the dynamic term rather than to reason about the size of the bias. The residual takes no lag and is unaffected, so it serves as an anchor.",
+        "reason": "P1 motivates the check correctly: the bias is a property of the dynamic specification, not a defect contained in the lag coefficient, so the only clean guard is removing the dynamic term. It marks the residual as the anchor, in author voice, with no quantified bias and no citation.",
+        "evidence": [
+          "section2.4_paragraph_ledger.json P3.3 and P5.3 (the cash ratio carries its own one-quarter lag; the residual takes no lag).",
+          "thesis_draft_uottawa.tex around line 234 (the partial-adjustment lag; cash is sticky)."
+        ]
+      },
+      "serves": [
+        "frames the Nickell bias as a property of the dynamic specification (not contained in the lag); motivates removing the dynamic term; marks the residual as the anchor"
+      ],
+      "boundary": "Design property only; no result. No quantified bias; no citation.",
+      "thin_claim": "The cash regressions are a dynamic fixed-effects panel, subject to the Nickell bias, which is not confined to the lag, so the guard is to remove the dynamic term; the residual carries no lag and is the anchor.",
+      "guardrails": [
+        "Name the bias as a standard concept (no citation); never give it a magnitude or call it small.",
+        "The bias is not confined to the lag; do not argue that ignoring the lag immunizes the bins.",
+        "Author voice; no hypothetical critic.",
+        "correlational."
+      ],
+      "lit_body": "The Nickell bias is named as a standard concept (an eponym, no citation), matching the Section 2.4 treatment of clustering methods.",
+      "proposition_chain": [
+        {
+          "prop_id": "4.4-PARA1-a",
+          "from_phaseA_prop": "4.4-P1",
+          "statement": "The cash-ratio regressions carry the cash ratio's own one-quarter lag with firm fixed effects, a dynamic fixed-effects panel that is subject to the Nickell bias; because that bias is not confined to the lag coefficient but also reaches regressors correlated with lagged cash, the clean guard is to remove the dynamic term rather than to leave the lag uninterpreted, and the residual, which takes no lag, serves as the anchor.",
+          "role_in_paragraph": "premise: the design property and the correct guard",
+          "type": "design-method",
+          "reason": "First: the bias must be framed as a property of the dynamic specification before the check is motivated.",
+          "evidence": [
+            "section2.4_paragraph_ledger.json P3.3 and P5.3",
+            "thesis_draft_uottawa.tex around line 234"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "no-identification"
+          ],
+          "depends_on": []
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed or cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    },
+    {
+      "para_id": "4.4-PARA2",
+      "order": 2,
+      "intent": {
+        "statement": "State the test and what carries over. Re-estimate the cash column with static fixed effects, dropping the lagged dependent variable (point to the table). Removing the lag changes what the coefficients describe: with the lag each coefficient is a change in the cash ratio around its own recent level (a partial adjustment); without it the coefficients describe the level of the cash ratio relative to the baseline. The two specifications are on different scales, so the comparison that carries over is the timing pattern, the sign and significance of the bins across event time, not the size of any single coefficient.",
+        "reason": "P2 establishes the level-versus-change scale shift before the numbers, so the larger magnitudes in P3 read as expected rather than as a stronger result.",
+        "evidence": [
+          "src/f1d/econometric/robustness_drop_sec43_44.py, main (the static run uses add_cash_lag set to false).",
+          "docs/Draft/_empire_drop_staticfe.tex, label tab:empire_drop_staticfe."
+        ]
+      },
+      "serves": [
+        "defines the static-fixed-effects check; establishes the level-versus-change scale shift so the comparison is timing, not magnitude"
+      ],
+      "boundary": "Design and scale framing only; no result. The magnitudes are not the comparison.",
+      "thin_claim": "Drop the lag for a static, level regression; the two specifications are on different scales, so read the timing pattern, not the magnitude.",
+      "guardrails": [
+        "Establish level (no lag) versus change (with lag) before the numbers, so larger magnitudes read as expected.",
+        "The comparison that carries over is the timing pattern, not the magnitude.",
+        "Author voice; correlational."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "4.4-PARA2-a",
+          "from_phaseA_prop": "4.4-P2",
+          "statement": "Re-estimating the cash column with static fixed effects (dropping the lag) changes the estimand from a change in the cash ratio (partial adjustment) to its level relative to the baseline, so the two specifications are on different scales and the comparison that carries over is the timing pattern across event time, not the size of any coefficient.",
+          "role_in_paragraph": "design: the static check and the level-versus-change scale shift",
+          "type": "design-method",
+          "reason": "Second: the scale shift must precede the result so larger magnitudes read as expected.",
+          "evidence": [
+            "src/f1d/econometric/robustness_drop_sec43_44.py, main",
+            "docs/Draft/_empire_drop_staticfe.tex"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "supportive-not-definitive"
+          ],
+          "depends_on": [
+            "4.4-PARA1-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed or cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    },
+    {
+      "para_id": "4.4-PARA3",
+      "order": 3,
+      "intent": {
+        "statement": "Report the result. Without the lag the cash ratio does not fall when the deal is announced (pre-announcement-to-gap change 0.0012 below zero, insignificant, like the with-lag 0.0006) and falls only once the cash leaves at completion (0.0318 from gap to completion, significant at one percent; completion coefficient 0.0189 below zero, significant at one percent). The pre-announcement-to-completion decline is 0.0305 (p<.01), larger than the 0.0216 of the partial-adjustment specification, as expected when the coefficients describe a level rather than a change. The residual column is unchanged, since it never carried the lag.",
+        "reason": "P3 reports the bins with cash named plainly (no peak; the gap coefficient exceeds the pre-announcement one in the level specification); the larger decline is flagged as expected from the scale shift, not as a stronger finding.",
+        "evidence": [
+          "outputs/econometric/robustness_drop_sec43_44/2026-06-15_070702/summary.json, sec44_static_fe (cash pre-announcement-to-gap 0.0012 below zero, p2 .808; gap-to-completion 0.0318, p2 about 2e-7; pre-announcement-to-completion 0.0305, p2 about 6e-12; completion 0.0189 below zero).",
+          "docs/Draft/_empire_drop_staticfe.tex."
+        ]
+      },
+      "serves": [
+        "delivers the preserved timing (no fall at announcement, a fall at completion) and the larger but expected magnitude; residual unchanged"
+      ],
+      "boundary": "Result only; the reading and the keep-the-lag point are P4. No causal claim.",
+      "thin_claim": "Static specification: no fall at announcement (0.0012 below zero, ns), a fall at completion (gap-to-completion 0.0318, p<.01), pre-announcement-to-completion 0.0305 (p<.01, larger because level not change); residual unchanged.",
+      "guardrails": [
+        "Name cash contrasts plainly; do not call the pre-announcement quarter the cash peak (the gap coefficient 0.0128 exceeds the pre-announcement 0.0116).",
+        "Flag the larger 0.0305 as expected from the level-versus-change scale shift, not a stronger finding.",
+        "The residual column is the unchanged anchor.",
+        "correlational."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "4.4-PARA3-a",
+          "from_phaseA_prop": "4.4-P3",
+          "statement": "Without the lag the cash ratio does not fall at announcement (pre-announcement-to-gap 0.0012 below zero, insignificant, like the with-lag 0.0006) and falls only at completion (gap-to-completion 0.0318, p<.01; completion 0.0189 below zero, p<.01), with a pre-announcement-to-completion decline of 0.0305 (p<.01), larger than the with-lag 0.0216 because the coefficients describe a level rather than a change; the residual column is unchanged.",
+          "role_in_paragraph": "result: the preserved timing and the expected larger magnitude",
+          "type": "result-number",
+          "reason": "Third: the bins pay off the design; the larger decline is read through the scale shift set in P2.",
+          "evidence": [
+            "outputs/econometric/robustness_drop_sec43_44/2026-06-15_070702/summary.json, sec44_static_fe",
+            "docs/Draft/_empire_drop_staticfe.tex"
+          ],
+          "numbers": [
+            "cash pre-announcement-to-gap 0.0012 below zero (ns), against with-lag 0.0006 (ns)",
+            "cash gap-to-completion 0.0318 (p<.01); completion 0.0189 below zero (p<.01)",
+            "cash pre-announcement-to-completion 0.0305 (p<.01), against with-lag 0.0216 (p<.01)",
+            "the residual column is identical to tab:empire_drop_matched"
+          ],
+          "register_locks": [
+            "correlational",
+            "supportive-not-definitive"
+          ],
+          "depends_on": [
+            "4.4-PARA2-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed or cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    },
+    {
+      "para_id": "4.4-PARA4",
+      "order": 4,
+      "intent": {
+        "statement": "State the reading. The lag belongs in the main specification, because cash is sticky and partial adjustment is the right description of how it moves; the static specification is not a better model but a check that removes the dynamic term entirely. Because the static specification carries no lagged dependent variable, it carries no dynamic-panel bias, so the cash timing conclusion, no fall at announcement and a fall at completion, holds whether or not that term is present. The timing of the cash path, on which the differential-timing result rests, does not ride on the dynamic specification.",
+        "reason": "P4 keeps the lag in the main specification and frames the static specification as sidestepping the bias (no lagged dependent variable, hence no bias), so the conclusion holds with or without the term that carries it; it does not claim the bias is fixed.",
+        "evidence": [
+          "section2.4_paragraph_ledger.json (the lag in the main cash specification; cash is sticky, partial adjustment).",
+          "advisor check, 2026-06-15."
+        ]
+      },
+      "serves": [
+        "keeps the lag in the main specification; frames the static specification as sidestepping the bias; the timing conclusion holds with or without the dynamic term"
+      ],
+      "boundary": "Reading only; no new result. Closes the subsection.",
+      "thin_claim": "The lag stays in the main specification (cash is sticky); the static specification has no lag, hence no dynamic-panel bias, so the cash timing conclusion holds with or without the dynamic term.",
+      "guardrails": [
+        "The lag stays in the main specification; the static specification is a check, not a better model.",
+        "The static specification sidesteps the bias (no lagged dependent variable, hence no bias); do not say it fixes the bias or that the bias is small.",
+        "The conclusion holds with or without the dynamic term that carries the bias.",
+        "correlational, supportive not definitive."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "4.4-PARA4-a",
+          "from_phaseA_prop": "4.4-P4",
+          "statement": "The lag belongs in the main specification because cash is sticky; the static specification is a check that removes the dynamic term, and because it carries no lagged dependent variable it carries no dynamic-panel bias, so the cash timing conclusion (no fall at announcement, a fall at completion) holds whether or not that term is present and does not ride on the dynamic specification.",
+          "role_in_paragraph": "framing: the reading; keep the lag; the conclusion holds with or without the dynamic term",
+          "type": "framing",
+          "reason": "Last: it governs how the static estimates relate to the main specification and closes the subsection.",
+          "evidence": [
+            "section2.4_paragraph_ledger.json",
+            "advisor check, 2026-06-15"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "supportive-not-definitive"
+          ],
+          "depends_on": [
+            "4.4-PARA3-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed or cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    }
+  ],
+  "allocation_coverage": {
+    "all_props_homed": "Four propositions homed one to one with four paragraphs: 4.4-P1 (design property and the Nickell bias, not confined to the lag) to PARA1; 4.4-P2 (static check and the level-versus-change scale) to PARA2; 4.4-P3 (preserved timing, expected larger magnitude, residual anchor) to PARA3; 4.4-P4 (keep the lag, sidestep the bias, holds with or without the dynamic term) to PARA4.",
+    "gaps": [
+      "Magnitudes are larger (level versus change), disclosed in PARA2 and PARA3; not framed as robust.",
+      "The bias is sidestepped (no lagged dependent variable), not fixed; the conclusion holds with or without the dynamic term (PARA4)."
+    ]
+  },
+  "_clone_provenance": {
+    "is_clone": true,
+    "of": "section4.4_paragraph_ledger.json (pristine original)",
+    "purpose": "Phase-3 chain redesign; locked final_prose stripped.",
+    "built_by": "tmp/clone_strip_prose.py",
+    "note": "Proposed chain fixes APPENDED under _proposed_fixes; original chain untouched."
+  },
+  "_proposed_fixes": {
+    "summary": "REVIEWED -- UNTOUCHED. Robustness. No masking-relevant content.",
+    "register_locks": [],
+    "fixes": []
+  }
+}
