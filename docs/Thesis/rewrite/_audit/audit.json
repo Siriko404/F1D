@@ -1,0 +1,772 @@
+{
+  "meta": {
+    "method": "deterministic merge of 2 panel runs + smoke (0 adjudication agents); P3.4 adjudicated in-context",
+    "sources": [
+      "audit_run1.json",
+      "audit_run2.json",
+      "smoke_overclaim.json"
+    ],
+    "deep_analysis": "ALL 15 verbatim-verified + blast-radius mapped in-context (4 clusters + 6 singletons). Provenance props abstract-P1-i & 5-P3-b confirmed clean.",
+    "provenance_props_clean": [
+      "abstract-P1-i",
+      "5-P3-b (both carry channel-difference-NOT-tested-directly lock; correct hedge)"
+    ],
+    "audit_status": "15 verified + 2 NEW user-flagged (SDC $1M sample-disclosure; DiD-label guard) = 17. §3.1 count resolved (FIVE, primary-source). P3.4 v4 -> Sina ratify. No DiD in thesis (confirmed).",
+    "lesson": "Every verdict needs TWO questions: (1) did I remove the error? (2) is the replacement correct/complete/canonical? Absence-of-error != presence-of-correctness.",
+    "sdc_status": "RESOLVED to code-verified filter set (gen_empire_did_table.py:97-128). Filters.txt #2/#3/#4/#5 not applied; #9 is US ACQUIRERS not targets. Disclosure must use the verified set.",
+    "conclusion": "AUDIT COMPLETE. 17 findings, all verbatim-verified + blast-radius mapped + fix-safety checked. Spine HOLDS: no finding broken, no data/result touched. Severity: 1 reformulated-critical (P3.4 masking motivation -> v4 setting-level -> SINA RATIFY); majors = §4.2 8-site overclaim (advisor-signed) + SDC sample-disclosure (code-verified filter set; Filters.txt found inaccurate); rest minor/cosmetic incl 2 NEW user-flagged spine-vs-data catches (SDC $1M; DiD-label guard). KEY spine-vs-data results: (a) thesis correctly uses within-firm two-way FE, NOT DiD; (b) only the code-verified filters are applied (US ACQUIRERS not targets; #2/#3 control filters NOT applied; $1M IS). NEXT: Sina ratifies per-fix -> apply to clones -> regenerate prose -> +2 bibitem -> compile.",
+    "lesson_internalized": "verified != asserted: every fix-verdict answers BOTH 'error removed?' AND 'replacement correct/complete/canonical/applied?'",
+    "verification_us_targets": "CLEAN -- thesis spine never claims 'US targets'; disclosure must say US ACQUIRERS. No live factual error.",
+    "verification_honesty_floor": "PASSED -- all 4 match the tables: cash +0.0461*** & stock -0.0429 (_empire_building_did.tex:13); C6 Wald 0.0983** & cause 0.0064 (_empire_cashspec.tex:18).",
+    "signoff": "CALIBRATED (advisor, NOT blanket-100%). SIGNED: spine-INTERNAL audit complete + sound -- 17 findings verbatim-verified, blast-radius mapped, fixes proposed; spine holds, no finding broken, no data touched; honesty-floor numbers + US-targets checks passed. NOT signed: (1) P3.4 v4 -> SINA RATIFY (judgment call, the prop answering the supervisor); (2) SPINE-vs-DATA dimension barely sampled -- 15/17 findings are spine-internal; the ONE data area sampled (SDC) hit ~100% (1 major + 4 Filters.txt discrepancies), so a bounded next pass is warranted. Sina's conscious call: close now (defer data sweep) or run it."
+  },
+  "summary": {
+    "total": 17,
+    "validated": 9,
+    "unreviewed_minor": 6,
+    "critical": 0,
+    "major": 5,
+    "minor": 12
+  },
+  "problems": [
+    {
+      "locus": "2.2|P3.4",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "major (real; reformulated from critical-contested)",
+      "severity_by_source": {
+        "run1": "minor",
+        "run2": "minor",
+        "smoke": "critical"
+      },
+      "n_flags": 5,
+      "dimensions": [
+        "coherence",
+        "completeness",
+        "evidence",
+        "logic",
+        "overclaim"
+      ],
+      "sources": [
+        "run1",
+        "run2",
+        "smoke"
+      ],
+      "status": "validated (adjudicated in-context)",
+      "redteam_verdicts": [
+        "-",
+        "CONFIRMED",
+        "UNREVIEWED"
+      ],
+      "issue": "P3.4 (ADDED) is the masking-differential motivation for H1a -- the cash>stock attenuation/by-product reasoning deferred from 2.1 P5 -- i.e. a masking leg asserted in 2.2 that depends on its setup in 2.1 P5 (Shleifer-Vishny currency motive / Louis pre-deal earnings / thewissen tone). Unlike every sibling in 2.2 P3 (P3.1/P3.2/P3.3 each carry relation_to_2_1 + anchor_2_1=['P5'], P3.3=['P5','P7']), P3.4 omits both fields. The setup link survives only in the free-text verification.note, so an orchestrator that traces the structured anchor graph will not see this masking leg's dependency on its 2.1 setup.",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "stock bidders manage their pre-deal narrative (callback 2.1 P5), and the same broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product, while cash bidders -- lacking the currency motive -- carry the disclosure strain into the unscripted answers more cleanly.",
+        "to": "The masking asymmetry motivates our focus on cash at the level of the research SETTING, not the unscripted Q&A channel. Stock acquirers have an equity-currency motive to manage their pre-deal narrative (press-release tone, accruals), so a pre-deal signal observed in stock deals is entangled with that documented management; cash acquirers lack the motive, so the cash setting is free of that confound and a pre-announcement run-up documented there reads cleanly, without the competing management story. This is why we focus on cash. We make no claim that the unscripted Q&A is itself more or less managed across arms -- the cross-channel firewall (P5.6) keeps scripted management out of the Q&A on both -- and the cash-versus-stock difference we report is empirical (C6: cash rising; the stock arm a noisy flat null we do not interpret). Motivation for the cash focus, not detection.",
+        "why": "REFORMULATED v4 (advisor BLOCK: firewall cuts BOTH ways). v3's 'cash Q&A is a clean read' implied cash is privileged at the Q&A level -- but P5.6 keeps mgmt out of the Q&A on BOTH arms, so neither arm's Q&A is privileged. v4 locates the motivation at the SETTING level: the cash setting is free of the management confound (no currency motive), so a run-up there is clean of entanglement with the management story; the Q&A channel itself is claimed neither cleaner nor dirtier. Gap stays empirical (C6).",
+        "honesty_floor": "PASS",
+        "evidence_ok": "PASS"
+      },
+      "finding_ids": [
+        "COH-04",
+        "EV-1",
+        "COMP-3",
+        "LOGIC-2",
+        "OV-01"
+      ],
+      "adjudication": "Flagged by 5 dimensions across all 3 sources. 'dampens their unguarded Q&A uncertainty' hands the stock arm an ACTIVE downward force = a stock-suppression reading -> breaches the 'NO stock suppressed' bright line (stock is a noisy flat null). Also contradicts the 2.1 P5.6 firewall (scripted mgmt does NOT carry into the unscripted Q&A). REAL. Sina picks the severity word; the fix is the same either way.",
+      "deep_analysis": {
+        "cluster": "C1 suppression-direction",
+        "verified": "VERBATIM confirmed, section2.2 L412: '...the same broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product...'",
+        "blast_radius": [
+          "section2.2 P3.4.statement (L412) -- 'dampens their unguarded Q&A uncertainty'",
+          "section2.1 P5.5 (L2307) -- sibling 'why stock sits lower' (own finding 2.1|P5.5)"
+        ],
+        "agents_missed": "none new (both sites independently flagged); but the two are ONE error class and must be fixed together",
+        "fix_covers_full_radius": "yes-for-P3.4; the coupled P5.5 site is fixed by its own entry",
+        "honesty_floor": "PASS (drops the active-dampening clause; re-bases on cash rising)",
+        "verdict": "REAL. Apply P3.4 + P5.5 fixes together. No other suppression-direction site exists (grep: dampen|sits lower|below baseline returns only these two + the 8 CORRECT no-suppressed locks).",
+        "function_check": "PASS v4 -- BOTH directions vs P5.6 verbatim. (1) stock Q&A more managed than cash? NO. (2) cash Q&A cleaner than stock? NO -- v4 makes the cleanliness a SETTING property (free of the mgmt confound), explicitly no Q&A comparative. Still answers 'why cash': cash setting is unconfounded by the documented management.",
+        "status": "REFORMULATED v4 -> PRESENT TO SINA for ratification (THE prop answering the supervisor critique; judgment call on the setting-level framing)"
+      }
+    },
+    {
+      "locus": "1|1-P7-a",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "major",
+      "severity_by_source": {
+        "run1": "major",
+        "run2": "minor"
+      },
+      "n_flags": 2,
+      "dimensions": [
+        "coherence",
+        "logic"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "status": "validated",
+      "redteam_verdicts": [
+        "CONFIRMED",
+        "UNREVIEWED"
+      ],
+      "issue": "The introduction's enumerated-contributions paragraph states the study makes THREE contributions, but FOUR are enumerated once the reconciled bid-ask prop 1-P7-b ('Fourth, ...') is appended. Generated prose would read 'This study makes three contributions ... First ... Second ... Third ... Fourth ...' -- a literal self-contradicting count. The corpus's own note on 1-P7-b admits 1-P7-a 'still read[s] three contributions' but the statement was never reworded. This also breaks the intro/conclusion findings-set mirror, since the conclusion (5-P3-b) carries the bid-ask finding too.",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "This study makes three contributions, each descriptive.",
+        "to": "This study makes four contributions, each descriptive.",
+        "why": "Four contributions are enumerated (First/Second/Third in 1-P7-a + Fourth in 1-P7-b). The literal count in 1-P7-a, plus the paragraph intent and thin_claim, must be updated three->four. The corpus reconciled the prop SET to four but left the word 'three' in the statement, so the contradiction is live in the audited spine."
+      },
+      "finding_ids": [
+        "COH-01",
+        "LOGIC-1"
+      ],
+      "deep_analysis": {
+        "cluster": "C2 06-24 reconciliation",
+        "verified": "VERBATIM confirmed: 1-P7-a.statement opens 'This study makes three contributions, each descriptive.'",
+        "blast_radius": [
+          "section1 1-P7-a.statement -- 'three contributions' (ONLY uncorrected site)"
+        ],
+        "agents_missed": "run1 claimed intent+thin_claim 'also still say three' -- STALE/WRONG: grep confirms 1-P7 thin_claim (L626) already reads 'Four descriptive contributions [RECONCILED]' and intent carries the FOUR bracket. So fix is 1 site, not 3.",
+        "fix_covers_full_radius": "yes (single site)",
+        "honesty_floor": "PASS (numeral only; no register touched)",
+        "verdict": "REAL, major. Fix: 'three contributions' -> 'four contributions' in 1-P7-a.statement ONLY."
+      }
+    },
+    {
+      "locus": "4.2|4.2-PARA4-a",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "major",
+      "severity_by_source": {
+        "run1": "major",
+        "run2": "minor"
+      },
+      "n_flags": 2,
+      "dimensions": [
+        "overclaim"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "status": "validated",
+      "redteam_verdicts": [
+        "CONFIRMED",
+        "UNREVIEWED"
+      ],
+      "issue": "The synthesis prop converts the residual-vs-spread NULL into a categorical identification claim: the Section 3 run-up 'cannot be an artifact of outsider reaction.' A categorical 'cannot' requires a proven zero, but this section's own residual null is explicitly framed as underpowered absence-of-evidence. Reading strictly, 'cannot be an artifact' edges toward an identification overreach (it is the thesis-level payoff of the section, propagated more weakly into abstract-P1-i / 1-P6-c / 5-P3-b). The cushioning ('reads as,' no-identification register, and the guardrail calling it 'a shield ... not a positive proof') keeps it from being a kill-shot, so the overreach is the single word 'cannot.'",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "the pre-announcement run-up documented in Section 3 cannot be an artifact of outsider reaction and instead reads as a private, insider-side signal",
+        "to": "the pre-announcement run-up documented in Section 3 is unlikely to be an artifact of outsider reaction and is more readily read as a private, insider-side signal",
+        "why": "Softens the categorical 'cannot' to the register the section's own null supports (absence-of-evidence, do-not-claim-a-proven-zero), resolving the PARA2/PARA4 contradiction while preserving the shield (rules-out-one-alternative) reading. Does not touch the no-identification ceiling. [SCOPE: apply to all 8 §4.2 sites, not just the prop statement.]"
+      },
+      "finding_ids": [
+        "OC-1",
+        "OVC-overclaim-01"
+      ],
+      "deep_analysis": {
+        "cluster": "C3 section-4.2 overclaim",
+        "verified": "VERBATIM confirmed: 4.2-PARA4-a.statement -- 'The payoff... is an identification one: because outsiders do not price the residual, the... run-up... cannot be an artifact of outsider reaction...'",
+        "blast_radius": [
+          "section4.2 L4 section_job ('SHIELD the Section 3 run-up from an outsider-reaction reading')",
+          "section4.2 L5 spine ('Section 3 identification shield')",
+          "section4.2 L6 section thin_claim ('outsiders do not price... run-up is a private insider signal')",
+          "section4.2 L219 PARA4 intent ('cannot be an artifact... private, insider-side signal')",
+          "section4.2 L220 PARA4 reason ('converting the residual null into an identification shield')",
+          "section4.2 L229 PARA4 serves ('identification shield... not an outsider-reaction artifact')",
+          "section4.2 L232 PARA4 thin_claim ('cannot be an outsider-reaction artifact; it is a private insider signal')",
+          "section4.2 L244 PARA4-a.statement (the prop: 'an identification one... cannot be an artifact...')"
+        ],
+        "agents_missed": "MAJOR under-count: agents flagged 1 site (L244); I initially said 3; the overclaim is actually 8 sites (3 section-level + 5 in PARA4). Caught by advisor BLOCK 2 + -o grep.",
+        "fix_covers_full_radius": "NO -- must extend the softening to ALL 8 sites. TEMPLATE for the corrected register already exists IN-SECTION: guardrails L236 ('rules out one alternative, not positive proof') + L282 gaps. Soften 'cannot be an artifact'->'we find no evidence... so unlikely'; 'an identification one'->'rules out one alternative'; 'is a private insider signal'->'consistent with a private-signal reading'. Absence-of-evidence register throughout.",
+        "honesty_floor": "PASS for the wording (absence-of-evidence) BUT incomplete coverage",
+        "verdict": "REAL, major. CRITICAL PROCESS NOTE: expand the fix to thin_claim L232 + serves L229, else the overclaim ships. This is the user's exact 'agents miss blast radius' fear, realized.",
+        "status": "SIGNED (8 sites mapped + scoped). Apply-note: even 'rules out one alternative' is faintly strong for an underpowered null -- floor is 'no evidence, consistent with'; do not drift stronger than the in-section guardrails (L236/L282)."
+      }
+    },
+    {
+      "locus": "1|1-P9-a",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "major",
+      "severity_by_source": {
+        "run1": "major",
+        "run2": "minor"
+      },
+      "n_flags": 2,
+      "dimensions": [
+        "completeness"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "status": "validated",
+      "redteam_verdicts": [
+        "DOWNGRADED",
+        "UNREVIEWED"
+      ],
+      "issue": "The paper's only structural roadmap (M4) descends to the additional-analysis level but names just ONE additional analysis. It says Section 4 'reports the additional analysis ruling out analyst scrutiny' and omits the delivered Section 4.2 (Outsider Reactions: the Bid-Ask Spread), 4.3 (Withdrawal robustness) and 4.4 (no-dynamic-term robustness). The 2026-06-24 drift reconciliation promoted the bid-ask channel to a PREVIEWED finding (1-P6-c) and a FOURTH CONTRIBUTION (1-P7-b) in the same introduction, yet left this roadmap unchanged, so the reader is told a bid-ask finding/contribution exists but the map never signposts where it is delivered. Same root cause as COMP-2 and the provenance mislabel in corpus_problems: one incompletely-executed reconciliation.",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "Section 4 reports the additional analysis ruling out analyst scrutiny; and Section 5 concludes.",
+        "to": "Section 4 reports additional analyses -- ruling out analyst scrutiny, examining outsider reactions through the bid-ask spread, and checking robustness; and Section 5 concludes.",
+        "why": "Restores roadmap coverage of the delivered Section 4 now that the bid-ask channel is a previewed finding and the 4th contribution; stays within the 50-80-word impersonal M4 convention. (If _DRIFT_AUDIT_2026-06-24.md explicitly scoped the roadmap out, that decision is undocumented in the corpus and still leaves the intro internally unsignposted.)"
+      },
+      "finding_ids": [
+        "COMP-1",
+        "comp-2"
+      ],
+      "deep_analysis": {
+        "cluster": "C2 06-24 reconciliation",
+        "verified": "VERBATIM confirmed: roadmap 1-P9-a names only 'the additional analysis ruling out analyst scrutiny'; omits delivered 4.2/4.3/4.4.",
+        "blast_radius": [
+          "section1 1-P9-a.statement (roadmap M4)"
+        ],
+        "agents_missed": "none",
+        "fix_covers_full_radius": "yes",
+        "honesty_floor": "PASS (descriptive roadmap; no claim ceiling)",
+        "verdict": "REAL, major. Same 06-24 root cause as 1-P7-a. Fix: roadmap to cover Section 4's delivered analyses (scrutiny rule-out + bid-ask channel + robustness)."
+      }
+    },
+    {
+      "locus": "3.1|3.1-PARA1-a",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "minor",
+      "severity_by_source": {
+        "run1": "minor",
+        "run2": "minor"
+      },
+      "n_flags": 2,
+      "dimensions": [
+        "coherence"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "status": "validated",
+      "redteam_verdicts": [
+        "CONFIRMED",
+        "UNREVIEWED"
+      ],
+      "issue": "Within paragraph 3.1-PARA1 the data-source count is inconsistent: the prop statement lists FIVE sources (Capital IQ, Compustat, CRSP/IBES, SDC, Execucomp), but the paragraph's role_in_paragraph, intent.reason, and the section allocation_coverage note all say FOUR. Execucomp was added later (VERIFIED primary-source 2026-06-14) bumping the statement to five without updating the surrounding scaffolding. Prose-bound statement is internally consistent at five, so this is meta-scaffolding drift only.",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "names the four sources every downstream number originates in (role_in_paragraph; + intent.reason 'four data sources'; + allocation 'four-source provenance premise')",
+        "to": "names the five sources every downstream number originates in (align role/intent/allocation to five)",
+        "why": "Execucomp is a substantive fifth source (it feeds the eq-4 manager fixed effect, per the statement and its evidence). The statement 'five' is correct; the stale 'four' in the meta should be aligned to five. Meta-only, hence minor."
+      },
+      "finding_ids": [
+        "COH-02",
+        "COH-3"
+      ],
+      "deep_analysis": {
+        "status": "RESOLVED -- count is FIVE (primary-source verified: add_execucomp_3_1.py moved four->five; comp_execucomp.parquet is a real input feeding the CEO fixed effect via build_tenure_map.py Step 1.3). Fix = align the stale 'four' sites (role_in_paragraph, the 'four-source provenance' note) to five.",
+        "verified": "VERBATIM: statement says 'combines five data sources' and lists 5 (Capital IQ; Compustat; CRSP+IBES bundled as one; SDC; Execucomp). The statement itself is internally consistent (5=5).",
+        "blast_radius": [
+          "section3.1 L9 statement = 'five' (CORRECT; lists Capital IQ, Compustat, CRSP/IBES, SDC, Execucomp)",
+          "section3.1 L21 thin_claim = 'Five named sources' (CORRECT)",
+          "section3.1 L10 reason = 'the four data sources' (STALE)",
+          "section3.1 L32 role_in_paragraph = 'naming the four sources' (STALE)",
+          "section3.1 L367 note = 'four-source provenance premise' (STALE)"
+        ],
+        "agents_missed": "confirmed: truth is FIVE (Execucomp added); 3 stale 'four' sites (reason/role/note) need aligning. Not the statement.",
+        "fix_safe": "PASS once direction confirmed; either way it is enumeration-only, no claim/finding risk.",
+        "verdict": "REAL-minor, LOCAL. Align the sibling-field count to the statement's five. No spine risk.",
+        "execucomp_status": "PRIMARY data source (input parquet inputs/Execucomp/comp_execucomp.parquet -> monthly CEO tenure panel -> eq-4 manager FE). Counts as the 5th source."
+      }
+    },
+    {
+      "locus": "1|1-P7-b",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "minor",
+      "severity_by_source": {
+        "run1": "minor",
+        "run2": "minor"
+      },
+      "n_flags": 2,
+      "dimensions": [
+        "cite_redundancy",
+        "coherence"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "status": "validated",
+      "redteam_verdicts": [
+        "CONFIRMED"
+      ],
+      "issue": "Five drift-reconciliation props (abstract-P1-i, 1-P6-c, 1-P7-b, 5-P3-b, 5-P3-c) carry _provenance='ORIGINAL-locked' while their own from_phaseA_prop says 'ADDED 2026-06-24 ... NOT an original ... prop'. The tag contradicts the from_phaseA_prop within the same object, and the meta.provenance counts (added:6, original:128) consequently misclassify these five added props as original. Because this audit is instructed to PRIORITIZE changed (ADDED/REWORDED/SWEPT) props, mis-tagging the five newest props as ORIGINAL-locked can cause them to be under-scrutinized.",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "_provenance: 'ORIGINAL-locked' on the five ADDED-2026-06-24 props; meta {original:128, added:6}",
+        "to": "_provenance: 'ADDED' on those five props; meta {original:123, added:11}",
+        "why": "from_phaseA_prop self-identifies these as ADDED 2026-06-24. Tagging them ORIGINAL-locked is a direct internal contradiction and corrupts provenance accounting, which the harness uses to prioritize changed props."
+      },
+      "finding_ids": [
+        "COH-03",
+        "CR-02"
+      ],
+      "deep_analysis": {
+        "cluster": "C2 06-24 provenance mislabel",
+        "verified": "Confirmed: 5 props (abstract-P1-i, 1-P6-c, 1-P7-b, 5-P3-b, 5-P3-c) carry from_phaseA_prop='ADDED 2026-06-24' but corpus _provenance='ORIGINAL-locked'.",
+        "blast_radius": [
+          "CORPUS-BUILD artifact only (build_corpus.py provenance tagging), NOT thesis prose",
+          "the 5 props span section1/section5/abstract"
+        ],
+        "agents_missed": "none",
+        "fix_covers_full_radius": "n/a -- this is an audit-corpus label, not a thesis edit",
+        "honesty_floor": "N/A",
+        "verdict": "REAL but COSMETIC. Does NOT touch the thesis. Fix = relabel these 5 to ADDED in the corpus (meta.added 6->11). No prose change; no ratify needed."
+      }
+    },
+    {
+      "locus": "2.1|P6.1",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "minor",
+      "severity_by_source": {
+        "run1": "minor",
+        "run2": "minor"
+      },
+      "n_flags": 2,
+      "dimensions": [
+        "cite_redundancy"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "status": "validated",
+      "redteam_verdicts": [
+        "CONFIRMED",
+        "UNREVIEWED"
+      ],
+      "issue": "thewissen2024 is introduced and NLM-verified TWICE inside section 2.1: in the ADDED masking prop P5.4 (the 'tone leg' -- stock bidders inflate press-release tone ~15% before stock-for-stock deals) and again one paragraph later in the pre-existing P6.1 (nearest-work positioning cell, 'managed tone, stock deals, press releases'). The masking redesign re-introduces a paper the section already cites, so the regenerated prose will state thewissen + its 15% tone-inflation fact twice in adjacent paragraphs (P5 then P6). The chain also double-books the magnitude: P5.4's statement carries 'by about 15 percent' while the 2.2 P2.2 guardrail asserts the 15% figure 'lives in 2.1 P6' -- an internal ownership inconsistency.",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "P6.1 re-introduces thewissen2024 as a fresh nearest-work citation, repeating the managed-tone/15% fact P5.4 already established one paragraph earlier.",
+        "to": "Make P6.1's realization a back-reference to the managed-tone evidence already introduced in P5.4 (e.g., 'the managed-tone finding noted above (Thewissen et al. 2024) occupies the nearest cell...'), so thewissen and the 15% magnitude are stated ONCE. Keep BOTH props and BOTH roles (P5.4 = masking tone leg; P6.1 = gap/2x2 positioning); designate P5.4, the earlier paragraph, as the owner of the cite+magnitude and reconcile the 2.2 P2.2 'lives in 2.1 P6' note to point at P5.4.",
+        "why": "Removes a duplicate introduction of the same verified fact without losing either argumentative function (thewissen carries the IDENTICAL fact in both props, so no distinct load-bearing fact is cut) and resolves the P5.4-vs-P6 ownership inconsistency. Touches no hedge and does not collapse the two paragraphs' distinct jobs (hence REWORD/back-reference, not MERGE)."
+      },
+      "finding_ids": [
+        "CR-01",
+        "CR-01"
+      ],
+      "deep_analysis": {
+        "cluster": "C4 thewissen duplicate",
+        "verified": "Confirmed: thewissen appears 23x in section2.1; introduced+NLM-verified twice -- ADDED masking prop P5.4 (tone leg) and P6.1 (nearest-work).",
+        "blast_radius": [
+          "section2.1 P5.4 (masking tone-leg, ADDED)",
+          "section2.1 P6.1 (nearest-work cite)"
+        ],
+        "agents_missed": "none",
+        "fix_covers_full_radius": "yes",
+        "honesty_floor": "PASS (no claim change; removes a duplicate INTRODUCTION, both argumentative roles kept)",
+        "verdict": "REAL, minor. Care: P5.4 and P6.1 serve different roles (masking motive vs literature gap); fix should de-duplicate the INTRODUCTION/verification, not delete either function."
+      }
+    },
+    {
+      "locus": "4.2|4.2-PARA2-a",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "minor",
+      "severity_by_source": {
+        "run1": "minor",
+        "run2": "minor"
+      },
+      "n_flags": 2,
+      "dimensions": [
+        "coherence",
+        "evidence"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "status": "unreviewed-minor",
+      "redteam_verdicts": [
+        "UNREVIEWED"
+      ],
+      "issue": "Internal number mismatch. The 4.2-PARA2 intent.statement reports the contemporaneous residual-on-spread coefficient range as 'between -0.0594 and -0.0893 across the six contemporaneous columns,' but the ratified prop 4.2-PARA2-a and its evidence list the six values as -0.0594/-0.0687/-0.0882/-0.1021/-0.0757/-0.0893, i.e. the most negative is -0.1021 (col 4) and the prop correctly states the range as '-0.0594 to -0.1021.' The intent field understates the floor. The prop itself is correct and all coefficients are n.s., so the substance (residual null) is unaffected; this is a stale planning-field number.",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "between -0.0594 and -0.0893 across the six contemporaneous columns",
+        "to": "between -0.0594 and -0.1021 across the six contemporaneous columns",
+        "why": "Align the planning field with the ratified prop and the six listed coefficients; all remain n.s., so only the stated bound changes."
+      },
+      "finding_ids": [
+        "EV-2",
+        "COH-2"
+      ],
+      "deep_analysis": {
+        "cluster": "C3 section-4.2",
+        "verified": "Confirmed: PARA2 intent.statement says range '-0.0594 to -0.0893'; prop PARA2-a + evidence say '-0.0594 to -0.1021' (col4=-0.1021 most negative). All n.s.",
+        "blast_radius": [
+          "section4.2 PARA2 intent.statement (the understated bound)"
+        ],
+        "agents_missed": "none",
+        "fix_covers_full_radius": "yes",
+        "honesty_floor": "PASS (all coefficients n.s.; only the stated lower bound changes)",
+        "verdict": "REAL, minor. Fix: '-0.0893' -> '-0.1021' in PARA2 intent.statement."
+      }
+    },
+    {
+      "locus": "5|5-P5-a",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "minor",
+      "severity_by_source": {
+        "run1": "minor"
+      },
+      "n_flags": 1,
+      "dimensions": [
+        "logic"
+      ],
+      "sources": [
+        "run1"
+      ],
+      "status": "validated",
+      "redteam_verdicts": [
+        "CONFIRMED"
+      ],
+      "issue": "The connective 'so' links two logically independent OPEN questions: the war-chest CAUSE of cash accumulation (why the firm holds cash) and the SOURCE of the CEO's uncertainty (compliance-constrained 'cannot speak' vs strategic 'will not speak'). The bright lines list these as SEPARATE open items. Read literally, 'the war-chest channel ... remains unestablished, so two readings ... remain observationally equivalent' implies the unestablished war-chest is what makes the compliance-vs-strategic readings equivalent. But resolving why firms accumulate cash would not resolve which reading of the hedging is correct, and failing to establish it does not cause that ambiguity; the two are independent. (A second, valid reading attaches 'so' to the broader 'establishes no mechanism' clause, under which observational equivalence does follow, so this is an ambiguous connective rather than a hard non-sequitur.) The intro mirror 1-P8-a keeps the two separate ('...offered as motivation, not identification -- while the source of the uncertainty ... remains observationally equivalent'), never invoking the war-chest, which shows the disambiguating fix touches no hedge.",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "the war-chest channel behind cash accumulation in particular remains unestablished, so two readings, a compliance-constrained inability to speak and a strategically chosen reticence, remain observationally equivalent",
+        "to": "the war-chest channel behind cash accumulation in particular remains unestablished, and, separately, the source of the uncertainty -- a compliance-constrained inability to speak versus a strategically chosen reticence -- remains observationally equivalent",
+        "why": "Decouples the two independent open questions so the sentence no longer implies that resolving the cash-accumulation cause would resolve the compliance-vs-strategic ambiguity. Matches the clean intro mirror 1-P8-a; retains all three limitation clauses, hardening or removing no hedge."
+      },
+      "finding_ids": [
+        "L1"
+      ],
+      "deep_analysis": {
+        "status": "VERIFIED (singleton pass)",
+        "verified": "VERBATIM: '...the war-chest channel...remains unestablished, SO two readings...remain observationally equivalent.' The 'so' was in the ORIGINAL too (pre-existing; survived my masking reword).",
+        "blast_radius": [
+          "section5 5-P5-a only (the limitations sentence)"
+        ],
+        "agents_missed": "none",
+        "fix_safe": "PASS -- decoupling KEEPS both opens open (war-chest CAUSE + source SOURCE); strengthens the two-open-whys separation.",
+        "verdict": "REAL-minor. The 'so' wrongly implies resolving the cash-accumulation cause would resolve the source. Decouple. Honest + safe."
+      }
+    },
+    {
+      "locus": "2.2|P5.2",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "minor",
+      "severity_by_source": {
+        "run1": "minor"
+      },
+      "n_flags": 1,
+      "dimensions": [
+        "coherence"
+      ],
+      "sources": [
+        "run1"
+      ],
+      "status": "validated",
+      "redteam_verdicts": [
+        "CONFIRMED"
+      ],
+      "issue": "2.2 P5.2 states the scrutiny rival is 'tested as a side analysis in 4.1, where it is rejected,' but 2.2 P5's own guardrail says the verdict 'belongs to 4.1 -- do NOT state it as established here' (and 2.5 P4.3 obeys this with a pure forward-pointer). 4.1, the verdict owner, deliberately never says 'rejected'; it frames the result as 'a failure to find ... not a powered equivalence test' that 'does not account for THIS run-up.' Mild verdict-register drift / guardrail-vs-statement tension. Note this is low-confidence because Section 4.1 is titled 'Ruling Out Analyst Scrutiny,' so 'rejected' is largely defensible as the paper's own framing.",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "tested as a side analysis in 4.1, where it is rejected",
+        "to": "tested as a side analysis in 4.1, where the run-up survives it (an underpowered failure to find, not a powered equivalence test)",
+        "why": "Aligns 2.2's verdict language to 4.1's register and to 2.2 P5's own 'do not state the verdict as established here' guardrail, while preserving the existing 'rejecting it does not establish a mechanism' hedge. Low priority because 'rejected' is defensible given Section 4.1's 'Ruling Out' framing."
+      },
+      "finding_ids": [
+        "COH-06"
+      ],
+      "deep_analysis": {
+        "status": "VERIFIED (singleton pass)",
+        "verified": "VERBATIM: scrutiny channel '...tested as a side analysis in 4.1, where it is rejected...' -- but 2.2 P5's guardrail defers the verdict to 4.1.",
+        "blast_radius": [
+          "section2.2 P5.2 + P5 guardrail"
+        ],
+        "agents_missed": "none",
+        "fix_safe": "PASS -- aligns to 4.1's register; 'rejected' also overstates the underpowered C4 null (floor: 'does not account for THIS run-up, not that scrutiny never matters').",
+        "verdict": "REAL-minor honesty-register (same family as 4.2). Soften 'rejected' -> 'does not account for this run-up'. C4 finding stands."
+      }
+    },
+    {
+      "locus": "5|5-P3-c",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "minor",
+      "severity_by_source": {
+        "run1": "minor"
+      },
+      "n_flags": 1,
+      "dimensions": [
+        "overclaim"
+      ],
+      "sources": [
+        "run1"
+      ],
+      "status": "unreviewed-minor",
+      "redteam_verdicts": [
+        "UNREVIEWED"
+      ],
+      "issue": "The conclusion bundles the Section 4.3 withdrawal-as-resolution check and the Section 4.4 no-lag check under one verb, 'the differential-timing result HOLDS.' 'Holds' is correct for the 4.4 leg (4.4's own register permits 'holds with or without the dynamic term'), but it overstates the 4.3 withdrawal leg, which Section 4.3 deliberately bounds as near-mechanical and low-power (only 89 firm-quarters / ~0.3% added; survival is 'a weak attenuation check, not strong evidence against selection') and whose register_global expressly forbids the word 'robust.' The prop's own _phaseC_audit note then characterizes both as 'robust,' directly contradicting 4.3's lock. Scope only to the 4.3/withdrawal leg; do NOT touch the 4.4 leg (flagging that would be a false positive).",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "The differential-timing result holds when a withdrawal is treated as a resolution of the deal and when the cash specification is estimated without its dynamic term. [_phaseC_audit: 'robust -- ... survive both alternatives']",
+        "to": "The differential-timing result is consistent with treating a withdrawal as a resolution of the deal and holds when the cash specification is estimated without its dynamic term. [_phaseC_audit: drop 'robust'; state 'consistent with' for the withdrawal leg, 'holds' for the no-lag leg]",
+        "why": "Keeps 'holds' for the 4.4 leg (sanctioned by 4.4's register) but downgrades the underpowered 4.3 withdrawal leg to 'consistent with' and removes 'robust' per 4.3's explicit register_lock, so the conclusion does not present a near-mechanical 0.3%-of-sample check as corroboration."
+      },
+      "finding_ids": [
+        "OC-2"
+      ],
+      "deep_analysis": {
+        "status": "VERIFIED (singleton pass)",
+        "verified": "VERBATIM: 'The differential-timing result HOLDS when a withdrawal is treated as a resolution... AND when the cash specification is estimated without its dynamic term.' Bundles 4.3 (withdrawal, underpowered) + 4.4 (no-lag) under one strong verb.",
+        "blast_radius": [
+          "section5 5-P3-c only"
+        ],
+        "agents_missed": "none",
+        "fix_safe": "PASS -- keep 'holds' for the 4.4 leg; downgrade the underpowered 4.3 withdrawal leg to 'consistent with'. Honest softening.",
+        "verdict": "REAL-minor honesty-register. Same family as 4.2 / 2.2 P5.2. Safe."
+      }
+    },
+    {
+      "locus": "2.1|P4.2",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "minor",
+      "severity_by_source": {
+        "run1": "minor"
+      },
+      "n_flags": 1,
+      "dimensions": [
+        "evidence"
+      ],
+      "sources": [
+        "run1"
+      ],
+      "status": "unreviewed-minor",
+      "redteam_verdicts": [
+        "UNREVIEWED"
+      ],
+      "issue": "P4.2's load-bearing claim (DWZ decompose call uncertainty into a persistent CEO-style component and a time-varying residual) is not carried by any verbatim cited_text span. The structured requery quotes are off-claim fragments -- n1 'conveyed, such as Lee (2016), sidestep this issue by including manager fixed effects in their', n2 'Next, we show that CEO clarity matters for the market', n4 'firms with more intangible assets...' -- none of which contains the decisive decomposition sentence ('Our analysis is the first to explicitly decompose ... personal style and the potentially strategic component (the residual)'). Support is answer-level reproduction + round-trip span_pin only. The verdict_note is transparent about this, and the underlying claim is genuinely DWZ's own method, so the citation is accurate; flagged for harness transparency, not as substantive overreach. ORIGINAL-locked.",
+      "proposed_fix": {
+        "action": "NONE",
+        "why": "The verdict openly discloses the weak span basis, and the decomposition is genuinely DWZ's own framing (DWZ call the residual 'the potentially strategic component'), so the claim is accurate and no prose change is required. The orchestrator should note this is the corpus's softest verbatim anchor and re-pin a clean span if Section 3's cash-positive contrast to DWZ's price-null is leaned on harder (P4.3 shares the same answer-level-only basis, also disclosed)."
+      },
+      "finding_ids": [
+        "EV-3"
+      ],
+      "deep_analysis": {
+        "status": "VERIFIED (singleton pass)",
+        "verified": "VERBATIM: 'language decomposes into a persistent CEO fixed effect and a time-varying residual; DWZ construct exactly this decomposition.' verdict=SUPPORTED, but the audit flags the NLM span basis as thin.",
+        "blast_radius": [
+          "section2.1 P4.2 (foundation of the UncResCEO measure); conceptually couples to section2.3 measure construction"
+        ],
+        "agents_missed": "none",
+        "fix_safe": "NONE proposed (self-disclosed weak span; DWZ's own construct).",
+        "verdict": "REAL but NO ACTION. The ONE singleton with substantive flavor -- it underpins the measure. Acceptable (SUPPORTED + DWZ framing), but THIS is the one to double-check if a referee probes the residual's construction. Not a break."
+      }
+    },
+    {
+      "locus": "4.2|4.2-PARA1-a",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "minor",
+      "severity_by_source": {
+        "run2": "minor"
+      },
+      "n_flags": 1,
+      "dimensions": [
+        "completeness"
+      ],
+      "sources": [
+        "run2"
+      ],
+      "status": "unreviewed-minor",
+      "redteam_verdicts": [
+        "UNREVIEWED"
+      ],
+      "issue": "Two Section 4.2 depends_on edges are prose phrases rather than prop_ids and resolve to no prop in the chain: 4.2-PARA1-a depends_on ['2.3 decomposition'] and 4.2-PARA4-a depends_on ['4.2-PARA2-a','4.2-PARA3-a','Section 3 run-up']. Every other cross-section dependency in the corpus uses a resolvable prop_id (e.g. 4.1-PARA1-a -> '3.2-PARA2-a', 4.3-PARA1-a -> '3.3-PARA3-a'). The referenced content exists (the 2.3 eq-4 decomposition; the Section 3 run-up), so this is a broken graph edge / orphan reference, not missing content -- but it disconnects 4.2 from its upstream anchors for any dependency traversal.",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "4.2-PARA1-a depends_on ['2.3 decomposition']; 4.2-PARA4-a depends_on [...,'Section 3 run-up']",
+        "to": "4.2-PARA1-a depends_on ['2.3:P2.2'] (the eq-4 / three-speech-component decomposition prop); 4.2-PARA4-a depends_on ['4.2-PARA2-a','4.2-PARA3-a','3.2-PARA2-a'] (the Section 3 run-up prop, with 3.3-PARA3-a optional)",
+        "why": "Restores resolvable dependency edges per the corpus's own cross-section convention. Section-qualify the 2.3 id (e.g. '2.3:P2.2') because 2.1-2.5 prop_ids are paragraph-local and collide across subsections."
+      },
+      "finding_ids": [
+        "comp-3"
+      ],
+      "deep_analysis": {
+        "cluster": "C3 section-4.2",
+        "verified": "Confirmed: 4.2-PARA1-a.depends_on=['2.3 decomposition'] and PARA4-a.depends_on=['Section 3 run-up'] -- free-text, resolve to no prop_id.",
+        "blast_radius": [
+          "section4.2 PARA1-a.depends_on",
+          "section4.2 PARA4-a.depends_on (2 dangling edges; also flagged in GATE-0 warnings)"
+        ],
+        "agents_missed": "none",
+        "fix_covers_full_radius": "yes",
+        "honesty_floor": "N/A (graph hygiene)",
+        "verdict": "REAL, minor. Fix: section-qualify to resolvable prop_ids (e.g. 2.3:P2.2) or move to a typed concept_depends_on field."
+      }
+    },
+    {
+      "locus": "4.4|4.4-PARA1-a",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "minor",
+      "severity_by_source": {
+        "run2": "minor"
+      },
+      "n_flags": 1,
+      "dimensions": [
+        "completeness"
+      ],
+      "sources": [
+        "run2"
+      ],
+      "status": "unreviewed-minor",
+      "redteam_verdicts": [
+        "UNREVIEWED"
+      ],
+      "issue": "4.4-PARA1-a -- the opening premise of the 'Cash Result Without the Dynamic Term' robustness section -- has depends_on=[], so it floats as a graph root with no anchor to the cash result it re-examines. The corpus's two other robustness-section openers BOTH anchor upstream to the result they check (4.1-PARA1-a -> '3.2-PARA2-a'; 4.3-PARA1-a -> '3.3-PARA3-a'). 4.4-PARA3-a re-derives the cash timing leg of 3.3-PARA3-a (no fall at announcement, fall at completion) without the lag, so the missing anchor is 3.3-PARA3-a (optionally also the cash run-up 3.2-PARA2-a). Same Section-4 dependency-edge defect class as comp-3.",
+      "proposed_fix": {
+        "action": "ADD",
+        "from": "depends_on: []",
+        "to": "depends_on: ['3.3-PARA3-a']",
+        "why": "Anchors the no-dynamic-term robustness check to the cash timing leg it re-examines, matching the convention used by 4.1 and 4.3. Add '3.2-PARA2-a' as a second anchor if the section also re-checks the MA1 cash run-up."
+      },
+      "finding_ids": [
+        "comp-4"
+      ],
+      "deep_analysis": {
+        "status": "VERIFIED (singleton pass)",
+        "verified": "VERBATIM: the no-dynamic-term robustness premise; depends_on=[] -> floats as a graph root.",
+        "blast_radius": [
+          "section4.4 4.4-PARA1-a depends_on only"
+        ],
+        "agents_missed": "none",
+        "fix_safe": "PASS -- graph hygiene; anchor to the cash-timing leg it re-examines (matches 4.1/4.3 convention). No claim touched.",
+        "verdict": "REAL-minor graph hygiene. Safe."
+      }
+    },
+    {
+      "locus": "2.1|P5.5",
+      "section": "2.1",
+      "prop_id": "P5.5",
+      "severity": "minor",
+      "severity_by_source": {
+        "smoke": "minor"
+      },
+      "n_flags": 1,
+      "dimensions": [
+        "overclaim"
+      ],
+      "sources": [
+        "smoke"
+      ],
+      "status": "unreviewed-minor",
+      "redteam_verdicts": [
+        "-"
+      ],
+      "issue": "P5.5 (ADDED) defers explanation of the differential to 2.2 with the phrase 'the magnitude of the cash-stock gap and why stock sits lower in our measure are developed in 2.2 (H1a).' 'Why stock sits lower in our measure' presupposes a real stock-below-baseline effect as the explanandum, foregrounding the stock-falling side and inverting the floor framing ('the gap is cash rising, not stock falling'). It is the forward-pointer to P3.4's suppression mechanism (OV-01) and dangles once P3.4's dampening clause is removed. This is a framing slip, not a deliberate hedge, so flagging it is not the asymmetric error; but it is low-stakes (the prop is otherwise heavily hedged: 'Motivation, not identification; the source ... stays open').",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "This motivates our FOCUS on cash deals; the magnitude of the cash-stock gap and why stock sits lower in our measure are developed in 2.2 (H1a).",
+        "to": "This motivates our FOCUS on cash deals; the magnitude of the cash-stock gap -- cash rising relative to the firm's own quarters, with stock showing no comparable rise -- is developed in 2.2 (H1a).",
+        "why": "Re-bases the deferred explanandum on the gap-as-cash-rising (floor framing) instead of 'stock sits lower' (suppression-direction framing), and keeps the forward-pointer consistent with the OV-01 rewrite of P3.4. Drops the standalone presupposition that stock is a real below-baseline effect needing a stock-side explanation."
+      },
+      "finding_ids": [
+        "OV-02"
+      ],
+      "deep_analysis": {
+        "cluster": "C1 suppression-direction",
+        "verified": "VERBATIM confirmed, section2.1 L2307: '...the magnitude of the cash-stock gap and why stock sits lower in our measure are developed in 2.2 (H1a)...'",
+        "blast_radius": [
+          "section2.1 P5.5 (L2307) -- 'why stock sits lower in our measure'"
+        ],
+        "agents_missed": "none",
+        "fix_covers_full_radius": "yes",
+        "honesty_floor": "PASS (re-base 'why stock sits lower' -> the gap-as-cash-rising framing)",
+        "verdict": "REAL, minor. Coupled to P3.4 (same error class). Fix: 'why stock sits lower in our measure' -> 'the magnitude of the cash-stock gap'."
+      }
+    },
+    {
+      "locus": "3.1|sample-selection",
+      "severity": "major (disclosure gap; Filters.txt inaccurate; applied set now code-verified)",
+      "dimension": "completeness (user-flagged)",
+      "issue": "§3.1 discloses no SDC sample-selection filters (only arm thresholds). The $1M minimum (F7) IS applied and undisclosed. BUT Filters.txt's documented 10 do NOT match the data: only F7 is baked into sdc-ma-merged.parquet (the raw 1999-2025 export, 142,457 deals); #1 + US/public/2002-2018/payment-known/deal-status are applied DOWNSTREAM; #2 (<50% prior) and #3 (>50% control) are NOT enforceable -- the SDC export has no percent-owned/percent-sought field, and minority deals (Partial Interest 1,081; Stake Purchase 682) survive; #4 (asset sales 2,095), #5 (self-tenders etc.), #6 (earliest-per-bid; 1,043 dup pairs) are NOT applied in the merge and unconfirmed downstream. So the disclosure must be built from VERIFIED pipeline filters, NOT from Filters.txt.",
+      "evidence": "inputs/SDC/Filters_accuracy_check.md (2026-06-04) + live re-run of tmp/_sdc_filter_verify.py: F7 min=1.0, 0 below (APPLIED); financials present (27,784 'Financial Group' targets); US targets only ~17% (24,374 of 142,457); #2/#3 no SDC column (not representable); 1,043 acq-target CUSIP pairs with >1 row (no earliest-per-bid dedup). sdc-ma-merged.parquet = raw/broad export, NOT the filtered sample.",
+      "proposed_fix": {
+        "action": "ADD",
+        "from": "",
+        "to": "Disclose the CODE-VERIFIED applied sample-selection (below), NOT Filters.txt. APPLIED FILTERS:\n- 2002-2018 announcement window (gen_empire_did_table.py:97)\n- US ACQUIRERS -- Acquiror Nation=='United States' (L98)  [NB: ACQUIRER, not target]\n- Public ACQUIRERS -- Acquiror Public Status=='Public' (L99)\n- Deal Status in {Completed, Pending, Withdrawn} (L100)\n- Payment method known -- Percentage of Cash or Stock non-null (L101)\n- Arm: >=50% cash (treatment) / >=50% stock (placebo) (build() mask, L117)\n- Minimum deal value $1M (F7, baked into sdc-ma-merged.parquet upstream)\n- Acquirer matched to >=1 earnings-call transcript (master_sample_manifest merge, L120)\n- First qualifying deal per firm -- earliest announcement quarter (L119)\n- financials/utilities excluded via the main call-firm sample (FF12 8&11); applied to SDC by the manifest match (L120)",
+        "why": "Code-verified from gen_empire_did_table.py:88-128 + master_sample_manifest. Filters.txt is inaccurate (see discrepancies); disclose only what is actually applied.",
+        "honesty_floor": "PASS",
+        "evidence_ok": "PASS (file:line verified)"
+      },
+      "confidence": "high",
+      "deep_analysis": {
+        "verified": "User-challenged correctly. Only F7 ($1M) verified-applied at the SDC merge; the other 9 are downstream / unenforceable / unconfirmed.",
+        "agents_missed": "N/A (panel had no data/code access). My OWN earlier fix ('disclose all 10') was WRONG -- would have invented #2/#3 control filters that are not enforced.",
+        "blast_radius": [
+          "§3.1 sample disclosure; AND inputs/SDC/Filters.txt is aspirational/inaccurate (overstates applied filters) -- do not cite it as the sample spec"
+        ],
+        "fix_safe": "CONDITIONAL -- disclose only F7 now; the rest pending pipeline-code verification",
+        "status": "CODE-VERIFIED + COMPLETE (incl fin/util via main-sample match). Disclosure content ready.",
+        "lesson": "applied second-question again: not 'does Filters.txt list 10?' but 'are the 10 actually applied?' -- answer: no, only 1.",
+        "applied_filters_VERIFIED": [
+          "2002-2018 announcement window (gen_empire_did_table.py:97)",
+          "US ACQUIRERS -- Acquiror Nation=='United States' (L98)  [NB: ACQUIRER, not target]",
+          "Public ACQUIRERS -- Acquiror Public Status=='Public' (L99)",
+          "Deal Status in {Completed, Pending, Withdrawn} (L100)",
+          "Payment method known -- Percentage of Cash or Stock non-null (L101)",
+          "Arm: >=50% cash (treatment) / >=50% stock (placebo) (build() mask, L117)",
+          "Minimum deal value $1M (F7, baked into sdc-ma-merged.parquet upstream)",
+          "Acquirer matched to >=1 earnings-call transcript (master_sample_manifest merge, L120)",
+          "First qualifying deal per firm -- earliest announcement quarter (L119)",
+          "financials/utilities EXCLUDED: the main call-firm sample is fin/util-filtered (FF12 8&11); SDC deals enter ONLY by matching that sample (manifest merge, gen_empire_did_table.py:120). user-confirmed + Filters_accuracy_check.md. APPLIED."
+        ],
+        "filters_txt_discrepancies": [
+          "Filters.txt #9 says 'U.S. TARGETS' but the code filters US ACQUIRERS (Acquiror Nation). target-vs-acquirer mismatch -- disclose as US ACQUIRERS.",
+          "Filters.txt #2 (<50% owned prior) + #3 (>50% control): NOT applied (no SDC field; not in the known mask).",
+          "Filters.txt #4 (asset sales) + #5 (self-tenders/spin-offs/reverse): NOT in the deal-selection mask (Form of the Deal not filtered).",
+          "Filters.txt #6 'earliest announcement per bid': applied as FIRST qualifying deal per firm (L119) -- related, not identical."
+        ]
+      }
+    },
+    {
+      "locus": "2.4|DiD-label",
+      "severity": "minor (prose-regeneration guard)",
+      "dimension": "coherence (user-flagged)",
+      "issue": "The estimator is a within-firm two-way fixed-effects regression (single event-time indicator; MA1 drops post-announce quarters -> a pre-only mean shift; arms estimated separately) -- NOT a canonical difference-in-differences. The rendered thesis (thesis_draft.tex L94) CORRECTLY says 'within-firm, two-way fixed-effects regression' and section 2.4 disclaims 'DiD identification'. No thesis-content error today. BUT section 2.4 planning metadata (spine 'main run-up DiD'; lit_body) + the code/table names (gen_empire_did_table.py, *_did_table) loosely call it 'DiD'; a prose regeneration from the planning spine could introduce a DiD mislabel.",
+      "evidence": "CONFIRMED no DiD in thesis: thesis_draft.tex L94 'a within-firm, two-way fixed-effects regression of an outcome on event-time treatment indicators'; grep = zero 'difference-in-differences' in the .tex. section2.4 thin_claim L244 'not a DiD identification proof'; L37 'descriptive estimand, NO identification'; SEAM-A L42 'MA1 DROPS post-announce quarters; MA1's beta is a pre-only mean shift'. 'DiD' appears ONLY in section2.4 planning fields + code/table names.",
+      "proposed_fix": {
+        "action": "ADD",
+        "to": "REGISTER-LOCK: the design is a within-firm two-way fixed-effects regression, NOT a difference-in-differences; the thesis disclaims DiD identification (no parallel-trends, no treat-x-post). NEVER write 'difference-in-differences' / 'DiD' in regenerated prose. The planning spine's 'run-up DiD' and the *_did code/table names are scaffolding only.",
+        "why": "User confirmed no DiD in the thesis; this guard protects the (now-correct) prose through the upcoming regeneration.",
+        "honesty_floor": "PASS",
+        "evidence_ok": "PASS"
+      },
+      "confidence": "high",
+      "deep_analysis": {
+        "verified": "User-confirmed + thesis_draft.tex L94 (two-way FE, no DiD). DiD only in scaffolding.",
+        "blast_radius": [
+          "section2.4 _plan.spine + lit_body (scaffolding); code names gen_empire_did_table.py / *_did_table (artifacts, never rendered)"
+        ],
+        "fix_safe": "PASS",
+        "status": "NEW (user-flagged); confirmed thesis correctly uses two-way FE"
+      }
+    }
+  ]
+}

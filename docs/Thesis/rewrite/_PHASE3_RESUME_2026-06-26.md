@@ -1,5 +1,9 @@
 # RESUME — Phase-3 masking propagation: PROPOSED-FIX clones DONE, ready to APPLY (2026-06-26)
 
+> ⚠️ **SUPERSEDED BY THE AUDIT LAYER (2026-06-27).** The proposed fixes below were then AUDITED.
+> **Start at `_audit/_AUDIT_RESUME_2026-06-27.md`** (17 findings in `_audit/audit.json`; nothing applied;
+> P3.4 needs ratify; spine-vs-data sweep decision pending). This doc remains the record of the fixes themselves.
+
 > **THE current entry point.** SUPERSEDES the harness-era docs (`_PHASE3_HARNESS_RESUME.md`,
 > `_PHASE4_FORK_PROMPT_1.md`, `_PHASE4_HARNESS_HANDOFF.md`, `_PHASE4_S2_MODSPEC.md`) — those describe a
 > multi-agent **harness that was ABANDONED**. We did the redesign **MANUALLY**, section by section.

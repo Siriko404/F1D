@@ -1,0 +1,38 @@
+{
+  "dimension": "overclaim",
+  "corpus_props": 149,
+  "findings": [
+    {
+      "id": "OV-01",
+      "dimension": "overclaim",
+      "severity": "critical",
+      "locus": { "section": "2.2", "prop_id": "P3.4", "field": "statement" },
+      "issue": "P3.4 (ADDED masking prop) motivates the cash>stock differential by asserting that stock bidders' 'broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product.' This posits an ACTIVE DOWNWARD FORCE on the stock arm's measured Q&A uncertainty (stock pushed below baseline) and hands the floor's 'noisy flat null' (stock -0.0429 n.s.) a mechanism, converting noise into signal. It breaches the absolute bright line 'NO stock suppressed -- the gap is CASH RISING, not stock falling,' which is installed as a guard in the abstract, Section 1, Section 2.1, Section 3.2, Section 3.4, and Section 5. The 'masking = motivation, not mechanism' license permits motivation but does NOT license a motivation that takes the FORM of a stock-suppression reading; the two bright lines are a conjunction. The hedges ('plausibly', 'by-product', 'interpretation, not detection') qualify certainty, but the floor forbids the reading itself regardless of certainty.",
+      "evidence": "P3.4 verbatim: 'The masking asymmetry motivates the differential (cash > stock): stock bidders manage their pre-deal narrative (callback 2.1 P5), and the same broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product, while cash bidders -- lacking the currency motive -- carry the disclosure strain into the unscripted answers more cleanly.' | Universal guard (Section 2.1 / 3.2 / 3.4 / abstract / 1 / 5): 'No stock suppressed / stock not pushed below baseline -- the stock comparison arm is a noisy flat null (-0.0429 n.s.); the cash-vs-stock gap is cash rising, not stock falling.' | INTERNAL CONTRADICTION (same-dimension): P5.6 (ADDED, same masking batch) states 'the documented scripted-channel management does not mechanically carry into our measure, so our signal is not an artifact of the very tone-management the cites describe' -- yet P3.4 claims that same scripted optimism management DOES carry into the measure (dampening the unscripted Q&A uncertainty). P3.4 therefore claims MORE than the thesis's own firewall concedes, independent of the bright line. | P3.4's own verification note even disavows the statement: 'the stock arm is a noisy flat null, not suppressed; we interpret, we do not detect.'",
+      "rule_broken": "Bright line: 'NO stock suppressed -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING, not stock falling.' Overclaim type: 'any stock suppressed reading (stock pushed below baseline).' Also breaches Section 2.2 _plan boundary ('predictions only ... never WHY ... never assert a cause') by supplying a downward-force WHY for the stock arm.",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "stock bidders manage their pre-deal narrative (callback 2.1 P5), and the same broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product, while cash bidders -- lacking the currency motive -- carry the disclosure strain into the unscripted answers more cleanly. This motivates why H1a expects a larger run-up for cash; it is interpretation, not detection.",
+        "to": "stock bidders manage their scripted pre-deal narrative (callback 2.1 P5), which gives them no parallel reason to surface uncertainty in the unscripted Q&A, while cash bidders -- lacking the currency motive -- carry the disclosure strain into the unscripted answers more cleanly. This motivates why H1a expects a larger run-up for cash: the gap is cash rising relative to the firm's own quarters, not stock pushed below baseline (the stock arm is a noisy flat null, -0.0429 n.s.). Motivation, not detection.",
+        "why": "Root fix, not word-trim. Removing ONLY the 'optimism disposition plausibly dampens their unguarded Q&A uncertainty' clause leaves the sentence still fully motivating cash>stock (cash carries the strain more cleanly = cash rising), which proves the dampening clause is pure surplus overclaim. The rewrite (a) keeps the legitimate masking motivation -- stock manages its scripted narrative per S-V valuation / Louis earnings / thewissen tone (callback 2.1 P5); (b) re-bases the differential entirely on cash rising, the floor-mandated framing; (c) adds the explicit no-suppression anchor the universal guard requires; and (d) resolves the contradiction with the P5.6 firewall (scripted management does not carry into the unscripted measure). The Section 2.2 fix_summary intends 'the attenuation motivation' to land here, but attenuation-of-stock is structurally suppression, so the motivation must be carried on the cash-rising side, not the stock-dampening side."
+      },
+      "confidence": "high"
+    },
+    {
+      "id": "OV-02",
+      "dimension": "overclaim",
+      "severity": "minor",
+      "locus": { "section": "2.1", "prop_id": "P5.5", "field": "statement" },
+      "issue": "P5.5 (ADDED) defers explanation of the differential to 2.2 with the phrase 'the magnitude of the cash-stock gap and why stock sits lower in our measure are developed in 2.2 (H1a).' 'Why stock sits lower in our measure' presupposes a real stock-below-baseline effect as the explanandum, foregrounding the stock-falling side and inverting the floor framing ('the gap is cash rising, not stock falling'). It is the forward-pointer to P3.4's suppression mechanism (OV-01) and dangles once P3.4's dampening clause is removed. This is a framing slip, not a deliberate hedge, so flagging it is not the asymmetric error; but it is low-stakes (the prop is otherwise heavily hedged: 'Motivation, not identification; the source ... stays open').",
+      "evidence": "P5.5 verbatim: '... the magnitude of the cash-stock gap and why stock sits lower in our measure are developed in 2.2 (H1a). Motivation, not identification; the source of the cash uncertainty stays open (P7).' | P5.5's own verification note contradicts the 'sits lower' framing: 'No stock suppressed; nothing below baseline. The DV-level gap (global-disposition by-product + attenuation) lives in 2.2.'",
+      "rule_broken": "Bright line: 'the gap is CASH RISING, not stock falling' (framing slip toward stock-below-baseline). Couple to OV-01.",
+      "proposed_fix": {
+        "action": "REWORD",
+        "from": "This motivates our FOCUS on cash deals; the magnitude of the cash-stock gap and why stock sits lower in our measure are developed in 2.2 (H1a).",
+        "to": "This motivates our FOCUS on cash deals; the magnitude of the cash-stock gap -- cash rising relative to the firm's own quarters, with stock showing no comparable rise -- is developed in 2.2 (H1a).",
+        "why": "Re-bases the deferred explanandum on the gap-as-cash-rising (floor framing) instead of 'stock sits lower' (suppression-direction framing), and keeps the forward-pointer consistent with the OV-01 rewrite of P3.4. Drops the standalone presupposition that stock is a real below-baseline effect needing a stock-side explanation."
+      },
+      "confidence": "med"
+    }
+  ]
+}

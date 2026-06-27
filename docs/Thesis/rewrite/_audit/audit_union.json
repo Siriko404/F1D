@@ -1,0 +1,963 @@
+{
+  "clusters": [
+    {
+      "locus": "2.2|P3.4",
+      "max_severity": "critical",
+      "n_findings": 5,
+      "dimensions": [
+        "coherence",
+        "completeness",
+        "evidence",
+        "logic",
+        "overclaim"
+      ],
+      "sources": [
+        "run1",
+        "run2",
+        "smoke"
+      ],
+      "findings": [
+        {
+          "id": "COH-04",
+          "severity": "minor",
+          "locus": {
+            "section": "2.2",
+            "prop_id": "P3.4",
+            "field": "statement"
+          },
+          "issue": "At the new-masking seam, the 2.1 P5.6 firewall (the load-bearing defense that the cash signal is not a tone-management artifact) says the cited management 'does not mechanically carry into our [unscripted Q&A] measure'; but 2.2 P3.4 (attenuation, the motivation for cash>stock) says stock acquirers' 'broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product.' Read side by side -- management does NOT reach the Q&A vs management disposition DOES dampen the Q&A -- a referee can read a contradiction. The intended distinction (specific scripted artifacts do not mechanically transfer; a broader disposition spills as a by-product, only for stock which has the currency motive) is real (P5.5's note homes the 'global-disposition by-product' in 2.2) but is never stated where the two props meet.",
+          "evidence": "2.1 P5.6: 'our dependent variable is uncertainty in the UNSCRIPTED Q&A ... the documented scripted-channel management does not mechanically carry into our measure, so our signal is not an artifact of the very tone-management the cites describe -- a strength, not a gap.' || 2.2 P3.4: 'stock bidders manage their pre-deal narrative ... and the same broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product, while cash bidders -- lacking the currency motive -- carry the disclosure strain into the unscripted answers more cleanly.'",
+          "rule_broken": "cross-section coherence at the masking seam: a load-bearing firewall claim (management does not reach the Q&A) must not be undercut by a parallel motivation claim (management disposition dampens the Q&A) without an explicit reconciliation",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "and the same broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product",
+            "to": "and the same broad optimism disposition -- a behavioral by-product, distinct from the scripted artifacts the 2.1 firewall shows do not mechanically enter the residual -- plausibly dampens their unguarded Q&A uncertainty",
+            "why": "Adds a one-clause reconciliation distinguishing the firewall (scripted artifacts do not mechanically transfer) from the attenuation (a disposition spills as a by-product), so the two masking props are not read as contradictory. Neither hedge is weakened -- both stay 'plausibly / motivation, not detection.'"
+          },
+          "confidence": "med",
+          "dimension": "coherence",
+          "redteam": {
+            "finding_id": "COH-04",
+            "verdict": "CONFIRMED",
+            "verdict_reason": "Real seam tension, minor. 2.1 P5.6 (firewall): the documented scripted-channel management 'does not mechanically carry into our [unscripted Q&A] measure'; 2.2 P3.4: stock bidders' 'broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product'. Side by side these read as 'management does NOT reach Q&A' vs 'disposition DOES dampen Q&A'. The intended distinction (specific scripted artifacts don't transfer; a broad disposition spills as a by-product) is real and homed in P5.5's note ('global-disposition by-product ... lives in 2.2') but not stated where the props meet. It is a misreading risk, not a hard contradiction (the firewall protects the CASH arm; the dampening explains the STOCK arm), so minor.",
+            "fix_check": {
+              "honesty_floor": "PASS",
+              "evidence_still_supports": "NA",
+              "verdict": "SOUND",
+              "hardened_to": "The added clause distinguishes by-product-disposition from scripted-artifact and keeps 'plausibly'/motivation register, crossing no bright line. CAUTION (see missed #3): the fix must NOT be allowed to amplify the 'stock dampened/falls' reading — keep the existing 'interpretation, not detection' + 'noisy flat null, not suppressed' hedges adjacent so the no-stock-suppressed bright line stays intact."
+            }
+          },
+          "_src": "run1"
+        },
+        {
+          "id": "EV-1",
+          "severity": "minor",
+          "locus": {
+            "section": "2.2",
+            "prop_id": "P3.4",
+            "field": "verification.note + statement"
+          },
+          "issue": "P3.4 is the ADDED masking-motivation prop for the cash>stock differential. Its statement posits that stock bidders' 'broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product,' and its evidence basis is 'callback to 2.1 P5 (S-V / Louis / thewissen, SUPPORTED).' But the three SUPPORTED sources establish scripted/earnings-channel management ONLY: Shleifer-Vishny = a valuation/currency motive, Louis = pre-deal abnormal accruals (earnings numbers), Thewissen = earnings-press-release TONE. None reaches the firm's UNSCRIPTED Q&A uncertainty, so the cited support does not back the specific by-product attenuation channel it is invoked for. IMPORTANT: masking-as-motivation is CORRECT and must stay; the prop is properly hedged ('plausibly', 'interpretation, not detection', INCONCLUSIVE_MANUAL, with an honesty floor stating stock is a noisy flat null, not suppressed). This is a narrow evidence-reach flag, NOT an attack on the hedge.",
+          "evidence": "statement: 'the same broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product, while cash bidders -- lacking the currency motive -- carry the disclosure strain into the unscripted answers more cleanly ... it is interpretation, not detection.' note: 'Evidence = callback to 2.1 P5 (S-V / Louis / thewissen, SUPPORTED) + the result (C6 ... 0.0983**) + data (cash +0.0461***, stock -0.0429 n.s.).' Appendix P5.2 = 'a powerful incentive for firms to get their equity overvalued, so that they can make acquisitions with stock' (valuation); P5.3 = 'a jump in the abnormal accrual in the quarter immediately prior to the merger announcement' (earnings); P5.4 = 'tone of earnings press releases significantly increases by 15%' (scripted tone) -- none about Q&A.",
+          "rule_broken": "evidence cited for something it does not establish: scripted/earnings sources (S-V/Louis/thewissen) used to back an unscripted-Q&A attenuation by-product they never test",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "the same broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product",
+            "to": "Keep the clause, but ensure the prose (and this note) mark the unscripted-Q&A by-product as the authors' OWN conjecture, explicitly NOT established by S-V/Louis/thewissen (which document only scripted tone and earnings-number management); retain the masking-as-motivation status and the 'noisy flat null, not suppressed' honesty floor.",
+            "why": "The by-product attenuation is the load-bearing interpretive bridge for 'cash > stock,' yet rides on a 'SUPPORTED' callback that does not reach the Q&A channel. The motivation is legitimate and must stay; only its evidentiary reach needs to be stated accurately so a referee does not read the cited papers as proving a Q&A dampening."
+          },
+          "confidence": "low",
+          "dimension": "evidence",
+          "redteam": {
+            "verdict": "UNREVIEWED",
+            "verdict_reason": "no redteam verdict (out of this redteam scope)"
+          },
+          "_src": "run1"
+        },
+        {
+          "id": "COMP-3",
+          "severity": "minor",
+          "locus": {
+            "section": "2.2",
+            "prop_id": "P3.4",
+            "field": "anchor_2_1"
+          },
+          "issue": "P3.4 (ADDED) is the masking-differential motivation for H1a -- the cash>stock attenuation/by-product reasoning deferred from 2.1 P5 -- i.e. a masking leg asserted in 2.2 that depends on its setup in 2.1 P5 (Shleifer-Vishny currency motive / Louis pre-deal earnings / thewissen tone). Unlike every sibling in 2.2 P3 (P3.1/P3.2/P3.3 each carry relation_to_2_1 + anchor_2_1=['P5'], P3.3=['P5','P7']), P3.4 omits both fields. The setup link survives only in the free-text verification.note, so an orchestrator that traces the structured anchor graph will not see this masking leg's dependency on its 2.1 setup.",
+          "evidence": "P3.4 has no anchor_2_1 / relation_to_2_1 key (confirmed: it is the lone prop among all 2.2 props lacking both). Its verification.note reads 'Evidence = callback to 2.1 P5 (S-V / Louis / thewissen, SUPPORTED) + the result (... C6 ...) + data (cash +0.0461***, stock -0.0429 n.s.).' Sibling P3.2 carries '\"anchor_2_1\": [\"P5\"]'; P3.3 carries '\"anchor_2_1\": [\"P5\",\"P7\"]'.",
+          "rule_broken": "completeness/traceability: the masking leg's setup dependency is not machine-traceable via the structured anchor field its siblings use",
+          "proposed_fix": {
+            "action": "ADD",
+            "from": "P3.4 with no relation_to_2_1 / anchor_2_1",
+            "to": "P3.4 with '\"relation_to_2_1\": \"CALLBACK\"' and '\"anchor_2_1\": [\"P5\",\"P7\"]'",
+            "why": "Makes the masking-differential's dependency on 2.1 P5 (the S-V/Louis/thewissen setup) and P7 (mechanism-open) structurally traceable, matching its siblings; carries no register change (the masking-as-motivation hedge in the statement is correct and stays)."
+          },
+          "confidence": "high",
+          "dimension": "completeness",
+          "redteam": {
+            "finding_id": "COMP-3",
+            "verdict": "CONFIRMED",
+            "verdict_reason": "Verified: P3.4 is the lone 2.2-P3 prop with neither relation_to_2_1 nor anchor_2_1 (it instead carries a full verification block, having been built in the 2.1-masking framing style); siblings P3.1/P3.2/P3.3 all carry relation_to_2_1 + anchor_2_1 (['P5'], ['P5'], ['P5','P7']) and no verification block. So the masking-differential's structured dependency on its 2.1 P5 setup survives only in free-text verification.note and is invisible to an anchor-graph trace. Minor (traceability/metadata), high-confidence.",
+            "fix_check": {
+              "honesty_floor": "PASS",
+              "evidence_still_supports": "NA",
+              "verdict": "SOUND",
+              "hardened_to": "relation_to_2_1='CALLBACK' + anchor_2_1=['P5','P7'] is correct (P3.4 calls back the deferred 2.1 P5 masking setup and invokes mechanism-open per P7, matching sibling P3.3's ['P5','P7']); the masking-as-motivation statement is untouched. Optional for full sibling-shape parity: also add status:'PLANNED' (P3.4 already carries a verification verdict INCONCLUSIVE_MANUAL, so it is 'cleared')."
+            }
+          },
+          "_src": "run1"
+        },
+        {
+          "id": "LOGIC-2",
+          "severity": "minor",
+          "locus": {
+            "section": "2.2",
+            "prop_id": "P3.4",
+            "field": "statement"
+          },
+          "issue": "Coherence seam between two ADDED masking props about the scripted->unscripted genre-jump. 2.1 P5.6 (the cross-channel firewall) defends the cash signal by asserting the cited scripted-channel management does NOT carry into the unscripted Q&A measure; 2.2 P3.4 (the cash>stock attenuation motivation) has the stock-side optimism posture dampening the UNGUARDED Q&A uncertainty as a by-product. Both props are individually sound and fully hedged as motivation/interpretation, and are reconcilable under a common-cause reading (deliberate scripted-artifact management, which P5.6 firewalls out of the Q&A, versus an incidental dispositional by-product, which P3.4 lets color the Q&A). But that reconciling distinction is never drawn, so on the page the two ADDED props superficially make opposite assumptions about whether the optimism/management posture reaches the unscripted Q&A.",
+          "evidence": "2.1 P5.6: 'the documented scripted-channel management does not mechanically carry into our measure, so our signal is not an artifact of the very tone-management the cites describe -- a strength, not a gap.' | 2.2 P3.4: 'the same broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product, while cash bidders -- lacking the currency motive -- carry the disclosure strain into the unscripted answers more cleanly.'",
+          "rule_broken": "Cross-prop coherence at a seam: two props in the same (masking) chain should not appear to assume opposite things about the same causal pathway (does the scripted/management posture reach the unscripted Q&A?) without an explicit reconciling distinction.",
+          "proposed_fix": {
+            "action": "ADD",
+            "from": "",
+            "to": "Add one half-clause (in 2.2 P3.4 or 2.1 P5.6) marking the stock-side Q&A dampening as an incidental by-product of a broad optimism disposition, explicitly distinct from the deliberate scripted-artifact management (press-release tone, accruals) that P5.6 firewalls out of the unscripted Q&A.",
+            "why": "Both props are correct, fully hedged motivation/interpretation and must stay; the only defect is the unstated distinction that reconciles them. This ADDs a clarifying distinction and removes or hardens no hedge, so it does not violate the masking 'motivation-not-mechanism' or 'no stock suppressed' bright lines."
+          },
+          "confidence": "low",
+          "dimension": "logic",
+          "redteam": {
+            "verdict": "UNREVIEWED",
+            "verdict_reason": "no redteam verdict (out of this redteam scope)"
+          },
+          "alternatives": [
+            {
+              "id": "COH-1",
+              "dimension": "coherence",
+              "action": "REWORD",
+              "why": "Relocates the stock-side management into the scripted channel (where P5.6 already firewalls it) and frames the expected gap as cash's signal being un-attenuated rather than stock's Q&A being actively dampened -- aligning the H1a motivation with both the P5.6 firewall and the P3.3 no-suppression lock, WITHOUT hardening any hedge ('plausibly', 'motivation, not detection', honesty-floor note all retained)."
+            },
+            {
+              "id": "EV-1",
+              "dimension": "evidence",
+              "action": "REWORD",
+              "why": "Removes the uncited, untested 'optimism dampens stock's unscripted Q&A' interpretation (the cited papers cover only scripted earnings/tone, and 2.1 P5.6 firewalls that very scripted->Q&A channel) while preserving the supported cash-rising motivation for cash > stock. This trims overreach toward the cash-rising framing; it does NOT harden any hedge, drop the 'interpretation, not detection' clause, or touch the noisy-flat-null floor."
+            }
+          ],
+          "_src": "run2"
+        },
+        {
+          "id": "OV-01",
+          "dimension": "overclaim",
+          "severity": "critical",
+          "locus": {
+            "section": "2.2",
+            "prop_id": "P3.4",
+            "field": "statement"
+          },
+          "issue": "P3.4 (ADDED masking prop) motivates the cash>stock differential by asserting that stock bidders' 'broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product.' This posits an ACTIVE DOWNWARD FORCE on the stock arm's measured Q&A uncertainty (stock pushed below baseline) and hands the floor's 'noisy flat null' (stock -0.0429 n.s.) a mechanism, converting noise into signal. It breaches the absolute bright line 'NO stock suppressed -- the gap is CASH RISING, not stock falling,' which is installed as a guard in the abstract, Section 1, Section 2.1, Section 3.2, Section 3.4, and Section 5. The 'masking = motivation, not mechanism' license permits motivation but does NOT license a motivation that takes the FORM of a stock-suppression reading; the two bright lines are a conjunction. The hedges ('plausibly', 'by-product', 'interpretation, not detection') qualify certainty, but the floor forbids the reading itself regardless of certainty.",
+          "evidence": "P3.4 verbatim: 'The masking asymmetry motivates the differential (cash > stock): stock bidders manage their pre-deal narrative (callback 2.1 P5), and the same broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product, while cash bidders -- lacking the currency motive -- carry the disclosure strain into the unscripted answers more cleanly.' | Universal guard (Section 2.1 / 3.2 / 3.4 / abstract / 1 / 5): 'No stock suppressed / stock not pushed below baseline -- the stock comparison arm is a noisy flat null (-0.0429 n.s.); the cash-vs-stock gap is cash rising, not stock falling.' | INTERNAL CONTRADICTION (same-dimension): P5.6 (ADDED, same masking batch) states 'the documented scripted-channel management does not mechanically carry into our measure, so our signal is not an artifact of the very tone-management the cites describe' -- yet P3.4 claims that same scripted optimism management DOES carry into the measure (dampening the unscripted Q&A uncertainty). P3.4 therefore claims MORE than the thesis's own firewall concedes, independent of the bright line. | P3.4's own verification note even disavows the statement: 'the stock arm is a noisy flat null, not suppressed; we interpret, we do not detect.'",
+          "rule_broken": "Bright line: 'NO stock suppressed -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING, not stock falling.' Overclaim type: 'any stock suppressed reading (stock pushed below baseline).' Also breaches Section 2.2 _plan boundary ('predictions only ... never WHY ... never assert a cause') by supplying a downward-force WHY for the stock arm.",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "stock bidders manage their pre-deal narrative (callback 2.1 P5), and the same broad optimism disposition plausibly dampens their unguarded Q&A uncertainty as a by-product, while cash bidders -- lacking the currency motive -- carry the disclosure strain into the unscripted answers more cleanly. This motivates why H1a expects a larger run-up for cash; it is interpretation, not detection.",
+            "to": "stock bidders manage their scripted pre-deal narrative (callback 2.1 P5), which gives them no parallel reason to surface uncertainty in the unscripted Q&A, while cash bidders -- lacking the currency motive -- carry the disclosure strain into the unscripted answers more cleanly. This motivates why H1a expects a larger run-up for cash: the gap is cash rising relative to the firm's own quarters, not stock pushed below baseline (the stock arm is a noisy flat null, -0.0429 n.s.). Motivation, not detection.",
+            "why": "Root fix, not word-trim. Removing ONLY the 'optimism disposition plausibly dampens their unguarded Q&A uncertainty' clause leaves the sentence still fully motivating cash>stock (cash carries the strain more cleanly = cash rising), which proves the dampening clause is pure surplus overclaim. The rewrite (a) keeps the legitimate masking motivation -- stock manages its scripted narrative per S-V valuation / Louis earnings / thewissen tone (callback 2.1 P5); (b) re-bases the differential entirely on cash rising, the floor-mandated framing; (c) adds the explicit no-suppression anchor the universal guard requires; and (d) resolves the contradiction with the P5.6 firewall (scripted management does not carry into the unscripted measure). The Section 2.2 fix_summary intends 'the attenuation motivation' to land here, but attenuation-of-stock is structurally suppression, so the motivation must be carried on the cash-rising side, not the stock-dampening side."
+          },
+          "confidence": "high",
+          "_src": "smoke"
+        }
+      ]
+    },
+    {
+      "locus": "1|1-P7-a",
+      "max_severity": "major",
+      "n_findings": 2,
+      "dimensions": [
+        "coherence",
+        "logic"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "findings": [
+        {
+          "id": "COH-01",
+          "severity": "major",
+          "locus": {
+            "section": "1",
+            "prop_id": "1-P7-a",
+            "field": "statement"
+          },
+          "issue": "The introduction's enumerated-contributions paragraph states the study makes THREE contributions, but FOUR are enumerated once the reconciled bid-ask prop 1-P7-b ('Fourth, ...') is appended. Generated prose would read 'This study makes three contributions ... First ... Second ... Third ... Fourth ...' -- a literal self-contradicting count. The corpus's own note on 1-P7-b admits 1-P7-a 'still read[s] three contributions' but the statement was never reworded. This also breaks the intro/conclusion findings-set mirror, since the conclusion (5-P3-b) carries the bid-ask finding too.",
+          "evidence": "1-P7-a: 'This study makes three contributions, each descriptive. First, it reads a residual measure ... Second, it documents that this language pattern concentrates in cash ... Third, it reads the unscripted question-and-answer session ...' || 1-P7-b: 'Fourth, it documents that this residual uncertainty is unrelated to the firm's post-call bid-ask spread ...' || 1-P7-b.from_phaseA_prop: '1-P7-a + this paragraph's intent/thin_claim still read \"three contributions\" -- Phase-C synthesis added a FOURTH (bid-ask) contribution to final_prose; the count is reconciled to FOUR here'",
+          "rule_broken": "internal enumeration consistency: a stated count ('three') must match the items actually listed (four); intent/thin_claim of 1-P7 also still say 'three'",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "This study makes three contributions, each descriptive.",
+            "to": "This study makes four contributions, each descriptive.",
+            "why": "Four contributions are enumerated (First/Second/Third in 1-P7-a + Fourth in 1-P7-b). The literal count in 1-P7-a, plus the paragraph intent and thin_claim, must be updated three->four. The corpus reconciled the prop SET to four but left the word 'three' in the statement, so the contradiction is live in the audited spine."
+          },
+          "confidence": "high",
+          "dimension": "coherence",
+          "redteam": {
+            "finding_id": "COH-01",
+            "verdict": "CONFIRMED",
+            "verdict_reason": "Verified: 1-P7-a statement literally opens 'This study makes three contributions, each descriptive. First... Second... Third...' while ADDED prop 1-P7-b appends 'Fourth, it documents that this residual uncertainty is unrelated to the firm's post-call bid-ask spread...'. Generated prose self-contradicts (three announced, four enumerated). The corpus's own 1-P7-b note concedes 1-P7-a 'still read three'. Major, high-confidence. NB: the finding's secondary claim that intent/thin_claim 'also still say three' is stale — I verified thin_claim was already reconciled to 'Four descriptive contributions' and intent.statement carries the FOUR bracket; only the STATEMENT (the prose-generating field) is wrong, which is exactly what the fix targets.",
+            "fix_check": {
+              "honesty_floor": "PASS",
+              "evidence_still_supports": "PASS",
+              "verdict": "SOUND",
+              "hardened_to": "Statement three->four is the load-bearing fix and is correct (all four items delivered). Optional polish: the intent.statement's enumerated 'First/Second/Third' could gain the 'Fourth' note, but it already carries a pre-reconciliation bracket, so the statement edit alone removes the live prose contradiction."
+            }
+          },
+          "_src": "run1"
+        },
+        {
+          "id": "LOGIC-1",
+          "severity": "minor",
+          "locus": {
+            "section": "1",
+            "prop_id": "1-P7-a",
+            "field": "statement"
+          },
+          "issue": "1-P7-a opens 'This study makes three contributions, each descriptive' and enumerates First/Second/Third, but the same paragraph (1-P7) homes the drift-reconciliation ADD 1-P7-b, which states 'Fourth, it documents that this residual uncertainty is unrelated to the firm's post-call bid-ask spread...' and depends_on 1-P7-a. Generated prose for the paragraph would therefore assert 'three contributions' and then enumerate four -- a live internal contradiction. The corpus documents the count was 'reconciled to FOUR' but only updated the paragraph intent and thin_claim; the load-bearing 1-P7-a statement (ORIGINAL-locked) still reads 'three', so the reconciliation is incomplete and the contradiction survives in the spine.",
+          "evidence": "1-P7-a: 'This study makes three contributions, each descriptive. First, it reads a residual measure ... Second, it documents that this language pattern concentrates in cash acquisitions rather than stock ... Third, it reads the unscripted question-and-answer session ...' | 1-P7-b: 'Fourth, it documents that this residual uncertainty is unrelated to the firm's post-call bid-ask spread ...' | paragraph thin_claim: 'Four descriptive contributions [RECONCILED 2026-06-24: was \"three\"; the fourth is the Section 4.2 bid-ask channel finding, prop 1-P7-b]'",
+          "rule_broken": "Internal consistency: a stated count must match the items actually enumerated within the same paragraph; a claim must follow from the props homed alongside it.",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "This study makes three contributions, each descriptive.",
+            "to": "This study makes four contributions, each descriptive.",
+            "why": "1-P7-b adds a fourth enumerated contribution (the Section 4.2 bid-ask channel finding) into the same paragraph, so the opening count must read 'four' to match. The edit changes only the numeral and touches no register_lock, hedge, or claim ceiling, so it does not violate 1-P7-a's ORIGINAL-locked status; it merely completes the count reconciliation the corpus already records in intent/thin_claim."
+          },
+          "confidence": "high",
+          "dimension": "logic",
+          "redteam": {
+            "verdict": "UNREVIEWED",
+            "verdict_reason": "no redteam verdict (out of this redteam scope)"
+          },
+          "alternatives": [
+            {
+              "id": "comp-1",
+              "dimension": "completeness",
+              "action": "REWORD",
+              "why": "1-P7-b adds a documented fourth contribution (the Section 4.2 bid-ask channel finding); the reconciliation note explicitly flags that 1-P7-a still says 'three'. Also propagate the count fix to 1-P7-a's intent and thin_claim fields, which the note says likewise still read 'three contributions'."
+            }
+          ],
+          "_src": "run2"
+        }
+      ]
+    },
+    {
+      "locus": "4.2|4.2-PARA4-a",
+      "max_severity": "major",
+      "n_findings": 2,
+      "dimensions": [
+        "overclaim"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "findings": [
+        {
+          "id": "OC-1",
+          "severity": "major",
+          "locus": {
+            "section": "4.2",
+            "prop_id": "4.2-PARA4-a",
+            "field": "statement"
+          },
+          "issue": "The Section 4.2 synthesis/payoff converts an underpowered null (the residual is not detectably associated with the post-call bid-ask spread) into a categorical exclusion plus an identification-direction claim, in a thesis whose ceiling is 'no identification.' It asserts the null as fact ('outsiders do NOT price the residual'), draws a 'cannot' conclusion ('the run-up ... cannot be an artifact of outsider reaction'), and labels the result 'an identification one' that 'reads as a private, insider-side signal.' This says more than a null supports and breaches the paragraph's own register. (Same locus, do not split: 'the scripted presentation moves the outside information environment' is causal-worded for a correlational association.)",
+          "evidence": "4.2-PARA4-a: 'The payoff for the main analysis is an identification one: because outsiders do not price the residual, the pre-announcement run-up documented in Section 3 cannot be an artifact of outsider reaction and instead reads as a private, insider-side signal.' This contradicts its OWN internal locks: 4.2-PARA2-a register_locks include 'absence-of-evidence' and PARA2 guardrail 'Null is absence-of-evidence, not a powered equivalence test; do not claim a proven zero'; and the PARA4 guardrail itself 'The identification point is a shield (rules out one alternative), not a positive proof of the insider mechanism.'",
+          "rule_broken": "correlational / no causal identification (thesis claim ceiling); an absence-of-evidence null cannot license 'do not price' / 'cannot be an artifact' / 'an identification' payoff",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "The payoff for the main analysis is an identification one: because outsiders do not price the residual, the pre-announcement run-up documented in Section 3 cannot be an artifact of outsider reaction and instead reads as a private, insider-side signal.",
+            "to": "Because we find no evidence that outsiders price the residual, the pre-announcement run-up documented in Section 3 is unlikely to be an artifact of outsider reaction, consistent with reading it as a private, insider-side signal.",
+            "why": "Aligns the payoff with the paragraph's own 'absence-of-evidence' / 'shield, not positive proof' locks and the no-identification ceiling; softens the null-asserted-as-fact ('do not price' -> 'we find no evidence that'), the categorical exclusion ('cannot' -> 'is unlikely to'), and drops the 'an identification' framing."
+          },
+          "confidence": "med",
+          "dimension": "overclaim",
+          "redteam": {
+            "verdict": "UNREVIEWED",
+            "verdict_reason": "no redteam verdict (out of this redteam scope)"
+          },
+          "alternatives": [
+            {
+              "id": "COH-05",
+              "dimension": "coherence",
+              "action": "ADD",
+              "why": "The register_global itself requires the disclaimer 'stated once' and says it governs the abstract/intro/conclusion; homing it in the synthesis prop guarantees the spine carries it rather than relying on prose regeneration. The prohibition (no tested difference) is already honored; only the affirmative disclaimer is missing."
+            }
+          ],
+          "_src": "run1"
+        },
+        {
+          "id": "OVC-overclaim-01",
+          "severity": "minor",
+          "locus": {
+            "section": "4.2",
+            "prop_id": "4.2-PARA4-a",
+            "field": "statement"
+          },
+          "issue": "The synthesis prop converts the residual-vs-spread NULL into a categorical identification claim: the Section 3 run-up 'cannot be an artifact of outsider reaction.' A categorical 'cannot' requires a proven zero, but this section's own residual null is explicitly framed as underpowered absence-of-evidence. Reading strictly, 'cannot be an artifact' edges toward an identification overreach (it is the thesis-level payoff of the section, propagated more weakly into abstract-P1-i / 1-P6-c / 5-P3-b). The cushioning ('reads as,' no-identification register, and the guardrail calling it 'a shield ... not a positive proof') keeps it from being a kill-shot, so the overreach is the single word 'cannot.'",
+          "evidence": "4.2-PARA4-a: 'because outsiders do not price the residual, the pre-announcement run-up documented in Section 3 cannot be an artifact of outsider reaction and instead reads as a private, insider-side signal.' Contradicted by 4.2-PARA2 guardrail: 'Null is absence-of-evidence, not a powered equivalence test; do not claim a proven zero.' (4.2-PARA2-a register_locks include 'absence-of-evidence'.)",
+          "rule_broken": "Asserting identification off a null the section itself labels underpowered absence-of-evidence; a 'cannot be X' inference needs ~a proven zero, which PARA2 forbids (internal contradiction).",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "the pre-announcement run-up documented in Section 3 cannot be an artifact of outsider reaction and instead reads as a private, insider-side signal",
+            "to": "the pre-announcement run-up documented in Section 3 is unlikely to be an artifact of outsider reaction and is more readily read as a private, insider-side signal",
+            "why": "Softens the categorical 'cannot' to the register the section's own null supports (absence-of-evidence, do-not-claim-a-proven-zero), resolving the PARA2/PARA4 contradiction while preserving the shield (rules-out-one-alternative) reading. Does not touch the no-identification ceiling."
+          },
+          "confidence": "med",
+          "dimension": "overclaim",
+          "redteam": {
+            "finding_id": "OVC-overclaim-01",
+            "verdict": "CONFIRMED",
+            "verdict_reason": "Real internal contradiction, minor. 4.2-PARA4-a's categorical 'the pre-announcement run-up documented in Section 3 CANNOT be an artifact of outsider reaction' is inferred off the residual-vs-spread null, but the section's own 4.2-PARA2 guardrail says 'Null is absence-of-evidence, not a powered equivalence test; do not claim a proven zero' (PARA2-a register_locks include 'absence-of-evidence'; the PARA4 guardrail says the identification point is 'a shield... not a positive proof'). A categorical 'cannot' requires the proven zero PARA2 forbids -- the overreach is the single word 'cannot'. Verified the overreach is localized: 5-P3-b, abstract-P1-i and 1-P6-c carry only the channel-split, NOT the 'cannot' shield, so it does not propagate. This is the correct direction for the audit (catching an overclaim, not attacking a hedge).",
+            "fix_check": {
+              "honesty_floor": "PASS",
+              "evidence_still_supports": "PASS",
+              "verdict": "SOUND",
+              "hardened_to": "Softening 'cannot'->'unlikely' adds a hedge, matches the section's own absence-of-evidence / shield-not-proof / supportive-not-definitive register, and is BETTER matched to an underpowered null than 'cannot'. Additionally apply the identical softening to 4.2-PARA4's intent.statement and thin_claim, which carry the same 'cannot ... artifact' wording, so the planning notes stay consistent with the reworded prop."
+            }
+          },
+          "_src": "run2"
+        }
+      ]
+    },
+    {
+      "locus": "1|1-P9-a",
+      "max_severity": "major",
+      "n_findings": 2,
+      "dimensions": [
+        "completeness"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "findings": [
+        {
+          "id": "COMP-1",
+          "severity": "major",
+          "locus": {
+            "section": "1",
+            "prop_id": "1-P9-a",
+            "field": "statement"
+          },
+          "issue": "The paper's only structural roadmap (M4) descends to the additional-analysis level but names just ONE additional analysis. It says Section 4 'reports the additional analysis ruling out analyst scrutiny' and omits the delivered Section 4.2 (Outsider Reactions: the Bid-Ask Spread), 4.3 (Withdrawal robustness) and 4.4 (no-dynamic-term robustness). The 2026-06-24 drift reconciliation promoted the bid-ask channel to a PREVIEWED finding (1-P6-c) and a FOURTH CONTRIBUTION (1-P7-b) in the same introduction, yet left this roadmap unchanged, so the reader is told a bid-ask finding/contribution exists but the map never signposts where it is delivered. Same root cause as COMP-2 and the provenance mislabel in corpus_problems: one incompletely-executed reconciliation.",
+          "evidence": "1-P9-a verbatim: '... Section 3 presents the three main analyses ...; Section 4 reports the additional analysis ruling out analyst scrutiny; and Section 5 concludes.' Corpus contains full sections 4.2/4.3/4.4, and intro 1-P6-c verbatim previews 'A further analysis turns to the firm's post-call information environment, measured by the bid-ask spread ...' with 1-P7-b adding the bid-ask as the 'Fourth' contribution.",
+          "rule_broken": "completeness: a structural forward-pointer (roadmap) under-covers delivered content; drift reconciliation synced abstract/intro-findings/contributions/conclusion to the bid-ask+robustness content but not the roadmap",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "Section 4 reports the additional analysis ruling out analyst scrutiny; and Section 5 concludes.",
+            "to": "Section 4 reports additional analyses -- ruling out analyst scrutiny, examining outsider reactions through the bid-ask spread, and checking robustness; and Section 5 concludes.",
+            "why": "Restores roadmap coverage of the delivered Section 4 now that the bid-ask channel is a previewed finding and the 4th contribution; stays within the 50-80-word impersonal M4 convention. (If _DRIFT_AUDIT_2026-06-24.md explicitly scoped the roadmap out, that decision is undocumented in the corpus and still leaves the intro internally unsignposted.)"
+          },
+          "confidence": "med",
+          "dimension": "completeness",
+          "redteam": {
+            "finding_id": "COMP-1",
+            "verdict": "DOWNGRADED",
+            "verdict_reason": "Real but major overstates it; downgrade to minor. 1-P9-a roadmap says 'Section 4 reports the additional analysis [singular] ruling out analyst scrutiny' while Section 4 delivers 4.1 (scrutiny), 4.2 (bid-ask), 4.3 (withdrawal), 4.4 (no-dynamic-term), and the same intro now previews bid-ask as a finding (1-P6-c) and 4th contribution (1-P7-b). So the roadmap under-covers and never signposts where the previewed bid-ask contribution is delivered — a genuine intro-internal navigational gap, sharpened by bid-ask's contribution status. But it is undercoverage, not contradiction (the roadmap does not deny 4.2-4.4 exist), touches no claim/hedge/evidence, and roadmap compression of robustness checks is conventional — hence minor, not major.",
+            "fix_check": {
+              "honesty_floor": "PASS",
+              "evidence_still_supports": "NA",
+              "verdict": "SOUND",
+              "hardened_to": "Fix restores coverage within the 50-80-word impersonal M4 convention, keeps scrutiny in Section 4, and describes 4.2 neutrally ('examining outsider reactions through the bid-ask spread') without asserting a tested between-component difference. Sound. Note the same incomplete reconciliation also left the intro findings preview with no robustness analogue (see missed #2)."
+            }
+          },
+          "_src": "run1"
+        },
+        {
+          "id": "comp-2",
+          "severity": "minor",
+          "locus": {
+            "section": "1",
+            "prop_id": "1-P9-a",
+            "field": "statement"
+          },
+          "issue": "Within the same introduction, 1-P6-c previews the Section 4.2 bid-ask analysis ('A further analysis turns to the firm's post-call information environment, measured by the bid-ask spread') and 1-P7-b counts it as the fourth contribution, yet the roadmap 1-P9-a routes the reader to Section 4 only as 'the additional analysis ruling out analyst scrutiny' -- giving no pointer to where the bid-ask analysis (4.2) is delivered. This is an internal inconsistency introduced by the partial 2026-06-24 reconciliation (the bid-ask props were added to the intro previews/contributions but the roadmap was left describing Section 4 as a single scrutiny analysis). Reframed narrowly as an intra-intro routing gap, not a claim that roadmaps must be exhaustive.",
+          "evidence": "1-P9-a: 'Section 4 reports the additional analysis ruling out analyst scrutiny; and Section 5 concludes.' | same section, 1-P6-c: 'A further analysis turns to the firm's post-call information environment, measured by the bid-ask spread ...' | 1-P7-b: 'Fourth, it documents that this residual uncertainty is unrelated to the firm's post-call bid-ask spread ...' (Section 4 actually contains 4.1 scrutiny, 4.2 bid-ask, 4.3 withdrawal-robustness, 4.4 no-dynamic-term-robustness).",
+          "rule_broken": "A roadmap should route the reader to material the same section explicitly previews; the 4.2 bid-ask analysis is previewed and counted as a contribution in the intro but is unrouted by 1-P9-a.",
+          "proposed_fix": {
+            "action": "ADD",
+            "from": "Section 4 reports the additional analysis ruling out analyst scrutiny; and Section 5 concludes.",
+            "to": "Section 4 reports the additional analyses -- ruling out analyst scrutiny and examining outsider reactions through the bid-ask spread; and Section 5 concludes.",
+            "why": "Aligns the roadmap with the intro's own 4.2 preview (1-P6-c) and fourth-contribution claim (1-P7-b). Non-destructive: extend the clause; do not alter the scrutiny wording. Low confidence because selective roadmaps are defensible -- the defect is the intra-intro mismatch, not roadmap brevity per se."
+          },
+          "confidence": "low",
+          "dimension": "completeness",
+          "redteam": {
+            "verdict": "UNREVIEWED",
+            "verdict_reason": "no redteam verdict (out of this redteam scope)"
+          },
+          "_src": "run2"
+        }
+      ]
+    },
+    {
+      "locus": "3.1|3.1-PARA1-a",
+      "max_severity": "minor",
+      "n_findings": 2,
+      "dimensions": [
+        "coherence"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "findings": [
+        {
+          "id": "COH-02",
+          "severity": "minor",
+          "locus": {
+            "section": "3.1",
+            "prop_id": "3.1-PARA1-a",
+            "field": "statement"
+          },
+          "issue": "Within paragraph 3.1-PARA1 the data-source count is inconsistent: the prop statement lists FIVE sources (Capital IQ, Compustat, CRSP/IBES, SDC, Execucomp), but the paragraph's role_in_paragraph, intent.reason, and the section allocation_coverage note all say FOUR. Execucomp was added later (VERIFIED primary-source 2026-06-14) bumping the statement to five without updating the surrounding scaffolding. Prose-bound statement is internally consistent at five, so this is meta-scaffolding drift only.",
+          "evidence": "3.1-PARA1-a statement: 'The analysis combines five data sources: Capital IQ ... Compustat ... CRSP daily and IBES ... SDC ... and Execucomp ...' || role_in_paragraph: 'opens the section by naming the four sources every downstream number originates in' || intent.reason: 'the ratified 3.1 purpose statement groups item (1) as \"the four data sources AND the CUSIP6->gvkey link that fuses them\"' || allocation note: 'four-source provenance premise'",
+          "rule_broken": "intra-paragraph count consistency (statement vs its own role/intent/allocation scaffolding)",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "names the four sources every downstream number originates in (role_in_paragraph; + intent.reason 'four data sources'; + allocation 'four-source provenance premise')",
+            "to": "names the five sources every downstream number originates in (align role/intent/allocation to five)",
+            "why": "Execucomp is a substantive fifth source (it feeds the eq-4 manager fixed effect, per the statement and its evidence). The statement 'five' is correct; the stale 'four' in the meta should be aligned to five. Meta-only, hence minor."
+          },
+          "confidence": "high",
+          "dimension": "coherence",
+          "redteam": {
+            "finding_id": "COH-02",
+            "verdict": "CONFIRMED",
+            "verdict_reason": "Verified: 3.1-PARA1-a statement says 'combines five data sources' and lists five (Capital IQ; Compustat; CRSP+IBES; SDC; Execucomp), internally consistent at five. role_in_paragraph says 'names the four sources', intent.reason says 'four data sources', allocation note says 'four-source provenance premise'. Execucomp (VERIFIED primary-source 2026-06-14, feeds the eq-4 manager FE) bumped the statement to five without updating the scaffolding. Real meta-only drift; the prose-bound statement is correct at five. Minor.",
+            "fix_check": {
+              "honesty_floor": "PASS",
+              "evidence_still_supports": "NA",
+              "verdict": "SOUND",
+              "hardened_to": "Align role/intent/allocation four->five. Statement (which generates prose) is untouched and accurate, so no NLM/evidence exposure; purely internal scaffolding hygiene."
+            }
+          },
+          "_src": "run1"
+        },
+        {
+          "id": "COH-3",
+          "severity": "minor",
+          "locus": {
+            "section": "3.1",
+            "prop_id": "3.1-PARA1-a",
+            "field": "role_in_paragraph / section_context.allocation_coverage (four) vs statement+intent (five)"
+          },
+          "issue": "Within-section 'four vs five sources' drift. The homed statement 3.1-PARA1-a and the paragraph intent both say FIVE data sources and enumerate five (Capital IQ, Compustat, CRSP+IBES, SDC, Execucomp), but the same prop's role_in_paragraph ('naming the four sources'), the reason field, and the section_context.allocation_coverage notes ('four-source provenance premise', 'the four data sources AND the CUSIP6->gvkey link') all say FOUR. The 'four' labels appear to predate the Execucomp source (evidence notes Execucomp 'VERIFIED primary-source 2026-06-14', i.e. added later); the surfacing statement (five) is the correct/current one.",
+          "evidence": "statement: 'The analysis combines five data sources: Capital IQ ... Compustat ... CRSP daily and IBES earnings records ... SDC M&A records ... and Execucomp annual CEO records'. role_in_paragraph: 'opens the section by naming the four sources every downstream number originates in'. allocation note: 'four-source provenance premise'.",
+          "rule_broken": "internal count consistency (metadata labels must match the homed statement's enumerated source count)",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "naming the four sources / four-source provenance premise / the four data sources",
+            "to": "naming the five sources / five-source provenance premise / the five data sources",
+            "why": "Update the stale 'four' metadata (pre-Execucomp) to the current 'five' the homed statement enumerates, so role/allocation labels match the prose-bearing statement."
+          },
+          "confidence": "high",
+          "dimension": "coherence",
+          "redteam": {
+            "verdict": "UNREVIEWED",
+            "verdict_reason": "no redteam verdict (out of this redteam scope)"
+          },
+          "_src": "run2"
+        }
+      ]
+    },
+    {
+      "locus": "1|1-P7-b",
+      "max_severity": "minor",
+      "n_findings": 2,
+      "dimensions": [
+        "cite_redundancy",
+        "coherence"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "findings": [
+        {
+          "id": "COH-03",
+          "severity": "minor",
+          "locus": {
+            "section": "1",
+            "prop_id": "1-P7-b",
+            "field": "_provenance"
+          },
+          "issue": "Five drift-reconciliation props (abstract-P1-i, 1-P6-c, 1-P7-b, 5-P3-b, 5-P3-c) carry _provenance='ORIGINAL-locked' while their own from_phaseA_prop says 'ADDED 2026-06-24 ... NOT an original ... prop'. The tag contradicts the from_phaseA_prop within the same object, and the meta.provenance counts (added:6, original:128) consequently misclassify these five added props as original. Because this audit is instructed to PRIORITIZE changed (ADDED/REWORDED/SWEPT) props, mis-tagging the five newest props as ORIGINAL-locked can cause them to be under-scrutinized.",
+          "evidence": "1-P7-b: '_provenance': 'ORIGINAL-locked' alongside 'from_phaseA_prop': 'ADDED 2026-06-24 (drift reconciliation; ... Phase-C synthesis added a FOURTH (bid-ask) contribution to final_prose ...)'. Identical pattern on abstract-P1-i, 1-P6-c, 5-P3-b, 5-P3-c. meta.provenance: {'original':128,'added':6,'reworded':7,'swept':8}",
+          "rule_broken": "provenance-tag self-consistency: an ADDED prop must not be tagged ORIGINAL-locked, and meta counts must reflect the true provenance",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "_provenance: 'ORIGINAL-locked' on the five ADDED-2026-06-24 props; meta {original:128, added:6}",
+            "to": "_provenance: 'ADDED' on those five props; meta {original:123, added:11}",
+            "why": "from_phaseA_prop self-identifies these as ADDED 2026-06-24. Tagging them ORIGINAL-locked is a direct internal contradiction and corrupts provenance accounting, which the harness uses to prioritize changed props."
+          },
+          "confidence": "high",
+          "dimension": "coherence",
+          "redteam": {
+            "finding_id": "COH-03",
+            "verdict": "CONFIRMED",
+            "verdict_reason": "Verified programmatically: meta.provenance={original:128,added:6,reworded:7,swept:8}; the five props abstract-P1-i, 1-P6-c, 1-P7-b, 5-P3-b, 5-P3-c are ALL tagged _provenance='ORIGINAL-locked' while their from_phaseA_prop reads 'ADDED 2026-06-24 ... NOT an original ... prop'. Direct internal contradiction; the meta consequently counts these five newest props as original, and the harness prioritizes changed props, so they risk under-scrutiny. The 6 genuinely-ADDED props are the masking props (P5.2-P5.6, P3.4). Minor (metadata), high-confidence.",
+            "fix_check": {
+              "honesty_floor": "PASS",
+              "evidence_still_supports": "NA",
+              "verdict": "SOUND",
+              "hardened_to": "Retag the five to 'ADDED'; meta original 128->123, added 6->11. I verified 123+11+7+8=149=total_props, and reworded:7/swept:8 match actual counts exactly so the fix correctly leaves them alone. (If the author intended 'ORIGINAL-locked' to mean 'decision locked', that meaning conflicts with the field's provenance vocabulary and still corrupts the counts — retag is correct; add a separate 'locked' flag if a do-not-revisit marker is wanted.)"
+            }
+          },
+          "_src": "run1"
+        },
+        {
+          "id": "CR-02",
+          "severity": "minor",
+          "locus": {
+            "section": "1",
+            "prop_id": "1-P7-b",
+            "field": "statement"
+          },
+          "issue": "The Section 4.2 bid-ask channel result is homed twice within the introduction -- as findings-preview prop 1-P6-c and again as the 'fourth contribution' prop 1-P7-b -- in near-identical wording. Unlike the three original contributions in 1-P7-a, each of which adds a distinct positioning claim ('where prior work read tone/vocabulary/prices'; 'survives a formal pooled test'; 'bridges two literatures'), 1-P7-b adds no distinct claim beyond the finding it restates; it is a bare restatement of 1-P6-c.",
+          "evidence": "1-P6-c statement: '...the residual is unrelated to it, while the scripted presentation is positively associated with it, a pattern consistent with the scripted and unscripted segments reaching the outside environment in different ways.' 1-P7-b statement: 'Fourth, it documents that this residual uncertainty is unrelated to the firm's post-call bid-ask spread while the scripted presentation is positively associated with it, consistent with a difference between the scripted and unscripted segments in how they relate to the outside information environment.' Both carry from_phaseA_prop 'ADDED 2026-06-24' and identical evidence (section4.2_paragraph_ledger.json; claim_findings_ledger C5/C7; tab:h14c_ceo2_decomp).",
+          "rule_broken": "cite_redundancy -- two props making the same point; a contribution prop that restates a finding prop without adding a distinct claim.",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "'Fourth, it documents that this residual uncertainty is unrelated to the firm's post-call bid-ask spread while the scripted presentation is positively associated with it, consistent with a difference between the scripted and unscripted segments in how they relate to the outside information environment.'",
+            "to": "The proposed reword's clause 'a channel prior call-language work leaves unexamined' is an UNHEDGED novelty/gap claim that crosses the 1-P7 novelty-hedge guardrail ('do NOT assert the gap as established fact'; the everhart/gokkaya scar) and the section's settled 'to our knowledge' register (a negative cannot be NLM-verified). Keep the EXTENSION differentiation but drop or hedge the gap clause -- e.g. 'Fourth, it extends the scripted-versus-unscripted decomposition to the firm's information environment' (clean, no gap claim), or if novelty is wanted, '...a channel we are, to our knowledge, the first to read.' That removes the redundancy without an unhedged novelty assertion.",
+            "why": "Differentiates the contribution (1-P7-b) from the finding (1-P6-c) so the intro does not state the bid-ask result twice in near-identical words. NOT proposing DROP -- the user explicitly confirmed KEEP 2026-06-24; the redundancy is removed by differentiation, not deletion, and no citation carrying a distinct fact is cut.",
+            "hardened": true
+          },
+          "confidence": "med",
+          "dimension": "cite_redundancy",
+          "redteam": {
+            "finding_id": "CR-02",
+            "verdict": "CONFIRMED",
+            "verdict_reason": "Real but minor. 1-P7-b ('Fourth, it documents that this residual uncertainty is unrelated to the firm's post-call bid-ask spread...') is near-verbatim with the finding-preview prop 1-P6-c and adds no positioning value-add, unlike 1-P7-a's First ('where prior work read tone/vocabulary/prices') and Third ('connecting... two literatures'). COUNTERWEIGHT (caps it at minor): finding->contribution restatement is conventional intro structure -- C2 and C6 are likewise restated from 1-P5/1-P6 into 1-P7-a -- so 1-P7-b is merely the thinnest contribution, not a unique defect; and both props are user-confirmed KEEP (2026-06-24), so differentiate-not-delete is the correct direction.",
+            "fix_check": {
+              "honesty_floor": "FAIL",
+              "evidence_still_supports": "FAIL",
+              "verdict": "HARDENED",
+              "hardened_to": "The proposed reword's clause 'a channel prior call-language work leaves unexamined' is an UNHEDGED novelty/gap claim that crosses the 1-P7 novelty-hedge guardrail ('do NOT assert the gap as established fact'; the everhart/gokkaya scar) and the section's settled 'to our knowledge' register (a negative cannot be NLM-verified). Keep the EXTENSION differentiation but drop or hedge the gap clause -- e.g. 'Fourth, it extends the scripted-versus-unscripted decomposition to the firm's information environment' (clean, no gap claim), or if novelty is wanted, '...a channel we are, to our knowledge, the first to read.' That removes the redundancy without an unhedged novelty assertion."
+            }
+          },
+          "_src": "run2"
+        }
+      ]
+    },
+    {
+      "locus": "2.1|P6.1",
+      "max_severity": "minor",
+      "n_findings": 2,
+      "dimensions": [
+        "cite_redundancy"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "findings": [
+        {
+          "id": "CR-01",
+          "severity": "minor",
+          "locus": {
+            "section": "2.1",
+            "prop_id": "P6.1",
+            "field": "proposition/verification (thewissen2024, nlm_source_id 731d56ed); duplicate of P5.4"
+          },
+          "issue": "thewissen2024 is carried as a FULL external-NLM proposition twice inside one section (2.1): P5.4 (ADDED masking 'tone leg') and P6.1 (ORIGINAL nearest-work cell). Both cite the same source id 731d56ed, run a word-for-word identical NLM query, carry a byte-identical verdict_note, and resolve to TWO separate appendix entries (appendix:P5.4 and appendix:P6.1) that verify the same ssrn-4900453 quotes (the 15% press-release tone sentence; the $21.777M cost-saving figure). Both props assert the same underlying fact -- stock bidders manage/inflate earnings press-release tone before stock-for-stock deals. This breaks the corpus's own callback discipline: every other second-use of a paper is a one-clause CALLBACK (e.g., 2.2 P2.2 references this exact finding with 'CALLBACK ... do NOT re-cite the ~15% figure'), yet within 2.1 the second use is a full re-citation, not a callback. P5.4's own role note concedes 'Same evidence as P6.1 (dual role)'. One full citation plus one callback would suffice; the second full citation + duplicate appendix evidence is redundant.",
+          "evidence": "P5.4 statement: 'The same pre-deal management reaches disclosure tone: stock bidders inflate the tone of earnings press releases by about 15 percent ...'; P5.4 role: 'TONE leg ... Same evidence as P6.1 (dual role); preprint, supplementary'. P6.1 statement: 'Thewissen et al. (2024) study tone management in earnings press releases before stock-for-stock acquisitions.' Both verdict_notes are identical: 'Thewissen et al. (2024): stock bidders strategically inflate the tone of earnings press releases before stock-for-stock M&A -- verbatim spans n2 ... n6 (press-release tone increases by 15% ...). Nearest-work cell: managed tone, stock deals, press releases.' Appendix carries BOTH P5.4 and P6.1 entries for ssrn-4900453 with the same 15% and $21.777M quotes. Corroborating: the 2.2 P2.2 guardrail still says 'do NOT re-cite the ~15% tone figure (lives in 2.1 P6)', but the masking redesign moved the 15%-bearing statement to P5.4 -- a now-stale cross-reference indicating the second placement was a seam artifact, not a cleanly intended dual home.",
+          "rule_broken": "cite_redundancy: a citation (thewissen2024) repeated as a full proposition + duplicate appendix evidence across two props in one section where one full citation plus a callback suffices; the corpus's own one-clause-callback convention (applied at 2.2 P2.2) is not applied at the P5/P6 seam.",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "thewissen2024 stated as a full external-NLM proposition in BOTH 2.1 P5.4 and 2.1 P6.1 (identical query + identical verdict_note + two appendix entries for ssrn-4900453).",
+            "to": "Keep ONE full thewissen citation in its chosen home and convert the other use to a one-clause callback (mirroring 2.2 P2.2), so the tone-management finding is stated/verified once; collapse the duplicate appendix entry to a single keyed source. Direction is the author's call -- P6.1 is the ORIGINAL nearest-work home, P5.4 is ADDED and needs the 15% magnitude for the masking motive -- so either keep P5.4 as the full home and make P6.1's 2x2 cell a callback to it, or keep P6.1 full and have P5.4 reference it for the genre point.",
+            "why": "Removes the duplicated full citation + duplicate appendix evidence while PRESERVING both distinct rhetorical roles (the masking 'tone leg' of the S-V/Louis/thewissen motive AND the nearest-work gap-positioning cell) -- neither is cut. Also refresh the stale 2.2 P2.2 guardrail to point at the actual home. Bright line preserved: thewissen stays cited strictly as TONE (preprint, supplementary), never as earnings/valuation (which belong to Louis/Shleifer-Vishny)."
+          },
+          "confidence": "high",
+          "dimension": "cite_redundancy",
+          "redteam": {
+            "verdict": "UNREVIEWED",
+            "verdict_reason": "no redteam verdict (out of this redteam scope)"
+          },
+          "_src": "run1"
+        },
+        {
+          "id": "CR-01",
+          "severity": "minor",
+          "locus": {
+            "section": "2.1",
+            "prop_id": "P6.1",
+            "field": "citation re-introduction (cross-ref P5.4; 2.2 P2.2)"
+          },
+          "issue": "thewissen2024 is introduced and NLM-verified TWICE inside section 2.1: in the ADDED masking prop P5.4 (the 'tone leg' -- stock bidders inflate press-release tone ~15% before stock-for-stock deals) and again one paragraph later in the pre-existing P6.1 (nearest-work positioning cell, 'managed tone, stock deals, press releases'). The masking redesign re-introduces a paper the section already cites, so the regenerated prose will state thewissen + its 15% tone-inflation fact twice in adjacent paragraphs (P5 then P6). The chain also double-books the magnitude: P5.4's statement carries 'by about 15 percent' while the 2.2 P2.2 guardrail asserts the 15% figure 'lives in 2.1 P6' -- an internal ownership inconsistency.",
+          "evidence": "P5.4 statement: 'stock bidders inflate the tone of earnings press releases by about 15 percent in the year before a stock-for-stock acquisition'; P5.4 role_in_paragraph note: 'Same evidence as P6.1 (dual role)'. P6.1 statement: 'Thewissen et al. (2024) study tone management in earnings press releases before stock-for-stock acquisitions.' The P5.4 and P6.1 verdict_notes are word-for-word identical, and appendix:P5.4 and appendix:P6.1 are byte-identical NLM verifications of source 731d56ed (ssrn-4900453) -- same answer, same quotes n1-n8, same chunk_ids/start_char/end_char, same span_pin '15% in the year preceding the M&A announcement'. 2.2 P2.2 verification_plan: 'do NOT re-cite the ~15% figure (it belongs to 2.1 P6).'",
+          "rule_broken": "cite_redundancy -- one citation (same paper, same fact, same verified evidence) introduced across two props where one introduction suffices.",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "P6.1 re-introduces thewissen2024 as a fresh nearest-work citation, repeating the managed-tone/15% fact P5.4 already established one paragraph earlier.",
+            "to": "Make P6.1's realization a back-reference to the managed-tone evidence already introduced in P5.4 (e.g., 'the managed-tone finding noted above (Thewissen et al. 2024) occupies the nearest cell...'), so thewissen and the 15% magnitude are stated ONCE. Keep BOTH props and BOTH roles (P5.4 = masking tone leg; P6.1 = gap/2x2 positioning); designate P5.4, the earlier paragraph, as the owner of the cite+magnitude and reconcile the 2.2 P2.2 'lives in 2.1 P6' note to point at P5.4.",
+            "why": "Removes a duplicate introduction of the same verified fact without losing either argumentative function (thewissen carries the IDENTICAL fact in both props, so no distinct load-bearing fact is cut) and resolves the P5.4-vs-P6 ownership inconsistency. Touches no hedge and does not collapse the two paragraphs' distinct jobs (hence REWORD/back-reference, not MERGE)."
+          },
+          "confidence": "high",
+          "dimension": "cite_redundancy",
+          "redteam": {
+            "finding_id": "CR-01",
+            "verdict": "CONFIRMED",
+            "verdict_reason": "Real, minor. Verified: appendix P5.4 and P6.1 are byte-identical (same MD5, len 7293). A duplicate-cite scan over all 149 props shows thewissen (731d56ed) is the ONLY same-source FRESH (external-NLM) double-introduction in the corpus -- every other multi-use source is either an explicit callback (lm2011 2.3-P1.1; harford 2.2-P3.2; thewissen's third use 2.2-P2.2) or two distinct facts inside one paragraph (basic1988 P1.3/P1.4; dwz P4.2/P4.3). So the thewissen 'tone management before stock-for-stock deals' fact is genuinely re-introduced fresh in two adjacent 2.1 paragraphs (P5.4 masking tone-leg; P6.1 nearest-work cell). CAVEAT that keeps it minor: the 'double-books the 15% magnitude in prose' sub-claim is overstated -- P6.1's STATEMENT omits the 15% (only P5.4 carries it), so the magnitude is single-stated; the genuine residue is (a) the cite + qualitative-fact duplication and (b) a label inconsistency (the 2.2 P2.2 note attributes the 15% to '2.1 P6' but it is actually stated in P5.4, i.e. paragraph P5). Touches no hedge or bright line.",
+            "fix_check": {
+              "honesty_floor": "PASS",
+              "evidence_still_supports": "PASS",
+              "verdict": "SOUND",
+              "hardened_to": "Fix is sound as-is (back-reference P6.1 to P5.4, keep both props/roles). For completeness also correct the 2.2 P2.2 note's owner label from '2.1 P6' to '2.1 P5 (P5.4)', since that is where the 15% magnitude is actually stated."
+            }
+          },
+          "_src": "run2"
+        }
+      ]
+    },
+    {
+      "locus": "4.2|4.2-PARA2-a",
+      "max_severity": "minor",
+      "n_findings": 2,
+      "dimensions": [
+        "coherence",
+        "evidence"
+      ],
+      "sources": [
+        "run1",
+        "run2"
+      ],
+      "findings": [
+        {
+          "id": "EV-2",
+          "severity": "minor",
+          "locus": {
+            "section": "4.2",
+            "prop_id": "4.2-PARA2-a",
+            "field": "intent.statement (paragraph 4.2-PARA2)"
+          },
+          "issue": "Internal number mismatch. The 4.2-PARA2 intent.statement reports the contemporaneous residual-on-spread coefficient range as 'between -0.0594 and -0.0893 across the six contemporaneous columns,' but the ratified prop 4.2-PARA2-a and its evidence list the six values as -0.0594/-0.0687/-0.0882/-0.1021/-0.0757/-0.0893, i.e. the most negative is -0.1021 (col 4) and the prop correctly states the range as '-0.0594 to -0.1021.' The intent field understates the floor. The prop itself is correct and all coefficients are n.s., so the substance (residual null) is unaffected; this is a stale planning-field number.",
+          "evidence": "intent.statement: 'the coefficients are small and insignificant (between -0.0594 and -0.0893 across the six contemporaneous columns; 42,625 calls).' prop 4.2-PARA2-a: 'ranging from -0.0594 to -0.1021 across the six contemporaneous columns.' evidence line: 'contemp cols 1-6 -0.0594/-0.0687/-0.0882/-0.1021/-0.0757/-0.0893 all n.s.'",
+          "rule_broken": "number in a field inconsistent with the prop and its own evidence list (internal numeric inconsistency)",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "between -0.0594 and -0.0893 across the six contemporaneous columns",
+            "to": "between -0.0594 and -0.1021 across the six contemporaneous columns",
+            "why": "Align the planning field with the ratified prop and the six listed coefficients; all remain n.s., so only the stated bound changes."
+          },
+          "confidence": "high",
+          "dimension": "evidence",
+          "redteam": {
+            "verdict": "UNREVIEWED",
+            "verdict_reason": "no redteam verdict (out of this redteam scope)"
+          },
+          "_src": "run1"
+        },
+        {
+          "id": "COH-2",
+          "severity": "minor",
+          "locus": {
+            "section": "4.2",
+            "prop_id": "4.2-PARA2-a",
+            "field": "intent.statement (paragraph 4.2-PARA2)"
+          },
+          "issue": "Within-section number-range drift: the 4.2-PARA2 intent.statement reports the residual's contemporaneous bid-ask coefficients as 'between -0.0594 and -0.0893 across the six contemporaneous columns', but the homed proposition 4.2-PARA2-a (and its own evidence list) reports 'ranging from -0.0594 to -0.1021', where col 4 = -0.1021 is the most negative cell. The intent metadata understates the range; the surfacing proposition is the correct one.",
+          "evidence": "intent.statement: 'the coefficients are small and insignificant (between -0.0594 and -0.0893 across the six contemporaneous columns; 42,625 calls)'. prop 4.2-PARA2-a: 'ranging from -0.0594 to -0.1021 across the six contemporaneous columns'. evidence: 'contemp cols 1-6 -0.0594/-0.0687/-0.0882/-0.1021/-0.0757/-0.0893 all n.s.' (most negative = -0.1021).",
+          "rule_broken": "internal number consistency (intent field must not contradict the homed prop's range it summarizes)",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "between -0.0594 and -0.0893 across the six contemporaneous columns",
+            "to": "between -0.0594 and -0.1021 across the six contemporaneous columns",
+            "why": "Sync the planning intent to the correct full coefficient range carried by the prop and its evidence (col 4 -0.1021); both are n.s. so no result changes, only the stated bound."
+          },
+          "confidence": "high",
+          "dimension": "coherence",
+          "redteam": {
+            "verdict": "UNREVIEWED",
+            "verdict_reason": "no redteam verdict (out of this redteam scope)"
+          },
+          "_src": "run2"
+        }
+      ]
+    },
+    {
+      "locus": "5|5-P5-a",
+      "max_severity": "minor",
+      "n_findings": 1,
+      "dimensions": [
+        "logic"
+      ],
+      "sources": [
+        "run1"
+      ],
+      "findings": [
+        {
+          "id": "L1",
+          "severity": "minor",
+          "locus": {
+            "section": "5",
+            "prop_id": "5-P5-a",
+            "field": "statement"
+          },
+          "issue": "The connective 'so' links two logically independent OPEN questions: the war-chest CAUSE of cash accumulation (why the firm holds cash) and the SOURCE of the CEO's uncertainty (compliance-constrained 'cannot speak' vs strategic 'will not speak'). The bright lines list these as SEPARATE open items. Read literally, 'the war-chest channel ... remains unestablished, so two readings ... remain observationally equivalent' implies the unestablished war-chest is what makes the compliance-vs-strategic readings equivalent. But resolving why firms accumulate cash would not resolve which reading of the hedging is correct, and failing to establish it does not cause that ambiguity; the two are independent. (A second, valid reading attaches 'so' to the broader 'establishes no mechanism' clause, under which observational equivalence does follow, so this is an ambiguous connective rather than a hard non-sequitur.) The intro mirror 1-P8-a keeps the two separate ('...offered as motivation, not identification -- while the source of the uncertainty ... remains observationally equivalent'), never invoking the war-chest, which shows the disambiguating fix touches no hedge.",
+          "evidence": "5-P5-a: 'the design supports no causal identification and establishes no mechanism: the concentration in cash deals is motivated in Section 2 but not identified, and the war-chest channel behind cash accumulation in particular remains unestablished, so two readings, a compliance-constrained inability to speak and a strategically chosen reticence, remain observationally equivalent.' Contrast intro mirror 1-P8-a, which separates them with 'while' and no war-chest clause.",
+          "rule_broken": "Connective ('so') asserts a cause/consequence relation between two premises that do not support it -- two independent open questions (cash-accumulation CAUSE vs uncertainty SOURCE) falsely linked, where the bright lines hold them open separately.",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "the war-chest channel behind cash accumulation in particular remains unestablished, so two readings, a compliance-constrained inability to speak and a strategically chosen reticence, remain observationally equivalent",
+            "to": "the war-chest channel behind cash accumulation in particular remains unestablished, and, separately, the source of the uncertainty -- a compliance-constrained inability to speak versus a strategically chosen reticence -- remains observationally equivalent",
+            "why": "Decouples the two independent open questions so the sentence no longer implies that resolving the cash-accumulation cause would resolve the compliance-vs-strategic ambiguity. Matches the clean intro mirror 1-P8-a; retains all three limitation clauses, hardening or removing no hedge."
+          },
+          "confidence": "low",
+          "dimension": "logic",
+          "redteam": {
+            "finding_id": "L1",
+            "verdict": "CONFIRMED",
+            "verdict_reason": "Real but minor. 5-P5-a reads '...the war-chest channel behind cash accumulation in particular remains unestablished, so two readings... remain observationally equivalent.' The bright lines list the cash-accumulation CAUSE and the SOURCE (compliance vs strategic) as SEPARATE open items; 'so' loosely chains them so a hostile reader can take war-chest-unestablished as the cause of the source-equivalence, which it is not. The auditor's own benign reading ('so' caps the whole no-mechanism clause) is also valid, hence the low stakes, but the connective genuinely conflates two independent open questions. Verified the intro mirror 1-P8-a uses 'while' and never invokes the war-chest, so decoupling matches the spine. NOT the asymmetric error: the fix preserves every limitation clause and hardens no hedge.",
+            "fix_check": {
+              "honesty_floor": "PASS",
+              "evidence_still_supports": "NA",
+              "verdict": "SOUND",
+              "hardened_to": "Fix is sound as written (keeps war-chest-open + source-open, decouples with 'and, separately', matches 1-P8-a). Optional: since 5-P5-a is REWORDED, confirm the reword's _original_statement already used 'so... we do not establish why' — the proposed 'and, separately' is a strict improvement and crosses no bright line."
+            }
+          },
+          "_src": "run1"
+        }
+      ]
+    },
+    {
+      "locus": "2.2|P5.2",
+      "max_severity": "minor",
+      "n_findings": 1,
+      "dimensions": [
+        "coherence"
+      ],
+      "sources": [
+        "run1"
+      ],
+      "findings": [
+        {
+          "id": "COH-06",
+          "severity": "minor",
+          "locus": {
+            "section": "2.2",
+            "prop_id": "P5.2",
+            "field": "statement"
+          },
+          "issue": "2.2 P5.2 states the scrutiny rival is 'tested as a side analysis in 4.1, where it is rejected,' but 2.2 P5's own guardrail says the verdict 'belongs to 4.1 -- do NOT state it as established here' (and 2.5 P4.3 obeys this with a pure forward-pointer). 4.1, the verdict owner, deliberately never says 'rejected'; it frames the result as 'a failure to find ... not a powered equivalence test' that 'does not account for THIS run-up.' Mild verdict-register drift / guardrail-vs-statement tension. Note this is low-confidence because Section 4.1 is titled 'Ruling Out Analyst Scrutiny,' so 'rejected' is largely defensible as the paper's own framing.",
+          "evidence": "2.2 P5.2: '... tested as a side analysis in 4.1, where it is rejected; ... rejecting it does not establish a mechanism.' || 2.2 P5 guardrail: 'Verdict (the nulls + \"rejected\") belongs to 4.1 -- do NOT state it as established here.' || 4.1-PARA5-a: 'this is a failure to find paired with a within-model dissociation, not a powered equivalence test ... The claim is that scrutiny does not account for THIS run-up, not that scrutiny never matters anywhere.'",
+          "rule_broken": "a section's own guardrail (verdict belongs to 4.1; do not state as established here) is obeyed by 2.5 P4.3 but violated by 2.2 P5.2; verdict register drifts from 4.1's 'underpowered failure to find'",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "tested as a side analysis in 4.1, where it is rejected",
+            "to": "tested as a side analysis in 4.1, where the run-up survives it (an underpowered failure to find, not a powered equivalence test)",
+            "why": "Aligns 2.2's verdict language to 4.1's register and to 2.2 P5's own 'do not state the verdict as established here' guardrail, while preserving the existing 'rejecting it does not establish a mechanism' hedge. Low priority because 'rejected' is defensible given Section 4.1's 'Ruling Out' framing."
+          },
+          "confidence": "low",
+          "dimension": "coherence",
+          "redteam": {
+            "finding_id": "COH-06",
+            "verdict": "CONFIRMED",
+            "verdict_reason": "Real, minor/low. 2.2 P5.2 says scrutiny is 'tested as a side analysis in 4.1, where it is rejected'; 2.2 P5's own guardrail says the verdict 'belongs to 4.1 -- do NOT state it as established here', and 2.5 P4.3 obeys with a pure forward-pointer. I verified 4.1-PARA5-a (the verdict owner) deliberately never says 'rejected' — it frames the result as 'a failure to find paired with a within-model dissociation, not a powered equivalence test ... does not account for THIS run-up' under a 'do not strengthen' register lock. So 2.2's 'rejected' says marginally MORE than the owner's hedged verdict. Low priority because Section 4.1 is titled 'Ruling Out Analyst Scrutiny', making 'rejected'/'ruled out' defensible as the paper's own framing.",
+            "fix_check": {
+              "honesty_floor": "PASS",
+              "evidence_still_supports": "NA",
+              "verdict": "SOUND",
+              "hardened_to": "Reword aligns 2.2 to 4.1's 'underpowered failure to find' and weakens (not hardens) the claim — bright-line safe. Note the fix only changes the first clause; the same sentence's trailing 'rejecting it does not establish a mechanism' still says 'rejecting' — acceptable (it is a general conditional) but for full consistency could read 'this failure to find does not establish a mechanism.'"
+            }
+          },
+          "_src": "run1"
+        }
+      ]
+    },
+    {
+      "locus": "5|5-P3-c",
+      "max_severity": "minor",
+      "n_findings": 1,
+      "dimensions": [
+        "overclaim"
+      ],
+      "sources": [
+        "run1"
+      ],
+      "findings": [
+        {
+          "id": "OC-2",
+          "severity": "minor",
+          "locus": {
+            "section": "5",
+            "prop_id": "5-P3-c",
+            "field": "statement"
+          },
+          "issue": "The conclusion bundles the Section 4.3 withdrawal-as-resolution check and the Section 4.4 no-lag check under one verb, 'the differential-timing result HOLDS.' 'Holds' is correct for the 4.4 leg (4.4's own register permits 'holds with or without the dynamic term'), but it overstates the 4.3 withdrawal leg, which Section 4.3 deliberately bounds as near-mechanical and low-power (only 89 firm-quarters / ~0.3% added; survival is 'a weak attenuation check, not strong evidence against selection') and whose register_global expressly forbids the word 'robust.' The prop's own _phaseC_audit note then characterizes both as 'robust,' directly contradicting 4.3's lock. Scope only to the 4.3/withdrawal leg; do NOT touch the 4.4 leg (flagging that would be a false positive).",
+          "evidence": "5-P3-c statement: 'The differential-timing result holds when a withdrawal is treated as a resolution of the deal and when the cash specification is estimated without its dynamic term.' Its _phaseC_audit: 'robust -- the round trip and the differential timing survive both alternatives.' Section 4.3 register_global: 'Do not oversell: ... survival is a weak attenuation check, not strong evidence against selection' and 'Use consistent with, never robust.'",
+          "rule_broken": "Section 4.3 register_global register_lock ('Use consistent with, never robust'; low-power near-mechanical check is 'consistent with', not corroboration)",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "The differential-timing result holds when a withdrawal is treated as a resolution of the deal and when the cash specification is estimated without its dynamic term. [_phaseC_audit: 'robust -- ... survive both alternatives']",
+            "to": "The differential-timing result is consistent with treating a withdrawal as a resolution of the deal and holds when the cash specification is estimated without its dynamic term. [_phaseC_audit: drop 'robust'; state 'consistent with' for the withdrawal leg, 'holds' for the no-lag leg]",
+            "why": "Keeps 'holds' for the 4.4 leg (sanctioned by 4.4's register) but downgrades the underpowered 4.3 withdrawal leg to 'consistent with' and removes 'robust' per 4.3's explicit register_lock, so the conclusion does not present a near-mechanical 0.3%-of-sample check as corroboration."
+          },
+          "confidence": "med",
+          "dimension": "overclaim",
+          "redteam": {
+            "verdict": "UNREVIEWED",
+            "verdict_reason": "no redteam verdict (out of this redteam scope)"
+          },
+          "_src": "run1"
+        }
+      ]
+    },
+    {
+      "locus": "2.1|P4.2",
+      "max_severity": "minor",
+      "n_findings": 1,
+      "dimensions": [
+        "evidence"
+      ],
+      "sources": [
+        "run1"
+      ],
+      "findings": [
+        {
+          "id": "EV-3",
+          "severity": "minor",
+          "locus": {
+            "section": "2.1",
+            "prop_id": "P4.2",
+            "field": "verification.requery.quotes / _evidence_ref appendix:P4.2"
+          },
+          "issue": "P4.2's load-bearing claim (DWZ decompose call uncertainty into a persistent CEO-style component and a time-varying residual) is not carried by any verbatim cited_text span. The structured requery quotes are off-claim fragments -- n1 'conveyed, such as Lee (2016), sidestep this issue by including manager fixed effects in their', n2 'Next, we show that CEO clarity matters for the market', n4 'firms with more intangible assets...' -- none of which contains the decisive decomposition sentence ('Our analysis is the first to explicitly decompose ... personal style and the potentially strategic component (the residual)'). Support is answer-level reproduction + round-trip span_pin only. The verdict_note is transparent about this, and the underlying claim is genuinely DWZ's own method, so the citation is accurate; flagged for harness transparency, not as substantive overreach. ORIGINAL-locked.",
+          "evidence": "verdict_note: 'DWZ's PDF chunks badly, so NO single clean cited_text span carries the full decomposition; the basis is CONVERGENT ... the decisive sentence is reproduced VERBATIM and IDENTICALLY across TWO independent NLM queries + round-trip pinned.' requery quote n1.cited_text: 'conveyed, such as Lee (2016), sidestep this issue by including manager fixed effects in their' (does not match the claimed decomposition sentence).",
+          "rule_broken": "verbatim quote does not contain the claimed sentence; the statement rests on answer-level evidence rather than a span (weakest verbatim anchor in the corpus)",
+          "proposed_fix": {
+            "action": "NONE",
+            "why": "The verdict openly discloses the weak span basis, and the decomposition is genuinely DWZ's own framing (DWZ call the residual 'the potentially strategic component'), so the claim is accurate and no prose change is required. The orchestrator should note this is the corpus's softest verbatim anchor and re-pin a clean span if Section 3's cash-positive contrast to DWZ's price-null is leaned on harder (P4.3 shares the same answer-level-only basis, also disclosed)."
+          },
+          "confidence": "low",
+          "dimension": "evidence",
+          "redteam": {
+            "verdict": "UNREVIEWED",
+            "verdict_reason": "no redteam verdict (out of this redteam scope)"
+          },
+          "_src": "run1"
+        }
+      ]
+    },
+    {
+      "locus": "4.2|4.2-PARA1-a",
+      "max_severity": "minor",
+      "n_findings": 1,
+      "dimensions": [
+        "completeness"
+      ],
+      "sources": [
+        "run2"
+      ],
+      "findings": [
+        {
+          "id": "comp-3",
+          "severity": "minor",
+          "locus": {
+            "section": "4.2",
+            "prop_id": "4.2-PARA1-a",
+            "field": "depends_on"
+          },
+          "issue": "Two Section 4.2 depends_on edges are prose phrases rather than prop_ids and resolve to no prop in the chain: 4.2-PARA1-a depends_on ['2.3 decomposition'] and 4.2-PARA4-a depends_on ['4.2-PARA2-a','4.2-PARA3-a','Section 3 run-up']. Every other cross-section dependency in the corpus uses a resolvable prop_id (e.g. 4.1-PARA1-a -> '3.2-PARA2-a', 4.3-PARA1-a -> '3.3-PARA3-a'). The referenced content exists (the 2.3 eq-4 decomposition; the Section 3 run-up), so this is a broken graph edge / orphan reference, not missing content -- but it disconnects 4.2 from its upstream anchors for any dependency traversal.",
+          "evidence": "4.2-PARA1-a depends_on: ['2.3 decomposition'] ; 4.2-PARA4-a depends_on: ['4.2-PARA2-a', '4.2-PARA3-a', 'Section 3 run-up']. The strings '2.3 decomposition' and 'Section 3 run-up' match no prop_id in the corpus (149 props enumerated).",
+          "rule_broken": "depends_on must reference resolvable prop_ids; these two edges are orphans -- the completeness brief's 'a depends_on referencing a prop_id absent from the chain'.",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "4.2-PARA1-a depends_on ['2.3 decomposition']; 4.2-PARA4-a depends_on [...,'Section 3 run-up']",
+            "to": "4.2-PARA1-a depends_on ['2.3:P2.2'] (the eq-4 / three-speech-component decomposition prop); 4.2-PARA4-a depends_on ['4.2-PARA2-a','4.2-PARA3-a','3.2-PARA2-a'] (the Section 3 run-up prop, with 3.3-PARA3-a optional)",
+            "why": "Restores resolvable dependency edges per the corpus's own cross-section convention. Section-qualify the 2.3 id (e.g. '2.3:P2.2') because 2.1-2.5 prop_ids are paragraph-local and collide across subsections."
+          },
+          "confidence": "high",
+          "dimension": "completeness",
+          "redteam": {
+            "verdict": "UNREVIEWED",
+            "verdict_reason": "no redteam verdict (out of this redteam scope)"
+          },
+          "_src": "run2"
+        }
+      ]
+    },
+    {
+      "locus": "4.4|4.4-PARA1-a",
+      "max_severity": "minor",
+      "n_findings": 1,
+      "dimensions": [
+        "completeness"
+      ],
+      "sources": [
+        "run2"
+      ],
+      "findings": [
+        {
+          "id": "comp-4",
+          "severity": "minor",
+          "locus": {
+            "section": "4.4",
+            "prop_id": "4.4-PARA1-a",
+            "field": "depends_on"
+          },
+          "issue": "4.4-PARA1-a -- the opening premise of the 'Cash Result Without the Dynamic Term' robustness section -- has depends_on=[], so it floats as a graph root with no anchor to the cash result it re-examines. The corpus's two other robustness-section openers BOTH anchor upstream to the result they check (4.1-PARA1-a -> '3.2-PARA2-a'; 4.3-PARA1-a -> '3.3-PARA3-a'). 4.4-PARA3-a re-derives the cash timing leg of 3.3-PARA3-a (no fall at announcement, fall at completion) without the lag, so the missing anchor is 3.3-PARA3-a (optionally also the cash run-up 3.2-PARA2-a). Same Section-4 dependency-edge defect class as comp-3.",
+          "evidence": "4.4-PARA1-a depends_on: [] ; its reason justifies only ordering ('First: the bias must be framed as a property of the dynamic specification before the check is motivated'), not the absent anchor. Contrast 4.1-PARA1-a depends_on ['3.2-PARA2-a'] and 4.3-PARA1-a depends_on ['3.3-PARA3-a']. 4.4-PARA3-a STMT: 'Without the lag the cash ratio does not fall at announcement ... and falls only at completion ...; the residual column is unchanged' -- i.e. it re-examines the cash leg of 3.3-PARA3-a.",
+          "rule_broken": "Robustness-section openers anchor to the result they check (corpus convention 4.1->3.2, 4.3->3.3); 4.4 breaks it, leaving Section 4.4 disconnected from the cash result in the dependency graph (an unjustified root).",
+          "proposed_fix": {
+            "action": "ADD",
+            "from": "depends_on: []",
+            "to": "depends_on: ['3.3-PARA3-a']",
+            "why": "Anchors the no-dynamic-term robustness check to the cash timing leg it re-examines, matching the convention used by 4.1 and 4.3. Add '3.2-PARA2-a' as a second anchor if the section also re-checks the MA1 cash run-up."
+          },
+          "confidence": "high",
+          "dimension": "completeness",
+          "redteam": {
+            "verdict": "UNREVIEWED",
+            "verdict_reason": "no redteam verdict (out of this redteam scope)"
+          },
+          "_src": "run2"
+        }
+      ]
+    },
+    {
+      "locus": "2.1|P5.5",
+      "max_severity": "minor",
+      "n_findings": 1,
+      "dimensions": [
+        "overclaim"
+      ],
+      "sources": [
+        "smoke"
+      ],
+      "findings": [
+        {
+          "id": "OV-02",
+          "dimension": "overclaim",
+          "severity": "minor",
+          "locus": {
+            "section": "2.1",
+            "prop_id": "P5.5",
+            "field": "statement"
+          },
+          "issue": "P5.5 (ADDED) defers explanation of the differential to 2.2 with the phrase 'the magnitude of the cash-stock gap and why stock sits lower in our measure are developed in 2.2 (H1a).' 'Why stock sits lower in our measure' presupposes a real stock-below-baseline effect as the explanandum, foregrounding the stock-falling side and inverting the floor framing ('the gap is cash rising, not stock falling'). It is the forward-pointer to P3.4's suppression mechanism (OV-01) and dangles once P3.4's dampening clause is removed. This is a framing slip, not a deliberate hedge, so flagging it is not the asymmetric error; but it is low-stakes (the prop is otherwise heavily hedged: 'Motivation, not identification; the source ... stays open').",
+          "evidence": "P5.5 verbatim: '... the magnitude of the cash-stock gap and why stock sits lower in our measure are developed in 2.2 (H1a). Motivation, not identification; the source of the cash uncertainty stays open (P7).' | P5.5's own verification note contradicts the 'sits lower' framing: 'No stock suppressed; nothing below baseline. The DV-level gap (global-disposition by-product + attenuation) lives in 2.2.'",
+          "rule_broken": "Bright line: 'the gap is CASH RISING, not stock falling' (framing slip toward stock-below-baseline). Couple to OV-01.",
+          "proposed_fix": {
+            "action": "REWORD",
+            "from": "This motivates our FOCUS on cash deals; the magnitude of the cash-stock gap and why stock sits lower in our measure are developed in 2.2 (H1a).",
+            "to": "This motivates our FOCUS on cash deals; the magnitude of the cash-stock gap -- cash rising relative to the firm's own quarters, with stock showing no comparable rise -- is developed in 2.2 (H1a).",
+            "why": "Re-bases the deferred explanandum on the gap-as-cash-rising (floor framing) instead of 'stock sits lower' (suppression-direction framing), and keeps the forward-pointer consistent with the OV-01 rewrite of P3.4. Drops the standalone presupposition that stock is a real below-baseline effect needing a stock-side explanation."
+          },
+          "confidence": "med",
+          "_src": "smoke"
+        }
+      ]
+    }
+  ]
+}
