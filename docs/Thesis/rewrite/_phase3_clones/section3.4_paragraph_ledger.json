@@ -1,0 +1,554 @@
+{
+  "subsection_id": "3.4",
+  "title": "Main Analysis 3: Cash-Specificity",
+  "paragraphs": [
+    {
+      "para_id": "3.4-PARA1",
+      "order": 1,
+      "intent": {
+        "statement": "Run the descriptive cash-vs-stock side-by-side on the reserved placebo STOCK column: neither arm trends into the event (PRE2 flat in both, 0.0105 cash and -0.0056 stock, neither significant), and only the cash arm moves, reproducing the run-up (PRE1 0.0486***, peak-to-post 0.0681***) while the stock arm shows none of it (PRE1 -0.0404 n.s.) and if anything moves the other way across announcement (PRE1-GAP -0.0756*).",
+        "reason": "The descriptive cash-vs-stock asymmetry motivates the formal test; the stock arm's opposite movement is what later makes the formal gap exceed either coefficient. The opposite move strengthens the placebo logic but is explicitly NOT the test (Gelman-Stern guard). This uses the STOCK column of tab:empire_drop_placebo reserved out of 3.3.",
+        "evidence": [
+          "section3.4_subsection_plan.json 3.4-P1",
+          "section34_phaseA_redteam.json 3.4 (placebo stock column assigned to 3.4-P1)",
+          "old_draft_81efc78.tex L141-143"
+        ]
+      },
+      "serves": [
+        "motivates the formal test descriptively; consumes the placebo stock column reserved from 3.3"
+      ],
+      "boundary": "Descriptive side-by-side only; explicitly NOT the formal test (that is PARA3). Uses the placebo STOCK column, complementing 3.3's CASH-column use.",
+      "thin_claim": "Side by side on the placebo, only the cash arm moves; the stock arm shows no run-up and if anything moves the other way; descriptive, not the test.",
+      "guardrails": [
+        "The side-by-side is descriptive motivation only, NOT the formal cash-specificity test (Gelman-Stern guard).",
+        "Uses the placebo STOCK column (cash column was 3.3-PARA5) -- one home per column.",
+        "correlational / concentration-not-strict-specificity."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.4-PARA1-a",
+          "from_phaseA_prop": "3.4-P1",
+          "statement": "Step one reruns the event study side by side on the stock placebo arm: neither arm trends into the event (PRE2 flat in both, 0.0105 cash and -0.0056 stock, neither significant), and only the cash arm moves, reproducing the run-up (PRE1 0.0486***, peak-to-post drop 0.0681***) while the stock arm shows none of it (PRE1 -0.0404, n.s.) and if anything moves the other way across announcement (PRE1-GAP -0.0756*). This uses the STOCK column of tab:empire_drop_placebo (the column reserved out of 3.3).",
+          "role_in_paragraph": "premise -- the sole proposition; the descriptive cash-vs-stock contrast",
+          "type": "result-number",
+          "reason": "First because the descriptive asymmetry sets up why a formal test is needed; placed before the design (PARA2) so the motivation precedes the pre-commitment to the Wald logic, matching the old-draft order.",
+          "evidence": [
+            "section3.4_subsection_plan.json 3.4-P1",
+            "claim_findings_ledger.json C6 (placebo_cash_PRE1 0.0486***; placebo_stock_PRE1 -0.0404 n.s.; stock moves OPPOSITE PRE1-GAP -0.0756*)",
+            "_tables_from_bible.tex tab:empire_drop_placebo cols 1 (cash) and 2 (stock)"
+          ],
+          "numbers": [
+            "cash PRE2 0.0105 (tab:empire_drop_placebo col 1, n.s.) / stock PRE2 -0.0056 (col 2, n.s.)",
+            "cash PRE1 0.0486*** (col 1, SE 0.0174)",
+            "cash Drop PRE1-POST 0.0681*** (col 1, SE 0.0187)",
+            "stock PRE1 -0.0404 (col 2, SE 0.0299, n.s.)",
+            "stock Drop PRE1-GAP -0.0756* (col 2, SE 0.0405)"
+          ],
+          "register_locks": [
+            "correlational",
+            "concentration-not-strict-specificity"
+          ],
+          "depends_on": [
+            "3.3-PARA5-a",
+            "3.4-PARA2-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "0.0105",
+          "table_cell": "tab:empire_drop_placebo col 1 PRE2 (cash)"
+        },
+        {
+          "number": "-0.0056",
+          "table_cell": "tab:empire_drop_placebo col 2 PRE2 (stock)"
+        },
+        {
+          "number": "0.0486",
+          "table_cell": "tab:empire_drop_placebo col 1 PRE1 (cash)"
+        },
+        {
+          "number": "0.0681",
+          "table_cell": "tab:empire_drop_placebo col 1 Drop PRE1-POST (cash)"
+        },
+        {
+          "number": "-0.0404",
+          "table_cell": "tab:empire_drop_placebo col 2 PRE1 (stock)"
+        },
+        {
+          "number": "-0.0756",
+          "table_cell": "tab:empire_drop_placebo col 2 Drop PRE1-GAP (stock)"
+        }
+      ]
+    },
+    {
+      "para_id": "3.4-PARA2",
+      "order": 2,
+      "intent": {
+        "statement": "Set the pooled MA3 design and pre-commit the test: the pooled interacted model of 2.4 carries both treatments and tests the cash-minus-stock difference directly with a single Wald linear restriction (beta_c - beta_s > 0), which estimates theta_-1^cash - theta_-1^stock in H1a; this difference, not a comparison of one significant coefficient against one insignificant one, is the formal cash-specificity test. The pooled baseline is firms that make neither a cash nor a stock deal.",
+        "reason": "The C6 C-trap: the test MUST be the formal Wald linear restriction, never the Gelman-Stern side-by-side. Stating this explicitly before the number is mandatory and is kept as a standalone pivot paragraph (not folded into the result) precisely to put the anti-Gelman-Stern logic on record first. SEAM-D: the MA3 baseline differs (never-either acquirers).",
+        "evidence": [
+          "section3.4_subsection_plan.json 3.4-P2",
+          "thesis_draft.tex 2.4 P3.2 (Wald beta_c-beta_s; 'not a comparison of one significant against one insignificant', L110)",
+          "claim_findings_ledger.json C6 risks (no Gelman-Stern)"
+        ]
+      },
+      "serves": [
+        "pre-commits the formal-Wald-not-Gelman-Stern logic and the never-either baseline before the EFFECT number; the anti-trap design paragraph"
+      ],
+      "boundary": "Design and test-definition only; no coefficient yet. Establishes the never-either baseline (SEAM-D), distinct from MA1/MA2 baselines.",
+      "thin_claim": "The pooled interacted model tests the cash-minus-stock difference with a single Wald linear restriction; that difference, not a sig-vs-n.s. side-by-side, is the formal test.",
+      "guardrails": [
+        "C6 C-trap (MANDATORY): the test is the formal Wald linear restriction, NEVER the Gelman-Stern sig-vs-n.s. side-by-side. State before the number.",
+        "SEAM-D: the MA3 pooled baseline is never-either acquirers, distinct from the MA1/MA2 baselines.",
+        "correlational / no-identification / concentration-not-strict-specificity."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.4-PARA2-a",
+          "from_phaseA_prop": "3.4-P2",
+          "statement": "A side-by-side display implies a comparison it never runs, so the pooled interacted model of 2.4 carries both treatments and tests the cash-minus-stock difference directly with a single Wald linear restriction (beta_c - beta_s > 0), which is what estimates theta_-1^cash - theta_-1^stock in H1a; this difference, and not a comparison of one significant coefficient against one insignificant one, is the formal cash-specificity test. The pooled baseline is firms that make neither a cash nor a stock deal.",
+          "role_in_paragraph": "definition -- the sole proposition; pre-commits the Wald logic and the never-either baseline",
+          "type": "design-method",
+          "reason": "Second, immediately after the descriptive motivation and BEFORE the EFFECT number, because the anti-Gelman-Stern pre-commitment must be on record before any coefficient is read.",
+          "evidence": [
+            "section3.4_subsection_plan.json 3.4-P2",
+            "thesis_draft.tex 2.4 P3.2 (L110)",
+            "section2.4_paragraph_ledger.json SEAM-D (MA3 baseline = never-either)",
+            "variable_ledger.json tab:empire_cashspec design.formal_test"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "no-identification",
+            "concentration-not-strict-specificity"
+          ],
+          "depends_on": [
+            "3.1-PARA4-a",
+            "3.3-PARA1-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": []
+    },
+    {
+      "para_id": "3.4-PARA3",
+      "order": 3,
+      "intent": {
+        "statement": "Deliver the formal EFFECT result: the cash arm's pre-announcement uncertainty coefficient is significant (0.0459**) and the stock arm's is insignificant and negative (-0.0524 n.s.); the formal cash-minus-stock Wald difference is 0.0983** (SE 0.0476; z~2.07, p=.039), significant at 5% two-tailed. Because the arms move in opposite directions the gap exceeds either coefficient, roughly a third of a residual standard deviation (0.0983/0.3010). This formal linear-restriction test, not a sig-vs-n.s. comparison, is the cash-specificity claim.",
+        "reason": "This IS C6: the EFFECT survives the formal Wald test at 5%. Stating it as the linear restriction explicitly avoids the Gelman-Stern fallacy; the empire_cashspec table is two-tailed (note L362), so 'survives a formal test' is accurate, not an overclaim. SD basis is the resolved 0.3010.",
+        "evidence": [
+          "section3.4_subsection_plan.json 3.4-P3",
+          "claim_findings_ledger.json C6 ('survives a formal test' ACCURATE)",
+          "_tables_from_bible.tex tab:empire_cashspec col 1 (two-tailed note L362)"
+        ]
+      },
+      "serves": [
+        "delivers C6; pays off H1a (formal cash-minus-stock difference 0.0983** at 5%) as concentration, not strict specificity"
+      ],
+      "boundary": "The EFFECT (uncertainty run-up) only; the CAUSE leg (PARA4) and the hedge (PARA5) are separate. SD basis is the resolved 0.3010.",
+      "thin_claim": "The formal cash-minus-stock Wald difference on the EFFECT is 0.0983**, valid at 5% two-tailed; the cash-specificity claim, framed as concentration.",
+      "guardrails": [
+        "Stated as the formal Wald LINEAR RESTRICTION, never the sig-vs-n.s. side-by-side (Gelman-Stern).",
+        "empire_cashspec is two-tailed (note L362) -> 'survives a formal test' is accurate, not an overclaim.",
+        "SD basis resolved 0.3010 (Panel B); ~1/3 of SD (32.7%) is a disclosed approximation on the MA3 universe.",
+        "correlational / concentration-not-strict-specificity / no-identification / supportive-not-definitive."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.4-PARA3-a",
+          "from_phaseA_prop": "3.4-P3",
+          "statement": "On the EFFECT, the pooled model delivers the formal cash-specificity result: the cash arm's pre-announcement uncertainty coefficient is significant (0.0459**) and the stock arm's is insignificant and negative (-0.0524, n.s.), and the formal cash-minus-stock Wald difference is 0.0983** (SE 0.0476; z~2.07, p=.039), significant at the 5% level two-tailed. Because the arms move in opposite directions the gap exceeds either coefficient, roughly a third of a residual standard deviation. This formal linear-restriction test, not a comparison of one significant against one insignificant coefficient, is the cash-specificity claim.",
+          "role_in_paragraph": "result -- the sole proposition; the formal Wald EFFECT",
+          "type": "result-number",
+          "reason": "Third, after the design pre-commits the Wald logic, so the 0.0983** difference is read strictly as the linear restriction PARA2 defined; anchored to the two-tailed table note so the claim is provably accurate.",
+          "evidence": [
+            "section3.4_subsection_plan.json 3.4-P3",
+            "claim_findings_ledger.json C6 (EFFECT_cash 0.0459**; EFFECT_stock -0.0524 n.s.; EFFECT_diff 0.0983** z=2.06 p=.039)",
+            "_tables_from_bible.tex tab:empire_cashspec col 1 (0.0459**, -0.0524 n.s., Cash-Stock 0.0983**, note L362 two-tailed); tab:summary_stats Panel B (SD 0.3010)"
+          ],
+          "numbers": [
+            "0.0459** (tab:empire_cashspec col 1 cash, SE 0.0185)",
+            "-0.0524 (tab:empire_cashspec col 1 stock, SE 0.0436, n.s.)",
+            "0.0983** (tab:empire_cashspec col 1 Cash-Stock formal test, SE 0.0476; z=0.0983/0.0476=2.07, p=.039 two-tailed)",
+            "~1/3 of SD = 0.0983 / 0.3010 (tab:summary_stats Panel B) = 32.7%"
+          ],
+          "register_locks": [
+            "correlational",
+            "concentration-not-strict-specificity",
+            "no-identification",
+            "supportive-not-definitive"
+          ],
+          "depends_on": [
+            "3.4-PARA2-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "0.0459",
+          "table_cell": "tab:empire_cashspec col 1 Pre-announce Cash (UncResCEO)"
+        },
+        {
+          "number": "-0.0524",
+          "table_cell": "tab:empire_cashspec col 1 Pre-announce Stock (UncResCEO)"
+        },
+        {
+          "number": "0.0983",
+          "table_cell": "tab:empire_cashspec col 1 Cash-Stock formal test"
+        },
+        {
+          "number": "0.0476",
+          "table_cell": "tab:empire_cashspec col 1 Cash-Stock SE"
+        },
+        {
+          "number": "2.07",
+          "table_cell": "derived z = 0.0983/0.0476 (tab:empire_cashspec col 1)"
+        },
+        {
+          "number": "0.039",
+          "table_cell": "claim_findings_ledger C6 EFFECT_diff (z~2.07, p=.039 two-tailed; tab:empire_cashspec note L362)"
+        },
+        {
+          "number": "32.7 percent",
+          "table_cell": "0.0983 (tab:empire_cashspec col 1) / 0.3010 (tab:summary_stats Panel B)"
+        },
+        {
+          "number": "0.3010",
+          "table_cell": "tab:summary_stats Panel B UncResCEO SD"
+        }
+      ]
+    },
+    {
+      "para_id": "3.4-PARA4",
+      "order": 4,
+      "intent": {
+        "statement": "Deliver the failing CAUSE leg: the cash build-up itself is only weakly cash-sided. The cash-minus-stock difference is insignificant on the matched universe (0.0064 n.s.) and reaches only marginal significance on the full panel (0.0092*). The EFFECT concentrates in cash deals, but the proposed war-chest mechanism is NOT established; the mechanism stays open.",
+        "reason": "The EFFECT/CAUSE split is the load-bearing honesty of C6: claim the cash-specific EFFECT, but do NOT claim the cause is cash-specific. This keeps the mechanism-open lock intact and pre-empts a referee who would over-read the run-up as a tested war-chest channel. EFFECT and CAUSE sit in adjacent but separate paragraphs because they carry opposite verdicts. The CAUSE-matched 0.0064 carries no stars (n.s.) in the table.",
+        "evidence": [
+          "section3.4_subsection_plan.json 3.4-P4",
+          "claim_findings_ledger.json C6 ('the cash build-up itself is NOT cash-specific'; keep mechanism OPEN)",
+          "_tables_from_bible.tex tab:empire_cashspec col 2 (Cash-Stock 0.0064 no stars) and col 3 (0.0092*)"
+        ]
+      },
+      "serves": [
+        "delivers the failing CAUSE leg; keeps the war-chest mechanism open (mechanism-open lock)"
+      ],
+      "boundary": "The CAUSE (cash build-up) only; the EFFECT is PARA3's. No mechanism is asserted.",
+      "thin_claim": "The cash build-up itself is not cash-specific (0.0064 n.s. matched, 0.0092* full); the war-chest mechanism stays open.",
+      "guardrails": [
+        "EFFECT/CAUSE split: the EFFECT is cash-specific (PARA3), the CAUSE is NOT; do not over-read the run-up as a tested war-chest channel.",
+        "CAUSE-matched difference 0.0064 carries NO stars (n.s.); full-panel 0.0092 is marginal (*). Do NOT confuse with the matched Cash-arm coefficient 0.0056** (the Cash-Stock difference, not the arm, is 0.0064).",
+        "mechanism-open / correlational / concentration-not-strict-specificity."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.4-PARA4-a",
+          "from_phaseA_prop": "3.4-P4",
+          "statement": "On the proposed CAUSE, the cash build-up itself is only weakly cash-sided: the cash-minus-stock difference is insignificant on the matched universe (0.0064, n.s.) and reaches only marginal significance on the full panel (0.0092*). The EFFECT concentrates in cash deals, but the proposed war-chest mechanism is therefore NOT established; the mechanism stays open.",
+          "role_in_paragraph": "result -- the sole proposition; the failing CAUSE leg",
+          "type": "result-number",
+          "reason": "Fourth, immediately after the EFFECT, because the EFFECT/CAUSE contrast is only legible once the EFFECT (PARA3) is claimed; kept in an adjacent but separate paragraph to preserve the opposite-verdict honesty.",
+          "evidence": [
+            "section3.4_subsection_plan.json 3.4-P4",
+            "claim_findings_ledger.json C6 (CAUSE_diff_matched 0.0064 n.s.; CAUSE_diff_full 0.0092*)",
+            "_tables_from_bible.tex tab:empire_cashspec col 2 (Cash-Stock 0.0064 no stars) and col 3 (0.0092*)"
+          ],
+          "numbers": [
+            "0.0064 (tab:empire_cashspec col 2 Cash-Stock matched difference, SE 0.0071, n.s.)",
+            "0.0092* (tab:empire_cashspec col 3 Cash-Stock full panel difference, SE 0.0055)"
+          ],
+          "register_locks": [
+            "mechanism-open",
+            "correlational",
+            "concentration-not-strict-specificity"
+          ],
+          "depends_on": [
+            "3.4-PARA3-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "0.0064",
+          "table_cell": "tab:empire_cashspec col 2 Cash-Stock (matched difference, CashRatio)"
+        },
+        {
+          "number": "0.0092",
+          "table_cell": "tab:empire_cashspec col 3 Cash-Stock (full-panel difference, CashRatio)"
+        }
+      ]
+    },
+    {
+      "para_id": "3.4-PARA5",
+      "order": 5,
+      "intent": {
+        "statement": "Lock the supported-but-fragile hedge: one formal test at the 5% level supports H1a's claim of concentration in cash, but its significance rides on the imprecise negative stock estimate (-0.0524, SE 0.0436), and the cause's own cash-specificity is weaker still (marginal, full panel only); the wording stays with 'concentrated', not 'specific', the sig-vs-n.s. difference is explicitly NOT treated as the test, and no cause is asserted.",
+        "reason": "Locks C6 at the ledger ceiling: valid-but-fragile, concentration-not-specificity, supportive-not-definitive, mechanism-open. This is the calibrated hedge the body and ledger already carry and must not be dropped.",
+        "evidence": [
+          "section3.4_subsection_plan.json 3.4-P5",
+          "claim_findings_ledger.json C6 thinnest_claim + risks (imprecise stock arm; supportive rather than definitive)",
+          "old_draft_81efc78.tex L147"
+        ]
+      },
+      "serves": [
+        "locks C6 at the ledger ceiling; the calibrated hedge that closes the cash-specificity subsection"
+      ],
+      "boundary": "Framing caveat only; no new result. Closes the subsection.",
+      "thin_claim": "The result is supported but fragile: one formal test at 5% riding on an imprecise stock arm; concentration not specificity, no cause asserted.",
+      "guardrails": [
+        "Wording stays 'concentrated', not 'specific'.",
+        "sig-vs-n.s. is explicitly NOT the test (Gelman-Stern).",
+        "Significance rides on the imprecise stock arm (-0.0524, SE 0.0436) -- disclose the fragility.",
+        "concentration-not-strict-specificity / supportive-not-definitive / mechanism-open / correlational."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.4-PARA5-a",
+          "from_phaseA_prop": "3.4-P5",
+          "statement": "We therefore read the result as supported but fragile: one formal test at the 5% level supports H1a's claim of concentration in cash, but its significance rides on the imprecise negative stock estimate (-0.0524, SE 0.0436), and the cause's own cash-specificity is weaker still (marginal, full panel only). The wording stays with 'concentrated', not 'specific', the difference between a significant and an insignificant coefficient is explicitly NOT treated as the test, and no cause is asserted.",
+          "role_in_paragraph": "caveat -- the sole proposition; the supported-but-fragile lock",
+          "type": "framing",
+          "reason": "Last because the hedge governs how the EFFECT (PARA3) and CAUSE (PARA4) results are read together; it closes the subsection at the ledger ceiling.",
+          "evidence": [
+            "section3.4_subsection_plan.json 3.4-P5",
+            "claim_findings_ledger.json C6 thinnest_claim + risks",
+            "thesis_draft.tex 2.2 H1a thin_claim (concentration not strict specificity)"
+          ],
+          "numbers": [
+            "EFFECT stock -0.0524 (tab:empire_cashspec col 1, SE 0.0436, n.s.) -- the imprecise arm the difference rides on"
+          ],
+          "register_locks": [
+            "concentration-not-strict-specificity",
+            "supportive-not-definitive",
+            "mechanism-open",
+            "correlational"
+          ],
+          "depends_on": [
+            "3.4-PARA3-a",
+            "3.4-PARA4-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "-0.0524",
+          "table_cell": "tab:empire_cashspec col 1 Pre-announce Stock (UncResCEO)"
+        },
+        {
+          "number": "0.0436",
+          "table_cell": "tab:empire_cashspec col 1 Pre-announce Stock SE"
+        }
+      ]
+    }
+  ],
+  "allocation_coverage": {
+    "all_phaseA_props_homed": "All five ratified 3.4 props homed exactly once, 1:1 with five paragraphs in chain order: 3.4-P1->PARA1; 3.4-P2->PARA2; 3.4-P3->PARA3; 3.4-P4->PARA4; 3.4-P5->PARA5. None split, merged, dropped, or duplicated. The anti-Gelman-Stern design (PARA2) precedes the EFFECT result (PARA3); EFFECT and CAUSE are kept in separate adjacent paragraphs to preserve the opposite-verdict honesty; the placebo stock column is consumed in PARA1, completing the dual-listed-table split with 3.3-PARA5.",
+    "prop_to_paragraph": [
+      {
+        "phaseA_prop": "3.4-P1",
+        "paragraph": "3.4-PARA1",
+        "note": "sole prop; descriptive placebo stock-column side-by-side"
+      },
+      {
+        "phaseA_prop": "3.4-P2",
+        "paragraph": "3.4-PARA2",
+        "note": "sole prop; pooled Wald design + never-either baseline; pre-commits anti-Gelman-Stern"
+      },
+      {
+        "phaseA_prop": "3.4-P3",
+        "paragraph": "3.4-PARA3",
+        "note": "sole prop; formal Wald EFFECT 0.0983** at 5%"
+      },
+      {
+        "phaseA_prop": "3.4-P4",
+        "paragraph": "3.4-PARA4",
+        "note": "sole prop; failing CAUSE leg; mechanism open"
+      },
+      {
+        "phaseA_prop": "3.4-P5",
+        "paragraph": "3.4-PARA5",
+        "note": "sole prop; supported-but-fragile hedge"
+      }
+    ],
+    "gaps": [
+      "The war-chest CAUSE mechanism is deliberately left open (cause leg fails), bounded-by-design.",
+      "The formal test rests on a single comparison and an imprecise stock arm, disclosed as fragility (PARA5), not hidden.",
+      "The R2 two-way-clustering rerun on empire_cashspec is a surfaced open item (could strengthen C6); table stays firm-clustered, not assumed into the chain."
+    ]
+  },
+  "_clone_provenance": {
+    "is_clone": true,
+    "of": "section3.4_paragraph_ledger.json (pristine original)",
+    "purpose": "Phase-3 chain redesign; locked final_prose stripped.",
+    "built_by": "tmp/clone_strip_prose.py",
+    "note": "Proposed chain fixes APPENDED under _proposed_fixes; original chain untouched."
+  },
+  "_proposed_fixes": {
+    "summary": "Surgical placebo->comparison sweep of descriptive stock-arm framing (11 fixes); 9 identifier hits KEPT (tab:empire_drop_placebo / placebo_*_PRE1, 18-file cross-ref). Results section -> no new cite props.",
+    "register_locks": [
+      "stock = comparison not inert placebo (matches 2.1/2.2)",
+      "NO stock-suppressed",
+      "we interpret, we do not detect"
+    ],
+    "fixes": [
+      {
+        "fix_id": "S3.4-F1",
+        "locus": "doc.paragraphs[0].intent.statement",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[0].intent.statement",
+          "from": "Run the descriptive cash-vs-stock side-by-side on the reserved placebo STOCK column: neither arm trends into the event (PRE2 flat in both, 0.0105 cash and -0.0056 stock, neither significant), and only the cash arm moves, reproducing the run-up (PRE1 0.0486***, peak-to-post 0.0681***) while the stock arm shows none of it (PRE1 -0.0404 n.s.) and if anything moves the other way across announcement (PRE1-GAP -0.0756*).",
+          "to": "Run the descriptive cash-vs-stock side-by-side on the reserved comparison STOCK column: neither arm trends into the event (PRE2 flat in both, 0.0105 cash and -0.0056 stock, neither significant), and only the cash arm moves, reproducing the run-up (PRE1 0.0486***, peak-to-post 0.0681***) while the stock arm shows none of it (PRE1 -0.0404 n.s.) and if anything moves the other way across announcement (PRE1-GAP -0.0756*)."
+        }
+      },
+      {
+        "fix_id": "S3.4-F2",
+        "locus": "doc.paragraphs[0].intent.reason",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[0].intent.reason",
+          "from": "The descriptive cash-vs-stock asymmetry motivates the formal test; the stock arm's opposite movement is what later makes the formal gap exceed either coefficient. The opposite move strengthens the placebo logic but is explicitly NOT the test (Gelman-Stern guard). This uses the STOCK column of tab:empire_drop_placebo reserved out of 3.3.",
+          "to": "The descriptive cash-vs-stock asymmetry motivates the formal test; the stock arm's opposite movement is what later makes the formal gap exceed either coefficient. The opposite move strengthens the comparison logic but is explicitly NOT the test (Gelman-Stern guard). This uses the STOCK column of tab:empire_drop_placebo reserved out of 3.3."
+        }
+      },
+      {
+        "fix_id": "S3.4-F3",
+        "locus": "doc.paragraphs[0].intent.evidence[1]",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[0].intent.evidence[1]",
+          "from": "section34_phaseA_redteam.json 3.4 (placebo stock column assigned to 3.4-P1)",
+          "to": "section34_phaseA_redteam.json 3.4 (comparison stock column assigned to 3.4-P1)"
+        }
+      },
+      {
+        "fix_id": "S3.4-F4",
+        "locus": "doc.paragraphs[0].serves[0]",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[0].serves[0]",
+          "from": "motivates the formal test descriptively; consumes the placebo stock column reserved from 3.3",
+          "to": "motivates the formal test descriptively; consumes the comparison stock column reserved from 3.3"
+        }
+      },
+      {
+        "fix_id": "S3.4-F5",
+        "locus": "doc.paragraphs[0].boundary",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[0].boundary",
+          "from": "Descriptive side-by-side only; explicitly NOT the formal test (that is PARA3). Uses the placebo STOCK column, complementing 3.3's CASH-column use.",
+          "to": "Descriptive side-by-side only; explicitly NOT the formal test (that is PARA3). Uses the comparison STOCK column, complementing 3.3's CASH-column use."
+        }
+      },
+      {
+        "fix_id": "S3.4-F6",
+        "locus": "doc.paragraphs[0].thin_claim",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[0].thin_claim",
+          "from": "Side by side on the placebo, only the cash arm moves; the stock arm shows no run-up and if anything moves the other way; descriptive, not the test.",
+          "to": "Side by side on the comparison, only the cash arm moves; the stock arm shows no run-up and if anything moves the other way; descriptive, not the test."
+        }
+      },
+      {
+        "fix_id": "S3.4-F7",
+        "locus": "doc.paragraphs[0].guardrails[1]",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[0].guardrails[1]",
+          "from": "Uses the placebo STOCK column (cash column was 3.3-PARA5) -- one home per column.",
+          "to": "Uses the comparison STOCK column (cash column was 3.3-PARA5) -- one home per column."
+        }
+      },
+      {
+        "fix_id": "S3.4-F8",
+        "locus": "doc.paragraphs[0].proposition_chain[0].statement",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[0].proposition_chain[0].statement",
+          "from": "Step one reruns the event study side by side on the stock placebo arm: neither arm trends into the event (PRE2 flat in both, 0.0105 cash and -0.0056 stock, neither significant), and only the cash arm moves, reproducing the run-up (PRE1 0.0486***, peak-to-post drop 0.0681***) while the stock arm shows none of it (PRE1 -0.0404, n.s.) and if anything moves the other way across announcement (PRE1-GAP -0.0756*). This uses the STOCK column of tab:empire_drop_placebo (the column reserved out of 3.3).",
+          "to": "Step one reruns the event study side by side on the stock comparison arm: neither arm trends into the event (PRE2 flat in both, 0.0105 cash and -0.0056 stock, neither significant), and only the cash arm moves, reproducing the run-up (PRE1 0.0486***, peak-to-post drop 0.0681***) while the stock arm shows none of it (PRE1 -0.0404, n.s.) and if anything moves the other way across announcement (PRE1-GAP -0.0756*). This uses the STOCK column of tab:empire_drop_placebo (the column reserved out of 3.3)."
+        }
+      },
+      {
+        "fix_id": "S3.4-F9",
+        "locus": "doc.allocation_coverage.all_phaseA_props_homed",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.allocation_coverage.all_phaseA_props_homed",
+          "from": "All five ratified 3.4 props homed exactly once, 1:1 with five paragraphs in chain order: 3.4-P1->PARA1; 3.4-P2->PARA2; 3.4-P3->PARA3; 3.4-P4->PARA4; 3.4-P5->PARA5. None split, merged, dropped, or duplicated. The anti-Gelman-Stern design (PARA2) precedes the EFFECT result (PARA3); EFFECT and CAUSE are kept in separate adjacent paragraphs to preserve the opposite-verdict honesty; the placebo stock column is consumed in PARA1, completing the dual-listed-table split with 3.3-PARA5.",
+          "to": "All five ratified 3.4 props homed exactly once, 1:1 with five paragraphs in chain order: 3.4-P1->PARA1; 3.4-P2->PARA2; 3.4-P3->PARA3; 3.4-P4->PARA4; 3.4-P5->PARA5. None split, merged, dropped, or duplicated. The anti-Gelman-Stern design (PARA2) precedes the EFFECT result (PARA3); EFFECT and CAUSE are kept in separate adjacent paragraphs to preserve the opposite-verdict honesty; the comparison stock column is consumed in PARA1, completing the dual-listed-table split with 3.3-PARA5."
+        }
+      },
+      {
+        "fix_id": "S3.4-F10",
+        "locus": "doc.allocation_coverage.prop_to_paragraph[0].note",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.allocation_coverage.prop_to_paragraph[0].note",
+          "from": "sole prop; descriptive placebo stock-column side-by-side",
+          "to": "sole prop; descriptive comparison stock-column side-by-side"
+        }
+      },
+      {
+        "fix_id": "S3.4-F11",
+        "locus": "stock-comparison paragraph",
+        "action": "ADD_REGISTER_LOCK",
+        "change": "guard regenerated prose against 'stock suppressed'",
+        "proposed_register_lock": "No 'stock suppressed' / stock not pushed below baseline -- the stock comparison arm is a noisy flat null (-0.0429 n.s.); the cash-vs-stock gap is cash rising, not stock falling. We interpret, we do not detect (masking register, 2.1/2.2)."
+      }
+    ]
+  }
+}

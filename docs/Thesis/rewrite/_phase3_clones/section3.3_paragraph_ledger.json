@@ -1,0 +1,702 @@
+{
+  "subsection_id": "3.3",
+  "title": "Main Analysis 2: Differential Timing Around the Announcement",
+  "paragraphs": [
+    {
+      "para_id": "3.3-PARA1",
+      "order": 1,
+      "intent": {
+        "statement": "Set the MA2 matched-universe event study: replace the single pre-announcement indicator with the four-bin event study (PRE2 at e=-2, PRE1 at e=-1, GAP announced-but-unclosed, POST completed; baseline e<=-3 plus never-acquirers) on the matched universe where both the residual and the cash ratio are defined (28,102 firm-quarters of 1,320 firms), both outcomes on the identical rows, two-tailed throughout.",
+        "reason": "tab:empire_drop_matched is the primary table because it alone carries BOTH clocks (the placebo table has no CashRatio column); the shared-sample design is exactly what licenses reading the two paths against each other, defending the differential-timing reading against a sample-composition artifact. The design is a distinct atomic premise from the pre-trend validity result, so they are separate paragraphs (favoring clarity for the strongest claim).",
+        "evidence": [
+          "section3.3_subsection_plan.json 3.3-P1",
+          "thesis_draft.tex 2.4 P2 (event-study spec; bins; two-tailed, L100-104)",
+          "old_draft_81efc78.tex L126"
+        ]
+      },
+      "serves": [
+        "defines the event-study estimand for C1/H1b on the matched universe; the shared-sample premise the two-path reading rests on"
+      ],
+      "boundary": "Design only; the event-study equation is 2.4's; no coefficient yet. Matched-universe N (28,102) is distinct from the placebo cash N (29,535, PARA4).",
+      "thin_claim": "MA2 estimates the 2.4 four-bin event study on the matched universe (28,102 / 1,320 firms), both outcomes on identical rows, two-tailed.",
+      "guardrails": [
+        "Matched-universe N is 28,102 / 1,320; do NOT conflate with placebo cash N 29,535 (PARA4).",
+        "Equation belongs to 2.4; reference, do not restate.",
+        "correlational / no-identification."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.3-PARA1-a",
+          "from_phaseA_prop": "3.3-P1",
+          "statement": "MA2 replaces the single pre-announcement indicator with the four-bin event study (PRE2 at e=-2, PRE1 at e=-1, GAP announced-but-unclosed, POST completed; baseline e<=-3 plus never-acquirers) on the matched universe where both the residual and the cash ratio are defined (28,102 firm-quarters of 1,320 firms); the specification is otherwise that of MA1 and, with no ordering imposed across bins, every coefficient is two-tailed. The matched universe estimates BOTH outcomes on the identical rows, defending the differential-timing reading against a sample-composition artifact.",
+          "role_in_paragraph": "premise -- the sole proposition; the matched-universe event-study design",
+          "type": "design-method",
+          "reason": "First because the bins and the shared-row matched universe must be fixed before the pre-trend and the two diverging legs can be read.",
+          "evidence": [
+            "section3.3_subsection_plan.json 3.3-P1",
+            "thesis_draft.tex 2.4 P2 (L100-104)",
+            "variable_ledger.json tab:empire_drop_matched design.matched_universe",
+            "_tables_from_bible.tex tab:empire_drop_matched (N 28,102, 1,320 firms)"
+          ],
+          "numbers": [
+            "28,102 firm-quarters / 1,320 firms (tab:empire_drop_matched)"
+          ],
+          "register_locks": [
+            "correlational",
+            "no-identification"
+          ],
+          "depends_on": [
+            "3.1-PARA4-a",
+            "3.2-PARA1-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "28,102",
+          "table_cell": "tab:empire_drop_matched N row (firm-quarters)"
+        },
+        {
+          "number": "1,320",
+          "table_cell": "tab:empire_drop_matched Firms row"
+        }
+      ]
+    },
+    {
+      "para_id": "3.3-PARA2",
+      "order": 2,
+      "intent": {
+        "statement": "Establish the flat pre-trend on both clocks: the e=-2 (PRE2) coefficient is null for the residual (0.0068 n.s.) and for the cash ratio (0.0008 n.s.), so the PRE1 estimates are not the tail of a pre-existing trend; this is a validity device, not an identification proof.",
+        "reason": "PRE2 is the 2.4-promised pre-trend check; without it the PRE1 spike could be dismissed as the tail of a trend. Stated as a validity device per the no-parallel-trends register (2.4 P4.1). It is a distinct validity result the spec promised, so for the strongest claim it stays its own atomic paragraph rather than being merged into the design.",
+        "evidence": [
+          "section3.3_subsection_plan.json 3.3-P2",
+          "thesis_draft.tex 2.4 P2/P4 (PRE2 pre-trend validity, no parallel-trends claim)",
+          "old_draft_81efc78.tex L128"
+        ]
+      },
+      "serves": [
+        "validates the PRE1 spike against a pre-existing trend; the precondition for reading PARA3's contrast"
+      ],
+      "boundary": "Pre-trend validity only; no identification claim; not the GAP contrast (PARA3).",
+      "thin_claim": "The pre-trend is flat on both clocks (PRE2 n.s.), so the PRE1 estimates are not a trend tail; validity device only.",
+      "guardrails": [
+        "No parallel-trends / identification claim; this is a validity device (2.4 P4.1).",
+        "correlational / no-identification."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.3-PARA2-a",
+          "from_phaseA_prop": "3.3-P2",
+          "statement": "The pre-trend is flat on both clocks: the e=-2 (PRE2) coefficient is null for the residual (0.0068 n.s.) and for the cash ratio (0.0008 n.s.), so the PRE1 estimates are not the tail of a pre-existing trend. This is a validity device, not an identification proof.",
+          "role_in_paragraph": "premise -- the sole proposition; the pre-trend validity check",
+          "type": "result-number",
+          "reason": "Second because the pre-trend must clear before the PRE1 spike (PARA3) can be read as an event response rather than a trend; isolated because it is a distinct validity result the 2.4 spec promised.",
+          "evidence": [
+            "section3.3_subsection_plan.json 3.3-P2",
+            "claim_findings_ledger.json C1 finding (PRE2 0.0068 n.s.)",
+            "_tables_from_bible.tex tab:empire_drop_matched (PRE2 0.0068 / 0.0008 n.s.)"
+          ],
+          "numbers": [
+            "0.0068 (tab:empire_drop_matched col 1 UncResCEO PRE2, SE 0.0178, n.s.)",
+            "0.0008 (tab:empire_drop_matched col 2 CashRatio PRE2, SE 0.0024, n.s.)"
+          ],
+          "register_locks": [
+            "correlational",
+            "no-identification"
+          ],
+          "depends_on": [
+            "3.3-PARA1-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "0.0068",
+          "table_cell": "tab:empire_drop_matched col 1 PRE2 (UncResCEO)"
+        },
+        {
+          "number": "0.0008",
+          "table_cell": "tab:empire_drop_matched col 2 PRE2 (CashRatio)"
+        }
+      ]
+    },
+    {
+      "para_id": "3.3-PARA3",
+      "order": 3,
+      "intent": {
+        "statement": "Deliver the discriminating GAP contrast. Information clock: residual uncertainty spikes at PRE1 (0.0473***) and falls to insignificance the instant the deal is public (GAP 0.0018 n.s.), a significant PRE1-GAP drop of 0.0455** and a large peak-to-completion swing (PRE1-POST 0.0723***). Transaction clock: the cash ratio is elevated at PRE1 (0.0061**), does NOT fall at announcement (PRE1-GAP drop 0.0006 n.s.), and declines only once cash leaves at completion (GAP-POST 0.0210***, POST -0.0155***). Because the GAP CashRatio level (0.0055) is positive but insignificant, cash persistence rests on the absence of a PRE1-GAP decline, not on a significant gap level.",
+        "reason": "These two legs jointly ARE the H1b/C1 contrast: uncertainty resolves at announcement (theta_gap=0, the MNPI fingerprint) while cash persists through the gap (kappa_gap>0). Leading with the GAP contrast follows the 2.4 P2.2 Wald discriminator; the kappa_gap honesty note keeps the register exact since the GAP CashRatio level is n.s.",
+        "evidence": [
+          "section3.3_subsection_plan.json 3.3-P3",
+          "thesis_draft.tex 2.2 P4 (theta_gap=0; kappa_gap>0 partly mechanical)",
+          "section34_phaseA_redteam.json 3.3 (kappa_gap honesty note: GAP CashRatio 0.0055 n.s.; persistence rests on null PRE1-GAP drop)"
+        ]
+      },
+      "serves": [
+        "delivers the C1/H1b core; pays off H1b (theta_-1>0, theta_gap=0, kappa_gap>0 read off the null PRE1-GAP decline)"
+      ],
+      "boundary": "The two diverging legs led by the GAP contrast; the round-trip magnitude (PARA4), placebo corroboration (PARA5), and over-reading caveat (PARA6) are separate.",
+      "thin_claim": "Uncertainty resolves at the GAP (PRE1-GAP drop 0.0455**) while the cash ratio does not fall at announcement and declines only at completion (GAP-POST 0.0210***); the contrast is the claim.",
+      "guardrails": [
+        "kappa_gap honesty: GAP CashRatio 0.0055 is n.s.; cash persistence rests on the NULL PRE1-GAP drop (0.0006 n.s.), NOT a significant gap level.",
+        "Lead with the GAP contrast (2.4 P2.2 Wald discriminator), not the peak-to-post swing.",
+        "Do NOT flatten GAP+POST into 'gone post' -- the GAP bin is the MNPI fingerprint.",
+        "correlational / within-firm / no-identification."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.3-PARA3-a",
+          "from_phaseA_prop": "3.3-P3",
+          "statement": "The discriminating contrast is the drop AT the gap. On the information clock, residual uncertainty spikes at PRE1 (0.0473***) and falls to insignificance the instant the deal is public (GAP 0.0018, n.s.), a significant PRE1-GAP drop of 0.0455** and a large significant peak-to-completion swing (PRE1-POST 0.0723***). On the transaction clock, the cash ratio is elevated at PRE1 (0.0061**), does NOT fall when the deal is announced (PRE1-GAP drop 0.0006, n.s.), and declines only once cash leaves at completion (GAP-POST drop 0.0210***, POST -0.0155***). Because the GAP CashRatio coefficient itself (0.0055) is positive but insignificant, cash persistence rests on the absence of a PRE1-GAP decline, not on a significant gap level.",
+          "role_in_paragraph": "result -- the sole proposition; the two diverging legs",
+          "type": "result-number",
+          "reason": "Third, the analytic core, placed after the design and the cleared pre-trend so the GAP contrast reads as the deal-driven divergence the validity device licensed.",
+          "evidence": [
+            "section3.3_subsection_plan.json 3.3-P3",
+            "claim_findings_ledger.json C1 (PRE1/GAP/POST/PRE1_minus_GAP/PRE1_minus_POST; CashRatio PRE1/POST/GAP_minus_POST)",
+            "_tables_from_bible.tex tab:empire_drop_matched (GAP CashRatio 0.0055 n.s.; Drop PRE1-GAP CashRatio 0.0006 n.s.)"
+          ],
+          "numbers": [
+            "UncResCEO PRE1 0.0473*** (tab:empire_drop_matched col 1, SE 0.0178)",
+            "UncResCEO GAP 0.0018 (col 1, SE 0.0187, n.s.)",
+            "Drop PRE1-GAP UncResCEO 0.0455** (col 1, SE 0.0225)",
+            "Drop PRE1-POST UncResCEO 0.0723*** (col 1, SE 0.0190)",
+            "CashRatio PRE1 0.0061** (col 2, SE 0.0024)",
+            "Drop PRE1-GAP CashRatio 0.0006 (col 2, n.s.)",
+            "CashRatio GAP 0.0055 (col 2, SE 0.0034, n.s.)",
+            "CashRatio POST -0.0155*** (col 2, SE 0.0022)",
+            "Drop GAP-POST CashRatio 0.0210*** (col 2, SE 0.0042)"
+          ],
+          "register_locks": [
+            "correlational",
+            "within-firm",
+            "no-identification"
+          ],
+          "depends_on": [
+            "3.3-PARA2-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "0.0473",
+          "table_cell": "tab:empire_drop_matched col 1 PRE1 (UncResCEO)"
+        },
+        {
+          "number": "0.0018",
+          "table_cell": "tab:empire_drop_matched col 1 GAP (UncResCEO)"
+        },
+        {
+          "number": "0.0455",
+          "table_cell": "tab:empire_drop_matched col 1 Drop PRE1-GAP (UncResCEO)"
+        },
+        {
+          "number": "0.0723",
+          "table_cell": "tab:empire_drop_matched col 1 Drop PRE1-POST (UncResCEO)"
+        },
+        {
+          "number": "0.0061",
+          "table_cell": "tab:empire_drop_matched col 2 PRE1 (CashRatio)"
+        },
+        {
+          "number": "0.0006",
+          "table_cell": "tab:empire_drop_matched col 2 Drop PRE1-GAP (CashRatio)"
+        },
+        {
+          "number": "0.0210",
+          "table_cell": "tab:empire_drop_matched col 2 Drop GAP-POST (CashRatio)"
+        },
+        {
+          "number": "-0.0155",
+          "table_cell": "tab:empire_drop_matched col 2 POST (CashRatio)"
+        },
+        {
+          "number": "0.0055",
+          "table_cell": "tab:empire_drop_matched col 2 GAP (CashRatio)"
+        }
+      ]
+    },
+    {
+      "para_id": "3.3-PARA4",
+      "order": 4,
+      "intent": {
+        "statement": "Tie the entry spike to MA1 and quantify the round trip: the PRE1 spike (0.0473) is economically the same event as MA1 (0.0461), about 15.7% of a residual SD (0.0473/0.3010); what MA2 adds is the round trip, the peak-to-post swing of 0.0723***, so the uncertainty raised in the pre-announcement window is fully unwound once the information is public; the cash leg is identified off the same well-behaved partial-adjustment specification as MA1 (lag 0.7547).",
+        "reason": "Connects C1 to C2 (same event) and quantifies the resolution; the peak-to-post number confirms the round trip but is presented secondary to the GAP contrast. The SD-scaling is a disclosed approximation since MA2 runs on the matched universe (a third universe), and the SD basis is the resolved 0.3010.",
+        "evidence": [
+          "section3.3_subsection_plan.json 3.3-P4",
+          "claim_findings_ledger.json _open_decisions_resolved_2026_06_14 (SD 0.3010)",
+          "old_draft_81efc78.tex L132 (round-trip framing)"
+        ]
+      },
+      "serves": [
+        "quantifies the round trip and ties MA2 to MA1; supports C1 without displacing the GAP contrast"
+      ],
+      "boundary": "Magnitude and the MA1 tie only; secondary to the GAP contrast (PARA3). SD basis is the resolved 0.3010, applied as a disclosed approximation on the matched universe.",
+      "thin_claim": "The entry spike is the same event as MA1 (~15.7% of a residual SD); the round-trip peak-to-post swing (0.0723***) fully unwinds it.",
+      "guardrails": [
+        "SD basis is the resolved 0.3010 (Panel B); the matched-universe scaling is a disclosed approximation, not a re-opened decision.",
+        "Round-trip magnitude is secondary to the GAP contrast (PARA3); do not let it displace the discriminator.",
+        "correlational / no-identification."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.3-PARA4-a",
+          "from_phaseA_prop": "3.3-P4",
+          "statement": "The entry spike is economically the same event as MA1 (0.0473 here against 0.0461 there, about fifteen percent of a residual standard deviation, 15.7% on the 0.3010 basis); what MA2 adds is the round trip, the peak-to-post swing of 0.0723***, so the uncertainty raised in the pre-announcement window is fully unwound once the information is public. The cash leg is identified off the same well-behaved partial-adjustment specification as MA1 (lag 0.7547).",
+          "role_in_paragraph": "inference -- the sole proposition; the round-trip magnitude and MA1 tie",
+          "type": "result-number",
+          "reason": "Fourth because the magnitude and the MA1 connection are read off the PRE1/POST coefficients of PARA3; placed after the contrast so the round trip reinforces rather than displaces the discriminator; SD basis resolved to 0.3010.",
+          "evidence": [
+            "section3.3_subsection_plan.json 3.3-P4",
+            "claim_findings_ledger.json C1 (PRE1 0.0473; PRE1-POST 0.0723)",
+            "_tables_from_bible.tex tab:empire_building_did col 2 (0.0461); tab:empire_drop_matched col 2 CashRatio_lag 0.7547; tab:summary_stats Panel B (SD 0.3010)"
+          ],
+          "numbers": [
+            "PRE1 0.0473*** (tab:empire_drop_matched col 1) vs MA1 0.0461*** (tab:empire_building_did col 2)",
+            "Drop PRE1-POST 0.0723*** (tab:empire_drop_matched col 1, SE 0.0190)",
+            "~15.7% of SD = 0.0473 / 0.3010 (tab:summary_stats Panel B)",
+            "CashRatio_lag 0.7547*** (tab:empire_drop_matched col 2, SE 0.0108)"
+          ],
+          "register_locks": [
+            "correlational",
+            "no-identification"
+          ],
+          "depends_on": [
+            "3.3-PARA3-a",
+            "3.2-PARA4-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "0.0473",
+          "table_cell": "tab:empire_drop_matched col 1 PRE1 (UncResCEO)"
+        },
+        {
+          "number": "0.0461",
+          "table_cell": "tab:empire_building_did col 2 PreAnnounceQtr (UncResCEO, cash)"
+        },
+        {
+          "number": "15.7 percent",
+          "table_cell": "0.0473 (tab:empire_drop_matched col 1) / 0.3010 (tab:summary_stats Panel B)"
+        },
+        {
+          "number": "0.3010",
+          "table_cell": "tab:summary_stats Panel B UncResCEO SD"
+        },
+        {
+          "number": "0.0723",
+          "table_cell": "tab:empire_drop_matched col 1 Drop PRE1-POST (UncResCEO)"
+        },
+        {
+          "number": "0.7547",
+          "table_cell": "tab:empire_drop_matched col 2 CashRatio_{t-1} partial adj."
+        }
+      ]
+    },
+    {
+      "para_id": "3.3-PARA5",
+      "order": 5,
+      "intent": {
+        "statement": "Corroborate the round trip on the placebo cash arm: on its own complete-case cash universe (29,535 firm-quarters of 1,326 firms) the placebo reproduces a significant PRE1 spike (0.0486***) that collapses to insignificance at the GAP (0.0058 n.s.), a significant PRE1-GAP drop (0.0428*) and a significant peak-to-post swing (0.0681***). Only the placebo table's CASH column is used here; its cash-vs-stock contrast is reserved for 3.4.",
+        "reason": "tab:empire_drop_placebo's CASH arm independently corroborates the matched round-trip on a second sample; using only its cash arm here (its stock column and the cash-vs-stock contrast go to 3.4) avoids double-claiming the specificity comparison. The placebo cash N is 29,535, NOT the matched 28,102.",
+        "evidence": [
+          "section3.3_subsection_plan.json 3.3-P5",
+          "section34_phaseA_redteam.json 3.3 (placebo cash N 29,535; CASH column corroborates, stock reserved for 3.4)",
+          "old_draft_81efc78.tex L143"
+        ]
+      },
+      "serves": [
+        "independent second-sample corroboration of C1's round trip; preserves the 3.4 reservation of the stock column"
+      ],
+      "boundary": "Placebo CASH column only; the stock column and the cash-vs-stock contrast are 3.4's. Placebo cash N is 29,535, distinct from matched 28,102.",
+      "thin_claim": "The placebo cash arm reproduces the round trip on its own universe (29,535 / 1,326 firms): PRE1 0.0486***, GAP 0.0058 n.s., peak-to-post 0.0681***.",
+      "guardrails": [
+        "Use only the placebo CASH column; the stock column and the cash-vs-stock contrast are reserved for 3.4 (one home per table).",
+        "Placebo cash N is 29,535 / 1,326, NOT the matched 28,102 (number-traceability).",
+        "correlational / within-firm."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.3-PARA5-a",
+          "from_phaseA_prop": "3.3-P5",
+          "statement": "The cash arm of the placebo event study reproduces the same round trip on its own complete-case cash universe (29,535 firm-quarters of 1,326 firms): a significant PRE1 spike (0.0486***) that collapses to insignificance at the GAP (0.0058, n.s.), a significant PRE1-GAP drop (0.0428*) and a significant peak-to-post swing (0.0681***). Only the placebo table's CASH column is used here; its cash-vs-stock CONTRAST is reserved for 3.4.",
+          "role_in_paragraph": "result -- the sole proposition; the second-sample corroboration",
+          "type": "result-number",
+          "reason": "Fifth because the corroboration reinforces the matched-universe result (PARA3/PARA4) on an independent sample; placed before the closing caveat and explicitly reserving the stock column for 3.4.",
+          "evidence": [
+            "section3.3_subsection_plan.json 3.3-P5",
+            "claim_findings_ledger.json C6 finding (placebo_cash_PRE1 0.0486***)",
+            "_tables_from_bible.tex tab:empire_drop_placebo col 1 (cash PRE1 0.0486***, GAP 0.0058 n.s., Drop PRE1-GAP 0.0428*, Drop PRE1-POST 0.0681***; N 29,535 / 1,326 firms)"
+          ],
+          "numbers": [
+            "0.0486*** (tab:empire_drop_placebo col 1 cash PRE1, SE 0.0174)",
+            "0.0058 (tab:empire_drop_placebo col 1 cash GAP, SE 0.0181, n.s.)",
+            "0.0428* (tab:empire_drop_placebo col 1 cash Drop PRE1-GAP, SE 0.0221)",
+            "0.0681*** (tab:empire_drop_placebo col 1 cash Drop PRE1-POST, SE 0.0187)",
+            "29,535 / 1,326 firms (tab:empire_drop_placebo cash column N)"
+          ],
+          "register_locks": [
+            "correlational",
+            "within-firm"
+          ],
+          "depends_on": [
+            "3.3-PARA3-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "29,535",
+          "table_cell": "tab:empire_drop_placebo col 1 N row (cash, firm-quarters)"
+        },
+        {
+          "number": "1,326",
+          "table_cell": "tab:empire_drop_placebo col 1 Firms row (cash)"
+        },
+        {
+          "number": "0.0486",
+          "table_cell": "tab:empire_drop_placebo col 1 PRE1 (cash UncResCEO)"
+        },
+        {
+          "number": "0.0058",
+          "table_cell": "tab:empire_drop_placebo col 1 GAP (cash UncResCEO)"
+        },
+        {
+          "number": "0.0428",
+          "table_cell": "tab:empire_drop_placebo col 1 Drop PRE1-GAP (cash)"
+        },
+        {
+          "number": "0.0681",
+          "table_cell": "tab:empire_drop_placebo col 1 Drop PRE1-POST (cash)"
+        }
+      ]
+    },
+    {
+      "para_id": "3.3-PARA6",
+      "order": 6,
+      "intent": {
+        "statement": "Lock the claim to the contrast, not to any single coefficient: uncertainty tracks the information and reverses at announcement; cash tracks the transaction and falls at completion, a persistence that is partly mechanical since cash leaves only at closing. The below-baseline POST uncertainty coefficient (-0.0250*) is not to be over-read.",
+        "reason": "C1's explicit register lock: the round-trip CONTRAST is the claim; the negative POST is a flagged not-to-over-read item and the cash-persistence mechanical component is disclosed. Stating both protects the strongest result from referee over-reading; the POST caveat is kept separate from the GAP discriminator (PARA3) per the C1 trap.",
+        "evidence": [
+          "section3.3_subsection_plan.json 3.3-P6",
+          "claim_findings_ledger.json C1 risks ('do not over-read POST -0.0250*'; 'cash persists partly mechanical')",
+          "old_draft_81efc78.tex L134"
+        ]
+      },
+      "serves": [
+        "locks C1 at the ledger ceiling (contrast-not-coefficient; POST not over-read; mechanical cash component disclosed)"
+      ],
+      "boundary": "Framing caveat only; introduces no new result. Closes the subsection.",
+      "thin_claim": "The claim rests on the contrast of the two paths, not on any single drop; the negative POST is not over-read and the cash-persistence is partly mechanical.",
+      "guardrails": [
+        "C1 POST not over-read: -0.0250* is flagged, not a finding.",
+        "Cash persistence is partly mechanical (cash leaves at closing) -- disclose.",
+        "correlational / no-identification / mechanism-open / supportive-not-definitive."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.3-PARA6-a",
+          "from_phaseA_prop": "3.3-P6",
+          "statement": "The claim rests on the contrast between the two paths, not on the magnitude or sign of any single drop: uncertainty tracks the information and reverses at announcement; cash tracks the transaction and falls at completion, a persistence that is partly mechanical since cash leaves only at closing. We do not over-read the below-baseline POST uncertainty coefficient (-0.0250*).",
+          "role_in_paragraph": "caveat -- the sole proposition; locks the claim to the contrast",
+          "type": "framing",
+          "reason": "Last because the caveat governs how the whole subsection's results (PARA3-PARA5) are read; it closes the strongest result by barring over-reading.",
+          "evidence": [
+            "section3.3_subsection_plan.json 3.3-P6",
+            "claim_findings_ledger.json C1 risks",
+            "thesis_draft.tex 2.2 P4.2 (do not over-read POST; cash leg partly mechanical)"
+          ],
+          "numbers": [
+            "-0.0250* (tab:empire_drop_matched col 1 POST, SE 0.0130) -- flagged not-to-over-read"
+          ],
+          "register_locks": [
+            "correlational",
+            "no-identification",
+            "mechanism-open",
+            "supportive-not-definitive"
+          ],
+          "depends_on": [
+            "3.3-PARA3-a",
+            "3.3-PARA5-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "-0.0250",
+          "table_cell": "tab:empire_drop_matched col 1 POST (UncResCEO)"
+        }
+      ]
+    }
+  ],
+  "allocation_coverage": {
+    "all_phaseA_props_homed": "All six ratified 3.3 props homed exactly once, 1:1 with six paragraphs in chain order: 3.3-P1->PARA1; 3.3-P2->PARA2; 3.3-P3->PARA3; 3.3-P4->PARA4; 3.3-P5->PARA5; 3.3-P6->PARA6. None split, merged, dropped, or duplicated. The kappa_gap honesty note is bound in PARA3's guardrails; the placebo cash N (29,535) is distinguished from the matched N (28,102) in PARA5; the cash-vs-stock contrast is reserved for 3.4.",
+    "prop_to_paragraph": [
+      {
+        "phaseA_prop": "3.3-P1",
+        "paragraph": "3.3-PARA1",
+        "note": "sole prop; matched-universe event-study design (N 28,102)"
+      },
+      {
+        "phaseA_prop": "3.3-P2",
+        "paragraph": "3.3-PARA2",
+        "note": "sole prop; flat pre-trend validity device"
+      },
+      {
+        "phaseA_prop": "3.3-P3",
+        "paragraph": "3.3-PARA3",
+        "note": "sole prop; GAP contrast on both clocks; kappa_gap honesty note"
+      },
+      {
+        "phaseA_prop": "3.3-P4",
+        "paragraph": "3.3-PARA4",
+        "note": "sole prop; round-trip magnitude + MA1 tie"
+      },
+      {
+        "phaseA_prop": "3.3-P5",
+        "paragraph": "3.3-PARA5",
+        "note": "sole prop; placebo cash-arm corroboration, N 29,535"
+      },
+      {
+        "phaseA_prop": "3.3-P6",
+        "paragraph": "3.3-PARA6",
+        "note": "sole prop; contrast-is-the-claim caveat; POST not over-read"
+      }
+    ],
+    "gaps": [
+      "The cash-vs-stock specificity contrast (placebo stock column) is reserved for 3.4, not claimed here.",
+      "The mechanical cash-persistence component and the below-baseline POST are disclosed as bounded, not pushed as findings."
+    ]
+  },
+  "_clone_provenance": {
+    "is_clone": true,
+    "of": "section3.3_paragraph_ledger.json (pristine original)",
+    "purpose": "Phase-3 chain redesign; locked final_prose stripped.",
+    "built_by": "tmp/clone_strip_prose.py",
+    "note": "Proposed chain fixes APPENDED under _proposed_fixes; original chain untouched."
+  },
+  "_proposed_fixes": {
+    "summary": "Surgical placebo->comparison sweep of descriptive stock-arm framing (15 fixes); 13 identifier hits KEPT (tab:empire_drop_placebo / placebo_*_PRE1, 18-file cross-ref). Results section -> no new cite props.",
+    "register_locks": [
+      "stock = comparison not inert placebo (matches 2.1/2.2)",
+      "NO stock-suppressed",
+      "we interpret, we do not detect"
+    ],
+    "fixes": [
+      {
+        "fix_id": "S3.3-F1",
+        "locus": "doc.paragraphs[0].intent.reason",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[0].intent.reason",
+          "from": "tab:empire_drop_matched is the primary table because it alone carries BOTH clocks (the placebo table has no CashRatio column); the shared-sample design is exactly what licenses reading the two paths against each other, defending the differential-timing reading against a sample-composition artifact. The design is a distinct atomic premise from the pre-trend validity result, so they are separate paragraphs (favoring clarity for the strongest claim).",
+          "to": "tab:empire_drop_matched is the primary table because it alone carries BOTH clocks (the comparison table has no CashRatio column); the shared-sample design is exactly what licenses reading the two paths against each other, defending the differential-timing reading against a sample-composition artifact. The design is a distinct atomic premise from the pre-trend validity result, so they are separate paragraphs (favoring clarity for the strongest claim)."
+        }
+      },
+      {
+        "fix_id": "S3.3-F2",
+        "locus": "doc.paragraphs[0].boundary",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[0].boundary",
+          "from": "Design only; the event-study equation is 2.4's; no coefficient yet. Matched-universe N (28,102) is distinct from the placebo cash N (29,535, PARA4).",
+          "to": "Design only; the event-study equation is 2.4's; no coefficient yet. Matched-universe N (28,102) is distinct from the comparison cash N (29,535, PARA4)."
+        }
+      },
+      {
+        "fix_id": "S3.3-F3",
+        "locus": "doc.paragraphs[0].guardrails[0]",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[0].guardrails[0]",
+          "from": "Matched-universe N is 28,102 / 1,320; do NOT conflate with placebo cash N 29,535 (PARA4).",
+          "to": "Matched-universe N is 28,102 / 1,320; do NOT conflate with comparison cash N 29,535 (PARA4)."
+        }
+      },
+      {
+        "fix_id": "S3.3-F4",
+        "locus": "doc.paragraphs[2].boundary",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[2].boundary",
+          "from": "The two diverging legs led by the GAP contrast; the round-trip magnitude (PARA4), placebo corroboration (PARA5), and over-reading caveat (PARA6) are separate.",
+          "to": "The two diverging legs led by the GAP contrast; the round-trip magnitude (PARA4), comparison corroboration (PARA5), and over-reading caveat (PARA6) are separate."
+        }
+      },
+      {
+        "fix_id": "S3.3-F5",
+        "locus": "doc.paragraphs[4].intent.statement",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[4].intent.statement",
+          "from": "Corroborate the round trip on the placebo cash arm: on its own complete-case cash universe (29,535 firm-quarters of 1,326 firms) the placebo reproduces a significant PRE1 spike (0.0486***) that collapses to insignificance at the GAP (0.0058 n.s.), a significant PRE1-GAP drop (0.0428*) and a significant peak-to-post swing (0.0681***). Only the placebo table's CASH column is used here; its cash-vs-stock contrast is reserved for 3.4.",
+          "to": "Corroborate the round trip on the comparison cash arm: on its own complete-case cash universe (29,535 firm-quarters of 1,326 firms) the comparison reproduces a significant PRE1 spike (0.0486***) that collapses to insignificance at the GAP (0.0058 n.s.), a significant PRE1-GAP drop (0.0428*) and a significant peak-to-post swing (0.0681***). Only the comparison table's CASH column is used here; its cash-vs-stock contrast is reserved for 3.4."
+        }
+      },
+      {
+        "fix_id": "S3.3-F6",
+        "locus": "doc.paragraphs[4].intent.reason",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[4].intent.reason",
+          "from": "tab:empire_drop_placebo's CASH arm independently corroborates the matched round-trip on a second sample; using only its cash arm here (its stock column and the cash-vs-stock contrast go to 3.4) avoids double-claiming the specificity comparison. The placebo cash N is 29,535, NOT the matched 28,102.",
+          "to": "tab:empire_drop_placebo's CASH arm independently corroborates the matched round-trip on a second sample; using only its cash arm here (its stock column and the cash-vs-stock contrast go to 3.4) avoids double-claiming the specificity comparison. The comparison cash N is 29,535, NOT the matched 28,102."
+        }
+      },
+      {
+        "fix_id": "S3.3-F7",
+        "locus": "doc.paragraphs[4].intent.evidence[1]",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[4].intent.evidence[1]",
+          "from": "section34_phaseA_redteam.json 3.3 (placebo cash N 29,535; CASH column corroborates, stock reserved for 3.4)",
+          "to": "section34_phaseA_redteam.json 3.3 (comparison cash N 29,535; CASH column corroborates, stock reserved for 3.4)"
+        }
+      },
+      {
+        "fix_id": "S3.3-F8",
+        "locus": "doc.paragraphs[4].boundary",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[4].boundary",
+          "from": "Placebo CASH column only; the stock column and the cash-vs-stock contrast are 3.4's. Placebo cash N is 29,535, distinct from matched 28,102.",
+          "to": "Comparison CASH column only; the stock column and the cash-vs-stock contrast are 3.4's. Comparison cash N is 29,535, distinct from matched 28,102."
+        }
+      },
+      {
+        "fix_id": "S3.3-F9",
+        "locus": "doc.paragraphs[4].thin_claim",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[4].thin_claim",
+          "from": "The placebo cash arm reproduces the round trip on its own universe (29,535 / 1,326 firms): PRE1 0.0486***, GAP 0.0058 n.s., peak-to-post 0.0681***.",
+          "to": "The comparison cash arm reproduces the round trip on its own universe (29,535 / 1,326 firms): PRE1 0.0486***, GAP 0.0058 n.s., peak-to-post 0.0681***."
+        }
+      },
+      {
+        "fix_id": "S3.3-F10",
+        "locus": "doc.paragraphs[4].guardrails[0]",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[4].guardrails[0]",
+          "from": "Use only the placebo CASH column; the stock column and the cash-vs-stock contrast are reserved for 3.4 (one home per table).",
+          "to": "Use only the comparison CASH column; the stock column and the cash-vs-stock contrast are reserved for 3.4 (one home per table)."
+        }
+      },
+      {
+        "fix_id": "S3.3-F11",
+        "locus": "doc.paragraphs[4].guardrails[1]",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[4].guardrails[1]",
+          "from": "Placebo cash N is 29,535 / 1,326, NOT the matched 28,102 (number-traceability).",
+          "to": "Comparison cash N is 29,535 / 1,326, NOT the matched 28,102 (number-traceability)."
+        }
+      },
+      {
+        "fix_id": "S3.3-F12",
+        "locus": "doc.paragraphs[4].proposition_chain[0].statement",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[4].proposition_chain[0].statement",
+          "from": "The cash arm of the placebo event study reproduces the same round trip on its own complete-case cash universe (29,535 firm-quarters of 1,326 firms): a significant PRE1 spike (0.0486***) that collapses to insignificance at the GAP (0.0058, n.s.), a significant PRE1-GAP drop (0.0428*) and a significant peak-to-post swing (0.0681***). Only the placebo table's CASH column is used here; its cash-vs-stock CONTRAST is reserved for 3.4.",
+          "to": "The cash arm of the comparison event study reproduces the same round trip on its own complete-case cash universe (29,535 firm-quarters of 1,326 firms): a significant PRE1 spike (0.0486***) that collapses to insignificance at the GAP (0.0058, n.s.), a significant PRE1-GAP drop (0.0428*) and a significant peak-to-post swing (0.0681***). Only the comparison table's CASH column is used here; its cash-vs-stock CONTRAST is reserved for 3.4."
+        }
+      },
+      {
+        "fix_id": "S3.3-F13",
+        "locus": "doc.allocation_coverage.all_phaseA_props_homed",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.allocation_coverage.all_phaseA_props_homed",
+          "from": "All six ratified 3.3 props homed exactly once, 1:1 with six paragraphs in chain order: 3.3-P1->PARA1; 3.3-P2->PARA2; 3.3-P3->PARA3; 3.3-P4->PARA4; 3.3-P5->PARA5; 3.3-P6->PARA6. None split, merged, dropped, or duplicated. The kappa_gap honesty note is bound in PARA3's guardrails; the placebo cash N (29,535) is distinguished from the matched N (28,102) in PARA5; the cash-vs-stock contrast is reserved for 3.4.",
+          "to": "All six ratified 3.3 props homed exactly once, 1:1 with six paragraphs in chain order: 3.3-P1->PARA1; 3.3-P2->PARA2; 3.3-P3->PARA3; 3.3-P4->PARA4; 3.3-P5->PARA5; 3.3-P6->PARA6. None split, merged, dropped, or duplicated. The kappa_gap honesty note is bound in PARA3's guardrails; the comparison cash N (29,535) is distinguished from the matched N (28,102) in PARA5; the cash-vs-stock contrast is reserved for 3.4."
+        }
+      },
+      {
+        "fix_id": "S3.3-F14",
+        "locus": "doc.allocation_coverage.prop_to_paragraph[4].note",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.allocation_coverage.prop_to_paragraph[4].note",
+          "from": "sole prop; placebo cash-arm corroboration, N 29,535",
+          "to": "sole prop; comparison cash-arm corroboration, N 29,535"
+        }
+      },
+      {
+        "fix_id": "S3.3-F15",
+        "locus": "doc.allocation_coverage.gaps[0]",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.allocation_coverage.gaps[0]",
+          "from": "The cash-vs-stock specificity contrast (placebo stock column) is reserved for 3.4, not claimed here.",
+          "to": "The cash-vs-stock specificity contrast (comparison stock column) is reserved for 3.4, not claimed here."
+        }
+      }
+    ]
+  }
+}

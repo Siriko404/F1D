@@ -1,0 +1,551 @@
+{
+  "subsection_id": "3.2",
+  "title": "Main Analysis 1: The Pre-Announcement Run-Up",
+  "paragraphs": [
+    {
+      "para_id": "3.2-PARA1",
+      "order": 1,
+      "intent": {
+        "statement": "Set the MA1 design and estimand: the single-indicator two-way fixed-effects regression of Section 2.4 (firm and calendar year-quarter FE, firm-clustered SE) estimated four times, each outcome (CashRatio, UncResCEO) in each arm (cash >=50%, stock >=50% placebo), with treated firms' post-announcement quarters dropped so the design observes only the run-up; identification is within-firm, the equation lives in 2.4 and is not restated.",
+        "reason": "Establishes beta = theta_-1, a within-firm anticipation contrast, so the coefficients that follow have a defined meaning, while honoring the boundary that the equation belongs to 2.4. This is the premise the whole subsection rests on.",
+        "evidence": [
+          "section3.2_subsection_plan.json 3.2-P1",
+          "thesis_draft.tex 2.4 P1 (MA1 equation + estimand, L94-98)",
+          "old_draft_81efc78.tex L113"
+        ]
+      },
+      "serves": [
+        "defines the estimand for C2/H1 so the run-up coefficients are interpretable; maps the 2.4 MA1 single-indicator design to the run-up question"
+      ],
+      "boundary": "Design/estimand only; the estimating equation is 2.4's and is not restated; no coefficient yet.",
+      "thin_claim": "MA1 is a within-firm single-indicator two-way FE regression run four times, post-announcement quarters dropped; correlational, no identification.",
+      "guardrails": [
+        "correlational / no-identification register binds the whole subsection.",
+        "Equation belongs to 2.4; reference, do not restate."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.2-PARA1-a",
+          "from_phaseA_prop": "3.2-P1",
+          "statement": "MA1 estimates the single-indicator two-way fixed-effects regression of Section 2.4 (firm and calendar year-quarter FE, firm-clustered SE) four times: each outcome (CashRatio, UncResCEO) in each arm (cash >=50%, stock >=50% placebo), with treated firms' post-announcement quarters dropped so the design observes only the run-up. Identification is within-firm (a treated firm's pre-announcement quarter against its own ordinary quarters); the estimating equation lives in 2.4 and is not restated.",
+          "role_in_paragraph": "premise -- the sole proposition; fixes the estimand",
+          "type": "design-method",
+          "reason": "First because the four-regression layout and within-firm estimand must be fixed before any coefficient is read.",
+          "evidence": [
+            "section3.2_subsection_plan.json 3.2-P1",
+            "thesis_draft.tex 2.4 P1 (L94-98)",
+            "variable_ledger.json tab:empire_building_did design (PanelOLS two-way FE, firm-clustered, post-announce dropped)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "no-identification"
+          ],
+          "depends_on": [
+            "3.1-PARA4-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "half in cash / half in stock",
+          "table_cell": "tab:empire_building_did spec page (>=50% cash / >=50% stock arm thresholds)"
+        }
+      ]
+    },
+    {
+      "para_id": "3.2-PARA2",
+      "order": 2,
+      "intent": {
+        "statement": "Deliver the cash-arm run-up on both clocks: residual Q&A uncertainty is elevated (0.0461***) and the cash ratio is rising (0.0051***, tracking the change in cash because the cash equation carries the 0.7990*** partial-adjustment lag); the residual survives a two-tailed test (p=.0074), so the table's one-tailed convention does not drive the load-bearing result.",
+        "reason": "This is the core C2/H1 positive finding: the run-up is visible on the language clock with the cash clock corroborating. The two-tailed survival is load-bearing because the table prints one-tailed and a referee will check whether the result is a convention artifact; it is not. Kept atomic (NOT merged with the two-universe caveat) so the positive result and its sample limitation are distinct jobs, consistent with the chain's separate coverage moves.",
+        "evidence": [
+          "section3.2_subsection_plan.json 3.2-P2",
+          "claim_findings_ledger.json C2 (two_tailed_check p=.0074)",
+          "old_draft_81efc78.tex L117-119"
+        ]
+      },
+      "serves": [
+        "delivers the C2 positive; pays off H1 (theta_-1>0); the first empirical pillar; feeds the magnitude (PARA4) and contrasts with the placebo (PARA5)"
+      ],
+      "boundary": "Cash-arm result only; the sample-comparability caveat (PARA3), magnitude (PARA4), and placebo (PARA5) are separate paragraphs. No formal cash-vs-stock test here (3.4).",
+      "thin_claim": "In the cash arm both clocks move in the final pre-announcement quarter; the residual elevation survives two-tailed at <.01.",
+      "guardrails": [
+        "One-tailed in table but SURVIVES two-tailed (p=.0074) -- state the survival.",
+        "CashRatio coefficient tracks the CHANGE in cash, not the level (partial-adjustment lag).",
+        "correlational / within-firm / no-identification."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.2-PARA2-a",
+          "from_phaseA_prop": "3.2-P2",
+          "statement": "In the cash arm both clocks move in the final pre-announcement quarter: residual Q&A uncertainty is elevated and the cash ratio is rising (a coefficient that tracks the change in cash, not its level, because the cash equation carries the partial-adjustment lag). The residual coefficient survives a two-tailed test (p=.0074), so the table's one-tailed reporting convention does not drive the load-bearing result.",
+          "role_in_paragraph": "result -- the sole proposition; the core C2/H1 positive",
+          "type": "result-number",
+          "reason": "Second because it is the headline result the design (PARA1) set up; the two-tailed survival is stated here, with the result, to pre-empt the one-tailed-artifact attack at the point of claim.",
+          "evidence": [
+            "section3.2_subsection_plan.json 3.2-P2",
+            "claim_findings_ledger.json C2 (cash_UncResCEO; cash_CashRatio; two_tailed_check p=.0074)",
+            "thesis_draft.tex 2.4 P3.3 (CashRatio carries partial-adjustment lag; residual takes none)"
+          ],
+          "numbers": [
+            "0.0461*** (tab:empire_building_did col 2, SE 0.0172)",
+            "0.0051*** (tab:empire_building_did col 1, SE 0.0017)",
+            "0.7990*** CashRatio_{t-1} partial-adjustment lag (tab:empire_building_did col 1, SE 0.0070)",
+            "two-tailed p=.0074 (claim_findings_ledger C2; t=0.0461/0.0172=2.68)"
+          ],
+          "register_locks": [
+            "correlational",
+            "within-firm",
+            "no-identification"
+          ],
+          "depends_on": [
+            "3.2-PARA1-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "0.0461",
+          "table_cell": "tab:empire_building_did col 2 PreAnnounceQtr (UncResCEO, cash)"
+        },
+        {
+          "number": "0.0051",
+          "table_cell": "tab:empire_building_did col 1 PreAnnounceQtr (CashRatio, cash)"
+        },
+        {
+          "number": "0.7990",
+          "table_cell": "tab:empire_building_did col 1 CashRatio_{t-1} partial adj."
+        },
+        {
+          "number": "2.68",
+          "table_cell": "derived t = 0.0461/0.0172 (tab:empire_building_did col 2 coeff/SE)"
+        },
+        {
+          "number": "0.0074",
+          "table_cell": "claim_findings_ledger C2 two_tailed_check (t=2.68, p=.0074)"
+        }
+      ]
+    },
+    {
+      "para_id": "3.2-PARA3",
+      "order": 3,
+      "intent": {
+        "statement": "Disclose the two-universe N difference: the residual exists only for CEOs with at least five calls, so the uncertainty test (col 2) uses 27,622 firm-quarters of 1,248 firms while the cash-ratio test (col 1) uses 67,590 of 2,232; the uncertainty test is the more demanding, smaller-universe one.",
+        "reason": "A referee will note the residual and cash columns are not the same sample; disclosing it pre-empts the criticism and connects the >=5-call mechanic (3.1) to its consequence here. This is the load-bearing, separately-sourced move the Phase-A red-team isolated to the empire_building_did N row, so it stays its own atomic paragraph rather than being crammed into the result.",
+        "evidence": [
+          "section3.2_subsection_plan.json 3.2-P3",
+          "_tables_from_bible.tex tab:empire_building_did (Firms/N rows cols 1,2)",
+          "section34_phaseA_redteam.json 3.2 synthesis (two-universe disclosure homed at empire_building_did N row)"
+        ]
+      },
+      "serves": [
+        "pre-empts the non-identical-sample referee attack on C2; homes the two-universe disclosure 3.1 routed here"
+      ],
+      "boundary": "Sample-comparability caveat only; not a result claim and not the magnitude. Counts are sourced to the empire_building_did N row, never to summary_stats.",
+      "thin_claim": "The two cash-arm columns run on different universes because the residual needs >=5 calls; the uncertainty test is the smaller, more demanding one.",
+      "guardrails": [
+        "Number-traceability (MAJOR): 27,622/1,248 and 67,590/2,232 are the empire_building_did N row, NOT summary_stats panels.",
+        ">=5-call is the mechanic from 3.1; the selection THREAT is 2.4 P5.5's.",
+        "correlational."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.2-PARA3-a",
+          "from_phaseA_prop": "3.2-P3",
+          "statement": "The two cash-arm columns run on different universes because the residual exists only for CEOs with at least five calls: the uncertainty test (col 2) uses 27,622 firm-quarters of 1,248 firms while the cash-ratio test (col 1) uses 67,590 of 2,232; the uncertainty test is therefore the more demanding, smaller-universe one.",
+          "role_in_paragraph": "caveat -- the sole proposition; the two-universe disclosure",
+          "type": "result-number",
+          "reason": "Third, immediately after the result it qualifies, because the comparability caveat is only meaningful once the cash-arm coefficients (PARA2) are on the table; isolated so the result paragraph stays clean and the disclosure is sourced explicitly to the table N row.",
+          "evidence": [
+            "section3.2_subsection_plan.json 3.2-P3",
+            "_tables_from_bible.tex tab:empire_building_did L186-187 (N row)",
+            "claim_findings_ledger.json C2 N block",
+            "section2.4_paragraph_ledger.json P5.5 (>=5-call selection)"
+          ],
+          "numbers": [
+            "27,622 / 1,248 firms (cash UncResCEO universe, tab:empire_building_did col 2 N row)",
+            "67,590 / 2,232 firms (cash CashRatio universe, tab:empire_building_did col 1 N row)"
+          ],
+          "register_locks": [
+            "correlational"
+          ],
+          "depends_on": [
+            "3.2-PARA2-a",
+            "3.1-PARA4-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "27,622",
+          "table_cell": "tab:empire_building_did col 2 N row (firm-quarters)"
+        },
+        {
+          "number": "1,248",
+          "table_cell": "tab:empire_building_did col 2 Firms row"
+        },
+        {
+          "number": "67,590",
+          "table_cell": "tab:empire_building_did col 1 N row (firm-quarters)"
+        },
+        {
+          "number": "2,232",
+          "table_cell": "tab:empire_building_did col 1 Firms row"
+        }
+      ]
+    },
+    {
+      "para_id": "3.2-PARA4",
+      "order": 4,
+      "intent": {
+        "statement": "Read the economic magnitude honestly on the RESOLVED 0.3010 basis: the uncertainty coefficient equals about 15.3% of a residual standard deviation (0.0461/0.3010), for a variable from which everything persistent has already been removed, in a quarter that is about one percent of the sample (PreAnnounceQtr mean 0.0094); the cash coefficient adds roughly half a percentage point of assets, about 3.0% of the mean cash ratio (0.0051/0.1708), in a single quarter.",
+        "reason": "Economic-magnitude reading turns the coefficient into a claim with stakes while keeping it honest (modest, on an already-purged variable). The denominators are sourced to live Table-1 cells; the SD basis is RESOLVED to 0.3010 (claim_findings ledger 2026-06-14), so the 0.3072 branch and the stale old-draft pointers (Panel-B 0.3072, 1.4%, mean 0.1573) are dropped and the decision is NOT re-surfaced.",
+        "evidence": [
+          "section3.2_subsection_plan.json 3.2-P4",
+          "claim_findings_ledger.json _open_decisions_resolved_2026_06_14 (SD 0.3010 resolved; 0.3072 retired)",
+          "tab:summary_stats (UncResCEO SD 0.3010 Panel B; CashRatio mean 0.1708 Panel C; PreAnnounceQtr mean 0.0094 Panel A)"
+        ]
+      },
+      "serves": [
+        "gives C2 its stakes while keeping the supportive-not-definitive register; sets the SD denominator (0.3010) reused in 3.3/3.4"
+      ],
+      "boundary": "Magnitude reading only; uses resolved 0.3010, not a live open decision. No re-opening of the SD basis. Denominators are live Table-1 cells.",
+      "thin_claim": "The effect is material but modest: ~15% of a residual SD and ~3% of the mean cash ratio, on an already-purged variable in a ~1%-of-sample quarter.",
+      "guardrails": [
+        "SD basis RESOLVED to 0.3010 (Panel B); strip the [or /0.3072] branch and do NOT re-surface the SD decision (supersedes the 3.2-P4 'surface, not silently picked' phrasing in the locked Phase-A statement).",
+        "Denominators are live Table-1 cells: SD 0.3010 Panel B, CashRatio mean 0.1708 Panel C, PreAnnounceQtr mean 0.0094 Panel A. Drop stale 0.3072 / 0.1573 / 1.4%.",
+        "correlational / supportive-not-definitive / no-identification."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.2-PARA4-a",
+          "from_phaseA_prop": "3.2-P4",
+          "statement": "The effect is material but modest: the uncertainty coefficient equals roughly fifteen percent of a residual standard deviation (about 15.3% on the all-universe 0.3010 basis), for a variable from which everything persistent has already been removed, in a quarter that is about one percent of the sample; the cash coefficient adds roughly half a percentage point of assets (about 3.0% of the mean cash ratio) to the cash stock in a single quarter.",
+          "role_in_paragraph": "inference -- the sole proposition; the economic magnitude",
+          "type": "result-number",
+          "reason": "Fourth because magnitude is read off the coefficients of PARA2 and the caveat of PARA3; placed after the comparability disclosure so the denominator (resolved 0.3010) is unambiguous. The Phase-A statement's 'SD basis is the live open decision and is surfaced' clause is SUPERSEDED by the ledger's 2026-06-14 resolution to 0.3010; applied, not re-surfaced.",
+          "evidence": [
+            "section3.2_subsection_plan.json 3.2-P4",
+            "claim_findings_ledger.json _open_decisions_resolved_2026_06_14 (0.3010)",
+            "tab:summary_stats Panel A/B/C cells",
+            "old_draft_81efc78.tex L119 (stale 0.3072/Panel-B/0.1573/1.4% -- dropped)"
+          ],
+          "numbers": [
+            "~15.3% of SD = 0.0461 (tab:empire_building_did col 2) / 0.3010 (tab:summary_stats Panel B)",
+            "~3.0% of mean cash = 0.0051 (tab:empire_building_did col 1) / 0.1708 (tab:summary_stats Panel C)",
+            "~1% of sample = PreAnnounceQtr mean 0.0094 (tab:summary_stats Panel A)"
+          ],
+          "register_locks": [
+            "correlational",
+            "supportive-not-definitive",
+            "no-identification"
+          ],
+          "depends_on": [
+            "3.2-PARA2-a",
+            "3.1-PARA5-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "15.3 percent",
+          "table_cell": "0.0461 (tab:empire_building_did col 2) / 0.3010 (tab:summary_stats Panel B)"
+        },
+        {
+          "number": "0.3010",
+          "table_cell": "tab:summary_stats Panel B UncResCEO SD"
+        },
+        {
+          "number": "0.0094",
+          "table_cell": "tab:summary_stats Panel A PreAnnounceQtr Mean"
+        },
+        {
+          "number": "3.0 percent",
+          "table_cell": "0.0051 (tab:empire_building_did col 1) / 0.1708 (tab:summary_stats Panel C)"
+        },
+        {
+          "number": "0.1708",
+          "table_cell": "tab:summary_stats Panel C CashRatio Mean"
+        }
+      ]
+    },
+    {
+      "para_id": "3.2-PARA5",
+      "order": 5,
+      "intent": {
+        "statement": "Deliver the stock placebo: under the same disclosure constraint, with nearly identical models (stock partial-adjustment lag 0.8013 vs cash 0.7990), neither residual uncertainty (-0.0429 n.s.) nor the cash ratio (-0.0036 n.s.) shows a comparable positive run-up, so what differs at e=-1 is the response, not the model; a side-by-side reading is not yet a formal test, which Section 3.4 supplies.",
+        "reason": "Delivers the 'not detectable for stock' half of C2's thinnest claim; the near-identical lag rules out a model-difference explanation; the explicit deferral to 3.4 pre-empts the C6 Gelman-Stern trap of reading sig-vs-n.s. as the formal test, and closes the subsection.",
+        "evidence": [
+          "section3.2_subsection_plan.json 3.2-P5",
+          "claim_findings_ledger.json C6 risks (no Gelman-Stern)",
+          "old_draft_81efc78.tex L121"
+        ]
+      },
+      "serves": [
+        "completes C2 (not detectable for stock); hands the formal cash-vs-stock difference to 3.4; closes MA1"
+      ],
+      "boundary": "Placebo half of C2 only; the formal cash-vs-stock test is 3.4's. Side-by-side is explicitly NOT the formal test.",
+      "thin_claim": "The stock arm shows no comparable positive run-up on either clock; what differs is the response, not the model; the formal difference is deferred to 3.4.",
+      "guardrails": [
+        "C6 Gelman-Stern trap: side-by-side sig-vs-n.s. is NOT the formal test; forward-link to 3.4.",
+        "Near-identical lags (0.8013 vs 0.7990) rule out a model-difference story.",
+        "correlational / concentration-not-strict-specificity."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "3.2-PARA5-a",
+          "from_phaseA_prop": "3.2-P5",
+          "statement": "The stock arm is the placebo: under the same disclosure constraint, with otherwise nearly identical models (the stock partial-adjustment lag 0.8013 is almost the same as the cash 0.7990), neither residual uncertainty (-0.0429, n.s.) nor the cash ratio (-0.0036, n.s.) shows a comparable positive run-up, so what differs at e=-1 is the response, not the model. A side-by-side reading is not yet a formal test of the difference; the formal cash-vs-stock test is supplied in Section 3.4 (Main Analysis 3).",
+          "role_in_paragraph": "inference -- the sole proposition; the placebo and the 3.4 hand-off",
+          "type": "result-number",
+          "reason": "Last because the placebo closes C2 by contrast with the cash result (PARA2) and the forward-link to 3.4 is the natural transition out of the subsection.",
+          "evidence": [
+            "section3.2_subsection_plan.json 3.2-P5",
+            "claim_findings_ledger.json C2 (stock_UncResCEO -0.0429 n.s.; stock_CashRatio -0.0036 n.s.)",
+            "_tables_from_bible.tex tab:empire_building_did cols 5,6"
+          ],
+          "numbers": [
+            "-0.0429 (tab:empire_building_did col 6, SE 0.0307, n.s.)",
+            "-0.0036 (tab:empire_building_did col 5, n.s.)",
+            "0.8013*** stock lag (tab:empire_building_did col 5, SE 0.0057) vs 0.7990*** cash lag (col 1)"
+          ],
+          "register_locks": [
+            "correlational",
+            "concentration-not-strict-specificity"
+          ],
+          "depends_on": [
+            "3.2-PARA2-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "number_audit": [
+        {
+          "number": "-0.0429",
+          "table_cell": "tab:empire_building_did col 6 PreAnnounceQtr (UncResCEO, stock)"
+        },
+        {
+          "number": "-0.0036",
+          "table_cell": "tab:empire_building_did col 5 PreAnnounceQtr (CashRatio, stock)"
+        },
+        {
+          "number": "0.8013",
+          "table_cell": "tab:empire_building_did col 5 CashRatio_{t-1} partial adj. (stock)"
+        },
+        {
+          "number": "0.7990",
+          "table_cell": "tab:empire_building_did col 1 CashRatio_{t-1} partial adj. (cash)"
+        }
+      ]
+    }
+  ],
+  "allocation_coverage": {
+    "all_phaseA_props_homed": "All five ratified 3.2 props homed exactly once, 1:1 with five paragraphs in chain order: 3.2-P1->PARA1; 3.2-P2->PARA2; 3.2-P3->PARA3; 3.2-P4->PARA4; 3.2-P5->PARA5. None split, merged, dropped, or duplicated. The two-universe counts (PARA3) are sourced to the empire_building_did N row, not summary_stats; the SD basis (PARA4) is applied at the resolved 0.3010 with the supersession documented.",
+    "prop_to_paragraph": [
+      {
+        "phaseA_prop": "3.2-P1",
+        "paragraph": "3.2-PARA1",
+        "note": "sole prop; design/estimand premise"
+      },
+      {
+        "phaseA_prop": "3.2-P2",
+        "paragraph": "3.2-PARA2",
+        "note": "sole prop; cash-arm run-up + two-tailed survival; the C2 positive"
+      },
+      {
+        "phaseA_prop": "3.2-P3",
+        "paragraph": "3.2-PARA3",
+        "note": "sole prop; two-universe N caveat from empire_building_did N row"
+      },
+      {
+        "phaseA_prop": "3.2-P4",
+        "paragraph": "3.2-PARA4",
+        "note": "sole prop; economic magnitude at resolved 0.3010"
+      },
+      {
+        "phaseA_prop": "3.2-P5",
+        "paragraph": "3.2-PARA5",
+        "note": "sole prop; stock placebo + 3.4 forward-link"
+      }
+    ],
+    "gaps": [
+      "The formal cash-vs-stock difference is deliberately deferred to 3.4 (Gelman-Stern guard), not claimed here.",
+      "empire_building_did col 4 (HighCashScrutiny 0.0408**) is NOT used in 3.2; it is homed in 4.1-PARA1 (promise/delivery split).",
+      "SD basis applied as resolved 0.3010 (not surfaced as open); stale 0.3072/0.1573/1.4% pointers dropped."
+    ]
+  },
+  "_clone_provenance": {
+    "is_clone": true,
+    "of": "section3.2_paragraph_ledger.json (pristine original)",
+    "purpose": "Phase-3 chain redesign; locked final_prose stripped.",
+    "built_by": "tmp/clone_strip_prose.py",
+    "note": "Proposed chain fixes APPENDED under _proposed_fixes; original chain untouched."
+  },
+  "_proposed_fixes": {
+    "summary": "Surgical placebo->comparison sweep of descriptive stock-arm framing (11 fixes); 0 identifier hits KEPT (tab:empire_drop_placebo / placebo_*_PRE1, 18-file cross-ref). Results section -> no new cite props.",
+    "register_locks": [
+      "stock = comparison not inert placebo (matches 2.1/2.2)",
+      "NO stock-suppressed",
+      "we interpret, we do not detect"
+    ],
+    "fixes": [
+      {
+        "fix_id": "S3.2-F1",
+        "locus": "doc.paragraphs[0].intent.statement",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[0].intent.statement",
+          "from": "Set the MA1 design and estimand: the single-indicator two-way fixed-effects regression of Section 2.4 (firm and calendar year-quarter FE, firm-clustered SE) estimated four times, each outcome (CashRatio, UncResCEO) in each arm (cash >=50%, stock >=50% placebo), with treated firms' post-announcement quarters dropped so the design observes only the run-up; identification is within-firm, the equation lives in 2.4 and is not restated.",
+          "to": "Set the MA1 design and estimand: the single-indicator two-way fixed-effects regression of Section 2.4 (firm and calendar year-quarter FE, firm-clustered SE) estimated four times, each outcome (CashRatio, UncResCEO) in each arm (cash >=50%, stock >=50% comparison), with treated firms' post-announcement quarters dropped so the design observes only the run-up; identification is within-firm, the equation lives in 2.4 and is not restated."
+        }
+      },
+      {
+        "fix_id": "S3.2-F2",
+        "locus": "doc.paragraphs[0].proposition_chain[0].statement",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[0].proposition_chain[0].statement",
+          "from": "MA1 estimates the single-indicator two-way fixed-effects regression of Section 2.4 (firm and calendar year-quarter FE, firm-clustered SE) four times: each outcome (CashRatio, UncResCEO) in each arm (cash >=50%, stock >=50% placebo), with treated firms' post-announcement quarters dropped so the design observes only the run-up. Identification is within-firm (a treated firm's pre-announcement quarter against its own ordinary quarters); the estimating equation lives in 2.4 and is not restated.",
+          "to": "MA1 estimates the single-indicator two-way fixed-effects regression of Section 2.4 (firm and calendar year-quarter FE, firm-clustered SE) four times: each outcome (CashRatio, UncResCEO) in each arm (cash >=50%, stock >=50% comparison), with treated firms' post-announcement quarters dropped so the design observes only the run-up. Identification is within-firm (a treated firm's pre-announcement quarter against its own ordinary quarters); the estimating equation lives in 2.4 and is not restated."
+        }
+      },
+      {
+        "fix_id": "S3.2-F3",
+        "locus": "doc.paragraphs[1].serves[0]",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[1].serves[0]",
+          "from": "delivers the C2 positive; pays off H1 (theta_-1>0); the first empirical pillar; feeds the magnitude (PARA4) and contrasts with the placebo (PARA5)",
+          "to": "delivers the C2 positive; pays off H1 (theta_-1>0); the first empirical pillar; feeds the magnitude (PARA4) and contrasts with the comparison (PARA5)"
+        }
+      },
+      {
+        "fix_id": "S3.2-F4",
+        "locus": "doc.paragraphs[1].boundary",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[1].boundary",
+          "from": "Cash-arm result only; the sample-comparability caveat (PARA3), magnitude (PARA4), and placebo (PARA5) are separate paragraphs. No formal cash-vs-stock test here (3.4).",
+          "to": "Cash-arm result only; the sample-comparability caveat (PARA3), magnitude (PARA4), and comparison (PARA5) are separate paragraphs. No formal cash-vs-stock test here (3.4)."
+        }
+      },
+      {
+        "fix_id": "S3.2-F5",
+        "locus": "doc.paragraphs[4].intent.statement",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[4].intent.statement",
+          "from": "Deliver the stock placebo: under the same disclosure constraint, with nearly identical models (stock partial-adjustment lag 0.8013 vs cash 0.7990), neither residual uncertainty (-0.0429 n.s.) nor the cash ratio (-0.0036 n.s.) shows a comparable positive run-up, so what differs at e=-1 is the response, not the model; a side-by-side reading is not yet a formal test, which Section 3.4 supplies.",
+          "to": "Deliver the stock comparison: under the same disclosure constraint, with nearly identical models (stock partial-adjustment lag 0.8013 vs cash 0.7990), neither residual uncertainty (-0.0429 n.s.) nor the cash ratio (-0.0036 n.s.) shows a comparable positive run-up, so what differs at e=-1 is the response, not the model; a side-by-side reading is not yet a formal test, which Section 3.4 supplies."
+        }
+      },
+      {
+        "fix_id": "S3.2-F6",
+        "locus": "doc.paragraphs[4].boundary",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[4].boundary",
+          "from": "Placebo half of C2 only; the formal cash-vs-stock test is 3.4's. Side-by-side is explicitly NOT the formal test.",
+          "to": "Comparison half of C2 only; the formal cash-vs-stock test is 3.4's. Side-by-side is explicitly NOT the formal test."
+        }
+      },
+      {
+        "fix_id": "S3.2-F7",
+        "locus": "doc.paragraphs[4].proposition_chain[0].statement",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[4].proposition_chain[0].statement",
+          "from": "The stock arm is the placebo: under the same disclosure constraint, with otherwise nearly identical models (the stock partial-adjustment lag 0.8013 is almost the same as the cash 0.7990), neither residual uncertainty (-0.0429, n.s.) nor the cash ratio (-0.0036, n.s.) shows a comparable positive run-up, so what differs at e=-1 is the response, not the model. A side-by-side reading is not yet a formal test of the difference; the formal cash-vs-stock test is supplied in Section 3.4 (Main Analysis 3).",
+          "to": "The stock arm is the comparison: under the same disclosure constraint, with otherwise nearly identical models (the stock partial-adjustment lag 0.8013 is almost the same as the cash 0.7990), neither residual uncertainty (-0.0429, n.s.) nor the cash ratio (-0.0036, n.s.) shows a comparable positive run-up, so what differs at e=-1 is the response, not the model. A side-by-side reading is not yet a formal test of the difference; the formal cash-vs-stock test is supplied in Section 3.4 (Main Analysis 3)."
+        }
+      },
+      {
+        "fix_id": "S3.2-F8",
+        "locus": "doc.paragraphs[4].proposition_chain[0].role_in_paragraph",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[4].proposition_chain[0].role_in_paragraph",
+          "from": "inference -- the sole proposition; the placebo and the 3.4 hand-off",
+          "to": "inference -- the sole proposition; the comparison and the 3.4 hand-off"
+        }
+      },
+      {
+        "fix_id": "S3.2-F9",
+        "locus": "doc.paragraphs[4].proposition_chain[0].reason",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.paragraphs[4].proposition_chain[0].reason",
+          "from": "Last because the placebo closes C2 by contrast with the cash result (PARA2) and the forward-link to 3.4 is the natural transition out of the subsection.",
+          "to": "Last because the comparison closes C2 by contrast with the cash result (PARA2) and the forward-link to 3.4 is the natural transition out of the subsection."
+        }
+      },
+      {
+        "fix_id": "S3.2-F10",
+        "locus": "doc.allocation_coverage.prop_to_paragraph[4].note",
+        "action": "SWEEP",
+        "change": "descriptive stock placebo -> comparison (identifiers protected)",
+        "reword": {
+          "field": "doc.allocation_coverage.prop_to_paragraph[4].note",
+          "from": "sole prop; stock placebo + 3.4 forward-link",
+          "to": "sole prop; stock comparison + 3.4 forward-link"
+        }
+      },
+      {
+        "fix_id": "S3.2-F11",
+        "locus": "stock-comparison paragraph",
+        "action": "ADD_REGISTER_LOCK",
+        "change": "guard regenerated prose against 'stock suppressed'",
+        "proposed_register_lock": "No 'stock suppressed' / stock not pushed below baseline -- the stock comparison arm is a noisy flat null (-0.0429 n.s.); the cash-vs-stock gap is cash rising, not stock falling. We interpret, we do not detect (masking register, 2.1/2.2)."
+      }
+    ]
+  }
+}
