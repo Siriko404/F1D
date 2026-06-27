@@ -1,5 +1,10 @@
 # Phase-3 (masking proposition redesign) lives in the FORK -- not in this tree.
 
+> ⚠️ **LATEST (2026-06-27) — NEXT-SESSION REVIEW. The masking fixes were AUDITED. Start here:**
+> `...\F1D-phase3\docs\Thesis\rewrite\_audit\_AUDIT_RESUME_2026-06-27.md`
+> 17 findings in `_audit\audit.json`; NOTHING applied. PENDING: P3.4 needs Sina's ratify; decide on a
+> spine-vs-DATA sweep (the 1 data area sampled hit ~100%). The `_PHASE3_RESUME_2026-06-26.md` is the prior layer.
+
 This `F1D` / `debug/campello-did-supervisor-interrogation` tree cannot see the redesign work; it is on
 the fork worktree. Start there:
 
