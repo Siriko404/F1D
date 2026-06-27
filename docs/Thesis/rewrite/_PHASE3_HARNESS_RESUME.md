@@ -1,5 +1,9 @@
 # RESUME — Proposition-Redesign Harness (canonical Phase 3)   2026-06-26
 
+> [SUPERSEDED 2026-06-26 -- describes the ABANDONED multi-agent harness. CURRENT entry point:
+> `_PHASE3_RESUME_2026-06-26.md`. The redesign was done MANUALLY (append proposed fixes per section)
+> and is DONE for all 16 sections. Do NOT build a harness. Historical content below.]
+>
 > SINGLE ENTRY POINT. Last handoff failed: it carried the CONTENT but not the HARNESS-BUILD references → the harness session had no idea HOW to build, wasted ~1h, failed. This fixes that: read BOTH halves (A = how, B = what). Treat all memory as UNVERIFIED; the files are truth.
 
 ## READ ON RESUME — in this order
