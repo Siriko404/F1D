@@ -1,9 +1,16 @@
-# 👉 Phase-3 (proposition redesign) lives in the FORK — not in this tree.
+# Phase-3 (masking proposition redesign) lives in the FORK -- not in this tree.
 
-If you are resuming the **masking proposition-redesign / harness** work, the content is on a different worktree+branch (this `F1D`/`debug/campello…` tree cannot see it):
+This `F1D` / `debug/campello-did-supervisor-interrogation` tree cannot see the redesign work; it is on
+the fork worktree. Start there:
 
-- **Resume entry (read FIRST):** `C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D-phase3\docs\Thesis\rewrite\_PHASE3_HARNESS_RESUME.md`
-- Worktree: `…\F1D-phase3`  ·  branch: `phase3/propositions`  ·  HEAD `abdf9e2a` (2026-06-26).
-- That resume binds: the harness design brief (`_PHASE4_FORK_PROMPT_1.md`), the harness HOW-TO (this tree's `_phase2_v2/HARNESS_DESIGN_LESSONS.md` + reference impl), and the content WHAT (decision, honesty floor, cite stack, §2 mod-set).
+- **Resume entry (read FIRST):**
+  `C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D-phase3\docs\Thesis\rewrite\_PHASE3_RESUME_2026-06-26.md`
+- Worktree: `...\F1D-phase3`  ·  branch: `phase4/masking-rewrite-harness`  ·  HEAD `21824b7c` (2026-06-26).
+- **Status:** the masking redesign is propagated to ALL 16 section paragraph-ledgers as **PROPOSED
+  fixes** (appended under `_proposed_fixes`; NOT applied; originals pristine; prose stripped). Done +
+  verified (16/16) + committed. NEXT (gated on Sina's ratify): apply -> regen prose -> +2 `\bibitem` ->
+  retire originals.
+- The earlier multi-agent **"harness" approach was ABANDONED** -- the redesign was done MANUALLY. Do
+  NOT build a harness. (The old `_PHASE3_HARNESS_RESUME.md` / `_PHASE4_*` docs are SUPERSEDED.)
 
-Harness build-HOW + Phase-2 reference impl + `HARNESS_DESIGN_LESSONS.md` live HERE in `F1D` (`docs/Thesis/rewrite/_phase2_v2/`). The proposition content lives in the FORK. Read the resume to bind both.
+Data + the installed `f1d` package live ONLY here in `F1D`; any compute/re-run executes from this tree.
