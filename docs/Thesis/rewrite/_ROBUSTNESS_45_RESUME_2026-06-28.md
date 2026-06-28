@@ -8,13 +8,16 @@
   canonical Format-B. MERGED == placed byte-identical (single source of truth).
 - **WIRE**: appended ONE §4.5 forward-pointer to each target paragraph's `serves` (the audit-safe home — corpus keeps
   cross-refs in scaffolding, never in frozen `statement`s). 8 appends across `section3.2/3.3/3.4` + `section2.4` P5,
-  mirroring the §4.5 depends_on back-edges. **7 §3 targets, not 6**: the prior list missed `3.4-PARA4` (the war-chest
-  CAUSE, cited by 4.5-PARA3-a as staying 0.0071 n.s.) — wired as cause-stays-open, mechanism-open preserved.
+  mirroring the §4.5 depends_on back-edges. **6 §3 result-wires + 1 §2.4 = 7 serves-appends.** (A 7th §3 wire on
+  `3.4-PARA4` — the CAUSE leg — was added then DROPPED at Sina's call: it sits on the null war-chest cause and is
+  hoarding-adjacent; the thesis frames cash deals as DRAWING DOWN already-accumulated cash, NOT hoarding (§2.2 P3.2),
+  and the cause tests n.s. — so no forward-pointer there. §4.5-PARA3-a STILL `depends_on 3.4-PARA4-a` internally; only
+  the forward serves-pointer was removed. graph intact.)
   GATE: every statement byte-identical pre/post, every non-target paragraph untouched, proper §, fully git-reversible.
 
 **What remains, IN ORDER:**
 1. **CHAIN RATIFICATION** — §4.5 is still flagged `PROPOSAL` (prose_gate all_supported/unlocked=false). Sina reviews the
-   6-prop chain incl. the 6 authored `reason` strings (shown in the PLACE turn) + the 8 serves pointers; then unlock.
+   6-prop chain incl. the 6 authored `reason` strings (shown in the PLACE turn) + the 7 serves pointers; then unlock.
 2. **PROSE phase** — write `final_prose` for all 79 paras incl. §4.5's 3 paras + the RATIFIED caveat-2 + 6 framing drafts
    (Sina authors load-bearing claims, BIMODAL). The 6 framing drafts live in the agent reports + the spec.
 3. **TABLES** — when §4.5 tables enter the thesis, add the `Firm + Year-Qtr FE: Yes` row to 5.2–5.5 (rob PDF omitted it).

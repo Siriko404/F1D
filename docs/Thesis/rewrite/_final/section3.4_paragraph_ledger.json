@@ -306,8 +306,7 @@
         ]
       },
       "serves": [
-        "delivers the failing CAUSE leg; keeps the war-chest mechanism open (mechanism-open lock)",
-        "Across all deals in §4.5 the war-chest CAUSE stays insignificant (0.0071 n.s.; mechanism-open preserved); see 4.5-PARA3."
+        "delivers the failing CAUSE leg; keeps the war-chest mechanism open (mechanism-open lock)"
       ],
       "boundary": "The CAUSE (cash build-up) only; the EFFECT is PARA3's. No mechanism is asserted.",
       "thin_claim": "The cash build-up itself is not cash-specific (0.0064 n.s. matched, 0.0092* full); the war-chest mechanism stays open.",
