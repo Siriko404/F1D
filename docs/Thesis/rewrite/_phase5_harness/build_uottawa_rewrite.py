@@ -135,8 +135,8 @@ def fix_23_se(t):
     return t.replace(a,
         "We flag the concern, together with the bootstrap that would address it, but we do not implement that "
         "correction here. The standard errors we report are therefore uncorrected, and the significance levels "
-        "that accompany them should be read as approximate rather than exact. For that reason we rest the "
-        "reading not on any single threshold but on the consistency of the pattern across our several designs.")
+        "that accompany them should be read as approximate. The reassurance we rely on instead is that the same "
+        "pattern recurs across our several designs.")
 
 # Issue 2 (Sina 2026-06-28): the prose states coefficients with significance STARS, which is non-standard.
 # Replace each star with a COMPACT p-threshold, dropped inside/after the standard error the prose already
