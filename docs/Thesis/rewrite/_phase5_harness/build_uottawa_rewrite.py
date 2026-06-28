@@ -55,14 +55,18 @@ DWZ_CONSTRUCTION = (
     r"The first check is construction. Before we lean on the residual, we confirm that building it "
     r"our own way, on our own data, reproduces the estimates the method was validated on. We re-estimate "
     r"the \citet{dwz} decomposition on our sample and place our numbers beside their published ones, line "
-    r"by line, in Table~\ref{tab:dwz_replication}. The largest piece lines up almost exactly: the loading "
-    r"on the CEO's own prepared-remarks uncertainty is $0.089$ in our data against $0.093$ in theirs, and "
-    r"the other two speech controls keep the same sign and significance. The fit lines up too, once the two "
-    r"are put on the same footing: their published figure is the controls' added explanatory power, about "
-    r"$0.05$ on top of a $0.31$ baseline, so roughly $0.36$ in total, against our total $R^2$ of $0.369$. "
-    r"The samples are not identical, ours covering non-financial, non-utility United States firms over 2002 "
-    r"to 2018 and theirs 2003 to 2015; and because we standardize the firm-performance controls for numerical "
-    r"stability, they match theirs in sign and significance rather than in raw size. The point is narrow but "
+    r"by line, in Table~\ref{tab:dwz_replication}, which reports two of our specifications: a Baseline that "
+    r"matches the Section~2.3 equation exactly and supplies the residual we carry forward, and an Extended one "
+    r"that adds the Section~2.4 firm-financial controls as a robustness check. The largest piece lines up almost "
+    r"exactly: the loading on the CEO's own prepared-remarks uncertainty is $0.089$ in our Baseline against "
+    r"$0.093$ in theirs, and the other two speech controls keep the same sign and significance. The fit lines up "
+    r"too, once the two are put on the same footing: their published figure is the controls' added explanatory "
+    r"power, about $0.05$ on top of a $0.31$ base, so roughly $0.36$ in total, against our total $R^2$ of $0.369$. "
+    r"The samples are not identical, ours covering non-financial, non-utility United States firms over 2002 to "
+    r"2018 and theirs 2003 to 2015; the firm-performance controls, standardized here for numerical stability, are "
+    r"not comparable in raw size and agree in sign for the earnings controls but not for the two market-return "
+    r"controls (StockRet flips sign; MarketRet is significant in the original but not here), an expected divergence "
+    r"across the different samples that does not bear on the residual. The point is narrow but "
     r"enough: because we build the residual the same way \citeauthor{dwz} do, the construct validity they "
     r"establish for the measure carries over to our setting, which leaves how it behaves in our own data as "
     r"the question for the checks below."
@@ -97,10 +101,27 @@ def augment_25(t):
     t = t.replace(c_old, c_new, 1)
     return t
 
+def fix_21(t):
+    # Coherence: drop the lone "war chest" assertion in 2.1. The cash accumulation is a by-product
+    # (2.4) and the war-chest CHANNEL is left open/unestablished (3.4, 5); 2.1 was the only place
+    # asserting it. The "accumulated, visible cash position" already conveys the point.
+    a = " -- a war chest, in effect --"
+    assert a in t, "fix_21 anchor (war chest) not found"
+    return t.replace(a, "")
+
+def fix_34(t):
+    # Coherence: 3.4 used $\theta_{-1}^{cash}-\theta_{-1}^{stock}$, a symbol defined nowhere; 2.4
+    # defines the same test as $\beta_c-\beta_s$. Drop the orphan Greek for plain wording.
+    a = r"That restriction is what estimates $\theta_{-1}^{\mathrm{cash}}-\theta_{-1}^{\mathrm{stock}}$ in hypothesis~H1a."
+    assert a in t, "fix_34 anchor (theta) not found"
+    return t.replace(a, r"That restriction is the formal expression of the cash-versus-stock gap that hypothesis~H1a predicts.")
+
 def prose_of(sid):
     body = "\n\n".join(normalize(p["final_prose"].strip()) for p in SEC[sid]["paragraphs"])
     if sid == "4.5": body = repoint_45(body)
     if sid == "2.5": body = augment_25(body)
+    if sid == "2.1": body = fix_21(body)
+    if sid == "3.4": body = fix_34(body)
     return body
 
 # ---- 1. clone every .tex in docs/Thesis so all \input deps resolve; originals untouched ----
@@ -108,6 +129,17 @@ CLONE.mkdir(exist_ok=True)
 for f in SRC.glob("*.tex"):
     shutil.copy(f, CLONE / f.name)
 print("cloned %d .tex files -> %s" % (len(list(CLONE.glob('*.tex'))), CLONE.name))
+
+# patch the DWZ-replication table note: the firm-controls do NOT all match in significance (Table 5.21 cells)
+_dwz = CLONE / "_dwz_replication.tex"
+_nt = _dwz.read_text(encoding="utf-8")
+_old_note = "standardized here, so their magnitudes are not comparable to the original's raw-unit coefficients, though signs and significance are."
+_new_note = ("standardized here, so their magnitudes are not comparable to the original's raw-unit "
+             "coefficients; signs agree for the earnings-surprise and EPS-growth controls but not for the "
+             "two market-return controls (StockRet flips sign; MarketRet is significant in the original but not here).")
+assert _old_note in _nt, "dwz-note anchor not found"
+_dwz.write_text(_nt.replace(_old_note, _new_note), encoding="utf-8")
+print("patched _dwz_replication.tex note (sign/significance accuracy)")
 
 # ---- 2. regenerate the standalone body files from phaseB prose ----
 (CLONE / "_abstract_body.tex").write_text(prose_of("abstract") + "\n", encoding="utf-8")
