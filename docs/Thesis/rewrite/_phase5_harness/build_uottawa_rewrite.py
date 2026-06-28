@@ -408,7 +408,7 @@ print("spliced Chapter-2 + added 5 bibitems; wrapper now %d chars" % len(wrap_ne
 
 # ---- 4. compile (pdflatex x3 for TOC / List of Tables / refs; manual bib, no bibtex) ----
 # Use a distinct -jobname so a viewer holding thesis_draft_uottawa.pdf open never blocks the write.
-JOB = "thesis_uottawa_rev2"
+JOB = "thesis_draft_uottawa"
 ok = True
 for p in range(3):
     r = subprocess.run(["pdflatex", "-interaction=nonstopmode", "-jobname", JOB, "thesis_draft_uottawa.tex"],
