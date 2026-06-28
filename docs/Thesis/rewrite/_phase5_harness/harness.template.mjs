@@ -103,43 +103,57 @@ async function writeSection(brief) {
   return { section: brief.section, status: 'WRITTEN', brief, merged, drafts: clean.map(d => d.paragraphs), flags: g.flags };
 }
 
-// collect the verbatim source quotes for a section's theory props (the load-bearing honesty evidence)
-function quoteBlock(brief) {
+// collect verbatim source quotes across the WHOLE thesis (the honesty evidence for the whole-thesis honesty audit)
+function quoteBlockAll(written) {
   const qs = [];
-  for (const pa of brief.paragraphs) for (const p of pa.props)
+  for (const w of written) for (const pa of w.brief.paragraphs) for (const p of pa.props)
     if (p.verification && p.verification.evidence_quotes)
-      qs.push(`PROP ${p.prop_id} claims: "${p.statement}"\nSOURCE (verbatim, from ${(p.verification.source && p.verification.source.title) || 'the cited paper'}; verdict ${p.verification.verdict}):\n${p.verification.evidence_quotes}`);
-  return qs.length ? `\nVERBATIM SOURCE SUPPORT (check each theory claim against its source; flag any claim that says MORE than the quote supports):\n${qs.join('\n\n')}\n` : '';
+      qs.push(`[Sec.${w.section}] PROP ${p.prop_id} claims: "${p.statement}"\nSOURCE (verbatim, ${(p.verification.source && p.verification.source.title) || 'cited paper'}; verdict ${p.verification.verdict}):\n${p.verification.evidence_quotes}`);
+  return qs.length ? `\nVERBATIM SOURCE SUPPORT (whole thesis; flag ANY claim that says more than its quote supports):\n${qs.join('\n\n')}\n` : '';
 }
 
-async function auditSection(prev, thesisMap, coherenceIssues) {
-  if (prev.status !== 'WRITTEN') return prev;
-  const { brief, merged } = prev;
-  const map = thesisMap ? `\nWHOLE-THESIS MAP (for cross-reference awareness; audit ONLY this section's prose, but know the rest exists):\n${thesisMap}\n` : '';
-  const draft = `${map}DRAFT UNDER AUDIT (this section):\n${JSON.stringify(merged.paragraphs, null, 1)}`;
-  const HONESTY = LANES[0][1];                 // lane-1 body
-  const OTHERS = LANES.slice(1);               // the other 5 lanes
-  // L3a: HONESTY sub-panel (3 agents, refute-by-default, WITH the verbatim source quotes) -- thesis-killer gets redundancy
+// ===== RED-TEAM (whole thesis): 3 agents read the FULL draft adversarially, flag, PROPOSE -- never rewrite =====
+async function redteamWhole(fullDraft) {
+  const heads = [
+    'You are the thesis red team. Read the WHOLE drafted thesis adversarially, top to bottom.',
+    'Act as a hostile journal referee reading the entire thesis to find everything wrong.',
+    'You are a skeptical examiner reading the complete thesis end to end.',
+  ];
+  const panel = (await parallel(heads.map((h, v) => () =>
+    agent(`${h} Assume every claim is wrong until the prose earns it. Flag overclaims, weakened hedges, numbers that look off, broken "see Section X" references, incoherence between sections -- anything a referee would attack. Tag each issue with its section. PROPOSE a fix; never rewrite.\n\nFULL THESIS:\n${fullDraft}`,
+      { label: `redteam${v + 1}-WHOLE`, phase: 'Audit', schema: AUDIT_SCHEMA })
+  ))).filter(Boolean);
+  return panel.flatMap(p => (p && p.issues) || []).map(i => ({ ...i, lane: 'redteam' }));
+}
+
+// ===== AUDIT (whole thesis): honesty x3 (with all quotes) + 5 lanes; each reads the FULL thesis. 2 staggered panels (rate limit). =====
+async function auditWhole(fullDraft, quotesAll) {
+  const HONESTY = LANES[0][1], OTHERS = LANES.slice(1);
   const honestyTasks = [0, 1, 2].map(v => () =>
-    agent(`${HONESTY}\n\nREFUTE-BY-DEFAULT: treat every theory/result claim as OVER-stated until the prop+quote clearly support it; if uncertain, FLAG. You PROPOSE fixes, never rewrite.\n\n${brmain(brief)}\n${quoteBlock(brief)}\n${draft}`,
-      { label: `audit:${brief.section}:honesty${v + 1}`, phase: 'Audit', schema: AUDIT_SCHEMA }).then(a => ({ lane: 'honesty', issues: (a && a.issues) || [] })));
-  // L3b: the other 5 exclusive lanes, 1 agent each (PROPOSE only)
+    agent(`${HONESTY}\n\nYou audit the WHOLE thesis. REFUTE-BY-DEFAULT: treat every claim as over-stated until its prop+quote support it; if uncertain, FLAG. Tag each issue with its section. PROPOSE fixes, never rewrite.\n${quotesAll}\n\nFULL THESIS:\n${fullDraft}`,
+      { label: `audit:honesty${v + 1}-WHOLE`, phase: 'Audit', schema: AUDIT_SCHEMA }).then(a => ({ lane: 'honesty', issues: (a && a.issues) || [] })));
   const otherTasks = OTHERS.map(([key, body]) => () =>
-    agent(`${body}\n\nYou audit ONLY this lane; PROPOSE fixes, do not rewrite. If a paragraph is clean in your lane, emit nothing for it.\n\n${brmain(brief)}\n${draft}`,
-      { label: `audit:${brief.section}:${key}`, phase: 'Audit', schema: AUDIT_SCHEMA }).then(a => ({ lane: key, issues: (a && a.issues) || [] })));
-  const audits = (await parallel([...honestyTasks, ...otherTasks])).filter(Boolean);
-  // fold in the WHOLE-THESIS coherence issues that touch this section
-  const mine = (coherenceIssues || []).filter(i => (i.section && (i.section === brief.section || i.section === brief.stem)) || (i.para_id || '').includes(brief.section));
-  const allIssues = audits.flatMap(a => a.issues.map(i => ({ ...i, lane: a.lane }))).concat(mine.map(i => ({ ...i, lane: 'coherence' })));
-  // L4: judge applies high-confidence fixes by MINIMAL edit, refute-by-default on honesty/number claims
+    agent(`${body}\n\nYou audit ONLY this lane, across the WHOLE thesis; tag each issue with its section. PROPOSE fixes, do not rewrite.\n\nFULL THESIS:\n${fullDraft}`,
+      { label: `audit:${key}-WHOLE`, phase: 'Audit', schema: AUDIT_SCHEMA }).then(a => ({ lane: key, issues: (a && a.issues) || [] })));
+  const all = [...honestyTasks, ...otherTasks];
+  log(`AUDIT PANEL 1/2 (${Math.ceil(all.length / 2)} lanes, whole thesis)`);
+  const a1 = (await parallel(all.slice(0, Math.ceil(all.length / 2)))).filter(Boolean);
+  log(`AUDIT PANEL 2/2 -- after Panel 1`);
+  const a2 = (await parallel(all.slice(Math.ceil(all.length / 2)))).filter(Boolean);
+  return [...a1, ...a2].flatMap(a => a.issues.map(i => ({ ...i, lane: a.lane })));
+}
+
+// ===== BOSS (whole-thesis CONTEXT, writes one section's final per call -- step by step) =====
+async function bossSection(w, fullDraft, allReports) {
+  const brief = w.brief;
+  const mine = allReports.filter(i => (i.section && (i.section === brief.section || i.section === brief.stem)) || (i.para_id || '').includes(brief.section));
   const final = await agent(
-    `You are the chief editor. Apply ONLY well-supported audit fixes to the draft by MINIMAL edit (prefer the existing wording; change the least). Reject spurious or hedge-weakening fixes (refute-by-default for honesty/number claims). Invent no new numbers/citations. Output the full corrected section.\n\n${brmain(brief)}\n\nDRAFT:\n${JSON.stringify(merged.paragraphs, null, 1)}\n\nAUDIT ISSUES (${allIssues.length}):\n${JSON.stringify(allIssues, null, 1)}`,
-    { label: `judge:${brief.section}`, phase: 'Audit', schema: WRITER_SCHEMA });
+    `You are the chief editor of the WHOLE thesis. You can see the full draft and ALL red-team + audit reports below. Produce the FINAL prose for SECTION ${brief.section} ONLY (output just this section's paragraphs). Apply well-supported fixes by MINIMAL edit; reject spurious or hedge-weakening fixes (refute-by-default on honesty/number claims); keep consistency with the rest of the thesis; invent no new numbers or citations.\n\n${brmain(brief)}\n\nFULL THESIS (context/consistency):\n${fullDraft}\n\nALL REPORTS (${mine.length} touch this section -- apply those):\n${JSON.stringify(mine, null, 1)}`,
+    { label: `boss:${brief.section}`, phase: 'Audit', schema: WRITER_SCHEMA });
   const g = sectionGate(final, brief);
-  // full per-section audit trail (materialized to its OWN json file by finalize.py)
-  const trail = { drafts: prev.drafts, merged: merged.paragraphs, audit_issues: allIssues, coherence_issues: mine };
+  const trail = { drafts: w.drafts, merged: w.merged.paragraphs, reports_for_section: mine };
   if (!g.pass) return { section: brief.section, status: 'BLOCKED', stage: 'FINAL-GATE', detail: g.blocks.slice(0, 12), final, trail };
-  return { section: brief.section, status: 'OK', final, flags: g.flags, audit_count: allIssues.length, trail };
+  return { section: brief.section, status: 'OK', final, flags: g.flags, audit_count: mine.length, trail };
 }
 
 // ---- run: 3 PARALLEL TEAMS, each owning a section-group (Sina's design). Rate-limit-safe:
@@ -166,33 +180,22 @@ log('PHASE A: write -- 3 thematic teams, parallel');
 const written = (await parallel(TEAMS.map(t => () => writeTeam(t)))).flat().filter(Boolean);
 const writtenOK = written.filter(w => w.status === 'WRITTEN');
 
-// ===== BARRIER: ALL prose written before ANY audit =====
-// ===== PHASE B -- AUDIT the WHOLE thesis at once =====
-log(`PHASE B: audit -- whole thesis at once (${writtenOK.length} written, ${written.length - writtenOK.length} blocked at write)`);
+// ===== BARRIER: ALL prose written before ANY review =====
+// ===== PHASE B -- RED-TEAM + AUDIT, both reading the WHOLE thesis =====
+log(`PHASE B: red-team + audit -- WHOLE thesis (${writtenOK.length} written, ${written.length - writtenOK.length} blocked at write)`);
 const thesisFull = JSON.stringify(writtenOK.map(w => ({ section: w.section, paragraphs: w.merged.paragraphs.map(p => ({ para_id: p.para_id, final_prose: p.final_prose })) })));
-// (1) GLOBAL COHERENCE PANEL -- 3 agents each read the FULL thesis, cross-section ONLY (thesis-level scrutiny gets redundancy)
-const COH_HEADS = [
-  'You are the thesis coherence auditor.',
-  'Act as a journal referee reading the whole thesis end-to-end for internal consistency.',
-  'You are the consistency editor responsible for the complete thesis reading as one document.',
-];
-const cohPanel = (await parallel(COH_HEADS.map((h, v) => () =>
-  agent(`${h} Read the ENTIRE drafted thesis below and flag ONLY cross-section problems: the abstract or Section 1 preview contradicting the results; terminology or notation drifting between sections; a claim in one section inconsistent with another; a "see Section X" reference that does not match X's content; a broken narrative arc. Do NOT re-audit within-section wording (other auditors own that). Tag each issue with the section it belongs to (e.g. "3.4"). PROPOSE fixes, never rewrite.\n\nFULL THESIS:\n${thesisFull}`,
-    { label: `audit:coherence${v + 1}-WHOLE`, phase: 'Audit', schema: AUDIT_SCHEMA })
-))).filter(Boolean);
-const coherenceIssues = cohPanel.flatMap(c => (c && c.issues) || []);
-log(`coherence panel (3): ${coherenceIssues.length} cross-section issue(s)`);
-// (2) per-section DEEP audit + judge, in 2 SEQUENTIAL PANELS (Sina: stagger spawns to avoid a rate-limit ban).
-// The engine has no sleep/timer -> Panel 2 starts when Panel 1's wave completes (natural stagger; halves spawn rate).
-// Each section's boss (judge, inside auditSection) reads + acts on ALL of that section's reports + the coherence issues.
-const compactMap = JSON.stringify(writtenOK.map(w => ({ section: w.section, summary: w.brief.paragraphs.map(p => p.thin_claim).filter(Boolean) })));
-const half = Math.ceil(writtenOK.length / 2);
-log(`AUDIT PANEL 1/2: ${half} section(s)`);
-const rA = await parallel(writtenOK.slice(0, half).map(w => () => auditSection(w, compactMap, coherenceIssues)));
-log(`AUDIT PANEL 2/2: ${writtenOK.length - half} section(s) -- spawned after Panel 1 completes`);
-const rB = await parallel(writtenOK.slice(half).map(w => () => auditSection(w, compactMap, coherenceIssues)));
-const results = [...rA, ...rB, ...written.filter(w => w.status !== 'WRITTEN')];
+const quotesAll = quoteBlockAll(writtenOK);
+const redteamIssues = await redteamWhole(thesisFull);
+log(`red-team (whole thesis): ${redteamIssues.length} issue(s)`);
+const auditIssues = await auditWhole(thesisFull, quotesAll);
+log(`audit (whole thesis): ${auditIssues.length} issue(s)`);
+const allReports = [...redteamIssues, ...auditIssues];
+// ===== PHASE C -- BOSS: whole-thesis-aware, writes the FINAL section by section (step by step) =====
+log(`PHASE C: boss -- final prose section by section (sees whole thesis + all ${allReports.length} reports each step)`);
+const results = [];
+for (const w of writtenOK) { log(`[boss] ${w.section}`); results.push(await bossSection(w, thesisFull, allReports)); }
+results.push(...written.filter(w => w.status !== 'WRITTEN'));
 const ok = results.filter(r => r && r.status === 'OK');
 const blocked = results.filter(r => r && r.status === 'BLOCKED');
 log(`DONE: ${ok.length} OK, ${blocked.length} BLOCKED`);
-return { ok: ok.map(r => r.section), blocked: blocked.map(r => ({ section: r.section, stage: r.stage, detail: r.detail })), results };
+return { ok: ok.map(r => r.section), blocked: blocked.map(r => ({ section: r.section, stage: r.stage, detail: r.detail })), results, reports: allReports };
