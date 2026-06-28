@@ -357,7 +357,7 @@ Our last robustness check drops the first-deal restriction and stacks every deal
 
 The differential-timing round trip survives all-deals as well. On the matched universe, Table~\ref{tab:rob_timing_matched} shows residual uncertainty spiking at PRE1 ($0.0352^{**}$, standard error $0.0148$) and then unwinding: the PRE1-to-GAP drop is $0.0363^{**}$ (standard error $0.0156$) and the PRE1-to-POST drop is $0.0544^{***}$ (standard error $0.0139$). Split by payment type, Table~\ref{tab:rob_timing_placebo} shows the round trip holding in the cash arm (PRE1 $0.0401^{***}$, standard error $0.0145$; PRE1-to-POST drop $0.0543^{***}$, standard error $0.0137$) and not in the stock arm (PRE1 $-0.0272$, standard error $0.0266$, not significant), where the stock arm's PRE1-to-GAP change is $-0.0585^{*}$ (standard error $0.0355$) --- marginally significant and negative, which we do not over-read given the noisy stock null.
 
-The formal cash-concentration result also survives, and in fact strengthens. On the all-deals-stacked panel of Table~\ref{tab:rob_cashspec}, the pooled cash-minus-stock Wald difference is $0.1056^{**}$ (standard error $0.0423$; $z\approx2.50$, $p\approx.013$) --- the cash arm at $0.0447^{**}$ (standard error $0.0180$) against the stock arm's insignificant $-0.0609$ (standard error $0.0385$) --- larger than the first-deal difference of $0.0983^{**}$ ($p=.039$) in the same table. The proposed cause remains the weak leg: the matched cash-ratio cash-minus-stock difference is $0.0071$ (standard error $0.0062$), not significant. So the run-up still concentrates in cash deals --- concentration, not strict specificity, and with no cause asserted --- while the build-up of cash itself is not differentially cash-sided here. In binary form, among deals at $e=-1$, higher residual uncertainty is associated with the deal being a cash deal (coded one) rather than a stock deal (coded zero): a linear-probability coefficient of $0.0613^{**}$ (standard error $0.0283$, $p=.030$) and a logit coefficient of $0.7478^{**}$ (standard error $0.3399$, $p=.028$) in this specification (Logit~B, Table~\ref{tab:logit_cashstock}), on 1,105 deal observations from 563 firms (982 cash, 123 stock; cash base rate 88.9\%; pseudo-$R^2$ $0.078$). Under firm and year-quarter fixed effects the coefficient keeps its sign but is no longer significant: a linear-probability coefficient of $0.0644$ (standard error $0.05076$, not significant; $p=.205$; 1,063 deal observations, 563 firms; within-$R^2$ $0.059$). The design stays correlational and identifies no causal effect, and we read it as concentration in cash deals, not strict specificity.
+The formal cash-concentration result also survives, and in fact strengthens. On the all-deals-stacked panel of Table~\ref{tab:rob_cashspec}, the pooled cash-minus-stock Wald difference is $0.1056^{**}$ (standard error $0.0423$; $z\approx2.50$, $p\approx.013$) --- the cash arm at $0.0447^{**}$ (standard error $0.0180$) against the stock arm's insignificant $-0.0609$ (standard error $0.0385$) --- larger than the first-deal difference of $0.0983^{**}$ ($p=.039$) reported in Table~\ref{tab:empire_cashspec}. The proposed cause remains the weak leg: the matched cash-ratio cash-minus-stock difference is $0.0071$ (standard error $0.0062$), not significant. So the run-up still concentrates in cash deals --- concentration, not strict specificity, and with no cause asserted --- while the build-up of cash itself is not differentially cash-sided here. In binary form, among deals at $e=-1$, higher residual uncertainty is associated with the deal being a cash deal (coded one) rather than a stock deal (coded zero): a linear-probability coefficient of $0.0613^{**}$ (standard error $0.0283$, $p=.030$) and a logit coefficient of $0.7478^{**}$ (standard error $0.3399$, $p=.028$) in this specification (Logit~B, Table~\ref{tab:logit_cashstock}), on 1,105 deal observations from 563 firms (982 cash, 123 stock; cash base rate 88.9\%; pseudo-$R^2$ $0.078$). Under firm and year-quarter fixed effects the coefficient keeps its sign but is no longer significant: a linear-probability coefficient of $0.0644$ (standard error $0.05076$, not significant; $p=.205$; 1,063 deal observations, 563 firms; within-$R^2$ $0.059$). The design stays correlational and identifies no causal effect, and we read it as concentration in cash deals, not strict specificity.
 
 % <<<<< end sec34_body_from_ledgers.tex >>>>>
 
@@ -1228,37 +1228,37 @@ Firms & 1,320 & 1,320 \\
 % Wired from rob_4tables.tex + logit_tables_final.tex; FE row added per the robustness resume.
 \begin{landscape}
 \begin{table}[htbp]\centering
-\caption{Pre-Announcement Run-Up: Thesis (first deal) vs.\ All Deals (stacked)}\label{tab:rob_runup}
-\scriptsize\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcccccccccccccccc}
+\caption{Pre-Announcement Run-Up (All Deals, Stacked)}\label{tab:rob_runup}
+\scriptsize\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcccccccc}
 \toprule
- & \multicolumn{8}{c}{\textbf{Thesis (first deal)}} & \multicolumn{8}{c}{\textbf{All deals (stacked)}} \\
-\cmidrule(lr){2-9}\cmidrule(lr){10-17}
- & \multicolumn{4}{c}{Cash} & \multicolumn{4}{c}{Stock} & \multicolumn{4}{c}{Cash} & \multicolumn{4}{c}{Stock} \\
-\cmidrule(lr){2-5}\cmidrule(lr){6-9}\cmidrule(lr){10-13}\cmidrule(lr){14-17}
- & CshR & UncR & CshSc & HiSc & CshR & UncR & CshSc & HiSc & CshR & UncR & CshSc & HiSc & CshR & UncR & CshSc & HiSc \\
+ & \multicolumn{8}{c}{\textbf{All deals (stacked)}} \\
+\cmidrule(lr){2-9}
+ & \multicolumn{4}{c}{Cash} & \multicolumn{4}{c}{Stock} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+ & CshR & UncR & CshSc & HiSc & CshR & UncR & CshSc & HiSc \\
 \midrule
-PreAnnounceQtr & \textbf{0.0051}$^{***}$ & \textbf{0.0461}$^{***}$ & 0.0854 & \textbf{0.0408}$^{**}$ & -0.0036 & -0.0429 & -0.3222 & -0.0303 & \textbf{0.0033}$^{**}$ & \textbf{0.0391}$^{***}$ & 0.0082 & 0.0184 & \textbf{-0.0059}$^{*}$ & -0.0348 & -0.2332 & -0.0006 \\
- & (0.0017) & (0.0172) & (0.0749) & (0.0194) & (0.0035) & (0.0307) & (0.2024) & (0.0313) & (0.0015) & (0.0140) & (0.0582) & (0.0155) & (0.0032) & (0.0272) & (0.1867) & (0.0337) \\
+PreAnnounceQtr & \textbf{0.0033}$^{**}$ & \textbf{0.0391}$^{***}$ & 0.0082 & 0.0184 & \textbf{-0.0059}$^{*}$ & -0.0348 & -0.2332 & -0.0006  \\
+ & (0.0015) & (0.0140) & (0.0582) & (0.0155) & (0.0032) & (0.0272) & (0.1867) & (0.0337)  \\
 \midrule
-Leverage & \textbf{-0.0146}$^{***}$ & -0.0338 & -0.1521 & -0.0179 & \textbf{-0.0213}$^{***}$ & -0.0292 & -0.1056 & -0.0428 & \textbf{-0.0142}$^{***}$ & -0.0331 & -0.1254 & -0.0194 & \textbf{-0.0219}$^{***}$ & -0.0279 & -0.1159 & \textbf{-0.0432}$^{*}$ \\
- & (0.0039) & (0.0217) & (0.1470) & (0.0308) & (0.0034) & (0.0196) & (0.1358) & (0.0262) & (0.0037) & (0.0221) & (0.1384) & (0.0293) & (0.0034) & (0.0193) & (0.1345) & (0.0259) \\
-lnAssets & \textbf{-0.0072}$^{***}$ & -0.0037 & -0.0391 & \textbf{0.0190}$^{**}$ & \textbf{-0.0079}$^{***}$ & -0.0043 & \textbf{-0.0733}$^{**}$ & 0.0077 & \textbf{-0.0072}$^{***}$ & -0.0024 & -0.0327 & \textbf{0.0200}$^{**}$ & \textbf{-0.0079}$^{***}$ & -0.0034 & \textbf{-0.0632}$^{*}$ & 0.0089 \\
- & (0.0011) & (0.0082) & (0.0482) & (0.0096) & (0.0008) & (0.0063) & (0.0369) & (0.0078) & (0.0011) & (0.0079) & (0.0455) & (0.0092) & (0.0008) & (0.0062) & (0.0368) & (0.0077) \\
-TobinsQ & \textbf{0.0013}$^{**}$ & -0.0031 & -0.0208 & 0.0006 & \textbf{0.0015}$^{***}$ & -0.0017 & -0.0113 & 0.0030 & \textbf{0.0012}$^{**}$ & -0.0028 & -0.0196 & 0.0011 & \textbf{0.0015}$^{***}$ & -0.0018 & -0.0133 & 0.0031 \\
- & (0.0006) & (0.0030) & (0.0144) & (0.0027) & (0.0004) & (0.0025) & (0.0123) & (0.0024) & (0.0005) & (0.0029) & (0.0138) & (0.0026) & (0.0004) & (0.0025) & (0.0127) & (0.0024) \\
-ROA & 0.0053 & 0.0499 & \textbf{-0.5659}$^{**}$ & \textbf{-0.1006}$^{**}$ & \textbf{0.0075}$^{*}$ & \textbf{0.0530}$^{*}$ & \textbf{-0.5350}$^{***}$ & \textbf{-0.0869}$^{**}$ & 0.0062 & \textbf{0.0529}$^{*}$ & \textbf{-0.5633}$^{**}$ & \textbf{-0.1053}$^{***}$ & \textbf{0.0067}$^{*}$ & \textbf{0.0579}$^{**}$ & \textbf{-0.5386}$^{***}$ & \textbf{-0.0892}$^{**}$ \\
- & (0.0042) & (0.0321) & (0.2254) & (0.0405) & (0.0041) & (0.0296) & (0.1982) & (0.0366) & (0.0042) & (0.0319) & (0.2190) & (0.0397) & (0.0040) & (0.0293) & (0.1952) & (0.0362) \\
-Capex & \textbf{-0.1057}$^{***}$ & 0.0842 & \textbf{-1.2215}$^{***}$ & \textbf{-0.3646}$^{***}$ & \textbf{-0.1067}$^{***}$ & 0.1256 & \textbf{-1.4479}$^{***}$ & \textbf{-0.4470}$^{***}$ & \textbf{-0.1044}$^{***}$ & 0.1487 & \textbf{-1.1021}$^{***}$ & \textbf{-0.3503}$^{***}$ & \textbf{-0.1078}$^{***}$ & 0.1291 & \textbf{-1.4815}$^{***}$ & \textbf{-0.4413}$^{***}$ \\
- & (0.0126) & (0.0986) & (0.3534) & (0.0880) & (0.0113) & (0.1006) & (0.3000) & (0.0793) & (0.0119) & (0.1061) & (0.3375) & (0.0848) & (0.0112) & (0.0995) & (0.3046) & (0.0791) \\
-DivDummy & -0.0011 & -0.0030 & -0.0561 & -0.0111 & \textbf{-0.0017}$^{**}$ & \textbf{-0.0137}$^{*}$ & -0.0564 & \textbf{-0.0146}$^{*}$ & -0.0009 & -0.0058 & -0.0593 & -0.0128 & \textbf{-0.0017}$^{**}$ & \textbf{-0.0141}$^{*}$ & -0.0541 & -0.0141 \\
- & (0.0009) & (0.0106) & (0.0537) & (0.0107) & (0.0008) & (0.0080) & (0.0384) & (0.0087) & (0.0009) & (0.0101) & (0.0518) & (0.0104) & (0.0008) & (0.0079) & (0.0380) & (0.0086) \\
-sCFO & 0.0008 & 0.0052 & \textbf{0.1180}$^{***}$ & \textbf{0.0235}$^{***}$ & 0.0007 & -0.0009 & \textbf{0.0906}$^{***}$ & \textbf{0.0169}$^{***}$ & 0.0008 & 0.0046 & \textbf{0.1004}$^{***}$ & \textbf{0.0197}$^{***}$ & 0.0007 & -0.0006 & \textbf{0.0911}$^{***}$ & \textbf{0.0171}$^{***}$ \\
- & (0.0006) & (0.0085) & (0.0140) & (0.0028) & (0.0007) & (0.0110) & (0.0337) & (0.0057) & (0.0006) & (0.0088) & (0.0313) & (0.0056) & (0.0007) & (0.0109) & (0.0334) & (0.0057) \\
+Leverage & \textbf{-0.0142}$^{***}$ & -0.0331 & -0.1254 & -0.0194 & \textbf{-0.0219}$^{***}$ & -0.0279 & -0.1159 & \textbf{-0.0432}$^{*}$  \\
+ & (0.0037) & (0.0221) & (0.1384) & (0.0293) & (0.0034) & (0.0193) & (0.1345) & (0.0259)  \\
+lnAssets & \textbf{-0.0072}$^{***}$ & -0.0024 & -0.0327 & \textbf{0.0200}$^{**}$ & \textbf{-0.0079}$^{***}$ & -0.0034 & \textbf{-0.0632}$^{*}$ & 0.0089  \\
+ & (0.0011) & (0.0079) & (0.0455) & (0.0092) & (0.0008) & (0.0062) & (0.0368) & (0.0077)  \\
+TobinsQ & \textbf{0.0012}$^{**}$ & -0.0028 & -0.0196 & 0.0011 & \textbf{0.0015}$^{***}$ & -0.0018 & -0.0133 & 0.0031  \\
+ & (0.0005) & (0.0029) & (0.0138) & (0.0026) & (0.0004) & (0.0025) & (0.0127) & (0.0024)  \\
+ROA & 0.0062 & \textbf{0.0529}$^{*}$ & \textbf{-0.5633}$^{**}$ & \textbf{-0.1053}$^{***}$ & \textbf{0.0067}$^{*}$ & \textbf{0.0579}$^{**}$ & \textbf{-0.5386}$^{***}$ & \textbf{-0.0892}$^{**}$  \\
+ & (0.0042) & (0.0319) & (0.2190) & (0.0397) & (0.0040) & (0.0293) & (0.1952) & (0.0362)  \\
+Capex & \textbf{-0.1044}$^{***}$ & 0.1487 & \textbf{-1.1021}$^{***}$ & \textbf{-0.3503}$^{***}$ & \textbf{-0.1078}$^{***}$ & 0.1291 & \textbf{-1.4815}$^{***}$ & \textbf{-0.4413}$^{***}$  \\
+ & (0.0119) & (0.1061) & (0.3375) & (0.0848) & (0.0112) & (0.0995) & (0.3046) & (0.0791)  \\
+DivDummy & -0.0009 & -0.0058 & -0.0593 & -0.0128 & \textbf{-0.0017}$^{**}$ & \textbf{-0.0141}$^{*}$ & -0.0541 & -0.0141  \\
+ & (0.0009) & (0.0101) & (0.0518) & (0.0104) & (0.0008) & (0.0079) & (0.0380) & (0.0086)  \\
+sCFO & 0.0008 & 0.0046 & \textbf{0.1004}$^{***}$ & \textbf{0.0197}$^{***}$ & 0.0007 & -0.0006 & \textbf{0.0911}$^{***}$ & \textbf{0.0171}$^{***}$  \\
+ & (0.0006) & (0.0088) & (0.0313) & (0.0056) & (0.0007) & (0.0109) & (0.0334) & (0.0057)  \\
 \midrule
-Firms & 2,232 & 1,248 & 1,237 & 1,237 & 2,281 & 1,338 & 1,325 & 1,325 & 2,336 & 1,346 & 1,332 & 1,332 & 2,351 & 1,362 & 1,348 & 1,348 \\
-N & 67,590 & 27,622 & 26,216 & 26,216 & 84,979 & 39,377 & 37,065 & 37,065 & 70,820 & 29,325 & 27,825 & 27,825 & 86,372 & 39,965 & 37,599 & 37,599 \\
+Firms & 2,336 & 1,346 & 1,332 & 1,332 & 2,351 & 1,362 & 1,348 & 1,348  \\
+N & 70,820 & 29,325 & 27,825 & 27,825 & 86,372 & 39,965 & 37,599 & 37,599  \\
 \midrule
-Firm FE / Year-Qtr FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+Firm FE / Year-Qtr FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
 \bottomrule\end{tabular}\end{adjustbox}
 \begin{minipage}{\linewidth}\vspace{2pt}\scriptsize\textit{Notes:} $^{*}p<.10$,$^{**}p<.05$,$^{***}p<.01$ (two-tailed); SE clustered by firm. CshR=CashRatio(+lag), UncR=UncResCEO, CshSc=CashScrutiny, HiSc=HighCashScrutiny.\end{minipage}\end{table}
 \end{landscape}
@@ -1266,153 +1266,151 @@ Firm FE / Year-Qtr FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Ye
 \clearpage
 
 \begin{table}[htbp]\centering
-\caption{Matched Universe Event Study: Thesis vs.\ All Deals (stacked)}\label{tab:rob_timing_matched}
-\scriptsize\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcccc}
+\caption{Matched Universe Event Study (All Deals, Stacked)}\label{tab:rob_timing_matched}
+\scriptsize\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcc}
 \toprule
- & \multicolumn{2}{c}{\textbf{Thesis}} & \multicolumn{2}{c}{\textbf{All deals (stacked)}} \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}
- & UncRes & CashR & UncRes & CashR \\
+ & \multicolumn{2}{c}{\textbf{All deals (stacked)}} \\
+\cmidrule(lr){2-3}
+ & UncRes & CashR \\
 \midrule
 
 
 
 
-PRE2 & 0.0068 & 0.0008 & 0.0052 & 0.0003 \\
- & (0.0178) & (0.0024) & (0.0135) & (0.0019) \\
-PRE1 & \textbf{0.0473}$^{***}$ & \textbf{0.0061}$^{**}$ & \textbf{0.0352}$^{**}$ & 0.0026 \\
- & (0.0178) & (0.0024) & (0.0148) & (0.0021) \\
-GAP & 0.0018 & 0.0055 & -0.0011 & \textbf{0.0059}$^{**}$ \\
- & (0.0187) & (0.0034) & (0.0129) & (0.0026) \\
-POST & \textbf{-0.0250}$^{*}$ & \textbf{-0.0155}$^{***}$ & \textbf{-0.0192}$^{*}$ & \textbf{-0.0150}$^{***}$ \\
- & (0.0130) & (0.0022) & (0.0105) & (0.0018) \\
+PRE2 & 0.0052 & 0.0003  \\
+ & (0.0135) & (0.0019)  \\
+PRE1 & \textbf{0.0352}$^{**}$ & 0.0026  \\
+ & (0.0148) & (0.0021)  \\
+GAP & -0.0011 & \textbf{0.0059}$^{**}$  \\
+ & (0.0129) & (0.0026)  \\
+POST & \textbf{-0.0192}$^{*}$ & \textbf{-0.0150}$^{***}$  \\
+ & (0.0105) & (0.0018)  \\
 \midrule
-Drop: PRE1 $-$ GAP & \textbf{0.0455}$^{**}$ & 0.0006 & \textbf{0.0363}$^{**}$ & -0.0033 \\
- & (0.0225) & (0.0039) & (0.0156) & (0.0029) \\
-Drop: GAP $-$ POST & 0.0268 & \textbf{0.0210}$^{***}$ & 0.0181 & \textbf{0.0210}$^{***}$ \\
- & (0.0199) & (0.0042) & (0.0123) & (0.0027) \\
-Drop: PRE1 $-$ POST & \textbf{0.0723}$^{***}$ & \textbf{0.0216}$^{***}$ & \textbf{0.0544}$^{***}$ & \textbf{0.0176}$^{***}$ \\
- & (0.0190) & (0.0031) & (0.0139) & (0.0021) \\
-\midrule\multicolumn{5}{l}{\textit{Controls}} \\
-Leverage & \textbf{-0.0415}$^{*}$ & \textbf{-0.0215}$^{***}$ & -0.0302 & \textbf{-0.0204}$^{***}$ \\
- & (0.0213) & (0.0054) & (0.0212) & (0.0049) \\
-lnAssets & -0.0060 & \textbf{-0.0074}$^{***}$ & -0.0005 & \textbf{-0.0089}$^{***}$ \\
- & (0.0084) & (0.0020) & (0.0075) & (0.0018) \\
-TobinsQ & -0.0045 & \textbf{0.0013}$^{**}$ & -0.0029 & \textbf{0.0013}$^{**}$ \\
- & (0.0029) & (0.0006) & (0.0027) & (0.0006) \\
-ROA & \textbf{0.0572}$^{*}$ & 0.0067 & 0.0507 & \textbf{0.0101}$^{*}$ \\
- & (0.0325) & (0.0061) & (0.0311) & (0.0060) \\
-Capex & 0.1073 & \textbf{-0.1434}$^{***}$ & 0.1504 & \textbf{-0.1420}$^{***}$ \\
- & (0.1054) & (0.0141) & (0.1104) & (0.0134) \\
-DivDummy & -0.0099 & -0.0016 & -0.0128 & -0.0016 \\
- & (0.0104) & (0.0014) & (0.0097) & (0.0014) \\
-sCFO & \textbf{0.0096}$^{**}$ & -0.0011 & 0.0063 & -0.0010 \\
- & (0.0043) & (0.0007) & (0.0061) & (0.0007) \\
-CashRatio$_{t-1}$ (partial adj.) & --- & \textbf{0.7547}$^{***}$ & --- & \textbf{0.7596}$^{***}$ \\
- &  & (0.0108) &  & (0.0102) \\
+Drop: PRE1 $-$ GAP & \textbf{0.0363}$^{**}$ & -0.0033  \\
+ & (0.0156) & (0.0029)  \\
+Drop: GAP $-$ POST & 0.0181 & \textbf{0.0210}$^{***}$  \\
+ & (0.0123) & (0.0027)  \\
+Drop: PRE1 $-$ POST & \textbf{0.0544}$^{***}$ & \textbf{0.0176}$^{***}$  \\
+ & (0.0139) & (0.0021)  \\
+\midrule\multicolumn{3}{l}{\textit{Controls}} \\
+Leverage & -0.0302 & \textbf{-0.0204}$^{***}$  \\
+ & (0.0212) & (0.0049)  \\
+lnAssets & -0.0005 & \textbf{-0.0089}$^{***}$  \\
+ & (0.0075) & (0.0018)  \\
+TobinsQ & -0.0029 & \textbf{0.0013}$^{**}$  \\
+ & (0.0027) & (0.0006)  \\
+ROA & 0.0507 & \textbf{0.0101}$^{*}$  \\
+ & (0.0311) & (0.0060)  \\
+Capex & 0.1504 & \textbf{-0.1420}$^{***}$  \\
+ & (0.1104) & (0.0134)  \\
+DivDummy & -0.0128 & -0.0016  \\
+ & (0.0097) & (0.0014)  \\
+sCFO & 0.0063 & -0.0010  \\
+ & (0.0061) & (0.0007)  \\
+CashRatio$_{t-1}$ (partial adj.) & --- & \textbf{0.7596}$^{***}$  \\
+ &  & (0.0102)  \\
 \midrule
-N & 28,102 & 28,102 & 31,199 & 31,199 \\
-Firms & 1,320 & 1,320 & 1,377 & 1,377 \\
+N & 31,199 & 31,199  \\
+Firms & 1,377 & 1,377  \\
 \midrule
-Firm FE / Year-Qtr FE & Yes & Yes & Yes & Yes \\
+Firm FE / Year-Qtr FE & Yes & Yes \\
 \bottomrule\end{tabular}\end{adjustbox}
 \begin{minipage}{\linewidth}\vspace{2pt}\scriptsize\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed); SE clustered by firm.\end{minipage}\end{table}
 
 \clearpage
 
 \begin{table}[htbp]\centering
-\caption{Event Study by Payment Type (placebo): Thesis vs.\ All Deals (stacked)}\label{tab:rob_timing_placebo}
-\scriptsize\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcccc}
+\caption{Event Study by Payment Type (placebo) (All Deals, Stacked)}\label{tab:rob_timing_placebo}
+\scriptsize\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcc}
 \toprule
- & \multicolumn{2}{c}{\textbf{Thesis}} & \multicolumn{2}{c}{\textbf{All deals (stacked)}} \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}
- & Cash & Stock & Cash & Stock \\
+ & \multicolumn{2}{c}{\textbf{All deals (stacked)}} \\
+\cmidrule(lr){2-3}
+ & Cash & Stock \\
 \midrule
 
 
 
 
-PRE2 & 0.0105 & -0.0056 & 0.0100 & 0.0061 \\
- & (0.0174) & (0.0368) & (0.0131) & (0.0316) \\
-PRE1 & \textbf{0.0486}$^{***}$ & -0.0404 & \textbf{0.0401}$^{***}$ & -0.0272 \\
- & (0.0174) & (0.0299) & (0.0145) & (0.0266) \\
-GAP & 0.0058 & 0.0353 & 0.0006 & 0.0312 \\
- & (0.0181) & (0.0318) & (0.0129) & (0.0281) \\
-POST & -0.0195 & -0.0048 & -0.0142 & -0.0198 \\
- & (0.0127) & (0.0246) & (0.0102) & (0.0233) \\
+PRE2 & 0.0100 & 0.0061  \\
+ & (0.0131) & (0.0316)  \\
+PRE1 & \textbf{0.0401}$^{***}$ & -0.0272  \\
+ & (0.0145) & (0.0266)  \\
+GAP & 0.0006 & 0.0312  \\
+ & (0.0129) & (0.0281)  \\
+POST & -0.0142 & -0.0198  \\
+ & (0.0102) & (0.0233)  \\
 \midrule
-Drop: PRE1 $-$ GAP & \textbf{0.0428}$^{*}$ & \textbf{-0.0756}$^{*}$ & \textbf{0.0395}$^{**}$ & \textbf{-0.0585}$^{*}$ \\
- & (0.0221) & (0.0405) & (0.0158) & (0.0355) \\
-Drop: GAP $-$ POST & 0.0253 & 0.0401 & 0.0148 & 0.0510 \\
- & (0.0194) & (0.0382) & (0.0123) & (0.0338) \\
-Drop: PRE1 $-$ POST & \textbf{0.0681}$^{***}$ & -0.0355 & \textbf{0.0543}$^{***}$ & -0.0075 \\
- & (0.0187) & (0.0358) & (0.0137) & (0.0314) \\
-\midrule\multicolumn{5}{l}{\textit{Controls}} \\
-Leverage & \textbf{-0.0372}$^{*}$ & -0.0286 & -0.0269 & -0.0270 \\
- & (0.0211) & (0.0194) & (0.0209) & (0.0191) \\
-lnAssets & -0.0063 & -0.0041 & -0.0011 & -0.0036 \\
- & (0.0080) & (0.0062) & (0.0072) & (0.0061) \\
-TobinsQ & -0.0034 & -0.0018 & -0.0022 & -0.0015 \\
- & (0.0029) & (0.0025) & (0.0027) & (0.0024) \\
-ROA & \textbf{0.0534}$^{*}$ & \textbf{0.0543}$^{*}$ & 0.0471 & \textbf{0.0557}$^{*}$ \\
- & (0.0315) & (0.0293) & (0.0301) & (0.0291) \\
-Capex & 0.0816 & 0.1297 & 0.1243 & 0.1266 \\
- & (0.0993) & (0.0987) & (0.1044) & (0.0981) \\
-DivDummy & -0.0065 & \textbf{-0.0132}$^{*}$ & -0.0093 & \textbf{-0.0134}$^{*}$ \\
- & (0.0100) & (0.0080) & (0.0093) & (0.0079) \\
-sCFO & 0.0049 & -0.0008 & 0.0022 & -0.0005 \\
- & (0.0084) & (0.0110) & (0.0096) & (0.0109) \\
+Drop: PRE1 $-$ GAP & \textbf{0.0395}$^{**}$ & \textbf{-0.0585}$^{*}$  \\
+ & (0.0158) & (0.0355)  \\
+Drop: GAP $-$ POST & 0.0148 & 0.0510  \\
+ & (0.0123) & (0.0338)  \\
+Drop: PRE1 $-$ POST & \textbf{0.0543}$^{***}$ & -0.0075  \\
+ & (0.0137) & (0.0314)  \\
+\midrule\multicolumn{3}{l}{\textit{Controls}} \\
+Leverage & -0.0269 & -0.0270  \\
+ & (0.0209) & (0.0191)  \\
+lnAssets & -0.0011 & -0.0036  \\
+ & (0.0072) & (0.0061)  \\
+TobinsQ & -0.0022 & -0.0015  \\
+ & (0.0027) & (0.0024)  \\
+ROA & 0.0471 & \textbf{0.0557}$^{*}$  \\
+ & (0.0301) & (0.0291)  \\
+Capex & 0.1243 & 0.1266  \\
+ & (0.1044) & (0.0981)  \\
+DivDummy & -0.0093 & \textbf{-0.0134}$^{*}$  \\
+ & (0.0093) & (0.0079)  \\
+sCFO & 0.0022 & -0.0005  \\
+ & (0.0096) & (0.0109)  \\
 \midrule
-N & 29,535 & 39,819 & 32,732 & 40,384 \\
-Firms & 1,326 & 1,363 & 1,379 & 1,383 \\
+N & 32,732 & 40,384  \\
+Firms & 1,379 & 1,383  \\
 \midrule
-Firm FE / Year-Qtr FE & Yes & Yes & Yes & Yes \\
+Firm FE / Year-Qtr FE & Yes & Yes \\
 \bottomrule\end{tabular}\end{adjustbox}
 \begin{minipage}{\linewidth}\vspace{2pt}\scriptsize\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed); SE clustered by firm.\end{minipage}\end{table}
 
 \clearpage
 
-\begin{landscape}
 \begin{table}[htbp]\centering
-\caption{Formal Cash-Specificity (pooled Wald): Thesis (matched) vs.\ All Deals (stacked)}\label{tab:rob_cashspec}
-\scriptsize\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcccccc}
+\caption{Formal Cash-Specificity (pooled Wald) (All Deals, Stacked)}\label{tab:rob_cashspec}
+\scriptsize\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lccc}
 \toprule
- & \multicolumn{3}{c}{\textbf{Thesis (matched)}} & \multicolumn{3}{c}{\textbf{All deals (stacked)}} \\
-\cmidrule(lr){2-4}\cmidrule(lr){5-7}
- & UncRes & CashR(m) & CashR(f) & UncRes & CashR(m) & CashR(f) \\
+ & \multicolumn{3}{c}{\textbf{All deals (stacked)}} \\
+\cmidrule(lr){2-4}
+ & UncRes & CashR(m) & CashR(f) \\
 \midrule
-Pre-announce qtr, Cash & \textbf{0.0459}$^{**}$ & \textbf{0.0056}$^{**}$ & \textbf{0.0049}$^{***}$ & \textbf{0.0447}$^{**}$ & \textbf{0.0061}$^{***}$ & \textbf{0.0046}$^{***}$ \\
- & (0.0185) & (0.0025) & (0.0019) & (0.0180) & (0.0023) & (0.0017) \\
-Pre-announce qtr, Stock & -0.0524 & -0.0008 & -0.0043 & -0.0609 & -0.0010 & -0.0042 \\
- & (0.0436) & (0.0066) & (0.0051) & (0.0385) & (0.0058) & (0.0046) \\
+Pre-announce qtr, Cash & \textbf{0.0447}$^{**}$ & \textbf{0.0061}$^{***}$ & \textbf{0.0046}$^{***}$  \\
+ & (0.0180) & (0.0023) & (0.0017)  \\
+Pre-announce qtr, Stock & -0.0609 & -0.0010 & -0.0042  \\
+ & (0.0385) & (0.0058) & (0.0046)  \\
 \midrule
-Cash $-$ Stock (Wald) & \textbf{0.0983}$^{**}$ & 0.0064 & \textbf{0.0092}$^{*}$ & \textbf{0.1056}$^{**}$ & 0.0071 & \textbf{0.0088}$^{*}$ \\
- & (0.0476) & (0.0071) & (0.0055) & (0.0423) & (0.0062) & (0.0049) \\
+Cash $-$ Stock (Wald) & \textbf{0.1056}$^{**}$ & 0.0071 & \textbf{0.0088}$^{*}$  \\
+ & (0.0423) & (0.0062) & (0.0049)  \\
 \midrule
-\multicolumn{7}{l}{\textit{Controls}} \\
-Leverage & \textbf{-0.0411}$^{*}$ & \textbf{-0.0236}$^{***}$ & \textbf{-0.0194}$^{***}$ & \textbf{-0.0403}$^{*}$ & \textbf{-0.0211}$^{***}$ & \textbf{-0.0193}$^{***}$ \\
- & (0.0230) & (0.0056) & (0.0043) & (0.0237) & (0.0053) & (0.0041) \\
-lnAssets & -0.0034 & -0.0033 & \textbf{-0.0065}$^{***}$ & -0.0010 & \textbf{-0.0037}$^{*}$ & \textbf{-0.0064}$^{***}$ \\
- & (0.0092) & (0.0021) & (0.0011) & (0.0090) & (0.0021) & (0.0011) \\
-TobinsQ & -0.0025 & 0.0007 & \textbf{0.0012}$^{**}$ & -0.0022 & 0.0007 & \textbf{0.0013}$^{**}$ \\
- & (0.0031) & (0.0006) & (0.0005) & (0.0030) & (0.0006) & (0.0005) \\
-ROA & 0.0556 & 0.0046 & 0.0054 & 0.0562 & 0.0061 & 0.0048 \\
- & (0.0355) & (0.0065) & (0.0046) & (0.0350) & (0.0064) & (0.0045) \\
-Capex & 0.0487 & \textbf{-0.1437}$^{***}$ & \textbf{-0.1095}$^{***}$ & 0.1126 & \textbf{-0.1404}$^{***}$ & \textbf{-0.1101}$^{***}$ \\
- & (0.1065) & (0.0148) & (0.0139) & (0.1150) & (0.0139) & (0.0133) \\
-DivDummy & -0.0068 & \textbf{-0.0026}$^{*}$ & -0.0015 & -0.0075 & \textbf{-0.0024}$^{*}$ & -0.0015 \\
- & (0.0109) & (0.0014) & (0.0010) & (0.0105) & (0.0014) & (0.0010) \\
-sCFO & 0.0040 & -0.0008 & 0.0009 & 0.0044 & -0.0007 & 0.0009 \\
- & (0.0088) & (0.0007) & (0.0006) & (0.0090) & (0.0007) & (0.0006) \\
-CashRatio$_{t-1}$ (partial adj.) & --- & \textbf{0.7778}$^{***}$ & \textbf{0.7957}$^{***}$ & --- & \textbf{0.7825}$^{***}$ & \textbf{0.7981}$^{***}$ \\
- &  & (0.0113) & (0.0073) &  & (0.0110) & (0.0070) \\
+\multicolumn{4}{l}{\textit{Controls}} \\
+Leverage & \textbf{-0.0403}$^{*}$ & \textbf{-0.0211}$^{***}$ & \textbf{-0.0193}$^{***}$  \\
+ & (0.0237) & (0.0053) & (0.0041)  \\
+lnAssets & -0.0010 & \textbf{-0.0037}$^{*}$ & \textbf{-0.0064}$^{***}$  \\
+ & (0.0090) & (0.0021) & (0.0011)  \\
+TobinsQ & -0.0022 & 0.0007 & \textbf{0.0013}$^{**}$  \\
+ & (0.0030) & (0.0006) & (0.0005)  \\
+ROA & 0.0562 & 0.0061 & 0.0048  \\
+ & (0.0350) & (0.0064) & (0.0045)  \\
+Capex & 0.1126 & \textbf{-0.1404}$^{***}$ & \textbf{-0.1101}$^{***}$  \\
+ & (0.1150) & (0.0139) & (0.0133)  \\
+DivDummy & -0.0075 & \textbf{-0.0024}$^{*}$ & -0.0015  \\
+ & (0.0105) & (0.0014) & (0.0010)  \\
+sCFO & 0.0044 & -0.0007 & 0.0009  \\
+ & (0.0090) & (0.0007) & (0.0006)  \\
+CashRatio$_{t-1}$ (partial adj.) & --- & \textbf{0.7825}$^{***}$ & \textbf{0.7981}$^{***}$  \\
+ &  & (0.0110) & (0.0070)  \\
 \midrule
-N & 25,600 & 24,347 & 61,876 & 27,095 & 25,782 & 64,928 \\
-Firms & 1,191 & 1,176 & 2,141 & 1,220 & 1,207 & 2,180 \\
+N & 27,095 & 25,782 & 64,928  \\
+Firms & 1,220 & 1,207 & 2,180  \\
 \midrule
-Firm FE / Year-Qtr FE & Yes & Yes & Yes & Yes & Yes & Yes \\
+Firm FE / Year-Qtr FE & Yes & Yes & Yes \\
 \bottomrule\end{tabular}\end{adjustbox}
 \begin{minipage}{\linewidth}\vspace{2pt}\scriptsize\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed); SE clustered by firm.\end{minipage}\end{table}
-\end{landscape}
 
 \clearpage
 

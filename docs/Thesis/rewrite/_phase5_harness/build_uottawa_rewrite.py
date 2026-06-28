@@ -43,6 +43,9 @@ def repoint_45(t):
     t = t.replace(r"\ref{tab:empire_cashspec}", r"\ref{tab:rob_cashspec}")
     t = t.replace("(Logit~A)", r"(Logit~A, Table~\ref{tab:logit_dealnext})")
     t = t.replace("(Logit~B)", r"(Logit~B, Table~\ref{tab:logit_cashstock})")
+    # the first-deal 0.0983 used to sit in the rob table's now-removed Thesis panel; point to the main table
+    t = t.replace(r"first-deal difference of $0.0983^{**}$ ($p=.039$) in the same table.",
+                  r"first-deal difference of $0.0983^{**}$ ($p=.039$) reported in Table~\ref{tab:empire_cashspec}.")
     return t
 
 # Section 2.5 lost its measure-validation content in the phaseB rewrite (4 orphaned tables).
@@ -179,11 +182,48 @@ def fe_row(spec):                                       # one "Firm FE / Year-Qt
 rob = strip_doc(ROB_SRC.read_text(encoding="utf-8", errors="ignore"))
 chunks = [c.strip() for c in rob.split(r"\clearpage") if "\\begin{table}" in c]
 LABELS = ["tab:rob_runup", "tab:rob_timing_matched", "tab:rob_timing_placebo", "tab:rob_cashspec"]
-LAND = {0, 3}                                           # the wide run-up (16-col) + cash-spec (6-col) go landscape
+
+# Drop the redundant first-deal "Thesis" panels (they duplicate the main tables 5.2-5.5); keep only the
+# All-deals columns. Each rob table is [Thesis half | All-deals half]; we keep the second half byte-exact
+# and swap in an all-deals-only header. (Sina 2026-06-28.)
+ADHEAD = {
+ "tab:rob_runup": (8, "lcccccccc",
+   " & \\multicolumn{8}{c}{\\textbf{All deals (stacked)}} \\\\\n\\cmidrule(lr){2-9}\n"
+   " & \\multicolumn{4}{c}{Cash} & \\multicolumn{4}{c}{Stock} \\\\\n\\cmidrule(lr){2-5}\\cmidrule(lr){6-9}\n"
+   " & CshR & UncR & CshSc & HiSc & CshR & UncR & CshSc & HiSc \\\\"),
+ "tab:rob_timing_matched": (2, "lcc",
+   " & \\multicolumn{2}{c}{\\textbf{All deals (stacked)}} \\\\\n\\cmidrule(lr){2-3}\n & UncRes & CashR \\\\"),
+ "tab:rob_timing_placebo": (2, "lcc",
+   " & \\multicolumn{2}{c}{\\textbf{All deals (stacked)}} \\\\\n\\cmidrule(lr){2-3}\n & Cash & Stock \\\\"),
+ "tab:rob_cashspec": (3, "lccc",
+   " & \\multicolumn{3}{c}{\\textbf{All deals (stacked)}} \\\\\n\\cmidrule(lr){2-4}\n & UncRes & CashR(m) & CashR(f) \\\\"),
+}
+def drop_thesis_panel(c, lab):
+    keep, newspec, newhead = ADHEAD[lab]
+    c = re.sub(r"\\begin\{tabular\}\{[lc]+\}", "\\\\begin{tabular}{%s}" % newspec, c, count=1)
+    c = re.sub(r"\\toprule.*?\\midrule", lambda m: "\\toprule\n" + newhead + "\n\\midrule", c, count=1, flags=re.S)
+    c = re.sub(r"\\multicolumn\{\d+\}\{l\}", "\\\\multicolumn{%d}{l}" % (keep + 1), c)   # Controls-panel span
+    c = re.sub(r":?\s*Thesis[^}]*?All Deals \(stacked\)\}", " (All Deals, Stacked)}", c)  # caption
+    out, in_body = [], False
+    for line in c.split("\n"):
+        s = line.strip()
+        if s == "\\midrule":
+            in_body = True; out.append(line); continue
+        if "\\bottomrule" in line:
+            in_body = False; out.append(line); continue
+        if in_body and "&" in line and "multicolumn" not in line and line.rstrip().endswith("\\\\"):
+            cells = line.rstrip()[:-2].split("&")
+            if len(cells) > keep:
+                line = "&".join([cells[0]] + cells[-keep:]) + " \\\\"
+        out.append(line)
+    return "\n".join(out)
+
+LAND = {0}                                              # only the run-up table (now 8-col) stays landscape
 robtex = []
 for k, (c, lab) in enumerate(zip(chunks, LABELS)):
     c = c.replace(r"\begin{table}[H]", r"\begin{table}[htbp]")          # float[H] needs a package we don't load
     c = re.sub(r"\\caption\{Table 5\.\d+ --- ", r"\\caption{", c)       # drop the hardcoded "Table 5.x" prefix
+    c = drop_thesis_panel(c, lab)                                       # keep only the all-deals columns
     c = re.sub(r"(\\caption\{[^}]*\})", r"\1\\label{%s}" % lab, c, count=1)
     spec = re.search(r"\\begin\{tabular\}\{([lc]+)\}", c).group(1)
     c = c.replace(r"\bottomrule", fe_row(spec) + r"\bottomrule", 1)
@@ -228,7 +268,7 @@ print("spliced Chapter-2 + added 5 bibitems; wrapper now %d chars" % len(wrap_ne
 
 # ---- 4. compile (pdflatex x3 for TOC / List of Tables / refs; manual bib, no bibtex) ----
 # Use a distinct -jobname so a viewer holding thesis_draft_uottawa.pdf open never blocks the write.
-JOB = "thesis_uottawa_rev"
+JOB = "thesis_uottawa_rev2"
 ok = True
 for p in range(3):
     r = subprocess.run(["pdflatex", "-interaction=nonstopmode", "-jobname", JOB, "thesis_draft_uottawa.tex"],
