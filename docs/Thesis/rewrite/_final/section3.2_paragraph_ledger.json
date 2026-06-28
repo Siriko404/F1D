@@ -124,7 +124,8 @@
         ]
       },
       "serves": [
-        "delivers the C2 positive; pays off H1 (theta_-1>0); the first empirical pillar; feeds the magnitude (PARA4) and contrasts with the comparison (PARA5)"
+        "delivers the C2 positive; pays off H1 (theta_-1>0); the first empirical pillar; feeds the magnitude (PARA4) and contrasts with the comparison (PARA5)",
+        "Robustified across all deals in §4.5 (run-up survives; see 4.5-PARA1)."
       ],
       "boundary": "Cash-arm result only; the sample-comparability caveat (PARA3), magnitude (PARA4), and comparison (PARA5) are separate paragraphs. No formal cash-vs-stock test here (3.4).",
       "thin_claim": "In the cash arm both clocks move in the final pre-announcement quarter; the residual elevation survives two-tailed at <.01.",

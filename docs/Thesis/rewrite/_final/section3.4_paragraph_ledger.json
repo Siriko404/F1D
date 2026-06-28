@@ -66,7 +66,8 @@
         ]
       },
       "serves": [
-        "motivates the formal test descriptively; consumes the comparison stock column reserved from 3.3"
+        "motivates the formal test descriptively; consumes the comparison stock column reserved from 3.3",
+        "Robustified across all deals in §4.5 (descriptive cash/stock asymmetry holds; see 4.5-PARA2)."
       ],
       "boundary": "Descriptive side-by-side only; explicitly NOT the formal test (that is PARA3). Uses the comparison STOCK column, complementing 3.3's CASH-column use.",
       "thin_claim": "Side by side on the comparison, only the cash arm moves; the stock arm shows no run-up and if anything moves the other way; descriptive, not the test.",
@@ -209,7 +210,8 @@
         ]
       },
       "serves": [
-        "delivers C6; pays off H1a (formal cash-minus-stock difference 0.0983** at 5%) as concentration, not strict specificity"
+        "delivers C6; pays off H1a (formal cash-minus-stock difference 0.0983** at 5%) as concentration, not strict specificity",
+        "Robustified across all deals in §4.5 (formal cash-minus-stock Wald holds and is larger, 0.1056**; see 4.5-PARA3)."
       ],
       "boundary": "The EFFECT (uncertainty run-up) only; the CAUSE leg (PARA4) and the hedge (PARA5) are separate. SD basis is the resolved 0.3010.",
       "thin_claim": "The formal cash-minus-stock Wald difference on the EFFECT is 0.0983**, valid at 5% two-tailed; the cash-specificity claim, framed as concentration.",
@@ -304,7 +306,8 @@
         ]
       },
       "serves": [
-        "delivers the failing CAUSE leg; keeps the war-chest mechanism open (mechanism-open lock)"
+        "delivers the failing CAUSE leg; keeps the war-chest mechanism open (mechanism-open lock)",
+        "Across all deals in §4.5 the war-chest CAUSE stays insignificant (0.0071 n.s.; mechanism-open preserved); see 4.5-PARA3."
       ],
       "boundary": "The CAUSE (cash build-up) only; the EFFECT is PARA3's. No mechanism is asserted.",
       "thin_claim": "The cash build-up itself is not cash-specific (0.0064 n.s. matched, 0.0092* full); the war-chest mechanism stays open.",

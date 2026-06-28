@@ -200,7 +200,8 @@
         ]
       },
       "serves": [
-        "delivers the C1/H1b core; pays off H1b (theta_-1>0, theta_gap=0, kappa_gap>0 read off the null PRE1-GAP decline)"
+        "delivers the C1/H1b core; pays off H1b (theta_-1>0, theta_gap=0, kappa_gap>0 read off the null PRE1-GAP decline)",
+        "Robustified across all deals in §4.5 (matched-universe round-trip survives; see 4.5-PARA2)."
       ],
       "boundary": "The two diverging legs led by the GAP contrast; the round-trip magnitude (PARA4), comparison corroboration (PARA5), and over-reading caveat (PARA6) are separate.",
       "thin_claim": "Uncertainty resolves at the GAP (PRE1-GAP drop 0.0455**) while the cash ratio does not fall at announcement and declines only at completion (GAP-POST 0.0210***); the contrast is the claim.",
@@ -303,7 +304,8 @@
         ]
       },
       "serves": [
-        "quantifies the round trip and ties MA2 to MA1; supports C1 without displacing the GAP contrast"
+        "quantifies the round trip and ties MA2 to MA1; supports C1 without displacing the GAP contrast",
+        "Robustified across all deals in §4.5 (round-trip magnitude survives; see 4.5-PARA2)."
       ],
       "boundary": "Magnitude and the MA1 tie only; secondary to the GAP contrast (PARA3). SD basis is the resolved 0.3010, applied as a disclosed approximation on the matched universe.",
       "thin_claim": "The entry spike is the same event as MA1 (~15.7% of a residual SD); the round-trip peak-to-post swing (0.0723***) fully unwinds it.",
@@ -388,7 +390,8 @@
         ]
       },
       "serves": [
-        "independent second-sample corroboration of C1's round trip; preserves the 3.4 reservation of the stock column"
+        "independent second-sample corroboration of C1's round trip; preserves the 3.4 reservation of the stock column",
+        "Robustified across all deals in §4.5 (cash-arm round-trip survives; see 4.5-PARA2)."
       ],
       "boundary": "Comparison CASH column only; the stock column and the cash-vs-stock contrast are 3.4's. Comparison cash N is 29,535, distinct from matched 28,102.",
       "thin_claim": "The comparison cash arm reproduces the round trip on its own universe (29,535 / 1,326 firms): PRE1 0.0486***, GAP 0.0058 n.s., peak-to-post 0.0681***.",

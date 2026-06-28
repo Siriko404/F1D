@@ -244,7 +244,7 @@
       "order": 5,
       "lit_body": "homeless items: inference, contamination, functional form",
       "intent": "Disclose/justify/flag the inference and design threats that don't belong to a single equation.",
-      "serves": "Referee-proofs the design spine; routes rerun-class risks to the user.",
+      "serves": "Referee-proofs the design spine; routes rerun-class risks to the user. The first-deal contamination threat disclosed here (P5.2) is addressed by the all-deals robustness in §4.5, where the run-up, timing, and cash-concentration results survive dropping the first-deal restriction.",
       "boundary": "Inference + design threats only.",
       "thin_claim": "Disclose honestly; rerun-class items flagged, not silently resolved.",
       "guardrails": [
