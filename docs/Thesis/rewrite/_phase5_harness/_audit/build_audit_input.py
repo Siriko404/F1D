@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 C = Path(r"C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D-phase3\docs\Thesis\_uottawa_rewrite")
 flat = (C / "_thesis_FLAT.tex").read_text(encoding="utf-8")
-aux = (C / "thesis_flat.aux").read_text(encoding="utf-8", errors="ignore")
+aux = (C / "thesis_draft_uottawa.aux").read_text(encoding="utf-8", errors="ignore")
 
 # ---- auto reference key ----
 labelnum = {m.group(1): m.group(2) for m in re.finditer(r"\\newlabel\{(tab:[^}]+)\}\{\{([^}]+)\}", aux)}

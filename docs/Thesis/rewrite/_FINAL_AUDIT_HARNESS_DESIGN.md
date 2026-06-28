@@ -52,24 +52,28 @@ VIII. METHODOLOGICAL DEFENSIBILITY (examiner mindset)
   31 do the caveats actually cover the inferential threats? any claim stronger than the design supports?
   32 robustness coverage adequate for an examiner; any glaring omission?   33 limitations honest + complete
 
-## ARCHITECTURE -- 4 layers: deterministic -> find -> adversarially verify -> completeness-critic -> synthesize
-LAYER 0  DETERMINISTIC (scripts; 100% reliable for what they cover): orphan.py, check_coherence.py,
-  destars_verify.py, floor_inventory.py + a STRENGTHENED number-provenance script (extract every prose
-  number + every table cell; flag any prose number absent from every table = fabricated/mistyped). Certainty
-  layer; frees agents for judgment.
-LAYER 1  FINDERS (~10 parallel referees, one per dimension, each reads the audit file, agentType=Explore):
-  numbers (I) | honesty-floor (II) | coherence (III) | completeness (IV) | citations+defs (V) | style/
-  notation (VI) | typesetting (VII) | methodology/examiner (VIII) | abstract<->body<->conclusion alignment |
-  attribution-extractor (V.23). Each emits FINDINGS {dimension, location, severity, problem, evidence[verbatim
-  quotes], best_fix, fix_rationale, fix_evidence[]} AND a CLEAN-BILL list (what it checked and passed, with why).
-LAYER 2  ADVERSARIAL VERIFY (>=2 independent skeptics per finding; pipeline so each finder streams into verify):
-  re-derive the finding FROM THE FILE, vote real/not-real, assign confidence, and stress-test the proposed fix
-  (is it correct? does it preserve the floor + every number?). CONSERVATIVE: downgrade confidence, never
-  silently drop -- an audit keeps plausible flags.
-LAYER 3  COMPLETENESS CRITIC (1-2 agents, LOOP-UNTIL-2-DRY): "what dimension/section/claim was NOT covered or
-  NOT verified?" -> targeted re-find; repeat until two consecutive empty rounds. This is the guard for "all
-  aspects I don't remember."
-SYNTHESIS (me, deterministic): dedupe across layers, severity-rank, and write the report. NO fix applied.
+## ARCHITECTURE v2 -- LEAN: 7 parallel referees (Sina cap: 40 was too much)
+LAYER 0  DETERMINISTIC (scripts; 0 agents; 100% reliable for what they cover): orphan.py, check_coherence.py,
+  destars_verify.py, floor_inventory.py + a STRENGTHENED number script (provenance to the SPECIFIC \ref'd
+  table + RECOMPUTE every derived number). Owns the FATAL numeric dimension with certainty.
+LAYER 1  7 REFEREE agents (ONE parallel wave; each reads the single audit file; SELF-ADVERSARIAL = must
+  refute each finding before logging; agentType=Explore):
+   1 Numbers & Tables (aspects 1-5; cross-checks + extends Layer 0 -- catches semantic numeric: "rises" vs a
+     negative coef, wrong direction, mislabeled tail)
+   2 Honesty floor (6-10)        3 Coherence & narrative + abstract<->body<->conclusion (11,12,15)
+   4 Completeness & hypothesis<->test (13,14,16-20)     5 Citations & attribution + external-claim extractor (21-24)
+   6 Style, notation & terminology (25-28)     7 Methodology / examiner-defensibility + typesetting (29-33)
+  Each emits FINDINGS {dimension, location, severity, problem, evidence[verbatim], best_fix, fix_rationale,
+  fix_evidence[], confidence} + a CLEAN-BILL {what checked, why it passed} + a COMPLETENESS self-sweep
+  {what in my dimension might I have missed?}.
+LAYER 2  VERIFY (no 40-agent fan-out): (a) Layer 0 scripts machine-verify all numeric/structural findings;
+  (b) I adjudicate every semantic finding against the flat file; (c) re-spawn ONE targeted referee if a
+  dimension reads thin (the only conditional extra agent).
+LAYER 3  ADVISOR hardnosed-checks my synthesized report -- the independent verify of the audit itself.
+SYNTHESIS (me): dedupe, severity-rank, write the report. NO fix applied.
+TRADEOFF (honest): 7 drops the redundant BLIND second finder + the critic loop of the 40-design, so it is
+  marginally weaker on false negatives. Recovered by: determinism on the fatal dimension + each referee's
+  self-completeness sweep + advisor + targeted re-spawn. Sina chose cost over the extra redundancy.
 
 ## OUTPUT -- the AUDIT REPORT (what earns "I don't have to read it again")
 1 COVERAGE MANIFEST: dimension x section grid -- who checked each cell, by what method. Proves exhaustiveness.
