@@ -137,14 +137,30 @@ async function auditSection(prev) {
   return { section: brief.section, status: 'OK', final, flags: g.flags, audit_count: allIssues.length };
 }
 
-// ---- run: args.only lets us run §4.5 ALONE first (its own invocation), read it, THEN release the rest ----
+// ---- run: 3 PARALLEL TEAMS, each owning a section-group (Sina's design). Rate-limit-safe:
+// only 3 streams run at once (one section per team in flight), not a 51-agent fan-out (lessons B5).
 let A = args; if (typeof A === 'string') { try { A = JSON.parse(A); } catch (e) { A = {}; } } A = A || {};
 const ONLY = Array.isArray(A.only) ? A.only : (A.only ? [A.only] : null);
-const ORDER = ['section4.5', ...BRIEFS.map(b => b.stem).filter(s => s !== 'section4.5')];
-let ordered = ORDER.map(s => BRIEFS.find(b => b.stem === s)).filter(Boolean);
-if (ONLY) ordered = ordered.filter(b => ONLY.includes(b.stem) || ONLY.includes(b.section));
-log(`prose harness: ${ordered.length} section(s)` + (ONLY ? ` [only: ${ONLY.join(',')}]` : ', Sec.4.5 first'));
-const results = await pipeline(ordered, writeSection, auditSection);
+const TEAMS = [
+  { name: 'T1-framework', stems: ['section2.1', 'section2.2', 'section2.3', 'section2.4', 'section2.5'] },
+  { name: 'T2-results', stems: ['section3.1', 'section3.2', 'section3.3', 'section3.4', 'section4.1', 'section4.2', 'section4.3', 'section4.4', 'section4.5'] },
+  { name: 'T3-framing', stems: ['section_abstract', 'section1', 'section5'] },
+];
+// each team processes its sections SEQUENTIALLY (one in flight at a time -> peak ~1 section's agents per team);
+// the 3 teams run CONCURRENTLY. A section still gets the full 4-layer + gates.
+async function runTeam(team) {
+  const out = [];
+  for (const stem of team.stems) {
+    if (ONLY && !ONLY.includes(stem)) continue;
+    const brief = BRIEFS.find(b => b.stem === stem);
+    if (!brief) continue;
+    log(`[${team.name}] ${stem}`);
+    out.push(await auditSection(await writeSection(brief)));
+  }
+  return out;
+}
+log(`prose harness: 3 parallel teams` + (ONLY ? ` [only: ${ONLY.join(',')}]` : ''));
+const results = (await parallel(TEAMS.map(t => () => runTeam(t)))).flat();
 const ok = results.filter(r => r && r.status === 'OK');
 const blocked = results.filter(r => r && r.status === 'BLOCKED');
 log(`DONE: ${ok.length} OK, ${blocked.length} BLOCKED`);
