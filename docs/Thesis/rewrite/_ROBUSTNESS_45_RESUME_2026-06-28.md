@@ -1,17 +1,27 @@
 # §4.5 ROBUSTNESS-INSERT + FE — RESUME 2026-06-28
 
 ## ⛳ NEXT-SESSION ENTRY POINT — read FIRST
-The §4.5 robustness subsection is BUILT as a proposal + GATE-passed, but **NOT yet placed into the live thesis**.
-Two steps remain, IN ORDER:
-1. **PLACE** `_final/_proposals/section4.5_MERGED.json` → real `_final/section4.5_paragraph_ledger.json`
-   (a NEW file — safe, nothing overwritten). Re-run the §4.5 PLACEMENT GATE (below) on the placed file.
-2. **WIRE** the forward-pointers into the LIVE `_final/section3.2/3.3/3.4` + `section2.4` (P5.2) ledgers.
-   ⚠ THIS IS THE FIRST EDIT TO REAL, COMMITTED, AUDITED LEDGERS → own exact-match + GATE + **Sina sign-off**.
-   Pointer text: "...holds across all deals (§4.5)"; §2.4 P5.2 gets "...this disclosed threat is answered by §4.5".
-Then (later, PROSE phase): write `final_prose` incl. the RATIFIED caveat-2 + the 6 framing drafts (Sina authors load-bearing).
+§4.5 is now PLACED + WIRED into the live thesis. **PLACE (step 1) DONE `5f831e7c`; WIRE (step 2) DONE `b9c2b83d`.**
+- **PLACE**: `section4.5_MERGED.json` → live `_final/section4.5_paragraph_ledger.json` (new file). PLACEMENT GATE 18/18.
+  At source, also: inserted the 6 per-prop `reason` fields agents dropped (universal in all 80 live props; build-time
+  chain-ordering scaffolding, NOT BIMODAL prose; authored within-chain-ordering register only) + reordered keys to
+  canonical Format-B. MERGED == placed byte-identical (single source of truth).
+- **WIRE**: appended ONE §4.5 forward-pointer to each target paragraph's `serves` (the audit-safe home — corpus keeps
+  cross-refs in scaffolding, never in frozen `statement`s). 8 appends across `section3.2/3.3/3.4` + `section2.4` P5,
+  mirroring the §4.5 depends_on back-edges. **7 §3 targets, not 6**: the prior list missed `3.4-PARA4` (the war-chest
+  CAUSE, cited by 4.5-PARA3-a as staying 0.0071 n.s.) — wired as cause-stays-open, mechanism-open preserved.
+  GATE: every statement byte-identical pre/post, every non-target paragraph untouched, proper §, fully git-reversible.
 
-§4.5 PLACEMENT GATE: valid Format-B · 6 props · exact field-order · final_prose="" · numbers==.tex ·
-every depends_on resolves in LIVE ledgers · 0 honesty/interp violations · honest meta (no false 74b7a0f8 provenance).
+**What remains, IN ORDER:**
+1. **CHAIN RATIFICATION** — §4.5 is still flagged `PROPOSAL` (prose_gate all_supported/unlocked=false). Sina reviews the
+   6-prop chain incl. the 6 authored `reason` strings (shown in the PLACE turn) + the 8 serves pointers; then unlock.
+2. **PROSE phase** — write `final_prose` for all 79 paras incl. §4.5's 3 paras + the RATIFIED caveat-2 + 6 framing drafts
+   (Sina authors load-bearing claims, BIMODAL). The 6 framing drafts live in the agent reports + the spec.
+3. **TABLES** — when §4.5 tables enter the thesis, add the `Firm + Year-Qtr FE: Yes` row to 5.2–5.5 (rob PDF omitted it).
+
+§4.5 PLACEMENT GATE (passed 18/18): valid Format-B · 6 props · para+prop key-order == sibling 4.4 · final_prose="" ·
+numbers frozen+verified-at-build vs rob_4tables.tex · every depends_on resolves in LIVE ledgers · 0 honesty/interp
+violations · honest PROPOSAL meta (no false 74b7a0f8 provenance). Scripts: scratchpad `normalize_place_45.py`, `wire_45.py`.
 
 ## WHAT THIS SESSION DID
 Place 2 orphaned logit tests + the all-deals robustness tables (in `docs/Thesis/rob_ALL.pdf`) into the thesis.
