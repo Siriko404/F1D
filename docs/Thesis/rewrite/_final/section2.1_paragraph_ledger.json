@@ -55,6 +55,18 @@
             "key": "verrecchia1983",
             "ref": "Verrecchia (1983), JAE 5:179-194",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "b919b243-8399-4230-8bbc-c352fffb47d7",
+              "title": "1-s2.0-0165410183900113-main.pdf"
+            },
+            "query": "Reading only this paper, \"Discretionary Disclosure\" by Verrecchia (1983, Journal of Accounting and Economics): under what conditions, if any, does it conclude that a manager who possesses private information will choose not to disclose that information? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "Verbatim spans n=5/n=6/n=8: an informed manager withholds below a threshold when a proprietary (disclosure) cost exists (p.182 §1; p.190 §4; p.192 §5).",
+            "_evidence_ref": "appendix:P1.1",
+            "evidence_quotes": "In Verrecchia (1983), a manager who possesses private information will choose not to disclose it when two primary conditions are met: there is a positive disclosure-related cost (termed a **\"proprietary cost\"**), and the value of the information observed falls below a specific **\"threshold level of disclosure\"** [1, 2]. This proprietary cost can include both the physical cost of dissemination and the strategic cost of revealing sensitive data that could be used against the firm by competitors or labor unions [1, 3]. Because of this cost, the market cannot conclude that silence unambiguously signals the worst possible news [4]. Instead, the manager will rationally withhold information if it is either outright \"bad news,\" or if it is \"good news\" that is not favorable enough to justify paying the proprietary cost to reveal it [5]. \n\nHere are the specific sentences quoted from the paper that support this conclusion, along with their exact page numbers and section headings:\n\n*   \"If a proprietary cost exists and information is withheld, traders are unsure whether it was withheld because: (i) the information represents ‘bad news’, or (ii) the information represents ‘good news’, but not sufficiently good news to warrant incurring the proprietary cost.\" [5]\n    *   **Page:** 182\n    *   **Section:** 1. Introduction\n\n*   \"An intuitive explanation of the Theorem is that when a proprietary cost exists, a manager maximizes the price of a risky asset by disclosing what he observes only when the realization y\"= y is sufficiently high to overcome the cost associated with its disclosure.\" [6] \n    *   **Page:** 190\n    *   **Section:** 4. The existence of a discretionary disclosure equilibrium\n\n*   \"An equilibrium threshold level of disclosure is a point below which a manager’s motivation to withhold information is consistent with traders’ conjecture as to how to interpret that action.\" [7]\n    *   **Page:** 192\n    *   **Section:** 5. Conclusion\n\n*   \"This result relies on the existence of a cost associated with the disclosure of information.\" [8]\n    *   **Page:** 192\n    *   **Section:** 5. Conclusion"
           }
         },
         {
@@ -66,6 +78,18 @@
             "key": "dye1985",
             "ref": "Dye (1985), JAR 23(1):123-145",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "1fd937e7-d055-4b0e-8c17-ea6df60969d4",
+              "title": "Dye-DisclosureNonproprietaryInformation-1985.pdf"
+            },
+            "query": "Reading only this paper, \"Disclosure of Nonproprietary Information\" by Dye (1985, Journal of Accounting Research): what determines whether a manager discloses or withholds the information it may have, and what role does the possibility that the manager is uninformed play in sustaining non-disclosure? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "Verbatim span n=8 ('a policy of complete disclosure ... is hence not an equilibrium') + n=4 (manager informed only with prob (1-p)): non-disclosure is sustained because investors cannot tell an uninformed manager from one withholding.",
+            "_evidence_ref": "appendix:P1.2",
+            "evidence_quotes": "In Dye (1985), a manager's decision to disclose or withhold nonproprietary information is determined by two main factors: **whether the market is uncertain about the manager actually possessing the information**, and **whether the disclosure would adversely affect the manager's compensation contract** [1-3]. \n\nThe possibility that a manager might simply be uninformed plays a crucial role in sustaining non-disclosure because it allows the manager to suppress bad news [4, 5]. Because a manager cannot credibly prove that they have not received information, investors observing silence cannot tell whether the manager is intentionally hiding bad news or genuinely has nothing to report [4]. Consequently, **the market cannot assume the absolute worst when a manager is silent, allowing the manager to rationally withhold unfavorable information** [4, 6, 7]. Due to this uncertainty, a policy of complete, full disclosure is never an equilibrium [8]. Furthermore, if investors *do* know the manager possesses information, **the manager may withhold it because early disclosure would override the firm's stock price, thereby destroying the informational value of the stock price that is otherwise useful for evaluating the manager in their compensation contract** [3].\n\nHere are the specific sentences quoted from the paper that support this conclusion, along with their exact page numbers and section headings:\n\n*   \"A legitimate explanation for the nondisclosure of management's non-proprietary information arises from the fact that investors are often unsure whether the manager has any such information-or, more generally, are uncertain about the kind of information held by management.\" [1]\n    *   **Page:** 126\n    *   **Section:** 2. Amended Disclosure Principle\n\n*   \"If he announces nothing, the investors cannot discern whether he has received information but chosen not to release it or whether he has not received information.\" [4]\n    *   **Page:** 127\n    *   **Section:** 3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown\n\n*   \"The economically interesting conclusion of Theorem 1 is that no policy of full disclosure is an equilibrium when investors may be unaware that managers have received any private information, given that (as assumed above) managers cannot make credible announcements that they have not received information.\" [8]\n    *   **Page:** 129\n    *   **Section:** 3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown\n\n*   \"According to Theorem 1, the manager may suppress the release of bad news because investors are unaware that the manager has any news.\" [5]\n    *   **Page:** 129\n    *   **Section:** 3. Disclosure Policies When Managers' Endowment(s) of Information Are Unknown\n\n*   \"The conjunction of these three conditions implies that the release of the information held by the manager must alter his compensation (with positive probability).\" [2]\n    *   **Page:** 130\n    *   **Section:** 4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information\n\n*   \"If the manager discloses the firm's output prior to the time this information (held by investors) is received, then the price of the firm will be determined by this announcement and will reveal little about the information held by investors.\" [3]\n    *   **Page:** 137\n    *   **Section:** 4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information\n\n*   \"In short, the manager's release of information destroys other information, and this is the reason that the early release is undesirable.\" [3]\n    *   **Page:** 137\n    *   **Section:** 4. Disclosure Policies When Managers Are Known to Possess Nonproprietary Information"
           }
         },
         {
@@ -77,6 +101,23 @@
             "key": "basic_v_levinson",
             "ref": "Basic Inc. v. Levinson, 485 U.S. 224 (1988)",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "type": "legal-primary",
+            "parts": [
+              {
+                "part": "basic-materiality",
+                "source": {
+                  "id": "98028735-470d-40b3-ae45-bbca761271f9",
+                  "title": "service-ll-usrep-usrep485-usrep485224-usrep485224.pdf"
+                },
+                "query": "Reading only this paper, the U.S. Supreme Court opinion in Basic Inc. v. Levinson, 485 U.S. 224 (1988): on what conditions, if any, does the Court conclude that information about preliminary or pending merger negotiations can be material to investors before a definitive agreement is reached, and what test or standard governs that materiality determination? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears."
+              }
+            ],
+            "verdict": "SUPPORTED",
+            "verdict_note": "Basic v. Levinson: preliminary/pending merger negotiations CAN be material before a definitive agreement; materiality = probability x magnitude balancing, case-by-case, no bright line (p.238 §III-C; p.250 §V). NB: on the scanned U.S. Reports PDF the structured citations landed on running headers, so the decisive quotes are answer-sourced + round-trip pinned (span_pins) -- canonical holding.",
+            "_evidence_ref": "appendix:P1.3"
           }
         },
         {
@@ -88,6 +129,31 @@
             "key": "basic_v_levinson + rule_10b5",
             "ref": "Basic Inc. v. Levinson, 485 U.S. 224 (1988) ('silence, absent a duty to disclose, is not misleading'); Rule 10b-5, 17 C.F.R. §240.10b-5",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "type": "legal-primary",
+            "parts": [
+              {
+                "part": "basic-silence-duty",
+                "source": {
+                  "id": "98028735-470d-40b3-ae45-bbca761271f9",
+                  "title": "service-ll-usrep-usrep485-usrep485224-usrep485224.pdf"
+                },
+                "query": "Reading only this paper, the U.S. Supreme Court opinion in Basic Inc. v. Levinson, 485 U.S. 224 (1988): what does the opinion say about whether a company has a duty to disclose information, about whether silence is or is not misleading, and about liability for making statements that are untrue or misleading? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears."
+              },
+              {
+                "part": "rule-10b5-halftruth",
+                "source": {
+                  "id": "b19a6e99-b9f2-4e0a-b1b0-83089f568569",
+                  "title": "CFR-2014-title17-vol4-sec240-10b-5.pdf"
+                },
+                "query": "Reading only this paper, Rule 10b-5 (17 C.F.R. 240.10b-5), \"Employment of manipulative and deceptive devices\": what conduct does this rule prohibit regarding untrue statements of material fact, and regarding omitting a material fact necessary to make statements not misleading, in connection with the purchase or sale of a security? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears."
+              }
+            ],
+            "verdict": "SUPPORTED",
+            "verdict_note": "Basic v. Levinson: no general duty to disclose confidential negotiations; 'Silence, absent a duty to disclose, is not misleading under Rule 10b-5' (p.239 fn17, §III-C); but a voluntary statement may not be 'so incomplete as to mislead' (p.229, §I). Rule 10b-5(b): unlawful to omit a material fact needed to make statements not misleading (p.79). => firm may stay silent but may not mislead; denial is not lawful.",
+            "_evidence_ref": "appendix:P1.4"
           }
         }
       ],
@@ -122,6 +188,18 @@
             "doi": "10.2308/accr-10034",
             "nlm_source_id": "a1dacc9f-2bee-46ba-9261-496fd687c8e6",
             "upload_status": "UPLOADED + NLM-identity-VERIFIED 2026-06-12 (notebook title 'EBSCO-FullText-06_12_2026.pdf', newest of 2 duplicate copies)"
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "a1dacc9f-2bee-46ba-9261-496fd687c8e6",
+              "title": "EBSCO-FullText-06_12_2026.pdf"
+            },
+            "query": "Reading only this paper, \"What Makes Conference Calls Useful? The Information Content of Managers' Presentations and Analysts' Discussion Sessions\" by Matsumoto, Pronk and Roelofsen (2011, The Accounting Review): does it reach a conclusion about whether the analysts' discussion (question-and-answer) portion of a conference call carries information content beyond the managers' presentation portion, and which of the two portions it finds more informative? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "Matsumoto, Pronk & Roelofsen (2011): the analysts' discussion (Q&A) segment carries information content incremental to the managers' presentation, and is MORE informative than the presentation. Verbatim fragment n6 ('...in the case of the discussion, over information released...') + the decisive conclusion sentence round-trip pinned (span_pin, p.1411 VI. Conclusion); empirical result at p.1396 IV. NB: the P2 PROSE uses the span-backed 'information content beyond the presentation' (n6); the stronger 'greater than the presentation' is answer-pinned only (no cited_text span) so it is kept OUT of the prose per E3.5 -- the citation stays accurate (greater IS Matsumoto's finding).",
+            "_evidence_ref": "appendix:P2.1",
+            "evidence_quotes": "The paper concludes that the analysts' discussion (question-and-answer) portion of a conference call does indeed carry information content beyond the managers' presentation portion [1]. Furthermore, the study determines that the analysts' discussion portion is relatively **more informative** than the managers' presentation [2-5]. \n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the discussion portion carrying incremental information beyond the presentation:**\n*   \"More importantly, the intercepts in both equations are positive and statistically significant, indicating that both the presentation and discussion segments have incremental information content over the accompanying press release and, in the case of the discussion, over information released during the presentation.\" [1, 6]\n    *   **Page:** 1396\n    *   **Section:** IV. EMPIRICAL DESIGN AND RESULTS (Subsection: Information Content of Presentation and Discussion Sessions)\n\n**On the discussion portion being more informative than the presentation:**\n*   \"However, we find statistically greater abnormal absolute returns during the discussion portion of the call relative to the presentation, suggesting that the discussion portion is relatively more informative.\" [3]\n    *   **Page:** 1384\n    *   **Section:** I. INTRODUCTION\n*   \"More importantly, the intercept is negative and statistically significant, consistent with the discussion segment of the call having greater information content than the presentation.\" [4]\n    *   **Page:** 1396\n    *   **Section:** IV. EMPIRICAL DESIGN AND RESULTS (Subsection: Information Content of Presentation and Discussion Sessions)\n*   \"We find that both presentations and discussions are incrementally informative, but that discussion periods have greater information content than presentations.\" [5]\n    *   **Page:** 1411\n    *   **Section:** VI. CONCLUSION"
           }
         },
         {
@@ -133,6 +211,18 @@
             "key": "lm2011",
             "ref": "Loughran & McDonald (2011), 'When Is a Liability Not a Liability? Textual Analysis, Dictionaries, and 10-Ks', Journal of Finance 66(1):35-65",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "105d4cef-bf78-45d2-b88f-5cc395b81298",
+              "title": "The Journal of Finance - 2011 - LOUGHRAN - When Is a Liability Not a Liability  Textual Analysis  Dictionaries  and 10‐Ks (1).pdf"
+            },
+            "query": "Reading only this paper, \"When Is a Liability Not a Liability? Textual Analysis, Dictionaries, and 10-Ks\" by Loughran and McDonald (2011, Journal of Finance): what does it conclude about whether word lists developed outside of finance misclassify words when applied to financial text, and does it construct finance-specific word lists -- including a category capturing uncertainty -- for classifying financial disclosures? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "Loughran & McDonald (2011): word lists from other disciplines misclassify financial text -- 73.8% of Harvard 'negative' words are not negative in finance (verbatim span n4, p.36) and 'high misclassification rate and spurious correlations' (verbatim span n3, p.62 V. Conclusions); LM build finance-specific lists INCLUDING uncertainty (verbatim span n6, p.37), and the Fin-Unc uncertainty list = 285 words (verbatim span n8, p.45 III. Textual Analysis and Word Lists). Instrument provenance bulletproof; 'uncertainty is informative' rides as bonus per design (verdict does not hinge on it). Decisive spans are themselves verbatim -- no pin needed.",
+            "_evidence_ref": "appendix:P2.2",
+            "evidence_quotes": "In Loughran and McDonald (2011), the authors conclude that word lists developed for other disciplines (such as psychology and sociology) **substantially misclassify common words when applied to financial text**, which can lead to noisy measurements and spurious correlations [1-3]. Specifically, they find that nearly three-fourths of the words identified as negative by the widely used Harvard Dictionary are not actually negative in a business or financial context [1, 4]. \n\nTo address this, the authors **construct their own finance-specific word lists** to better reflect the tone in financial disclosures [1, 5]. In addition to a comprehensive list of negative financial words, they create five other specific dictionaries, **including a category specifically designed to capture uncertainty** (alongside positive, litigious, strong modal, and weak modal categories) [6-8].\n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the misclassification of outside word lists:**\n\n*   \"We show that word lists developed for other disciplines misclassify common words in financial text.\"\n    *   **Page:** 35\n    *   **Section:** ABSTRACT\n*   \"Most notably, we find that almost three-fourths (73.8%) of the negative word counts according to the Harvard list are attributable to words that are typically not negative in a financial context.\"\n    *   **Page:** 36\n    *   **Section:** Introduction (appears before Section I without a specific heading)\n*   \"Most important, we show that financial researchers should be cautious when relying on word classification schemes derived outside the domain of business usage. Applying nonbusiness word lists to accounting and finance topics can lead to a high misclassification rate and spurious correlations.\"\n    *   **Page:** 62\n    *   **Section:** V. Conclusions\n\n**On the construction of finance-specific word lists, including uncertainty:**\n\n*   \"We develop an alternative negative word list, along with five other word lists, that better reflect tone in financial text.\"\n    *   **Page:** 35\n    *   **Section:** ABSTRACT\n*   \"To expand the word classification categories, we create five additional word lists. Specifically, in addition to the negative word lists, we consider positive, uncertainty, litigious, strong modal, and weak modal word categories.\"\n    *   **Page:** 37\n    *   **Section:** Introduction (appears before Section I without a specific heading)\n*   \"We propose five other word lists: positive (Fin-Pos); uncertainty (Fin-Unc); litigious (Fin-Lit); strong modal words (MW-Strong); and weak modal words (MW-Weak).\"\n    *   **Page:** 44\n    *   **Section:** III. Textual Analysis and Word Lists\n*   \"The Fin-Unc list includes words denoting uncertainty, with emphasis on the general notion of imprecision rather than exclusively focusing on risk. The list includes 285 words, such as *approximate, contingency, depend, fluctuate, indefinite, uncertain,* and *variability*.\"\n    *   **Page:** 45\n    *   **Section:** III. Textual Analysis and Word Lists"
           }
         }
       ],
@@ -165,6 +255,18 @@
             "key": "hollander2010",
             "ref": "Hollander, Pronk & Roelofsen (2010), 'Does Silence Speak? An Empirical Analysis of Disclosure Choices During Conference Calls', JAR 48(3):531-563",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "62b15593-80b6-4fbe-a304-c74553ded616",
+              "title": "J of Accounting Research - 2010 - HOLLANDER - Does Silence Speak  An Empirical Analysis of Disclosure Choices During (1).pdf"
+            },
+            "query": "Reading only this paper, \"Does Silence Speak? An Empirical Analysis of Disclosure Choices During Conference Calls\" by Hollander, Pronk and Roelofsen (2010, Journal of Accounting Research): what does it conclude about whether managers strategically manage their disclosures during conference calls -- including choosing not to answer questions -- and whether such silence or non-answers are informative to investors? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "Hollander, Pronk & Roelofsen (2010): managers strategically manage call disclosure -- they decline/withhold requested information in ~6 of 10 calls (verbatim span n2: 'managers withhold information from the public in approximately 6 out of 10 calls, with an average of two unanswered queries per call') -- and such silence is informative ('silence speaks', span_pin). PREMISE ONLY: the UP sign of our measure is H1 (one-tailed, tested), never from Hollander.",
+            "_evidence_ref": "appendix:P3.1",
+            "evidence_quotes": "In Hollander, Pronk, and Roelofsen (2010), the authors conclude that managers do indeed strategically manage their disclosures by regularly withholding information during conference calls, specifically by choosing not to answer certain questions posed by participants [1, 2]. The study reveals that this form of incomplete disclosure is quite common, occurring in approximately 60% of the calls analyzed [2]. \n\nRegarding how investors process this behavior, the study concludes that such silence or non-answers are highly informative to the market [1, 3]. The authors find strong evidence that investors interpret a manager's refusal or failure to answer a question negatively [1, 3]. In other words, call participants and investors actively price-protect themselves when information is withheld, demonstrating that they equate \"no news\" directly with \"bad news\" [1, 4]. \n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On managers choosing not to answer questions:**\n\n*   \"Our evidence suggests that managers regularly leave participants on the conference call in the dark by not answering their questions.\" [1]\n    *   **Page:** 531\n    *   **Section:** ABSTRACT\n\n*   \"We find that managers withhold information from the public in approximately 6 out of 10 calls, with an average of two unanswered queries per call, a frequency greater than is often assumed.\" [2]\n    *   **Page:** 534\n    *   **Section:** 1. Introduction\n\n**On whether this silence is informative to investors:**\n\n*   \"Finally, we document strong support for the assumption maintained in the literature that investors interpret silence negatively. That is, investors seem to interpret no news as bad news.\" [1]\n    *   **Page:** 531\n    *   **Section:** ABSTRACT\n\n*   \"After controlling for potential drift or momentum effects, we find strong support for the assumption maintained in the literature that investors interpret 'silence' negatively.\" [3]\n    *   **Page:** 556\n    *   **Section:** 6.2 MULTIVARIATE ANALYSIS\n\n*   \"In short, the results of our study suggest that silence speaks.\" [4]\n    *   **Page:** 559\n    *   **Section:** 7. Conclusion"
           }
         }
       ],
@@ -198,6 +300,18 @@
             "key": "bertrand_schoar2003",
             "ref": "Bertrand & Schoar (2003), 'Managing with style', QJE 118(4):1169-1208",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "506c2524-8e66-4910-a1c1-8ce30b6d1f2b",
+              "title": "118-4-1169.pdf"
+            },
+            "query": "Reading only this paper, \"Managing with Style: The Effect of Managers on Firm Policies\" by Bertrand and Schoar (2003, Quarterly Journal of Economics): what does it conclude about whether individual managers have persistent, distinct styles that systematically affect the firm policies and outcomes they manage (manager fixed effects)? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "Bertrand & Schoar (2003): managers carry persistent fixed-effect styles across the firm policies they manage -- verbatim span n4 (a manager's residual in his last job vs his first job is positive and statistically significant for ALL policy variables, t-stats 4-16) + n2 (the investment / financial / organizational policy variables). PREMISE ONLY (persistent components are real, in POLICIES); NOT the language decomposition (DWZ's), NOT a residual-is-signal claim.",
+            "_evidence_ref": "appendix:P4.1",
+            "evidence_quotes": "In Bertrand and Schoar (2003), the authors conclude that **individual managers do indeed have persistent, distinct styles that systematically shape the policies and outcomes of the firms they manage** [1, 2]. By tracking top executives as they move across different companies, the study determines that **manager fixed effects explain a significant portion of the observed heterogeneity in a wide range of corporate decisions**, including investment levels, financial leverage, acquisition behavior, and organizational strategy [1, 3]. \n\nFurthermore, the authors confirm that these managerial styles are highly persistent across different jobs, meaning a manager's behavior in one firm is a strong, statistically significant predictor of their behavior in a subsequent firm [4, 5]. Finally, the paper concludes that these **distinct management styles are also directly tied to firm outcomes, as they systematically correlate with manager fixed effects in corporate performance** (e.g., return on assets) [1]. \n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n*   \"A significant extent of the heterogeneity in investment, financial, and organizational practices of firms can be explained by the presence of manager fixed effects.\" [1]\n    *   **Page:** 1169\n    *   **Section:** Abstract (unnumbered)\n\n*   \"Our results show that manager fixed effects are empirically important determinants of a wide range of corporate variables.\" [2]\n    *   **Page:** 1170\n    *   **Section:** I. INTRODUCTION\n\n*   \"These results are consistent with a persistence of the manager fixed effects across firms.\" [5]\n    *   **Page:** 1188\n    *   **Section:** IV.C. Robustness of Results\n\n*   \"Moreover, we show that management style is significantly related to manager fixed effects in performance and that managers with higher performance fixed effects receive higher compensation and are more likely to be found in better governed firms.\" [1]\n    *   **Page:** 1169\n    *   **Section:** Abstract (unnumbered)\n\n*   \"The realizations of all investment, financing, and other organizational strategy variables appear to systematically depend on the specific executives in charge.\" [3]\n    *   **Page:** 1203\n    *   **Section:** VII. CONCLUSION"
           }
         },
         {
@@ -209,6 +323,54 @@
             "key": "dwz2021",
             "ref": "Dzielinski, Wagner & Zeckhauser, 'Straight Talkers and Vague Talkers' (working paper)",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "5f348ced-c548-45f5-b61a-817163bb49eb",
+              "title": "Dzielinski et al. - Straight talkers and vague talkers The effects of managerial style in earnings conference calls.pdf"
+            },
+            "query": "Reading only this paper, \"Straight Talkers and Vague Talkers: The Effects of Managerial Style in Earnings Conference Calls\" by Dzielinski, Wagner and Zeckhauser (working paper): what does it conclude about decomposing managers' uncertainty or clarity language in earnings conference calls into a persistent manager-specific component (such as a CEO fixed effect) and a separate time-varying, call-level component? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "DWZ 'Straight Talkers and Vague Talkers' (working paper): the persistent/time-varying decomposition this paper follows. EVIDENCE BASIS -- DWZ's PDF chunks badly, so NO single clean cited_text span carries the full decomposition; the basis is CONVERGENT: (1) the decisive sentence is reproduced VERBATIM and IDENTICALLY across TWO independent NLM queries + round-trip pinned -- 'Our analysis is the first to explicitly decompose an important feature of CEO communication into two components: personal style and the potentially strategic component (the residual), and then to separately examine their impacts' (p.6 sec 1; see verification.requery); (2) verbatim cited_text FRAGMENTS n2 ('...we operationalize CEOs' [clarity]') + n4 ('neither does it differ systematically across industries, firm size') back the persistent (manager-specific) half. Cited ONLY for the decomposition's EXISTENCE; the residual-is-where-the-signal-must-live logic is OURS, never DWZ's. NB: DWZ themselves call the residual 'the potentially strategic component'.",
+            "requery": [
+              {
+                "query": "Reading only this paper, \"Straight Talkers and Vague Talkers: The Effects of Managerial Style in Earnings Conference Calls\" by Dzielinski, Wagner and Zeckhauser (working paper): Quote verbatim, exactly as printed, the sentence(s) where the paper: (a) states that it decomposes managers' uncertainty or clarity language into a persistent manager-specific component and a separate time-varying residual component; and (b) reports whether that time-varying residual component is or is not significantly related to stock-price or stock-market reactions. Reproduce each sentence exactly. For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+                "answer": "Here are the verbatim sentences from the paper exactly as printed that address your queries:\n\n**(a) Decomposing managers' language into a persistent manager-specific component and a separate time-varying residual component:**\n\n*   \"Our analysis is the first to explicitly decompose an important feature of CEO communication into two components: personal style and the potentially strategic component (the residual), and then to separately examine their impacts.\" [1]\n    *   **Page:** 6\n    *   **Section:** 1 Introduction\n\n**(b) Whether the time-varying residual component is significantly related to stock-price or stock-market reactions:**\n\n*   \"By contrast, residual use of uncertainty words - that is, the component of the overall frequency of uncertainty words in CEO’s answers during each call that is not explained by items (1) to (3) above - explains little of the market reaction.\" [2, 3]\n    *   **Page:** 3-4 (The sentence begins on page 3 and finishes on page 4)\n    *   **Section:** 1 Introduction\n\n*   \"By contrast, neither UncPreCEO nor UncResCEO is significantly associated with stock price or volume responses.\" [4]\n    *   **Page:** 26\n    *   **Section:** 5.2 Results",
+                "quotes": [
+                  {
+                    "n": 1,
+                    "cited_text": "conveyed, such as Lee (2016), sidestep this issue by including manager fixed effects in their",
+                    "start_char": 17491,
+                    "end_char": 17585,
+                    "chunk_id": "5c25ebf5-1e51-44da-936c-b8c8b9369cf2"
+                  },
+                  {
+                    "n": 2,
+                    "cited_text": "Next, we show that CEO clarity matters for the market - investors and analysts respond",
+                    "start_char": 10695,
+                    "end_char": 10782,
+                    "chunk_id": "c179d808-f648-4d12-a3fc-a51446699edd"
+                  },
+                  {
+                    "n": 3,
+                    "cited_text": "4",
+                    "start_char": 11223,
+                    "end_char": 11224,
+                    "chunk_id": "db395a1a-afed-4980-8cbf-d067d3b55f5d"
+                  },
+                  {
+                    "n": 4,
+                    "cited_text": "firms with more intangible assets (which are presumably harder to value than tangible assets)",
+                    "start_char": 63681,
+                    "end_char": 63775,
+                    "chunk_id": "44529561-e2ff-47f4-a955-87248b3f9b11"
+                  }
+                ]
+              }
+            ],
+            "_evidence_ref": "appendix:P4.2",
+            "evidence_quotes": "The paper concludes that **decomposing managers' use of uncertainty language into a persistent manager-specific component (CEO fixed effect) and a time-varying, call-level component (residual uncertainty) is crucial because these two components have entirely different drivers and market impacts**. \n\nSpecifically, the authors conclude that **the persistent manager-specific component—which they operationalize as \"CEO clarity\"—is an idiosyncratic personal \"style\" characteristic that is fundamentally distinct from the firm's culture, industry, size, or underlying business uncertainty**. \n\nFurthermore, the paper concludes that **market participants respond strongly to this persistent style component, but they do not respond to the time-varying residual component**. Analysts and investors react much more strongly to earnings news (and especially the \"soft\" information within it) when it is conveyed by a consistently clear-talking CEO, whereas the quarter-specific, uncharacteristic fluctuations in a CEO's uncertainty language (the residual) explain almost none of the market's stock price or volume response.\n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On decomposing language into a persistent style and a time-varying residual:**\n*   \"We operationalize CEOs’ clarity as the stable “style” component in the use of uncertainty words - the component that is not motivated by business uncertainty.\" [1, 2]\n    *   **Page:** 2\n    *   **Section:** 1 Introduction\n\n*   \"Our analysis is the first to explicitly decompose an important feature of CEO communication into two components: personal style and the potentially strategic component (the residual), and then to separately examine their impacts.\" [3]\n    *   **Page:** 6\n    *   **Section:** 1 Introduction\n\n**On the persistent manager-specific component being a distinct personal characteristic:**\n*   \"These results confirm that the clarity of CEOs’ communication is a personal characteristic, and is distinct from the types of firms they run.\" [4]\n    *   **Page:** 3\n    *   **Section:** 1 Introduction\n\n*   \"In short, CEO clarity represents a distinct and personal 'style' in communication.\" [5]\n    *   **Page:** 23\n    *   **Section:** 4.6 Summary of results so far\n\n**On the differing market impacts of the persistent style versus the time-varying residual:**\n*   \"By contrast, residual use of uncertainty words - that is, the component of the overall frequency of uncertainty words in CEO’s answers during each call that is not explained by items (1) to (3) above - explains little of the market reaction.\" [6, 7]\n    *   **Page:** 4\n    *   **Section:** 1 Introduction\n\n*   \"By contrast, neither UncPreCEO nor UncResCEO is significantly associated with stock price or volume responses.\" [8, 9]\n    *   **Page:** 26\n    *   **Section:** 5.2 Results\n\n*   \"Thus, the price response to information discussed on the call is primarily a function of ClarityCEO (which may also govern managerial communication in other settings), rather than the quarter-specific uncertainty.\" [10]\n    *   **Page:** 30\n    *   **Section:** 5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?"
           }
         },
         {
@@ -220,6 +382,18 @@
             "key": "dwz2021",
             "ref": "Dzielinski, Wagner & Zeckhauser, 'Straight Talkers and Vague Talkers' (working paper)",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "5f348ced-c548-45f5-b61a-817163bb49eb",
+              "title": "Dzielinski et al. - Straight talkers and vague talkers The effects of managerial style in earnings conference calls.pdf"
+            },
+            "query": "Reading only this paper, \"Straight Talkers and Vague Talkers: The Effects of Managerial Style in Earnings Conference Calls\" by Dzielinski, Wagner and Zeckhauser (working paper): what does it conclude about whether the time-varying (residual) component of call uncertainty -- as distinct from the persistent manager component -- is related to stock-market or stock-price reactions? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "NON-GATING record (for 2.3 defensive + 3 contrast). EVIDENCE BASIS is ANSWER-LEVEL ONLY -- NO clean cited_text span (DWZ chunks badly; the structured spans are fragments/off-claim). DWZ report the time-varying residual is NOT significantly related to price reactions: answer-reproduced 'By contrast, neither UncPreCEO nor UncResCEO is significantly associated with stock price or volume [reactions]' (located p.26 + p.29; span_pin p.26 sec 5.2). NOT 'evidence-locked' -- re-verify with a clean span when 3 drafts the cash-positive CONTRAST. Do NOT draft into P4.",
+            "_evidence_ref": "appendix:P4.3",
+            "evidence_quotes": "The paper concludes that the time-varying (residual) component of a CEO's uncertainty language—which captures quarter-specific fluctuations not explained by the manager's persistent style or firm characteristics—is **not significantly related to stock-market or stock-price reactions** [1, 2]. Instead, the market's response to earnings information is primarily driven by the CEO's persistent, personal communication style (their overall \"clarity\") rather than these call-specific residual variations [3]. \n\nHere are the specific sentences quoted from the paper that support this conclusion, along with their exact printed page numbers and section headings:\n\n*   \"By contrast, residual use of uncertainty words - that is, the component of the overall frequency of uncertainty words in CEO’s answers during each call that is not explained by items (1) to (3) above - explains little of the market reaction.\"\n    *   **Page:** 4\n    *   **Section:** 1 Introduction\n\n*   \"By contrast, neither UncPreCEO nor UncResCEO is significantly associated with stock price or volume responses.\"\n    *   **Page:** 26\n    *   **Section:** 5.2 Results\n\n*   \"There is no corresponding effect for the interactions with UncPreCEO and UncResCEO. Thus, the price response to information discussed on the call is primarily a function of ClarityCEO (which may also govern managerial communication in other settings), rather than the quarter-specific uncertainty.\"\n    *   **Page:** 29\n    *   **Section:** 5.3 Does the clarity of CEOs affect the response to hard or soft information they convey?"
           }
         }
       ],
@@ -252,6 +426,18 @@
             "key": "harford1999",
             "ref": "Harford (1999), 'Corporate cash reserves and acquisitions'",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "b643f847-f1ba-4dc0-871e-8f951caeacbc",
+              "title": "The Journal of Finance - 2002 - Harford - Corporate Cash Reserves and Acquisitions.pdf"
+            },
+            "query": "Reading only this paper, \"Corporate Cash Reserves and Acquisitions\" by Harford (1999, Journal of Finance): what does it conclude about whether firms accumulate cash reserves prior to making acquisitions, and whether cash-rich firms are more likely to attempt acquisitions? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "Harford (1999): firms with cash reserves accumulated above a baseline model ('cash-rich') are more likely to make acquisitions -- verbatim spans n2 ('cash-rich firms are more likely to make acquisitions'), n3 (cash-rich = reserves above the model's predictions), n4 ('Cash-richness predicts that a firm will become a bidder'); located p.1995. DRAFTING CAVEAT: Harford finds this accumulation is free-cash-flow STOCKPILING, NOT deliberate saving to fund planned value-increasing deals -> P5 must claim only that an accumulated cash position EXISTS (the war chest), never that firms deliberately save to fund acquisitions.",
+            "_evidence_ref": "appendix:P5.1",
+            "evidence_quotes": "Based on Harford (1999), the paper concludes that firms do accumulate large cash reserves prior to making acquisitions, and that these \"cash-rich\" firms are significantly more likely to attempt acquisitions than other firms [1, 2]. \n\nHowever, the paper finds that this prior cash accumulation is typically not a deliberate savings strategy designed to fund planned, value-increasing acquisitions [3, 4]. Instead, firms build up excess cash over time by stockpiling their free cash flow rather than paying it out to shareholders [5-7]. Once this cash reserve becomes large enough, it insulates managers from external market monitoring and provides them with ample discretion, leading them to ultimately spend the stockpiled cash on value-decreasing acquisitions [2, 5, 6].\n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On whether firms accumulate cash prior to making acquisitions:**\n*   \"Since excessive cash reserves are essentially stockpiled free cash f low, this agency cost of free cash f low should be severe in cash-rich firms.\"\n    *   **Page:** 1969\n    *   **Section:** (Introduction — appears before Section I without a specific heading) [5]\n*   \"Firms often build up much more cash than they need to meet expected financing requirements.\"\n    *   **Page:** 1995\n    *   **Section:** IV. Conclusions [7]\n*   \"To test whether cash stockpiles are invested poorly, I study the acquisition behavior of cash-rich firms.\"\n    *   **Page:** 1995\n    *   **Section:** IV. Conclusions [2]\n\n**On whether cash-rich firms are more likely to attempt acquisitions:**\n*   \"Cash-rich firms are more likely than other firms to attempt acquisitions.\"\n    *   **Page:** 1969\n    *   **Section:** ABSTRACT [1]\n*   \"As predicted by the free cash f low hypothesis, the probability of being a bidder increases with cash-richness.\"\n    *   **Page:** 1977\n    *   **Section:** II.A.2. Cash-Richness and the Likelihood of a Bid [8]\n*   \"I find that cash-rich firms are more likely to make acquisitions.\"\n    *   **Page:** 1995\n    *   **Section:** IV. Conclusions [2]"
           }
         },
         {
@@ -263,6 +449,18 @@
             "key": "shleifer_vishny2003",
             "ref": "\"Stock Market Driven Acquisitions\" by Shleifer and Vishny (2003, Journal of Financial Economics)",
             "nlm_source_id": "f649faef-2fdd-4d68-be04-517447533345"
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "f649faef-2fdd-4d68-be04-517447533345",
+              "title": "\"Stock Market Driven Acquisitions\" by Shleifer and Vishny (2003, Journal of Financial Economics)"
+            },
+            "query": "Reading only this paper, \"Stock Market Driven Acquisitions\" by Shleifer and Vishny (2003, Journal of Financial Economics): what does it conclude about whether acquiring firms use overvalued equity (their own stock) as the medium of payment in acquisitions, and whether the relative stock-market valuations of the acquirer and the target drive the choice between stock and cash as the method of payment? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "SUPPORTED -- MOTIVE leg. Verbatim cited_text: n1 'Using overvalued shares as a means of payment ... cushions the collapse of the shares in the long run' (p.300 sec.3); n3 'it might be better to use overvalued equity to buy other overvalued firms than to invest in cash' (p.302 sec.4 Discussion); n5 'a powerful incentive for firms to get their equity overvalued, so that they can make acquisitions with stock ... an incentive to raise a firm's stock price even through earnings manipulation' (p.308 sec.6 Conclusion); n7 'acquisitions completed with stock arise from the overvaluation of the bidder relative to the target' (p.304 sec.5.1). DRAFTING CAVEAT (guide sec.15): cite the currency/misvaluation MOTIVE only -- equity is the acquisition currency, so an overvalued bidder has an incentive to keep its price high to pay with stock; do NOT import the full merger-wave model. Valuation/earnings axis, NOT disclosure tone.",
+            "_evidence_ref": "appendix:P5.2",
+            "evidence_quotes": "Based on the paper \"Stock Market Driven Acquisitions\" by Shleifer and Vishny (2003), the authors explicitly conclude that acquiring firms rationally use their overvalued equity as a medium of payment to cushion the long-term collapse of their shares, and that the choice between cash and stock is fundamentally driven by the relative misvaluations of the bidder and target. \n\nHere are the paper's conclusions, supported by verbatim quotations with their exact printed pages and section headings:\n\n**1. On whether acquiring firms use overvalued equity as the medium of payment:**\nThe paper concludes that managers of overvalued firms deliberately use their inflated stock to buy hard assets (other firms), thereby transferring wealth to their long-term shareholders before the market corrects the overvaluation. \n*   \"Using overvalued shares as a means of payment enhances the claim on capital of the bidding shareholders, and thereby cushions the collapse of the shares in the long run.\"\n    *   **Page:** 300\n    *   **Section:** 3. The arithmetics of returns [1]\n*   \"Stock acquisitions are used specifically by overvalued bidders who expect to see negative long-run returns on their shares, but are attempting to make these returns less negative.\"\n    *   **Pages:** 304–305\n    *   **Section:** 5.1. Implications for the cross-section of returns [2]\n*   \"For this reason as well, it might be better to use overvalued equity to buy other overvalued firms than to invest in cash.\"\n    *   **Page:** 302\n    *   **Section:** 4. Discussion [3]\n*   \"Our model takes mispricing as given. But it also points to a powerful incentive for firms to get their equity overvalued, so that they can make acquisitions with stock.\"\n    *   **Page:** 308\n    *   **Section:** 6. Conclusion [4, 5]\n\n**2. On whether relative stock-market valuations drive the choice between stock and cash:**\nThe paper concludes that the medium of payment is a direct function of relative valuation: cash is used when the target is undervalued in absolute terms, whereas stock is used when the bidder is overvalued relative to the target (even if the target is also overvalued).\n*   \"We show that the key ingredients of the answers are the relative valuations of the combining firms and the synergies that the market perceives in the merger.\"\n    *   **Page:** 296\n    *   **Section:** 1. Introduction [6]\n*   \"Both of these findings are consistent with our view that acquisitions completed with stock arise from the overvaluation of the bidder relative to the target.\"\n    *   **Page:** 304\n    *   **Section:** 5.1. Implications for the cross-section of returns [7]\n*   \"First, the model predicts that targets in cash acquisitions are undervalued in absolute terms (i.e., relative to fundamentals), but targets in stock acquisitions are undervalued relative to the bidders.\"\n    *   **Page:** 307\n    *   **Section:** 5.3. Untested predictions [8]\n*   \"To begin, we expect targets of cash acquisitions to be undervalued firms, and moreover, we predict that such acquisitions are more likely to be hostile than those for stock. We are likely to see acquisitions for stock under a combination of three circumstances. First, market valuations must be high, and there must be a supply of highly overvalued firms (bidders) as well as of relatively less overvalued ones (targets).\"\n    *   **Page:** 303\n    *   **Section:** 4. Discussion [9]"
           }
         },
         {
@@ -274,6 +472,18 @@
             "key": "louis2004",
             "ref": "\"Earnings Management and the Market Performance of Acquiring Firms\" by Louis (2004, Journal of Financial Economics)",
             "nlm_source_id": "8ed79bba-379c-457f-a87d-e34ca0c27099"
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "8ed79bba-379c-457f-a87d-e34ca0c27099",
+              "title": "\"Earnings Management and the Market Performance of Acquiring Firms\" by Louis (2004, Journal of Financial Economics)"
+            },
+            "query": "Reading only this paper, \"Earnings Management and the Market Performance of Acquiring Firms\" by Louis (2004, Journal of Financial Economics): what does it find about whether acquiring firms overstate or manage their reported earnings in the period shortly before announcing a stock-for-stock (stock-financed) acquisition, and what it reports about the timing of any such earnings management relative to the announcement? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "SUPPORTED -- BEHAVIOR+TIMING leg. Verbatim cited_text: n4 'acquiring firms overstate their earnings reports in the quarter preceding a stock swap announcement' (p.121-122 sec.1 Introduction); n6 'For the stock-for-stock acquirers, there is a jump in the abnormal accrual in the quarter immediately prior to the merger announcement' (p.134 sec.4.3); n8 'abnormal accruals in the quarter preceding stock swap announcements' (p.145-146 sec.5 Summary). DRAFTING CAVEAT (guide sec.15): EARNINGS-NUMBER management, NOT tone/language -- frame at genre level; thewissen carries the tone link. The cash-contrast (cash insignificant) is answer-only, not needed for the pillar.",
+            "_evidence_ref": "appendix:P5.3",
+            "evidence_quotes": "Based on the paper \"Earnings Management and the Market Performance of Acquiring Firms\" by Louis (2004), the author finds that acquiring firms explicitly overstate (manage upward) their reported earnings, and that this earnings management is specifically timed to occur in the single quarter immediately preceding the announcement of a stock-for-stock merger. By contrast, firms using cash do not exhibit this behavior. \n\nHere are the verbatim quotes detailing these findings and their timing, along with their exact printed page numbers and section headings:\n\n**On overstating earnings and the timing of the manipulation:**\n*   \"I find strong evidence suggesting that acquiring firms overstate their earnings in the quarter preceding a stock swap announcement.\" [1, 2]\n    *   **Page:** 121\n    *   **Section:** Abstract\n*   \"Consistent with Erickson and Wang (1999), I find strong evidence suggesting that acquiring firms overstate their earnings reports in the quarter preceding a stock swap announcement.\" [3, 4]\n    *   **Pages:** 121–122 \n    *   **Section:** 1. Introduction\n*   \"The median abnormal current accrual is significantly positive for bidders engaging in stock swaps, whereas it is statistically insignificant for acquirers that pay with cash.\" [5]\n    *   **Page:** 134\n    *   **Section:** 4.3. Earnings management prior to merger announcements\n*   \"For the stock-for-stock acquirers, there is a jump in the abnormal accrual in the quarter immediately prior to the merger announcement.\" [6]\n    *   **Page:** 134\n    *   **Section:** 4.3. Earnings management prior to merger announcements\n*   \"I find strong evidence suggesting that acquiring firms report significant positive abnormal accruals in the quarter preceding stock swap announcements.\" [7, 8]\n    *   **Pages:** 145–146\n    *   **Section:** 5. Summary"
           }
         },
         {
@@ -285,6 +495,18 @@
             "key": "thewissen2024",
             "ref": "thewissen2024 (in notebook, ssrn-4900453)",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "731d56ed-c42a-4280-84eb-eec23f8be9b3",
+              "title": "ssrn-4900453.pdf"
+            },
+            "query": "Reading only this paper, the working paper by Thewissen and coauthors (2024) on managerial tone around acquisitions (this single notebook source, ssrn-4900453): what does it study regarding firms' management of tone or language in earnings press releases around stock-for-stock acquisitions, and what does it find? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "Thewissen et al. (2024): stock bidders strategically inflate the tone of earnings press releases before stock-for-stock M&A -- verbatim spans n2 (stock as the form of payment), n3 (shares issued to purchase the target), n6 (press-release tone increases by 15% in the year preceding the M&A announcement, span_pin). Nearest-work cell: managed tone, stock deals, press releases.",
+            "_evidence_ref": "appendix:P5.4",
+            "evidence_quotes": "In Thewissen et al. (2024), the authors study whether acquiring firms in stock-for-stock mergers strategically manipulate the qualitative narrative content of their earnings press releases before the merger announcement. Because a higher bidder stock price reduces the number of shares that must be issued to buy a target, the authors investigate whether bidders intentionally use overly optimistic language (tone inflation) to temporarily boost their stock price and lower the acquisition cost [1-4]. \n\nThe paper finds that **stock bidders do indeed significantly inflate the tone of their earnings press releases in the year leading up to the M&A announcement, increasing it by about 15%** [5]. This tone inflation is not uniform; it is **more pronounced for larger deals, for firms with weaker past performance, and for firms lacking strong monitoring mechanisms** [6, 7]. \n\nFurthermore, the authors find that this strategy is initially successful but ultimately detrimental in the long run. **Tone inflation effectively boosts the bidder's stock price in the pre-merger period, saving the average stock bidder an estimated $21.8 million in acquisition costs** [7]. However, investors eventually see through the manipulation, meaning that **the short-term stock price boost is reversed, exposing the stock bidder to lower, unfavorable long-term stock returns after the merger is completed** [7, 8].\n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the focus of the study:**\n*   \"In this paper, we therefore extent prior research and propose that, in order to increase their stock price and reduce the acquisition cost of the target, bidders in stock-for-stock mergers inflate the tone of corporate disclosures.\"\n    *   **Page:** 3\n    *   **Section:** 1. Introduction\n\n**On the finding that stock bidders inflate disclosure tone:**\n*   \"Based on a sample of 5,558 M&A deals between 2004 and 2020, we find evidence that stock bidders are more likely than cash or hybrid bidders to engage in tone management and that the tone of earnings press releases significantly increases by 15% in the year preceding the M&A announcement.\"\n    *   **Page:** 37\n    *   **Section:** 6. Conclusion\n\n**On the specific firm and deal characteristics that worsen tone inflation:**\n*   \"We provide further insights on the underlying mechanisms by revealing more pronounced effects of stock-for-stock deals on tone inflation for (i) larger M&A deals, (ii) firms with lower past performance and (iii) firms with less control mechanisms.\"\n    *   **Page:** 38\n    *   **Section:** 6. Conclusion\n\n**On the economic benefits and long-term costs of this strategy:**\n*   \"We further find that increasing the tone of earnings press releases is associated with an increase in stock prices in the pre-merger period. In fact, this tone inflation leads to savings in acquisition costs by $21.777 million, on average.\"\n    *   **Page:** 38\n    *   **Section:** 6. Conclusion\n*   \"However, in the long-term, we document that stock bidders suffer from lower stock returns, which is in line with prior evidence that firms that manipulate earnings to beat expectations are still able to benefit from higher stock returns, but also larger long-term losses.\"\n    *   **Page:** 38\n    *   **Section:** 6. Conclusion"
           }
         },
         {
@@ -296,6 +518,15 @@
             "key": "n/a",
             "ref": "framing / interpretation -- not a paper-fact",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "n/a",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "INCONCLUSIVE_MANUAL",
+            "verified_date": null,
+            "note": "Framing synthesis; not NLM. Honesty floor: cash rises (+0.0461***), stock is a noisy flat null (-0.0429 n.s.); masking is the ex-ante motivation -- we interpret, we do not detect. No 'stock suppressed'; nothing below baseline. The DV-level gap (global-disposition by-product + attenuation) lives in 2.2.",
+            "query": ""
           }
         },
         {
@@ -307,6 +538,15 @@
             "key": "n/a",
             "ref": "framing / interpretation -- not a paper-fact",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "n/a",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "INCONCLUSIVE_MANUAL",
+            "verified_date": null,
+            "note": "Framing; not NLM. Anchor: P2 (unscripted Q&A = the segment managers cannot fully prepare = hardest to stage-manage). Not 2.3's UncPre control -- UncPre is in-call presentation uncertainty, a different artifact from the press-release tone / accruals the cites document.",
+            "query": ""
           }
         }
       ],
@@ -340,6 +580,18 @@
             "key": "thewissen2024",
             "ref": "thewissen2024 (in notebook, ssrn-4900453)",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "731d56ed-c42a-4280-84eb-eec23f8be9b3",
+              "title": "ssrn-4900453.pdf"
+            },
+            "query": "Reading only this paper, the working paper by Thewissen and coauthors (2024) on managerial tone around acquisitions (this single notebook source, ssrn-4900453): what does it study regarding firms' management of tone or language in earnings press releases around stock-for-stock acquisitions, and what does it find? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "Thewissen et al. (2024): stock bidders strategically inflate the tone of earnings press releases before stock-for-stock M&A -- verbatim spans n2 (stock as the form of payment), n3 (shares issued to purchase the target), n6 (press-release tone increases by 15% in the year preceding the M&A announcement, span_pin). Nearest-work cell: managed tone, stock deals, press releases.",
+            "_evidence_ref": "appendix:P6.1",
+            "evidence_quotes": "In Thewissen et al. (2024), the authors study whether acquiring firms in stock-for-stock mergers strategically manipulate the qualitative narrative content of their earnings press releases before the merger announcement. Because a higher bidder stock price reduces the number of shares that must be issued to buy a target, the authors investigate whether bidders intentionally use overly optimistic language (tone inflation) to temporarily boost their stock price and lower the acquisition cost [1-4]. \n\nThe paper finds that **stock bidders do indeed significantly inflate the tone of their earnings press releases in the year leading up to the M&A announcement, increasing it by about 15%** [5]. This tone inflation is not uniform; it is **more pronounced for larger deals, for firms with weaker past performance, and for firms lacking strong monitoring mechanisms** [6, 7]. \n\nFurthermore, the authors find that this strategy is initially successful but ultimately detrimental in the long run. **Tone inflation effectively boosts the bidder's stock price in the pre-merger period, saving the average stock bidder an estimated $21.8 million in acquisition costs** [7]. However, investors eventually see through the manipulation, meaning that **the short-term stock price boost is reversed, exposing the stock bidder to lower, unfavorable long-term stock returns after the merger is completed** [7, 8].\n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On the focus of the study:**\n*   \"In this paper, we therefore extent prior research and propose that, in order to increase their stock price and reduce the acquisition cost of the target, bidders in stock-for-stock mergers inflate the tone of corporate disclosures.\"\n    *   **Page:** 3\n    *   **Section:** 1. Introduction\n\n**On the finding that stock bidders inflate disclosure tone:**\n*   \"Based on a sample of 5,558 M&A deals between 2004 and 2020, we find evidence that stock bidders are more likely than cash or hybrid bidders to engage in tone management and that the tone of earnings press releases significantly increases by 15% in the year preceding the M&A announcement.\"\n    *   **Page:** 37\n    *   **Section:** 6. Conclusion\n\n**On the specific firm and deal characteristics that worsen tone inflation:**\n*   \"We provide further insights on the underlying mechanisms by revealing more pronounced effects of stock-for-stock deals on tone inflation for (i) larger M&A deals, (ii) firms with lower past performance and (iii) firms with less control mechanisms.\"\n    *   **Page:** 38\n    *   **Section:** 6. Conclusion\n\n**On the economic benefits and long-term costs of this strategy:**\n*   \"We further find that increasing the tone of earnings press releases is associated with an increase in stock prices in the pre-merger period. In fact, this tone inflation leads to savings in acquisition costs by $21.777 million, on average.\"\n    *   **Page:** 38\n    *   **Section:** 6. Conclusion\n*   \"However, in the long-term, we document that stock bidders suffer from lower stock returns, which is in line with prior evidence that firms that manipulate earnings to beat expectations are still able to benefit from higher stock returns, but also larger long-term losses.\"\n    *   **Page:** 38\n    *   **Section:** 6. Conclusion"
           }
         },
         {
@@ -351,6 +603,18 @@
             "key": "ragozzino2024",
             "ref": "ragozzino2024 (in notebook, S0024630123001000)",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "f84c6cd2-59a1-4879-a053-b798687fd03c",
+              "title": "1-s2.0-S0024630123001000-main.pdf"
+            },
+            "query": "Reading only this paper, the paper by Ragozzino and Reuer (2024) on strategy vocabulary in conference calls around deal activity (this single notebook source, S0024630123001000): what does it study regarding the volume or use of strategy-related vocabulary on earnings conference calls around firms' acquisition or deal activity? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "Ragozzino & Reuer (2024): strategy-vocabulary volume on earnings calls rises with M&A activity -- verbatim spans n3 (analysts use ~9% more corporate-strategy terms at M&A-active firms, p<0.0001) + n4 (executives discuss strategy 7.2% more); located p.9. Nearest-work cell: managed strategy vocabulary on calls.",
+            "_evidence_ref": "appendix:P6.2",
+            "evidence_quotes": "In Ragozzino and Reuer (2024), the authors study whether a firm's M&A activity leads to an increased exchange of information regarding corporate strategy between executives and analysts during quarterly earnings calls. To measure this, they construct a \"corporate strategy dictionary\" comprising strategy-related vocabulary (such as \"merger,\" \"acquisition,\" \"alliance,\" \"scale,\" \"scope,\" and \"strategy\") and text-analyze transcripts to track the volume of these words used by both parties. \n\nThe study concludes that **the volume of strategy-related vocabulary used in earnings calls significantly increases when a firm is involved in M&A activity**. The authors find that both the analysts asking questions and the executives providing answers use corporate strategy words more frequently when the firm has recently engaged in M&A. Furthermore, **the use of this vocabulary is positively correlated with the sheer volume of M&A transactions**; the more deals a firm has entered into, the more heavily its corporate strategy is discussed during the call. Specifically, the authors find that analysts use strategy terms nearly 9% more, and executives use them 7.2% more, in calls held by M&A-active firms compared to inactive firms. \n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n**On what the paper studies:**\n*   \"We examine whether firms’ M&A activity results in an information exchange between executives and analysts that highlights corporate strategy as a discussion topic.\" [1]\n    *   **Page:** 1\n    *   **Section:** ABSTRACT\n\n**On the findings regarding the volume and use of strategy vocabulary:**\n*   \"Specifically, both analysts and company executives discuss a firm’s corporate strategy more when the firm is involved in M&A activity in the period of time leading up to the call.\" [2]\n    *   **Page:** 12\n    *   **Section:** 7.1. Contributions\n\n*   \"In addition, the more M&A transactions the firm has engaged in, the more the firm’s corporate strategy becomes the subject of discussion during the call.\" [2]\n    *   **Page:** 12\n    *   **Section:** 7.1. Contributions\n\n*   \"The difference between M&A active and inactive firms amounts to a nearly 9 percent greater usage of corporate strategy terms by analysts.\" [3]\n    *   **Page:** 9\n    *   **Section:** 6. Results\n\n*   \"Paralleling the interpretation offered above, M&A active firms’ executives discuss corporate strategy 7.2 percent more than inactive firms.\" [4]\n    *   **Page:** 9\n    *   **Section:** 6. Results"
           }
         },
         {
@@ -362,6 +626,18 @@
             "key": "keown1981",
             "ref": "Keown & Pinkerton (1981), 'Merger Announcements and Insider Trading Activity', JF 36(4):855-869 (uploaded 2026-06-12)",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "NLM",
+            "source": {
+              "id": "6dc00775-74d4-43e7-8af8-60376e877533",
+              "title": "The Journal of Finance - September 1981 - KEOWN - Merger Announcements and Insider Trading Activity  An Empirical.pdf"
+            },
+            "query": "Reading only this paper, \"Merger Announcements and Insider Trading Activity: An Empirical Investigation\" by Keown and Pinkerton (1981, Journal of Finance): what does it conclude about whether abnormal stock-price movements or returns occur before the public announcement of a merger (a pre-announcement price run-up)? For each sentence you quote in support, report the exact page number printed in the paper and the section (heading or number) where it appears.",
+            "verdict": "SUPPORTED",
+            "verdict_note": "Keown & Pinkerton (1981): abnormal pre-announcement price run-up -- verbatim span n3 ('approximately half of the market reaction occurs before the first public announcement date', p.866). Cited for the PRICE-RUN-UP FACT only; the insider-trading mechanism is NOT cited (advisor). Splits our LANGUAGE signal from the known PRICE signal.",
+            "_evidence_ref": "appendix:P6.3",
+            "evidence_quotes": "Based on Keown and Pinkerton (1981), the paper concludes that **abnormal stock-price movements and positive excess returns do indeed occur prior to the first public announcement of a merger**. \n\nThe authors attribute this pre-announcement price run-up to the widespread leakage of inside information and illegal insider trading. They find that the abnormal price buildup begins roughly a month (25 trading days) before the announcement date, and that **approximately half of the total market reaction to the merger takes place before the planned takeover is ever publicly announced**. \n\nHere are the specific sentences quoted from the paper that support these conclusions, along with their exact printed page numbers and section headings:\n\n*   \"This paper provides evidence of excess returns earned by investors in acquired firms prior to the first public announcement of planned mergers.\" [1]\n    *   **Page:** 855\n    *   **Section:** ABSTRACT\n\n*   \"Specifically, leakage of inside information is a pervasive problem occurring at a significant level up to 12 trading days prior to the first public announcement of a proposed merger.\" [1]\n    *   **Page:** 855\n    *   **Section:** ABSTRACT\n\n*   \"The CA t becomes positive 25 trading days prior to the announcement date and approximately half of the total increase in CARt occurs prior to the announcement date.\" [2]\n    *   **Page:** 860\n    *   **Section:** III. Empirical Results\n\n*   \"As previously mentioned, approximately half of the market reaction occurs before the first public announcement date.\" [3]\n    *   **Page:** 866\n    *   **Section:** III. Empirical Results\n\n*   \"This study has shown that the market reaction to intended mergers begins to occur before the first public announcement of the intended merger.\" [4]\n    *   **Page:** 866\n    *   **Section:** IV. Summary"
           }
         },
         {
@@ -373,6 +649,15 @@
             "key": "n/a",
             "ref": "cannot prove a negative",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "n/a",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "INCONCLUSIVE_MANUAL",
+            "verified_date": null,
+            "note": "'to our knowledge' only; NOT verifiable",
+            "query": ""
           }
         }
       ],

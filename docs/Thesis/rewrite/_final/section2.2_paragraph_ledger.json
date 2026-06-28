@@ -190,6 +190,15 @@
             "key": "n/a",
             "ref": "framing / interpretation -- not a paper-fact",
             "nlm_source_id": null
+          },
+          "verification": {
+            "method": "n/a",
+            "evidence": [],
+            "answer_nonevidence": "",
+            "verdict": "INCONCLUSIVE_MANUAL",
+            "verified_date": null,
+            "note": "Framing; not NLM. Evidence = callback to 2.1 P5 (S-V / Louis / thewissen, SUPPORTED) + the result (claim_findings_ledger C6, Wald 0.0983**, p=.039) + data (cash +0.0461***, stock -0.0429 n.s.). Honesty floor: the stock arm is a noisy flat null, not suppressed; we interpret, we do not detect.",
+            "query": ""
           }
         }
       ],
