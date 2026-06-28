@@ -22,6 +22,19 @@ ROA & $\mathrm{iby}/\overline{\mathrm{assets}}$ & profitability \\
 Capex & $\mathrm{capxy}/\mathrm{atq}$ & investment intensity \\
 DivDummy & $\mathbf{1}[\mathrm{dvy}>0]$ & dividend payer \\
 sCFO & five-year rolling standard deviation of $\mathrm{oancfy}/\mathrm{atq}_{t-1}$ & cash-flow volatility \\
+\midrule
+\multicolumn{3}{l}{\textit{Convergent-validity controls (Tables 5.6--5.8)}} \\
+FirmMat & firm lifecycle stage from age, sales growth, and capital structure & firm maturity \\
+EarnVol & rolling standard deviation of quarterly earnings over assets & earnings volatility \\
+\midrule
+\multicolumn{3}{l}{\textit{Cash-position indicator (Table 5.9)}} \\
+HighCash & $\mathbf{1}[\mathrm{CashRatio}\ge p_{67}]$ & cash-rich (top tercile of $\mathrm{CashRatio}$) \\
+\midrule
+\multicolumn{3}{l}{\textit{Bid-ask extended controls (Table 5.12)}} \\
+StockPrice & CRSP share price (winsorized) & price level \\
+Turnover & trading volume over shares outstanding (CRSP) & share turnover \\
+DailyVola & daily return volatility (CRSP) & return volatility \\
+AbsSurpDec & $|\mathrm{SurpDec}|$, absolute earnings-surprise decile & surprise magnitude \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}

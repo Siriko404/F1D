@@ -210,6 +210,14 @@ def fix_45_se(t):
         t = t.replace(old, new)
     return t
 
+def fix_5(t):
+    # #5 (Sina: limitation note): disclose that the 50%-cash classification threshold is not varied.
+    a = "is an imperfect counterfactual, and the sample, United States public firms"
+    assert a in t, "fix_5 #5 anchor not found"
+    return t.replace(a, "is an imperfect counterfactual; the cash and stock arms turn on a "
+                        "fifty-percent-of-consideration cutoff whose sensitivity we do not test; and the sample, "
+                        "United States public firms")
+
 def global_fixes(t):
     # #12 (whole-unit "Section~N"/"Sections~N" render as Chapters): -> Chapter~N, keeping "Section~N.M" subsection refs
     t = re.sub(r"\bSection~([1-5])(?![.0-9])", r"Chapter~\1", t)
@@ -309,6 +317,7 @@ def prose_of(sid):
     if sid == "1":   body = fix_intro(body)    # intro #7 + #8
     if sid in ("2.1", "2.2"): body = fix_unmanaged(body, sid)  # #9 flat "unmanaged"
     if sid == "2.4": body = fix_24(body)       # #14 leading-zero p
+    if sid == "5":   body = fix_5(body)        # #5 50%-threshold limitation
     body = destars(body, sid)                  # Issue 2: significance stars -> compact p (PROSE ONLY)
     body = dehedge(body, sid)                  # Issue 1: thin redundant honesty-floor closers (PROSE; never math)
     if sid == "4.5": body = fix_45_se(body)    # #18 SE 4dp (AFTER destars, whose NOSE[4.5] anchor reads $0.00275$)
@@ -383,6 +392,27 @@ _bf = _bf.replace(_bk, "and a lagged dependent variable is included. The depende
                        "is rescaled by $10^{4}$ (basis points) for readability. Standard errors clustered by firm")
 _bibt.write_text(_bf, encoding="utf-8")
 print("patched bible tables: placebo->comparison (3), event-time t->e (8), bid-ask 1e4 disclosure")
+
+# Issue #1 (Sina: ADD defs, not soften): Appendix II omitted 7 vars that appear as table rows -- FirmMat/EarnVol
+# (Tables 5.1, 5.6-5.8), HighCash (5.9), StockPrice/Turnover/DailyVola/AbsSurpDec (5.12) -- contradicting the
+# Table 5.1 note "all variables defined". Add them with authoritative formulas from the data-tree variable_ledger.json.
+_apx = CLONE / "appendix_II_controls.tex"
+_at = _apx.read_text(encoding="utf-8")
+_apx_end = "\\bottomrule\n\\end{tabular}"
+assert _at.count(_apx_end) == 1, "appendix II anchor: expected 1 bottomrule/end, got %d" % _at.count(_apx_end)
+_apx_rows = (
+ "\\midrule\n\\multicolumn{3}{l}{\\textit{Convergent-validity controls (Tables 5.6--5.8)}} \\\\\n"
+ "FirmMat & firm lifecycle stage from age, sales growth, and capital structure & firm maturity \\\\\n"
+ "EarnVol & rolling standard deviation of quarterly earnings over assets & earnings volatility \\\\\n"
+ "\\midrule\n\\multicolumn{3}{l}{\\textit{Cash-position indicator (Table 5.9)}} \\\\\n"
+ "HighCash & $\\mathbf{1}[\\mathrm{CashRatio}\\ge p_{67}]$ & cash-rich (top tercile of $\\mathrm{CashRatio}$) \\\\\n"
+ "\\midrule\n\\multicolumn{3}{l}{\\textit{Bid-ask extended controls (Table 5.12)}} \\\\\n"
+ "StockPrice & CRSP share price (winsorized) & price level \\\\\n"
+ "Turnover & trading volume over shares outstanding (CRSP) & share turnover \\\\\n"
+ "DailyVola & daily return volatility (CRSP) & return volatility \\\\\n"
+ "AbsSurpDec & $|\\mathrm{SurpDec}|$, absolute earnings-surprise decile & surprise magnitude \\\\\n")
+_apx.write_text(_at.replace(_apx_end, _apx_rows + _apx_end), encoding="utf-8")
+print("patched appendix_II_controls.tex: +7 variable definitions (FirmMat/EarnVol/HighCash/4 bid-ask controls)")
 
 # ---- 2. regenerate the standalone body files from phaseB prose ----
 (CLONE / "_abstract_body.tex").write_text(prose_of("abstract") + "\n", encoding="utf-8")
