@@ -27,7 +27,6 @@ function sourceFacts() {
     out.push(`SECTION ${s.section}:` +
       (s.bright_lines && s.bright_lines.length ? `\n HONESTY FLOOR: ${s.bright_lines.join(' | ')}` : '') +
       (locks.length ? `\n REGISTER LOCKS: ${locks.join(' | ')}` : '') +
-      (s.table_labels && s.table_labels.length ? `\n TABLES (cite each as \\ref{tab:...}): ${s.table_labels.join(', ')}` : '') +
       (nums.length ? `\n NUMBERS IN CONTEXT (value = its only correct meaning):\n${nums.join('\n')}` : '') +
       (quotes.length ? `\n VERBATIM SOURCE QUOTES (a claim may not say more than its quote):\n${quotes.join('\n')}` : ''));
   }
@@ -45,23 +44,22 @@ const RT_HEADS = [
 const REPORT_SCHEMA = { type: 'object', required: ['issues'], properties: { issues: { type: 'array', items: {
   type: 'object', required: ['section', 'para_id', 'aspect', 'problem', 'best_fix'], properties: {
     section: { type: 'string' }, para_id: { type: 'string' },
-    aspect: { enum: ['honesty', 'number', 'citation', 'table_ref', 'forbidden_word', 'plain_language', 'flow', 'coherence', 'completeness', 'other'] },
+    aspect: { enum: ['honesty', 'number', 'plain_language', 'flow', 'coherence', 'completeness', 'other'] },
     problem: { type: 'string' },
     best_fix: { type: 'string', description: 'the exact, minimal rewrite that fixes it' } } } } } };
 
 async function redTeam(fullThesis, facts) {
   const panel = await parallel(RT_HEADS.map((h, v) => () => agent(
-    `${h}\n\nDo ONE exhaustive pass over the WHOLE thesis below. For EVERY real problem give the BEST concrete fix (the exact minimal rewrite). Do NOT rewrite the thesis; only report {section, para_id, aspect, problem, best_fix}.\n\nCHECK ALL OF:\n` +
-    `- HONESTY/OVERCLAIM: no sentence says more than its source quote or register lock allows -- correlational not causal; the stock arm is a noisy flat null (never "suppressed/dampened"); concentration not strict specificity; "we interpret, we do not detect"; supportive not definitive; mechanism stays open.\n` +
-    `- FORBIDDEN WORDS: ${FORBIDDEN}.\n` +
-    `- NUMBERS: every figure matches its one correct meaning in NUMBERS IN CONTEXT (right arm, right clock, right comparison) with the exact sign and significance stars; flag any number attached to the wrong claim.\n` +
-    `- CITATIONS: every \\citep/\\citet key is real and the source actually supports the claim.\n` +
-    `- TABLE REFS: every table is cited as \\ref{tab:...} from that section's allowed labels; NO hardcoded "Table 5.2".\n` +
-    `- PLAIN LANGUAGE: a smart reader with NO finance training follows on first read; flag over-long/dense sentences and un-glossed jargon.\n` +
-    `- FLOW + COHERENCE & COHESIVENESS ACROSS THE WHOLE BODY AND FINDINGS: do all sections tell ONE consistent story? consistent terms/notation; no contradiction between the framing (Sec 2), the findings (Sec 3-4) and the conclusion (Sec 5); transitions and section seams hold.\n` +
+    `${h}\n\nYou have NO access to the repository and no need for it -- everything to judge is in the SOURCE FACTS and WHOLE THESIS below. Do NOT use Grep/Glob/Bash/Read or any tool to look anything up; judge ONLY from the text given, and return your report ONLY via the StructuredOutput tool.\n\n` +
+    `A deterministic gate already enforces the MECHANICAL checks (citation keys valid, numbers and stars present, \\ref table tags, forbidden words, LaTeX) -- do NOT audit those, they are handled. Audit ONLY what a careful reader must judge, all fully answerable from what is given. For every real problem give the BEST concrete minimal fix.\n\nCHECK:\n` +
+    `- OVERCLAIM vs SOURCE: does any sentence say MORE than its verbatim quote or register lock allows? (correlational not causal; the stock arm a noisy flat null; concentration not strict specificity; we interpret, we do not detect; supportive not definitive; mechanism stays open.)\n` +
+    `- NUMBER-IN-CONTEXT: is each figure attached to its ONE correct meaning per NUMBERS IN CONTEXT (right arm, right clock, right comparison)? flag a real number used on the wrong claim.\n` +
+    `- PLAIN LANGUAGE: would a smart reader with NO finance training follow on first read? flag over-long/dense sentences and un-glossed jargon.\n` +
+    `- FLOW + COHERENCE & COHESIVENESS across the WHOLE body and findings: do all sections tell ONE consistent story (framing Sec 2, findings Sec 3-4, conclusion Sec 5)? consistent terms/notation, no contradictions, transitions and seams hold.\n` +
     `- COMPLETENESS: nothing load-bearing dropped or duplicated.\n\n` +
-    `SOURCE FACTS (the locked truth -- judge the prose against THIS, never invent new facts):\n${facts}\n\nWHOLE THESIS:\n${fullThesis}`,
-    { label: `redteam:v${v + 1}`, phase: 'RedTeam', schema: REPORT_SCHEMA })));
+    `BE SELECTIVE AND TERSE: report only issues that matter (aim for ~15-20, not every nitpick); make "problem" and "best_fix" ONE short sentence each.\n\n` +
+    `SOURCE FACTS (judge against THIS; never invent new facts):\n${facts}\n\nWHOLE THESIS:\n${fullThesis}`,
+    { label: `redteam:v${v + 1}`, phase: 'RedTeam', schema: REPORT_SCHEMA, effort: 'medium' })));
   return panel.filter(Boolean).flatMap(r => (r && r.issues) || []);
 }
 
@@ -74,6 +72,7 @@ const PATCH_SCHEMA = { type: 'object', required: ['patches'], properties: { patc
 async function boss(fullThesis, facts, issues) {
   return await agent(
     `You are the chief editor delivering the FINAL thesis. Below are the whole thesis, the locked SOURCE FACTS, and the red-team's issues with proposed fixes. Apply the WELL-SUPPORTED fixes by MINIMAL EDIT, working section by section. Rules:\n` +
+    `- You have everything below; do NOT use Grep/Glob/Bash/Read or any tool to look at the repository -- edit only from the text given, and return ONLY via the StructuredOutput tool.\n` +
     `- Change only what a fix truly requires; keep wording that is already clean.\n` +
     `- REJECT any fix that weakens a hedge, alters a number/sign/significance star, or softens an honesty or register lock (refute-by-default on those).\n` +
     `- Keep every number, citation, \\ref, hedge and register lock exact. Invent nothing -- no new fact, number, citation, or table.\n` +
@@ -81,7 +80,7 @@ async function boss(fullThesis, facts, issues) {
     `- Improve plain language and cross-section coherence where the red team flags it, without changing meaning.\n` +
     `- OUTPUT ONLY THE PARAGRAPHS YOU CHANGED, each as {section, para_id, final_prose} carrying that paragraph's COMPLETE final text. Omit every paragraph you did not change.\n\n` +
     `SOURCE FACTS:\n${facts}\n\nRED-TEAM ISSUES + PROPOSED FIXES:\n${JSON.stringify(issues, null, 1)}\n\nWHOLE THESIS:\n${fullThesis}`,
-    { label: 'boss:final', phase: 'Boss', schema: PATCH_SCHEMA });
+    { label: 'boss:final', phase: 'Boss', schema: PATCH_SCHEMA, effort: 'medium' });
 }
 
 function gateProse(s, prose) {
