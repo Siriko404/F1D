@@ -24,7 +24,7 @@ function sectionGate(out, brief) {
     const r = runGates({
       prose: par.final_prose || '',
       allowedTokens: b.allowed_tokens,
-      allowedKeys: b.allowed_cites.concat(['harford1999','shleifer_vishny2003','louis2004','verrecchia1983','dye1985','hollander2010','matsumoto2011','lm2011','bertrand_schoar2003']),
+      allowedKeys: (b.allowed_cites_all && b.allowed_cites_all.length ? b.allowed_cites_all : b.allowed_cites),
       props: b.props.map(p => ({ prop_id: p.prop_id, signature: p.signature })),
     });
     blocks.push(...r.blocks.map(x => `${par.para_id}: ${x}`));
@@ -148,7 +148,7 @@ async function bossSection(w, fullDraft, allReports) {
   const brief = w.brief;
   const mine = allReports.filter(i => (i.section && (i.section === brief.section || i.section === brief.stem)) || (i.para_id || '').includes(brief.section));
   const final = await agent(
-    `You are the chief editor of the WHOLE thesis. You can see the full draft and ALL red-team + audit reports below. Produce the FINAL prose for SECTION ${brief.section} ONLY (output just this section's paragraphs). Apply well-supported fixes by MINIMAL edit; reject spurious or hedge-weakening fixes (refute-by-default on honesty/number claims); keep consistency with the rest of the thesis; invent no new numbers or citations.\n\n${brmain(brief)}\n\nFULL THESIS (context/consistency):\n${fullDraft}\n\nALL REPORTS (${mine.length} touch this section -- apply those):\n${JSON.stringify(mine, null, 1)}`,
+    `You are the chief editor of the WHOLE thesis. EDIT the current draft of Section ${brief.section} below into its FINAL form by applying the well-supported reports: minimal edit (change the least; keep wording that is already clean), reject spurious or hedge-weakening fixes (refute-by-default on honesty/number claims), keep consistency with the rest of the thesis you can see, invent no new numbers or citations. Output just this section's paragraphs.\n\n${brmain(brief)}\n\nCURRENT DRAFT OF SECTION ${brief.section} (edit THIS):\n${JSON.stringify(w.merged.paragraphs, null, 1)}\n\nWHOLE THESIS (context/consistency only):\n${fullDraft}\n\nREPORTS (${mine.length} touch this section -- apply those):\n${JSON.stringify(mine, null, 1)}`,
     { label: `boss:${brief.section}`, phase: 'Audit', schema: WRITER_SCHEMA });
   const g = sectionGate(final, brief);
   const trail = { drafts: w.drafts, merged: w.merged.paragraphs, reports_for_section: mine };

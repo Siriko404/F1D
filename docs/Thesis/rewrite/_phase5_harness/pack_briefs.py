@@ -38,6 +38,17 @@ for t in set(SECTYPE.values()):
     d=json.load(open(RB/f"{t}.json",encoding="utf-8"))
     rulebooks[t]=[{"device":p["device"],"principle":p["principle"]} for p in d["principles"]]
 
+# ALL available bibitem keys (cite-gate allow-list: no \citep may render [?] / abort the compile;
+# a wrong-but-defined cite is caught by the citation AUDIT lane, not falsely blocked by the gate).
+BIB = Path(r"C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D")/"docs/Thesis/uo-ethesis/bibliography/uo-ethesis.bib"
+SUPP = PH/"docs/Thesis/_bibitems_supplement.tex"
+bibkeys=set()
+if BIB.exists(): bibkeys |= set(re.findall(r'@\w+\{([^,]+),', BIB.read_text(encoding="utf-8",errors="ignore")))
+if SUPP.exists(): bibkeys |= set(re.findall(r'\\bibitem(?:\[[^\]]*\])?\{([^}]*)\}', SUPP.read_text(encoding="utf-8")))
+bibkeys |= {"bertrand_schoar2003","dye1985","harford1999","hollander2010","keown1981","verrecchia1983",
+            "shleifer_vishny2003","louis2004","matsumoto2011","lm2011"}   # push_2_1 + §4.5 known set
+ALLOWED_CITES_ALL=sorted(bibkeys)
+
 briefs=[]
 order = list(SECTYPE)
 for i,stem in enumerate(order):
@@ -77,6 +88,7 @@ for i,stem in enumerate(order):
         "section":stem.replace("section_","").replace("section",""),
         "stem":stem, "type":typ, "title":d.get("title"),
         "rulebook":rulebooks[typ],
+        "allowed_cites_all":ALLOWED_CITES_ALL,
         "bright_lines":d.get("_bright_lines") or d.get("bright_lines") or [],
         "register_global":(d.get("section_context") or {}).get("register_global") if isinstance(d.get("section_context"),dict) else None,
         "paragraphs":paras,
