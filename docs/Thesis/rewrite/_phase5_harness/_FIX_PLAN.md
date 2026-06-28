@@ -47,6 +47,21 @@ HIGH H1 = DONE (6b378581/2cf3fb40). Everything below is open.
 - #12/#15 global sweeps: run LAST in prose_of (after fix_XX/destars/dehedge) so a global replace can't break a
   later anchor; also grep "Sections~" (plural) for #12.
 
+## FINAL STATUS (2026-06-28, after waves 1-3; gates all green: PDF 70pp 0/0, floor 12/15/11/13/9/18/6/2/1, number A=0 B=0, orphan 0)
+- DONE + committed (f7670537 wave1, 23dad6e6 wave2, 341e210a wave3):
+  H2-caption, #1, #2, #4, #5, #7, #8, #9, #10, #11, #12, #14, #15, #16/#22, #18  (15 items)
+- #3 PARTIAL -> NEEDS SINA: removed the explicit "incidence not volume" sentence, BUT (a) "HighCashScrutiny
+  rises 0.0408" [l.58, motivates the whole rule-out] and (b) "CashScrutiny = volume" [l.62, the non-circularity
+  defense] REMAIN and cannot be cut without breaking the section. "Completely silent" needs a restructure that
+  sacrifices a load-bearing argument. Decision pending: accept residual vs restructure.
+- DECLINED: H2-prose upper-bound caveat (referee's "beta_s biased negative" conflicts with locked floor
+  "stock arm = noisy flat null, never suppressed"; + overclaims). Existing hedge kept.
+- DEFERRED (Sina): #13 variable typography (math-mode regex risk near submission).
+- SKIPPED (Sina "else skip"; OUTSTANDING transparency gap): #6 first-deal cash/stock deal counts (not cheap;
+  all-deals 982/123 already in via Logit B).
+- HEADS-UP: FirmMat appendix def is approximate (data source says "lifecycle ... such as age/sales-growth/
+  capital-structure"; the -317.57 min isn't explained by "lifecycle stage"). Ships fine; flag if examiner probes.
+
 ## VERIFY (each batch)
 generator "PDF OK pages=70 undefined-ref/cite=0 overfull-hbox=0"; floor_inventory grid unchanged;
 destars_verify PASS; number_audit A=0/B=0; orphan 0/21; advisor check after the batch.
