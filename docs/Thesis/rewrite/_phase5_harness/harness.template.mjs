@@ -1,7 +1,9 @@
 // harness.template.mjs — Phase 3: the prose-writing Workflow (the agentic core).
 // TEMPLATE: the build step (build_harness.py) injects briefs.json + gates.mjs source at the two
 // placeholders below (one each), emitting a self-contained ASCII script for the Workflow tool.
-// Unit = one section. Per section: L1 writers(3) -> GATE -> L2 editor -> GATE -> L3 audit(6 lanes) -> L4 judge -> FINAL GATE.
+// WRITE: 3 teams, each = 3 paraphrased BLOCK-writers that render the team's WHOLE block (all its sections)
+// in one go, step by step (1M ctx). Then per section: GATE -> editor merges the clean drafts -> GATE.
+// Then BARRIER -> whole-thesis red-team -> whole-thesis audit (honesty x3 + 5 lanes) -> boss writes the final, section by section.
 // Lessons: §2 paraphrased panel, NO examples, identical hard constraints · §3 deterministic JS gate is the spine ·
 // §4 red-team synthesizes by reference · P9 auditors PROPOSE only · P8 null-degrade · B5 sequential batches.
 
@@ -72,16 +74,28 @@ function brmain(brief) {
   ].join('\n');
 }
 
-// 3 paraphrased writer heads (voice differs; constraints identical)
-const HEADS = [
-  'You are an empirical corporate-finance author drafting this section of your own thesis. Write the section\'s final prose now, in your own steady scholarly voice.',
-  'Act as the paper\'s writer. Turn the locked propositions below into the finished section text, faithful and readable, in clean academic register.',
-  'Compose this section as the thesis author. Convert each proposition into publishable LaTeX prose that a finance referee would find precise and well-built.',
-];
+// per-section editor / boss output: one section's paragraphs
 const WRITER_SCHEMA = { type: 'object', required: ['paragraphs'], properties: { paragraphs: { type: 'array', items: {
   type: 'object', required: ['para_id', 'final_prose'], properties: {
     para_id: { type: 'string' }, final_prose: { type: 'string', description: 'LaTeX prose for this paragraph' },
     prop_ids: { type: 'array', items: { type: 'string' } } } } } } };
+// a BLOCK-writer returns prose for EVERY section in its team's block (Sina's design: each of a team's 3
+// paraphrased writers writes the team's WHOLE block in one go, step by step, using the 1M-token context).
+const BLOCK_WRITER_SCHEMA = { type: 'object', required: ['sections'], properties: { sections: { type: 'array', items: {
+  type: 'object', required: ['section', 'paragraphs'], properties: {
+    section: { type: 'string', description: 'section id, e.g. "2.1"' },
+    paragraphs: { type: 'array', items: { type: 'object', required: ['para_id', 'final_prose'], properties: {
+      para_id: { type: 'string' }, final_prose: { type: 'string', description: 'LaTeX prose for this paragraph' } } } } } } } } };
+// 3 paraphrased block-writer heads (voice differs; constraints identical)
+const BLOCK_HEADS = [
+  'You are an empirical corporate-finance author drafting these sections of your own thesis. Write each section\'s final prose now, in your own steady scholarly voice.',
+  'Act as the paper\'s writer. Turn the locked propositions below into the finished text for every section, faithful and readable, in clean academic register.',
+  'Compose these sections as the thesis author. Convert each proposition into publishable LaTeX prose that a finance referee would find precise and well-built.',
+];
+// concatenate the team's per-section briefs (rulebook+props+constraints+seams) into one block prompt
+function blockMain(briefs) {
+  return briefs.map((b, i) => `\n======== SECTION ${b.section} (${i + 1}/${briefs.length}) ========\n${brmain(b)}`).join('\n');
+}
 
 // 6 exclusive audit lanes (P7 stay-in-lane; P9 PROPOSE only, never rewrite)
 const LANES = [
@@ -97,22 +111,7 @@ const AUDIT_SCHEMA = { type: 'object', required: ['issues'], properties: { issue
     para_id: { type: 'string' }, severity: { enum: ['critical', 'major', 'minor'] },
     issue: { type: 'string' }, proposed_fix: { type: 'string' }, evidence: { type: 'string' } } } } } };
 
-async function writeSection(brief) {
-  // L1: 3 paraphrased writers
-  const drafts = (await parallel(HEADS.map((h, v) => () =>
-    agent(`${h}\n\n${brmain(brief)}`, { label: `write:${brief.section}:v${v + 1}`, phase: 'Write', schema: WRITER_SCHEMA })
-  ))).filter(Boolean);
-  // GATE each draft; keep only gate-clean ones
-  const clean = drafts.filter(d => sectionGate(d, brief).pass);
-  if (!clean.length) return { section: brief.section, status: 'BLOCKED', stage: 'L1', detail: drafts.map(d => sectionGate(d, brief).blocks).flat().slice(0, 12) };
-  // L2: editor synthesizes the best single draft BY REFERENCE (no new claims)
-  const merged = await agent(
-    `You are the section editor. Below are ${clean.length} independent drafts of the SAME section, each already number- and honesty-gate-clean. Produce ONE best version: choose the strongest rendering of each paragraph and smooth the flow. Invent nothing; every number/citation must already appear in one of the drafts; keep all hedges.\n\n${brmain(brief)}\n\nDRAFTS:\n${JSON.stringify(clean.map(d => d.paragraphs), null, 1)}`,
-    { label: `edit:${brief.section}`, phase: 'Write', schema: WRITER_SCHEMA });
-  const g = sectionGate(merged, brief);
-  if (!g.pass) return { section: brief.section, status: 'BLOCKED', stage: 'L2', detail: g.blocks.slice(0, 12), drafts: clean.map(d => d.paragraphs) };
-  return { section: brief.section, status: 'WRITTEN', brief, merged, drafts: clean.map(d => d.paragraphs), flags: g.flags };
-}
+// (write logic lives in writeTeam below: 3 block-writers -> per-section GATE -> editor merge -> GATE)
 
 // collect verbatim source quotes across the WHOLE thesis (the honesty evidence for the whole-thesis honesty audit)
 function quoteBlockAll(written) {
@@ -167,8 +166,8 @@ async function bossSection(w, fullDraft, allReports) {
   return { section: brief.section, status: 'OK', final, flags: g.flags, audit_count: mine.length, trail };
 }
 
-// ---- run: 3 PARALLEL TEAMS, each owning a section-group (Sina's design). Rate-limit-safe:
-// only 3 streams run at once (one section per team in flight), not a 51-agent fan-out (lessons B5).
+// ---- run: 3 PARALLEL TEAMS, each owning a section-group (Sina's design). Each team's 3 writers render the
+// whole block in one go -> peak ~9 block-writers concurrent (under the 16 cap), not a 51-agent fan-out (lessons B5).
 let A = args; if (typeof A === 'string') { try { A = JSON.parse(A); } catch (e) { A = {}; } } A = A || {};
 const ONLY = Array.isArray(A.only) ? A.only : (A.only ? [A.only] : null);
 const TEAMS = [
@@ -176,16 +175,32 @@ const TEAMS = [
   { name: 'T2-results', stems: ['section3.1', 'section3.2', 'section3.3', 'section3.4', 'section4.1', 'section4.2', 'section4.3', 'section4.4', 'section4.5'] },
   { name: 'T3-framing', stems: ['section_abstract', 'section1', 'section5'] },
 ];
-// ===== PHASE A -- WRITE: 3 thematic teams in parallel; each writes its sections (writers->gate->editor->gate). NO audit yet. =====
+// ===== PHASE A -- WRITE: 3 thematic teams in parallel. Each team = 3 block-writers (each renders the team's
+// WHOLE block in one go) -> per section: GATE the 3 versions, editor merges the clean ones, GATE. NO audit yet. =====
 async function writeTeam(team) {
-  const out = [];
-  for (const stem of team.stems) {                 // sequential within a team -> low concurrency
-    if (ONLY && !ONLY.includes(stem)) continue;
-    const brief = BRIEFS.find(b => b.stem === stem); if (!brief) continue;
-    log(`[${team.name} WRITE] ${stem}`);
-    out.push(await writeSection(brief));
-  }
-  return out;
+  let briefs = team.stems.map(s => BRIEFS.find(b => b.stem === s)).filter(Boolean);
+  if (ONLY) briefs = briefs.filter(b => ONLY.includes(b.stem) || ONLY.includes(b.section));
+  if (!briefs.length) return [];
+  const ids = briefs.map(b => b.section).join(', ');
+  log(`[${team.name} WRITE] block: ${ids}`);
+  // L1: 3 paraphrased block-writers, each renders ALL of the team's sections, step by step
+  const blocks = (await parallel(BLOCK_HEADS.map((h, v) => () =>
+    agent(`${h}\n\nWrite the FINAL LaTeX prose for ALL of the following sections, in order, working through them step by step. Return EXACTLY one entry per section (sections: ${ids}) and, within each, one entry per paragraph tagged with its para_id. Omit no section and no paragraph.\n${blockMain(briefs)}`,
+      { label: `write:${team.name}:v${v + 1}`, phase: 'Write', schema: BLOCK_WRITER_SCHEMA })
+  ))).filter(Boolean);
+  // L2: per section -> gather the 3 versions, GATE, editor merges the clean ones, GATE
+  return await parallel(briefs.map(brief => async () => {
+    const versions = blocks.map(bk => (bk.sections || []).find(s => s.section === brief.section || s.section === brief.stem)).filter(Boolean);
+    const clean = versions.filter(v => sectionGate(v, brief).pass);
+    if (!clean.length) return { section: brief.section, status: 'BLOCKED', stage: 'L1', detail: versions.map(v => sectionGate(v, brief).blocks).flat().slice(0, 12) };
+    const merged = await agent(
+      `You are the section editor. Below are ${clean.length} independent drafts of the SAME section, each already number- and honesty-gate-clean. Produce ONE best version: choose the strongest rendering of each paragraph and smooth the flow. Invent nothing; every number/citation must already appear in one of the drafts; keep all hedges.\n\n${brmain(brief)}\n\nDRAFTS:\n${JSON.stringify(clean.map(d => d.paragraphs), null, 1)}`,
+      { label: `edit:${brief.section}`, phase: 'Write', schema: WRITER_SCHEMA });
+    if (!merged) return { section: brief.section, status: 'BLOCKED', stage: 'L2', detail: ['editor returned null'], drafts: clean.map(d => d.paragraphs) };
+    const g = sectionGate(merged, brief);
+    if (!g.pass) return { section: brief.section, status: 'BLOCKED', stage: 'L2', detail: g.blocks.slice(0, 12), drafts: clean.map(d => d.paragraphs) };
+    return { section: brief.section, status: 'WRITTEN', brief, merged, drafts: clean.map(d => d.paragraphs), flags: g.flags };
+  }));
 }
 log('PHASE A: write -- 3 thematic teams, parallel');
 const written = (await parallel(TEAMS.map(t => () => writeTeam(t)))).flat().filter(Boolean);
