@@ -1,10 +1,15 @@
 \documentclass[11pt]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{adjustbox}
+\usepackage{pdflscape}
+\usepackage[round,authoryear]{natbib}
 \usepackage[hidelinks]{hyperref}
-\providecommand{\citep}[1]{\cite{#1}}
-\providecommand{\citet}[1]{\cite{#1}}
 \usepackage{setspace}\onehalfspacing
+\setlength{\emergencystretch}{3em}
 \title{CEO Question-and-Answer Uncertainty and the Anticipation of Cash Acquisitions}
 \author{}\date{}
 \begin{document}
@@ -13,7 +18,7 @@
 
 Firms host quarterly earnings calls and field analysts' unscripted questions, and the language a CEO uses in answering is increasingly read as a window into what managers know but have not yet disclosed. Yet when a firm is privately committed to an acquisition it has not announced, the executive holds the routine call unable to confirm or deny the one development that matters. Whether the spoken record tracks that withholding has not been characterized. We study the earnings-call transcripts and acquisition records of United States public firms from 2002 to 2018, covering 88,205 calls from 1,884 firms. From this language we construct a residual measure of CEO question-and-answer uncertainty---the part that remains once each executive's persistent speaking style is removed---and we track it around firms' cash acquisitions, with stock acquisitions as a comparison. We find that this residual uncertainty is elevated in the quarter before a cash acquisition, relative to the firm's own other quarters, with no comparable rise before stock acquisitions. Moreover, it becomes indistinguishable from zero once the deal is announced, even before completion, while the cash that funds the purchase stays on the balance sheet until the deal closes. Furthermore, the elevation concentrates in cash acquisitions rather than stock acquisitions, a difference that survives a formal pooled test. This pattern is not accounted for by the analyst cash-scrutiny we can measure; we read it as call language that tracks the deal's passage from private to public, a within-firm correlational regularity rather than a tested mechanism. Finally, the residual is also unrelated to the firm's post-call bid-ask spread, a standard gauge of information asymmetry, while the scripted presentation is, contemporaneously and on one-tailed within-firm tests, positively associated with it, consistent with the two parts of the call relating to the outside information environment in different ways. Overall, a constrained executive's unscripted answers appear to carry a readable, anticipatory trace of an acquisition the firm has not yet disclosed.
 
-\section{1}
+\section{Introduction}
 
 Earnings calls, and especially the unscripted question-and-answer session, are a setting in which managers' language carries information beyond the scripted presentation \citep{matsumoto2011}. Disclosure theory holds that an informed manager may rationally withhold private information when disclosure is costly \citep{verrecchia1983}, and that non-disclosure can persist in equilibrium because outside investors cannot distinguish an uninformed manager from one who is informed but silent \citep{dye1985}, so a withholding state is itself informative. A firm privately committed to an acquisition it has not announced sits in a concrete such state: information about preliminary merger negotiations can be material well before any definitive agreement \citep{basic_v_levinson}, and although the firm may stay silent it may not mislead once it speaks \citep{rule_10b5, basic_v_levinson}, so the executive can neither confirm nor deny the pending deal and is left to answer around it. When a manager cannot answer directly, the constraint can surface in the words themselves, for non-answers are common and not informationally empty: in a large share of calls managers leave requested information undisclosed, and, in the words of that literature, silence speaks \citep{hollander2010}.
 
@@ -35,7 +40,7 @@ The remainder of the paper proceeds as follows. Section~2 develops the conceptua
 
 \section{Theoretical Framework and Hypothesis Development}
 
-\subsection{2.1}
+\subsection{Conceptual Framework + Main Literature Review}
 
 Consider a firm that has privately committed to an acquisition but has not yet announced it. Such a firm sits in a particular disclosure state, not a particular balance-sheet state: the pending deal is material information that the public does not yet hold, while the quarterly earnings call is a standing obligation the firm must still meet. Disclosure theory gives this bind its shape. \citet{verrecchia1983} shows that a manager who knows something may rationally choose not to reveal it when disclosure is costly; there is a threshold below which the informed manager simply withholds. \citet{dye1985} shows why such silence can survive in equilibrium: outside investors cannot always tell a manager who knows nothing from one who knows something and is keeping quiet, so withholding is not, by itself, a giveaway. The pending deal can matter to investors well before any contract is signed. In \citet{basic_v_levinson}, the Court held that information about preliminary, still-pending merger negotiations can be material, and that materiality turns on weighing how likely the deal is against how large it would be -- a probability-times-magnitude assessment rather than a bright line. Yet the same law that makes the deal material also limits what the manager may say about it. A firm has no general duty to disclose confidential merger talks, so staying silent is permitted; but once it speaks, it may not mislead, because an untrue or half-true statement is unlawful \citep{basic_v_levinson, rule_10b5}. Hence a flat denial is not a lawful option, which leaves deflection. The result is a tight bind: the chief executive must host the call, cannot address the one material thing, and cannot deny it either. That bind -- a state of informed withholding, which the theory treats as itself informative -- is the organizing primitive of this paper.
 
@@ -43,7 +48,7 @@ The earnings call is where this bind becomes visible. It is a recurring, semi-sp
 
 Now place a constrained chief executive in that Q\&A. If the one pressing question is the one he may not answer, his unscripted replies have nowhere clean to go: they may turn hedged, qualified, and non-committal, and the share of uncertainty words in his answers may rise. This is not a claim that managers speak at random. \citet{hollander2010} show that managers make deliberate disclosure-and-silence choices during conference calls, and that a non-answer or a silence is itself informative to the market -- saying little is a choice the market reads. To the extent that such a signal is keyed to the undisclosed deal, it should be present while the deal is still secret and should resolve once the announcement makes the deal public. The undisclosed state, in other words, supplies a clock: the language moves with the information and settles when the information comes out.
 
-One caution is needed before going further. Some of the uncertainty in how a manager speaks is simply persistent personal style. \citet{bertrand_schoar2003} show that managers carry durable, individual styles that show up as manager fixed effects in firm policies and outcomes -- a measurable component that stays with the person, not the moment. Call language is no exception. \citet{dwz2021} separate a manager's uncertainty and clarity language in earnings calls into two pieces: a persistent, manager-specific component -- a chief-executive fixed effect -- and a time-varying, call-level residual that changes from one call to the next. This paper follows that split. The distinction matters here for one reason. An anticipatory signal that tracks a particular pending deal cannot be a fixed trait, because it must appear and then disappear within a single executive's tenure. Hence, to the extent that such a signal exists at all, it can only live in the call-varying part, once persistent style has been netted out. It is worth adding what that residual does not do elsewhere: \citet{dwz2021} find that the time-varying, residual component of call uncertainty is largely unrelated to market and stock-price reactions, so on its own it explains little for prices. An anticipatory, deal-tracking reading of the residual is therefore a claim about where a signal would have to sit, not a claim that the residual is already known to carry one.
+One caution is needed before going further. Some of the uncertainty in how a manager speaks is simply persistent personal style. \citet{bertrand_schoar2003} show that managers carry durable, individual styles that show up as manager fixed effects in firm policies and outcomes -- a measurable component that stays with the person, not the moment. Call language is no exception. \citet{dwz} separate a manager's uncertainty and clarity language in earnings calls into two pieces: a persistent, manager-specific component -- a chief-executive fixed effect -- and a time-varying, call-level residual that changes from one call to the next. This paper follows that split. The distinction matters here for one reason. An anticipatory signal that tracks a particular pending deal cannot be a fixed trait, because it must appear and then disappear within a single executive's tenure. Hence, to the extent that such a signal exists at all, it can only live in the call-varying part, once persistent style has been netted out. It is worth adding what that residual does not do elsewhere: \citet{dwz} find that the time-varying, residual component of call uncertainty is largely unrelated to market and stock-price reactions, so on its own it explains little for prices. An anticipatory, deal-tracking reading of the residual is therefore a claim about where a signal would have to sit, not a claim that the residual is already known to carry one.
 
 Cash deals and stock deals share the same disclosure bind, but they differ in two ways that matter for the design. The first difference is on the balance sheet: a cash purchase draws on an accumulated, visible cash position -- a war chest, in effect -- that a stock deal need not assemble. \citet{harford1999} documents that firms build up cash reserves ahead of acquisitions and that cash-rich firms are more acquisitive, so a cash bid reflects an accumulated balance-sheet position. The second difference is about incentives to manage the story beforehand. A stock bidder pays in its own equity -- its acquisition currency -- and so has reason to care what that equity is worth. \citet{shleifer_vishny2003} argue that an overvalued bidder has a powerful incentive to keep its equity overvalued so that it can buy with stock, a valuation-and-currency motive that a cash bidder does not share. Bidders act on that motive before the deal: \citet{louis2004} finds that stock-for-stock bidders overstate reported earnings -- positive abnormal accruals -- in the quarter just before the announcement, whereas cash acquirers do not. The same pre-deal management reaches disclosure tone as well, since \citet{thewissen2024} report that stock bidders inflate the tone of their earnings press releases before a stock-for-stock acquisition. Two clarifications keep this in its proper place. First, on what the comparison buys us: because a cash bidder has no equity currency to protect, it lacks the parallel pre-deal management incentive that a stock bidder has, so we read the cash deal as the relatively unmanaged window onto the disclosure state and the stock deal as the managed comparison -- the same bind, but overlaid with an extra reason to manage the message. This is what motivates our focus on cash deals; how large the cash-versus-stock gap is, and why the run-up should concentrate in cash, are developed with H1a in the hypotheses that follow. Here the point is motivation, not identification, and the source of the cash uncertainty stays open. Second, a firewall between channels: the management documented above operates on scripted, prepared artifacts -- the tone of an earnings press release, the accruals in a reported number -- whereas our dependent variable is uncertainty in the unscripted Q\&A, the call segment managers cannot fully prepare in advance. Because we read the venue that is hardest to stage-manage, the scripted-channel management those papers describe does not mechanically carry into our measure; our signal is therefore not an artifact of the very tone-management the citations describe, which is a strength of the design rather than a gap in it. The two differences then come apart in time: uncertainty tracks the information and resolves at the announcement, while the cash position serves the purchase and, mechanically, persists until the deal completes.
 
@@ -51,7 +56,7 @@ Where does this leave our paper relative to the nearest work? The closest study 
 
 One last boundary. The prediction admits two readings, and we do not choose between them. On one reading the disclosure is compliance-constrained: the chief executive legally cannot speak to the deal. On the other it is strategic silence: the chief executive chooses not to. In our data these two are observationally equivalent -- the same pattern is consistent with either -- and the framework does not require us to separate them. We therefore document a pattern keyed to the disclosure state, claim no identification, and leave the underlying mechanism open.
 
-\subsection{2.2}
+\subsection{Hypothesis Development}
 
 We now turn the framework into predictions we can test. The two dimensions developed above -- anticipatory timing and cash-concentration -- speak to where and when a chief-executive Q\&A language signal should appear, not to why it appears. To fix the timing, we define the pre-announcement quarter. Let event time $e$ be the call quarter minus the announcement quarter, so that $e = -1$ is the call held in the quarter immediately before the firm's first acquisition that is at least 50\% cash. We then set $\mathit{PreAnnounceQtr} = \mathbf{1}[e = -1]$, an indicator equal to one for that single pre-announcement call and zero otherwise. We state the predictions as falsifiable hypotheses -- H1, H1a, and H1b -- and test them with the designs that follow. Throughout, we read the results in descriptive, correlational terms: they describe where and when the signal sits, and we make no causal claim.
 
@@ -63,17 +68,17 @@ Our third prediction is about timing after the announcement, and it turns on two
 
 One alternative reading deserves to be flagged here, though we develop and test it later. The competing hypothesis is analyst scrutiny: perhaps the pre-announcement rise in uncertainty reflects analysts asking more cash-related questions, which mechanically draws out hedged answers, rather than the disclosure bind doing the work. This is an identification threat. We motivate and develop it where we set out our construct measures, and we test it as a side analysis with the results, where the run-up survives it -- though we read that as an underpowered failure to find, not a powered equivalence test. Two points keep this in proportion. It is distinct from the two observationally-equivalent readings drawn earlier -- compliance-constrained versus strategic silence -- which concern why the manager is quiet, not whether scrutiny is doing the work. And ruling this channel out does not establish a mechanism; it removes one rival story, nothing more.
 
-\subsection{2.3}
+\subsection{Estimation of the Main Variable}
 
 We measure uncertainty with the finance-specific apparatus introduced earlier. Following \citet{lm2011}, we take their `uncertainty' word list -- a list built for financial text -- and apply it as a word-share, the fraction of words that fall on the list. This is the established tool, not a new one. On top of it we build the raw measure that the decomposition operates on. Following \citet{dwz}, we define \[ \mathit{UncAnsCEO} = \frac{\mathit{UnctWordsAnsCEO}}{\mathit{WordsAnsCEO}}, \] that is, the number of uncertainty words the chief executive uses when answering analysts divided by the total number of words spoken in those answers (their equation~(2)). In words, it is the share of the chief executive's answer that is uncertainty language. This raw share is the input to the decomposition and the left-hand side of the decomposition equation below. We compute the same word-share on the two parts of the call separately: \textit{UncPreCEO} is the share in the chief executive's prepared presentation (their equation~(1)), and \textit{UncQue} is the share in the analysts' questions (their equation~(3)). Both take the same form as \textit{UncAnsCEO}, but they enter the decomposition as controls rather than as the dependent variable.
 
-Why a residual at all? As established earlier, an anticipatory signal that tracks a particular pending deal must vary from one call to the next within a single chief executive's tenure, so it cannot live in the persistent, manager-specific style; it can only live in the call-varying residual. The decomposition isolates exactly that residual. We use the specification of \citet{dwz}, estimated on our own data: \[ \mathit{UncAnsCEO}_{it} = \alpha + \gamma_i\,\mathit{CEO}_{it} + \beta_s\,\mathit{Speech}_{sit} + \beta_k\,\mathit{FirmChars}_{kit} + \mathit{Year}_t + \varepsilon_{it}, \] where $\alpha$ is a constant; $\mathit{CEO}_{it}$ picks out the chief executive, so that $\gamma_i$ is that manager's persistent style and $\mathit{ClarityCEO}_i = -\gamma_i$; $\mathit{Speech}_{sit}$ collects the other call-language controls $\{\mathit{UncPreCEO}, \mathit{UncQue}, \mathit{NegCall}\}$; $\mathit{FirmChars}_{kit}$ collects the firm controls $\{\mathit{SurpDec}, \mathit{EPSgrowth}, \mathit{StockRet}, \mathit{MarketRet}\}$; and $\mathit{Year}_t$ is a set of year fixed effects. The object we carry forward is the residual, $\mathit{UncResCEO} = \varepsilon_{it}$, the part of answer-uncertainty left unexplained by all of these. One point about ownership is worth stating plainly: this is the specification of \citet{dwz}, re-estimated on our sample, so the residual is our own, not their published residual. This equation is the precise version of the `call-level residual' described earlier. It nets out two things at once: the persistent style $\gamma_i$, and observable call-level factors -- the prepared-presentation uncertainty, the analysts' question uncertainty, call negativity, contemporaneous performance, and the year. Because it removes more, \textit{UncResCEO} is narrower than a style-only residual would be; it is a refinement of the earlier description, not a different object. The measure itself is not new to us: \citet{dwz} construct \textit{UncResCEO} and use it as an explanatory variable in their own model of market responses (their equation~(5)). Our contribution is not the measure but the reading we give it -- an anticipatory, disclosure-state reading of \textit{UncResCEO} around deals that have not yet been disclosed. Following \citet{dwz}, the residual is answer-uncertainty net of the scripted presentation (\textit{UncPreCEO}): it isolates the unscripted, call-specific component, which is where the anticipation of an undisclosed deal would surface. If some of that anticipation also leaks into the scripted, vetted remarks, then the residual understates it, which makes the measure a conservative floor rather than an upper bound. By the same construction the residual is also net of the analysts' own question-uncertainty (\textit{UncQue}) and of call negativity (\textit{NegCall}), and we rely on this when we reconcile the measure with the scrutiny and tone alternatives later.
+Why a residual at all? As established earlier, an anticipatory signal that tracks a particular pending deal must vary from one call to the next within a single chief executive's tenure, so it cannot live in the persistent, manager-specific style; it can only live in the call-varying residual. The decomposition isolates exactly that residual. We use the specification of \citet{dwz}, estimated on our own data: \[ \mathit{UncAnsCEO}_{it} = \alpha + \gamma_i\,\mathit{CEO}_{it} + \beta_s\,\mathit{Speech}_{sit} + \beta_k\,\mathit{FirmChars}_{kit} + \mathit{Year}_t + \varepsilon_{it}, \] where $\alpha$ is a constant; $\mathit{CEO}_{it}$ picks out the chief executive, so that $\gamma_i$ is that manager's persistent style and $\mathit{ClarityCEO}_i = -\gamma_i$; $\mathit{Speech}_{sit}$ collects the other call-language controls $\{\mathit{UncPreCEO},\allowbreak \mathit{UncQue},\allowbreak \mathit{NegCall}\}$; $\mathit{FirmChars}_{kit}$ collects the firm controls $\{\mathit{SurpDec},\allowbreak \mathit{EPSgrowth},\allowbreak \mathit{StockRet},\allowbreak \mathit{MarketRet}\}$; and $\mathit{Year}_t$ is a set of year fixed effects. The object we carry forward is the residual, $\mathit{UncResCEO} = \varepsilon_{it}$, the part of answer-uncertainty left unexplained by all of these. One point about ownership is worth stating plainly: this is the specification of \citet{dwz}, re-estimated on our sample, so the residual is our own, not their published residual. This equation is the precise version of the `call-level residual' described earlier. It nets out two things at once: the persistent style $\gamma_i$, and observable call-level factors -- the prepared-presentation uncertainty, the analysts' question uncertainty, call negativity, contemporaneous performance, and the year. Because it removes more, \textit{UncResCEO} is narrower than a style-only residual would be; it is a refinement of the earlier description, not a different object. The measure itself is not new to us: \citet{dwz} construct \textit{UncResCEO} and use it as an explanatory variable in their own model of market responses (their equation~(5)). Our contribution is not the measure but the reading we give it -- an anticipatory, disclosure-state reading of \textit{UncResCEO} around deals that have not yet been disclosed. Following \citet{dwz}, the residual is answer-uncertainty net of the scripted presentation (\textit{UncPreCEO}): it isolates the unscripted, call-specific component, which is where the anticipation of an undisclosed deal would surface. If some of that anticipation also leaks into the scripted, vetted remarks, then the residual understates it, which makes the measure a conservative floor rather than an upper bound. By the same construction the residual is also net of the analysts' own question-uncertainty (\textit{UncQue}) and of call negativity (\textit{NegCall}), and we rely on this when we reconcile the measure with the scrutiny and tone alternatives later.
 
 One property of this construction deserves a note, offered as a caution rather than a complaint. \textit{UncResCEO} is a generated regressand -- a residual estimated in a first step that we then use as the dependent variable in a second step. \citet{pagan1984} sets out the issue for such two-step settings. This is a standard arrangement, not a flaw peculiar to us; indeed \citet{dwz} themselves use the residual as a regressor in their own second step. The practical implication is that conventional standard errors may be understated unless a two-step correction is applied. We flag the concern, together with the bootstrap that would address it, and note that it does not change the descriptive readings we report. A second property we do not assume away: whether the residual truly captures uncertainty, rather than merely reflecting how hard analysts are pressing, is an empirical question. We treat it as one and take it up where we examine the construct's validity, rather than asserting it here.
 
-\subsection{2.4}
+\subsection{Methodology and Empirical Design}
 
-We estimate three related designs on a common panel. The first and main one, which we label MA1, is \[ Y_{it} = \beta\,\mathit{PreAnnounceQtr}_{it} + \gamma' X_{it} + \alpha_i + \tau_t + \varepsilon_{it}, \] where $Y_{it}$ is the outcome for firm $i$ in quarter $t$; $X_{it}$ is a vector of firm controls $\{\mathit{Leverage}, \mathit{lnAssets}, \mathit{TobinsQ}, \mathit{ROA}, \mathit{Capex}, \mathit{DivDummy}, \mathit{sCFO}\}$; $\alpha_i$ is a firm fixed effect, which absorbs everything that stays fixed about the firm; and $\tau_t$ is a calendar year-quarter fixed effect, which absorbs whatever is common to all firms in that quarter. We cluster standard errors by firm. The treatment indicator is $\mathit{PreAnnounceQtr}_{it} = \mathbf{1}[e = -1]$, where event time $e$ is the call quarter minus the quarter of the firm's first acquisition that is at least 50\% cash. We drop the post-announcement quarters ($e \geq 0$) from the sample, and firms that never acquire (for which $e$ is undefined) serve as the fixed-effects baseline. The coefficient $\beta$ is the estimand: it measures a within-firm shift in the outcome in the pre-announcement quarter -- the anticipation quarter -- read against the same firm's own earlier, normal quarters. The never-acquirers mainly pin down the calendar-time effects rather than serving as the within-firm contrast. We read $\beta$ as a descriptive contrast, not a causal effect.
+We estimate three related designs on a common panel. The first and main one, which we label MA1, is \[ Y_{it} = \beta\,\mathit{PreAnnounceQtr}_{it} + \gamma' X_{it} + \alpha_i + \tau_t + \varepsilon_{it}, \] where $Y_{it}$ is the outcome for firm $i$ in quarter $t$; $X_{it}$ is a vector of firm controls $\{\mathit{Leverage},\allowbreak \mathit{lnAssets},\allowbreak \mathit{TobinsQ},\allowbreak \mathit{ROA},\allowbreak \mathit{Capex},\allowbreak \mathit{DivDummy},\allowbreak \mathit{sCFO}\}$; $\alpha_i$ is a firm fixed effect, which absorbs everything that stays fixed about the firm; and $\tau_t$ is a calendar year-quarter fixed effect, which absorbs whatever is common to all firms in that quarter. We cluster standard errors by firm. The treatment indicator is $\mathit{PreAnnounceQtr}_{it} = \mathbf{1}[e = -1]$, where event time $e$ is the call quarter minus the quarter of the firm's first acquisition that is at least 50\% cash. We drop the post-announcement quarters ($e \geq 0$) from the sample, and firms that never acquire (for which $e$ is undefined) serve as the fixed-effects baseline. The coefficient $\beta$ is the estimand: it measures a within-firm shift in the outcome in the pre-announcement quarter -- the anticipation quarter -- read against the same firm's own earlier, normal quarters. The never-acquirers mainly pin down the calendar-time effects rather than serving as the within-firm contrast. We read $\beta$ as a descriptive contrast, not a causal effect.
 
 The second design, which we label MA2, replaces the single indicator with a small set of event-time bins, so that we can see the shape over time: \[ Y_{it} = \sum_b \beta_b\,\mathit{Bin}_{b,it} + \gamma' X_{it} + \alpha_i + \tau_t + \varepsilon_{it}. \] There are four bins. \textit{PRE2} is two quarters before ($e = -2$); \textit{PRE1} is the pre-announcement quarter ($e = -1$); \textit{GAP} covers the quarters after the announcement when the deal is announced but not yet closed; and \textit{POST} covers the quarters after the deal has completed. The omitted baseline is the set of quarters three or more before the announcement ($e \leq -3$) together with the never-acquirers. We cap the post-window at four quarters, truncate it at a firm's second announcement, and drop the post rows of deals that are later withdrawn. The discriminating contrast is a Wald test on $\beta_{\mathit{PRE1}} - \beta_{\mathit{GAP}}$: if uncertainty drops at the GAP -- announced but not yet completed -- that favours a reading in which the constraint lifts at announcement over one in which the outcome only resolves at completion. \textit{PRE2} is the validity check; with no anticipation that early, its coefficient is expected to be about zero, which is what a clean pre-trend would show. We run the event study for cash acquirers and, as a benchmark for comparison, for stock acquirers, and we report all bin coefficients and Wald drops two-tailed.
 
@@ -83,7 +88,7 @@ Three assumptions are common to all three designs, and we state them descriptive
 
 Several threats do not belong to any single equation, and we disclose them together. First, inference: we cluster standard errors by firm in the three designs, and some validity tables use two-way clustering, by firm and by calendar quarter. In places we report the focal treatment tests one-tailed; for honesty these should be read two-tailed, and the load-bearing results survive that stricter standard -- in particular, the pre-announcement run-up remains significant at $p = 0.0074$ two-tailed. Second, the endogeneity of timing: firms choose when to do deals, and only the first deal sets our event clock, so later deals can contaminate the baseline; we mitigate this by truncating each firm's post-window at its second announcement, but the never-acquirer baseline and the focus on the first deal remain assumptions, not identification. Third, functional form: the outcomes are levels and word-shares, not counts; the \textit{CashRatio} regressions use a partial-adjustment lag, because cash is sticky -- its quarter-to-quarter persistence is about $\rho \approx 0.78$ -- while the residual outcomes use no such lag; and because \textit{UncResCEO} is a generated regressand, the two-step standard-error caveat noted earlier applies to every design here. Fourth, the choice of controls: the firm-financial controls -- \textit{Leverage}, \textit{lnAssets}, \textit{TobinsQ}, \textit{ROA}, \textit{Capex}, \textit{DivDummy}, and \textit{sCFO} -- follow the standard cash-determinants regression \citep{opler1999, bates2009}, and we ground the cash equation in that literature and read it mechanically, as cash accumulating as a by-product of retained free cash flow rather than as purposeful saving toward a war chest. Fifth, sample selection. The residual outcome \textit{UncResCEO} exists only for chief executives with at least five conference calls in the main, non-financial and non-utility, industry sample -- the universe in which the first-stage residual is estimated. Because every design drops observations that lack the dependent variable, all of the focal uncertainty regressions for H1, H1b, and H1a run on this subsample of firms with at least five calls in the main industries, which skews toward larger, better-covered firms. The \textit{CashRatio} outcomes, by contrast, use the full panel. We disclose this as a selection threat to external validity.
 
-\subsection{2.5}
+\subsection{Specification and Measurement of Key Constructs}
 
 Having defined the residual, we now check whether it measures what we claim, and we treat that validity as an empirical question to answer here, not as an assumption. We ask two things of $\mathrm{UncResCEO}$. First, is it convergent: does it move together with measures of uncertainty that are already established? That is the check we run in this section. Second, could a plausible rival account for the pre-announcement pattern instead of the disclosure bind, namely analyst scrutiny, how much of a call analysts spend asking about cash? That rival is a plausible alternative driver, and we put it to the data as a side analysis in Section~4.1. By construction, the residual is already net of the scripted presentation and of the wording of the analysts' own questions, as set out in Section~2.3, so these checks ask how it behaves once that wording has been removed.
 
@@ -95,7 +100,7 @@ Finally, we collect the remaining key constructs used in the designs. $\mathrm{C
 
 \section{Data and Main Results}
 
-\subsection{3.1}
+\subsection{Data, Sample, and Variable Construction}
 
 We combine five data sources. First, we download Capital~IQ earnings-call transcripts for U.S. public firms over 2002--2018, parsed so that we know each speaker's role and whether a turn falls in the scripted presentation or in the back-and-forth question-and-answer (Q\&A) segment. Second, we retrieve quarterly Compustat North America fundamentals, taking the most recent fiscal quarter that ends on or before the call. Third, we pull CRSP daily records and IBES earnings records, which supply the stock-return, market-return, and earnings-surprise controls that the Section~2.3 decomposition requires. Fourth, we collect SDC merger-and-acquisition records---announcement date, completion or withdrawal date, and the cash-versus-stock split of how each deal is paid for---keeping only deals with a transaction value of at least \$1~million. Fifth, we take Execucomp annual CEO records and aggregate them into a monthly tenure panel that identifies which executive holds the CEO role in each quarter; this identity is the input to the Section~2.3 manager fixed effect. These five sources do not all use the same firm identifier. SDC keys each deal by the acquirer's six-digit CUSIP, while our call panel is keyed by the Compustat firm identifier (gvkey), so we join deals to calls through the acquirer's six-digit CUSIP, using the CRSP--Compustat link table that anchors the master-sample manifest.
 
@@ -107,7 +112,7 @@ The estimation samples are built in three layers, which is why the number of obs
 
 Table~\ref{tab:summary_stats} reports summary statistics over 2002--2018. Our earnings-call (language) sample comprises 88,205 earnings-call observations across 1,884 firms; the cash-ratio regressions draw on a broader panel spanning 2,232 firms, because the cash ratio does not require a CEO speaking-style residual and so is not limited to the calls that can form one. The count $N$ varies from row to row, because each variable is summarized only on the calls for which it is available (its complete cases). The residual uncertainty measure UncResCEO is centered near zero, with mean $-0.0000$ and a standard deviation of $0.3010$ (44,900 observations, Panel~B), while the cash ratio averages $0.1708$ with a standard deviation of $0.1806$ (Panel~C). Because the residual can be computed only for CEOs with at least five calls at non-financial and non-utility firms, the uncertainty regressions tend to describe a better-covered set of firms, one that skews toward larger firms, than the cash-ratio regressions do. For that reason every table reports its own firm and observation counts, and we are cautious about reading too much into these summary statistics on their own.
 
-\subsection{3.2}
+\subsection{Main Analysis 1: The Pre-Announcement Run-Up}
 
 Our first main analysis (MA1) estimates the single-indicator two-way fixed-effects regression of Section~2.4 four times. The regression carries firm fixed effects and calendar year-quarter fixed effects---in plain terms, it compares a firm against itself and against the same calendar quarter at other firms---and clusters standard errors by firm. We run it once for each outcome---the cash ratio (CashRatio) and the residual uncertainty in the CEO's Q\&A answers (UncResCEO)---in each arm: the cash arm, deals that are at least half cash, and the stock comparison arm, deals that are at least half stock. For treated firms we drop the quarters after the announcement, so the design sees only the run-up into the deal. Identification is within-firm: it sets a treated firm's pre-announcement quarter against that same firm's ordinary quarters. This is a correlational design and does not by itself identify a causal effect; the estimating equation is given in Section~2.4, and we do not restate it here.
 
@@ -119,7 +124,7 @@ How large are these effects? They are material but modest. The uncertainty coeff
 
 The stock arm is our comparison. It faces the same disclosure constraint, and its model is almost identical to the cash arm's---the stock partial-adjustment lag of $0.8013^{***}$ (standard error $0.0057$) is nearly the same as the cash arm's $0.7990^{***}$. Yet neither outcome shows a comparable positive run-up. In column~6 residual uncertainty carries a coefficient of $-0.0429$ (standard error $0.0307$), which is not statistically significant; in column~5 the cash ratio carries $-0.0036$, also not significant. We read these as flat, noisy nulls, not as movements in any direction. What differs at $e=-1$, the final quarter before the announcement, is therefore the response, not the model. We should be careful here: reading the two arms side by side is not yet a formal test of the difference between them. That formal cash-versus-stock test is supplied in Section~3.4, our third main analysis.
 
-\subsection{3.3}
+\subsection{Main Analysis 2: Differential Timing Around the Announcement}
 
 Our second main analysis (MA2) replaces the single pre-announcement indicator with a four-bin event study. The bins trace the deal through time: \textit{PRE2} marks the quarter two before the announcement ($e=-2$), \textit{PRE1} the quarter just before it ($e=-1$), \textit{GAP} the window in which the deal is announced but not yet closed, and \textit{POST} the quarters after completion. The baseline against which these are measured is the firm's own ordinary quarters ($e\le-3$) together with firms that never acquire. We estimate the specification on the matched universe---the set of firm-quarters where both the residual and the cash ratio are defined, 28,102 firm-quarters across 1,320 firms---and we run both outcomes on exactly these same rows. Because we impose no ordering across the bins, every coefficient is read two-tailed. Putting both outcomes on the identical sample guards the differential-timing reading against the worry that the two paths merely reflect different samples. The design is otherwise that of MA1, and it remains correlational: it does not identify a cause.
 
@@ -133,7 +138,7 @@ Column~1 of Table~\ref{tab:empire_drop_placebo} corroborates the round trip on a
 
 Taken together, the claim rests on the contrast between the two paths, not on the size or sign of any single coefficient. Uncertainty tracks the flow of information and reverses the moment the deal is announced; cash tracks the transaction and falls only at completion---a persistence that is partly mechanical, since the cash does not leave the firm until the deal closes. We do not over-read the one coefficient that dips below baseline, the \textit{POST} uncertainty estimate of $-0.0250^{*}$ (standard error $0.0130$). The reading is correlational and supportive, not definitive; it does not identify a cause, and the mechanism behind it remains open.
 
-\subsection{3.4}
+\subsection{Main Analysis 3: Cash-Specificity}
 
 We begin descriptively, rerunning the event study side by side on the stock comparison arm, using the stock column of Table~\ref{tab:empire_drop_placebo} that we held back from Section~3.3. Neither arm trends into the event: the PRE2 coefficient is flat in both ($0.0105$ in the cash arm and $-0.0056$ in the stock arm, neither significant). Only the cash arm then moves. It reproduces the run-up (PRE1 $0.0486^{***}$, standard error $0.0174$; peak-to-post drop $0.0681^{***}$, standard error $0.0187$), while the stock arm shows none of it (PRE1 $-0.0404$, standard error $0.0299$, not significant) and, if anything, its PRE1-to-GAP change is a marginal $-0.0756^{*}$ (standard error $0.0405$), a noisy across-announcement change we do not read as a directional run-up. This is a descriptive side-by-side, not yet the test.
 
@@ -147,7 +152,7 @@ Overall, we read the result as supported but fragile. One formal test at the fiv
 
 \section{Additional Analyses and Robustness}
 
-\subsection{4.1}
+\subsection{Ruling Out Analyst Scrutiny}
 
 The most immediate rival to our reading is analyst scrutiny. The idea is that the quarters just before a deal draw harder analyst questions about cash, and that it is the hard questions, not the deal itself, that produce the hedged answers we measure. This confound is genuine, not a straw man. Column~4 of Table~\ref{tab:empire_building_did} shows that the incidence of cash scrutiny --- whether a call draws heavy cash questioning at all --- does itself rise in the quarter before a cash acquisition: the coefficient on $\mathrm{HighCashScrutiny}$ is $0.0408^{**}$ (standard error $0.0194$). Scrutiny therefore moves together with both the firm's cash position and the event, and could in principle generate the run-up mechanically. The continuous, volume-based measure tells a weaker story --- in column~3 the $\mathrm{CashScrutiny}$ coefficient is $0.0854$ (standard error $0.0749$), not significant --- so the genuine confound is whether cash scrutiny happens at all (its incidence), not how much of a call it fills (its volume).
 
@@ -159,7 +164,7 @@ Third, and most directly, we put scrutiny and the pre-announcement indicator int
 
 We keep the register honest about what this does and does not show. What we have is a failure to find an effect, paired with a dissociation inside a single model --- not a powered equivalence test that could formally rule an effect out. The interaction's confidence interval (roughly $[-0.027,\,+0.016]$) does not exclude effects that would still matter against a run-up near $0.04$; about 89\% of calls draw no cash scrutiny at all; and a contrast between a significant and an insignificant coefficient is not, by itself, a test. So our claim is the narrow one: analyst scrutiny does not account for \emph{this} run-up. We do not claim that scrutiny never matters anywhere. The reading is correlational and supportive, not definitive; it identifies no cause, and the mechanism remains open.
 
-\subsection{4.2}
+\subsection{Outsider Reactions: The Bid-Ask Spread}
 
 We now ask whether the speech-uncertainty signal moves the post-call information environment --- how large the information gap is between the firm and outside traders. We proxy that environment with the firm's bid-ask spread, the gap between the price to buy and the price to sell, measured over the 25 trading days that begin on the call date. This is a standard measure of how much outside traders fear trading against better-informed insiders, following BGT, whose post-call window we adopt, and we decompose the spread by the three speech components of Section~2.3. Two priors frame the test. DWZ found that the residual uncertainty is unrelated to stock-price or trading-volume responses and explains little of the market reaction, which loads instead on the chief executive's persistent clarity --- but they never examined a liquidity outcome. BGT, by contrast, found that call language relates to information asymmetry with \emph{opposite} signs across the call's two segments: complexity in the scripted presentation is positively associated with information asymmetry (an obfuscation reading), while complexity in the spontaneous response is negatively associated with it (an information reading).
 
@@ -169,7 +174,7 @@ Second, the scripted presentation is the segment outsiders appear to react to. U
 
 Taken together, the contemporaneous spread is associated with the scripted presentation but not with the residual; we do not test the between-segment difference directly. This pattern sits within DWZ's own scripted-versus-spontaneous framing and matches BGT's presentation-versus-response split. The payoff for our main analysis is one of interpretation rather than identification: because outsiders do not react to the residual, the pre-announcement run-up documented in Section~3 is unlikely to be an artifact of outsider reaction, and is more readily read as a private, insider-side signal. We offer this as a supportive reading, not as proof.
 
-\subsection{4.3}
+\subsection{Robustness: Withdrawal as a Resolution Event}
 
 One feature of the Section~3.3 event study deserves a closer look. The post bin is dated to completion: a deal's quarters enter the post bin only once it has closed, and the quarters following a withdrawal are dropped from the event clock. Two of the three round-trip contrasts, peak-to-completion and gap-to-completion, are therefore estimated only over deals that go on to complete. Because completing and withdrawn deals need not be alike, part of the post-completion decline could in principle reflect \emph{which} deals complete rather than the resolution of the disclosure state itself. This is a correlational concern, and we do not claim to identify it away. The peak-to-gap contrast, however, is exempt. It is measured at the public announcement --- a point every announced deal reaches whatever its eventual outcome --- so it conditions on nothing that follows.
 
@@ -179,7 +184,7 @@ Table~\ref{tab:empire_drop_resolution} shows that the round trip survives. On th
 
 We bound the check honestly. Few first deals are withdrawn and then observed for complete-case quarters inside the post window, so the resolution-inclusive sample adds only 89 firm-quarters and one firm to the 28,102 firm-quarters over 1,320 firms of the main analysis. With so little new data, the post-completion decline can barely move, so what this shows is that the handful of withdrawn deals behave like the completed ones --- not that a completion-driven reading is ruled out on its own. The firmer reassurance is structural: the peak-to-gap leg is measured at announcement and conditions on nothing that follows, so the resolution of the residual at announcement never depended on which deals complete. We therefore read the resolution-inclusive estimates as consistent with the main specification, not as an independent test.
 
-\subsection{4.4}
+\subsection{Robustness: The Cash Result Without the Dynamic Term}
 
 The cash-ratio regressions carry the cash ratio's own one-quarter lag alongside firm fixed effects --- a partial-adjustment form, well suited to a sticky stock like cash that moves toward its target only gradually. A dynamic fixed-effects panel of this kind is subject to the Nickell bias, a small-sample bias that the within-firm transformation induces. That bias is not confined to the lag coefficient; it also reaches regressors correlated with lagged cash, so simply declining to interpret the lag does not immunize the event-time bins. The clean guard is therefore to remove the dynamic term altogether, rather than to reason about the size of the bias. The residual takes no lag and is untouched by this, so it serves as our anchor. This is a specification concern, not a claim of causal identification.
 
@@ -189,7 +194,7 @@ Table~\ref{tab:empire_drop_staticfe} shows that the timing pattern carries over.
 
 How should we read the two side by side? The lag belongs in the main specification, because cash is sticky and partial adjustment is the right description of how it moves; the static specification is not a better model but a check that removes the dynamic term entirely. And because the static specification carries no lagged dependent variable, it carries no dynamic-panel bias --- so the cash timing conclusion (no fall at announcement, a fall at completion) holds whether or not that term is present. The timing of the cash path, on which the differential-timing result rests, does not ride on the dynamic specification. The reading is correlational and supportive rather than definitive.
 
-\subsection{4.5}
+\subsection{Robustness: The Main Findings Without the First-Deal Restriction}
 
 Our last robustness check drops the first-deal restriction and stacks every deal a firm makes. The pre-announcement run-up survives. On the all-deals-stacked panel of Table~\ref{tab:empire_building_did}, the cash-arm residual-uncertainty coefficient is $0.0391^{***}$ (standard error $0.0140$) and the cash-ratio coefficient is $0.0033^{**}$ (standard error $0.0015$), while the stock-arm residual coefficient is $-0.0348$ (standard error $0.0272$), a flat null. It also reappears in a binary forward form. Among all firm-quarters, higher CEO Q\&A residual uncertainty is associated with a deal being announced the next quarter, of any payment type: a linear-probability coefficient of $0.0086^{***}$ (standard error $0.0026$, $p=.0011$) and a logit coefficient of $0.3233^{***}$ (standard error $0.0967$, $p=.0008$) in this forward specification (Logit~A), estimated on 40,004 firm-quarters from 1,422 firms with a deal rate of 2.84\% (pseudo-$R^2$ $0.026$). It survives firm and year-quarter fixed effects, with a linear-probability coefficient of $0.0078^{***}$ (standard error $0.00275$; 39,557 firm-quarters, 1,422 firms; within-$R^2$ $0.003$).
 
@@ -197,7 +202,7 @@ The differential-timing round trip survives all-deals as well. On the matched un
 
 The formal cash-concentration result also survives, and in fact strengthens. On the all-deals-stacked panel of Table~\ref{tab:empire_cashspec}, the pooled cash-minus-stock Wald difference is $0.1056^{**}$ (standard error $0.0423$; $z\approx2.50$, $p\approx.013$) --- the cash arm at $0.0447^{**}$ (standard error $0.0180$) against the stock arm's insignificant $-0.0609$ (standard error $0.0385$) --- larger than the first-deal difference of $0.0983^{**}$ ($p=.039$) in the same table. The proposed cause remains the weak leg: the matched cash-ratio cash-minus-stock difference is $0.0071$ (standard error $0.0062$), not significant. So the run-up still concentrates in cash deals --- concentration, not strict specificity, and with no cause asserted --- while the build-up of cash itself is not differentially cash-sided here. In binary form, among deals at $e=-1$, higher residual uncertainty is associated with the deal being a cash deal (coded one) rather than a stock deal (coded zero): a linear-probability coefficient of $0.0613^{**}$ (standard error $0.0283$, $p=.030$) and a logit coefficient of $0.7478^{**}$ (standard error $0.3399$, $p=.028$) in this specification (Logit~B), on 1,105 deal observations from 563 firms (982 cash, 123 stock; cash base rate 88.9\%; pseudo-$R^2$ $0.078$). Under firm and year-quarter fixed effects the coefficient keeps its sign but is no longer significant: a linear-probability coefficient of $0.0644$ (standard error $0.05076$, not significant; $p=.205$; 1,063 deal observations, 563 firms; within-$R^2$ $0.059$). The design stays correlational and identifies no causal effect, and we read it as concentration in cash deals, not strict specificity.
 
-\section{5}
+\section{Conclusion}
 
 In this study we examine whether the language a chief executive uses in the unscripted question-and-answer session of an earnings call tracks the disclosure state of an acquisition the firm is still withholding, using a residual measure of chief-executive question-and-answer uncertainty that nets out each executive's persistent speaking style.
 
@@ -214,27 +219,768 @@ Two further boundaries qualify the evidence. The residual is estimated only for 
 Future work could ask whether the same anticipatory language signature appears around other classes of withheld material events, and could pursue designs able to separate compliance-constrained from strategic silence, which our setting cannot distinguish. Several extensions follow. The same residual-uncertainty reading could be applied to other corporate transactions, such as divestitures, joint ventures, and strategic alliances, and to settings outside the United States; richer measures of spoken uncertainty could replace the word-list count; and identifying the mechanism behind the cash concentration, which Section~2 motivates but does not establish, including the cash-accumulation channel this study leaves open, would require a design the present setting does not provide.
 
 \clearpage
-\begin{table}[htbp]\centering\caption{Cash Scrutiny Channel}\label{tab:cash_scrutiny_channel}\textit{[table content]}\end{table}
+% Auto-generated by outputs/generate_summary_stats.py
+% Longtable fragment — caller must NOT wrap in \begin{table}.
+% Caption + label embedded inside longtable; notes follow as a separate
+% paragraph after \end{longtable} so they don't trigger 'Infinite glue
+% shrinkage' on the splitting page.
+\begingroup
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{llcrrrrrrr}
+\caption{Summary Statistics} \label{tab:summary_stats} \\
+\toprule
+Variable & Unit & N & Mean & SD & Min & P25 & Median & P75 & Max \\
+\midrule
+\endfirsthead
+\multicolumn{10}{l}{\textit{(continued from previous page)}} \\
+\toprule
+Variable & Unit & N & Mean & SD & Min & P25 & Median & P75 & Max \\
+\midrule
+\endhead
+\midrule
+\multicolumn{10}{r}{\textit{(continued on next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+\multicolumn{10}{l}{\textit{A. Independent Variables}} \\
+\midrule
+CashScrutiny & C & 76,570 & 0.4250 & 1.7576 & 0.0000 & 0.0000 & 0.0000 & 0.0000 & 100.0000 \\
+GEPU\_log & C & 88,205 & 4.6872 & 0.3672 & 3.8626 & 4.3797 & 4.7238 & 4.9666 & 5.5106 \\
+HighCashScrutiny & C & 76,570 & 0.1127 & 0.3162 & 0.0000 & 0.0000 & 0.0000 & 0.0000 & 1.0000 \\
+PRisk & C & 85,995 & 99.6187 & 146.5189 & 0.0000 & 17.0778 & 53.3729 & 120.1973 & 1192.4308 \\
+PreAnnounceQtr & C & 88,205 & 0.0094 & 0.0963 & 0.0000 & 0.0000 & 0.0000 & 0.0000 & 1.0000 \\
+US\_EPU\_log & C & 88,205 & 4.7123 & 0.3661 & 3.8018 & 4.4805 & 4.6891 & 4.9625 & 5.6478 \\
+\midrule
+\multicolumn{10}{l}{\textit{B. Dependent Variables}} \\
+\midrule
+BGTLevel\_Spread & C & 87,018 & 0.0017 & 0.0026 & 0.0001 & 0.0004 & 0.0009 & 0.0017 & 0.0164 \\
+UncAnsCEO & C & 71,748 & 0.7806 & 0.3925 & 0.0000 & 0.5147 & 0.7415 & 1.0018 & 2.5874 \\
+UncPreCEO & C & 71,727 & 0.6602 & 0.3917 & 0.0000 & 0.3810 & 0.6001 & 0.8723 & 2.2432 \\
+UncResCEO & C & 44,900 & -0.0000 & 0.3010 & -1.5108 & -0.1846 & -0.0180 & 0.1650 & 1.7794 \\
+\midrule
+\multicolumn{10}{l}{\textit{C. Firm Controls}} \\
+\midrule
+Capex & C & 87,627 & 0.0487 & 0.0536 & 0.0000 & 0.0176 & 0.0324 & 0.0592 & 0.5203 \\
+CashRatio & C & 87,990 & 0.1708 & 0.1806 & 0.0000 & 0.0368 & 0.1047 & 0.2435 & 0.9938 \\
+CashRatio\_lag & C & 79,131 & 0.1709 & 0.1804 & 0.0000 & 0.0367 & 0.1048 & 0.2443 & 0.9938 \\
+DivDummy & C & 88,134 & 0.4755 & 0.4994 & 0.0000 & 0.0000 & 0.0000 & 1.0000 & 1.0000 \\
+EarnVol & C & 87,440 & 0.0701 & 0.1907 & 0.0006 & 0.0163 & 0.0315 & 0.0695 & 19.5101 \\
+FirmMat & C & 87,571 & -0.0432 & 2.1826 & -317.5714 & -0.0078 & 0.2191 & 0.4195 & 0.9252 \\
+HighCash & C & 87,990 & 0.3333 & 0.4714 & 0.0000 & 0.0000 & 0.0000 & 1.0000 & 1.0000 \\
+Leverage & C & 87,994 & 0.2330 & 0.2240 & 0.0000 & 0.0470 & 0.2065 & 0.3455 & 3.9453 \\
+NegCall & C & 86,858 & 0.9210 & 0.3024 & 0.0000 & 0.7038 & 0.8798 & 1.0943 & 2.3901 \\
+ROA & C & 87,552 & 0.0386 & 0.1330 & -3.9826 & 0.0146 & 0.0525 & 0.0925 & 0.5490 \\
+TobinsQ & C & 87,363 & 2.1363 & 1.5197 & 0.3847 & 1.2681 & 1.6791 & 2.4362 & 35.6144 \\
+UncQue & C & 81,031 & 1.4398 & 0.4831 & 0.0000 & 1.1216 & 1.4108 & 1.7268 & 3.5945 \\
+lnAssets & C & 87,994 & 7.4710 & 1.6607 & -0.5692 & 6.3008 & 7.3763 & 8.5436 & 12.4592 \\
+sCFO & C & 83,662 & 0.0619 & 0.2233 & 0.0014 & 0.0236 & 0.0395 & 0.0664 & 32.4035 \\
+\end{longtable}
 
-\begin{table}[htbp]\centering\caption{Cash Scrutiny Validity}\label{tab:cash_scrutiny_validity}\textit{[table content]}\end{table}
+\noindent
+\begin{minipage}{\linewidth}\footnotesize\parindent=0pt \textit{Notes:} Summary statistics for the main estimation sample (United States public, non-financial, non-utility firms, 2002--2018). Each variable is summarized on the complete cases of its own estimation universe, so the number of observations varies by row; never-acquirer firm-quarters are included as the fixed-effects baseline and treated firms' post-announcement quarters are excluded. All variables are defined in the main text and in Appendices~I and~II.\end{minipage}
+\endgroup
+\clearpage
 
-\begin{table}[htbp]\centering\caption{Empire Building Did}\label{tab:empire_building_did}\textit{[table content]}\end{table}
+\clearpage
 
-\begin{table}[htbp]\centering\caption{Empire Cashspec}\label{tab:empire_cashspec}\textit{[table content]}\end{table}
+\begin{landscape}
+\begin{table}[htbp]
+\centering
+\caption{Pre-Announcement Run-Up Test: Cash versus Stock Acquirers}
+\label{tab:empire_building_did}
+\scriptsize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcccccccc}
+\toprule
+ & \multicolumn{4}{c}{Cash acquirers} & \multicolumn{4}{c}{Stock acquirers (placebo)} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+ & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\
+ & CashRatio & UncResCEO & CashScrutiny & HighCashScrutiny & CashRatio & UncResCEO & CashScrutiny & HighCashScrutiny \\
+\midrule
+PreAnnounceQtr & \textbf{0.0051}$^{***}$ & \textbf{0.0461}$^{***}$ & 0.0854 & \textbf{0.0408}$^{**}$ & -0.0036 & -0.0429 & -0.3222 & -0.0303 \\
+ & (0.0017) & (0.0172) & (0.0749) & (0.0194) & (0.0035) & (0.0307) & (0.2024) & (0.0313) \\
+CashRatio$_{t-1}$ (partial adj.) & \textbf{0.7990}$^{***}$ & --- & --- & --- & \textbf{0.8013}$^{***}$ & --- & --- & --- \\
+ & (0.0070) &  &  &  & (0.0057) &  &  &  \\
+\midrule
+Leverage & \textbf{-0.0146}$^{***}$ & -0.0338 & -0.1521 & -0.0179 & \textbf{-0.0213}$^{***}$ & -0.0292 & -0.1056 & -0.0428 \\
+ & (0.0039) & (0.0217) & (0.1470) & (0.0308) & (0.0034) & (0.0196) & (0.1358) & (0.0262) \\
+lnAssets & \textbf{-0.0072}$^{***}$ & -0.0037 & -0.0391 & \textbf{0.0190}$^{**}$ & \textbf{-0.0079}$^{***}$ & -0.0043 & \textbf{-0.0733}$^{**}$ & 0.0077 \\
+ & (0.0011) & (0.0082) & (0.0482) & (0.0096) & (0.0008) & (0.0063) & (0.0369) & (0.0078) \\
+TobinsQ & \textbf{0.0013}$^{**}$ & -0.0031 & -0.0208 & 0.0006 & \textbf{0.0015}$^{***}$ & -0.0017 & -0.0113 & 0.0030 \\
+ & (0.0006) & (0.0030) & (0.0144) & (0.0027) & (0.0004) & (0.0025) & (0.0123) & (0.0024) \\
+ROA & 0.0053 & 0.0499 & \textbf{-0.5659}$^{**}$ & \textbf{-0.1006}$^{**}$ & \textbf{0.0075}$^{*}$ & \textbf{0.0530}$^{*}$ & \textbf{-0.5350}$^{***}$ & \textbf{-0.0869}$^{**}$ \\
+ & (0.0042) & (0.0321) & (0.2254) & (0.0405) & (0.0041) & (0.0296) & (0.1982) & (0.0366) \\
+Capex & \textbf{-0.1057}$^{***}$ & 0.0842 & \textbf{-1.2215}$^{***}$ & \textbf{-0.3646}$^{***}$ & \textbf{-0.1067}$^{***}$ & 0.1256 & \textbf{-1.4479}$^{***}$ & \textbf{-0.4470}$^{***}$ \\
+ & (0.0126) & (0.0986) & (0.3534) & (0.0880) & (0.0113) & (0.1006) & (0.3000) & (0.0793) \\
+DivDummy & -0.0011 & -0.0030 & -0.0561 & -0.0111 & \textbf{-0.0017}$^{**}$ & \textbf{-0.0137}$^{*}$ & -0.0564 & \textbf{-0.0146}$^{*}$ \\
+ & (0.0009) & (0.0106) & (0.0537) & (0.0107) & (0.0008) & (0.0080) & (0.0384) & (0.0087) \\
+sCFO & 0.0008 & 0.0052 & \textbf{0.1180}$^{***}$ & \textbf{0.0235}$^{***}$ & 0.0007 & -0.0009 & \textbf{0.0906}$^{***}$ & \textbf{0.0169}$^{***}$ \\
+ & (0.0006) & (0.0085) & (0.0140) & (0.0028) & (0.0007) & (0.0110) & (0.0337) & (0.0057) \\
+\midrule
+Firm FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+Cal. Year-Quarter FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+\midrule
+Firms & 2,232 & 1,248 & 1,237 & 1,237 & 2,281 & 1,338 & 1,325 & 1,325 \\
+N (firm-quarters) & 67,590 & 27,622 & 26,216 & 26,216 & 84,979 & 39,377 & 37,065 & 37,065 \\
+$R^2$ & 0.665 & 0.001 & 0.002 & 0.002 & 0.672 & 0.001 & 0.002 & 0.002 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\linewidth}
+\vspace{8pt}\scriptsize
+\textit{Notes:} Pre-announcement run-up test. $\mathrm{PreAnnounceQtr}$ marks the quarter before a firm's first qualifying acquisition; post-announcement quarters are dropped and never-acquirers form the baseline. The cash arm is acquisitions at least half in cash; the stock arm is the at-least-half-in-stock placebo. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
+\end{minipage}
+\end{table}
+\end{landscape}
 
-\begin{table}[htbp]\centering\caption{Empire Drop Matched}\label{tab:empire_drop_matched}\textit{[table content]}\end{table}
+\clearpage
 
-\begin{table}[htbp]\centering\caption{Empire Drop Placebo}\label{tab:empire_drop_placebo}\textit{[table content]}\end{table}
+\begin{table}[htbp]
+\centering
+\caption{Uncertainty and Cash Around the Announcement (Matched Sample)}
+\label{tab:empire_drop_matched}
+\scriptsize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcc}
+\toprule
+ & (1) UncResCEO & (2) CashRatio \\
+\midrule
+PRE2 ($t{-}2$, pre-trend) & 0.0068 & 0.0008 \\
+ & (0.0178) & (0.0024) \\
+PRE1 ($t{-}1$, pre-announce) & \textbf{0.0473}$^{***}$ & \textbf{0.0061}$^{**}$ \\
+ & (0.0178) & (0.0024) \\
+GAP (announced, pre-close) & 0.0018 & 0.0055 \\
+ & (0.0187) & (0.0034) \\
+POST (completed) & \textbf{-0.0250}$^{*}$ & \textbf{-0.0155}$^{***}$ \\
+ & (0.0130) & (0.0022) \\
+\midrule
+Drop: PRE1 $-$ GAP & \textbf{0.0455}$^{**}$ & 0.0006 \\
+ & (0.0225) & (0.0039) \\
+Drop: GAP $-$ POST & 0.0268 & \textbf{0.0210}$^{***}$ \\
+ & (0.0199) & (0.0042) \\
+Drop: PRE1 $-$ POST & \textbf{0.0723}$^{***}$ & \textbf{0.0216}$^{***}$ \\
+ & (0.0190) & (0.0031) \\
+\midrule
+\multicolumn{3}{l}{\textit{Controls}} \\
+Leverage & \textbf{-0.0415}$^{*}$ & \textbf{-0.0215}$^{***}$ \\
+ & (0.0213) & (0.0054) \\
+lnAssets & -0.0060 & \textbf{-0.0074}$^{***}$ \\
+ & (0.0084) & (0.0020) \\
+TobinsQ & -0.0045 & \textbf{0.0013}$^{**}$ \\
+ & (0.0029) & (0.0006) \\
+ROA & \textbf{0.0572}$^{*}$ & 0.0067 \\
+ & (0.0325) & (0.0061) \\
+Capex & 0.1073 & \textbf{-0.1434}$^{***}$ \\
+ & (0.1054) & (0.0141) \\
+DivDummy & -0.0099 & -0.0016 \\
+ & (0.0104) & (0.0014) \\
+sCFO & \textbf{0.0096}$^{**}$ & -0.0011 \\
+ & (0.0043) & (0.0007) \\
+CashRatio$_{t-1}$ (partial adj.) & --- & \textbf{0.7547}$^{***}$ \\
+ &  & (0.0108) \\
+\midrule
+Firm FE / Year-Qtr FE / Controls & Yes & Yes \\
+N (firm-quarters) & 28,102 & 28,102 \\
+Firms & 1,320 & 1,320 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\linewidth}\vspace{8pt}\scriptsize
+\textit{Notes:} Disclosure-window event study on the matched universe, where $\mathrm{UncResCEO}$ and $\mathrm{CashRatio}$ are defined on the identical firm-quarters. Bins: $\mathrm{PRE2}$ ($e{=}{-}2$), $\mathrm{PRE1}$ ($e{=}{-}1$), $\mathrm{GAP}$ (announced, not yet closed), $\mathrm{POST}$ (completed); the omitted baseline is $e\le-3$ with never-acquirers. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
+\end{minipage}
+\end{table}
+\clearpage
 
-\begin{table}[htbp]\centering\caption{Empire Drop Resolution}\label{tab:empire_drop_resolution}\textit{[table content]}\end{table}
+\clearpage
 
-\begin{table}[htbp]\centering\caption{Empire Drop Staticfe}\label{tab:empire_drop_staticfe}\textit{[table content]}\end{table}
+\begin{table}[htbp]
+\centering
+\caption{Event Study by Payment Type: Cash versus Stock Acquirers}
+\label{tab:empire_drop_placebo}
+\scriptsize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcc}
+\toprule
+ & \multicolumn{2}{c}{DV: UncResCEO} \\
+\cmidrule(lr){2-3}
+ & (1) Cash acquirers & (2) Stock acquirers \\
+\midrule
+PRE2 ($t{-}2$, pre-trend) & 0.0105 & -0.0056 \\
+ & (0.0174) & (0.0368) \\
+PRE1 ($t{-}1$, pre-announce) & \textbf{0.0486}$^{***}$ & -0.0404 \\
+ & (0.0174) & (0.0299) \\
+GAP (announced, pre-close) & 0.0058 & 0.0353 \\
+ & (0.0181) & (0.0318) \\
+POST (completed) & -0.0195 & -0.0048 \\
+ & (0.0127) & (0.0246) \\
+\midrule
+Drop: PRE1 $-$ GAP & \textbf{0.0428}$^{*}$ & \textbf{-0.0756}$^{*}$ \\
+ & (0.0221) & (0.0405) \\
+Drop: GAP $-$ POST & 0.0253 & 0.0401 \\
+ & (0.0194) & (0.0382) \\
+Drop: PRE1 $-$ POST & \textbf{0.0681}$^{***}$ & -0.0355 \\
+ & (0.0187) & (0.0358) \\
+\midrule
+\multicolumn{3}{l}{\textit{Controls}} \\
+Leverage & \textbf{-0.0372}$^{*}$ & -0.0286 \\
+ & (0.0211) & (0.0194) \\
+lnAssets & -0.0063 & -0.0041 \\
+ & (0.0080) & (0.0062) \\
+TobinsQ & -0.0034 & -0.0018 \\
+ & (0.0029) & (0.0025) \\
+ROA & \textbf{0.0534}$^{*}$ & \textbf{0.0543}$^{*}$ \\
+ & (0.0315) & (0.0293) \\
+Capex & 0.0816 & 0.1297 \\
+ & (0.0993) & (0.0987) \\
+DivDummy & -0.0065 & \textbf{-0.0132}$^{*}$ \\
+ & (0.0100) & (0.0080) \\
+sCFO & 0.0049 & -0.0008 \\
+ & (0.0084) & (0.0110) \\
+\midrule
+Firm FE / Year-Qtr FE / Controls & Yes & Yes \\
+N (firm-quarters) & 29,535 & 39,819 \\
+Firms & 1,326 & 1,363 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\linewidth}\vspace{8pt}\scriptsize
+\textit{Notes:} Disclosure-window event study estimated separately for cash acquirers and, as a placebo, stock acquirers, each on its own complete-case universe. Bins and baseline as in the matched event study. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
+\end{minipage}
+\end{table}
+\clearpage
 
-\begin{table}[htbp]\centering\caption{H14C Ceo2 Decomp}\label{tab:h14c_ceo2_decomp}\textit{[table content]}\end{table}
+\clearpage
 
-\begin{table}[htbp]\centering\caption{Reason Gating}\label{tab:reason_gating}\textit{[table content]}\end{table}
+\begin{table}[htbp]
+\centering
+\caption{Cash-Specificity Test: Cash versus Stock Acquirers}
+\label{tab:empire_cashspec}
+\scriptsize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lccc}
+\toprule
+ & \multicolumn{1}{c}{EFFECT} & \multicolumn{2}{c}{PROPOSED CAUSE} \\
+\cmidrule(lr){2-2}\cmidrule(lr){3-4}
+ & (1) UncResCEO & (2) CashRatio & (3) CashRatio \\
+ & (matched) & (matched, +lag) & (full panel, +lag) \\
+\midrule
+Pre-announce qtr, Cash acquirer & \textbf{0.0459}$^{**}$ & \textbf{0.0056}$^{**}$ & \textbf{0.0049}$^{***}$ \\
+ & (0.0185) & (0.0025) & (0.0019) \\
+Pre-announce qtr, Stock acquirer & -0.0524 & -0.0008 & -0.0043 \\
+ & (0.0436) & (0.0066) & (0.0051) \\
+\midrule
+Cash $-$ Stock (formal test) & \textbf{0.0983}$^{**}$ & 0.0064 & \textbf{0.0092}$^{*}$ \\
+ & (0.0476) & (0.0071) & (0.0055) \\
+\midrule
+\multicolumn{4}{l}{\textit{Controls}} \\
+Leverage & \textbf{-0.0411}$^{*}$ & \textbf{-0.0236}$^{***}$ & \textbf{-0.0194}$^{***}$ \\
+ & (0.0230) & (0.0056) & (0.0043) \\
+lnAssets & -0.0034 & -0.0033 & \textbf{-0.0065}$^{***}$ \\
+ & (0.0092) & (0.0021) & (0.0011) \\
+TobinsQ & -0.0025 & 0.0007 & \textbf{0.0012}$^{**}$ \\
+ & (0.0031) & (0.0006) & (0.0005) \\
+ROA & 0.0556 & 0.0046 & 0.0054 \\
+ & (0.0355) & (0.0065) & (0.0046) \\
+Capex & 0.0487 & \textbf{-0.1437}$^{***}$ & \textbf{-0.1095}$^{***}$ \\
+ & (0.1065) & (0.0148) & (0.0139) \\
+DivDummy & -0.0068 & \textbf{-0.0026}$^{*}$ & -0.0015 \\
+ & (0.0109) & (0.0014) & (0.0010) \\
+sCFO & 0.0040 & -0.0008 & 0.0009 \\
+ & (0.0088) & (0.0007) & (0.0006) \\
+\quad CashRatio$_{t-1}$ (partial adj.) & --- & \textbf{0.7778}$^{***}$ & \textbf{0.7957}$^{***}$ \\
+ &  & (0.0113) & (0.0073) \\
+\midrule
+Firm FE / Year-Qtr FE / Controls & Yes & Yes & Yes \\
+UncResCEO-present restriction & Yes & Yes & \textbf{No} \\
+N (firm-quarters) & 25,600 & 24,347 & 61,876 \\
+Firms & 1,191 & 1,176 & 2,141 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\linewidth}\vspace{8pt}\scriptsize
+\textit{Notes:} Pooled cash-specificity test: both treatments enter one regression and the cash-minus-stock difference is evaluated by a Wald test; the baseline is firms making neither a cash nor a stock acquisition. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
+\end{minipage}
+\end{table}
+\clearpage
 
-\begin{table}[htbp]\centering\caption{Summary Stats}\label{tab:summary_stats}\textit{[table content]}\end{table}
+\clearpage
+
+\begin{table}[htbp]
+\centering
+\caption{Convergent Validity: Firm Political Risk}
+\label{tab:h11_prisk_uncertainty}
+\scriptsize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcccc}
+\toprule
+ & (1) & (2) & (3) & (4) \\
+ & \multicolumn{2}{c}{Industry FE} & \multicolumn{2}{c}{Firm FE} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+ & UncResCEO & UncPreCEO & UncResCEO & UncPreCEO \\
+\midrule
+PRisk & \textbf{0.0001}$^{***}$ & \textbf{0.0003}$^{***}$ & \textbf{0.0001}$^{***}$ & \textbf{0.0002}$^{***}$ \\
+ & (0.0000) & (0.0000) & (0.0000) & (0.0000) \\
+\midrule
+UncQue & -0.0022 & \textbf{0.0204}$^{***}$ & -0.0014 & \textbf{0.0081}$^{***}$ \\
+ & (0.0032) & (0.0045) & (0.0037) & (0.0029) \\
+NegCall & -0.0025 & \textbf{0.1874}$^{***}$ & -0.0036 & \textbf{0.1477}$^{***}$ \\
+ & (0.0051) & (0.0141) & (0.0073) & (0.0082) \\
+lnAssets & -0.0002 & \textbf{-0.0296}$^{***}$ & -0.0054 & 0.0048 \\
+ & (0.0004) & (0.0039) & (0.0058) & (0.0078) \\
+TobinsQ & -0.0005 & -0.0007 & -0.0008 & 0.0001 \\
+ & (0.0009) & (0.0036) & (0.0022) & (0.0023) \\
+ROA & \textbf{0.0291}$^{**}$ & 0.0477 & \textbf{0.0540}$^{**}$ & 0.0346 \\
+ & (0.0145) & (0.0318) & (0.0264) & (0.0230) \\
+CashRatio & 0.0019 & -0.0354 & 0.0206 & 0.0265 \\
+ & (0.0077) & (0.0357) & (0.0240) & (0.0287) \\
+DivDummy & -0.0031 & -0.0139 & -0.0108 & \textbf{-0.0229}$^{**}$ \\
+ & (0.0021) & (0.0118) & (0.0074) & (0.0103) \\
+FirmMat & 0.0012 & \textbf{0.0021}$^{**}$ & 0.0027 & 0.0006 \\
+ & (0.0013) & (0.0010) & (0.0041) & (0.0007) \\
+EarnVol & 0.0078 & -0.0072 & 0.0056 & -0.0104 \\
+ & (0.0077) & (0.0157) & (0.0117) & (0.0132) \\
+UncPreCEO & -0.0051 &  & -0.0054 &  \\
+ & (0.0034) &  & (0.0054) &  \\
+\midrule
+Industry FE & Yes & Yes &  &  \\
+Firm FE &  &  & Yes & Yes \\
+Year FE & Yes & Yes & Yes & Yes \\
+\midrule
+N & 44,497 & 65,760 & 44,497 & 65,760 \\
+$R^2$ & 0.003 & 0.043 & 0.003 & 0.023 \\
+Adj.~$R^2$ & 0.002 & 0.043 & -0.030 & -0.004 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\linewidth}
+\vspace{8pt}\scriptsize
+\textit{Notes:} Convergent-validity check: residual CEO uncertainty regressed on firm-level political risk. Columns (1)--(2) use industry (FF12) and calendar-year fixed effects; columns (3)--(4) use firm and calendar-year fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the independent variable, $\beta>0$; two-tailed for controls).
+\end{minipage}
+\end{table}
+\clearpage
+
+\clearpage
+
+\begin{table}[htbp]
+\centering
+\caption{Convergent Validity: US Policy Uncertainty}
+\label{tab:h24_us_epu}
+\scriptsize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcccc}
+\toprule
+ & (1) & (2) & (3) & (4) \\
+ & \multicolumn{2}{c}{Industry + Cal. Year FE} & \multicolumn{2}{c}{Firm + Cal. Year FE} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+ & UncResCEO & UncPreCEO & UncResCEO & UncPreCEO \\
+\midrule
+US\_EPU\_log & \textbf{0.0124}$^{**}$ & \textbf{0.0211}$^{***}$ & \textbf{0.0123}$^{*}$ & \textbf{0.0239}$^{***}$ \\
+ & (0.0075) & (0.0074) & (0.0075) & (0.0076) \\
+\midrule
+UncQue & 0.0011 & \textbf{0.0164}$^{***}$ & 0.0024 & \textbf{0.0095}$^{***}$ \\
+ & (0.0035) & (0.0032) & (0.0040) & (0.0028) \\
+NegCall & 0.0006 & \textbf{0.1247}$^{***}$ & 0.0021 & \textbf{0.1385}$^{***}$ \\
+ & (0.0056) & (0.0089) & (0.0073) & (0.0079) \\
+lnAssets & 0.0009 & \textbf{-0.0143}$^{***}$ & 0.0013 & 0.0038 \\
+ & (0.0007) & (0.0020) & (0.0067) & (0.0063) \\
+TobinsQ & -0.0001 & 0.0007 & -0.0000 & 0.0007 \\
+ & (0.0011) & (0.0019) & (0.0027) & (0.0018) \\
+ROA & \textbf{0.0281}$^{*}$ & \textbf{0.0367}$^{**}$ & \textbf{0.0677}$^{**}$ & \textbf{0.0467}$^{**}$ \\
+ & (0.0149) & (0.0168) & (0.0268) & (0.0191) \\
+CashRatio & 0.0051 & -0.0079 & 0.0345 & 0.0305 \\
+ & (0.0087) & (0.0187) & (0.0256) & (0.0231) \\
+DivDummy & \textbf{-0.0046}$^{***}$ & -0.0074 & \textbf{-0.0142}$^{**}$ & \textbf{-0.0157}$^{*}$ \\
+ & (0.0009) & (0.0061) & (0.0072) & (0.0083) \\
+FirmMat & \textbf{0.0023}$^{*}$ & 0.0009 & 0.0005 & -0.0011 \\
+ & (0.0012) & (0.0008) & (0.0047) & (0.0012) \\
+EarnVol & \textbf{0.0268}$^{*}$ & -0.0074 & \textbf{0.0353}$^{**}$ & -0.0083 \\
+ & (0.0157) & (0.0086) & (0.0176) & (0.0119) \\
+UncPreCEO & -0.0026 &  & -0.0011 &  \\
+ & (0.0032) &  & (0.0045) &  \\
+Lagged\_DV & \textbf{0.0202}$^{***}$ & \textbf{0.5176}$^{***}$ & \textbf{0.0187}$^{***}$ & \textbf{0.2626}$^{***}$ \\
+ & (0.0054) & (0.0131) & (0.0056) & (0.0089) \\
+\midrule
+Industry FE & Yes & Yes &  &  \\
+Firm FE &  &  & Yes & Yes \\
+Year FE & Yes & Yes & Yes & Yes \\
+\midrule
+N & 39,063 & 60,503 & 39,063 & 60,503 \\
+$R^2$ & 0.001 & 0.292 & 0.001 & 0.084 \\
+Adj.~$R^2$ & -0.000 & 0.291 & -0.035 & 0.057 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\linewidth}
+\vspace{8pt}\scriptsize
+\textit{Notes:} Convergent-validity check: residual CEO uncertainty regressed on United States economic policy uncertainty. Columns (1)--(2) use industry (FF12) and calendar-year fixed effects; columns (3)--(4) use firm and calendar-year fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the independent variable, $\beta>0$; two-tailed for controls).
+\end{minipage}
+\end{table}
+\clearpage
+
+\clearpage
+
+\begin{table}[htbp]
+\centering
+\caption{Convergent Validity: Global Policy Uncertainty}
+\label{tab:h24b_global_epu}
+\scriptsize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcccc}
+\toprule
+ & (1) & (2) & (3) & (4) \\
+ & \multicolumn{2}{c}{Industry + Cal. Year FE} & \multicolumn{2}{c}{Firm + Cal. Year FE} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+ & UncResCEO & UncPreCEO & UncResCEO & UncPreCEO \\
+\midrule
+GEPU\_log & \textbf{0.0181}$^{**}$ & \textbf{0.0271}$^{***}$ & \textbf{0.0187}$^{**}$ & \textbf{0.0309}$^{***}$ \\
+ & (0.0100) & (0.0107) & (0.0101) & (0.0108) \\
+\midrule
+UncQue & 0.0011 & \textbf{0.0164}$^{***}$ & 0.0024 & \textbf{0.0095}$^{***}$ \\
+ & (0.0035) & (0.0032) & (0.0039) & (0.0028) \\
+NegCall & 0.0006 & \textbf{0.1247}$^{***}$ & 0.0020 & \textbf{0.1385}$^{***}$ \\
+ & (0.0056) & (0.0089) & (0.0072) & (0.0079) \\
+lnAssets & 0.0009 & \textbf{-0.0143}$^{***}$ & 0.0012 & 0.0037 \\
+ & (0.0007) & (0.0020) & (0.0067) & (0.0063) \\
+TobinsQ & -0.0001 & 0.0008 & 0.0000 & 0.0007 \\
+ & (0.0011) & (0.0019) & (0.0027) & (0.0018) \\
+ROA & \textbf{0.0280}$^{*}$ & \textbf{0.0367}$^{**}$ & \textbf{0.0673}$^{**}$ & \textbf{0.0462}$^{**}$ \\
+ & (0.0149) & (0.0168) & (0.0267) & (0.0191) \\
+CashRatio & 0.0051 & -0.0080 & 0.0345 & 0.0304 \\
+ & (0.0087) & (0.0188) & (0.0256) & (0.0231) \\
+DivDummy & \textbf{-0.0047}$^{***}$ & -0.0074 & \textbf{-0.0142}$^{**}$ & \textbf{-0.0156}$^{*}$ \\
+ & (0.0009) & (0.0061) & (0.0072) & (0.0083) \\
+FirmMat & \textbf{0.0023}$^{*}$ & 0.0009 & 0.0006 & -0.0011 \\
+ & (0.0012) & (0.0008) & (0.0047) & (0.0012) \\
+EarnVol & \textbf{0.0269}$^{*}$ & -0.0074 & \textbf{0.0354}$^{**}$ & -0.0082 \\
+ & (0.0157) & (0.0086) & (0.0176) & (0.0119) \\
+UncPreCEO & -0.0026 &  & -0.0011 &  \\
+ & (0.0032) &  & (0.0045) &  \\
+Lagged\_DV & \textbf{0.0202}$^{***}$ & \textbf{0.5176}$^{***}$ & \textbf{0.0187}$^{***}$ & \textbf{0.2626}$^{***}$ \\
+ & (0.0054) & (0.0131) & (0.0056) & (0.0089) \\
+\midrule
+Industry FE & Yes & Yes &  &  \\
+Firm FE &  &  & Yes & Yes \\
+Year FE & Yes & Yes & Yes & Yes \\
+\midrule
+N & 39,063 & 60,503 & 39,063 & 60,503 \\
+$R^2$ & 0.001 & 0.292 & 0.001 & 0.084 \\
+Adj.~$R^2$ & -0.000 & 0.291 & -0.035 & 0.057 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\linewidth}
+\vspace{8pt}\scriptsize
+\textit{Notes:} Convergent-validity check: residual CEO uncertainty regressed on global economic policy uncertainty. Columns (1)--(2) use industry (FF12) and calendar-year fixed effects; columns (3)--(4) use firm and calendar-year fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the independent variable, $\beta>0$; two-tailed for controls).
+\end{minipage}
+\end{table}
+\clearpage
+
+\clearpage
+
+\begin{table}[htbp]
+\centering
+\caption{Analyst Cash Scrutiny: Construct Validity}
+\label{tab:cash_scrutiny_validity}
+\scriptsize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcccc}
+\toprule
+& \multicolumn{4}{c}{DV: CashScrutiny (\% of analyst Q\&A turns on cash/liquidity)} \\
+\cmidrule(lr){2-5}
+ & (1) & (2) & (3) & (4) \\
+\midrule
+CashRatio & \textbf{0.7530}$^{***}$ & \textbf{0.8519}$^{***}$ &  &  \\
+ & (0.0949) & (0.0967) &  &  \\
+HighCash &  &  & \textbf{0.1754}$^{***}$ & \textbf{0.1921}$^{***}$ \\
+ &  &  & (0.0237) & (0.0236) \\
+\midrule
+Leverage & --- & \textbf{0.2180}$^{**}$ & --- & \textbf{0.2030}$^{**}$ \\
+ &  & (0.0978) &  & (0.0987) \\
+lnAssets & --- & \textbf{-0.0562}$^{***}$ & --- & \textbf{-0.0744}$^{***}$ \\
+ &  & (0.0213) &  & (0.0212) \\
+TobinsQ & --- & \textbf{-0.0272}$^{***}$ & --- & \textbf{-0.0218}$^{**}$ \\
+ &  & (0.0089) &  & (0.0085) \\
+ROA & --- & \textbf{-0.5012}$^{***}$ & --- & \textbf{-0.5002}$^{***}$ \\
+ &  & (0.1339) &  & (0.1335) \\
+Capex & --- & \textbf{-1.2348}$^{***}$ & --- & \textbf{-1.3259}$^{***}$ \\
+ &  & (0.2890) &  & (0.2900) \\
+DivDummy & --- & \textbf{-0.0674}$^{**}$ & --- & \textbf{-0.0678}$^{**}$ \\
+ &  & (0.0331) &  & (0.0331) \\
+sCFO & --- & 0.0244 & --- & 0.0291 \\
+ &  & (0.0274) &  & (0.0277) \\
+\midrule
+Firm FE & Yes & Yes & Yes & Yes \\
+Cal. Year-Quarter FE & Yes & Yes & Yes & Yes \\
+Controls & No & Yes & No & Yes \\
+\midrule
+Firms & 1,868 & 1,853 & 1,868 & 1,853 \\
+N (calls) & 75,087 & 72,670 & 75,087 & 72,670 \\
+$R^2$ & 0.002 & 0.005 & 0.001 & 0.004 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\linewidth}
+\vspace{8pt}\scriptsize
+\textit{Notes:} Validity check that a firm's cash position predicts analyst cash scrutiny. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the cash coefficient, $\beta>0$; two-tailed for controls).
+\end{minipage}
+\end{table}
+\clearpage
+
+\clearpage
+
+\begin{table}[htbp]
+\centering
+\caption{Analyst Cash Scrutiny as a Driver of CEO Uncertainty}
+\label{tab:cash_scrutiny_channel}
+\small
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcc}
+\toprule
+ & UncResCEO & UncAnsCEO \\
+ & (DWZ residual) & (raw Q\&A) \\
+\midrule
+\multicolumn{3}{l}{\textit{Panel A. OLS --- DV in continuous level}} \\
+CashScrutiny & -0.0000 & 0.0001 \\
+ & (0.0013) & (0.0013) \\
+$N$ (calls) & 41,512 & 41,512 \\
+Within $R^2$ & 0.000 & 0.000 \\
+\midrule
+\multicolumn{3}{l}{\textit{Panel B. Logit --- DV $= \mathbf{1}$[measure $\geq$ median]}} \\
+CashScrutiny (log-odds) & -0.0003 & 0.0080 \\
+ & (0.0074) & (0.0085) \\
+$N$ (calls) & 41,512 & 41,512 \\
+Pseudo $R^2$ & 0.002 & 0.019 \\
+\midrule
+Firm FE (A) / Industry FE (B) & Yes & Yes \\
+Cal. Year-Quarter FE & Yes & Yes \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\linewidth}\vspace{8pt}\scriptsize
+\textit{Notes:} Analyst cash scrutiny as a candidate driver of residual CEO uncertainty. Panel~A is OLS on the continuous measure; Panel~B is a logit on an above-median indicator. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
+\end{minipage}
+\end{table}
+\clearpage
+
+\clearpage
+
+\begin{table}[htbp]
+\centering
+\caption{Analyst Cash Scrutiny: Interaction with the Run-Up}
+\label{tab:reason_gating}
+\small
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcc}
+\toprule
+ & \multicolumn{2}{c}{UncResCEO} \\
+\cmidrule(lr){2-3}
+ & (1) & (2) \\
+\midrule
+CashScrutiny & 0.0000 & 0.0001 \\
+ & (0.0018) & (0.0018) \\
+PreAnnounceQtr & \textbf{0.0413}$^{***}$ & \textbf{0.0439}$^{**}$ \\
+ & (0.0177) & (0.0189) \\
+CashScrutiny $\times$ PreAnnounceQtr &  & -0.0056 \\
+ &  & (0.0111) \\
+\midrule
+Controls & Yes & Yes \\
+Firm FE & Yes & Yes \\
+Cal. Year-Quarter FE & Yes & Yes \\
+\midrule
+N (firm-quarters) & 26,216 & 26,216 \\
+Firms & 1,237 & 1,237 \\
+$R^2$ & 0.001 & 0.001 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\linewidth}
+\vspace{8pt}\scriptsize
+\textit{Notes:} The pre-announcement run-up estimated with analyst cash scrutiny and its interaction with the pre-announcement window, on the matched universe (calls with both $\mathrm{CashScrutiny}$ and $\mathrm{UncResCEO}$). Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the directional terms, $\beta>0$; two-tailed otherwise).
+\end{minipage}
+\end{table}
+\clearpage
+
+\clearpage
+
+\begin{table}[htbp]
+\centering
+\caption{CEO Uncertainty and the Bid-Ask Spread}
+\label{tab:h14c_ceo2_decomp}
+\scriptsize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcccccccccccc}
+\toprule
+ & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) & (10) & (11) & (12) \\
+ & \multicolumn{6}{c}{BGTLevel\_Spread} & \multicolumn{6}{c}{BGTLevel\_Spread\_lead1} \\
+\cmidrule(lr){2-7} \cmidrule(lr){8-13}
+\midrule
+ClarityCEO & -0.0477 & 1.0617 & 0.2122 & 1.1056 & 0.1644 & 1.0547 & -0.1886 & 0.5998 & -0.0922 & 0.6828 & -0.0431 & 0.5722 \\
+ & (0.2145) & (0.4277) & (0.2227) & (0.4260) & (0.2103) & (0.4174) & (0.2370) & (0.4004) & (0.2399) & (0.4055) & (0.2206) & (0.3729) \\
+UncResCEO & -0.0594 & -0.0687 & -0.0882 & -0.1021 & -0.0757 & -0.0893 & 0.0825 & 0.0696 & 0.0742 & 0.0545 & 0.0984 & 0.0751 \\
+ & (0.1068) & (0.1057) & (0.1023) & (0.1007) & (0.0994) & (0.0981) & (0.1416) & (0.1437) & (0.1407) & (0.1426) & (0.1339) & (0.1357) \\
+UncPreCEO & \textbf{0.1664}$^{**}$ & \textbf{0.3496}$^{***}$ & 0.0814 & \textbf{0.2945}$^{***}$ & 0.0108 & \textbf{0.1644}$^{*}$ & -0.0817 & -0.0288 & -0.1072 & -0.0360 & 0.0170 & 0.1124 \\
+ & (0.0946) & (0.1253) & (0.0956) & (0.1229) & (0.0919) & (0.1184) & (0.0926) & (0.1229) & (0.0926) & (0.1233) & (0.0872) & (0.1186) \\
+\midrule
+lnAssets & \textbf{-0.8039}$^{***}$ & \textbf{-1.9098}$^{***}$ & \textbf{-0.6339}$^{***}$ & \textbf{-1.6825}$^{***}$ & \textbf{-0.6352}$^{***}$ & \textbf{-1.8277}$^{***}$ & \textbf{-0.8218}$^{***}$ & \textbf{-1.5191}$^{***}$ & \textbf{-0.7857}$^{***}$ & \textbf{-1.7292}$^{***}$ & \textbf{-0.6568}$^{***}$ & \textbf{-1.4181}$^{***}$ \\
+ & (0.0490) & (0.2000) & (0.0472) & (0.2156) & (0.0473) & (0.2158) & (0.0513) & (0.1951) & (0.0505) & (0.2130) & (0.0474) & (0.2017) \\
+TobinsQ & \textbf{-0.2861}$^{***}$ & \textbf{-0.4785}$^{***}$ & \textbf{-0.2633}$^{***}$ & \textbf{-0.5518}$^{***}$ & \textbf{-0.2654}$^{***}$ & \textbf{-0.5883}$^{***}$ & \textbf{-0.2305}$^{***}$ & \textbf{-0.3215}$^{***}$ & \textbf{-0.2285}$^{***}$ & \textbf{-0.4803}$^{***}$ & \textbf{-0.2035}$^{***}$ & \textbf{-0.4289}$^{***}$ \\
+ & (0.0457) & (0.0900) & (0.0470) & (0.0963) & (0.0451) & (0.0956) & (0.0467) & (0.0850) & (0.0478) & (0.1002) & (0.0433) & (0.0935) \\
+ROA & \textbf{-9.4469}$^{***}$ & \textbf{-11.6430}$^{***}$ & \textbf{-5.7059}$^{***}$ & \textbf{-7.6844}$^{***}$ & \textbf{-5.7511}$^{***}$ & \textbf{-7.8517}$^{***}$ & \textbf{-9.9256}$^{***}$ & \textbf{-12.8443}$^{***}$ & \textbf{-8.8744}$^{***}$ & \textbf{-11.9197}$^{***}$ & \textbf{-7.6375}$^{***}$ & \textbf{-10.5867}$^{***}$ \\
+ & (1.0201) & (1.3867) & (0.9822) & (1.2654) & (0.9633) & (1.2490) & (1.0798) & (1.2992) & (1.0722) & (1.2732) & (0.9869) & (1.1921) \\
+Leverage & \textbf{0.3875}$^{*}$ & \textbf{1.8330}$^{***}$ & -0.1126 & 0.6850 & -0.0542 & 0.8026 & 0.2924 & 0.5282 & 0.1338 & 0.2221 & 0.0592 & 0.1928 \\
+ & (0.2088) & (0.5143) & (0.2434) & (0.5013) & (0.2264) & (0.4954) & (0.2224) & (0.5516) & (0.2248) & (0.5596) & (0.2111) & (0.5258) \\
+Capex & -0.8001 & 0.9540 & \textbf{-2.3622}$^{**}$ & -1.5271 & \textbf{-2.0790}$^{*}$ & -1.2897 & \textbf{-1.6463}$^{*}$ & -3.2121 & \textbf{-2.1561}$^{**}$ & \textbf{-4.3379}$^{*}$ & -1.4770 & -2.4356 \\
+ & (1.1109) & (2.9126) & (1.1044) & (2.8061) & (1.0845) & (2.7998) & (0.9620) & (2.2020) & (0.9823) & (2.2446) & (0.9011) & (2.1565) \\
+DivDummy & 0.1043 & 0.1429 & \textbf{0.3329}$^{***}$ & 0.2549 & \textbf{0.3156}$^{***}$ & 0.2723 & 0.0240 & 0.1007 & 0.1012 & 0.1454 & 0.1145 & 0.1739 \\
+ & (0.0893) & (0.2020) & (0.0896) & (0.1888) & (0.0855) & (0.1867) & (0.0887) & (0.2095) & (0.0889) & (0.2074) & (0.0825) & (0.1975) \\
+sCFO & \textbf{0.6700}$^{**}$ & \textbf{0.8405}$^{**}$ & 0.4045 & \textbf{0.6825}$^{*}$ & 0.4084 & \textbf{0.6882}$^{**}$ & 0.0871 & \textbf{0.3644}$^{*}$ & 0.0040 & 0.3165 & -0.0840 & 0.2479 \\
+ & (0.3405) & (0.3472) & (0.4604) & (0.3789) & (0.4126) & (0.3375) & (0.1759) & (0.1877) & (0.2174) & (0.2055) & (0.1937) & (0.1738) \\
+Lagged\_DV & \textbf{0.7547}$^{***}$ & \textbf{0.6569}$^{***}$ & \textbf{0.7140}$^{***}$ & \textbf{0.6180}$^{***}$ & \textbf{0.7310}$^{***}$ & \textbf{0.6318}$^{***}$ & \textbf{0.7540}$^{***}$ & \textbf{0.6361}$^{***}$ & \textbf{0.7360}$^{***}$ & \textbf{0.6135}$^{***}$ & \textbf{0.7676}$^{***}$ & \textbf{0.6518}$^{***}$ \\
+ & (0.0150) & (0.0186) & (0.0167) & (0.0199) & (0.0168) & (0.0208) & (0.0156) & (0.0185) & (0.0173) & (0.0205) & (0.0162) & (0.0197) \\
+StockPrice &  &  & -0.0011 & -0.0033 & 0.0002 & 0.0019 &  &  & -0.0001 & \textbf{0.0101}$^{***}$ & -0.0016 & \textbf{0.0047}$^{**}$ \\
+ &  &  & (0.0014) & (0.0024) & (0.0013) & (0.0024) &  &  & (0.0013) & (0.0024) & (0.0012) & (0.0022) \\
+Turnover &  &  & \textbf{-24.1012}$^{***}$ & \textbf{-23.8647}$^{***}$ & \textbf{-20.7840}$^{***}$ & \textbf{-20.3411}$^{***}$ &  &  & \textbf{-7.9396}$^{***}$ & \textbf{-5.5050}$^{***}$ & \textbf{-7.1303}$^{***}$ & \textbf{-4.7073}$^{**}$ \\
+ &  &  & (1.7508) & (2.2119) & (1.7290) & (2.1791) &  &  & (1.5411) & (2.0904) & (1.4699) & (1.9633) \\
+DailyVola &  &  & \textbf{0.1229}$^{***}$ & \textbf{0.1393}$^{***}$ & \textbf{0.1075}$^{***}$ & \textbf{0.1257}$^{***}$ &  &  & \textbf{0.0404}$^{***}$ & \textbf{0.0520}$^{***}$ & \textbf{0.0396}$^{***}$ & \textbf{0.0441}$^{***}$ \\
+ &  &  & (0.0072) & (0.0081) & (0.0082) & (0.0099) &  &  & (0.0062) & (0.0068) & (0.0069) & (0.0081) \\
+AbsSurpDec &  &  & \textbf{-0.0919}$^{***}$ & -0.0241 & \textbf{-0.0756}$^{***}$ & -0.0093 &  &  & -0.0050 & 0.0119 & -0.0174 & -0.0012 \\
+ &  &  & (0.0265) & (0.0300) & (0.0253) & (0.0286) &  &  & (0.0278) & (0.0304) & (0.0261) & (0.0285) \\
+\midrule
+Extended Controls &  &  & Yes & Yes & Yes & Yes &  &  & Yes & Yes & Yes & Yes \\
+Industry FE & Yes &  & Yes &  & Yes &  & Yes &  & Yes &  & Yes &  \\
+Firm FE &  & Yes &  & Yes &  & Yes &  & Yes &  & Yes &  & Yes \\
+Year FE & Yes & Yes & Yes & Yes &  &  & Yes & Yes & Yes & Yes &  &  \\
+Year-Quarter FE &  &  &  &  & Yes & Yes &  &  &  &  & Yes & Yes \\
+\midrule
+N & 42,625 & 42,625 & 42,625 & 42,625 & 42,625 & 42,625 & 43,049 & 43,049 & 43,049 & 43,049 & 43,049 & 43,049 \\
+$R^2$ & 0.703 & 0.517 & 0.721 & 0.551 & 0.730 & 0.548 & 0.700 & 0.499 & 0.702 & 0.504 & 0.723 & 0.523 \\
+Adj.~$R^2$ & 0.703 & 0.501 & 0.721 & 0.535 & 0.730 & 0.532 & 0.700 & 0.482 & 0.702 & 0.487 & 0.723 & 0.506 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\linewidth}
+\vspace{8pt}\scriptsize
+\textit{Notes:} Post-call bid-ask spread regressed on the three speech components across twelve specifications; the fixed-effect grid (industry or firm, by year or year-quarter) and the contemporaneous-versus-one-quarter-ahead window vary by column as indicated, and a lagged dependent variable is included. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (one-tailed for the speech components, $\beta>0$; two-tailed for controls).
+\end{minipage}
+\end{table}
+\clearpage
+
+\clearpage
+
+\begin{table}[htbp]
+\centering
+\caption{Robustness: Withdrawal as a Resolution Event}
+\label{tab:empire_drop_resolution}
+\scriptsize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcc}
+\toprule
+ & (1) UncResCEO & (2) CashRatio \\
+\midrule
+PRE2 ($t{-}2$, pre-trend) & 0.0069 & 0.0008 \\
+ & (0.0179) & (0.0024) \\
+PRE1 ($t{-}1$, pre-announce) & \textbf{0.0479}$^{***}$ & \textbf{0.0061}$^{**}$ \\
+ & (0.0178) & (0.0024) \\
+GAP (announced, pre-close) & 0.0022 & 0.0056 \\
+ & (0.0187) & (0.0034) \\
+POST (completed) & -0.0208 & \textbf{-0.0143}$^{***}$ \\
+ & (0.0127) & (0.0022) \\
+\midrule
+Drop: PRE1 $-$ GAP & \textbf{0.0457}$^{**}$ & 0.0006 \\
+ & (0.0224) & (0.0039) \\
+Drop: GAP $-$ POST & 0.0230 & \textbf{0.0199}$^{***}$ \\
+ & (0.0196) & (0.0041) \\
+Drop: PRE1 $-$ POST & \textbf{0.0687}$^{***}$ & \textbf{0.0204}$^{***}$ \\
+ & (0.0188) & (0.0030) \\
+\midrule
+\multicolumn{3}{l}{\textit{Controls}} \\
+Leverage & \textbf{-0.0430}$^{**}$ & \textbf{-0.0215}$^{***}$ \\
+ & (0.0212) & (0.0054) \\
+lnAssets & -0.0063 & \textbf{-0.0075}$^{***}$ \\
+ & (0.0084) & (0.0020) \\
+TobinsQ & -0.0046 & \textbf{0.0013}$^{**}$ \\
+ & (0.0029) & (0.0006) \\
+ROA & \textbf{0.0578}$^{*}$ & 0.0068 \\
+ & (0.0325) & (0.0061) \\
+Capex & 0.1131 & \textbf{-0.1419}$^{***}$ \\
+ & (0.1051) & (0.0140) \\
+DivDummy & -0.0110 & -0.0017 \\
+ & (0.0104) & (0.0014) \\
+sCFO & \textbf{0.0094}$^{**}$ & -0.0011 \\
+ & (0.0043) & (0.0007) \\
+CashRatio$_{t-1}$ (partial adj.) & --- & \textbf{0.7554}$^{***}$ \\
+ &  & (0.0107) \\
+\midrule
+Firm FE / Year-Qtr FE / Controls & Yes & Yes \\
+N (firm-quarters) & 28,191 & 28,191 \\
+Firms & 1,321 & 1,321 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\linewidth}\vspace{8pt}\scriptsize
+\textit{Notes:} Robustness for the matched event study with the post bin redefined to count any resolution, completion or withdrawal (quarters at and after a withdrawal enter $\mathrm{POST}$). Bins, baseline, and estimator as in the matched event study. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
+\end{minipage}
+\end{table}
+\clearpage
+
+\clearpage
+
+\begin{table}[htbp]
+\centering
+\caption{Robustness: Static Fixed Effects without the Lagged Dependent Variable}
+\label{tab:empire_drop_staticfe}
+\scriptsize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lcc}
+\toprule
+ & (1) UncResCEO & (2) CashRatio \\
+\midrule
+PRE2 ($t{-}2$, pre-trend) & 0.0068 & 0.0052 \\
+ & (0.0178) & (0.0041) \\
+PRE1 ($t{-}1$, pre-announce) & \textbf{0.0473}$^{***}$ & \textbf{0.0116}$^{**}$ \\
+ & (0.0178) & (0.0046) \\
+GAP (announced, pre-close) & 0.0018 & \textbf{0.0128}$^{**}$ \\
+ & (0.0187) & (0.0057) \\
+POST (completed) & \textbf{-0.0250}$^{*}$ & \textbf{-0.0189}$^{***}$ \\
+ & (0.0130) & (0.0053) \\
+\midrule
+Drop: PRE1 $-$ GAP & \textbf{0.0455}$^{**}$ & -0.0012 \\
+ & (0.0225) & (0.0051) \\
+Drop: GAP $-$ POST & 0.0268 & \textbf{0.0318}$^{***}$ \\
+ & (0.0199) & (0.0061) \\
+Drop: PRE1 $-$ POST & \textbf{0.0723}$^{***}$ & \textbf{0.0305}$^{***}$ \\
+ & (0.0190) & (0.0044) \\
+\midrule
+\multicolumn{3}{l}{\textit{Controls}} \\
+Leverage & \textbf{-0.0415}$^{*}$ & \textbf{-0.0529}$^{***}$ \\
+ & (0.0213) & (0.0189) \\
+lnAssets & -0.0060 & \textbf{-0.0244}$^{***}$ \\
+ & (0.0084) & (0.0066) \\
+TobinsQ & -0.0045 & \textbf{0.0101}$^{***}$ \\
+ & (0.0029) & (0.0019) \\
+ROA & \textbf{0.0572}$^{*}$ & 0.0195 \\
+ & (0.0325) & (0.0179) \\
+Capex & 0.1073 & \textbf{-0.2534}$^{***}$ \\
+ & (0.1054) & (0.0396) \\
+DivDummy & -0.0099 & -0.0004 \\
+ & (0.0104) & (0.0045) \\
+sCFO & \textbf{0.0096}$^{**}$ & 0.0004 \\
+ & (0.0043) & (0.0027) \\
+CashRatio$_{t-1}$ (partial adj.) & --- & --- \\
+ &  &  \\
+\midrule
+Firm FE / Year-Qtr FE / Controls & Yes & Yes \\
+N (firm-quarters) & 28,102 & 28,102 \\
+Firms & 1,320 & 1,320 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\begin{minipage}{\linewidth}\vspace{8pt}\scriptsize
+\textit{Notes:} Robustness for the cash column with static fixed effects, dropping the lagged dependent variable; the residual column is unchanged, since it carries no lag, and without the lag the coefficients describe the cash-ratio level rather than its change. Firm and calendar year-quarter fixed effects. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed).
+\end{minipage}
+\end{table}
+\clearpage
 
 \begin{thebibliography}{99}
 
@@ -249,9 +995,6 @@ Bertrand, M., and A.~Schoar. 2003. Managing with style: The effect of managers o
 
 \bibitem[Dzielinski et~al.(2021)]{dwz}
 Dzielinski, M., A.~F. Wagner, and R.~J. Zeckhauser. 2021. Straight talkers and vague talkers: The effects of managerial style in earnings conference calls. Working paper. % alias of dwz2021 (props use both keys -> normalize to one in the harness)
-
-\bibitem[Dzielinski et~al.(2021)]{dwz2021}
-Dzielinski, M., A.~F. Wagner, and R.~J. Zeckhauser. 2021. Straight talkers and vague talkers: The effects of managerial style in earnings conference calls. Working paper. % VERIFY year/venue (working paper)
 
 \bibitem[Dye(1985)]{dye1985}
 Dye, R. 1985. Disclosure of nonproprietary information. \emph{Journal of Accounting Research} 23: 123--145.

@@ -1,0 +1,16 @@
+% Appendix I -- Cash-Scrutiny Measure: definition and word lists.
+% Simplified 2026-06-15 (user): holds ONLY the cash-scrutiny variable definitions and
+% the search-term word lists. The regression specification and the CashRatio / firm-
+% financial-control definitions were removed -- they live in the main text and Appendix II.
+\section*{Appendix I\quad Cash-Scrutiny Measure: Definition and Word Lists}
+\vspace{4pt}\noindent\textbf{Variable definitions.}
+\begin{itemize}\setlength\itemsep{2pt}
+\item \textbf{CashScrutiny}$_{i,t}$ --- the share of call $i$'s analyst question-and-answer turns whose text contains at least one \emph{cash-level} or \emph{liquidity} term (listed below); a turn-level indicator averaged over the call's analyst Q\&A turns.
+\item \textbf{HighCashScrutiny}$_{i,t}$ --- an indicator equal to one when $\mathrm{CashScrutiny}_{i,t}$ exceeds its sample median; because the median call draws no cash scrutiny, it flags calls with any cash scrutiny at all.
+\end{itemize}
+\vspace{4pt}\noindent\textbf{Search terms.} An analyst Q\&A turn is flagged if, after the \emph{excluded} phrases are blanked out, its lower-cased text contains any phrase below, matched on a word boundary (case-insensitive). Every literal spelling actually searched is listed: where a phrase has a singular/plural or hyphenated/closed variant (e.g.\ \texttt{'noncash'} and \texttt{'non-cash'}), both forms appear. Disposition/payout terms (dividends, buybacks) are deliberately \emph{not} used here: they load on firm size and maturity and would correlate with the cash position spuriously rather than through cash attention.
+\begin{itemize}\setlength\itemsep{3pt}
+\item \textbf{Cash level} (20 forms) --- \emph{why:} they name the firm's cash stockpile or balance itself, the direct object of attention to how much cash the firm holds. \\ \texttt{'cash holding'}, \texttt{'cash holdings'}, \texttt{'cash balance'}, \texttt{'cash balances'}, \texttt{'cash position'}, \texttt{'cash on hand'}, \texttt{'cash on the balance sheet'}, \texttt{'cash reserve'}, \texttt{'cash reserves'}, \texttt{'cash and cash equivalents'}, \texttt{'cash and equivalents'}, \texttt{'cash and shortterm investments'}, \texttt{'cash and short-term investments'}, \texttt{'net cash'}, \texttt{'cash pile'}, \texttt{'cash hoard'}, \texttt{'cash stockpile'}, \texttt{'excess cash'}, \texttt{'idle cash'}, \texttt{'surplus cash'}
+\item \textbf{Liquidity} (5 forms) --- \emph{why:} standard analyst synonyms for the same liquid-asset buffer. \\ \texttt{'liquidity'}, \texttt{'liquid assets'}, \texttt{'shortterm investments'}, \texttt{'short-term investments'}, \texttt{'marketable securities'}
+\item \textbf{Excluded} (17 forms) --- \emph{why:} they contain ``cash'' but denote cash \emph{flow}, earnings, an accounting basis, or an idiom rather than the cash holdings, so they are blanked out before matching to prevent false positives. \\ \texttt{'free cash flow'}, \texttt{'operating cash flow'}, \texttt{'cash flow statement'}, \texttt{'cash flow'}, \texttt{'cash flows'}, \texttt{'cash conversion cycle'}, \texttt{'cash conversion'}, \texttt{'cash basis'}, \texttt{'cash cow'}, \texttt{'cash compensation'}, \texttt{'noncash'}, \texttt{'non-cash'}, \texttt{'cash register'}, \texttt{'cash crop'}, \texttt{'cash taxes'}, \texttt{'cash earnings'}, \texttt{'cash in on'}
+\end{itemize}
