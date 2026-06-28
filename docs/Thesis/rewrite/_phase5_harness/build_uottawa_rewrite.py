@@ -120,12 +120,51 @@ def fix_34(t):
     assert a in t, "fix_34 anchor (theta) not found"
     return t.replace(a, r"That restriction is the formal expression of the cash-versus-stock gap that hypothesis~H1a predicts.")
 
+# Issue 2 (Sina 2026-06-28): the prose states coefficients with significance STARS, which is non-standard.
+# Replace each star with a COMPACT p-threshold, dropped inside/after the standard error the prose already
+# gives -- matching its OWN style (it already reads "(standard error $0.0026$, $p=.0011$)"). (Sina saw a
+# worded "significant at the one percent level" MA1 sample and judged compact neater.) PROSE ONLY -- the
+# table bodies keep their stars + note. *** -> $p<.01$, ** -> $p<.05$, * -> $p<.10$ (no leading zero, as in
+# the table notes + existing prose). Coefs already carrying an exact p ($p=.039$, $p=.0011$, ...) just lose
+# the star. Mechanism (advisor-vetted): the regex copies the value + SE VERBATIM (back-refs) and only the
+# star->threshold is computed, so a coefficient value can never be mis-transcribed; echoes (no SE) lose the
+# star and stay bare, exactly as the old prose does. Significance level is verified vs each table cell.
+PMAP = {1: ".10", 2: ".05", 3: ".01"}
+# Two coef forms carry no parenthesised SE for the generic rule to tuck the threshold into, so add it here:
+#  - 2.5 convergent/validity coefs (verified vs Tables 5.6/5.7/5.8/5.9);
+#  - the 4.5 forward LPM+FE coef, whose SE is followed by ";" (verified vs the Logit-A table).
+NOSE = {
+ "2.5": [
+  (r"a coefficient of $0.0001^{***}$ (Table",                 r"a coefficient of $0.0001$, $p<.01$ (Table"),
+  (r"at $0.0124^{**}$ and $0.0123^{*}$ (Table",               r"at $0.0124$ ($p<.05$) and $0.0123$ ($p<.10$) (Table"),
+  (r"at $0.0181^{**}$ and $0.0187^{**}$ (Table",              r"at $0.0181$ ($p<.05$) and $0.0187$ ($p<.05$) (Table"),
+  (r"with coefficients of $0.7530^{***}$ and $0.8519^{***}$,", r"with coefficients of $0.7530$ ($p<.01$) and $0.8519$ ($p<.01$),"),
+ ],
+ "4.5": [
+  (r"coefficient of $0.0078^{***}$ (standard error $0.00275$;", r"coefficient of $0.0078$ (standard error $0.00275$, $p<.01$;"),
+ ],
+}
+def destars(t, sid):
+    for old, new in NOSE.get(sid, []):
+        assert old in t, "destars[%s] special anchor missing (prose changed?): %s" % (sid, old[:50])
+        t = t.replace(old, new, 1)
+    # (a) parenthesised SE (optional trailing ", one-tailed"): tuck the threshold inside the paren
+    t = re.sub(r"\$(-?\d+\.\d+)\^\{(\*+)\}\$ \(standard error \$(\d+\.\d+)\$(, one-tailed)?\)",
+               lambda m: "$%s$ (standard error $%s$, $p<%s$%s)" % (m.group(1), m.group(3), PMAP[len(m.group(2))], m.group(4) or ""), t)
+    # (b) comma SE ("$V$, standard error $SE$"): append the threshold after the SE
+    t = re.sub(r"\$(-?\d+\.\d+)\^\{(\*+)\}\$, standard error \$(\d+\.\d+)\$",
+               lambda m: "$%s$, standard error $%s$, $p<%s$" % (m.group(1), m.group(3), PMAP[len(m.group(2))]), t)
+    # (c) any remaining significance star -> strip (echoes; and coefs already carrying an exact p)
+    t = re.sub(r"(\$-?\d+\.\d+)\^\{\*+\}\$", r"\1$", t)
+    return t
+
 def prose_of(sid):
     body = "\n\n".join(normalize(p["final_prose"].strip()) for p in SEC[sid]["paragraphs"])
     if sid == "4.5": body = repoint_45(body)
     if sid == "2.5": body = augment_25(body)
     if sid == "2.1": body = fix_21(body)
     if sid == "3.4": body = fix_34(body)
+    body = destars(body, sid)                  # Issue 2: significance stars -> compact p (PROSE ONLY)
     return body
 
 # ---- 1. clone every .tex in docs/Thesis so all \input deps resolve; originals untouched ----
@@ -163,6 +202,7 @@ SEC34 = (
  "\\section{Robustness: Withdrawal as a Resolution Event}\n\n" + prose_of("4.3") + "\n\n"
  "\\section{Robustness: The Cash Result Without the Dynamic Term}\n\n" + prose_of("4.4") + "\n\n"
  "\\section{Robustness: The Main Findings Without the First-Deal Restriction}\n\n" + prose_of("4.5") + "\n")
+assert "^{*" not in SEC34, "Issue-2: a significance star survived in the Chapter 3-4 prose"
 (CLONE / "sec34_body_from_ledgers.tex").write_text(SEC34, encoding="utf-8")
 
 # ---- 2b. Section-4.5 robustness tables: 4 all-deals comparison tables + 2 logit ----
@@ -242,6 +282,7 @@ SEC2 = (
  "\\section{Estimation of the Main Variable}\n\n" + prose_of("2.3") + "\n\n"
  "\\section{Methodology and Empirical Design}\n\n" + prose_of("2.4") + "\n\n"
  "\\section{Specification and Measurement of Key Constructs}\n\n" + prose_of("2.5") + "\n\n")
+assert "^{*" not in SEC2, "Issue-2: a significance star survived in the Chapter 2 prose"
 
 NEW_BIBS = "\n\n".join([
  "\\bibitem[Bates et~al.(2009)]{bates2009}\nBates, T.~W., K.~M. Kahle, and R.~M. Stulz. 2009. Why do U.S.\\ firms hold so much more cash than they used to? \\emph{The Journal of Finance} 64: 1985--2021.",
