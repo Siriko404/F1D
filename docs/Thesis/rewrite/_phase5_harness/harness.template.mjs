@@ -99,8 +99,8 @@ async function writeSection(brief) {
     `You are the section editor. Below are ${clean.length} independent drafts of the SAME section, each already number- and honesty-gate-clean. Produce ONE best version: choose the strongest rendering of each paragraph and smooth the flow. Invent nothing; every number/citation must already appear in one of the drafts; keep all hedges.\n\n${brmain(brief)}\n\nDRAFTS:\n${JSON.stringify(clean.map(d => d.paragraphs), null, 1)}`,
     { label: `edit:${brief.section}`, phase: 'Write', schema: WRITER_SCHEMA });
   const g = sectionGate(merged, brief);
-  if (!g.pass) return { section: brief.section, status: 'BLOCKED', stage: 'L2', detail: g.blocks.slice(0, 12) };
-  return { section: brief.section, status: 'WRITTEN', brief, merged, flags: g.flags };
+  if (!g.pass) return { section: brief.section, status: 'BLOCKED', stage: 'L2', detail: g.blocks.slice(0, 12), drafts: clean.map(d => d.paragraphs) };
+  return { section: brief.section, status: 'WRITTEN', brief, merged, drafts: clean.map(d => d.paragraphs), flags: g.flags };
 }
 
 // collect the verbatim source quotes for a section's theory props (the load-bearing honesty evidence)
@@ -136,8 +136,10 @@ async function auditSection(prev, thesisMap, coherenceIssues) {
     `You are the chief editor. Apply ONLY well-supported audit fixes to the draft by MINIMAL edit (prefer the existing wording; change the least). Reject spurious or hedge-weakening fixes (refute-by-default for honesty/number claims). Invent no new numbers/citations. Output the full corrected section.\n\n${brmain(brief)}\n\nDRAFT:\n${JSON.stringify(merged.paragraphs, null, 1)}\n\nAUDIT ISSUES (${allIssues.length}):\n${JSON.stringify(allIssues, null, 1)}`,
     { label: `judge:${brief.section}`, phase: 'Audit', schema: WRITER_SCHEMA });
   const g = sectionGate(final, brief);
-  if (!g.pass) return { section: brief.section, status: 'BLOCKED', stage: 'FINAL-GATE', detail: g.blocks.slice(0, 12), final };
-  return { section: brief.section, status: 'OK', final, flags: g.flags, audit_count: allIssues.length };
+  // full per-section audit trail (materialized to its OWN json file by finalize.py)
+  const trail = { drafts: prev.drafts, merged: merged.paragraphs, audit_issues: allIssues, coherence_issues: mine };
+  if (!g.pass) return { section: brief.section, status: 'BLOCKED', stage: 'FINAL-GATE', detail: g.blocks.slice(0, 12), final, trail };
+  return { section: brief.section, status: 'OK', final, flags: g.flags, audit_count: allIssues.length, trail };
 }
 
 // ---- run: 3 PARALLEL TEAMS, each owning a section-group (Sina's design). Rate-limit-safe:
