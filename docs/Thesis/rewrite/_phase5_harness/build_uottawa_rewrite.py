@@ -138,6 +138,84 @@ def fix_23_se(t):
         "that accompany them should be read as approximate. The reassurance we rely on instead is that the same "
         "pattern recurs across our several designs.")
 
+# ===== Audit fix batch (Sina 2026-06-28; decisions + evidence in _FIX_PLAN.md). All PROSE, no number moved. =====
+def fix_32(t):
+    # #4: Sina-confirmed Table 5.2 stars are TWO-tailed (runners empire_drop_test:191 / empire_cashspec:127 are
+    # "uniform two-tailed"; 5.2 note "(two-tailed)"; t=2.68 -> two-tailed p=.0074). So the prose calling the
+    # table "one-tailed" is the error -> reword to state plainly the coef is significant two-tailed.
+    a = ("One might worry that the uncertainty result is an artifact of the table's one-tailed reporting "
+         "convention; it is not. The residual coefficient survives a two-tailed test ($p=.0074$), so the "
+         "load-bearing result does not depend on the reporting convention.")
+    assert a in t, "fix_32 #4 anchor not found"
+    return t.replace(a, "The residual coefficient is significant on the two-tailed test that "
+                        "Table~\\ref{tab:empire_building_did} reports ($p=.0074$).")
+
+def fix_41(t):
+    # #3 (Sina: keep the scrutiny incidence-vs-volume issue silent): remove the sentence naming incidence as
+    # "the genuine confound" (it set up the mismatch with the volume-based rule-out); its $0.0854$ is reworded
+    # out, the prior sentence keeps the motivation. #7 (causal verb -> associational). #8 ("rule it out" -> "assess").
+    a3 = (" The continuous, volume-based measure tells a weaker story --- in column~3 the "
+          "$\\mathrm{CashScrutiny}$ coefficient is $0.0854$ (standard error $0.0749$), not significant --- so "
+          "the genuine confound is whether cash scrutiny happens at all (its incidence), not how much of a call "
+          "it fills (its volume).")
+    assert a3 in t, "fix_41 #3 anchor not found"
+    t = t.replace(a3, "")
+    a7 = ("Put plainly: the reason for the deal raises uncertainty, the questioning does not, and the "
+          "questioning does not amplify the reason either.")
+    assert a7 in t, "fix_41 #7 anchor not found"
+    t = t.replace(a7, "Put plainly: the pre-announcement quarter is associated with higher uncertainty, the "
+                      "questioning is not, and the questioning does not interact with it either.")
+    a8 = "We rule it out in three steps."
+    assert a8 in t, "fix_41 #8 anchor not found"
+    t = t.replace(a8, "We assess it in three steps.")
+    return t
+
+def fix_intro(t):
+    # #8 (floor: don't overclaim a null) + #7 (causal "amplify") in the introduction
+    a8 = "We also rule out the most immediate alternative."
+    assert a8 in t, "fix_intro #8 anchor not found"
+    t = t.replace(a8, "We also assess the most immediate alternative.")
+    a7 = "the elevation survives and scrutiny does not amplify it."
+    assert a7 in t, "fix_intro #7 anchor not found"
+    t = t.replace(a7, "the elevation survives and scrutiny does not strengthen it.")
+    a8b = "additional analyses, ruling out analyst scrutiny,"
+    assert a8b in t, "fix_intro #8 roadmap anchor not found"
+    t = t.replace(a8b, "additional analyses, assessing analyst scrutiny,")
+    return t
+
+def fix_unmanaged(t, sid):
+    # #9 (honesty: flat "unmanaged" overclaims; the design supports only "relatively unmanaged" / "hardest to stage-manage")
+    pairs = {
+     "2.1": [("whereas ours is unmanaged uncertainty in the unscripted Q\\&A",
+              "whereas ours is relatively unmanaged uncertainty in the unscripted Q\\&A")],
+     "2.2": [("not managed tone before stock deals, but unmanaged uncertainty before cash deals",
+              "not managed tone before stock deals, but relatively unmanaged uncertainty before cash deals")],
+    }
+    for old, new in pairs.get(sid, []):
+        assert old in t, "fix_unmanaged[%s] anchor not found" % sid
+        t = t.replace(old, new)
+    return t
+
+def fix_24(t):
+    # #14 (style: only leading-zero p-value in the doc -> no-leading-zero convention)
+    a = "remains significant at $p = 0.0074$ two-tailed"
+    assert a in t, "fix_24 #14 anchor not found"
+    return t.replace(a, "remains significant at $p=.0074$ two-tailed")
+
+def fix_45_se(t):
+    # #18 (style: prose SEs at 5dp vs 4dp tables) -> match the table cells (5.19=0.0027, 5.20=0.0508).
+    # MUST run AFTER destars (its NOSE[4.5] anchor reads "$0.00275$").
+    for old, new in [("$0.00275$", "$0.0027$"), ("$0.05076$", "$0.0508$")]:
+        assert old in t, "fix_45_se anchor %s not found" % old
+        t = t.replace(old, new)
+    return t
+
+def global_fixes(t):
+    # #12 (whole-unit "Section~N"/"Sections~N" render as Chapters): -> Chapter~N, keeping "Section~N.M" subsection refs
+    t = re.sub(r"\bSection~([1-5])(?![.0-9])", r"Chapter~\1", t)
+    t = re.sub(r"\bSections~([1-5])(?![.0-9])", r"Chapters~\1", t)
+    return t
+
 # Issue 2 (Sina 2026-06-28): the prose states coefficients with significance STARS, which is non-standard.
 # Replace each star with a COMPACT p-threshold, dropped inside/after the standard error the prose already
 # gives -- matching its OWN style (it already reads "(standard error $0.0026$, $p=.0011$)"). (Sina saw a
@@ -226,8 +304,16 @@ def prose_of(sid):
     if sid == "2.1": body = fix_21(body)
     if sid == "3.4": body = fix_34(body)
     if sid == "2.3": body = fix_23_se(body)    # Issue H1: SE no-change assertion -> honest limitation (PROSE ONLY)
+    if sid == "3.2": body = fix_32(body)       # #4 Table 5.2 tail mislabel
+    if sid == "4.1": body = fix_41(body)       # #3 scrutiny-silent + #7 causal verb + #8 rule-out phrase
+    if sid == "1":   body = fix_intro(body)    # intro #7 + #8
+    if sid in ("2.1", "2.2"): body = fix_unmanaged(body, sid)  # #9 flat "unmanaged"
+    if sid == "2.4": body = fix_24(body)       # #14 leading-zero p
     body = destars(body, sid)                  # Issue 2: significance stars -> compact p (PROSE ONLY)
     body = dehedge(body, sid)                  # Issue 1: thin redundant honesty-floor closers (PROSE; never math)
+    if sid == "4.5": body = fix_45_se(body)    # #18 SE 4dp (AFTER destars, whose NOSE[4.5] anchor reads $0.00275$)
+    body = global_fixes(body)                  # #12 Section->Chapter (whole-unit), run LAST
+    if sid in ("2.1", "2.2", "2.3", "2.4", "2.5"): body = body.replace(" -- ", "---")  # #15 Ch2 dashes, LAST
     return body
 
 # ---- 1. clone every .tex in docs/Thesis so all \input deps resolve; originals untouched ----
@@ -282,7 +368,7 @@ SEC34 = (
  "\\section{Main Analysis 2: Differential Timing Around the Announcement}\n\n" + prose_of("3.3") + "\n\n"
  "\\section{Main Analysis 3: Cash-Specificity}\n\n" + prose_of("3.4") + "\n\n"
  "\\chapter{Additional Analyses}\\label{ch:additional}\n\n"
- "\\section{Ruling Out Analyst Scrutiny}\n\n" + prose_of("4.1") + "\n\n"
+ "\\section{Assessing the Analyst-Scrutiny Alternative}\n\n" + prose_of("4.1") + "\n\n"
  "\\section{Outsider Reactions: The Bid-Ask Spread}\n\n" + prose_of("4.2") + "\n\n"
  "\\section{Robustness: Withdrawal as a Resolution Event}\n\n" + prose_of("4.3") + "\n\n"
  "\\section{Robustness: The Cash Result Without the Dynamic Term}\n\n" + prose_of("4.4") + "\n\n"

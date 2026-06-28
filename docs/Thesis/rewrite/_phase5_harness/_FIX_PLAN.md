@@ -33,6 +33,20 @@ HIGH H1 = DONE (6b378581/2cf3fb40). Everything below is open.
 | 6 | first-deal cash/stock deal counts never reported | report counts if found in outputs (cheap) | skip |
 | 13 | one variable typeset 4 ways (\mathrm/\mathit/\textit/bare) | DEFER (regex risk in math mode near submission) | careful context-aware unify to \textit (text) keeping \mathit in displayed eqns |
 
+## SINA DECISIONS (2026-06-28)
+- #4 -> TWO-TAILED: fix the 3.2 prose (note is right). #5 -> limitation note (cheap). #1 -> ADD defs to Appendix II.
+- #3 -> "keep silent COMPLETELY": REMOVE the 4.1 "genuine confound is incidence, not volume" sentence (numbers
+  reworded out); add NO caveat anywhere. #8 -> SOFTEN ("Assessing the Analyst-Scrutiny Alternative"; "assess").
+- #13 -> DEFER (typography). #6 -> add deal counts only if found cheaply, else skip.
+
+## ADVISOR REFINEMENTS (2026-06-28)
+- #4 tail: VERIFIED via runners -- empire_drop_test.py:191 + empire_cashspec_interaction.py:127 both
+  "uniform two-tailed" (pdir=p2); 5.2 note plain "(two-tailed)"; test_h1 one-tailed = hypothesis-support,
+  not the star rule. Direction = 5.2 two-tailed, 3.2 prose is the error. STILL confirm with Sina (load-bearing).
+- #11 bib: assert len==22 BEFORE and AFTER sort; diff the KEY SET (not just order) so no entry is dropped/mangled.
+- #12/#15 global sweeps: run LAST in prose_of (after fix_XX/destars/dehedge) so a global replace can't break a
+  later anchor; also grep "Sections~" (plural) for #12.
+
 ## VERIFY (each batch)
 generator "PDF OK pages=70 undefined-ref/cite=0 overfull-hbox=0"; floor_inventory grid unchanged;
 destars_verify PASS; number_audit A=0/B=0; orphan 0/21; advisor check after the batch.
