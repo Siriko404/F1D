@@ -68,6 +68,32 @@
    "0.0210***",
    "0.0455**"
   ],
+  "number_table_map_all": {
+   ".0074": [
+    "tab:empire_building_did"
+   ],
+   ".0210": [
+    "tab:empire_drop_matched"
+   ],
+   ".039": [
+    "tab:empire_cashspec"
+   ],
+   ".0455": [
+    "tab:empire_drop_matched"
+   ]
+  },
+  "table_labels": [
+   "tab:cash_scrutiny_channel",
+   "tab:empire_building_did",
+   "tab:empire_cashspec",
+   "tab:empire_drop_matched",
+   "tab:h14c_ceo2_decomp",
+   "tab:reason_gating",
+   "tab:summary_stats"
+  ],
+  "table_xwalk": {
+   "1": "tab:summary_stats"
+  },
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -363,6 +389,27 @@
    "0.0210***",
    "0.0455**"
   ],
+  "number_table_map_all": {
+   ".0074": [
+    "tab:empire_building_did"
+   ],
+   ".0210": [
+    "tab:empire_drop_matched"
+   ],
+   ".0455": [
+    "tab:empire_drop_matched"
+   ]
+  },
+  "table_labels": [
+   "tab:cash_scrutiny_channel",
+   "tab:empire_building_did",
+   "tab:empire_cashspec",
+   "tab:empire_drop_matched",
+   "tab:h14c_ceo2_decomp",
+   "tab:reason_gating",
+   "tab:summary_stats"
+  ],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -1024,6 +1071,9 @@
    "verrecchia1983"
   ],
   "allowed_tokens_all": [],
+  "number_table_map_all": {},
+  "table_labels": [],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -1781,6 +1831,9 @@
    "verrecchia1983"
   ],
   "allowed_tokens_all": [],
+  "number_table_map_all": {},
+  "table_labels": [],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -2104,6 +2157,9 @@
    "verrecchia1983"
   ],
   "allowed_tokens_all": [],
+  "number_table_map_all": {},
+  "table_labels": [],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -2365,6 +2421,9 @@
   "allowed_tokens_all": [
    ".0074"
   ],
+  "number_table_map_all": {},
+  "table_labels": [],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -2745,6 +2804,9 @@
    "0.7530***",
    "0.8519***"
   ],
+  "number_table_map_all": {},
+  "table_labels": [],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -3017,6 +3079,32 @@
    "0.1806",
    "0.3010"
   ],
+  "number_table_map_all": {
+   ".0000": [
+    "tab:summary_stats"
+   ],
+   ".1127": [
+    "tab:summary_stats"
+   ],
+   ".1708": [
+    "tab:summary_stats"
+   ],
+   ".1806": [
+    "tab:summary_stats"
+   ],
+   ".3010": [
+    "tab:summary_stats"
+   ]
+  },
+  "table_labels": [
+   "tab:cash_scrutiny_validity",
+   "tab:empire_building_did",
+   "tab:empire_drop_matched",
+   "tab:summary_stats"
+  ],
+  "table_xwalk": {
+   "1": "tab:summary_stats"
+  },
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -3360,6 +3448,63 @@
    "0.8013",
    "0.8013***"
   ],
+  "number_table_map_all": {
+   ".0017": [
+    "tab:empire_building_did"
+   ],
+   ".0036": [
+    "tab:empire_building_did"
+   ],
+   ".0051": [
+    "tab:empire_building_did",
+    "tab:summary_stats"
+   ],
+   ".0057": [
+    "tab:empire_building_did"
+   ],
+   ".0070": [
+    "tab:empire_building_did"
+   ],
+   ".0074": [
+    "tab:empire_building_did"
+   ],
+   ".0094": [
+    "tab:empire_building_did",
+    "tab:summary_stats"
+   ],
+   ".0172": [
+    "tab:empire_building_did"
+   ],
+   ".0307": [
+    "tab:empire_building_did"
+   ],
+   ".0429": [
+    "tab:empire_building_did"
+   ],
+   ".0461": [
+    "tab:empire_building_did",
+    "tab:summary_stats"
+   ],
+   ".1708": [
+    "tab:empire_building_did",
+    "tab:summary_stats"
+   ],
+   ".3010": [
+    "tab:empire_building_did",
+    "tab:summary_stats"
+   ],
+   ".7990": [
+    "tab:empire_building_did"
+   ],
+   ".8013": [
+    "tab:empire_building_did"
+   ]
+  },
+  "table_labels": [
+   "tab:empire_building_did",
+   "tab:summary_stats"
+  ],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -3734,6 +3879,126 @@
    "0.7547",
    "0.7547***"
   ],
+  "number_table_map_all": {
+   ".0006": [
+    "tab:empire_drop_matched"
+   ],
+   ".0008": [
+    "tab:empire_drop_matched"
+   ],
+   ".0018": [
+    "tab:empire_drop_matched"
+   ],
+   ".0022": [
+    "tab:empire_drop_matched"
+   ],
+   ".0024": [
+    "tab:empire_drop_matched"
+   ],
+   ".0034": [
+    "tab:empire_drop_matched"
+   ],
+   ".0042": [
+    "tab:empire_drop_matched"
+   ],
+   ".0055": [
+    "tab:empire_drop_matched"
+   ],
+   ".0058": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0061": [
+    "tab:empire_drop_matched"
+   ],
+   ".0068": [
+    "tab:empire_drop_matched"
+   ],
+   ".0108": [
+    "tab:empire_building_did",
+    "tab:empire_drop_matched",
+    "tab:summary_stats"
+   ],
+   ".0130": [
+    "tab:empire_drop_matched"
+   ],
+   ".0155": [
+    "tab:empire_drop_matched"
+   ],
+   ".0174": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0178": [
+    "tab:empire_drop_matched"
+   ],
+   ".0181": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0187": [
+    "tab:empire_drop_matched",
+    "tab:empire_drop_placebo"
+   ],
+   ".0190": [
+    "tab:empire_building_did",
+    "tab:empire_drop_matched",
+    "tab:summary_stats"
+   ],
+   ".0210": [
+    "tab:empire_drop_matched"
+   ],
+   ".0221": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0225": [
+    "tab:empire_drop_matched"
+   ],
+   ".0250": [
+    "tab:empire_drop_matched"
+   ],
+   ".0428": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0455": [
+    "tab:empire_drop_matched"
+   ],
+   ".0461": [
+    "tab:empire_building_did",
+    "tab:empire_drop_matched",
+    "tab:summary_stats"
+   ],
+   ".0473": [
+    "tab:empire_building_did",
+    "tab:empire_drop_matched",
+    "tab:summary_stats"
+   ],
+   ".0486": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0681": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0723": [
+    "tab:empire_building_did",
+    "tab:empire_drop_matched",
+    "tab:summary_stats"
+   ],
+   ".3010": [
+    "tab:empire_building_did",
+    "tab:empire_drop_matched",
+    "tab:summary_stats"
+   ],
+   ".7547": [
+    "tab:empire_building_did",
+    "tab:empire_drop_matched",
+    "tab:summary_stats"
+   ]
+  },
+  "table_labels": [
+   "tab:empire_building_did",
+   "tab:empire_drop_matched",
+   "tab:empire_drop_placebo",
+   "tab:summary_stats"
+  ],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -4177,6 +4442,88 @@
    "0.0983**",
    "0.3010"
   ],
+  "number_table_map_all": {
+   ".0055": [
+    "tab:empire_cashspec"
+   ],
+   ".0056": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0064": [
+    "tab:empire_cashspec"
+   ],
+   ".0071": [
+    "tab:empire_cashspec"
+   ],
+   ".0092": [
+    "tab:empire_cashspec"
+   ],
+   ".0105": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0174": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0185": [
+    "tab:empire_cashspec",
+    "tab:summary_stats"
+   ],
+   ".0187": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0299": [
+    "tab:empire_drop_placebo"
+   ],
+   ".039": [
+    "tab:empire_cashspec",
+    "tab:summary_stats"
+   ],
+   ".0404": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0405": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0436": [
+    "tab:empire_cashspec",
+    "tab:summary_stats"
+   ],
+   ".0459": [
+    "tab:empire_cashspec",
+    "tab:summary_stats"
+   ],
+   ".0476": [
+    "tab:empire_cashspec",
+    "tab:summary_stats"
+   ],
+   ".0486": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0524": [
+    "tab:empire_cashspec",
+    "tab:summary_stats"
+   ],
+   ".0681": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0756": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0983": [
+    "tab:empire_cashspec",
+    "tab:summary_stats"
+   ],
+   ".3010": [
+    "tab:empire_cashspec",
+    "tab:summary_stats"
+   ]
+  },
+  "table_labels": [
+   "tab:empire_cashspec",
+   "tab:empire_drop_placebo",
+   "tab:summary_stats"
+  ],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -4554,6 +4901,96 @@
    "0.7530***",
    "0.8519***"
   ],
+  "number_table_map_all": {
+   ".0000": [
+    "tab:cash_scrutiny_channel",
+    "tab:reason_gating"
+   ],
+   ".0001": [
+    "tab:reason_gating"
+   ],
+   ".0003": [
+    "tab:cash_scrutiny_channel"
+   ],
+   ".0013": [
+    "tab:cash_scrutiny_channel"
+   ],
+   ".0056": [
+    "tab:empire_building_did",
+    "tab:reason_gating",
+    "tab:summary_stats"
+   ],
+   ".0074": [
+    "tab:cash_scrutiny_channel"
+   ],
+   ".0111": [
+    "tab:empire_building_did",
+    "tab:reason_gating",
+    "tab:summary_stats"
+   ],
+   ".016": [
+    "tab:empire_building_did",
+    "tab:summary_stats"
+   ],
+   ".0177": [
+    "tab:reason_gating"
+   ],
+   ".0189": [
+    "tab:reason_gating"
+   ],
+   ".0194": [
+    "tab:empire_building_did"
+   ],
+   ".0237": [
+    "tab:cash_scrutiny_validity"
+   ],
+   ".027": [
+    "tab:empire_building_did",
+    "tab:summary_stats"
+   ],
+   ".0408": [
+    "tab:empire_building_did"
+   ],
+   ".0413": [
+    "tab:reason_gating"
+   ],
+   ".0439": [
+    "tab:reason_gating"
+   ],
+   ".0749": [
+    "tab:empire_building_did"
+   ],
+   ".0854": [
+    "tab:empire_building_did"
+   ],
+   ".0949": [
+    "tab:cash_scrutiny_validity"
+   ],
+   ".0967": [
+    "tab:cash_scrutiny_validity"
+   ],
+   ".1127": [
+    "tab:empire_building_did",
+    "tab:summary_stats"
+   ],
+   ".1754": [
+    "tab:cash_scrutiny_validity"
+   ],
+   ".7530": [
+    "tab:cash_scrutiny_validity"
+   ],
+   ".8519": [
+    "tab:cash_scrutiny_validity"
+   ]
+  },
+  "table_labels": [
+   "tab:cash_scrutiny_channel",
+   "tab:cash_scrutiny_validity",
+   "tab:empire_building_did",
+   "tab:reason_gating",
+   "tab:summary_stats"
+  ],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -4921,6 +5358,54 @@
    "0.3496",
    "0.3496***"
   ],
+  "number_table_map_all": {
+   ".0108": [
+    "tab:h14c_ceo2_decomp"
+   ],
+   ".0545": [
+    "tab:h14c_ceo2_decomp"
+   ],
+   ".0594": [
+    "tab:h14c_ceo2_decomp"
+   ],
+   ".0814": [
+    "tab:h14c_ceo2_decomp"
+   ],
+   ".0946": [
+    "tab:h14c_ceo2_decomp"
+   ],
+   ".0984": [
+    "tab:h14c_ceo2_decomp"
+   ],
+   ".1021": [
+    "tab:h14c_ceo2_decomp"
+   ],
+   ".1184": [
+    "tab:h14c_ceo2_decomp"
+   ],
+   ".1229": [
+    "tab:h14c_ceo2_decomp"
+   ],
+   ".1253": [
+    "tab:h14c_ceo2_decomp"
+   ],
+   ".1644": [
+    "tab:h14c_ceo2_decomp"
+   ],
+   ".1664": [
+    "tab:h14c_ceo2_decomp"
+   ],
+   ".2945": [
+    "tab:h14c_ceo2_decomp"
+   ],
+   ".3496": [
+    "tab:h14c_ceo2_decomp"
+   ]
+  },
+  "table_labels": [
+   "tab:h14c_ceo2_decomp"
+  ],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -5238,6 +5723,11 @@
    "0.0687",
    "0.0723"
   ],
+  "number_table_map_all": {},
+  "table_labels": [
+   "tab:empire_drop_resolution"
+  ],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -5525,6 +6015,31 @@
    "0.0305",
    "0.0318"
   ],
+  "number_table_map_all": {
+   ".0006": [
+    "tab:empire_drop_matched"
+   ],
+   ".0012": [
+    "tab:empire_drop_matched"
+   ],
+   ".0189": [
+    "tab:empire_drop_matched"
+   ],
+   ".0216": [
+    "tab:empire_drop_matched"
+   ],
+   ".0305": [
+    "tab:empire_drop_matched"
+   ],
+   ".0318": [
+    "tab:empire_drop_matched"
+   ]
+  },
+  "table_labels": [
+   "tab:empire_drop_matched",
+   "tab:empire_drop_staticfe"
+  ],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -5846,6 +6361,111 @@
    "0.3399",
    "0.7478**"
   ],
+  "number_table_map_all": {
+   ".0015": [
+    "tab:empire_building_did"
+   ],
+   ".0033": [
+    "tab:empire_building_did"
+   ],
+   ".0062": [
+    "tab:empire_cashspec"
+   ],
+   ".0071": [
+    "tab:empire_cashspec"
+   ],
+   ".013": [
+    "tab:empire_cashspec"
+   ],
+   ".0137": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0139": [
+    "tab:empire_drop_matched"
+   ],
+   ".0140": [
+    "tab:empire_building_did"
+   ],
+   ".0145": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0148": [
+    "tab:empire_drop_matched"
+   ],
+   ".0156": [
+    "tab:empire_drop_matched"
+   ],
+   ".0180": [
+    "tab:empire_cashspec"
+   ],
+   ".0266": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0272": [
+    "tab:empire_building_did",
+    "tab:empire_drop_placebo"
+   ],
+   ".0348": [
+    "tab:empire_building_did"
+   ],
+   ".0352": [
+    "tab:empire_drop_matched"
+   ],
+   ".0355": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0363": [
+    "tab:empire_drop_matched"
+   ],
+   ".0385": [
+    "tab:empire_cashspec"
+   ],
+   ".039": [
+    "tab:empire_cashspec"
+   ],
+   ".0391": [
+    "tab:empire_building_did"
+   ],
+   ".0401": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0423": [
+    "tab:empire_cashspec"
+   ],
+   ".0447": [
+    "tab:empire_cashspec"
+   ],
+   ".0543": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0544": [
+    "tab:empire_drop_matched"
+   ],
+   ".0585": [
+    "tab:empire_drop_placebo"
+   ],
+   ".0609": [
+    "tab:empire_cashspec"
+   ],
+   ".0983": [
+    "tab:empire_cashspec"
+   ],
+   ".1056": [
+    "tab:empire_cashspec"
+   ]
+  },
+  "table_labels": [
+   "tab:empire_building_did",
+   "tab:empire_cashspec",
+   "tab:empire_drop_matched",
+   "tab:empire_drop_placebo"
+  ],
+  "table_xwalk": {
+   "5.2": "tab:empire_building_did",
+   "5.3": "tab:empire_drop_matched",
+   "5.4": "tab:empire_drop_placebo",
+   "5.5": "tab:empire_cashspec"
+  },
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -6211,6 +6831,40 @@
    "0.0983",
    "0.1127"
   ],
+  "number_table_map_all": {
+   ".0064": [
+    "tab:empire_cashspec"
+   ],
+   ".039": [
+    "tab:empire_building_did",
+    "tab:empire_cashspec",
+    "tab:empire_drop_matched"
+   ],
+   ".0455": [
+    "tab:empire_building_did",
+    "tab:empire_cashspec",
+    "tab:empire_drop_matched"
+   ],
+   ".0983": [
+    "tab:empire_building_did",
+    "tab:empire_cashspec",
+    "tab:empire_drop_matched"
+   ],
+   ".1127": [
+    "tab:empire_building_did",
+    "tab:summary_stats"
+   ]
+  },
+  "table_labels": [
+   "tab:cash_scrutiny_channel",
+   "tab:empire_building_did",
+   "tab:empire_cashspec",
+   "tab:empire_drop_matched",
+   "tab:h14c_ceo2_decomp",
+   "tab:reason_gating",
+   "tab:summary_stats"
+  ],
+  "table_xwalk": {},
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",

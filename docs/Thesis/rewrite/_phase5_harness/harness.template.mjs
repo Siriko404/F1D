@@ -25,6 +25,7 @@ function sectionGate(out, brief) {
       prose: par.final_prose || '',
       allowedTokens: (brief.allowed_tokens_all && brief.allowed_tokens_all.length ? brief.allowed_tokens_all : b.allowed_tokens),
       allowedKeys: (b.allowed_cites_all && b.allowed_cites_all.length ? b.allowed_cites_all : b.allowed_cites),
+      numberTables: brief.number_table_map_all || null,
       props: b.props.map(p => ({ prop_id: p.prop_id, signature: p.signature })),
     });
     blocks.push(...r.blocks.map(x => `${par.para_id}: ${x}`));
@@ -36,6 +37,15 @@ function sectionGate(out, brief) {
   return { pass: blocks.length === 0, blocks, flags };
 }
 
+// table-reference hint: this section's labels + the hardcoded-number crosswalk (writers must emit \ref, never a literal number)
+function tableHint(brief) {
+  const xw = brief.table_xwalk || {};
+  const labs = brief.table_labels || [];
+  const a = labs.length ? `Tables this section may cite: ${labs.join(', ')}.` : '';
+  const b = Object.keys(xw).length ? ` When a prop names a table as "Table N", render it as: ${Object.entries(xw).map(([n, l]) => `Table ${n} -> \\ref{${l}}`).join('; ')}.` : '';
+  return (a + b).trim();
+}
+
 // ---- shared constraint block (BYTE-IDENTICAL across all writers; lessons §2 vary voice not constraints) ----
 function constraints(brief) {
   return [
@@ -43,6 +53,7 @@ function constraints(brief) {
     '- Render ONLY the propositions below into flowing LaTeX prose. Add NO new claim, number, citation, or fact.',
     '- NUMBERS: use ONLY the exact figures printed in each prop (with their exact significance stars in LaTeX form, e.g. $0.0391^{***}$). Never invent, round, or restate a number with different/extra stars. A figure may be cited bare (no stars) only as a magnitude.',
     '- CITATIONS: use \\citep{}/\\citet{} ONLY with the cite keys the props carry. No other keys.',
+    '- TABLE REFERENCES: cite every table with \\ref{<tab:label>} (write e.g. "Table~\\ref{tab:empire_building_did}"). NEVER hardcode a table number such as "Table 5.2" (LaTeX auto-numbers; a literal number drifts), and never print a bare "tab:..." as visible text. ' + tableHint(brief),
     '- HONESTY FLOOR (verbatim, do not cross): ' + (brief.bright_lines || []).join(' | '),
     '- Respect every prop\'s register_locks exactly. Never say "suppressed"/"dampened" for a null; never claim detection or causation the prop does not state; keep hedges (these are mandatory, not optional).',
     '- Output valid LaTeX with balanced braces and math; escape % & _ #.',

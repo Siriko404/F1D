@@ -61,5 +61,24 @@ check("ROUNDING 0.008 (from 0.0078) -> FLAGGED not blocked", r9.pass && r9.flags
 const r10 = runGates({ ...base, prose: CORRECT + " The deal rate is 2.84\\% across 2002--2018." });
 check("PERCENTAGE 2.84% + year 2002 -> not false-blocked", r10.pass);
 
+// ---- TABLE-REFERENCE integrity tests (GATE 1b: \ref form + anti-hardcode) ----
+const tablesMap = { ".0391": ["tab:empire_building_did"], ".0086": ["tab:empire_cashspec"], ".0078": ["tab:empire_building_did", "tab:empire_drop_staticfe"] };
+const tbase = { allowedTokens, allowedKeys, props, numberTables: tablesMap };
+// 12. correct \ref tags pass (both "Table~\ref" and bare "\ref" forms)
+const t0 = runGates({ ...tbase, prose: String.raw`The run-up is $+0.0391^{***}$ (Table~\ref{tab:empire_building_did}) and the forward result is $0.0086^{***}$ (\ref{tab:empire_cashspec}).` });
+check("TABLE-REF correct \\ref tags -> passes", t0.pass);
+// 13. swapped label -> blocked (mis-attribution)
+const t1 = runGates({ ...tbase, prose: String.raw`The run-up is $+0.0391^{***}$ (Table~\ref{tab:empire_drop_matched}).` });
+check("TABLE-REF swapped label (.0391 -> drop_matched) -> blocked", !t1.pass && t1.blocks.some(b => b.includes("mis-attribution") && b.includes("drop_matched")));
+// 14. hardcoded "Table 5.2" number -> blocked (must be \ref)
+const t2 = runGates({ ...tbase, prose: String.raw`The run-up is $+0.0391^{***}$ (Table 5.2 all-deals).` });
+check("TABLE-REF hardcoded 'Table 5.2' -> blocked", !t2.pass && t2.blocks.some(b => b.includes("hardcoded table number")));
+// 15. loose co-mention (prose word between number and \ref) -> NOT blocked
+const t3 = runGates({ ...tbase, prose: String.raw`The $+0.0391^{***}$ figure is fifteen percent of a residual SD; see also \ref{tab:empire_drop_matched} elsewhere.` });
+check("TABLE-REF loose mention (words between) -> not false-blocked", t3.pass);
+// 16. value with no known table -> skipped; multi-label value using 2nd -> passes
+const t4 = runGates({ ...tbase, prose: String.raw`The SE $0.0140$ (\ref{tab:empire_drop_matched}) is small, and under static FE the estimate is $0.0078^{***}$ (\ref{tab:empire_drop_staticfe}).` });
+check("TABLE-REF unknown-value skipped + multi-label 2nd -> passes", t4.pass);
+
 console.log(`\n${"=".repeat(40)}\n${fail === 0 ? "ALL GATES WORK" : "GATES BROKEN"}: ${pass} pass, ${fail} fail`);
 process.exit(fail === 0 ? 0 : 1);

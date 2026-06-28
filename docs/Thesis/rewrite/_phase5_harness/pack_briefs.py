@@ -32,6 +32,36 @@ def cites(pr):
         out |= {k.strip() for k in g.split(",")}
     return sorted(out)
 
+TBL = re.compile(r'Table\s+(\d[\d.]*[A-Za-z]?)')   # hardcoded "Table 5.2" / "Table 1" / "Table 1."
+LBL = re.compile(r'tab:[A-Za-z0-9_]+')             # LaTeX \label form (the robust reference)
+# author's hardcoded table numbers -> the actual \label (content-matched from captions + 4.5 object-homing;
+# robust to compile numbering). Every hardcoded "Table N" the writers see MUST be here (asserted in self-test).
+TABLE_XWALK = {"1":"tab:summary_stats", "5.2":"tab:empire_building_did", "5.3":"tab:empire_drop_matched",
+               "5.4":"tab:empire_drop_placebo", "5.5":"tab:empire_cashspec"}
+def normval(s):   # mirror gates.mjs normVal: drop sign + leading zeros before the dot (".0391")
+    return re.sub(r'^0+(?=\.)','', s.strip().lstrip('+-'))
+def _blob(pr):
+    return " ".join([pr.get("statement","")]
+        + (pr.get("numbers",[]) if isinstance(pr.get("numbers"),list) else [])
+        + ([json.dumps(pr.get("evidence"))] if pr.get("evidence") else []))
+def prop_table_tokens(pr):
+    """(tab:labels, hardcoded-numbers) referenced anywhere in this prop."""
+    blob=_blob(pr)
+    return set(LBL.findall(blob)), {n.rstrip('.') for n in TBL.findall(blob)}
+def prop_labels(pr):
+    """canonical tab:labels for this prop (direct labels + hardcoded numbers crosswalked)."""
+    labs,nums=prop_table_tokens(pr)
+    return labs | {TABLE_XWALK[n] for n in nums if n in TABLE_XWALK}
+def number_table_pairs(pr):
+    """normalized coefficient value -> set(tab:labels) the prop sources it from."""
+    labs=prop_labels(pr); out={}
+    if not labs: return out
+    for s in [pr.get("statement","")] + (pr.get("numbers",[]) if isinstance(pr.get("numbers"),list) else []):
+        if not isinstance(s,str): continue
+        for tok in COEF.findall(s):
+            out.setdefault(normval(tok.replace('*','')), set()).update(labs)
+    return out
+
 # rulebooks
 rulebooks={}
 for t in set(SECTYPE.values()):
@@ -56,13 +86,15 @@ for i,stem in enumerate(order):
     d=json.load(open(f,encoding="utf-8"))
     typ=SECTYPE[stem]
     pl=d["paragraphs"]; items=list(pl.items()) if isinstance(pl,dict) else [(p.get("para_id"),p) for p in pl]
-    paras=[]
+    paras=[]; sec_map={}; sec_labels=set(); sec_nums=set()
     for pid,pa in items:
         props=pa.get("propositions") or pa.get("proposition_chain") or []
         ptoks=set(); pcites=set(); plist=[]
         for pr in props:
             if not isinstance(pr,dict): continue
             tk=tokens(pr); ct=cites(pr); ptoks|=set(tk); pcites|=set(ct)
+            for v,ts in number_table_pairs(pr).items(): sec_map.setdefault(v,set()).update(ts)
+            _l,_n=prop_table_tokens(pr); sec_labels|=prop_labels(pr); sec_nums|={n for n in _n if n in TABLE_XWALK}
             plist.append({
                 "prop_id":pr.get("prop_id"),
                 "statement":pr.get("statement"),
@@ -73,6 +105,10 @@ for i,stem in enumerate(order):
                 "verification":pr.get("verification"),     # theory props carry the NLM verbatim quotes
                 "signature": (tk[0] if tk else None),
             })
+        ib=json.dumps(pa.get("intent"))   # the paragraph intent is shown to the writer -> harvest its table labels too
+        sec_labels|=set(LBL.findall(ib))
+        for n in {x.rstrip('.') for x in TBL.findall(ib)}:
+            if n in TABLE_XWALK: sec_labels.add(TABLE_XWALK[n]); sec_nums.add(n)
         paras.append({
             "para_id":pid,
             "order":pa.get("order"),
@@ -91,6 +127,9 @@ for i,stem in enumerate(order):
         "rulebook":rulebooks[typ],
         "allowed_cites_all":ALLOWED_CITES_ALL,
         "allowed_tokens_all":sec_tokens,   # SECTION-level number set (back-references across paragraphs are legit)
+        "number_table_map_all":{k:sorted(v) for k,v in sorted(sec_map.items())},  # gate 1b: value -> allowed tab:labels
+        "table_labels":sorted(sec_labels),                              # tables this section cites (render as \ref{label})
+        "table_xwalk":{n:TABLE_XWALK[n] for n in sorted(sec_nums)},     # writer crosswalk: hardcoded "Table N" -> \ref{label}
         "bright_lines":d.get("_bright_lines") or d.get("bright_lines") or [],
         "register_global":(d.get("section_context") or {}).get("register_global") if isinstance(d.get("section_context"),dict) else None,
         "paragraphs":paras,
@@ -118,6 +157,15 @@ def has_coef(pa): return any(COEF.search(" ".join([p.get("statement") or ""] + p
 ck("no coefficient dropped (every numeric paragraph has allowed_tokens)", all(
     pa["allowed_tokens"] for b in briefs for pa in b["paragraphs"] if has_coef(pa)))
 ck("ASCII-clean (embeddable)", all(ord(c)<128 for c in OUT.read_text(encoding="utf-8")))
+m45=next((b["number_table_map_all"] for b in briefs if b["stem"]=="section4.5"),{})
+ck("number->label map populated (4.5 .0391 -> tab:empire_building_did)", "tab:empire_building_did" in m45.get(".0391",[]))
+# every hardcoded "Table N" the writers see (statement+numbers) must be crosswalkable -> the \ref instruction can map it
+allnums=set()
+for b in briefs:
+    for pa in b["paragraphs"]:
+        for pr in pa["props"]:
+            allnums|={n.rstrip('.') for n in TBL.findall(" ".join([pr.get("statement") or ""]+(pr.get("numbers") or [])))}
+ck("every hardcoded Table N is in the crosswalk (no unmappable ref)", allnums <= set(TABLE_XWALK))
 nprops=sum(len(pa["props"]) for b in briefs for pa in b["paragraphs"])
 print(f"  briefs:{len(briefs)}  paragraphs:{sum(len(b['paragraphs']) for b in briefs)}  props:{nprops}")
 print("PACKER OK -> briefs.json" if not fails else f"FAILED {fails}")

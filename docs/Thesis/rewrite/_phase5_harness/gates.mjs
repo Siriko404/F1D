@@ -41,6 +41,30 @@ export function gateNumbers(prose, allowedTokens) {
   return { blocks, flags };
 }
 
+// ---------- GATE 1b: table-reference integrity (anti-mis-tag + anti-hardcode) ----------
+// Policy: every table is cited as \ref{tab:label} so LaTeX auto-numbers it (a hardcoded "Table 5.2"
+// drifts off-by-one if float order changes -> wrong reference in the final PDF). Two checks:
+//  (a) HARDCODE: a literal "Table <digit>" is BLOCKED (must be \ref{<tab:label>}).
+//  (b) MIS-TAG: when a figure is tightly tied to a \ref{tab:...}, that label must be one the props
+//      actually source the figure from. numberTables maps normalized value -> [allowed tab:labels].
+//      Tight adjacency only (stars / $ / "Table~" / punctuation between number and \ref; no other
+//      prose word) -> a loose co-mention can't false-block; a value with no known table is skipped.
+const REF_PAIR = /([+-]?\d?\.\d{3,4})(?:\*{1,3}|\$|n\.s\.?|Table|~|[\s(),.;:\-]){0,20}\\ref\{(tab:[A-Za-z0-9_]+)\}/gi;
+const HARDCODE_TABLE = /\bTable~?\s*\d/i;   // a literal table NUMBER (policy: use \ref instead)
+export function gateNumberTable(prose, numberTables) {
+  const blocks = [];
+  const m0 = prose.match(HARDCODE_TABLE);
+  if (m0) blocks.push(`hardcoded table number "${m0[0].trim()}" -- cite tables as \\ref{<tab:label>} (compile auto-numbers; a literal number drifts off-by-one)`);
+  if (numberTables) for (const m of deLatexStars(prose).matchAll(REF_PAIR)) {
+    const val = normVal(m[1]); const label = m[2];
+    const allowed = numberTables[val];
+    if (!allowed || !allowed.length) continue;          // not a known table-sourced figure -> skip
+    if (!allowed.includes(label))
+      blocks.push(`number ${m[1]} tied to \\ref{${label}} but props source it from ${allowed.join("/")} (mis-attribution)`);
+  }
+  return blocks;
+}
+
 // ---------- GATE 2: honesty-FORBID (register floor) ----------
 const FORBID = [/suppress/i, /dampen/i, /strict specificity/i, /\bwe are the first\b/i,
                 /\bto mask\b/i, /manipulat/i, /\bdetect/i, /\bin order to mask\b/i];
@@ -87,6 +111,7 @@ export function runGates(par) {
   const blocks = [], flags = [];
   const n = gateNumbers(par.prose, par.allowedTokens);
   blocks.push(...n.blocks); flags.push(...n.flags);
+  blocks.push(...gateNumberTable(par.prose, par.numberTables));
   blocks.push(...gateHonesty(par.prose));
   blocks.push(...gateCites(par.prose, par.allowedKeys));
   blocks.push(...gateLatex(par.prose));
