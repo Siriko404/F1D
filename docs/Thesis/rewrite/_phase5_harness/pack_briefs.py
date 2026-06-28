@@ -163,9 +163,10 @@ ck("number->label map populated (4.5 .0391 -> tab:empire_building_did)", "tab:em
 allnums=set()
 for b in briefs:
     for pa in b["paragraphs"]:
+        allnums|={n.rstrip('.') for n in TBL.findall(json.dumps(pa.get("intent")))}   # writers see intent too
         for pr in pa["props"]:
             allnums|={n.rstrip('.') for n in TBL.findall(" ".join([pr.get("statement") or ""]+(pr.get("numbers") or [])))}
-ck("every hardcoded Table N is in the crosswalk (no unmappable ref)", allnums <= set(TABLE_XWALK))
+ck("every hardcoded Table N (statement+numbers+intent) is in the crosswalk (no unfixable block)", allnums <= set(TABLE_XWALK))
 nprops=sum(len(pa["props"]) for b in briefs for pa in b["paragraphs"])
 print(f"  briefs:{len(briefs)}  paragraphs:{sum(len(b['paragraphs']) for b in briefs)}  props:{nprops}")
 print("PACKER OK -> briefs.json" if not fails else f"FAILED {fails}")

@@ -37,14 +37,24 @@ Every post-write agent sees the entire thesis (Opus 1M ctx). Only the boss TYPES
 Agents are schema-forced (deliver JSON, never free text); they RETURN data, the harness writes files
 (no two agents touch one file). Each section -> its own output/ json.
 
-## THE GATES (the deterministic spine — gates.mjs, 11/11)
+## THE GATES (the deterministic spine — gates.mjs, 16/16)
 number-trace (SECTION-level set; back-references pass; a rounded figure FLAGS not blocks; extra-stars BLOCKS;
-foreign number BLOCKS) · honesty-FORBID (suppress/dampen/detect/strict-specificity/...) · cite-whitelist
-(full 22-key bib set; mis-cite caught by the audit lane) · bijection (every prop rendered) · LaTeX-lint.
-Run BETWEEN every layer; a blocked paragraph cannot move forward. `node gates.test.mjs` -> 11/11.
+foreign number BLOCKS) · table-ref integrity (NEW, gate 1b: literal "Table 5.2" BLOCKED -> must be \ref{tab:label};
+a figure tied to \ref{tab:...} must use a label the props source it from) · honesty-FORBID
+(suppress/dampen/detect/strict-specificity/...) · cite-whitelist (full 22-key bib set; mis-cite caught by the audit
+lane) · bijection (every prop rendered) · LaTeX-lint. Run BETWEEN every layer; a blocked paragraph cannot move
+forward. `node gates.test.mjs` -> 16/16.
+
+## TABLE REFERENCES (policy, locked 2026-06-28; commit f8e5ec27)
+Every table cited as \ref{tab:label} (LaTeX auto-numbers; hardcoded "Table 5.2" drifts off-by-one). Writers get the
+instruction + a per-section crosswalk (briefs: table_labels + table_xwalk). Content-matched crosswalk:
+1->summary_stats, 5.2->empire_building_did, 5.3->empire_drop_matched, 5.4->empire_drop_placebo, 5.5->empire_cashspec.
+ASSEMBLER REQUIREMENT (verified present, must stay): thesis_draft_uottawa.tex \inputs _tables_from_bible.tex (L334) +
+_dwz_replication.tex (L339); all 9 referenced labels are defined + the master's existing prose already \refs them.
+Final-compile check (assembler stage): grep the PDF for "??" to confirm no unresolved \ref.
 
 ## FILES (all committed; harness.mjs + _wrapcheck.cjs + output/ + harness_result.json are gitignored build/run artifacts)
-- gates.mjs (+ gates.test.mjs 11/11)         — the spine
+- gates.mjs (+ gates.test.mjs 16/16)         — the spine
 - pack_briefs.py -> briefs.json              — per-section briefs (props+rulebook+locks+closed number/cite sets)
 - harness.template.mjs + build_harness.py -> harness.mjs   — the workflow (ASCII-sanitized, wrap-checked)
 - finalize.py                                — materialize per-section json + --place into ledgers
