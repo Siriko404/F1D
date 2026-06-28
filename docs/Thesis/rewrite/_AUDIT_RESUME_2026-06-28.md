@@ -11,16 +11,23 @@ finding via `cat >> file <<'J'`), identify-only, NEVER fix. Merge is programmati
   wf_c9aac417-d39). A 5-min health-check wakeup is armed to merge when they land.
 
 ## HOW TO FINISH (post-compaction)
-1. Confirm methodology_A.jsonl + completeness_A.jsonl exist in `_phase5_harness/_audit_reports/` and the
-   rerun task completed. If they FAILED AGAIN (stalled): re-run on effort 'medium' (edit audit_rerun.js).
+0. If neither a task-notification nor the wakeup fired, PROACTIVELY check task wuw6g5fnw + the report dir.
+1. The MOMENT methodology_A.jsonl + completeness_A.jsonl land, `git add` + COMMIT them immediately, before
+   anything else (~340k tokens; uncommitted = LOST on the next compaction). Confirm both exist in
+   `_phase5_harness/_audit_reports/`. If they FAILED AGAIN (stalled): re-run on effort 'medium' (edit audit_rerun.js).
 2. `cd _phase5_harness && python _audit/merge_jsonl.py`  -> writes `_AUDIT_REPORT.{json,md}` (all 7).
-3. ADJUDICATE each finding YOURSELF against the flat file `_uottawa_rewrite/_thesis_AUDIT.tex` -- accept or
-   reject with evidence (orchestrator adjudication is the weak link; the advisor must see your accept/reject
-   calls, not a cleaned summary). NEVER auto-apply a fix.
+3. ADJUDICATE each finding YOURSELF against the flat file `_uottawa_rewrite/_thesis_AUDIT.tex`. The merged
+   JSON LOOKS authoritative but is NOT -- re-derive every number from its actual table cell and every claim
+   from its sentence; do NOT rubber-stamp (this session caught real errors only by re-deriving). Accept/reject
+   each with evidence; the advisor MUST see your accept/reject calls, not a cleaned summary. NEVER auto-apply a fix.
 4. Present the vetted fix-plan to Sina. Fixes (if approved) go via the generator transforms like Issues 1-3,
    then RE-RUN Layer-0 + re-audit touched sections (applying fixes re-opens the audit).
 
-## FINDINGS SO FAR (5/7; ~79 findings; 0 HIGH-severity -- no fatal flaw found)
+## FINDINGS SO FAR (5/7 -- NOT an all-clear)
+0 high-severity ON THE 5 DONE, ~79 findings. But methodology + completeness -- the 2 dimensions that most
+often raise FATAL examiner objections -- are STILL PENDING; methodology's failed partial already floated
+"claim stronger than design supports" and "construct-validity vs central interpretation". Do not call the
+thesis clean until those two land and are adjudicated.
 - numbers: ALL 21 tables' cited cells, economic effects, bin drops, Wald=beta_c-beta_s RECONCILE. Only med:
   one prose line mislabels Table 5.2's two-tailed note as "one-tailed" reporting convention.
 - honesty: a causal verb slipped into a gloss ("the reason for the deal RAISES uncertainty"); "Ruling Out"/
