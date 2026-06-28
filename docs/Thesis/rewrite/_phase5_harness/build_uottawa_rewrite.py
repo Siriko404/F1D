@@ -158,6 +158,49 @@ def destars(t, sid):
     t = re.sub(r"(\$-?\d+\.\d+)\^\{\*+\}\$", r"\1$", t)
     return t
 
+# Issue 1 (Sina 2026-06-28; VERY SENSITIVE): thin the redundant honesty-floor repetition WITHOUT weakening
+# the floor. Per-section SHORTEN/MERGE/CUT of redundant per-paragraph CLOSERS only; each section keeps its
+# load-bearing statement of every floor element (correlational / no-cause / within-firm / mechanism-open /
+# supportive-not-definitive / concentration-not-specificity). Untouched: intro, all of Chapter 2, MA3
+# (cash-specificity, incl. "we leave that mechanism open"), and the Conclusion limitations paragraph.
+# SAFETY: every anchor is hedge PROSE with ZERO math (asserted) -> no number can move; and
+# floor_inventory.py must show no section dropping any element to zero after the rebuild.
+DEHEDGE = {
+ "3.2": [   # MA1 run-up (CORR/NOCAUSE/WITHIN all remain in "...within-firm... correlational design... causal effect")
+  (" Because each firm is compared with itself, the pattern is within-firm; it remains correlational and does not identify a cause.", ""),
+  ("These magnitudes are supportive but not definitive, and they do not establish a cause.",
+   "These magnitudes are supportive but not definitive."),
+ ],
+ "3.3": [   # MA2 differential timing (keep the section's only WITHIN; CORR/NOCAUSE remain in the primary + closer)
+  ("Throughout, firms are compared with themselves, the design is correlational, and it does not identify a cause.",
+   "Throughout, firms are compared with themselves."),
+  (" This remains a correlational reading, not a causal one.", ""),
+ ],
+ "4.1": [   # scrutiny rule-out (CORR already in the within-firm sentence above; SUPP/NOCAUSE/MECH stay here)
+  ("The reading is correlational and supportive, not definitive; it identifies no cause, and the mechanism remains open.",
+   "The reading is supportive, not definitive; it identifies no cause, and the mechanism remains open."),
+ ],
+ "4.3": [   # withdrawal robustness (CORR already in "This is a correlational concern..." above)
+  ("The reading is correlational and supportive rather than definitive.",
+   "The reading is supportive rather than definitive."),
+ ],
+ "4.4": [   # dynamic-term robustness -- merge the doubled "supportive rather than definitive"; CORR moves into l.92
+  ("This is a robustness check and is supportive rather than definitive.",
+   "This is a correlational robustness check, supportive rather than definitive."),
+  (" The reading is correlational and supportive rather than definitive.", ""),
+ ],
+ "4.5": [   # first-deal robustness (NOCAUSE/CONC remain in "...concentration, not strict specificity, and with no cause asserted")
+  ("The design stays correlational and identifies no causal effect, and we read it as concentration in cash deals, not strict specificity.",
+   "The design stays correlational."),
+ ],
+}
+def dehedge(t, sid):
+    for old, new in DEHEDGE.get(sid, []):
+        assert "$" not in old and "$" not in new, "dehedge[%s]: anchor touches math -- abort" % sid
+        assert old in t, "dehedge[%s] anchor not found (prose changed?): %s" % (sid, old[:50])
+        t = t.replace(old, new, 1)
+    return t
+
 def prose_of(sid):
     body = "\n\n".join(normalize(p["final_prose"].strip()) for p in SEC[sid]["paragraphs"])
     if sid == "4.5": body = repoint_45(body)
@@ -165,6 +208,7 @@ def prose_of(sid):
     if sid == "2.1": body = fix_21(body)
     if sid == "3.4": body = fix_34(body)
     body = destars(body, sid)                  # Issue 2: significance stars -> compact p (PROSE ONLY)
+    body = dehedge(body, sid)                  # Issue 1: thin redundant honesty-floor closers (PROSE; never math)
     return body
 
 # ---- 1. clone every .tex in docs/Thesis so all \input deps resolve; originals untouched ----
