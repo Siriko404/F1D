@@ -1,0 +1,43 @@
+% Bibitems supplement — the 11 cite keys used in props that lacked a \bibitem
+% (surfaced by tmp/preflight_inputs.py). The assembler appends these into the thesis
+% bibliography so no \citep renders as [?] and push_to_tex does not abort.
+%
+% CONFIDENCE: entries below the "VERIFIED" header are from thesis prop source.ref text
+% or are standard, heavily-cited references. The two under "NEEDS-VERIFY" carry only an
+% opaque id in the props (PII / SSRN) — stubbed, NOT fabricated; Sina to complete.
+
+% ===== VERIFIED (from prop ref text) =====
+\bibitem[Basic Inc.\ v.\ Levinson(1988)]{basic_v_levinson}
+Basic Inc.\ v.\ Levinson, 485 U.S. 224 (1988).
+
+\bibitem[Loughran and McDonald(2011)]{lm2011}
+Loughran, T., and B.~McDonald. 2011. When is a liability not a liability? Textual analysis, dictionaries, and 10-Ks. \emph{The Journal of Finance} 66: 35--65.
+
+\bibitem[Matsumoto et~al.(2011)]{matsumoto2011}
+Matsumoto, D., M.~Pronk, and E.~Roelofsen. 2011. What makes conference calls useful? The information content of managers' presentations and analysts' discussion sessions. \emph{The Accounting Review} 86: 1383--1414.
+
+\bibitem[Dzielinski et~al.(2021)]{dwz2021}
+Dzielinski, M., A.~F. Wagner, and R.~J. Zeckhauser. 2021. Straight talkers and vague talkers: The effects of managerial style in earnings conference calls. Working paper. % VERIFY year/venue (working paper)
+
+\bibitem[Dzielinski et~al.(2021)]{dwz}
+Dzielinski, M., A.~F. Wagner, and R.~J. Zeckhauser. 2021. Straight talkers and vague talkers: The effects of managerial style in earnings conference calls. Working paper. % alias of dwz2021 (props use both keys -> normalize to one in the harness)
+
+% ===== STANDARD refs (high-confidence; verify exact pages) =====
+\bibitem[U.S.\ SEC(Rule 10b-5)]{rule_10b5}
+U.S.\ Securities and Exchange Commission. Rule 10b-5: Employment of manipulative and deceptive devices. 17 C.F.R.\ \S\,240.10b-5.
+
+\bibitem[Opler et~al.(1999)]{opler1999}
+Opler, T., L.~Pinkowitz, R.~Stulz, and R.~Williamson. 1999. The determinants and implications of corporate cash holdings. \emph{Journal of Financial Economics} 52: 3--46. % VERIFY pages
+
+\bibitem[Bates et~al.(2009)]{bates2009}
+Bates, T.~W., K.~M. Kahle, and R.~M. Stulz. 2009. Why do U.S.\ firms hold so much more cash than they used to? \emph{The Journal of Finance} 64: 1985--2021. % VERIFY pages
+
+\bibitem[Pagan(1984)]{pagan1984}
+Pagan, A. 1984. Econometric issues in the analysis of regressions with generated regressors. \emph{International Economic Review} 25: 221--247. % VERIFY pages
+
+% ===== NEEDS-VERIFY (props carry only an opaque id — stub, NOT fabricated) =====
+\bibitem[Ragozzino(2024)]{ragozzino2024}
+Ragozzino, R. 2024. [TITLE TK]. \emph{Long Range Planning} [vol./pages TK]. % SOURCE: notebook PII S0024-6301(23)00100-0 -- SINA VERIFY authors/title/pages
+
+\bibitem[Thewissen et~al.(2024)]{thewissen2024}
+Thewissen, J., et~al. 2024. [TITLE TK -- tone working paper]. SSRN working paper 4900453. % SINA VERIFY authors/title
