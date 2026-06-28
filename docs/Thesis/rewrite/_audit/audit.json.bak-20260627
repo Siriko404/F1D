@@ -88,41 +88,6 @@
         "verdict": "REAL. Apply P3.4 + P5.5 fixes together. No other suppression-direction site exists (grep: dampen|sits lower|below baseline returns only these two + the 8 CORRECT no-suppressed locks).",
         "function_check": "PASS v4 -- BOTH directions vs P5.6 verbatim. (1) stock Q&A more managed than cash? NO. (2) cash Q&A cleaner than stock? NO -- v4 makes the cleanliness a SETTING property (free of the mgmt confound), explicitly no Q&A comparative. Still answers 'why cash': cash setting is unconfounded by the documented management.",
         "status": "REFORMULATED v4 -> PRESENT TO SINA for ratification (THE prop answering the supervisor critique; judgment call on the setting-level framing)"
-      },
-      "session_findings_2026_06_27_cont": {
-        "_note": "Verified findings from the 2026-06-27 (cont.) P3.4 deep-dive. CAPTURE ONLY — nothing applied; clones + originals pristine. Logic advisor-signed; wording NOT yet written.",
-        "A_deliberate_is_non_threat": {
-          "verdict": "VERIFIED + advisor-signed. 'Is the Q&A uncertainty deliberate?' CANNOT threaten H1.",
-          "evidence_verbatim_2_1_P7_intent": "Two readings of the prediction -- compliance-constrained disclosure (the CEO legally cannot speak) and strategic silence (the CEO chooses not to) -- are observationally equivalent in our data; we do not separate them, and the framework does not require it. We document a pattern keyed to the disclosure state, claim no identification, and leave the mechanism open.",
-          "implication": "strategic silence ('chooses not to') = DELIBERATE is an OFFICIAL open reading. H1 = a TIMING pattern (up pre-announce, drop post, Wald-supported), mechanism left open. So P3.4/masking does NOT need to defend involuntariness. Corrects this session's mis-framing that 'is it spin?' was a threat.",
-          "also": "section2.1 P3.1 (Hollander 2010) already places 'strategic disclosure/silence choices' + 'silence is informative' in the spine (PREMISE-only; UP sign is H1, never cited)."
-        },
-        "three_objection_split_ADVISOR_SIGNED": {
-          "A": "is-it-deliberate -> answered by 2.1 P7 (two readings open). DONE, non-threat.",
-          "B": "is-your-signal-just-the-documented-tone-management -> P5.6 contamination defense. BOTH ARMS. Now LIGHTER: the signal is the OPPOSITE direction from the documented management (P2.2 verbatim: 'H1 predicts the opposite register'; optimism-mgmt LOWERS uncertainty, we find it RISING) + the announcement-timing drop. P5.6 shrinks to a clarifier, not a heavy 'it's not management' claim.",
-          "C": "why-cash-not-stock -> stock has a deal-time motive to manage (currency/optimism) that cash lacks + thewissen documents it + the empirical C6 gap. NOT P5.6.",
-          "HARD_RULE": "P5.6 does B, never C. The UncPre regression control is a BOTH-ARMS fact -> it can NEVER justify cash-focus (category error flagged twice by advisor). Cash-focus asserts NOTHING about the stock measure; 'noisy not lower' REJECTED; stock stays the empirical noisy flat null we do not interpret."
-        },
-        "P3_4_not_structurally_broken": {
-          "concern_raised": "Sina: P3.4's statement is a multi-claim mini-paragraph, not an atomic proposition.",
-          "deterministic_scan_corpus_json": "149 props total. ORIGINAL-locked=128 (median len 312, max 917, 88/128 'compound' = >=2 sentences or >250 chars). ADDED=6, REWORDED=7, SWEPT=8. P3.4 len=453 = ~38th longest of 149 (mid-pack); ~34 of the props longer than it are ORIGINAL-locked (e.g. 1-P7-a=857/4-sentence, P2.2=700, 3.3-PARA3-a=731).",
-          "verdict": "NOT a disaster, NOT a P3.4 defect. The whole chain is paragraph-grained 'proposition' units BY DESIGN (each carries from_phaseA_prop/reason/evidence/register_locks/depends_on -> realizes to ONE prose paragraph). P3.4 conforms to the norm. Re-architecting 149 props to atomic would tear up the locked spine for no payoff. The only P3.4-LOCAL schema defect = missing relation_to_2_1 + anchor_2_1 (already the audit finding)."
-        },
-        "thewissen_neighbor_paper": {
-          "fact": "thewissen2024 = the 'nearest neighbor' working paper. Our section2.1 P6.1 (cite SUPPORTED, id 731d56ed): 'stock bidders inflate disclosure tone by about 15 percent in the year before a stock-for-stock announcement.'",
-          "role": "documents the stock-deal pre-deal management. Supports objection C (cash-focus: stock already covered + has a documented motive). thewissen = TONE, preprint, supplementary. NOT a Q&A-cleanliness claim."
-        },
-        "uncpre_control_measure_cleanliness": {
-          "fact": "VERIFIED (section2.3): UncResCEO = residual of DWZ eq-4, which controls UncPre (the scripted PRESENTATION segment) among {UncPre,UncQue,NegCall,StockRet,MarketRet,EPSgrowth,SurpDec}+C(ceo_id)+C(year). So UncRes is orthogonal to the in-call scripted presentation by construction. Code: run_h0_3_ceo_clarity_extended.py:369 (Catch-3 CLOSED).",
-          "scope": "This is a BOTH-ARMS fact (defends contamination/B), NOT a cash-vs-stock differentiator (NOT C). Corrects this session's 'managers can't rehearse' hand-wave: the cleanliness is a regression control, not genre.",
-          "two_distinct_scripted_things": "press-release tone/accruals (OUTSIDE the call, thewissen/Louis -> not in our measure at all) vs the in-call PRESENTATION segment (UncPre control). Do NOT conflate. The UncPre control nets only the in-call presentation."
-        },
-        "write_time_seams": [
-          "P3.4: keep 'scripted management (P5.6)' meaning the OUTSIDE-call artifacts (tone/accruals), distinct from the in-call UncPre control (S2.3).",
-          "Do NOT write 'unmanaged' (P6.4/P2.2) loosely next to 'deliberate / strategic silence' (P7). Reconcilable ('unmanaged' = not optimism-tone-managed, NOT involuntary) but referee bait if loose.",
-          "P5.6 reword is BEYOND the audited 17 -> fold into the P3.4 finding as ONE logic-locked sub-change; do not reopen a full re-audit."
-        ],
-        "status": "Logic SETTLED + advisor-signed (A/B/C). Wording NOT written. NEXT: write P5.6 (does B, lighter clarifier) + P3.4 (does C, cash-focus on motive+thewissen+C6) to match the A/B/C skeleton; add P3.4's missing relation_to_2_1/anchor_2_1; THEN apply all 17 -> regen prose -> +2 bibitem -> compile. NOTHING applied yet."
       }
     },
     {

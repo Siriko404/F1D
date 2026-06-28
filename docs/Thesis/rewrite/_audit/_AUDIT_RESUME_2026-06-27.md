@@ -1,19 +1,83 @@
 # ⚠️ NEXT-SESSION REVIEW REQUIRED — Proposition-chain referee AUDIT (2026-06-27)
 
+## ✅ SESSION CLOSE 2026-06-27 (cont.) — CURRENT TRUTH, read this FIRST
+> Everything below the next divider is EARLIER-layer narrative (some now STALE, e.g. "Nothing is applied" /
+> "14 of 17"). THIS banner is the authoritative current state.
+
+**STATE: ALL 17 audit fixes are APPLIED** to `_audit/corpus_audited.json` — one merged file, 16 sections
+(`_abstract`,§1,§2.1–2.5,§3.1–3.4,§4.1–4.4,§5), 149 props. Every fix was script-applied by **exact-match +
+GATE-verified**; final GATE = **0 suppression flavor (dampen/sits-lower/suppress/below-baseline) in all LIVE
+statements** (archival `_original_statement`/`_phaseC_audit` fields may retain traces by design — do NOT panic on a grep hit).
+`corpus.json` + the v1 originals = **PRISTINE**. Fully reversible. (The 17 = all of `audit.json`'s findings,
+incl. the P3.4/P3.3/P5.5 masking cluster, the DiD scrub, the $1M SDC disclosure, P6.1 dedup.)
+
+**NEW THIS SESSION (post-apply), and where we stopped:**
+- **SCHEMA FINDING (verified by `scratchpad/schema_profile.py`):** corpus_audited.json is **TWO merged ledger
+  formats** — **Format A** (§2.1–2.5: `paragraphs`=DICT {P1..}, prop-list=`propositions`, `intent`=str,
+  fields relation_to_2_1/anchor_2_1/verification_plan/status) vs **Format B** (abstract,§1,§3,§4,§5:
+  `paragraphs`=LIST, prop-list=`proposition_chain`, `intent`=dict, fields reason/evidence/numbers/
+  register_locks/depends_on). 3 STRUCTURAL diffs + field-presence variance. Uniform everywhere: core prop
+  fields (prop_id/statement/role/type/_provenance) + para fields (order/intent/serves/.../final_prose).
+  **No prop field has a mixed value-type** (union is type-safe).
+- **NORMALIZATION: investigated + planned, then DEFERRED (advisor).** NOT a confirmed bottleneck — prose works
+  with both formats (every section has the prose-needed fields). My plan had a **ref-integrity hole**: §2
+  paragraphs are referenced by their dict key (`anchor_2_1:['P5']`, callbacks, depends_on), so dict→list could
+  silently break refs. Only normalize IF the prose-writer is a strict deterministic tool.
+
+**⛳ THE NEXT DECISION — gates ALL remaining work (answer Q1+Q2 first):**
+```
+Q1  prose-writer =  A) by hand / an LLM reading the file  → SKIP normalization
+                    B) a deterministic tool needing one schema → normalize first (with the 2 missing
+                       safety checks: synthesize para_id=P-key on dict→list; GATE that every
+                       anchor/callback/depends_on resolves after)
+Q2  propagation  =  clone-forward (corpus_audited.json IS the source) OR regenerate the per-section
+                    ledgers from it.  (If B regenerates ledgers, normalizing the merged clone = wasted.)
+```
+
+**REMAINING BIG-PLAN (after Q1/Q2):** build the final file (clone corpus_audited.json → strip the audit-only
+fields: _provenance/from_phaseA_prop/reason/verification*/​*_audit/_original_statement; keep statement/role/
+type/source/register_locks/numbers + paragraph intent/guardrails/final_prose) → **write `final_prose`** (now
+empty everywhere) → **+2 `\bibitem`** (`shleifer_vishny2003`, `louis2004`) in `thesis_draft.tex` → **compile+verify**.
+
+**SCRIPTS (session scratchpad — reproducible, NOT cross-session durable):** `apply_11.py` · `apply_2_meta.py` ·
+`strip_did.py` · `fix_1m.py` · `apply_p34_cluster.py` · `schema_profile.py` · `capture_p34_findings.py`.
+
+---
+
 > **THE current entry point for the audit layer.** Supersedes nothing in `_PHASE3_RESUME_2026-06-26.md`
 > (that doc = the masking PROPOSED-FIXES; this doc = the AUDIT of those fixes + 2 new data-level catches).
-> **Nothing is applied.** Originals pristine. Treat memory as unverified; the files + `audit.json` are truth.
+> **ALL 17 NOW APPLIED** to `corpus_audited.json` (see SESSION CLOSE banner above); `corpus.json` + originals
+> pristine. Treat memory as unverified; the files + `audit.json` + `corpus_audited.json` are truth.
 
 ## ONE LINE
 We referee-audited the Phase-3 masking proposed-fix proposition chain. **17 findings, each verbatim-verified
 + blast-radius mapped + investigated fix + fix-safety checked.** Deliverable = `audit.json`. NOTHING applied.
+
+> **2026-06-27 (cont.) — P3.4 deep-dive CAPTURED to `audit.json` → `problems[2.2|P3.4].session_findings_2026_06_27_cont` (logic advisor-SIGNED; wording NOT written; nothing applied).** Key results: (A) "is it deliberate?" is a NON-threat — §2.1 P7 keeps both readings open (strategic silence = deliberate), H1 = a timing pattern, mechanism open. (B/C) the masking work splits into 3 objections: A=deliberate→P7 (done) · B=is-it-just-tone-mgmt→P5.6 (now LIGHT: signal is the OPPOSITE direction) · C=why-cash→motive+thewissen(~15%)+C6 (NOT P5.6; the UncPre control is BOTH-arms, can't justify cash). P3.4 is NOT structurally broken (scan: 88/128 ORIGINAL props equally paragraph-grained). NEXT: write P5.6(B)+P3.4(C) to the A/B/C skeleton, then apply.
+
+## ⚙️ APPLY STARTED (2026-06-27 cont.) — `corpus_audited.json`  `[SUPERSEDED — now 17/17; see SESSION CLOSE banner at top]`
+**`_audit/corpus_audited.json`** = a CLONE of `corpus.json` (the masking-applied substrate) with **14 of 17 audit fixes applied**, each script-applied by exact-match + GATE-verified (149 props stable, provenance enum clean, depends_on resolves, 0 "DiD" left). `corpus.json` is UNTOUCHED (pristine substrate); fully reversible. Apply scripts in the session scratchpad (`apply_11.py`, `apply_2_meta.py`, `strip_did.py`, `fix_1m.py`).
+- **+ `2.1|P6.1`** (Sina-ratified reword: thewissen back-reference, cite key intact, no fresh re-intro) · **`3.1|sample-selection`** (added the ONE undisclosed filter — "$1 million" deal-value floor — to 3.1-PARA1-a's SDC item, PLAIN text not LaTeX; verified the other 9 filters already disclosed via the matched call-panel + "first ≥50%-cash" event def, so re-stating them = redundant; Filters.txt NOT cited).
+- **`2.2|P3.4` CLUSTER — DONE (Sina-ratified, advisor-vetted, GATE-clean).** Applied as 4 coherent moves: P3.2 unchanged (the managed-comparison contrast) · **P3.3 reverted** (dropped the added no-suppression clause — it was a circular patch for P3.4's "dampens"; now moot) · **P3.4 rewritten** ("Because the stock arm is a managed comparison (P3.2), a pre-deal signal there is entangled with documented management -- a competing story the cash setting lacks; the masking asymmetry therefore motivates H1a's direction, the run-up concentrating in cash. Motivation for the prediction's direction, not detection.") · **P5.5 reframed** ("why stock sits lower" → "why the run-up concentrates in cash"). FINAL GATE: **0 suppression flavor (dampen/sits-lower/suppress/below-baseline) in ANY statement.** `2.1|P4.2` = no action (watch-item).
+- **✅ ALL 17 APPLIED to `corpus_audited.json` (149 props, every GATE clean).**
+
+## ⚠️ TRUE STATE — 17/17 ≠ thesis done
+`corpus_audited.json` is a **CLONE** (masking-applied substrate + the 17 audit fixes). NOT the thesis. Downstream remaining (NEXT SESSION):
+1. **Propagate to the REAL section ledgers** — the masking `_proposed_fixes` are STILL not applied to the live `_phase3_clones/section*.json` chains; corpus_audited.json holds masking+audit together but the real ledgers don't. Decide: regenerate ledgers from corpus_audited.json, or apply both layers to the ledgers directly.
+2. **Regenerate `final_prose`** for every changed paragraph (currently stripped/empty).
+3. **+2 `\bibitem`** (`shleifer_vishny2003`, `louis2004`) in `thesis_draft.tex`.
+4. **Compile + verify** the draft.
+- **APPLIED (12, all GATE-verified):** `1-P7-a` · `4.2-PARA4-a` · `1-P9-a` · `4.2-PARA2-a` · `5-P5-a` · `2.2-P5.2` (statement swaps) · `1-P7-b` (provenance: 5 props ORIGINAL-locked→ADDED, meta→123/11/7/8) · `5-P3-c` (statement) · `2.4|DiD-label` (scrubbed all 3 "DiD" at source — spine/lit_body→"main run-up", thin_claim→"not an identification design") · `4.4-PARA1-a` (depends_on→['3.3-PARA3-a']) · `4.2-PARA1-a` (depends_on prose→IDs: '2.3:P2.2', 3.2-PARA2-a) · `3.1-PARA1-a` (source-count own-labels four→five; statement already five).
+- **REMAINING (4 prose-bearing — need FRESH session + USER authorship, NOT tonight):** `2.1|P6.1` (dedupe thewissen → back-reference) · `3.1|sample-selection` (SDC disclosure, MAJOR, code-verified content, needs placement) · `2.2|P3.4` + coupled `2.1|P5.5` (THE supervisor-answer cluster — Sina authors the claim, I verify + anchor).
+- **NO ACTION:** `2.1|P4.2` (watch-item).
+- **BIMODAL CADENCE (locked, advisor):** internal/zero-prose fixes → apply on GATE authority, show after-diff. Prose-bearing fixes → Sina authors the claim in his words, I verify + source-anchor + honesty-floor-check (drift enters when I author). Mechanical = script exact-match only, never hand-typed.
 
 ## THE DELIVERABLE — read this first
 `F1D-phase3/docs/Thesis/rewrite/_audit/audit.json`
 - `problems[]` (17): each has `locus`, `severity`, verbatim `issue`, `evidence`, `proposed_fix{action,from,to,why,honesty_floor,evidence_ok}`, and `deep_analysis{verified, blast_radius, agents_missed, fix_safe, status, ...}`.
 - `meta.signoff` = the calibrated advisor sign-off (below). `meta.conclusion`, `meta.lesson_internalized`.
 
-## ⚠️ DECISIONS PENDING (this is the review flag)
+## ⚠️ DECISIONS PENDING (this is the review flag)  `[SUPERSEDED — all resolved + applied; see SESSION CLOSE banner at top. The ONLY open decision now is Q1/Q2 in that banner.]`
 1. **P3.4 → SINA MUST RATIFY.** It's THE prop answering the supervisor's "cash motivation not justified."
    Reformulated 4× (v1 dampens→suppression ✗ · v2 hidden comparative ✗ · v3 Q&A-cleaner ✗ ·
    **v4 SETTING-level: cash setting is management-free → run-up there is clean; NO Q&A comparative; gap is
