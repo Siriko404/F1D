@@ -182,10 +182,16 @@ const cohPanel = (await parallel(COH_HEADS.map((h, v) => () =>
 ))).filter(Boolean);
 const coherenceIssues = cohPanel.flatMap(c => (c && c.issues) || []);
 log(`coherence panel (3): ${coherenceIssues.length} cross-section issue(s)`);
-// (2) per-section DEEP audit + judge, each given a compact whole-thesis map + the coherence issues that touch it
+// (2) per-section DEEP audit + judge, in 2 SEQUENTIAL PANELS (Sina: stagger spawns to avoid a rate-limit ban).
+// The engine has no sleep/timer -> Panel 2 starts when Panel 1's wave completes (natural stagger; halves spawn rate).
+// Each section's boss (judge, inside auditSection) reads + acts on ALL of that section's reports + the coherence issues.
 const compactMap = JSON.stringify(writtenOK.map(w => ({ section: w.section, summary: w.brief.paragraphs.map(p => p.thin_claim).filter(Boolean) })));
-const results = await parallel(writtenOK.map(w => () => auditSection(w, compactMap, coherenceIssues)));
-results.push(...written.filter(w => w.status !== 'WRITTEN'));
+const half = Math.ceil(writtenOK.length / 2);
+log(`AUDIT PANEL 1/2: ${half} section(s)`);
+const rA = await parallel(writtenOK.slice(0, half).map(w => () => auditSection(w, compactMap, coherenceIssues)));
+log(`AUDIT PANEL 2/2: ${writtenOK.length - half} section(s) -- spawned after Panel 1 completes`);
+const rB = await parallel(writtenOK.slice(half).map(w => () => auditSection(w, compactMap, coherenceIssues)));
+const results = [...rA, ...rB, ...written.filter(w => w.status !== 'WRITTEN')];
 const ok = results.filter(r => r && r.status === 'OK');
 const blocked = results.filter(r => r && r.status === 'BLOCKED');
 log(`DONE: ${ok.length} OK, ${blocked.length} BLOCKED`);
