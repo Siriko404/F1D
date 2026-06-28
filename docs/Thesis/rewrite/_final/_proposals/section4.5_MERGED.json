@@ -93,7 +93,7 @@
         },
         {
           "prop_id": "4.5-PARA1-b",
-          "statement": "In binary forward form, among all firm-quarters higher CEO Q&A residual uncertainty is associated with a deal announced the next quarter of any payment type: LPM 0.0086*** and logit 0.3233***. It survives firm and year-quarter fixed effects: LPM 0.0078*** (SE 0.00275, N 39,557).",
+          "statement": "In binary forward form, among all firm-quarters higher CEO Q&A residual uncertainty is associated with a deal announced the next quarter of any payment type: LPM 0.0086*** and logit 0.3233***. It survives firm and year-quarter fixed effects: LPM 0.0078*** (SE 0.00275, N 39,557; within-R2 0.003).",
           "role_in_paragraph": "corroboration -- the binary forward logit of the run-up (pooled, no fixed effects, all payment types; secondary)",
           "type": "result-number",
           "reason": "Corroboration follows the table: the pooled forward logit restates the run-up in a different functional form and is placed after the within-firm primary.",
@@ -105,7 +105,7 @@
             "LPM 0.0086*** (logit_fullcontrols_results.json TEST_A; SE 0.0026, p=.0011)",
             "logit 0.3233*** (logit_fullcontrols_results.json TEST_A; SE 0.0967, p=.0008)",
             "N 40,004 / 1,422 firms; deal rate 2.84%; pseudo-R2 0.026 (logit_fullcontrols_results.json TEST_A)",
-            "0.0078*** (FE-LPM, Firm + Year-Qtr FE; fe_results.json TEST_A; SE 0.00275, N 39,557, firms 1,422)"
+            "0.0078*** (FE-LPM, Firm + Year-Qtr FE; fe_results.json TEST_A; SE 0.00275, N 39,557, firms 1,422; within-R2 0.003)"
           ],
           "register_locks": [
             "correlational"
@@ -268,7 +268,7 @@
         },
         {
           "prop_id": "4.5-PARA3-b",
-          "statement": "In binary form, among deals at e=-1 higher residual uncertainty is associated with a cash deal (1) versus a stock deal (0): LPM 0.0613** and logit 0.7478**. Under firm and year-quarter fixed effects the coefficient keeps its sign but is insignificant: LPM 0.0644 (SE 0.05076, n.s.).",
+          "statement": "In binary form, among deals at e=-1 higher residual uncertainty is associated with a cash deal (1) versus a stock deal (0): LPM 0.0613** and logit 0.7478**. Under firm and year-quarter fixed effects the coefficient keeps its sign but is insignificant: LPM 0.0644 (SE 0.05076, n.s.; within-R2 0.059).",
           "role_in_paragraph": "corroboration -- the binary cash-vs-stock logit (pooled, no fixed effects, underpowered stock arm; secondary)",
           "type": "result-number",
           "reason": "Corroboration follows the Wald: the pooled cash-versus-stock logit restates the effect in binary form and is placed after the formal primary.",
@@ -280,7 +280,7 @@
             "LPM 0.0613** (logit_fullcontrols_results.json TEST_B; SE 0.0283, p=.030)",
             "logit 0.7478** (logit_fullcontrols_results.json TEST_B; SE 0.3399, p=.028)",
             "N 1,105 / 563 firms; cash 982 / stock 123; cash base rate 88.9%; pseudo-R2 0.078 (logit_fullcontrols_results.json TEST_B)",
-            "0.0644 n.s. (FE-LPM, Firm + Year-Qtr FE; fe_results.json TEST_B; SE 0.05076, p .205, N 1,063, firms 563)"
+            "0.0644 n.s. (FE-LPM, Firm + Year-Qtr FE; fe_results.json TEST_B; SE 0.05076, p .205, N 1,063, firms 563; within-R2 0.059)"
           ],
           "register_locks": [
             "correlational",
