@@ -57,15 +57,16 @@ DWZ_CONSTRUCTION = (
     r"the \citet{dwz} decomposition on our sample and place our numbers beside their published ones, line "
     r"by line, in Table~\ref{tab:dwz_replication}, which reports two of our specifications: a Baseline that "
     r"matches the Section~2.3 equation exactly and supplies the residual we carry forward, and an Extended one "
-    r"that adds the Section~2.4 firm-financial controls as a robustness check. The largest piece lines up almost "
+    r"that adds a broader set of standard firm-financial controls as a robustness check. The largest piece lines up almost "
     r"exactly: the loading on the CEO's own prepared-remarks uncertainty is $0.089$ in our Baseline against "
     r"$0.093$ in theirs, and the other two speech controls keep the same sign and significance. The fit lines up "
     r"too, once the two are put on the same footing: their published figure is the controls' added explanatory "
     r"power, about $0.05$ on top of a $0.31$ base, so roughly $0.36$ in total, against our total $R^2$ of $0.369$. "
     r"The samples are not identical, ours covering non-financial, non-utility United States firms over 2002 to "
     r"2018 and theirs 2003 to 2015; the firm-performance controls, standardized here for numerical stability, are "
-    r"not comparable in raw size and agree in sign for the earnings controls but not for the two market-return "
-    r"controls (StockRet flips sign; MarketRet is significant in the original but not here), an expected divergence "
+    r"not comparable in raw size; they agree in sign for the earnings controls, while the two market-return "
+    r"controls differ -- StockRet flips sign, and MarketRet matches in sign but is significant in the original "
+    r"only -- an expected divergence "
     r"across the different samples that does not bear on the residual. The point is narrow but "
     r"enough: because we build the residual the same way \citeauthor{dwz} do, the construct validity they "
     r"establish for the measure carries over to our setting, which leaves how it behaves in our own data as "
@@ -135,8 +136,8 @@ _dwz = CLONE / "_dwz_replication.tex"
 _nt = _dwz.read_text(encoding="utf-8")
 _old_note = "standardized here, so their magnitudes are not comparable to the original's raw-unit coefficients, though signs and significance are."
 _new_note = ("standardized here, so their magnitudes are not comparable to the original's raw-unit "
-             "coefficients; signs agree for the earnings-surprise and EPS-growth controls but not for the "
-             "two market-return controls (StockRet flips sign; MarketRet is significant in the original but not here).")
+             "coefficients; signs agree for the earnings-surprise and EPS-growth controls, while among the "
+             "market-return controls StockRet flips sign and MarketRet matches in sign but is significant in the original only.")
 assert _old_note in _nt, "dwz-note anchor not found"
 _dwz.write_text(_nt.replace(_old_note, _new_note), encoding="utf-8")
 print("patched _dwz_replication.tex note (sign/significance accuracy)")
