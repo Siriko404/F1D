@@ -1,6 +1,7 @@
 {
   "referees_reported": [
     "citations_A",
+    "coherence_A",
     "completeness_A",
     "honesty_A",
     "methodology_A",
@@ -8,14 +9,72 @@
     "style_A"
   ],
   "counts": {
-    "high": 0,
-    "medium": 17,
-    "low": 17,
-    "total": 34,
-    "clean_bills": 39,
-    "malformed_lines": 10
+    "high": 2,
+    "medium": 25,
+    "low": 79,
+    "total": 106,
+    "clean_bills": 90,
+    "malformed_lines": 0
   },
   "findings": [
+    {
+      "kind": "finding",
+      "referee": "methodology",
+      "panel": "A",
+      "aspect": "generated-regressand SE correction asserted-but-not-run",
+      "location": "Sec 2.3 (l.319) + Sec 2.4 threats (l.331)",
+      "severity": "high",
+      "problem": "UncResCEO is a first-stage residual used as DV; Pagan(1984) two-step SE understatement is flagged, but the bootstrap is never run and they ASSERT it 'does not change the descriptive readings' without evidence. The load-bearing run-up significance (p=.0074 two-tailed) and the marginal Wald (p=.039) ride on SEs that ignore first-stage estimation noise.",
+      "evidence": [
+        "'together with the bootstrap that would address it, and note that it does not change'"
+      ],
+      "best_fix": "Actually run the two-step/wild bootstrap on at least the headline run-up and the cash-specificity Wald; report corrected SEs, or downgrade the significance claims to point estimates.",
+      "fix_evidence": [
+        "p=.0074 and p=.039 are both close to thresholds"
+      ],
+      "confidence": "high",
+      "refutation": "They frame every claim as 'descriptive/correlational', so arguably no inferential weight is placed on the SEs; but stars and p-values are reported and leaned on throughout."
+    },
+    {
+      "kind": "finding",
+      "referee": "methodology",
+      "panel": "A",
+      "aspect": "stock arm is a confounded comparison yet labelled 'placebo' and used as the cash-specificity baseline",
+      "location": "Tables 5.2/5.4/5.5/5.17 captions vs Sec 2.1-2.2 framework",
+      "severity": "high",
+      "problem": "The framework argues stock bidders actively manage pre-deal tone (Thewissen/Louis), so the stock arm is NOT a clean placebo; yet tables call it 'placebo'. Worse, the cash-specificity Wald (beta_c-beta_s) treats stock as the comparison: if stock bidders manage uncertainty DOWNWARD pre-deal, beta_s is biased negative and the cash-minus-stock gap is inflated. They concede the gap 'rides on the imprecise negative stock estimate' but never confront that this negativity may be the management artifact, i.e. the test is contaminated by the very story invoked to motivate it.",
+      "evidence": [
+        "'Stock acquirers (placebo)'",
+        "'rides in part on the imprecise negative stock estimate'"
+      ],
+      "best_fix": "Drop the word 'placebo' everywhere (use 'managed comparison'); add a one-sided caveat that stock-arm tone management biases beta_s negative and can inflate the Wald gap, so the gap is an upper bound.",
+      "fix_evidence": [
+        "framework explicitly predicts stock-bidder tone management"
+      ],
+      "confidence": "high",
+      "refutation": "They do flag the gap rides on the stock estimate and frame as 'concentration not specificity', partially covering it."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "author-name-consistency",
+      "location": "Table 5.21 (tab:dwz_replication) caption + notes vs bibitem dwz",
+      "severity": "medium",
+      "problem": "Lead author DWZ spelled inconsistently: bibliography and every \\citet/\\citeauthor render plain 'Dzielinski', but Table 5.21 caption and notes use an accented form (LaTeX Dzielin\\'ski). The accent is also mis-placed (lands on s, giving Dzielinski-with-s-accent) rather than the intended Polish n.",
+      "evidence": [
+        "bib: 'Dzielinski, M.' no accent",
+        "caption: 'Replication of Dzielin\\'ski et al.'",
+        "notes: 'Equation 4 of Dzielin\\'ski, Wagner...'"
+      ],
+      "best_fix": "Make all instances identical: use plain 'Dzielinski' in Table 5.21 caption+notes to match the bibitem and the in-text cites (or apply the correct accent everywhere).",
+      "fix_evidence": [
+        "bibitem label [Dzielinski et~al.(2021)]",
+        "line 337 \\citeauthor{dwz} renders 'Dzielinski'"
+      ],
+      "confidence": "high",
+      "refutation": "Both forms point to the same person; a reader still maps them. Cosmetic, not a resolution failure."
+    },
     {
       "kind": "finding",
       "referee": "citations",
@@ -23,7 +82,7 @@
       "aspect": "reference-list-ordering",
       "location": "References (thebibliography, ch. after Conclusion)",
       "severity": "medium",
-      "problem": "Author-year reference list is not in a single alphabetical sequence. Entries 1-11 are alphabetical (Baker..Thewissen), then the list restarts the alphabet at Bertrand and runs a second un-merged block (Bertrand, Dye, Harford, Hollander, Keown, Verrecchia, Bates, Louis, Opler, Pagan, Shleifer) -- and even within it Verrecchia precedes Bates.",
+      "problem": "Author-year reference list is not in a single alphabetical sequence. Entries 1-11 are alphabetical (Baker..Thewissen), then the list restarts the alphabet at Bertrand and runs two further un-merged blocks (three alphabetical runs in all) (Bertrand, Dye, Harford, Hollander, Keown, Verrecchia, Bates, Louis, Opler, Pagan, Shleifer) -- and even within it Verrecchia precedes Bates.",
       "evidence": [
         "Thewissen(2024) then Bertrand(2003)",
         "Verrecchia(1983) then Bates(2009)"
@@ -38,22 +97,104 @@
     },
     {
       "kind": "finding",
-      "referee": "completeness",
+      "referee": "coherence",
       "panel": "A",
-      "aspect": "roadmap pointer unfulfilled (control catalog)",
-      "location": "Section 2.5 final paragraph + Appendices I/II",
+      "aspect": "scrutiny rule-out tests the wrong scrutiny measure",
+      "location": "Sec 4.1; Tables 5.10, 5.11",
       "severity": "medium",
-      "problem": "prose says the Section-2.3 decomposition controls are 'catalogued in the Appendix', but no appendix lists them (App I=cash scrutiny, App II=firm-financial controls + CashRatio only)",
+      "problem": "4.1 names the 'genuine confound' as scrutiny INCIDENCE (HighCashScrutiny, rises 0.0408** pre-announce) yet the channel/gating rule-out (Tables 5.10/5.11) is run on the VOLUME measure CashScrutiny, which itself does NOT rise pre-announce (0.0854 ns). The direct test HighCashScrutiny x PreAnnounceQtr is never shown.",
       "evidence": [
-        "'controls from the Section~2.3 decomposition...catalogued in the Appendix'",
-        "App II lists only Leverage..sCFO,CashRatio"
+        "'genuine confound is...incidence'",
+        "gating uses CashScrutiny x PreAnnounceQtr",
+        "HiSc 0.0408** vs CshSc 0.0854 ns"
       ],
-      "best_fix": "add SurpDec/EPSgrowth/StockRet/MarketRet/NegCall defs to an appendix or repoint to Sec 2.3",
+      "best_fix": "Run channel/gating with HighCashScrutiny + its interaction, or justify why continuous CashScrutiny subsumes incidence.",
       "fix_evidence": [
-        "decomposition controls absent from App I and App II"
+        "HighCashScrutiny is the term that moves",
+        "continuous proxy only partial"
+      ],
+      "confidence": "medium",
+      "refutation": "Continuous CashScrutiny encodes 0 vs >0; its null on the residual plausibly implies incidence null; text mentions 'coarser scrutiny proxies' were checked."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "undefined variables vs table-note claim",
+      "location": "Table 5.1; Tables 5.6-5.8",
+      "severity": "medium",
+      "problem": "FirmMat and EarnVol appear in summary stats and the convergent-validity tables but are never defined in the text or Appendices I/II, contradicting Table 5.1's note 'All variables are defined in the main text and in Appendices I and II'. FirmMat shows an anomalous min of -317.57 with no definition to consult.",
+      "evidence": [
+        "FirmMat, EarnVol in Table 5.1",
+        "note: 'All variables are defined'",
+        "absent from App I/II + text"
+      ],
+      "best_fix": "Define FirmMat, EarnVol (and Table 5.12 extended controls) in Appendix II, or drop the blanket 'all defined' claim.",
+      "fix_evidence": [
+        "App II lists only 8 controls",
+        "EarnVol/FirmMat missing"
       ],
       "confidence": "high",
-      "refutation": "they are named in Sec 2.3 and appear in Table 5.21, just not formally catalogued"
+      "refutation": "They are validity-only controls a reader might infer; but the formulas are genuinely absent and the note over-promises."
+    },
+    {
+      "kind": "finding",
+      "referee": "completeness",
+      "panel": "A",
+      "aspect": "chapter-vs-section naming mismatch",
+      "location": "intro roadmap + all cross-refs",
+      "severity": "medium",
+      "problem": "Body uses book class with \\chapter (renders 'Chapter 1..5') but prose consistently calls them 'Section 2/3/4/5'; e.g. roadmap 'Section 5 concludes' points to Chapter 5 Conclusion",
+      "evidence": [
+        "\\chapter{Conclusion}",
+        "'Section~5 concludes'",
+        "'develops...empirical strategy' is Chapter 2"
+      ],
+      "best_fix": "Replace bare 'Section N' chapter references with 'Chapter N' (the X.Y subsection refs already render correctly)",
+      "fix_evidence": [
+        "Section~2.3 renders as subsection 2.3 OK",
+        "only bare chapter-level refs mismatch"
+      ],
+      "confidence": "high",
+      "refutation": "Finance papers conventionally say 'Section'; X.Y refs all resolve, so a charitable reader maps Section N->Chapter N"
+    },
+    {
+      "kind": "finding",
+      "referee": "completeness",
+      "panel": "A",
+      "aspect": "undefined variables vs 'all variables defined' claim",
+      "location": "Table 5.1 notes; Tables 5.6-5.8",
+      "severity": "medium",
+      "problem": "FirmMat and EarnVol appear in summary stats and convergent-validity tables as controls but are never defined in text or Appendices; yet Table 5.1 note asserts 'All variables are defined in the main text and in Appendices I and II'",
+      "evidence": [
+        "FirmMat / EarnVol only in tables",
+        "note: 'All variables are defined...'"
+      ],
+      "best_fix": "Add FirmMat (firm maturity) and EarnVol (earnings volatility) definitions to Appendix II, or drop them",
+      "fix_evidence": [
+        "Appendix II lists only CashRatio + 7 firm controls"
+      ],
+      "confidence": "high",
+      "refutation": "Names are self-suggestive (firm maturity, earnings volatility) and they are non-focal controls"
+    },
+    {
+      "kind": "finding",
+      "referee": "completeness",
+      "panel": "A",
+      "aspect": "broken roadmap promise: decomposition controls not in Appendix",
+      "location": "Sec 2.5 final para (line ~343)",
+      "severity": "medium",
+      "problem": "Text says 'the controls from the Section 2.3 decomposition that builds the residual are catalogued in the Appendix', but Appendix II catalogs only CashRatio + firm-financial controls; SurpDec, EPSgrowth, StockRet, MarketRet, NegCall, UncQue are not catalogued anywhere",
+      "evidence": [
+        "'catalogued in the Appendix'",
+        "Appendix II has no SurpDec/EPSgrowth/StockRet/MarketRet"
+      ],
+      "best_fix": "Add the Section-2.3 decomposition controls to an appendix table, or soften the claim",
+      "fix_evidence": [
+        "FirmChars={SurpDec,EPSgrowth,StockRet,MarketRet} only in eq + Table 5.21 gloss"
+      ],
+      "confidence": "high",
+      "refutation": "Table 5.21 glosses SurpDec/StockRet/EPSgrowth/MarketRet in row labels; UncQue/NegCall named in 2.3"
     },
     {
       "kind": "finding",
@@ -97,192 +238,153 @@
     },
     {
       "kind": "finding",
+      "referee": "honesty",
+      "panel": "A",
+      "aspect": "core 'unmanaged' assumption de-hedged to flat fact",
+      "location": "Sec 2.1 (line 295) vs Sec 2.1 (line 297) and Sec 2.2 H1 (line 305)",
+      "severity": "medium",
+      "problem": "The load-bearing identifying assumption is hedged correctly as 'the RELATIVELY unmanaged window' / 'hardest to stage-manage' / 'cannot fully prepare', but stated flat as fact elsewhere: 'ours is UNMANAGED uncertainty in the unscripted Q&A' and 'unmanaged uncertainty before cash deals'. The flat form asserts immunity to management that the design (and the thesis's own 'residual understates it if anticipation leaks into scripted remarks') does not support.",
+      "evidence": [
+        "the relatively unmanaged window",
+        "ours is unmanaged uncertainty",
+        "but unmanaged uncertainty before cash deals"
+      ],
+      "best_fix": "Make every instance 'relatively unmanaged' / 'less managed', matching line 295.",
+      "fix_evidence": [
+        "relatively unmanaged"
+      ],
+      "confidence": "medium",
+      "refutation": "Context makes the comparative sense clear; 'unmanaged' may read as shorthand for 'unmanaged relative to the scripted channel'."
+    },
+    {
+      "kind": "finding",
       "referee": "methodology",
       "panel": "A",
-      "aspect": "outlier handling / winsorization",
-      "location": "Table 5.1 summary_stats; Sec 3.1; App II",
+      "aspect": "prose contradicts table footnote on tailedness",
+      "location": "Sec 3.2 prose (l.368) vs Table 5.2 notes (l.671)",
       "severity": "medium",
-      "problem": "No winsorization documented anywhere; summary stats show wild un-trimmed outliers in controls used by OLS",
+      "problem": "Prose says 'the table's one-tailed reporting convention' for Table 5.2, but Table 5.2's own footnote states '(two-tailed)'. The headline coefficient 0.0461/0.0172=2.68 gives two-tailed p=.0074, so the *** is two-tailed-correct and the footnote is right; the prose's characterization of the table as one-tailed is simply wrong/internally inconsistent.",
       "evidence": [
-        "FirmMat min -317.57",
-        "sCFO max 32.40",
-        "EarnVol max 19.51",
-        "ROA min -3.98",
-        "Leverage max 3.95"
+        "prose: 'the table's one-tailed reporting convention'",
+        "table note: '(two-tailed)'"
       ],
-      "best_fix": "State winsorization policy (e.g. 1/99%) and add a winsorized-robustness column; bid-ask ROA coef -9 to -12 is outlier-exposed",
+      "best_fix": "Reword prose to: 'a worry that the result depends on one-tailed reporting; it does not -- the table is two-tailed and p=.0074.'",
       "fix_evidence": [
-        "finance-standard practice",
-        "min < P25 by orders of magnitude proves untrimmed"
+        "0.0461/0.0172=2.68 -> two-tailed p=.0074"
       ],
       "confidence": "high",
-      "refutation": "Focal DVs UncResCEO and CashRatio are naturally bounded, so headline coefficients may be insensitive; outliers mainly threaten controls/validity tables"
+      "refutation": "None substantive; it is a self-contradiction within the same file."
     },
     {
       "kind": "finding",
       "referee": "methodology",
       "panel": "A",
-      "aspect": "typesetting / oversized table",
-      "location": "Table 5.12 (tab:h14c_ceo2_decomp)",
+      "aspect": "bid-ask DV magnitudes irreconcilable with summary stats (undisclosed scaling)",
+      "location": "Table 5.12 (l.1147-1186) vs Table 5.1 BGTLevel_Spread (l.597)",
       "severity": "medium",
-      "problem": "13-column (l+12) bid-ask table set in PORTRAIT at scriptsize under adjustbox max-width; will be scaled to ~3-4pt, effectively unreadable",
+      "problem": "Summary stats give BGTLevel_Spread mean 0.0017, max 0.0164. But Table 5.12 coefficients are orders of magnitude larger (lnAssets -0.80 to -1.91, ROA -9.4, Turnover -24.1, UncPreCEO 0.166-0.350). On the raw 0.0017-scale DV these coefficients are impossible (a single regressor would drive the spread far past its max). The regression DV is evidently rescaled (~x1000 / bps), but the table never states the units, so a reader cannot reconcile magnitudes with Table 5.1 or judge economic size.",
       "evidence": [
-        "12 data cols portrait",
-        "scriptsize + adjustbox",
-        "comparable 8/16-col tables ARE landscaped"
+        "mean 0.0017 vs lnAssets coef -0.8039",
+        "Turnover -24.1012"
       ],
-      "best_fix": "Put in landscape like Tables 5.2/5.15, or split into contemporaneous vs lead panels",
+      "best_fix": "State the DV units in the Table 5.12 header/notes (e.g. 'spread in basis points, x1000') and ensure consistency with Table 5.1.",
       "fix_evidence": [
-        "Tables 5.2,5.15 use \begin{landscape}",
-        "5.12 does not"
+        "coefficients exceed DV max by 1000x"
+      ],
+      "confidence": "medium",
+      "refutation": "Speech-coefficient ranges quoted in prose match the table rows, so the within-table reading is internally consistent; only the cross-table unit reconciliation is missing."
+    },
+    {
+      "kind": "finding",
+      "referee": "methodology",
+      "panel": "A",
+      "aspect": "no robustness to the 50%-cash classification threshold",
+      "location": "Sec 2.2/3.1 deal definition (l.303, l.360)",
+      "severity": "medium",
+      "problem": "Cash arm = deals >=50% cash; stock arm = >=50% stock. The entire design hinges on this dichotomy yet no sensitivity to the threshold is shown (e.g. pure 100%-cash deals, or 80% cut). An examiner would demand evidence the run-up is not an artifact of mixed-consideration deals near the 50% boundary.",
+      "evidence": [
+        "'at least 50% cash'"
+      ],
+      "best_fix": "Add a robustness cut restricting to >=80% or 100% cash (and symmetric stock) and report the run-up and Wald survive.",
+      "fix_evidence": [
+        "threshold drives arm membership"
+      ],
+      "confidence": "medium",
+      "refutation": "The all-deals-stacked and matched checks vary sample composition broadly, indirectly probing robustness; but none varies the cash/stock cut itself."
+    },
+    {
+      "kind": "finding",
+      "referee": "methodology",
+      "panel": "A",
+      "aspect": "variables used in tables are defined nowhere",
+      "location": "Tables 5.6-5.8 (FirmMat,EarnVol), Table 5.12 extended controls, Sec 4.1 HighCash, Appendix II",
+      "severity": "medium",
+      "problem": "FirmMat and EarnVol appear in summary stats and in the headline convergent-validity regressions (5.6/5.7/5.8) but are defined nowhere (Appendix II lists only CashRatio + 7 financial controls; Sec 2.3 lists only SurpDec/EPSgrowth/StockRet/MarketRet/NegCall/UncPreCEO/UncQue). HighCash carries a validity claim (0.1754***) with no cutoff stated (mean 0.3333, not a median split). Table 5.12's extended controls (StockPrice, Turnover, DailyVola, AbsSurpDec) are likewise undefined. An examiner flags every undefined regressor.",
+      "evidence": [
+        "FirmMat/EarnVol in Table 5.6 rows; absent from Appendix II",
+        "HighCash mean 0.3333"
+      ],
+      "best_fix": "Add FirmMat, EarnVol, HighCash, and the four bid-ask extended controls to Appendix II with formulas/cutoffs.",
+      "fix_evidence": [
+        "Appendix II catalogs only 8 variables"
       ],
       "confidence": "high",
-      "refutation": "adjustbox keeps it on-page and technically compiles; not malformed, only cramped"
+      "refutation": "Some (e.g. AbsSurpDec, DailyVola) are semi-self-evident from name; none is a focal treatment variable."
     },
     {
       "kind": "finding",
       "referee": "methodology",
       "panel": "A",
-      "aspect": "undefined variables / broken appendix promise",
-      "location": "Tables 5.6-5.8; Sec 2.5 line 343; Sec 3.1 line 358; App I/II",
+      "aspect": "number of cash vs stock deals never reported for the load-bearing first-deal tests",
+      "location": "Ch.3 main analyses (Tables 5.2-5.5)",
       "severity": "medium",
-      "problem": "FirmMat and EarnVol appear as regressors in validity tables but are defined nowhere; prose promises DWZ first-stage controls 'catalogued in the Appendix' but App II lists only the 7 firm-financial controls",
+      "problem": "The first-deal run-up, event study, and Wald tables report firm and firm-quarter counts but never the count of cash vs stock acquisitions actually identifying the effect. The count clearly exists (Logit B discloses 982 cash / 123 stock for the all-deals deal-level sample). Its omission for the headline first-deal results is a transparency and power gap a referee will demand.",
       "evidence": [
-        "FirmMat/EarnVol in 5.6-5.8",
-        "App II omits NegCall,UncQue,SurpDec,EPSgrowth,StockRet,MarketRet",
-        "'catalogued in the Appendix'"
+        "Tables 5.2-5.5 report only firm/firm-qtr N",
+        "Logit B: '982 cash, 123 stock'"
       ],
-      "best_fix": "Add definitions for FirmMat, EarnVol and the DWZ first-stage controls to an appendix",
+      "best_fix": "Report the number of treated cash and stock deals (and treated firms) underlying each first-deal table.",
       "fix_evidence": [
-        "App II table contents",
-        "line 343 promise"
+        "deal counts shown only in Logit B"
       ],
       "confidence": "high",
-      "refutation": "FirmMat/EarnVol are only in convergent-validity tables, not the headline designs; reader can infer 'firm maturity'/'earnings volatility'"
+      "refutation": "PreAnnounceQtr mean (0.0094) and firm counts let a determined reader bound the deal count indirectly."
     },
     {
       "kind": "finding",
       "referee": "methodology",
       "panel": "A",
-      "aspect": "generated-regressand SE correction flagged but not executed",
-      "location": "Sec 2.3 line 319; Sec 2.4 line 331; Tables 5.19-5.20",
+      "aspect": "REFINES finding 'prose contradicts table footnote on tailedness' — likely the footnote, not the prose, is the error",
+      "location": "Table 5.2 notes (l.671) vs Sec 3.2 prose (l.368)",
       "severity": "medium",
-      "problem": "Two-step (Pagan) SE correction/bootstrap is named but never run; reassurance 'does not change the descriptive readings' is asserted, not demonstrated; in Logit A/B UncResCEO is a genuine generated REGRESSOR (the case Pagan addresses) yet the caveat is not repeated there",
+      "problem": "Correcting my earlier direction: the Table 5.2 stars cannot themselves discriminate one- vs two-tailed, and the prose offers 'survives a two-tailed test (p=.0074)' as an EXTRA check, implying the table stars were computed one-tailed and the '(two-tailed)' footnote is the mislabel -- consistent with Tables 5.6-5.12 all using one-tailed focal tests. Either way it is a genuine contradiction; the safer reading is that the footnote is wrong.",
       "evidence": [
-        "'flag the concern, together with the bootstrap'",
-        "p=.0074 headline on generated DV",
-        "Logit A/B RHS UncResCEO, no caveat at Sec 4.5"
+        "prose: 'survives a two-tailed test (p=.0074)' framed as additional reassurance"
       ],
-      "best_fix": "Run the block-bootstrap two-step SEs (or report them for the headline and the logits) rather than only naming them",
+      "best_fix": "Reconcile: confirm whether Table 5.2 stars are one- or two-tailed and correct the mislabelled element; do not assume the prose is the error.",
       "fix_evidence": [
-        "Sec 2.4 'applies to every design here' covers regressand designs only",
-        "4.5 logits uncaveated"
+        "0.0461/0.0172=2.68 gives *** under either tail; non-discriminating"
       ],
       "confidence": "medium",
-      "refutation": "Headline survives across many specs (all-deals 0.0391 p<.01); for a generated regressand added noise often inflates SEs (conservative), so correction may not weaken it"
+      "refutation": "For the headline coefficient *** holds two-tailed anyway, so the substantive significance claim is unaffected by which element is wrong."
     },
     {
       "kind": "finding",
       "referee": "methodology",
       "panel": "A",
-      "aspect": "pre-trend assessed with a single lead",
-      "location": "Sec 3.3; Table 5.3 (empire_drop_matched)",
+      "aspect": "REFINES bid-ask scaling confidence",
+      "location": "Table 5.12 vs Table 5.1",
       "severity": "medium",
-      "problem": "Only PRE2 (e=-2) is shown as a pre-trend check; all e<=-3 are folded into the baseline, so a slow multi-quarter ramp toward the deal would be absorbed into baseline and make PRE1 look like a discrete jump",
+      "problem": "Confidence on the undisclosed-scaling finding should be high, not medium: lnAssets -0.80, ROA -9.4, Turnover -24.1 are arithmetically impossible on a DV whose summary max is 0.0164, so the regression DV is certainly rescaled (~x1000) and the units are certainly undisclosed.",
       "evidence": [
-        "bins PRE2,PRE1,GAP,POST only",
-        "baseline = e<=-3 + never-acquirers",
-        "'clean pre-trend'"
+        "DV max 0.0164 vs Turnover coef -24.1012"
       ],
-      "best_fix": "Show e=-4,-3,-2 leads (not just PRE2) to demonstrate flat pre-period",
+      "best_fix": "State the rescaled DV units in Table 5.12.",
       "fix_evidence": [
-        "single PRE2 coefficient 0.0068"
+        "coefficients exceed DV support by ~1000x"
       ],
-      "confidence": "medium",
-      "refutation": "They disclaim parallel trends and make no causal claim; PRE2~0 plus the announcement-timed reversal is suggestive of a discrete event"
-    },
-    {
-      "kind": "finding",
-      "referee": "methodology",
-      "panel": "A",
-      "aspect": "claim stronger than design: 'readable/observable' signal",
-      "location": "Abstract; Conclusion line 466; Table 5.19",
-      "severity": "medium",
-      "problem": "Calls the signal 'readable' / 'a signature researchers can observe before the announcement', but its own forward predictive model has near-zero fit (LPM R2 0.006, pseudo-R2 0.026), i.e. not practically detectable",
-      "evidence": [
-        "'readable, anticipatory trace'",
-        "Logit A pseudo-R2 0.026",
-        "LPM R2 0.006"
-      ],
-      "best_fix": "Soften 'readable/observable' to a within-firm statistical elevation; note predictive content is trivial",
-      "fix_evidence": [
-        "deal rate 2.84%",
-        "R2 < 1%"
-      ],
-      "confidence": "medium",
-      "refutation": "'in principle' hedges line 466; claim is a within-firm mean shift, not a cross-sectional classifier"
-    },
-    {
-      "kind": "finding",
-      "referee": "methodology",
-      "panel": "A",
-      "aspect": "cash-specificity label overclaims vs design",
-      "location": "Sec 3.4 title; Table 5.5 caption ('Cash-Specificity Test')",
-      "severity": "medium",
-      "problem": "Section and table are titled 'Cash-Specificity' while the prose retreats to 'concentration, not strict specificity'; worse, by their own 'unmanaged window' logic the cash>stock gap is equally consistent with pure stock-side suppression (no cash-specificity at all)",
-      "evidence": [
-        "title 'Cash-Specificity Test'",
-        "prose 'concentration rather than strict specificity'",
-        "'cash deal as the relatively unmanaged window'"
-      ],
-      "best_fix": "Retitle to 'Cash-vs-Stock Concentration'; state the gap cannot separate cash-trigger from stock-suppression",
-      "fix_evidence": [
-        "Wald rides on stock -0.0524 ns",
-        "H1a framed as concentration"
-      ],
-      "confidence": "medium",
-      "refutation": "Prose repeatedly hedges to concentration and discloses reliance on the imprecise negative stock estimate"
-    },
-    {
-      "kind": "finding",
-      "referee": "methodology",
-      "panel": "A",
-      "aspect": "asymmetric one-tailed reporting",
-      "location": "Tables 5.6-5.9, 5.11, 5.12 notes; Sec 2.4 line 331",
-      "severity": "medium",
-      "problem": "Headline run-up is reported two-tailed (conservative) but the supporting validity/secondary results are one-tailed (liberal); several flip to insignificant two-tailed, so the weakest evidence gets the most permissive test",
-      "evidence": [
-        "US-EPU col3 0.0123* one-tailed",
-        "bid-ask UncPreCEO col6 0.1644* one-tailed",
-        "'one-tailed for the independent variable'"
-      ],
-      "best_fix": "Report validity/secondary tests two-tailed too, or justify the directional prior per table; flag which survive",
-      "fix_evidence": [
-        "main table 5.2 note '(two-tailed)'",
-        "validity notes '(one-tailed...)'"
-      ],
-      "confidence": "medium",
-      "refutation": "Directional priors exist (convergent measures, BGT obfuscation); one-tailedness is disclosed in notes and even the abstract"
-    },
-    {
-      "kind": "finding",
-      "referee": "methodology",
-      "panel": "A",
-      "aspect": "construct-validity vs central interpretation",
-      "location": "Sec 2.6; Sec 4.2; Table 5.6; abstract",
-      "severity": "medium",
-      "problem": "The residual is inert on every external dimension (DWZ: no price/volume link; here: no bid-ask link; convergent R2~0.003) yet the whole thesis interprets its one active result as 'uncertainty'; the tension is disclosed piecewise but never assembled into a single 'the construct is weak, the spike could be a call-language artifact' statement",
-      "evidence": [
-        "PRisk R2~0.003 'economically trivial'",
-        "residual 'inert' on spread",
-        "'supportive but weak'"
-      ],
-      "best_fix": "Add a consolidated construct-risk caveat acknowledging the spike may not reflect 'uncertainty' specifically",
-      "fix_evidence": [
-        "DWZ residual 'largely unrelated to market...reactions'"
-      ],
-      "confidence": "medium",
-      "refutation": "Each weakness is individually disclosed; round-trip reversal and survival under controls argue the spike is not pure noise"
+      "confidence": "high",
+      "refutation": "None on existence of the mismatch; only its severity is a judgement call."
     },
     {
       "kind": "finding",
@@ -309,6 +411,27 @@
       "kind": "finding",
       "referee": "style",
       "panel": "A",
+      "aspect": "variable-name typography uniformity",
+      "location": "throughout; esp. line 317, Ch2 vs Ch3-4",
+      "severity": "medium",
+      "problem": "Same constructs (UncResCEO, CashRatio, CashScrutiny, PreAnnounceQtr) typeset 4 ways: \\mathrm{} (upright), \\mathit{} (math-italic), \\textit{} (text-italic), and bare unformatted in Ch3-4; renders as visibly different fonts for one variable",
+      "evidence": [
+        "line317 \\mathit{UncResCEO} and \\textit{UncResCEO} same sentence",
+        "268 \\mathrm{UncResCEO}",
+        "356/368 bare UncResCEO"
+      ],
+      "best_fix": "Pick ONE convention (e.g. \\textit{} text-italic) and apply to every variable mention incl. bare Ch3-4 names",
+      "fix_evidence": [
+        "mathrm at 268,335,406,410,728,1129,1665",
+        "textit at 305,317,327,329,331,1643"
+      ],
+      "confidence": "high",
+      "refutation": "If a macro \\Var were defined the source could differ yet render uniformly, but raw \\mathrm vs \\textit render upright vs italic differently"
+    },
+    {
+      "kind": "finding",
+      "referee": "style",
+      "panel": "A",
       "aspect": "p-value format / no-leading-zero",
       "location": "Sec 2.4 methodology, line 331",
       "severity": "medium",
@@ -320,7 +443,7 @@
       ],
       "best_fix": "Change line 331 to $p=.0074$ to match the document-wide no-leading-zero convention",
       "fix_evidence": [
-        "grep: only 331 matches p =0.0"
+        "grep: only 331 matches 'p =0.0'"
       ],
       "confidence": "high",
       "refutation": "Leading zero is defensible APA-side, but doc's own dominant style is no-leading-zero so 331 is the outlier"
@@ -340,11 +463,32 @@
       ],
       "best_fix": "Normalize all interruptive dashes to one form (em-dash '---' is the majority register in body sections); convert Ch2 ' -- ' accordingly",
       "fix_evidence": [
-        "em-dash absent in 285-353 except none",
+        "em-dash absent in lines 285-353",
         "en-dash 33 occurrences"
       ],
       "confidence": "high",
       "refutation": "Both are valid typographically; only a problem because the same doc mixes them"
+    },
+    {
+      "kind": "finding",
+      "referee": "style",
+      "panel": "A",
+      "aspect": "event-time index notation",
+      "location": "Tables 5.3/5.4 row labels (L687,746) vs prose Sec2.4 & same-table notes (L728)",
+      "severity": "medium",
+      "problem": "Event-time bins labelled '($t{-}2$)'/'($t{-}1$)' in table rows, but defined as '$e{=}{-}2$'/'$e=-1$' in prose and in the SAME table's notes; worse, $t$ is already the calendar-quarter index in $Y_{it}$, $\\tau_t$, so $t-1$ overloads the symbol the $e$ notation exists to disambiguate",
+      "evidence": [
+        "687 'PRE2 ($t{-}2$, pre-trend)'",
+        "728 notes '$\\mathrm{PRE2}$ ($e{=}{-}2$)'",
+        "323 $Y_{it}$ uses t for calendar"
+      ],
+      "best_fix": "Relabel table rows to $e{=}{-}2$/$e{=}{-}1$ to match prose and notes",
+      "fix_evidence": [
+        "e defined L303/323",
+        "notes already use e"
+      ],
+      "confidence": "high",
+      "refutation": "$t-1$ is a common generic 'one period before' shorthand a reader may parse loosely, but here it collides with the model's own t index"
     },
     {
       "kind": "finding",
@@ -361,10 +505,69 @@
       ],
       "best_fix": "Use the full construct names (UncResCEO, CashRatio, CashScrutiny, HighCashScrutiny) as column heads in 5.15-5.18, matching 5.2-5.14",
       "fix_evidence": [
-        "638 main table uses 'CashRatio & UncResCEO & CashScrutiny & HighCashScrutiny'"
+        "638 main table spells out 'CashRatio / UncResCEO / CashScrutiny / HighCashScrutiny'"
       ],
       "confidence": "high",
-      "refutation": "Abbreviations save width in landscape 8-col tables; glossary is provided -- but the two schemes (CshR vs CashR) are indefensible"
+      "refutation": "Abbreviations save width in landscape 8-col tables; a glossary is provided -- but the two schemes (CshR vs CashR) are indefensible"
+    },
+    {
+      "kind": "finding",
+      "referee": "style",
+      "panel": "A",
+      "aspect": "standard-error decimal precision (prose)",
+      "location": "Sec 4.5 prose L448, L452 vs doc-wide 4dp and Tables 5.19/5.20",
+      "severity": "medium",
+      "problem": "Two SEs printed to 5 decimals in prose -- $0.00275$ (L448) and $0.05076$ (L452) -- while every other SE in prose and all tables uses 4 decimals; the SAME two coefficients show 4dp SEs in their tables (5.19 L1520 (0.0027); 5.20 L1556 (0.0508)), so it is both a precision drift and a prose-table mismatch",
+      "evidence": [
+        "448 'standard error $0.00275$'",
+        "452 'standard error $0.05076$'",
+        "1520 (0.0027)",
+        "1556 (0.0508)"
+      ],
+      "best_fix": "Round both prose SEs to 4dp ($0.0027$/$0.0028$ and $0.0508$) to match the tables and the document standard",
+      "fix_evidence": [
+        "all other prose SE 4dp e.g. 368 (0.0172)"
+      ],
+      "confidence": "high",
+      "refutation": "5dp is more precise, not wrong; but it is inconsistent with the doc's own 4dp standard and its own tables"
+    },
+    {
+      "kind": "finding",
+      "referee": "style",
+      "panel": "A",
+      "aspect": "unit naming: 'Section N' vs rendered 'Chapter N'",
+      "location": "prose L278 (and L268,311,335,etc.) vs chapter at L259/283/350/402/457; fossil label sec:framework L283",
+      "severity": "medium",
+      "problem": "book class with \\chapter{} for all five top units renders headings 'Chapter 1..5', but prose refers to whole units as 'Section~2..Section~5' (roadmap L278: 'Section 2 develops... Section 5 concludes'). Subsection refs 'Section 2.3/4.1' are fine; only the whole-unit refs mismatch. The \\chapter carries \\label{sec:framework}, a leftover from a section->chapter conversion",
+      "evidence": [
+        "278 'Section~2 ... Section~5 concludes'",
+        "283 \\chapter{...}\\label{sec:framework}"
+      ],
+      "best_fix": "Change whole-unit cross-references from 'Section N' to 'Chapter N' (leave 'Section N.M' subsection refs)",
+      "fix_evidence": [
+        "259/283/350/402/457 are chapter units"
+      ],
+      "confidence": "high",
+      "refutation": "Overlaps the cross-reference referee's lane; if the author intends 'Section' as the top-level term the fix is heading-side instead -- but as rendered they contradict"
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "cite-year-vs-entry",
+      "location": "References: rule10b5 bibitem + in-text \\citep{rule10b5}",
+      "severity": "low",
+      "problem": "In-text the rule renders 'Rule 10b-5 (2014)' (label year 2014), but the reference entry text contains no 2014 -- it reads only 'Rule 10b-5, 17 C.F.R. 240.10b-5'. A reader checking the year finds no matching date in the entry.",
+      "evidence": [
+        "label [Rule 10b-5(2014)]",
+        "entry has no '2014'"
+      ],
+      "best_fix": "Add the C.F.R. edition/revision year (e.g. '(2014 ed.)') to the rule10b5 entry text so the cited year is sourced.",
+      "fix_evidence": [
+        "bibitem body: '...17 C.F.R. 240.10b-5.'"
+      ],
+      "confidence": "high",
+      "refutation": "Legal-citation convention puts the code-edition year only in the parenthetical; some readers accept the label year alone."
     },
     {
       "kind": "finding",
@@ -422,6 +625,866 @@
       ],
       "confidence": "medium",
       "refutation": "This is a methods/consistency issue, not citation/attribution -- likely belongs to the numbers/consistency referee, not this dimension."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Intro + Sec 2.1 (matsumoto2011)",
+      "severity": "low",
+      "problem": "Verify against source: claim that the analyst-discussion/Q&A session carries information beyond the prepared presentation.",
+      "evidence": [
+        "'analyst-discussion session carries information beyond the managers prepared presentation'"
+      ],
+      "best_fix": "Confirm Matsumoto et al.(2011) supports this.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Standard reading of the paper; likely accurate."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 2.1 (verrecchia1983)",
+      "severity": "low",
+      "problem": "Verify: informed manager rationally withholds when disclosure is costly; a threshold below which he withholds.",
+      "evidence": [
+        "'rationally choose not to reveal... threshold below which the informed manager simply withholds'"
+      ],
+      "best_fix": "Confirm Verrecchia(1983) discretionary-disclosure threshold.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Canonical summary of Verrecchia(1983)."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Intro + Sec 2.1 (dye1985)",
+      "severity": "low",
+      "problem": "Verify: non-disclosure persists in equilibrium because investors cannot tell an uninformed manager from an informed-but-silent one.",
+      "evidence": [
+        "'cannot... tell a manager who knows nothing from one who knows something and is keeping quiet'"
+      ],
+      "best_fix": "Confirm Dye(1985).",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Standard Dye(1985) pooling result."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 2.1 (basic1988, materiality)",
+      "severity": "low",
+      "problem": "Verify: Court held preliminary/pending merger talks can be material; materiality = probability x magnitude.",
+      "evidence": [
+        "'preliminary, still-pending merger negotiations can be material... how likely... against how large'"
+      ],
+      "best_fix": "Confirm Basic v. Levinson(1988) holding.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Accurately states the Basic probability/magnitude test."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Intro + Sec 2.1 (basic1988 + rule10b5, duty/mislead)",
+      "severity": "low",
+      "problem": "Verify: no general duty to disclose confidential merger talks, but once it speaks a firm may not mislead (untrue/half-true statement unlawful).",
+      "evidence": [
+        "'no general duty to disclose... once it speaks, it may not mislead'"
+      ],
+      "best_fix": "Confirm jointly against Basic(1988) and Rule 10b-5.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Consistent with 10b-5 half-truth doctrine."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Intro + Sec 2.1 (hollander2010)",
+      "severity": "low",
+      "problem": "Verify: managers make deliberate disclosure/silence choices on calls and a non-answer is itself informative ('silence speaks').",
+      "evidence": [
+        "'silence speaks'",
+        "'non-answer or a silence is itself informative'"
+      ],
+      "best_fix": "Confirm Hollander et al.(2010).",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Matches the paper's title/thesis."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Intro + Sec 2.5 (keown1981)",
+      "severity": "low",
+      "problem": "Verify: abnormal stock-price run-up precedes public merger announcements (pre-announcement leakage into prices).",
+      "evidence": [
+        "'abnormal stock-price run-up before public merger announcements'"
+      ],
+      "best_fix": "Confirm Keown and Pinkerton(1981).",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Standard citation for pre-bid run-up."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Intro + Sec 2.1 (lm2011)",
+      "severity": "low",
+      "problem": "Verify: finance-specific word lists, including the uncertainty list used here, classify tone/uncertainty in financial text.",
+      "evidence": [
+        "'finance-specific word lists -- among them the uncertainty list our measure uses'"
+      ],
+      "best_fix": "Confirm Loughran and McDonald(2011) uncertainty list.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "LM(2011) is the canonical source."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 2.1 (bertrand_schoar2003)",
+      "severity": "low",
+      "problem": "Verify: managers carry durable individual styles showing up as manager fixed effects in firm policies/outcomes.",
+      "evidence": [
+        "'durable, individual styles that show up as manager fixed effects'"
+      ],
+      "best_fix": "Confirm Bertrand and Schoar(2003).",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Matches 'Managing with Style'."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 2.1/2.3 (dwz, decomposition)",
+      "severity": "low",
+      "problem": "Verify: DWZ separate call uncertainty/clarity into a persistent CEO-specific component and a time-varying call-level residual (the decomposition this paper re-estimates).",
+      "evidence": [
+        "'separate... into two pieces: a persistent, manager-specific component... and a time-varying, call-level residual'"
+      ],
+      "best_fix": "Confirm Dzielinski et al.(2021) decomposition.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Method described matches a working paper this study replicates in Table 5.21."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 2.1 + 4.2 (dwz, residual null on prices); recurs 293/418/420/422",
+      "severity": "low",
+      "problem": "Verify (single recurring claim): DWZ find the residual component largely unrelated to stock-price/trading-volume reactions, with the market reaction loading instead on persistent CEO clarity.",
+      "evidence": [
+        "'residual component... largely unrelated to market and stock-price reactions'",
+        "'loads instead on... persistent clarity'"
+      ],
+      "best_fix": "Confirm DWZ(2021) price/volume vs clarity result.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Load-bearing for Sec 4.2 framing; restated 4x but one claim."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Table 5.21 + Sec 2.3 (dwz Table 3 col 2 numbers)",
+      "severity": "low",
+      "problem": "Verify (high-value): published DWZ Table 3(2) values reproduced here -- UncPreCEO 0.093, UncQue 0.049, NegCall 0.046; N=95,296; 5,985 CEOs; R2 incremental ~0.05 over 0.31 base; sample 2003-2015.",
+      "evidence": [
+        "'0.093... in theirs'",
+        "'95,296... 5,985'",
+        "'0.05 on top of a 0.31 base'"
+      ],
+      "best_fix": "Cross-check every DWZ column figure against DWZ(2021) Table 3 col (2).",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Header notes claim these were user-verified against the PDF + NotebookLM."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 4.2 (bgt2018, opposite-sign segments)",
+      "severity": "low",
+      "problem": "Verify: BGT find call language relates to information asymmetry with opposite signs -- scripted-presentation complexity positive (obfuscation), spontaneous-response complexity negative (information).",
+      "evidence": [
+        "'opposite signs across the call two segments'",
+        "'presentation... positively... response... negatively'"
+      ],
+      "best_fix": "Confirm Bushee et al.(2018) segment signs.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Matches the obfuscation-vs-information framing in the title."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 4.2 (bgt2018, window adopted)",
+      "severity": "low",
+      "problem": "Verify: the 25-trading-day post-call bid-ask window is adopted from BGT.",
+      "evidence": [
+        "'25 trading days that begin on the call date... following \\citet{bgt2018}, whose post-call window we adopt'"
+      ],
+      "best_fix": "Confirm BGT(2018) use this post-call window.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Plausible; window choice attributed explicitly."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 2.1 (harford1999)",
+      "severity": "low",
+      "problem": "Verify: firms build cash reserves ahead of acquisitions and cash-rich firms are more acquisitive.",
+      "evidence": [
+        "'build up cash reserves ahead of acquisitions and... cash-rich firms are more acquisitive'"
+      ],
+      "best_fix": "Confirm Harford(1999).",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Standard Harford(1999) result."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 2.1 (shleifer_vishny2003)",
+      "severity": "low",
+      "problem": "Verify: an overvalued bidder has incentive to keep equity overvalued so it can buy with stock.",
+      "evidence": [
+        "'overvalued bidder... incentive to keep its equity overvalued so that it can buy with stock'"
+      ],
+      "best_fix": "Confirm Shleifer and Vishny(2003).",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Matches 'Stock market driven acquisitions'."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 2.1 (louis2004)",
+      "severity": "low",
+      "problem": "Verify: stock-for-stock bidders show positive abnormal accruals (overstate earnings) the quarter before announcement, while cash acquirers do not.",
+      "evidence": [
+        "'stock-for-stock bidders overstate reported earnings... whereas cash acquirers do not'"
+      ],
+      "best_fix": "Confirm Louis(2004) accruals result.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Consistent with Louis(2004)."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 2.3 (pagan1984)",
+      "severity": "low",
+      "problem": "Verify: generated-regressor two-step setting -> conventional standard errors understated absent correction.",
+      "evidence": [
+        "'sets out the issue for such two-step settings'",
+        "'standard errors may be understated'"
+      ],
+      "best_fix": "Confirm Pagan(1984) generated-regressor result.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Canonical Pagan(1984) point."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 2.4 (opler1999 + bates2009)",
+      "severity": "low",
+      "problem": "Verify: the firm-financial controls follow the standard cash-determinants regression of these two papers.",
+      "evidence": [
+        "'standard cash-determinants regression \\citep{opler1999, bates2009}'"
+      ],
+      "best_fix": "Confirm control set matches Opler et al.(1999) / Bates et al.(2009).",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Both are canonical cash-holdings determinants papers."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 2.5 (hassan2020)",
+      "severity": "low",
+      "problem": "Verify: PRisk is the call-based firm-level political-risk measure of Hassan et al.(2020).",
+      "evidence": [
+        "'firm-level political risk (PRisk), the call-based measure of \\citet{hassan2020}'"
+      ],
+      "best_fix": "Confirm Hassan et al.(2020) PRisk.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Correct source for PRisk."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 2.5 (baker2016)",
+      "severity": "low",
+      "problem": "Verify: US-EPU is the newspaper-based economic-policy-uncertainty index of Baker et al.(2016).",
+      "evidence": [
+        "'US economic policy uncertainty (US-EPU), the newspaper-based index of \\citet{baker2016}'"
+      ],
+      "best_fix": "Confirm Baker, Bloom, Davis(2016).",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Correct source for US-EPU."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Sec 2.5 (davis2016)",
+      "severity": "low",
+      "problem": "Verify: GEPU is the global economic-policy-uncertainty index of Davis(2016).",
+      "evidence": [
+        "'global economic policy uncertainty (GEPU), the index of \\citet{davis2016}'"
+      ],
+      "best_fix": "Confirm Davis(2016) NBER WP 22740.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Correct source for GEPU."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Intro + Sec 2.1/2.2 (thewissen2024)",
+      "severity": "low",
+      "problem": "Verify: stock-for-stock acquirers deliberately manage/inflate the tone of their pre-deal disclosure (earnings press releases) before the announcement.",
+      "evidence": [
+        "'stock bidders inflate the tone of their earnings press releases before a stock-for-stock acquisition'"
+      ],
+      "best_fix": "Confirm Thewissen et al.(2024) tone-management finding.",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Matches the SSRN working-paper title; load-bearing for the cash-vs-stock motivation."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "external-attribution",
+      "location": "Intro + Sec 2.1 (ragozzino2024)",
+      "severity": "low",
+      "problem": "Verify: the volume of corporate-strategy vocabulary rises on the earnings calls of acquisitive firms around deal activity.",
+      "evidence": [
+        "'volume of corporate-strategy vocabulary rises on the calls of acquisitive firms'"
+      ],
+      "best_fix": "Confirm Ragozzino and Reuer(2024).",
+      "fix_evidence": [
+        "cannot verify from this file"
+      ],
+      "confidence": "low",
+      "refutation": "Plausible; cited as adjacent (volume, not uncertainty) work."
+    },
+    {
+      "kind": "finding",
+      "referee": "citations",
+      "panel": "A",
+      "aspect": "borrowed-claim-uncited",
+      "location": "Sec 4.2 (bid-ask spread as information asymmetry)",
+      "severity": "low",
+      "problem": "The interpretation of the bid-ask spread as a measure of adverse selection / trading against better-informed insiders rests on the Glosten-Milgrom/Kyle microstructure literature, which is uncited; bgt2018 is cited only for the post-call window, not for the spread-as-information-asymmetry premise.",
+      "evidence": [
+        "'how much outside traders fear trading against better-informed insiders'",
+        "only bgt2018 cited nearby"
+      ],
+      "best_fix": "Cite a microstructure source (e.g. Glosten-Milgrom) for the adverse-selection reading of the spread, or attribute it to bgt2018 explicitly if they supply it.",
+      "fix_evidence": [
+        "no microstructure bibitem present"
+      ],
+      "confidence": "low",
+      "refutation": "The spread-as-info-asymmetry reading is textbook and bgt2018 itself uses the spread that way, so the premise is implicitly sourced."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "narrative-arc inversion: validity results before data section",
+      "location": "Sec 2.5 vs Sec 3.1",
+      "severity": "low",
+      "problem": "Empirical validity RESULTS with coefficients/p-values/N (Tables 5.21, 5.6, 5.7, 5.8, 5.9) are reported in 2.5 inside the 'Conceptual Framework and Empirical Strategy' chapter, BEFORE the five data sources, sampling layers, and summary stats appear in 3.1. Reader meets estimates before the sample.",
+      "evidence": [
+        "2.5 reports '0.0001 p<.01 (Table 5.6)'",
+        "data/sample only in 3.1",
+        "Table 5.1 after"
+      ],
+      "best_fix": "Move the sample description ahead of measure-validation, or relocate validity tables into the empirical chapter.",
+      "fix_evidence": [
+        "2.5 cites Ns (44,497)",
+        "3.1 first lists five sources"
+      ],
+      "confidence": "medium",
+      "refutation": "Measurement-validation conventionally sits with construction; partial sample info (2002-2018, non-fin non-util) is given in 2.5."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "fragility caveat present in body, absent from summaries",
+      "location": "Abstract/Intro/Conclusion vs Sec 3.4",
+      "severity": "low",
+      "problem": "3.4 calls the cash-concentration result 'supported but fragile... its significance rides on the imprecise negative stock estimate'. Abstract, intro and conclusion present it as cleanly 'survives a formal pooled test'; they hedge interpretation (concentration not specificity, mechanism open) but omit the statistical-fragility caveat.",
+      "evidence": [
+        "3.4 'supported but fragile'",
+        "abstract 'survives a formal pooled test'",
+        "no fragility in summaries"
+      ],
+      "best_fix": "Signal in the conclusion (and maybe abstract) that the difference rests on an imprecise stock null.",
+      "fix_evidence": [
+        "gap rides on -0.0524 stock",
+        "3.4 states it"
+      ],
+      "confidence": "medium",
+      "refutation": "'Survives a formal pooled test' is literally true (p=.039); abstracts routinely drop second-order caveats and the interpretive hedge is present."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "paper-to-thesis conversion artifacts",
+      "location": "throughout (roadmap, all cross-refs)",
+      "severity": "low",
+      "problem": "Document is a thesis (book class chapters render 'Chapter 1..5'), but prose consistently calls its chapters 'Section 2/3/4/5' and calls itself 'the paper' ('the remainder of the paper proceeds'). Whole-chapter cross-refs mislabel Chapters as Sections; sub-refs (2.3 etc.) are fine.",
+      "evidence": [
+        "'Section 2 develops' = Chapter 2",
+        "'the remainder of the paper'",
+        "chapters used throughout"
+      ],
+      "best_fix": "Global replace whole-unit 'Section N'->'Chapter N' and 'the paper'->'this thesis'; keep 'Section X.Y'.",
+      "fix_evidence": [
+        "top-level units are chapters",
+        "subsection refs resolve"
+      ],
+      "confidence": "high",
+      "refutation": "Usage is consistent so a reader can follow; subsection numbers still resolve correctly."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "residual under-described in summaries",
+      "location": "Abstract, Intro (4th contribution), Conclusion vs Sec 2.3",
+      "severity": "low",
+      "problem": "Summaries describe UncResCEO as 'the part that remains once each executive's persistent speaking style is removed', but per 2.3 it also nets out UncPreCEO, UncQue, NegCall, performance and year FE. 2.3 reconciles ('removes more...a refinement, not a different object'), so disclosed, but the abstract/conclusion understate what is removed.",
+      "evidence": [
+        "abstract 'persistent speaking style is removed'",
+        "2.3 'removes more...narrower'",
+        "also nets UncPre/UncQue/NegCall"
+      ],
+      "best_fix": "Add 'and observable call-level factors' to summary descriptions or cite 2.3.",
+      "fix_evidence": [
+        "2.3 lists Speech+FirmChars+Year",
+        "style-only is a refinement"
+      ],
+      "confidence": "medium",
+      "refutation": "Explicitly reconciled in 2.3; 'net of persistent style' is true if incomplete; standard abstract simplification."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "redundant double-reporting of validity coefficients",
+      "location": "Sec 2.5 and Sec 4.1 step 1",
+      "severity": "low",
+      "problem": "CashScrutiny construct-validity coefficients (0.7530**, 0.8519**) are stated in full in 2.5 and again in 4.1 step 1 (both Table 5.9), duplicating the same numbers across two chapters.",
+      "evidence": [
+        "2.5 '0.7530...and 0.8519'",
+        "4.1 '0.7530...and 0.8519'"
+      ],
+      "best_fix": "In 4.1 reference the 2.5 validity result instead of restating coefficients.",
+      "fix_evidence": [
+        "same Table 5.9 cited twice"
+      ],
+      "confidence": "high",
+      "refutation": "2.5 uses it to motivate the measure, 4.1 as step 1 of a 3-step rule-out; mild and arguably intentional recap."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "hypothesis verdicts not closed out by label",
+      "location": "Sec 3.2 (H1), 3.3 (H1b) vs 3.4 (H1a)",
+      "severity": "low",
+      "problem": "H1/H1a/H1b are stated (2.2) and mapped to MA1/MA2/MA3 (2.4), but only H1a is named in its results section (3.4). 3.2 and 3.3 never say 'this supports H1 / H1b', leaving those verdicts implicit.",
+      "evidence": [
+        "3.4 names 'H1a'",
+        "3.2/3.3 omit H1/H1b",
+        "verdicts implicit"
+      ],
+      "best_fix": "Add a 'consistent with H1' / 'consistent with H1b' line to 3.2 and 3.3.",
+      "fix_evidence": [
+        "2.4 maps designs to hypotheses",
+        "only H1a recurs"
+      ],
+      "confidence": "medium",
+      "refutation": "2.4's explicit mapping lets the reader connect each result without repeated labels."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "loose 'residual-feasible' sample label",
+      "location": "Sec 3.2 para 3",
+      "severity": "low",
+      "problem": "3.2 calls 1,884 the 'residual-feasible call sample' vs the 2,232-firm cash panel, but the UncResCEO regression runs on 1,248 firms; 1,884 is the full language sample from which residuals are estimated, not the set with usable residuals (N=44,900 of 88,205).",
+      "evidence": [
+        "'1,884-firm residual-feasible'",
+        "UncResCEO reg 1,248 firms",
+        "residual N=44,900"
+      ],
+      "best_fix": "Call 1,884 the 'language sample'; if contrasting feasibility use 1,248.",
+      "fix_evidence": [
+        "col2 27,622/1,248",
+        "col1 67,590/2,232"
+      ],
+      "confidence": "low",
+      "refutation": "Directional claim (cash panel broader) holds; 1,884 is the universe residuals derive from, so loosely defensible."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "AUDIT-AIDS column maps stale (aid, not thesis)",
+      "location": "AUDIT-AIDS header for Tables 5.15-5.18 vs rendered tables",
+      "severity": "low",
+      "problem": "The audit-aid maps describe Tables 5.15-5.18 as combined 'Thesis vs All-Deals' panels (16/4/4/6 data cols), but the rendered tables are all-deals-only (8/2/2/3 cols). E.g. aid says all-deals Wald 0.1056 'is col 4' of 5.18, but 5.18 has 3 cols and 0.1056 is the UncRes col. Thesis PROSE resolves correctly against the actual tables; only the aid is stale.",
+      "evidence": [
+        "aid '16 data cols' for 5.15",
+        "rendered 5.15 has 8 cols",
+        "prose matches actual"
+      ],
+      "best_fix": "Disregard/repair the aid maps for 5.15-5.18; rely on rendered tables.",
+      "fix_evidence": [
+        "4.5 0.0391=5.15 cash UncR",
+        "0.1056=5.18 UncRes col"
+      ],
+      "confidence": "high",
+      "refutation": "Not a thesis-body defect; the comment header does not compile and the prose is internally correct."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "roadmap omits data section and validity analyses",
+      "location": "Intro roadmap vs Sec 3.1 and 2.5",
+      "severity": "low",
+      "problem": "Roadmap says 'Section 3 presents the three main analyses', but Sec 3 opens with 3.1 Data/Sample (not an analysis); and 'Section 2 develops the conceptual framework and empirical strategy' does not flag that 2.5 houses empirical validity analyses (Tables 5.6-5.9, 5.21).",
+      "evidence": [
+        "roadmap 'three main analyses'",
+        "3.1 is Data/Sample",
+        "validity sits in 2.5"
+      ],
+      "best_fix": "Mention the data section and measurement-validation in the roadmap.",
+      "fix_evidence": [
+        "3.1 precedes 3.2-3.4",
+        "2.5 reports validity"
+      ],
+      "confidence": "low",
+      "refutation": "Roadmaps summarize at chapter granularity; data + validation are subsumed under 'empirical strategy'/'main analyses'."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "summary-stats role taxonomy loose",
+      "location": "Table 5.1 panels A/B/C",
+      "severity": "low",
+      "problem": "Panels labelled 'A. Independent / B. Dependent / C. Firm Controls', but roles vary: CashScrutiny (Panel A 'Independent') is the DV in Table 5.9; UncResCEO (Panel B 'Dependent') is a regressor in Logit A/B and the bid-ask table; PRisk/EPU (Panel A) are only validity regressors.",
+      "evidence": [
+        "CashScrutiny 'Independent' but DV in 5.9",
+        "UncResCEO regressor in 5.19/5.20"
+      ],
+      "best_fix": "Relabel panels by data type (call-level/firm-level) or note roles vary by analysis.",
+      "fix_evidence": [
+        "multi-role variables",
+        "fixed A/B/C labels"
+      ],
+      "confidence": "low",
+      "refutation": "Presentational grouping for a multi-analysis paper; clean role-mapping impossible when a variable serves several models."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "'strongest result' superlative vs moderate significance",
+      "location": "Intro vs Tables 5.3/5.4",
+      "severity": "low",
+      "problem": "Intro calls the round-trip 'the study's strongest result', but its discriminating announcement-resolution leg (PRE1-GAP uncertainty drop) is only p<.05 matched (0.0455**) and p<.10 placebo (0.0428*); the run-up itself is p<.01. The superlative leans on the full PRE1-POST swing (0.0723***), not the crux GAP-drop.",
+      "evidence": [
+        "'strongest result'",
+        "PRE1-GAP 0.0455**/0.0428*",
+        "run-up p=.0074"
+      ],
+      "best_fix": "Qualify 'strongest' as 'most identifying' or anchor on the 0.0723*** swing.",
+      "fix_evidence": [
+        "GAP-drop moderate",
+        "full swing p<.01"
+      ],
+      "confidence": "low",
+      "refutation": "'Strongest' plausibly means most identifying (two-clocks design rules out cash-persistence stories); full swing is p<.01."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "conclusion drops the 'one-tailed' qualifier on the bid-ask claim",
+      "location": "Conclusion para 3 vs Abstract and Sec 4.2",
+      "severity": "low",
+      "problem": "Conclusion states 'the scripted presentation is contemporaneously positively associated with it' with no 'one-tailed' qualifier, whereas the abstract ('on one-tailed within-firm tests') and body 4.2 (table note: one-tailed for speech components) both carry it. The conclusion's version is slightly less guarded than the rest.",
+      "evidence": [
+        "conclusion: 'contemporaneously positively associated'",
+        "abstract: 'one-tailed within-firm'",
+        "4.2 one-tailed"
+      ],
+      "best_fix": "Add 'on one-tailed tests' (or 'within-firm') to the conclusion sentence to match abstract/body.",
+      "fix_evidence": [
+        "abstract carries one-tailed",
+        "4.2 carries one-tailed"
+      ],
+      "confidence": "medium",
+      "refutation": "Conclusions routinely compress qualifiers; 'contemporaneously' is retained, and the claim is not false, only less hedged."
+    },
+    {
+      "kind": "finding",
+      "referee": "coherence",
+      "panel": "A",
+      "aspect": "all tables numbered 5.x and placed after the Conclusion",
+      "location": "Tables block (after the Conclusion chapter) vs discussion in Ch 2-4",
+      "severity": "low",
+      "problem": "All 21 tables physically sit after the Conclusion chapter and the references, so they render as Table 5.x (chapter-5/Conclusion numbering) even though discussed throughout Chapters 2-4. Every body table reference is thus a forward reference to material past the conclusion (e.g. Table 5.21 cited in Sec 2.3, Table 5.2 in Sec 3.2), and the 5. prefix mismatches the discussing chapter.",
+      "evidence": [
+        "tables begin after Conclusion",
+        "render Table 5.1 to 5.21",
+        "cited in Ch 2-4"
+      ],
+      "best_fix": "Embed each table within its discussing chapter so numbering tracks the chapter, or accept end-placement as a flagged layout choice.",
+      "fix_evidence": [
+        "Conclusion at line 457",
+        "tables start ~556",
+        "no new chapter between"
+      ],
+      "confidence": "high",
+      "refutation": "Tables-at-end is an accepted manuscript style; numbering is mechanically correct given placement; may be the layout referee remit."
+    },
+    {
+      "kind": "finding",
+      "referee": "completeness",
+      "panel": "A",
+      "aspect": "leftover placeholder in front matter",
+      "location": "Examining Committee page",
+      "severity": "low",
+      "problem": "Three reader-visible placeholders '[Examiner --- name, affiliation]' remain in the Examining Committee block",
+      "evidence": [
+        "[Examiner --- name, affiliation] x3"
+      ],
+      "best_fix": "Fill examiner names/affiliations before deposit, or note conventionally that they are assigned at defense",
+      "fix_evidence": [
+        "front-matter bracket placeholder"
+      ],
+      "confidence": "high",
+      "refutation": "Examiner names are routinely filled only at/after the defense; expected to be blank in a pre-defense draft"
+    },
+    {
+      "kind": "finding",
+      "referee": "completeness",
+      "panel": "A",
+      "aspect": "asserted-but-unshown bootstrap",
+      "location": "Sec 2.3 generated-regressor caveat",
+      "severity": "low",
+      "problem": "Pagan generated-regressor concern is flagged and the text 'notes that it does not change the descriptive readings', implying a two-step/bootstrap result that is never reported in any table",
+      "evidence": [
+        "'together with the bootstrap that would address it'",
+        "'does not change the descriptive readings'"
+      ],
+      "best_fix": "Either report the bootstrap SEs or reword to a purely conceptual claim (signs/directions are robust to SE corrections)",
+      "fix_evidence": [
+        "no bootstrap table in the 21 tables"
+      ],
+      "confidence": "medium",
+      "refutation": "Load-bearing results are framed descriptively (direction), which an SE correction cannot flip, so the claim is defensible without a table"
+    },
+    {
+      "kind": "finding",
+      "referee": "completeness",
+      "panel": "A",
+      "aspect": "stale AUDIT-AIDS column maps (meta, non-thesis)",
+      "location": "comment header lines 75-87",
+      "severity": "low",
+      "problem": "The provided column maps describe robustness Tables 5.15-5.18 as Thesis|All-deals blocks (16/4/4/6 cols), but the actual tables contain only the all-deals block (8/2/2/3 cols); prose attributions still resolve correctly to actual cells",
+      "evidence": [
+        "AID: '16 data cols THESIS vs ALL-DEALS'",
+        "actual rob_runup tabular lcccccccc = 8 data cols, 'All deals (stacked)'"
+      ],
+      "best_fix": "Audit aid only (does not compile); note for auditors that 5.15-5.18 are all-deals-only and verify prose against actual tables, which checks out",
+      "fix_evidence": [
+        "prose 0.0391/0.1056/0.0447 all match actual all-deals tables"
+      ],
+      "confidence": "high",
+      "refutation": "AUDIT-AIDS is an explicitly non-compiling comment, not part of the thesis; thesis prose+tables are mutually consistent"
+    },
+    {
+      "kind": "finding",
+      "referee": "completeness",
+      "panel": "A",
+      "aspect": "undefined acronym 'DWZ'",
+      "location": "Table 5.10 column header '(DWZ residual)'",
+      "severity": "low",
+      "problem": "Reader-visible 'DWZ' (in table header) is never expanded; citation key is Dzielinski et al. (2021), and 'DWZ' initials are not introduced in prose",
+      "evidence": [
+        "'(DWZ residual)' header",
+        "prose uses \\citet{dwz}=Dzielinski et al."
+      ],
+      "best_fix": "Spell out 'Dzielinski et al. (DWZ)' once, or relabel header",
+      "fix_evidence": [
+        "no 'DWZ' expansion in body"
+      ],
+      "confidence": "medium",
+      "refutation": "Context (citation to Dzielinski et al.) makes the initials inferable"
+    },
+    {
+      "kind": "finding",
+      "referee": "completeness",
+      "panel": "A",
+      "aspect": "internal label scheme hints at collapsed hypotheses",
+      "location": "table labels h11_/h24_/h24b_/h14c_",
+      "severity": "low",
+      "problem": "Table labels encode an older hypothesis numbering (H11, H24, H24b, H14c) but the reader-visible thesis states only H1/H1a/H1b; the convergent-validity and bid-ask analyses are reframed as 'checks/analyses', so no reader-visible hypothesis is dropped without a verdict",
+      "evidence": [
+        "label tab:h11_prisk_uncertainty etc.",
+        "prose: only H1,H1a,H1b stated"
+      ],
+      "best_fix": "None needed for reader (labels invisible); optionally rename labels to avoid confusion",
+      "fix_evidence": [
+        "labels do not render"
+      ],
+      "confidence": "high",
+      "refutation": "Labels are invisible; the reframed analyses each receive an explicit verdict, so completeness of hypothesis<->test is intact"
+    },
+    {
+      "kind": "finding",
+      "referee": "completeness",
+      "panel": "A",
+      "aspect": "more undefined symbols/acronyms",
+      "location": "Table 5.12 controls; Tables 5.6-5.8 notes",
+      "severity": "low",
+      "problem": "StockPrice, Turnover, DailyVola, AbsSurpDec (bid-ask 'Extended Controls', Tab5.12) are never defined in prose or appendices; AbsSurpDec is also distinct from the decomposition's SurpDec; the acronym 'FF12' (industry FE in Tab5.6-5.8 notes) is unexpanded",
+      "evidence": [
+        "Tab5.12 rows StockPrice/Turnover/DailyVola/AbsSurpDec",
+        "note 'industry (FF12)'"
+      ],
+      "best_fix": "Define the four microstructure controls in an appendix and expand 'FF12' = Fama-French 12 industries once",
+      "fix_evidence": [
+        "no definitions found for these symbols"
+      ],
+      "confidence": "high",
+      "refutation": "These are standard market-microstructure controls and FF12 is a near-universal abbreviation; arguably common knowledge"
+    },
+    {
+      "kind": "finding",
+      "referee": "completeness",
+      "panel": "A",
+      "aspect": "hypothesis stated-order vs tested-order",
+      "location": "Sec 2.2 vs Ch.3",
+      "severity": "low",
+      "problem": "Hypotheses are stated H1->H1a->H1b but presented/tested H1->H1b->H1a (MA1/MA2/MA3); the mapping is made explicit so it is not a defect, only a mild ordering wrinkle",
+      "evidence": [
+        "2.2 order H1,H1a,H1b",
+        "'MA1 tests H1; MA2 tests H1b; MA3 tests H1a'"
+      ],
+      "best_fix": "Optionally reorder the H statements or add a one-line signpost; not required",
+      "fix_evidence": [
+        "explicit one-for-one mapping already given"
+      ],
+      "confidence": "high",
+      "refutation": "Explicit mapping fully removes ambiguity; many papers present in a different order than stated"
     },
     {
       "kind": "finding",
@@ -580,24 +1643,170 @@
     },
     {
       "kind": "finding",
+      "referee": "honesty",
+      "panel": "A",
+      "aspect": "absolute 'not an artifact' from a partialling-out argument",
+      "location": "Sec 2.1 (line 295)",
+      "severity": "low",
+      "problem": "'our signal is therefore not an artifact of the very tone-management the citations describe' states an absolute negative from a residualization argument (residual is net of UncPreCEO/NegCall). Defensible but the absolute form overclaims what partialling-out can guarantee.",
+      "evidence": [
+        "not an artifact of the very tone-management"
+      ],
+      "best_fix": "Soften to 'is unlikely to be a mechanical artifact of the scripted-channel tone-management'.",
+      "fix_evidence": [
+        "unlikely to be a mechanical artifact"
+      ],
+      "confidence": "low",
+      "refutation": "The residual is genuinely net of scripted presentation and call negativity, so the scripted-tone artifact channel is largely closed by construction."
+    },
+    {
+      "kind": "finding",
       "referee": "methodology",
       "panel": "A",
-      "aspect": "differential-timing contrast partly informal/mechanical",
-      "location": "Sec 3.3; Table 5.3",
+      "aspect": "no outlier/winsorization treatment despite extreme control tails",
+      "location": "Table 5.1 (l.604-617)",
       "severity": "low",
-      "problem": "The 'two different clocks' centerpiece compares a significant within-uncertainty drop against a non-significant within-cash drop across two different-scaled outcomes (no cross-equation test), and the cash leg is admitted 'partly mechanical' (cash held until paid)",
+      "problem": "Several controls show extreme untrimmed tails: sCFO max 32.40, EarnVol max 19.51, FirmMat min -317.57, TobinsQ max 35.61, ROA min -3.98. No winsorization or trimming is mentioned anywhere. Influential outliers in controls (and in the residual first stage) could move coefficients; the thesis is silent on outlier handling.",
       "evidence": [
-        "'two paths running on different clocks'",
-        "cash leg 'partly mechanical'",
-        "no cross-outcome restriction"
+        "FirmMat min -317.5714",
+        "sCFO max 32.4035"
       ],
-      "best_fix": "State explicitly that the contrast is each-outcome-within-itself, not a tested cross-outcome difference; foreground that the substantive leg is uncertainty only",
+      "best_fix": "State winsorization (e.g. 1/99%) policy, or add a winsorized robustness column.",
       "fix_evidence": [
-        "unc drop at PRE1-GAP 0.0455**",
-        "cash drop at GAP-POST 0.0210***"
+        "unbounded control maxima"
       ],
       "confidence": "medium",
-      "refutation": "Each outcome's drop is a within-outcome Wald test at a different bin, so 'different clocks' is supported per-outcome; mechanical nature is disclosed"
+      "refutation": "Main MA1 controls (Leverage, lnAssets, TobinsQ, ROA, Capex) are more bounded; FE absorb level outliers; effect sizes are stable across many cuts."
+    },
+    {
+      "kind": "finding",
+      "referee": "methodology",
+      "panel": "A",
+      "aspect": "main run-up uses firm-only clustering despite calendar-clustered treatment",
+      "location": "Sec 2.4 (l.331) + Table 5.2 notes",
+      "severity": "low",
+      "problem": "PreAnnounceQtr is concentrated in calendar-time M&A waves, so residuals are likely correlated across firms within a quarter. Main MA1/MA2/MA3 cluster by firm only; only 'some validity tables' use two-way (firm x quarter) clustering. Year-quarter FE absorb common means but not within-quarter cross-firm residual correlation. The headline SE may be understated.",
+      "evidence": [
+        "'some validity tables use two-way clustering'"
+      ],
+      "best_fix": "Report the headline run-up and Wald with two-way (firm and calendar-quarter) clustering, or note it survives.",
+      "fix_evidence": [
+        "treatment timing clusters in calendar quarters"
+      ],
+      "confidence": "medium",
+      "refutation": "Year-quarter FE materially mitigate calendar dependence; with ~1,200+ firm clusters firm-clustering is defensible."
+    },
+    {
+      "kind": "finding",
+      "referee": "methodology",
+      "panel": "A",
+      "aspect": "generated-regressand caveat absent from the Conclusion limitations list",
+      "location": "Conclusion limitations (l.468-470)",
+      "severity": "low",
+      "problem": "The two-step/generated-regressand SE concern is disclosed in Sec 2 but omitted from the consolidated limitations in the Conclusion, which an examiner often reads as the definitive honesty inventory. The list covers selection, mechanism, word-list, counterfactual, external validity, but not the SE caveat.",
+      "evidence": [
+        "limitations para omits Pagan/two-step"
+      ],
+      "best_fix": "Add one clause to the Conclusion limitations noting the generated-regressand SE caveat and that a bootstrap correction is left to future work.",
+      "fix_evidence": [
+        "Sec 2.3 raises it; Conclusion does not"
+      ],
+      "confidence": "medium",
+      "refutation": "It is disclosed in the methodology, so the thesis as a whole is not silent."
+    },
+    {
+      "kind": "finding",
+      "referee": "methodology",
+      "panel": "A",
+      "aspect": "no multiple-testing acknowledgement across 21 tables / many focal tests",
+      "location": "throughout Ch.3-4",
+      "severity": "low",
+      "problem": "Numerous focal tests, several near thresholds (Wald p=.039; PRE1-GAP drop p<.05 / p<.10 across samples; Logit B FE p=.205). No discussion of multiple comparisons or family-wise error. An examiner may push on selective emphasis of the significant cuts.",
+      "evidence": [
+        "Wald p=.039",
+        "PRE1-GAP p<.10 in placebo cash col"
+      ],
+      "best_fix": "Add a sentence noting the inferential burden of multiple tests and that the round-trip (the strongest, p<.01) anchors the claims.",
+      "fix_evidence": [
+        "many marginal p-values"
+      ],
+      "confidence": "low",
+      "refutation": "The strongest result (peak-to-post 0.0723, p<.01) is robust across every sample, reducing multiple-testing fragility; heavy hedging limits overclaiming."
+    },
+    {
+      "kind": "finding",
+      "referee": "methodology",
+      "panel": "A",
+      "aspect": "Table 5.12 set in portrait at 13 columns (legibility/oversize risk)",
+      "location": "Table 5.12 tab:h14c_ceo2_decomp (l.1135-1190)",
+      "severity": "low",
+      "problem": "A 13-column (12 data) table is placed in PORTRAIT, scriptsize, inside adjustbox max width=linewidth, while the other wide tables (5.2 run-up = 9 col, 5.15 = 9 col) are in landscape. adjustbox will shrink 12 numeric columns into 6.375in, risking illegibly small type in the final PDF.",
+      "evidence": [
+        "{lcccccccccccc} not in landscape; 5.2/5.15 use landscape"
+      ],
+      "best_fix": "Wrap Table 5.12 in the landscape environment as done for the 9-column tables.",
+      "fix_evidence": [
+        "12 data cols vs 8 in the landscaped tables"
+      ],
+      "confidence": "medium",
+      "refutation": "adjustbox guarantees no margin overflow, so it compiles; this is a legibility judgement, not a broken table."
+    },
+    {
+      "kind": "finding",
+      "referee": "methodology",
+      "panel": "A",
+      "aspect": "convergent validity is near-vacuous yet used to support the construct",
+      "location": "Sec 2.5 (l.339) + Tables 5.6/5.7/5.8",
+      "severity": "low",
+      "problem": "All three convergent checks are one-tailed, economically trivial (PRisk R^2~0.003; coef 0.0001), and the macro EPU/GEPU indices are identified only by within-year aggregate co-movement under year FE (one US-EPU estimate only marginal, p<.10). This is barely evidence the residual measures uncertainty rather than noise; the construct rests mainly on the DWZ replication.",
+      "evidence": [
+        "'R^2 approx 0.003'",
+        "'the convergent leg is supportive but weak'"
+      ],
+      "best_fix": "Frame convergent validity as corroborative only and lean the construct case on the replication; or add a firm-quarter-level convergent measure.",
+      "fix_evidence": [
+        "macro indices constant across firms within period"
+      ],
+      "confidence": "medium",
+      "refutation": "They explicitly concede it is 'supportive but weak' and do not overclaim; the replication carries the main construct-validity weight."
+    },
+    {
+      "kind": "finding",
+      "referee": "methodology",
+      "panel": "A",
+      "aspect": "'scripted presentation is the segment outsiders react to' rests on one-tailed, contemporaneous, 4/6 cols",
+      "location": "Sec 4.2 (l.422-424)",
+      "severity": "low",
+      "problem": "The bid-ask conclusion that UncPreCEO drives the spread is built on one-tailed tests, contemporaneous only, significant in 4 of 6 columns and null in both extended-control industry-FE columns; the between-segment difference is never formally tested. The section-level phrasing is firmer than the evidence.",
+      "evidence": [
+        "'one-tailed'",
+        "'insignificant in the two industry-fixed-effect specifications'",
+        "'we do not test the between-segment difference directly'"
+      ],
+      "best_fix": "Soften to 'contemporaneously and on one-tailed tests, the scripted presentation is associated...' (the abstract already does this; align the section prose).",
+      "fix_evidence": [
+        "abstract uses the hedged form"
+      ],
+      "confidence": "low",
+      "refutation": "The abstract and the closing of Sec 4.2 do hedge ('contemporaneous only', 'supportive reading, not proof')."
+    },
+    {
+      "kind": "finding",
+      "referee": "methodology",
+      "panel": "A",
+      "aspect": "no alternative-dictionary / placebo word-list robustness for the core DV",
+      "location": "Sec 2.3 measure + Conclusion limitation (l.470)",
+      "severity": "low",
+      "problem": "The entire dependent variable rests on the single Loughran-McDonald uncertainty list. The conclusion concedes the word-count abstracts from context, but nothing probes sensitivity to an alternative uncertainty dictionary or a placebo (non-uncertainty) word list, which would show the run-up is keyed to uncertainty specifically and not generic word-share dynamics.",
+      "evidence": [
+        "'Uncertainty is captured by applying a finance-specific word list'"
+      ],
+      "best_fix": "Add a robustness using an alternative uncertainty lexicon and a placebo word list; show the run-up appears for uncertainty and not the placebo.",
+      "fix_evidence": [
+        "single-dictionary dependence"
+      ],
+      "confidence": "medium",
+      "refutation": "LM is the field-standard list; the residualization nets out persistent style, limiting generic-vocabulary artifacts."
     },
     {
       "kind": "finding",
@@ -617,6 +1826,45 @@
       ],
       "confidence": "medium",
       "refutation": "AUDIT-AIDS is a non-compiling comment, not thesis body; prose-vs-actual-cell all match, so PDF is correct"
+    },
+    {
+      "kind": "finding",
+      "referee": "numbers",
+      "panel": "A",
+      "aspect": "deal-rate 2.84% not verifiable from a table cell",
+      "location": "Sec 4.5 line 448 / Table 5.19",
+      "severity": "low",
+      "problem": "'deal rate of 2.84%' is the DV mean for Logit A but not shown in the table; cannot cross-check against a cell",
+      "evidence": [
+        "'deal rate of 2.84%'",
+        "Table 5.19 has no DV-mean row"
+      ],
+      "best_fix": "none needed if correct; could add DV-mean to table note",
+      "fix_evidence": [
+        "0.0284*40,004~1,136 deals plausible"
+      ],
+      "confidence": "low",
+      "refutation": "likely correct internal stat; just not independently checkable from shown cells"
+    },
+    {
+      "kind": "finding",
+      "referee": "numbers",
+      "panel": "A",
+      "aspect": "mixed one/two-tailed convention for SAME PreAnnounceQtr indicator across tables",
+      "location": "Table 5.2 vs Table 5.11",
+      "severity": "low",
+      "problem": "identical pre-announce indicator gets *** two-tailed in 5.2 (0.0461,t=2.68) but *** one-tailed in 5.11 (0.0413,t=2.33 -> two-tailed only **); reader cannot tell standard differs",
+      "evidence": [
+        "5.2 note two-tailed",
+        "5.11 note one-tailed for directional",
+        "0.0413/0.0177=2.33 two-tailed p=.0196"
+      ],
+      "best_fix": "harmonize focal-test tail convention or label each focal coef's tail inline",
+      "fix_evidence": [
+        "line 331 discloses 'in places...one-tailed'"
+      ],
+      "confidence": "high",
+      "refutation": "explicitly disclosed at line 331; both stars are individually correct under their stated tail; structural not an arithmetic error"
     },
     {
       "kind": "finding",
@@ -641,6 +1889,67 @@
       "kind": "finding",
       "referee": "style",
       "panel": "A",
+      "aspect": "raw code variable names in rendered tables",
+      "location": "Table 5.1 (L589,593,597,606) and reg tables (L912,935,969,992)",
+      "severity": "low",
+      "problem": "Reader-facing table labels carry machine column names with underscores and code suffixes (US\\_EPU\\_log, GEPU\\_log, CashRatio\\_lag, BGTLevel\\_Spread, Lagged\\_DV, sCFO, EarnVol, FirmMat) rather than the polished prose notation (US-EPU, GEPU, lagged DV)",
+      "evidence": [
+        "593 US\\_EPU\\_log",
+        "969 GEPU\\_log",
+        "935 Lagged\\_DV",
+        "597 BGTLevel\\_Spread"
+      ],
+      "best_fix": "Map raw column names to display labels matching prose (e.g. US-EPU, GEPU, Cash ratio (t-1))",
+      "fix_evidence": [
+        "prose L339 'US-EPU','GEPU'"
+      ],
+      "confidence": "medium",
+      "refutation": "Some readers accept verbatim variable codes in tables; underscores are escaped so they render legibly"
+    },
+    {
+      "kind": "finding",
+      "referee": "style",
+      "panel": "A",
+      "aspect": "table layout/spacing consistency across pipelines",
+      "location": "Tables 5.15-5.18 vs 5.2-5.14",
+      "severity": "low",
+      "problem": "Two table generators produce different micro-layout: bible tables order rows [FE; then Firms/N] with notes \\vspace{8pt}; robustness tables order [Firms/N; then FE] with notes \\vspace{2pt}",
+      "evidence": [
+        "660-664 FE-then-N, vspace8pt",
+        "1350-1353 N-then-FE, vspace2pt"
+      ],
+      "best_fix": "Unify row order (FE block then counts) and notes vspace across all tables",
+      "fix_evidence": [
+        "727 vspace{8pt}",
+        "1355 vspace{2pt}"
+      ],
+      "confidence": "medium",
+      "refutation": "Reader tolerance for minor layout drift is high; both orders are legible"
+    },
+    {
+      "kind": "finding",
+      "referee": "style",
+      "panel": "A",
+      "aspect": "cited-author surname diacritic stability",
+      "location": "Table 5.21 caption L1599 & notes L1643 vs References L497-498 and all in-text cites",
+      "severity": "low",
+      "problem": "Surname rendered both 'Dzielin\\'ski' (accented, Table 5.21 caption + notes) and 'Dzielinski' (no accent, References entry + every \\citet{dwz} in-text render). Same author, two spellings in the rendered PDF",
+      "evidence": [
+        "1599 Dzielin\\'ski et al.",
+        "498 bib 'Dzielinski, M.'",
+        "35 cite label Dzielinski"
+      ],
+      "best_fix": "Pick the correct diacritic and apply to bib \\bibitem label + entry so in-text and table agree",
+      "fix_evidence": [
+        "bibitem[Dzielinski et~al.(2021)] drives in-text"
+      ],
+      "confidence": "high",
+      "refutation": "If the accented form is correct the bib is the error, not the table; either way they must match"
+    },
+    {
+      "kind": "finding",
+      "referee": "style",
+      "panel": "A",
       "aspect": "parenthetical statistic format (SE vs t)",
       "location": "Table 5.21 (L1611 etc.) vs all other reg tables",
       "severity": "low",
@@ -655,6 +1964,26 @@
       ],
       "confidence": "high",
       "refutation": "Disclosed in the table's own notes and matches the replicated DWZ source's reporting; numerically unmistakable as t-stats"
+    },
+    {
+      "kind": "finding",
+      "referee": "style",
+      "panel": "A",
+      "aspect": "math subscript index style",
+      "location": "Appendix I/II (L1664,1665,1686,1697) vs Sec 2.4 equations (L317-327)",
+      "severity": "low",
+      "problem": "Firm-quarter subscript written without comma in the model equations ($Y_{it}$,$X_{it}$,$\\varepsilon_{it}$) but with a comma in the appendices ($X_{i,t}$, CashScrutiny$_{i,t}$, HighCashScrutiny$_{i,t}$)",
+      "evidence": [
+        "323 X_{it}",
+        "1686 X_{i,t}",
+        "1664 _{i,t}"
+      ],
+      "best_fix": "Standardize to one subscript style (the equation block's $_{it}$ is the majority)",
+      "fix_evidence": [
+        "317/323/325/327 all _{it}"
+      ],
+      "confidence": "high",
+      "refutation": "$i,t$ vs $it$ is universally understood; purely cosmetic"
     },
     {
       "kind": "finding",
@@ -683,7 +2012,7 @@
       "aspect": "signed-zero artifact",
       "location": "prose L362,L410; Table 5.21 L1621; tables 5.7/5.8 adj R2 L944/L1001",
       "severity": "low",
-      "problem": "Negative zero printed: '$-0.0000$' (residual mean L362; scrutiny effect L410), '$-0.000$' (StockRet L1621), '-0.000' (Adj.~R^2 L944/1001) -- a rounding/formatting artifact of a near-zero or slightly-negative value",
+      "problem": "Negative zero printed: '$-0.0000$' (residual mean L362; scrutiny effect L410), '$-0.000$' (StockRet L1621), '-0.000' (Adj. R^2 L944/1001) -- a rounding/formatting artifact of a near-zero or slightly-negative value",
       "evidence": [
         "362 mean $-0.0000$",
         "944 Adj R2 -0.000"
@@ -694,9 +2023,456 @@
       ],
       "confidence": "low",
       "refutation": "$-0.0000$ faithfully signals a tiny negative that rounds to zero; negative adj-R2 is a real computed value, not an error"
+    },
+    {
+      "kind": "finding",
+      "referee": "style",
+      "panel": "A",
+      "aspect": "Tobin's Q typography",
+      "location": "L358 vs L1700 vs table rows (e.g. L649)",
+      "severity": "low",
+      "problem": "Same construct rendered three ways: 'Tobin's~Q' (upright Q, prose L358), 'Tobin's $Q$' (math-italic Q, appendix L1700), and 'TobinsQ' (bare, table rows). A concrete instance of the variable-typography non-uniformity",
+      "evidence": [
+        "358 Tobin's~Q",
+        "1700 Tobin's $Q$",
+        "649 TobinsQ"
+      ],
+      "best_fix": "Pick one (e.g. 'Tobin's $Q$' in prose+appendix, label 'Tobin's Q' in tables) and apply uniformly",
+      "fix_evidence": [
+        "part of the broader typography finding"
+      ],
+      "confidence": "high",
+      "refutation": "Upright vs italic Q is subtle; many readers won't notice"
+    },
+    {
+      "kind": "finding",
+      "referee": "style",
+      "panel": "A",
+      "aspect": "round-trip compound hyphenation",
+      "location": "L270,L428 vs L384,L386,L432,L450",
+      "severity": "low",
+      "problem": "'round-trip' hyphenated as a modifier (L270 'round-trip contrast', L428 'round-trip contrasts') but 'round trip' two words as a noun (L384,386,432,450)",
+      "evidence": [
+        "270 round-trip",
+        "384 round trip"
+      ],
+      "best_fix": "If desired fix one form; otherwise leave -- current usage already follows the modifier-hyphenation rule",
+      "fix_evidence": [
+        "adjective vs noun split"
+      ],
+      "confidence": "low",
+      "refutation": "This is standard correct English: hyphenate the compound modifier, not the standalone noun -- likely not an error at all"
     }
   ],
   "clean_bills": [
+    {
+      "kind": "clean_bill",
+      "referee": "citations",
+      "aspect": "citation-resolution",
+      "why": "Every \\citet/\\citep/\\citeauthor in the body resolves to one of the 22 bibitems, including multi-key cites.",
+      "evidence": [
+        "\\citep{opler1999, bates2009}",
+        "\\citep{rule10b5, basic1988}",
+        "\\citeauthor{bgt2018}/\\citeauthor{dwz}"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "citations",
+      "aspect": "no-orphan-bibitems",
+      "why": "22 cite keys map 1:1 to 22 bibitems; every bibitem is cited at least once, no dangling \\cite and no unused entry.",
+      "evidence": [
+        "22 keys in header map",
+        "22 \\bibitem entries",
+        "each key used in body"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "citations",
+      "aspect": "author-year-label-consistency",
+      "why": "Each header-map Author(Year) matches its bibitem label exactly, incl. et al. vs and forms by author count.",
+      "evidence": [
+        "Keown and Pinkerton(1981) 2 authors",
+        "Opler et al.(1999) 4 authors",
+        "Davis(2016) sole author"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "citations",
+      "aspect": "epu-vs-gepu-attribution",
+      "why": "The classic mis-attribution is avoided: US-EPU credited to Baker et al.(2016) newspaper index, GEPU to Davis(2016) solo NBER index -- correctly split.",
+      "evidence": [
+        "'US-EPU... index of \\citet{baker2016}'",
+        "'GEPU, the index of \\citet{davis2016}'"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "citations",
+      "aspect": "table-ref-resolution",
+      "why": "All 21 \\ref{tab:...} in prose resolve to a defined \\label; header map covers all 21 and each is referenced.",
+      "evidence": [
+        "tab:dwz_replication ref at Sec 2.3",
+        "21 labels = 21 header entries"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "citations",
+      "aspect": "deferred-method-citation",
+      "why": "Intro's 'a decomposition developed in the earnings-call language literature' is uncited at point of use but explicitly deferred to Section 2.3, where \\citet{dwz} is cited repeatedly -- deferral, not an uncited borrow.",
+      "evidence": [
+        "intro: 'developed in the earnings-call language literature'",
+        "Sec 2.3 cites dwz for the decomposition"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "citations",
+      "aspect": "dwz-revised-year-consistency",
+      "why": "dwz cited consistently as 2021 throughout; bibitem reconciles the working-paper year as '2017, revised 2021', so the 2021 cite-year is sourced.",
+      "evidence": [
+        "label [Dzielinski et~al.(2021)]",
+        "entry: '(2017, revised 2021)'"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "coherence",
+      "aspect": "every abstract claim delivered in body",
+      "why": "all 9 abstract claims (data 88,205/1,884, residual, run-up, round-trip, cash-concentration, scrutiny rule-out, bid-ask, overall) map to a body section/table",
+      "evidence": [
+        "88,205 = Table 5.1",
+        "run-up 0.0461***",
+        "Wald 0.0983 p=.039"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "coherence",
+      "aspect": "conclusion summarizes only what is shown",
+      "why": "each conclusion claim traces to a results section; no unsupported result; limitations match disclosed threats",
+      "evidence": [
+        "round-trip/cash-conc/scrutiny/bidask all in body",
+        "limits: correlational, war-chest open"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "coherence",
+      "aspect": "hypothesis->design->result mapping",
+      "why": "2.4 explicitly maps MA1->H1, MA2->H1b, MA3->H1a and 3.2/3.3/3.4 deliver in that order",
+      "evidence": [
+        "'MA1 tests H1; MA2 H1b; MA3 H1a'",
+        "3.2/3.3/3.4 follow"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "coherence",
+      "aspect": "headline numbers consistent across sections",
+      "why": "run-up ~0.046 (0.0461/0.0473/0.0459), two-tailed p=.0074, Wald 0.0983 p=.039, swing 0.0723 agree between prose and Tables 5.2-5.5 and recur consistently",
+      "evidence": [
+        "0.0461/0.0473/0.0459",
+        "p=.0074 in 2.4 and 3.2",
+        "0.0983 in 3.4 and 4.5"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "coherence",
+      "aspect": "register/voice consistency",
+      "why": "correlational/descriptive/no-causal/supportive-not-definitive hedging holds from intro through every result section to the conclusion, no lapse into causal claims",
+      "evidence": [
+        "'correlational and within-firm'",
+        "each MA ends 'not a cause'",
+        "conclusion 'no causal channel'"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "coherence",
+      "aspect": "two-clocks narrative thread",
+      "why": "information-clock vs transaction-clock contrast set up in H1b (2.2), executed in MA2 (3.3), echoed in abstract/intro/conclusion with consistent direction",
+      "evidence": [
+        "2.2 'information/transaction clock'",
+        "3.3 same",
+        "conclusion 'persists to completion'"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "coherence",
+      "aspect": "roadmap matches Sec 3/4 content",
+      "why": "intro roadmap's Sec 4 listing (scrutiny, bid-ask, three robustness checks) matches 4.1-4.5 exactly; three main analyses match 3.2-3.4",
+      "evidence": [
+        "roadmap S4 = scrutiny+bidask+3 robustness",
+        "4.1-4.5 match"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "coherence",
+      "aspect": "robustness checks tie back consistently",
+      "why": "4.3/4.4/4.5 each restate the main coefficient tested and report matching numbers",
+      "evidence": [
+        "4.3 0.0687 vs 0.0723",
+        "4.4 0.0305 vs 0.0216",
+        "4.5 0.0391/0.1056"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "coherence",
+      "aspect": "no cross-section contradiction in core results thread",
+      "why": "cash-persistence, stock-arm null, residual-resolves-at-announcement, scrutiny-survives are stated identically wherever they recur; no sign flip or magnitude conflict",
+      "evidence": [
+        "stock arm null everywhere",
+        "cash falls only at completion"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "completeness",
+      "aspect": "hypothesis->test->verdict mapping",
+      "why": "H1/H1a/H1b each stated as a falsifiable quote, explicitly mapped to MA1/MA3/MA2, tested, and given a verdict; none dropped",
+      "evidence": [
+        "MA1 tests H1; MA2 tests H1b; MA3 tests H1a",
+        "H1 supported p=.0074; H1b round-trip; H1a 'supported but fragile'"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "completeness",
+      "aspect": "roadmap delivery (Ch.3 three analyses, Ch.4 five subsections)",
+      "why": "Intro roadmap items all delivered: 3.2/3.3/3.4 run-up/timing/cash-spec; 4.1-4.5 scrutiny/bid-ask/withdrawal/static-FE/all-deals",
+      "evidence": [
+        "roadmap list matches section headings 1:1"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "completeness",
+      "aspect": "'three checks' and 'three steps' promises",
+      "why": "Sec 2.5 'three things' (construction Tab5.21, convergent Tab5.6-5.8, scrutiny side-test 4.1) and Sec 4.1 'three steps' (validity/null/joint, Tab5.9-5.11) all delivered",
+      "evidence": [
+        "'We ask three things'",
+        "'We rule it out in three steps'"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "completeness",
+      "aspect": "table cross-references (all 21)",
+      "why": "Every \ref{tab:*} resolves to an existing table and every one of the 21 tables is cited at least once; no orphan/dangling table refs",
+      "evidence": [
+        "21 labels, 21 tabulars, each referenced"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "completeness",
+      "aspect": "bibliography completeness",
+      "why": "All 22 \\citet keys have matching \\bibitem entries and all 22 bib entries are cited; no undefined citations, no uncited entries",
+      "evidence": [
+        "22 cite keys == 22 bibitems"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "completeness",
+      "aspect": "prose number<->table cell consistency",
+      "why": "Spot-checked every headline number in 3.2-4.5 (0.0461,0.0473,0.0723,0.0983,0.1056,0.0391,0.0613,0.7478,etc.) against the cited table cells; all match including N and SE",
+      "evidence": [
+        "0.0983** in Tab5.5",
+        "0.1056** in Tab5.18 col1",
+        "0.0391*** Tab5.15"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "completeness",
+      "aspect": "FOCAL construct definitions before first use",
+      "why": "All FOCAL constructs defined at/before first quantitative use: UncResCEO/UncAnsCEO/UncPreCEO/UncQue/NegCall (2.3), PreAnnounceQtr/e (2.2), CashScrutiny/HighCashScrutiny (2.5/AppI), MA1-3 (2.4), PRisk/US-EPU/GEPU. Scoped to focal constructs; non-focal controls left undefined are logged separately (FirmMat/EarnVol, decomposition controls, Tab5.12 microstructure controls, FF12)",
+      "evidence": [
+        "decomposition eq defines residual",
+        "CashScrutiny defined in 2.5 + Appendix I"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "honesty",
+      "aspect": "stock arm as noisy flat null (floor #6)",
+      "why": "Stock arm consistently 'flat, noisy nulls' / 'imprecise'; never 'suppressed' or 'dampened'.",
+      "evidence": [
+        "flat, noisy nulls",
+        "imprecise negative stock estimate",
+        "noisy stock null"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "honesty",
+      "aspect": "cash as by-product, not war chest (floor #7)",
+      "why": "Every 'war chest' mention is negated; cash read 'mechanically ... by-product of retained free cash flow rather than purposeful saving toward a war chest'.",
+      "evidence": [
+        "by-product of retained free cash flow",
+        "not established by these tests",
+        "remains unestablished"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "honesty",
+      "aspect": "novelty hedged, no 'first' (floor #8)",
+      "why": "Positioning uses 'to our knowledge no prior work'; never claims to be 'first'.",
+      "evidence": [
+        "To our knowledge no prior work",
+        "empty cell is where this paper sits"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "honesty",
+      "aspect": "mechanism open/unestablished (floor #4)",
+      "why": "Mechanism repeatedly 'left open' / 'establishes no mechanism'; war-chest channel 'not established'.",
+      "evidence": [
+        "mechanism remains open",
+        "We leave that mechanism open",
+        "establishes no mechanism"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "honesty",
+      "aspect": "supportive-not-definitive register (floor #5)",
+      "why": "'supportive but not definitive' recurs; mandated phrase 'We interpret, and we do not detect' present verbatim.",
+      "evidence": [
+        "We interpret, and we do not detect",
+        "supportive but not definitive",
+        "supported but fragile"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "honesty",
+      "aspect": "every analytic section carries a correlational disclaimer (floor #1/#2 at section level)",
+      "why": "Verified each of Sec 3.2-4.5 and the Conclusion states 'correlational / does not identify a cause'; the lone slip is the gloss verb in Finding 1, not a missing disclaimer.",
+      "evidence": [
+        "correlational design and does not by itself identify",
+        "The design stays correlational",
+        "supports no causal identification"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "honesty",
+      "aspect": "no positive 'proves/establishes/detects/definitive'",
+      "why": "All such words appear only negated ('establishes no mechanism','we do not detect','not as proof','not definitive'); replication uses 'confirm reproduction', not proof of the hypothesis.",
+      "evidence": [
+        "we do not detect",
+        "establishes no mechanism",
+        "not as proof"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "honesty",
+      "aspect": "'predicts' in logit tables is predictive not causal",
+      "why": "Logit A/B titles use 'predicts' (forecasting/associational); body reports 'is associated with', no causal claim.",
+      "evidence": [
+        "Predicts a Deal Next Quarter",
+        "is associated with a deal being announced"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "honesty",
+      "aspect": "substantive cash claim hedged to concentration (floor #3, substance)",
+      "why": "Substantive claims say 'concentration, not strict specificity, and with no cause asserted'; residual tension is only the nominal 'cash-specificity' label (Finding 4).",
+      "evidence": [
+        "concentration, not strict specificity",
+        "we keep our wording at concentrated rather than specific"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "honesty",
+      "aspect": "conclusion claims no policy/causal payoff",
+      "why": "'We draw no prescription ... from a correlational pattern that identifies no causal channel; the contribution is to characterize a regularity.'",
+      "evidence": [
+        "We draw no prescription",
+        "characterize a regularity, not to recommend acting"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "honesty",
+      "aspect": "two observationally-equivalent readings kept open",
+      "why": "Compliance-constrained vs strategic-silence source 'remains observationally equivalent' in abstract, intro, framework, and conclusion; no claim to separate them.",
+      "evidence": [
+        "remains observationally equivalent",
+        "claim no identification, and leave the underlying mechanism open"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "methodology",
+      "aspect": "internal numerical consistency of reported statistics",
+      "why": "Spot-checks of t-ratios/p-values reconcile exactly (0.0461/0.0172->p=.0074; Wald 0.0983/0.0476->z=2.07,p=.039; 0.1056/0.0423->z=2.50,p=.013) and SD-fraction figures match (15.3/15.7/32.7%).",
+      "evidence": [
+        "0.0983/0.0476=2.07",
+        "0.0461/0.3010=15.3%"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "methodology",
+      "aspect": "causal-inference discipline / hedging",
+      "why": "Every causal door is explicitly closed (within-firm correlational, no parallel-trends, no mechanism, observational equivalence of compliance vs strategic silence, 'concentration not specificity'); if anything over-hedged.",
+      "evidence": [
+        "'design supports no causal identification and establishes no mechanism'"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "methodology",
+      "aspect": "scrutiny rule-out honesty (underpowered, not equivalence)",
+      "why": "Explicitly labels it a failure-to-find not a powered equivalence test, reports the interaction CI [-0.027,+0.016] that does not exclude meaningful effects, and notes 89% of calls draw no scrutiny.",
+      "evidence": [
+        "'underpowered failure to find, not a powered equivalence test'",
+        "interaction CI quoted"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "methodology",
+      "aspect": "sample-selection / five-call filter disclosure",
+      "why": "The five-call residual-feasibility filter and its skew toward larger, better-covered firms are disclosed as an external-validity threat in Sec 2.4, Sec 3.1, and the Conclusion.",
+      "evidence": [
+        "'skews toward larger, better-covered firms'"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "methodology",
+      "aspect": "DWZ replication transparency",
+      "why": "Replication discloses sample differences (2002-18 vs 2003-15), standardized-vs-raw control caveat, StockRet sign flip and MarketRet significance gap, and reconciles R^2 (0.369 vs ~0.364) openly via daggered/double-daggered notes.",
+      "evidence": [
+        "'StockRet flips sign and MarketRet matches in sign but is significant in the original only'"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "methodology",
+      "aspect": "dynamic-panel (Nickell) bias handled",
+      "why": "Partial-adjustment lag is justified (rho~0.78) and a static-FE robustness (Table 5.14) drops the lag entirely, showing the cash timing pattern (no fall at announcement, fall at completion) is invariant to the dynamic term.",
+      "evidence": [
+        "'carries no lagged dependent variable... carries no dynamic-panel bias'"
+      ]
+    },
     {
       "kind": "clean_bill",
       "referee": "numbers",
@@ -1024,6 +2800,101 @@
     },
     {
       "kind": "clean_bill",
+      "referee": "numbers",
+      "aspect": "Table 5.21 DWZ fit row",
+      "why": "Baseline R2 0.369 matches prose 'our total R^2 0.369'; DWZ 0.0537 incremental+0.31 base~0.364~'0.36 in total'; Baseline obs 44,900 = summary-stats UncResCEO N",
+      "evidence": [
+        "R2 0.369",
+        "0.31+0.0537=0.364",
+        "obs 44,900"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "numbers",
+      "aspect": "DWZ table stars internally consistent with t-stats",
+      "why": "MarketRet DWZ -0.038** t=-2.52 (p=.012); SurpDec 0.001* t=1.73 (p=.084); StockRet -0.000 t=-1.59 ns; all two-tailed consistent",
+      "evidence": [
+        "t=2.52->** t=1.73->*"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "numbers",
+      "aspect": "Appendix I word-list counts",
+      "why": "Cash level 20 forms, Liquidity 5 forms, Excluded 17 forms all count correctly",
+      "evidence": [
+        "counted 20/5/17"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "numbers",
+      "aspect": "cross-sample N coherence",
+      "why": "UncResCEO N 44,900 (5.1) = DWZ Baseline obs (5.21); call panel 88,205 = PreAnnounceQtr/EPU N; cash panel 2,232 firms = Table 5.2 col1",
+      "evidence": [
+        "44,900 ; 88,205 ; 2,232"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "numbers",
+      "aspect": "bold<->significance internal sanity across tables",
+      "why": "spot-checked ~25 cells (5.2 ROA/lnAssets/sCFO, 5.12, logits): bold iff has stars iff t exceeds threshold; no mismatches",
+      "evidence": [
+        "ROA stock 0.0075* t=1.83",
+        "sCFO 0.1180*** t=8.4"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "numbers",
+      "aspect": "sign/direction words match coefficient signs",
+      "why": "every 'rises/elevated/positively associated' has positive coef; every 'falls/declines' is a positive drop; nulls all unbold",
+      "evidence": [
+        "0.0461 elevated",
+        "GAP-POST 0.0210 declines"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "numbers",
+      "aspect": "Wald SE consistency (cash-spec tables)",
+      "why": "first-deal Wald SE 0.0476~sqrt(0.0185^2+0.0436^2)=0.0474; all-deals 0.0423~sqrt(0.0180^2+0.0385^2)=0.0425; col2 0.0071, col3 0.0055 reconcile (near-independent arms)",
+      "evidence": [
+        "sqrt(.0185^2+.0436^2)=.0474"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "numbers",
+      "aspect": "bin-drop SE consistency (event studies)",
+      "why": "PRE1-GAP drop SE 0.0225<sqrt(0.0178^2+0.0187^2)=0.0258 reflecting positive within-regression covariance; PRE1-POST 0.0190<0.0220 same; internally coherent",
+      "evidence": [
+        "0.0225<0.0258 covariance reduces"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "numbers",
+      "aspect": "Table 5.1 monotonicity + mean-in-range ALL 26 rows",
+      "why": "every row Min<=P25<=Median<=P75<=Max and Mean within [Min,Max]; skew signs sane (PRisk/TobinsQ/EarnVol/sCFO right; ROA/FirmMat/lnAssets left tails); FirmMat Min -317.57 and ROA Min -3.98 consistent with mean<median",
+      "evidence": [
+        "all rows 588-617 ordered",
+        "UncResCEO -1.51..1.78 mean ~0"
+      ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "numbers",
+      "aspect": "cash persistence rho~0.78 (line 331)",
+      "why": "partial-adjustment lag coefs across tables 0.7547/0.7554/0.7596/0.7778/0.7825/0.7957/0.7981/0.7990/0.8013 center ~0.78",
+      "evidence": [
+        "lags span 0.755-0.801"
+      ]
+    },
+    {
+      "kind": "clean_bill",
       "referee": "style",
       "aspect": "regression-table SE / significance / bold conventions",
       "why": "Every reg table puts SE in parentheses under the coefficient, bolds significant coefficients, and uses an identical star legend $^{*}p<.10$,$^{**}p<.05$,$^{***}p<.01$ with no-leading-zero, plus explicit one-/two-tailed disclosure",
@@ -1048,7 +2919,7 @@
       "aspect": "p-value no-leading-zero convention (dominant)",
       "why": "All p-values use no-leading-zero form ($p<.01$,$p=.039$,$p=.0011$) except the single flagged anomaly at L331; star legends consistently $^{*}p<.10$ etc.",
       "evidence": [
-        "grep: only L331 has p =0.0",
+        "grep: only L331 has 'p =0.0'",
         "339/396/448/452 p=.0 forms"
       ]
     },
@@ -1061,7 +2932,53 @@
         "319 'residual estimated in a first step ... second step'",
         "438 'small-sample bias ... within-firm transformation'"
       ]
+    },
+    {
+      "kind": "clean_bill",
+      "referee": "style",
+      "aspect": "compound-term hyphenation uniformity",
+      "why": "run-up, pre-announcement, year-quarter, bid-ask, first-deal, war-chest are hyphenated consistently in all rendered prose; every unhyphenated 'runup' is inside the tab:rob_runup label, not text",
+      "evidence": [
+        "grep: runup only at 20/75/448/1323, all in labels/comments",
+        "run-up hyphenated 30+ times"
+      ]
     }
   ],
-  "sweeps": []
+  "sweeps": [
+    {
+      "kind": "sweep",
+      "referee": "citations",
+      "completeness": "Verified all \\citet/\\citep/\\citeauthor resolve (22 keys<->22 bibitems, 1:1, no orphans/danglers), header-map vs bibitem author-year/et-al consistency, table \\ref resolution, and EPU/GEPU split. NOT audited (out of citation dimension; flag to other referees): external ACCURACY of every attributed claim (impossible from this self-contained file -- see ~24 external-attribution checklist items); hardcoded section cross-refs (Section 2.3/4.1/2.5 etc.) and Appendix I/II name-refs are typed text not \\ref, so their numbering correctness is a consistency-referee matter; the prose 'two-way clustering' claim vs firm-only clustering in table notes (Finding F) is a methods-referee matter; DWZ R2 wording 0.36 vs 0.364 and other in-text numbers belong to the numbers referee. Residual risk: a \\cite buried inside an adjustbox/longtable cell I read as data, and whether natbib would actually compile the non-alphabetical manual bibitem labels without warning (cannot run LaTeX here)."
+    },
+    {
+      "kind": "sweep",
+      "referee": "coherence",
+      "completeness": "Verified the full arc (abstract<->body<->conclusion), the H1/H1a/H1b -> MA1/MA2/MA3 -> results mapping, the two-clocks thread, register consistency, headline-number consistency, and roadmap-vs-structure; no high-severity contradiction exists. Residual risk: (1) paragraph-level transitions inside the dense theory paragraphs (2.1, 2.3, 2.5) were spot-checked, not exhaustively traced sentence-by-sentence, so a subtle non-sequitur there could remain; (2) numeric prose-vs-table agreement was checked only for narrative-bearing headline cells, leaving exhaustive cell-by-cell verification to the numbers referee; (3) table-placement/numbering and Section-vs-Chapter labeling straddle the layout referee remit and are recorded here as cohesion items; (4) bibliography completeness (each citet has a bibitem) was assumed from the AUDIT-AIDS cite map, not re-derived."
+    },
+    {
+      "kind": "sweep",
+      "referee": "completeness",
+      "completeness": "Source-only audit (no compile): could NOT verify rendered TOC / List-of-Tables ordering, page numbering, or that table float placement matches the 5.1-5.21 numbering a reader sees -- assumed from labels+AUDIT-AIDS. Numeric DATA integrity (e.g. near-identical 5.7/5.8 control coeffs, whether reported SEs/p-values are arithmetically correct) is out-of-dimension and left to the stats/numbers referee. I verified hypothesis->test->verdict (H1/H1a/H1b all stated, tested, judged; no reader-visible H dropped), roadmap delivery (Ch3 three analyses, Ch4 five subsections, 'three checks'/'three steps'), all 21 table refs resolve and are cited, 22=22 bibliography, and spot-checked prose<->cell numbers across 3.2-4.5. Residual risk: undefined non-focal controls (FirmMat/EarnVol/StockPrice/Turnover/DailyVola/AbsSurpDec/FF12) and the false 'all variables defined'/'catalogued in the Appendix' promises are the main completeness gaps; a subtle cross-ref I may have under-weighted is whether every 'Section N' truly maps to the intended chapter in every instance."
+    },
+    {
+      "kind": "sweep",
+      "referee": "honesty",
+      "completeness": "Covered all 8 locked floor items across every section + tables/captions/notes. Possible residual gaps: (1) I judged tail-convention honesty mostly via the AUDIT-AIDS notes and spot t-stat recomputation, not a full recompute of every starred coefficient's one- vs two-tailed status, so other one-tailed-dependent stars in the validity tables (5.6-5.9, 5.12) may carry the same under-flag as Finding 6; (2) I did not independently re-derive any reported magnitude/SD-share beyond a few headline checks, so an arithmetic overclaim hidden inside prose could remain (out of my honesty charter but adjacent); (3) 'tracks'/'anticipatory trace of an acquisition' is the central interpretive verb -- I judged it correlational and within bounds, but a maximally hostile referee could read directional attribution into it; (4) front-matter (title 'Cash Got Your Tongue?', keywords, JEL) judged non-overclaiming. No high-severity honesty breach found; the floor holds, with two medium de-hedges (causal 'raises'; flat 'unmanaged') and the 'rule out' framing as the main exposures."
+    },
+    {
+      "kind": "sweep",
+      "referee": "methodology",
+      "completeness": "Read all 1714 lines (prose + 21 tables + bib + appendices). Verified focal t/p/SD arithmetic (reconciles), causal-hedging discipline (sound, even over-hedged), DWZ replication and dynamic-panel handling (clean). Top threats: (1) generated-regressand SEs asserted-not-corrected under load-bearing significance; (2) 'placebo' stock arm is a tone-managed comparison whose negative beta_s inflates the cash-specificity Wald. Plus undefined variables (FirmMat/EarnVol/HighCash/bid-ask extended controls), unreported cash-vs-stock deal counts, undisclosed bid-ask DV scaling, a tailedness footnote/prose contradiction, and Table 5.12 oversize-in-portrait. NOT independently checkable from this file alone: actual first-stage regression code, whether the bootstrap was ever run, true DV units, winsorization in the data pipeline, and every cell of the 12-col bid-ask table (verified only the rows quoted in prose). Did not exhaustively re-derive every control coefficient in all 21 tables; focused on focal estimands and cross-references."
+    },
+    {
+      "kind": "sweep",
+      "referee": "numbers",
+      "completeness": "Cross-checked every prose number vs its exact cell in all 21 tables; recomputed all economic effects (coef/SD, %-of-mean), all bin drops, all Wald=beta_c-beta_s and their SEs, derived p-values from t-stats, and Table 5.1 monotonicity/mean-in-range for all 26 rows. Could NOT independently verify auxiliary stats absent from any cell: deal rate 2.84%, exact deal counts, the 25-trading-day BGT window, and the convergent-validity within-year co-movement claims. DWZ Table 5.21 reports t-stats not SEs, so I verified stars<->t but not coefficient magnitudes against the external source (external lookups barred). First-stage residualization coefficients beyond Table 5.21 are not shown. p-values use normal approx; exact clustered-t df could nudge borderline cases (none flipped). Sub-0.0001 prose/table gaps treated as rounding from unrounded inputs; raw data not available to confirm rounding direction. Front-matter TOC/List-of-Tables page numbers out of numeric charter and not resolvable. Worst issue found: line 368 mislabels two-tailed Table 5.2 as one-tailed (medium); no high-severity numeric error."
+    },
+    {
+      "kind": "sweep",
+      "referee": "style",
+      "completeness": "Audited from LaTeX source, not a compiled PDF, so rendered typography (upright vs italic; \\mathrm/\\mathit/\\textit/bare) was inferred from macros -- subtle visual artifacts (margin overflow, widows/orphans, italic-correction, caption line-breaks) are UNVERIFIED. Spot-checked but not exhaustively audited: number style (spelled-out 'fifteen percent' L372 vs numeric '15.3%' coexist by design), quotation-mark style (backtick-apostrophe singles, e.g. L289 'uncertainty' list), Oxford-comma usage, title-case of table captions and the H1/H1a/H1b hypothesis-label formatting, and hyphenation of non-/stock-for-stock/cash-to-assets compounds (looked uniform). Numeric-value correctness and ref/citet target accuracy belong to other referees. Strongest confirmed style issues: variable-name typography split (mathrm/mathit/textit/bare), construct-abbreviation drift in Tables 5.15-5.18 (UncR/UncRes, CshR/CashR), dash-style split (en vs em), p-value L331 leading-zero, SE 5dp prose vs 4dp tables, and 'Section N' refs to chapters."
+    }
+  ]
 }
