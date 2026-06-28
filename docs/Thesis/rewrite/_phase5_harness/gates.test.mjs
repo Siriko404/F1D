@@ -1,7 +1,7 @@
 // gates.test.mjs — unit-test the deterministic spine on synthetic §4.5-PARA1 prose
 // (throwaway test data, NOT thesis content). Proves: correct prose passes; each planted
 // violation is BLOCKED/FLAGGED by the right gate. Run: node gates.test.mjs
-import { runGates } from "./gates.mjs";
+import { runGates, gateHonesty } from "./gates.mjs";
 
 // §4.5-PARA1 real allowed set (from the locked ledger)
 const allowedTokens = ["+0.0033**","+0.0391***","-0.0348",".0008",".0011","0.0015","0.0026",
@@ -79,6 +79,13 @@ check("TABLE-REF loose mention (words between) -> not false-blocked", t3.pass);
 // 16. value with no known table -> skipped; multi-label value using 2nd -> passes
 const t4 = runGates({ ...tbase, prose: String.raw`The SE $0.0140$ (\ref{tab:empire_drop_matched}) is small, and under static FE the estimate is $0.0078^{***}$ (\ref{tab:empire_drop_staticfe}).` });
 check("TABLE-REF unknown-value skipped + multi-label 2nd -> passes", t4.pass);
+
+// ---- HONESTY negation-awareness (soft forbids OK only as a denial) ----
+check("HONESTY 'do not detect' (denial) -> allowed", gateHonesty("we interpret, we do not detect a deal").length === 0);
+check("HONESTY 'we detect' (positive) -> blocked", gateHonesty("we detect a clear deal signal").length > 0);
+check("HONESTY 'not strict specificity' (denial) -> allowed", gateHonesty("we read this as concentration, not strict specificity").length === 0);
+check("HONESTY 'shows strict specificity' (positive) -> blocked", gateHonesty("the cash effect shows strict specificity").length > 0);
+check("HONESTY 'suppressed' still hard-blocked", gateHonesty("the stock arm is suppressed").length > 0);
 
 console.log(`\n${"=".repeat(40)}\n${fail === 0 ? "ALL GATES WORK" : "GATES BROKEN"}: ${pass} pass, ${fail} fail`);
 process.exit(fail === 0 ? 0 : 1);

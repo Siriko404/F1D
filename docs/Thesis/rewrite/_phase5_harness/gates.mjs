@@ -66,11 +66,21 @@ export function gateNumberTable(prose, numberTables) {
 }
 
 // ---------- GATE 2: honesty-FORBID (register floor) ----------
-const FORBID = [/suppress/i, /dampen/i, /strict specificity/i, /\bwe are the first\b/i,
-                /\bto mask\b/i, /manipulat/i, /\bdetect/i, /\bin order to mask\b/i];
+// HARD = never acceptable in any form. SOFT = acceptable ONLY as a denial ("we do NOT detect",
+// "concentration, NOT strict specificity") -- the register locks require exactly those denials,
+// so block a SOFT word only when used as a positive claim (no negation in the ~22 chars before it).
+const HARD_FORBID = [/suppress/i, /dampen/i, /\bwe are the first\b/i, /\bto mask\b/i, /manipulat/i, /\bin order to mask\b/i];
+const SOFT_FORBID = [/\bdetect\w*/ig, /strict specificity/ig];
+const NEG_BEFORE = /\b(not|no|never|cannot|without|nor|rather than)\b|n't\b/i;
 export function gateHonesty(prose) {
   const blocks = [];
-  for (const re of FORBID) { const m = prose.match(re); if (m) blocks.push(`forbidden phrase "${m[0]}" (honesty floor)`); }
+  for (const re of HARD_FORBID) { const m = prose.match(re); if (m) blocks.push(`forbidden phrase "${m[0]}" (honesty floor)`); }
+  for (const re of SOFT_FORBID) {
+    for (const m of prose.matchAll(re)) {
+      const before = prose.slice(Math.max(0, m.index - 22), m.index);
+      if (!NEG_BEFORE.test(before)) blocks.push(`"${m[0]}" used as a positive claim (honesty floor; only the negated/denial form is allowed)`);
+    }
+  }
   return blocks;
 }
 
