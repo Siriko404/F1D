@@ -120,6 +120,24 @@ def fix_34(t):
     assert a in t, "fix_34 anchor (theta) not found"
     return t.replace(a, r"That restriction is the formal expression of the cash-versus-stock gap that hypothesis~H1a predicts.")
 
+# Issue H1 (Sina 2026-06-28; final-audit methodology HIGH): section 2.3 flagged the generated-regressand
+# two-step SE concern (Pagan 1984) but then ASSERTED, without running the bootstrap, that it "does not change
+# the descriptive readings we report" -- an unsupported claim a referee can press (the load-bearing run-up's
+# significance rides on those SEs). Fix = state it as an HONEST LIMITATION: the correction is not implemented,
+# the reported SEs are uncorrected, significance is approximate, and the reading rests on the pattern recurring
+# across designs (which the thesis already shows) rather than on any single threshold. Faithful to DWZ: the
+# preceding sentence (kept verbatim) notes DWZ themselves use the residual in their own two-step second step.
+# PROSE ONLY -- no number, no math, no coefficient moves; the bootstrap is NOT run (Sina chose the prose fix).
+def fix_23_se(t):
+    a = ("We flag the concern, together with the bootstrap that would address it, and note that it does not "
+         "change the descriptive readings we report.")
+    assert a in t, "fix_23_se anchor (SE no-change assertion) not found -- 2.3 prose changed"
+    return t.replace(a,
+        "We flag the concern, together with the bootstrap that would address it, but we do not implement that "
+        "correction here. The standard errors we report are therefore uncorrected, and the significance levels "
+        "that accompany them should be read as approximate rather than exact. For that reason we rest the "
+        "reading not on any single threshold but on the consistency of the pattern across our several designs.")
+
 # Issue 2 (Sina 2026-06-28): the prose states coefficients with significance STARS, which is non-standard.
 # Replace each star with a COMPACT p-threshold, dropped inside/after the standard error the prose already
 # gives -- matching its OWN style (it already reads "(standard error $0.0026$, $p=.0011$)"). (Sina saw a
@@ -207,6 +225,7 @@ def prose_of(sid):
     if sid == "2.5": body = augment_25(body)
     if sid == "2.1": body = fix_21(body)
     if sid == "3.4": body = fix_34(body)
+    if sid == "2.3": body = fix_23_se(body)    # Issue H1: SE no-change assertion -> honest limitation (PROSE ONLY)
     body = destars(body, sid)                  # Issue 2: significance stars -> compact p (PROSE ONLY)
     body = dehedge(body, sid)                  # Issue 1: thin redundant honesty-floor closers (PROSE; never math)
     return body
