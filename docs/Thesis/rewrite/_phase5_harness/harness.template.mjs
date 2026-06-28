@@ -103,14 +103,30 @@ async function writeSection(brief) {
   return { section: brief.section, status: 'WRITTEN', brief, merged, flags: g.flags };
 }
 
+// collect the verbatim source quotes for a section's theory props (the load-bearing honesty evidence)
+function quoteBlock(brief) {
+  const qs = [];
+  for (const pa of brief.paragraphs) for (const p of pa.props)
+    if (p.verification && p.verification.evidence_quotes)
+      qs.push(`PROP ${p.prop_id} claims: "${p.statement}"\nSOURCE (verbatim, from ${(p.verification.source && p.verification.source.title) || 'the cited paper'}; verdict ${p.verification.verdict}):\n${p.verification.evidence_quotes}`);
+  return qs.length ? `\nVERBATIM SOURCE SUPPORT (check each theory claim against its source; flag any claim that says MORE than the quote supports):\n${qs.join('\n\n')}\n` : '';
+}
+
 async function auditSection(prev) {
   if (prev.status !== 'WRITTEN') return prev;
   const { brief, merged } = prev;
-  // L3: 6 exclusive audit lanes, PROPOSE only
-  const audits = (await parallel(LANES.map(([key, body]) => () =>
-    agent(`${body}\n\nYou audit ONLY this lane; PROPOSE fixes, do not rewrite. If a paragraph is clean in your lane, emit nothing for it.\n\n${brmain(brief)}\n\nDRAFT UNDER AUDIT:\n${JSON.stringify(merged.paragraphs, null, 1)}`,
-      { label: `audit:${brief.section}:${key}`, phase: 'Audit', schema: AUDIT_SCHEMA }).then(a => ({ lane: key, issues: (a && a.issues) || [] }))
-  ))).filter(Boolean);
+  const draft = `DRAFT UNDER AUDIT:\n${JSON.stringify(merged.paragraphs, null, 1)}`;
+  const HONESTY = LANES[0][1];                 // lane-1 body
+  const OTHERS = LANES.slice(1);               // the other 5 lanes
+  // L3a: HONESTY sub-panel (3 agents, refute-by-default, WITH the verbatim source quotes) -- thesis-killer gets redundancy
+  const honestyTasks = [0, 1, 2].map(v => () =>
+    agent(`${HONESTY}\n\nREFUTE-BY-DEFAULT: treat every theory/result claim as OVER-stated until the prop+quote clearly support it; if uncertain, FLAG. You PROPOSE fixes, never rewrite.\n\n${brmain(brief)}\n${quoteBlock(brief)}\n${draft}`,
+      { label: `audit:${brief.section}:honesty${v + 1}`, phase: 'Audit', schema: AUDIT_SCHEMA }).then(a => ({ lane: 'honesty', issues: (a && a.issues) || [] })));
+  // L3b: the other 5 exclusive lanes, 1 agent each (PROPOSE only)
+  const otherTasks = OTHERS.map(([key, body]) => () =>
+    agent(`${body}\n\nYou audit ONLY this lane; PROPOSE fixes, do not rewrite. If a paragraph is clean in your lane, emit nothing for it.\n\n${brmain(brief)}\n${draft}`,
+      { label: `audit:${brief.section}:${key}`, phase: 'Audit', schema: AUDIT_SCHEMA }).then(a => ({ lane: key, issues: (a && a.issues) || [] })));
+  const audits = (await parallel([...honestyTasks, ...otherTasks])).filter(Boolean);
   const allIssues = audits.flatMap(a => a.issues.map(i => ({ ...i, lane: a.lane })));
   // L4: judge applies high-confidence fixes by MINIMAL edit, refute-by-default on honesty/number claims
   const final = await agent(
@@ -121,10 +137,13 @@ async function auditSection(prev) {
   return { section: brief.section, status: 'OK', final, flags: g.flags, audit_count: allIssues.length };
 }
 
-// ---- run: §4.5 FIRST (smallest results section), then the rest in sequential batches ----
+// ---- run: args.only lets us run §4.5 ALONE first (its own invocation), read it, THEN release the rest ----
+let A = args; if (typeof A === 'string') { try { A = JSON.parse(A); } catch (e) { A = {}; } } A = A || {};
+const ONLY = Array.isArray(A.only) ? A.only : (A.only ? [A.only] : null);
 const ORDER = ['section4.5', ...BRIEFS.map(b => b.stem).filter(s => s !== 'section4.5')];
-const ordered = ORDER.map(s => BRIEFS.find(b => b.stem === s)).filter(Boolean);
-log(`prose harness: ${ordered.length} sections, §4.5 first`);
+let ordered = ORDER.map(s => BRIEFS.find(b => b.stem === s)).filter(Boolean);
+if (ONLY) ordered = ordered.filter(b => ONLY.includes(b.stem) || ONLY.includes(b.section));
+log(`prose harness: ${ordered.length} section(s)` + (ONLY ? ` [only: ${ONLY.join(',')}]` : ', Sec.4.5 first'));
 const results = await pipeline(ordered, writeSection, auditSection);
 const ok = results.filter(r => r && r.status === 'OK');
 const blocked = results.filter(r => r && r.status === 'BLOCKED');
