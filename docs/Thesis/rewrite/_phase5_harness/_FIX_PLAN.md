@@ -50,10 +50,10 @@ HIGH H1 = DONE (6b378581/2cf3fb40). Everything below is open.
 ## FINAL STATUS (2026-06-28, after waves 1-3; gates all green: PDF 70pp 0/0, floor 12/15/11/13/9/18/6/2/1, number A=0 B=0, orphan 0)
 - DONE + committed (f7670537 wave1, 23dad6e6 wave2, 341e210a wave3):
   H2-caption, #1, #2, #4, #5, #7, #8, #9, #10, #11, #12, #14, #15, #16/#22, #18  (15 items)
-- #3 PARTIAL -> NEEDS SINA: removed the explicit "incidence not volume" sentence, BUT (a) "HighCashScrutiny
-  rises 0.0408" [l.58, motivates the whole rule-out] and (b) "CashScrutiny = volume" [l.62, the non-circularity
-  defense] REMAIN and cannot be cut without breaking the section. "Completely silent" needs a restructure that
-  sacrifices a load-bearing argument. Decision pending: accept residual vs restructure.
+- #3 RESOLVED (Sina: ACCEPT RESIDUAL): the explicit "incidence not volume" sentence is removed (wave1); the two
+  load-bearing lines stay -- "HighCashScrutiny rises 0.0408" [l.58, motivation] and "CashScrutiny = volume"
+  [l.62, non-circularity defense] -- because cutting them would break the section. Mismatch no longer spelled
+  out. No further edit; current committed state is final.
 - DECLINED: H2-prose upper-bound caveat (referee's "beta_s biased negative" conflicts with locked floor
   "stock arm = noisy flat null, never suppressed"; + overclaims). Existing hedge kept.
 - DEFERRED (Sina): #13 variable typography (math-mode regex risk near submission).
