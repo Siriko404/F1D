@@ -112,10 +112,11 @@ function quoteBlock(brief) {
   return qs.length ? `\nVERBATIM SOURCE SUPPORT (check each theory claim against its source; flag any claim that says MORE than the quote supports):\n${qs.join('\n\n')}\n` : '';
 }
 
-async function auditSection(prev) {
+async function auditSection(prev, thesisMap, coherenceIssues) {
   if (prev.status !== 'WRITTEN') return prev;
   const { brief, merged } = prev;
-  const draft = `DRAFT UNDER AUDIT:\n${JSON.stringify(merged.paragraphs, null, 1)}`;
+  const map = thesisMap ? `\nWHOLE-THESIS MAP (for cross-reference awareness; audit ONLY this section's prose, but know the rest exists):\n${thesisMap}\n` : '';
+  const draft = `${map}DRAFT UNDER AUDIT (this section):\n${JSON.stringify(merged.paragraphs, null, 1)}`;
   const HONESTY = LANES[0][1];                 // lane-1 body
   const OTHERS = LANES.slice(1);               // the other 5 lanes
   // L3a: HONESTY sub-panel (3 agents, refute-by-default, WITH the verbatim source quotes) -- thesis-killer gets redundancy
@@ -127,7 +128,9 @@ async function auditSection(prev) {
     agent(`${body}\n\nYou audit ONLY this lane; PROPOSE fixes, do not rewrite. If a paragraph is clean in your lane, emit nothing for it.\n\n${brmain(brief)}\n${draft}`,
       { label: `audit:${brief.section}:${key}`, phase: 'Audit', schema: AUDIT_SCHEMA }).then(a => ({ lane: key, issues: (a && a.issues) || [] })));
   const audits = (await parallel([...honestyTasks, ...otherTasks])).filter(Boolean);
-  const allIssues = audits.flatMap(a => a.issues.map(i => ({ ...i, lane: a.lane })));
+  // fold in the WHOLE-THESIS coherence issues that touch this section
+  const mine = (coherenceIssues || []).filter(i => (i.section && (i.section === brief.section || i.section === brief.stem)) || (i.para_id || '').includes(brief.section));
+  const allIssues = audits.flatMap(a => a.issues.map(i => ({ ...i, lane: a.lane }))).concat(mine.map(i => ({ ...i, lane: 'coherence' })));
   // L4: judge applies high-confidence fixes by MINIMAL edit, refute-by-default on honesty/number claims
   const final = await agent(
     `You are the chief editor. Apply ONLY well-supported audit fixes to the draft by MINIMAL edit (prefer the existing wording; change the least). Reject spurious or hedge-weakening fixes (refute-by-default for honesty/number claims). Invent no new numbers/citations. Output the full corrected section.\n\n${brmain(brief)}\n\nDRAFT:\n${JSON.stringify(merged.paragraphs, null, 1)}\n\nAUDIT ISSUES (${allIssues.length}):\n${JSON.stringify(allIssues, null, 1)}`,
@@ -146,21 +149,41 @@ const TEAMS = [
   { name: 'T2-results', stems: ['section3.1', 'section3.2', 'section3.3', 'section3.4', 'section4.1', 'section4.2', 'section4.3', 'section4.4', 'section4.5'] },
   { name: 'T3-framing', stems: ['section_abstract', 'section1', 'section5'] },
 ];
-// each team processes its sections SEQUENTIALLY (one in flight at a time -> peak ~1 section's agents per team);
-// the 3 teams run CONCURRENTLY. A section still gets the full 4-layer + gates.
-async function runTeam(team) {
+// ===== PHASE A -- WRITE: 3 thematic teams in parallel; each writes its sections (writers->gate->editor->gate). NO audit yet. =====
+async function writeTeam(team) {
   const out = [];
-  for (const stem of team.stems) {
+  for (const stem of team.stems) {                 // sequential within a team -> low concurrency
     if (ONLY && !ONLY.includes(stem)) continue;
-    const brief = BRIEFS.find(b => b.stem === stem);
-    if (!brief) continue;
-    log(`[${team.name}] ${stem}`);
-    out.push(await auditSection(await writeSection(brief)));
+    const brief = BRIEFS.find(b => b.stem === stem); if (!brief) continue;
+    log(`[${team.name} WRITE] ${stem}`);
+    out.push(await writeSection(brief));
   }
   return out;
 }
-log(`prose harness: 3 parallel teams` + (ONLY ? ` [only: ${ONLY.join(',')}]` : ''));
-const results = (await parallel(TEAMS.map(t => () => runTeam(t)))).flat();
+log('PHASE A: write -- 3 thematic teams, parallel');
+const written = (await parallel(TEAMS.map(t => () => writeTeam(t)))).flat().filter(Boolean);
+const writtenOK = written.filter(w => w.status === 'WRITTEN');
+
+// ===== BARRIER: ALL prose written before ANY audit =====
+// ===== PHASE B -- AUDIT the WHOLE thesis at once =====
+log(`PHASE B: audit -- whole thesis at once (${writtenOK.length} written, ${written.length - writtenOK.length} blocked at write)`);
+const thesisFull = JSON.stringify(writtenOK.map(w => ({ section: w.section, paragraphs: w.merged.paragraphs.map(p => ({ para_id: p.para_id, final_prose: p.final_prose })) })));
+// (1) GLOBAL COHERENCE PANEL -- 3 agents each read the FULL thesis, cross-section ONLY (thesis-level scrutiny gets redundancy)
+const COH_HEADS = [
+  'You are the thesis coherence auditor.',
+  'Act as a journal referee reading the whole thesis end-to-end for internal consistency.',
+  'You are the consistency editor responsible for the complete thesis reading as one document.',
+];
+const cohPanel = (await parallel(COH_HEADS.map((h, v) => () =>
+  agent(`${h} Read the ENTIRE drafted thesis below and flag ONLY cross-section problems: the abstract or Section 1 preview contradicting the results; terminology or notation drifting between sections; a claim in one section inconsistent with another; a "see Section X" reference that does not match X's content; a broken narrative arc. Do NOT re-audit within-section wording (other auditors own that). Tag each issue with the section it belongs to (e.g. "3.4"). PROPOSE fixes, never rewrite.\n\nFULL THESIS:\n${thesisFull}`,
+    { label: `audit:coherence${v + 1}-WHOLE`, phase: 'Audit', schema: AUDIT_SCHEMA })
+))).filter(Boolean);
+const coherenceIssues = cohPanel.flatMap(c => (c && c.issues) || []);
+log(`coherence panel (3): ${coherenceIssues.length} cross-section issue(s)`);
+// (2) per-section DEEP audit + judge, each given a compact whole-thesis map + the coherence issues that touch it
+const compactMap = JSON.stringify(writtenOK.map(w => ({ section: w.section, summary: w.brief.paragraphs.map(p => p.thin_claim).filter(Boolean) })));
+const results = await parallel(writtenOK.map(w => () => auditSection(w, compactMap, coherenceIssues)));
+results.push(...written.filter(w => w.status !== 'WRITTEN'));
 const ok = results.filter(r => r && r.status === 'OK');
 const blocked = results.filter(r => r && r.status === 'BLOCKED');
 log(`DONE: ${ok.length} OK, ${blocked.length} BLOCKED`);
