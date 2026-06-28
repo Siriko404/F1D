@@ -181,8 +181,30 @@ _new_note = ("standardized here, so their magnitudes are not comparable to the o
              "coefficients; signs agree for the earnings-surprise and EPS-growth controls, while among the "
              "market-return controls StockRet flips sign and MarketRet matches in sign but is significant in the original only.")
 assert _old_note in _nt, "dwz-note anchor not found"
-_dwz.write_text(_nt.replace(_old_note, _new_note), encoding="utf-8")
-print("patched _dwz_replication.tex note (sign/significance accuracy)")
+_nt = _nt.replace(_old_note, _new_note)
+# Issue 3 (Sina 2026-06-28): 5.21 was the only table not bolding its significant coefficients. Bold every
+# starred coef so it matches the other 20 tables; the value is carried verbatim by the back-reference and
+# only \textbf is wrapped around it (the R^2 dagger and the unstarred cells are untouched).
+_nt, _nb = re.subn(r"\$(-?\d\.\d+)\^\{(\*+)\}\$", r"\\textbf{\g<1>}$^{\g<2>}$", _nt)
+assert _nb == 13, "dwz bolding: expected 13 starred coefs, got %d" % _nb
+# add the bold clause to the note + unify its significance legend to no-leading-zero (matches prose + tables)
+_old_sig = "are excluded. Significance: $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$ (two-tailed)."
+_new_sig = "are excluded; significant coefficients are shown in \\textbf{bold}. $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed)."
+assert _old_sig in _nt, "dwz significance-legend anchor not found"
+_nt = _nt.replace(_old_sig, _new_sig)
+_dwz.write_text(_nt, encoding="utf-8")
+print("patched _dwz_replication.tex: note + bolded %d significant coefs + no-zero legend" % _nb)
+
+# Issue 3: unify the significance legend in the bible tables to no-leading-zero (matches the prose + the
+# robustness tables). Note-only -- the legend string can never occur in a data cell. (Sina 2026-06-28.)
+_bib = CLONE / "_tables_from_bible.tex"
+_bt = _bib.read_text(encoding="utf-8")
+_old_leg = "$^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$"
+_new_leg = "$^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$"
+_nleg = _bt.count(_old_leg)
+assert _nleg == 13, "bible legend: expected 13 occurrences, got %d (drift)" % _nleg
+_bib.write_text(_bt.replace(_old_leg, _new_leg), encoding="utf-8")
+print("unified %d bible-table legends to no-leading-zero" % _nleg)
 
 # ---- 2. regenerate the standalone body files from phaseB prose ----
 (CLONE / "_abstract_body.tex").write_text(prose_of("abstract") + "\n", encoding="utf-8")
@@ -258,17 +280,50 @@ def drop_thesis_panel(c, lab):
         out.append(line)
     return "\n".join(out)
 
+# Issue 3: lift the 4 robustness notes from their terse "legend; SE" form to the bible template
+# (what-it-shows -> SE clustered by firm + bold -> legend). FE is shown in each table's own FE row, so the
+# note omits an FE clause (per advisor). The WHATs are anchored in the Section 4.5 prose. (Sina 2026-06-28.)
+_ROB_LEG = r"Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed)."
+ROB_NOTE = {
+ "tab:rob_runup": (
+   r"\textit{Notes:} $^{*}p<.10$,$^{**}p<.05$,$^{***}p<.01$ (two-tailed); SE clustered by firm. CshR=CashRatio(+lag), UncR=UncResCEO, CshSc=CashScrutiny, HiSc=HighCashScrutiny.",
+   r"\textit{Notes:} All-deals pre-announcement run-up: the first-deal restriction is dropped and every deal a firm makes is stacked. " + _ROB_LEG + r" CshR=CashRatio(+lag), UncR=UncResCEO, CshSc=CashScrutiny, HiSc=HighCashScrutiny."),
+ "tab:rob_timing_matched": (
+   r"\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed); SE clustered by firm.",
+   r"\textit{Notes:} All-deals differential-timing event study on the matched universe. " + _ROB_LEG),
+ "tab:rob_timing_placebo": (
+   r"\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed); SE clustered by firm.",
+   r"\textit{Notes:} All-deals differential-timing event study, split by payment type (cash arm and stock placebo). " + _ROB_LEG),
+ "tab:rob_cashspec": (
+   r"\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed); SE clustered by firm.",
+   r"\textit{Notes:} All-deals pooled cash-specificity test: both treatments enter one regression and the cash-minus-stock difference is evaluated by a Wald restriction. " + _ROB_LEG),
+}
+def restyle_robnote(c, lab):
+    old, new = ROB_NOTE[lab]
+    assert old in c, "Issue-3 rob-note anchor not found for %s" % lab
+    return c.replace(old, new, 1)
+
 LAND = {0}                                              # only the run-up table (now 8-col) stays landscape
 robtex = []
 for k, (c, lab) in enumerate(zip(chunks, LABELS)):
     c = c.replace(r"\begin{table}[H]", r"\begin{table}[htbp]")          # float[H] needs a package we don't load
     c = re.sub(r"\\caption\{Table 5\.\d+ --- ", r"\\caption{", c)       # drop the hardcoded "Table 5.x" prefix
     c = drop_thesis_panel(c, lab)                                       # keep only the all-deals columns
+    c = restyle_robnote(c, lab)                                         # Issue 3: note -> bible template
     c = re.sub(r"(\\caption\{[^}]*\})", r"\1\\label{%s}" % lab, c, count=1)
     spec = re.search(r"\\begin\{tabular\}\{([lc]+)\}", c).group(1)
     c = c.replace(r"\bottomrule", fe_row(spec) + r"\bottomrule", 1)
     robtex.append(("\\begin{landscape}\n" + c + "\n\\end{landscape}") if k in LAND else c)
 logit = strip_doc(LOGIT_SRC.read_text(encoding="utf-8", errors="ignore"))   # already labelled tab:logit_*
+# Issue 3: give the two (identical) logit notes a distinct anchored lead + the bold clause, and align the
+# SE wording to the bible template. A (tab:logit_dealnext) is first in the source, B second. (Sina 2026-06-28.)
+_LOGIT_OLD = r"\textit{Notes:} Col.\ (1) linear probability model; (2) logit (raw log-odds); (3) LPM adding firm and year-quarter fixed effects. A firm-fixed-effects logit is infeasible here (perfect separation: the deal/cash base rate leaves most firms with no within-firm outcome variation). UncResCEO is the residual CEO Q\&A uncertainty; all controls shown; SEs clustered by firm; $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed)."
+_LOGIT_TAIL = r"Col.\ (1) linear probability model; (2) logit (raw log-odds); (3) LPM adding firm and year-quarter fixed effects. A firm-fixed-effects logit is infeasible here (perfect separation: the deal/cash base rate leaves most firms with no within-firm outcome variation). All controls shown. Standard errors clustered by firm, in parentheses; significant coefficients in \textbf{bold}. $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed)."
+_LOGIT_A = r"\textit{Notes:} Forward specification on all firm-quarters: residual CEO Q\&A uncertainty (UncResCEO) predicting whether a deal of any payment type is announced the next quarter. " + _LOGIT_TAIL
+_LOGIT_B = r"\textit{Notes:} Among deals at the pre-announcement quarter: residual CEO Q\&A uncertainty (UncResCEO) predicting whether the deal is cash-financed rather than stock-financed. " + _LOGIT_TAIL
+assert logit.count(_LOGIT_OLD) == 2, "Issue-3 logit-note: expected 2 identical notes, got %d" % logit.count(_LOGIT_OLD)
+logit = logit.replace(_LOGIT_OLD, _LOGIT_A, 1)
+logit = logit.replace(_LOGIT_OLD, _LOGIT_B, 1)
 robblock = ("% Section 4.5 robustness tables -- 4 all-deals comparison tables + 2 logit (FE 3-col).\n"
             "% Wired from rob_4tables.tex + logit_tables_final.tex; FE row added per the robustness resume.\n"
             + "\n\n\\clearpage\n\n".join(robtex) + "\n\n\\clearpage\n\n" + logit + "\n")
