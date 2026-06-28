@@ -1,5 +1,34 @@
 # ⚠️ NEXT-SESSION REVIEW REQUIRED — Proposition-chain referee AUDIT (2026-06-27)
 
+## ✅ SESSION 2026-06-27 (cont.2) — FINAL-FILE BUILD DONE, read this FIRST
+> Supersedes the Q1/Q2 fork in the (cont.) banner below — BOTH RESOLVED.
+
+**Q1 RESOLVED = A (skip normalization):** the only deterministic downstream tool (`push_*_to_tex.py`) reads
+ONLY `final_prose`; everything else feeds the prose-WRITER (human/LLM), so the two schemas are fine — no
+normalization needed. **Q2 RESOLVED = β (per-section, NOT one merged file):** per-section files are each
+single-format (the two-schema headache vanishes), reuse the §2.x pushers, match the retire-old/clone-new model.
+
+**BUILT: 16 prose-ready per-section ledgers in `docs/Thesis/rewrite/_final/`** (`section{X}_paragraph_ledger.json`),
+by `scratchpad/build_final.py`, derived from FROZEN `corpus_audited.json` (@74b7a0f8). Surgical strip of EXACTLY
+9 audit-only fields (`_provenance · _original_statement · verification · verification_plan · status ·
+nlm_query_draft · fetch_target · from_phaseA_prop · fix_summary`); ALL else KEPT incl. audit-named-but-SACRED
+(`source · guards_added · number_audit · _phaseC_audit · reason · relation_to_2_1 · anchor_2_1 · depends_on ·
+numbers · register_locks · evidence`). **GATE all-pass:** surgical-diff (only the 9 removed, 0 value-changes,
+0 adds) · sacred-survival · 16/149/79 counts · prose-empty · refs-resolve · round-trip zero-loss (on-disk
+verified). `corpus_audited.json` + the v1 live ledgers (`rewrite/section*.json`) = UNTOUCHED.
+Each `_final/` file = self-contained honest substrate: claims (statement/role/type/citations/refs) + per-paragraph
+`intent·boundary·thin_claim·guardrails` + 8 global `_bright_lines`; **`final_prose` EMPTY everywhere — ALL prose
+to be written FRESH** (NO harvest of v1 prose — Sina: old prose = old argument, would smuggle pre-redesign framing).
+
+**⛳ NEXT (gated on Sina — said "wait for me" after this commit): WRITE FRESH PROSE** into the 16 `_final/`
+ledgers, paragraph by paragraph — Sina authors load-bearing claims; Claude drafts + source-anchors + honesty-gates
+(BIMODAL CADENCE still holds). **THEN DEFERRED:** build the 11 missing `push_*_to_tex` scripts + reconcile each
+pusher's hardcoded bibitems vs the new chains' citations; +2 `\bibitem` (`shleifer_vishny2003`, `louis2004`);
+`git mv` the 3 stale ledger-sets (`rewrite/section*`, `_phase3_clones/*`, `_rewrite_working/*`) → `_archive/`
+(Sina sign-off); compile + verify.
+
+---
+
 ## ✅ SESSION CLOSE 2026-06-27 (cont.) — CURRENT TRUTH, read this FIRST
 > Everything below the next divider is EARLIER-layer narrative (some now STALE, e.g. "Nothing is applied" /
 > "14 of 17"). THIS banner is the authoritative current state.
@@ -24,7 +53,7 @@ incl. the P3.4/P3.3/P5.5 masking cluster, the DiD scrub, the $1M SDC disclosure,
   paragraphs are referenced by their dict key (`anchor_2_1:['P5']`, callbacks, depends_on), so dict→list could
   silently break refs. Only normalize IF the prose-writer is a strict deterministic tool.
 
-**⛳ THE NEXT DECISION — gates ALL remaining work (answer Q1+Q2 first):**
+**⛳ THE NEXT DECISION [RESOLVED 2026-06-27 cont.2 — Q1=A, Q2=β, 16 ledgers BUILT; see top banner]:**
 ```
 Q1  prose-writer =  A) by hand / an LLM reading the file  → SKIP normalization
                     B) a deterministic tool needing one schema → normalize first (with the 2 missing

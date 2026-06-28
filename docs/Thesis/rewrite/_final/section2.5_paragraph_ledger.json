@@ -1,0 +1,208 @@
+{
+  "_derived_from": "corpus_audited.json @ commit 74b7a0f8 (FROZEN); 9 audit-only fields stripped; prose to be written fresh",
+  "_bright_lines": [
+    "masking = MOTIVATION, not mechanism / not identification",
+    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
+    "cite Shleifer-Vishny + Louis as EARNINGS/VALUATION, NEVER tone; thewissen = tone (preprint, supplementary)",
+    "SOURCE mechanism (compliance-constrained vs strategic) stays OPEN",
+    "war-chest / cash-accumulation CAUSE stays OPEN (C6 cause 0.0064 n.s.)",
+    "concentration = motivated, NOT identified; correlational, within-firm, no causal id",
+    "concentration-not-strict-specificity; 'we interpret, we do not detect'",
+    "each section's own register_locks are bright lines; a fix that hardens/removes a hedge is INVALID"
+  ],
+  "section_id": "2.5",
+  "title": "Specification and Measurement of Key Constructs",
+  "guards_added": [],
+  "section_context": {
+    "_plan": {
+      "section_job": "Validate the construct via convergent validity and MOTIVATE the scrutiny identification side-test (plausible alternative driver, tested in 4.1). [competition/discriminant test DROPPED 2026-06-14.]",
+      "spine": "P1 frame (convergent demand + scrutiny flag) -> P2 convergent (LEAD with the significant association; one-tailed + magnitude secondary) -> P4 scrutiny construct + motivation (verdict in 4.1) -> P5 key constructs. [P3 discriminant/competition DROPPED.]",
+      "serves": "Construct credibility; introduces + motivates the scrutiny identification side-test (verdict in 4.1); defines key non-main constructs.",
+      "boundary": "Validity + scrutiny construct + key non-main constructs. MAIN var -> 2.3. Scrutiny RESULTS -> 4.1. Presentation-contrast RESULTS -> 4.2. Controls -> Appendix.",
+      "thin_claim": "Convergent = SIGNIFICANT positive association (lead, FD); one-tailed + economic magnitude are honest SECONDARY qualifiers; scrutiny = 'doesn't account for THIS run-up,' not 'never matters.' [discriminant clause removed.]",
+      "division_of_labor": "Mostly NEW -- validity is work 2.1 does not do. Presentation/Q&A split = CALLBACK P2. Scrutiny: 2.5 P4 OWNS the construct + the identification motivation (validity table as ground); 2.2 P5 only FLAGS the rival.",
+      "validity_papers_status": "hassan2020 (PRisk), baker2016 (US-EPU), davis2016 (GEPU, provisional, fold-as-is) VERIFIED via NLM 2026-06-13. [hoberg2016/hoberg2010/'fluidity' REMOVED 2026-06-14 -- competition test dropped.] C5 numbers from the regression tables (the disregarded summary stats are NOT used; FB magnitude FILLED 2026-06-14 (1-SD -> ~5%/1.5%/2.2% of residual SD; all-universe summary stats built))."
+    }
+  },
+  "paragraphs": {
+    "P1": {
+      "order": 1,
+      "lit_body": "the two validity demands",
+      "intent": "Frame the checks: (a) convergent -- the residual moves with established uncertainty measures (P2); (b) the analyst-scrutiny rival -- a plausible alternative driver tested as a side analysis (P4 -> 4.1). [discriminant/competition demand REMOVED 2026-06-14; distinctness rests on the 2.3 net-of-controls floor + the 4.1 rule-out.]",
+      "serves": "Frames the validity gate; sets up P2-P4.",
+      "boundary": "Validity framing only; results -> 4.1/4.2.",
+      "thin_claim": "Validity is asserted as an empirical question answered here, not assumed.",
+      "guardrails": [
+        "No results preview (4.1 scrutiny, 4.2 presentation).",
+        "The residual under test is the 2.3 UncResCEO (callback 2.3)."
+      ],
+      "propositions": [
+        {
+          "prop_id": "P1.1",
+          "statement": "The residual UncResCEO must (a) be convergent -- move with established uncertainty constructs (P2); and is checked against (b) the analyst-scrutiny rival, a plausible alternative driver tested as a side analysis (P4 -> 4.1). By construction it is already net of the scripted presentation and analyst-question wording (2.3).",
+          "role_in_paragraph": "The validity frame.",
+          "type": "framing-nonverifiable",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": []
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    },
+    "P2": {
+      "order": 2,
+      "lit_body": "convergent validity (political risk + policy uncertainty)",
+      "intent": "Show the residual is 'consistent with' established uncertainty measures -- honestly hedged (one-tailed; PRisk firm-quarter but economically trivial; US-EPU/GEPU = aggregate macro co-movement, marginal).",
+      "serves": "Convergent leg -- now the PRIMARY validity evidence (lead with significance).",
+      "boundary": "Convergent validity only. LEAD with the significant positive association (FD); one-tailed + economic magnitude as honest secondary qualifiers. [no longer 'lead with discriminant'.]",
+      "thin_claim": "LEAD with the SIGNIFICANT positive association (one-tailed); keep small-PRisk + economic magnitude as honest secondary notes (FD). Do not over-hedge.",
+      "guardrails": [
+        "Keep 'consistent with' VERBATIM (C5).",
+        "Numbers bible-verbatim (bible cross-check at write-time).",
+        "hassan2020/baker2016/davis2016 VERIFIED 2026-06-13 (tmp/nlm_validity_definitions.json) -- davis2016 provisional, fold as-is.",
+        "IDENTIFICATION BASIS (F4, the validity justification the user mandated): PRisk = firm-quarter (h11 Year FE -> within-year FIRM-LEVEL variation, cleanest match to UncRes); US-EPU/GEPU = MACRO monthly index matched to quarter (h24/h24b Cal-Year FE + two-way cluster -> within-year AGGREGATE co-movement, every firm one value per period, weakest)."
+      ],
+      "propositions": [
+        {
+          "prop_id": "P2.1",
+          "statement": "The residual is positively associated with political risk (PRisk) and economic policy uncertainty (US-EPU, global EPU): PRisk->UncRes 0.0001*** (economically trivial, R2~0.003); US-EPU->UncRes 0.0124**/0.0123* (one-tailed; firm-FE marginal); GEPU->UncRes 0.0181**/0.0187** (one-tailed).",
+          "role_in_paragraph": "The convergent evidence.",
+          "type": "bible-verbatim",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": [],
+          "source": {
+            "key": "claim_findings_ledger",
+            "ref": "C5 (bible-verbatim)"
+          }
+        },
+        {
+          "prop_id": "P2.2",
+          "statement": "This is reported as 'consistent with' established measures, not as establishing the construct: the tests are one-tailed; PRisk (firm-quarter, the cleanest unit match to UncRes) is economically trivial; and US-EPU/GEPU are MACRO monthly indices -- every firm shares one value per period, entering under calendar-year FE, so they are identified only off WITHIN-YEAR AGGREGATE co-movement (an aggregate co-movement check, not a firm-level one). The convergent leg is supportive but weak.",
+          "role_in_paragraph": "The hedge (C5).",
+          "type": "framing-nonverifiable",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": [],
+          "source": {
+            "key": "claim_findings_ledger",
+            "ref": "C5 thinnest_claim"
+          }
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    },
+    "P4": {
+      "order": 4,
+      "lit_body": "introduce + motivate the analyst-scrutiny identification side-test (construct here; verdict in 4.1)",
+      "intent": "Introduce CashScrutiny as OUR OWN constructed measure and MOTIVATE the identification side-test: (a) it is VALID -- CashRatio predicts it (0.7530***/0.8519***), the same validity class as the other 2.5 yardsticks; (b) it is a PLAUSIBLE alternative DRIVER -- it itself rises around cash-deal announcements -- so it could mechanically generate the run-up. We therefore test, as a SIDE analysis in 4.1, whether scrutiny (not the disclosure bind) accounts for the run-up. 2.5 owns this motivation (2.2 only flags); the REJECTION verdict is reported in 4.1, not here.",
+      "serves": "Owns the scrutiny construct + the identification motivation (validity table as ground); the 2.2 P5 flag points here; the test/verdict is 4.1.",
+      "boundary": "Construct + pre-registration only; the RESULTS are 4.1.",
+      "thin_claim": "Keep the hedge EXACTLY when stated (in 4.1): 'does not account for THIS run-up; not that scrutiny never matters' (C4, NULL-only, underpowered). In 2.5: MOTIVATE + pre-register only; do NOT assert the rejection as established here.",
+      "guardrails": [
+        "RULE-COH-8: CashScrutiny = % of analyst Q&A turns on cash/liquidity (VOLUME), distinct from UncQue word-uncertainty (confirmed gen_empire_did_table.py:73).",
+        "RULE-COH-5: scrutiny is a PLAUSIBLE ALTERNATIVE DRIVER (identification threat) tested & REJECTED in 4.1 -- NOT one of P7's two readings; rejecting it != establishing a mechanism.",
+        "NUMBER SPLIT (advisor): 0.7530***/0.8519*** (validity) STAYS in 2.5; 'rises around cash deals' is QUALITATIVE here -- the 0.0408** magnitude + the -0.0000/-0.0056 nulls + the rejection verdict are 4.1's, NOT previewed in 2.5.",
+        "BUILD home: how it's built (spec/definition) lives HERE in 2.5 (user); do not strip the deeper data-pipeline mechanics from 3.1 where every variable's mechanics sit.",
+        "C4 hedge stays VERBATIM where stated (4.1); in 2.5, motivate + pre-register only -- scrutiny genuinely DOES rise pre-announce (which is what makes it a plausible driver), but only the underpowered gating test rejects it."
+      ],
+      "propositions": [
+        {
+          "prop_id": "P4.1",
+          "statement": "Define CashScrutiny = the share (%) of analyst Q&A turns devoted to cash/liquidity, and HighCashScrutiny = 1[CashScrutiny > median] (median = 0; ~11% of calls draw any cash scrutiny) -- a VOLUME/topic measure of analyst attention, distinct from the uncertainty wording of questions (UncQue).",
+          "role_in_paragraph": "The scrutiny construct definition (the BUILD/spec home is 2.5, per user).",
+          "type": "verified-code",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": [],
+          "source": {
+            "file": "scripts/gen_empire_did_table.py",
+            "line": "73-76 (CashScrutiny = stock_score*100; HighCashScrutiny)"
+          }
+        },
+        {
+          "prop_id": "P4.2",
+          "statement": "Motivate the side-test: CashScrutiny is (a) VALID -- CashRatio predicts it (0.7530***/0.8519***) -- and (b) a PLAUSIBLE alternative driver -- it itself rises around cash-deal announcements. Because it co-moves with both cash and the event, it could mechanically generate the pre-announcement run-up (a textbook identification threat). We therefore test, as a side analysis in 4.1, whether scrutiny rather than the disclosure bind accounts for the run-up. (The test's null magnitudes and verdict are reported in 4.1, not previewed here.)",
+          "role_in_paragraph": "The plausibility motivation (validity 0.7530*** + qualitative co-movement) + the pre-registered side-test.",
+          "type": "bible-verbatim",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": [],
+          "source": {
+            "key": "claim_findings_ledger",
+            "ref": "C4 (bible-verbatim)"
+          }
+        },
+        {
+          "prop_id": "P4.3",
+          "statement": "Pure forward-pointer (NO verdict stated here): the formal scrutiny side-test, its hedged verdict, and the underpowered caveat are all reported in 4.1, which owns the C4 hedge verbatim. 2.5 states only that the test is run and reported there.",
+          "role_in_paragraph": "Pure forward-ref to 4.1 (no verdict content in 2.5; 4.1 owns the verdict + the C4 hedge).",
+          "type": "framing-nonverifiable",
+          "relation_to_2_1": "CALLBACK",
+          "anchor_2_1": [
+            "P7"
+          ],
+          "source": {
+            "key": "claim_findings_ledger",
+            "ref": "C4 thinnest_claim"
+          }
+        },
+        {
+          "prop_id": "P4.4",
+          "statement": "CashScrutiny measures the VOLUME/topic of cash questions, distinct from analyst-question uncertainty WORDS (UncQue), which the residual already nets out by construction (eq-4). So this alternative-driver test targets the question-VOLUME path that eq-4 does not absorb -- it is non-redundant with the controls already inside the residual (referee-proofing; RULE-COH-8).",
+          "role_in_paragraph": "Non-redundancy: why the scrutiny side-test still bites although eq-4 already controls UncQue (restores the dropped 2.2 P5.3 claim; 2.3 P2.5 points here).",
+          "type": "framing-nonverifiable",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": []
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    },
+    "P5": {
+      "order": 5,
+      "lit_body": "define remaining key constructs",
+      "intent": "Define the remaining key non-main constructs used in the designs: CashRatio, PreAnnounceQtr, CashScrutiny (with controls routed to the Appendix).",
+      "serves": "Closes the construct inventory; keeps definitions out of 2.3 (main var) and the Appendix (controls).",
+      "boundary": "Key non-main constructs only; MAIN var (UncRes) -> 2.3; controls -> Appendix.",
+      "thin_claim": "Definitions only; no new claims.",
+      "guardrails": [
+        "Definitions transcribed from code/bible; no memory.",
+        "PreAnnounceQtr already defined in 2.2 P1.2 + 2.4 P1.2 -> reference, do not redefine inconsistently.",
+        "CashScrutiny already defined in P4.1 -> reference."
+      ],
+      "propositions": [
+        {
+          "prop_id": "P5.1",
+          "statement": "Define the key non-main constructs: CashRatio (the firm's cash-to-assets position); PreAnnounceQtr = 1[e=-1] (cross-reference 2.2/2.4); CashScrutiny / HighCashScrutiny (cross-reference P4.1). Remaining controls (Leverage, lnAssets, TobinsQ, ROA, Capex, DivDummy, sCFO, and the eq-4 controls) are catalogued in the Appendix.",
+          "role_in_paragraph": "The construct inventory.",
+          "type": "verified-code",
+          "relation_to_2_1": "NEW",
+          "anchor_2_1": [],
+          "source": {
+            "note": "CashRatio + CTRL: h1_cash_holdings panel / gen_empire_did_table.py:39,47,63-64. PreAnnounceQtr: :48,127. CashScrutiny: :73."
+          }
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    }
+  }
+}

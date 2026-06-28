@@ -1,0 +1,347 @@
+{
+  "_derived_from": "corpus_audited.json @ commit 74b7a0f8 (FROZEN); 9 audit-only fields stripped; prose to be written fresh",
+  "_bright_lines": [
+    "masking = MOTIVATION, not mechanism / not identification",
+    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
+    "cite Shleifer-Vishny + Louis as EARNINGS/VALUATION, NEVER tone; thewissen = tone (preprint, supplementary)",
+    "SOURCE mechanism (compliance-constrained vs strategic) stays OPEN",
+    "war-chest / cash-accumulation CAUSE stays OPEN (C6 cause 0.0064 n.s.)",
+    "concentration = motivated, NOT identified; correlational, within-firm, no causal id",
+    "concentration-not-strict-specificity; 'we interpret, we do not detect'",
+    "each section's own register_locks are bright lines; a fix that hardens/removes a hedge is INVALID"
+  ],
+  "section_id": "_abstract",
+  "title": "Abstract (single paragraph, five elements in order)",
+  "guards_added": [
+    "No 'stock suppressed' / stock not pushed below baseline -- stock shows no comparable rise (noisy flat null, -0.0429 n.s.); the cash-vs-stock gap is cash rising. We interpret, we do not detect (masking register, 2.1/2.2)."
+  ],
+  "section_context": {
+    "allocation_coverage": {
+      "all_phaseA_props_homed": "All 8 abstract Phase-A props (AB.1..AB.8) land in the single abstract paragraph abstract-P1, in their locked chain order, each exactly once. The convention forbids any split (the abstract is one paragraph), so no prop is split or merged; none is orphaned or duplicated. Element order is preserved 1->5 (AB.1 motivation, AB.2 gap, AB.3 data, AB.4 measure, AB.5..AB.8 findings+contribution). UPDATE 2026-06-24 (drift reconciliation): a 9th proposition, abstract-P1-i, was added to home the Section 4.2 bid-ask channel sentence that Phase-C synthesis wove into final_prose but the original AB chain never carried; abstract-P1-i is NOT a Phase-A prop and is the documented exception to the 'each AB exactly once / none orphaned' statement above. Final_prose now maps to 9 props (AB.1-AB.8 + abstract-P1-i), with abstract-P1-i sitting between the two clauses of AB.8 in prose order.",
+      "prop_to_paragraph": [
+        {
+          "phaseA_prop": "AB.1",
+          "paragraph": "abstract-P1",
+          "note": "element 1 motivation; opener."
+        },
+        {
+          "phaseA_prop": "AB.2",
+          "paragraph": "abstract-P1",
+          "note": "element 2 objective/gap."
+        },
+        {
+          "phaseA_prop": "AB.3",
+          "paragraph": "abstract-P1",
+          "note": "element 3 data+sample; sample-scale numerals only."
+        },
+        {
+          "phaseA_prop": "AB.4",
+          "paragraph": "abstract-P1",
+          "note": "element 4 measure+setting; descriptive, no citation."
+        },
+        {
+          "phaseA_prop": "AB.5",
+          "paragraph": "abstract-P1",
+          "note": "element 5a C2 run-up + descriptive stock side-by-side."
+        },
+        {
+          "phaseA_prop": "AB.6",
+          "paragraph": "abstract-P1",
+          "note": "element 5b C1 two-clocks, strongest; GAP-safe phrasing."
+        },
+        {
+          "phaseA_prop": "AB.7",
+          "paragraph": "abstract-P1",
+          "note": "element 5c C6 formal pooled difference."
+        },
+        {
+          "phaseA_prop": "AB.8",
+          "paragraph": "abstract-P1",
+          "note": "element 5d C4 rule-out + contribution close; ceiling implicit."
+        }
+      ],
+      "gaps": []
+    }
+  },
+  "paragraphs": [
+    {
+      "para_id": "abstract-P1",
+      "order": 1,
+      "intent": {
+        "statement": "Deliver the abstract as exactly ONE self-contained paragraph carrying the five abstract elements in convention order: motivation (unscripted Q&A language read as a window into what managers know but have not disclosed); objective/gap (whether CEO Q&A language tracks an acquisition the firm is still withholding, an uncharacterized cell); data+sample (U.S. public firms' earnings-call transcripts and acquisition records, 2002 to 2018); measure+setting (a residual measure of CEO Q&A uncertainty net of each executive's persistent speaking style, studied around cash acquisitions against a stock comparison); and qualitative findings + contribution (the pre-cash run-up, indistinguishable from zero once announced, cash-concentrated on a formal pooled test, not explained by analyst scrutiny, read as call language tracking the disclosure state). [RECONCILED 2026-06-24: final_prose also carries the Section 4.2 bid-ask channel sentence, homed as prop abstract-P1-i.]",
+        "reason": "The ABSTRACT convention mandates exactly one single highly-compressed paragraph delivering five elements in order, qualitative and citation-free; the locked AB chain already realizes all five in sequence (AB.1=el.1, AB.2=el.2, AB.3=el.3, AB.4=el.4, AB.5..AB.8=el.5), so the only allocation decision is to home the entire chain in one paragraph in element order, with the correlational ceiling carried implicitly by the AB.8 contribution close (the abstract convention has no honesty-caveat move).",
+        "evidence": [
+          "DraftTemplate.txt L33-54 (ABSTRACT = one single paragraph, 5 elements in order, QUALITATIVE, no citations/coefficients/equations/roadmap, numbers only for sample scale)",
+          "section_abstract_subsection_plan.json purpose.statement + coverage.purpose_fully_delivered (five elements delivered in order; ceiling implicit)",
+          "section2.2_paragraph_ledger.json (format template: intent/serves/boundary/thin_claim/guardrails/propositions/prose_gate/final_prose/prose_status)",
+          "introconcl_phaseA_redteam.json synthesis_decisions (abstract zero cites + zero names; AB.6 leads 'indistinguishable from zero'; ceiling kept IMPLICIT via AB.8)"
+        ]
+      },
+      "serves": [
+        "The whole abstract: all five elements, the four delivered claims C2/C1/C6 + the C4 rule-out qualitatively, the named measure, and the disclosure-state contribution",
+        "Mirror target for the conclusion CO.1 restate and the intro IN.7 objective"
+      ],
+      "boundary": "NAMES the measure DESCRIPTIVELY and the cash/stock setting; carries ZERO citations and ZERO author names (no DWZ); no equations or notation; no coefficients/SEs/p-values/t-stats/economic-magnitude percentages; no roadmap. Points at nothing in Section 2 (the abstract stands alone). Sample-scale numerals only (years; optional 88,205 calls / 1,884 firms). No standalone caveat sentence; the ceiling stays implicit in AB.8.",
+      "thin_claim": "A within-firm correlational regularity: residual CEO Q&A uncertainty is elevated before cash acquisitions (not stock), indistinguishable from zero once announced, cash-concentrated on a formal pooled test, not explained by analyst scrutiny; read as call language tracking the disclosure state, no tested mechanism, no identification. [RECONCILED 2026-06-24: ALSO carries the Section 4.2 bid-ask channel sentence (prop abstract-P1-i); findings = C2/C1/C6/C4 + this channel finding; see _DRIFT_AUDIT_2026-06-24.md.] Ceiling kept IMPLICIT (abstract convention has no honesty move).",
+      "guardrails": [
+        "ZERO citations and ZERO author names (abstract-citation rule); measure named descriptively only (DWZ and all names live in the intro and Section 2).",
+        "C1 (AB.6): lead with 'indistinguishable from zero once the deal is announced' at the GAP; NEVER 'unwound/reverses/falls' as the headline verb (red-team flagged this on plan2 AB.6); 'fully unwound' is the peak-to-completion swing in the body, NOT the GAP; do NOT read the negative POST.",
+        "C6 (AB.7): phrase ONLY as the formal pooled (Wald) difference that survives; NEVER the Gelman-Stern 'significant for cash vs not for stock' side-by-side; concentration not strict specificity.",
+        "C4 (AB.8): 'not explained by analysts devoting more of the call to cash questions' = does not account for THIS run-up; NEVER 'scrutiny never matters'.",
+        "E1: no generated-regressand / Pagan / two-step-SE disclaimer anywhere in the abstract.",
+        "No coefficient/SE/p-value/t-stat/economic-magnitude percentage in any statement; numbers confined to sample scale (years; optional N).",
+        "C3 (dropped 2026-06-14) and C5 EPU/PRisk-index convergent validity NOT elevated (the abstract carries no EPU/PRisk sentence). EXCEPTION added 2026-06-24 (user-authorized): the Section 4.2 bid-ask CHANNEL finding (residual inert to the post-call spread; scripted presentation positively associated) IS carried, homed as abstract-P1-i, stated as two per-component facts and NEVER as a tested between-component difference (Section 4.2 register_global). Findings capped to C2/C1/C6/C4 PLUS this channel sentence.",
+        "Ceiling kept IMPLICIT: add NO standalone caveat sentence (abstract convention has no honesty move)."
+      ],
+      "lit_body": "none new (abstract carries no citations)",
+      "proposition_chain": [
+        {
+          "prop_id": "abstract-P1-a",
+          "statement": "Firms host quarterly earnings calls and field analysts' unscripted questions, and the language a CEO uses in answering is increasingly read as a window into what managers know but have not yet disclosed.",
+          "role_in_paragraph": "premise -- element 1 (motivation/prior practice): opens the abstract by framing the unscripted Q&A as an informative venue, no citation.",
+          "type": "framing",
+          "reason": "The convention places motivation/prior practice first; AB.1 is the chain's framing opener and must lead the single paragraph to establish the venue the gap (AB.2) and everything after depend on.",
+          "evidence": [
+            "section_abstract_subsection_plan.json AB.1 (Phase-A premise, element 1)",
+            "DraftTemplate.txt L33-37 (element 1 = motivation/prior practice, frame the concept, no citation)",
+            "section2.1 P2/P3 final_prose (unscripted Q&A as the venue; language read quantitatively)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational"
+          ],
+          "depends_on": []
+        },
+        {
+          "prop_id": "abstract-P1-b",
+          "statement": "When a firm is privately committed to an acquisition it has not yet announced, the executive holds the routine call unable to confirm or deny the one development that matters, and whether the spoken record tracks that withholding has not been characterized.",
+          "role_in_paragraph": "definition -- element 2 (objective/gap): states the withholding tension and the empty cell, no reference names.",
+          "type": "framing",
+          "reason": "Element 2 follows the motivation in the convention; AB.2 converts the venue into the specific tension the paper resolves and names the gap as a negative (hence framing). Depends on AB.1's venue.",
+          "evidence": [
+            "section_abstract_subsection_plan.json AB.2 (Phase-A definition, element 2)",
+            "DraftTemplate.txt L33-38 (element 2 = core objective / the gap)",
+            "section2.1 P1 final_prose (the withholding bind); section2.1 P6 final_prose (the empty cell)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "supportive-not-definitive"
+          ],
+          "depends_on": [
+            "abstract-P1-a"
+          ]
+        },
+        {
+          "prop_id": "abstract-P1-c",
+          "statement": "We study United States public firms' earnings-call transcripts and acquisition records from 2002 to 2018.",
+          "role_in_paragraph": "premise -- element 3 (data + sample): names dataset and period; the years are the only obligatory numerals.",
+          "type": "design-method",
+          "reason": "Element 3 (data+sample) follows the objective; once the question is posed the abstract names the data and window. Years are the sole required numerals (firm/call scale optional).",
+          "evidence": [
+            "section_abstract_subsection_plan.json AB.3 (Phase-A premise, element 3)",
+            "DraftTemplate.txt L38 + L48-50 (element 3 = data + sample; numbers only for sample scale)",
+            "section3.1 P0 + P4 final_prose (Capital IQ transcripts + SDC deals, U.S. public, 2002 to 2018; 88,205 calls / 1,884 firms)",
+            "tab:summary_stats (sample anchor 88,205 / 1,884 / 2002-2018)"
+          ],
+          "numbers": [
+            "sample window 2002 to 2018; optional Table 1 anchor 88,205 calls / 1,884 firms (tab:summary_stats) -- sample-scale only"
+          ],
+          "register_locks": [],
+          "depends_on": [
+            "abstract-P1-b"
+          ]
+        },
+        {
+          "prop_id": "abstract-P1-d",
+          "statement": "From this language we construct a residual measure of CEO question-and-answer uncertainty, the component that remains once each executive's persistent speaking style is removed, and we track it around firms' cash acquisitions against stock acquisitions as a comparison.",
+          "role_in_paragraph": "definition -- element 4 (measure + setting): names UncResCEO descriptively and the cash-vs-stock-comparison setting, no citation/notation.",
+          "type": "design-method",
+          "reason": "Element 4 (method/measure) follows the data; AB.4 names what we build from the language and the setting, with descriptive naming honoring the abstract no-citation rule (no DWZ, no notation). Depends on AB.3's data.",
+          "evidence": [
+            "section_abstract_subsection_plan.json AB.4 (Phase-A definition, element 4)",
+            "DraftTemplate.txt L38 + L51-54 (element 4 = method/measure; no citation/notation)",
+            "section2.3 P2 final_prose (residual = call-varying component net of persistent style); variable_ledger.json UncResCEO.definition; section3.2 P0 final_prose (cash acquirers vs stock comparison)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational"
+          ],
+          "depends_on": [
+            "abstract-P1-c"
+          ]
+        },
+        {
+          "prop_id": "abstract-P1-e",
+          "statement": "This residual uncertainty is elevated in the quarter before a cash acquisition, relative to the firm's own other quarters, with no comparable rise before stock acquisitions.",
+          "role_in_paragraph": "result -- element 5a (finding C2, H1): the pre-announcement run-up stated directionally with the descriptive cash-vs-stock side-by-side.",
+          "type": "result-number",
+          "reason": "Element 5 opens the findings with the foundational run-up (C2): the elevation must be established before the announcement-timing contrast (AB.6) and the formal cash-concentration test (AB.7) can build on it. The stock side here is the descriptive contrast, distinct from the formal test in AB.7.",
+          "evidence": [
+            "section_abstract_subsection_plan.json AB.5 (Phase-A result, element 5a)",
+            "section3.2 P1 + P4 final_prose (cash residual elevated, survives two-tailed; stock arm not significant)",
+            "claim_findings_ledger.json C2 (cash 0.0461***; stock -0.0429 n.s.)"
+          ],
+          "numbers": [
+            "cash UncResCEO coef positive + n.s. distinction: positive + sig, survives two-tailed p=.0074 (tab:empire_building_did col 2); stock null (col 6)"
+          ],
+          "register_locks": [
+            "correlational",
+            "no-identification",
+            "concentration-not-strict-specificity"
+          ],
+          "depends_on": [
+            "abstract-P1-d"
+          ]
+        },
+        {
+          "prop_id": "abstract-P1-f",
+          "statement": "It becomes indistinguishable from zero once the deal is announced, even before completion, while the cash that funds the purchase persists on the balance sheet until the deal closes.",
+          "role_in_paragraph": "result -- element 5b (finding C1, the strongest): the two-clocks round-trip contrast, led by the GAP-safe phrasing.",
+          "type": "result-number",
+          "reason": "The announcement-timing contrast follows the run-up: once elevation is established (AB.5), the abstract delivers its strongest result, that the elevation is anticipatory while the cash persists on a different clock. Led by 'indistinguishable from zero' to pre-empt the C1 reversal trap. Ordered after AB.5 per the locked depends_on.",
+          "evidence": [
+            "section_abstract_subsection_plan.json AB.6 (Phase-A result, element 5b)",
+            "section3.3 P2 + P5 final_prose (residual spikes PRE1, falls to insignificance at GAP; cash declines only at completion; do not over-read negative POST)",
+            "claim_findings_ledger.json C1 (PRE1 0.0473***, GAP 0.0018 n.s.; CashRatio persists, POST -0.0155***)",
+            "introconcl_phaseA_redteam.json synthesis_decisions (lead with 'indistinguishable from zero once announced'; drop 'unwound at announcement' as headline verb -- plan2 flag)"
+          ],
+          "numbers": [
+            "residual GAP coef ~0 n.s.; PRE1-minus-GAP 0.0455** (tab:empire_drop_matched col 1); cash GAP persists, GAP-minus-POST 0.0210*** (col 2)"
+          ],
+          "register_locks": [
+            "correlational",
+            "no-identification",
+            "mechanism-open"
+          ],
+          "depends_on": [
+            "abstract-P1-e"
+          ]
+        },
+        {
+          "prop_id": "abstract-P1-g",
+          "statement": "The elevation concentrates in cash acquisitions rather than stock acquisitions, a difference that survives a formal pooled test.",
+          "role_in_paragraph": "result -- element 5c (finding C6, H1a): cash-concentration via the FORMAL pooled (Wald) difference.",
+          "type": "result-number",
+          "reason": "The formal cash-concentration test follows the descriptive contrast and the timing result: it upgrades the cash-vs-stock side-by-side of AB.5 into a formal pooled difference. Phrased ONLY as the formal test (not Gelman-Stern). Ordered after AB.6 per locked depends_on.",
+          "evidence": [
+            "section_abstract_subsection_plan.json AB.7 (Phase-A result, element 5c)",
+            "section3.4 P2 + P4 final_prose (formal cash-minus-stock Wald difference; supported but fragile; concentration not strict specificity)",
+            "claim_findings_ledger.json C6 (EFFECT_diff 0.0983**, z=2.06, p=.039 two-tailed)"
+          ],
+          "numbers": [
+            "cash-minus-stock Wald diff positive + sig at 5% two-tailed, p=.039 (tab:empire_cashspec col 1)"
+          ],
+          "register_locks": [
+            "correlational",
+            "concentration-not-strict-specificity",
+            "supportive-not-definitive",
+            "mechanism-open"
+          ],
+          "depends_on": [
+            "abstract-P1-f"
+          ]
+        },
+        {
+          "prop_id": "abstract-P1-h",
+          "statement": "This pattern is not explained by analysts devoting more of the call to cash questions, and we read it as call language tracking the deal's passage from private to public, a within-firm correlational regularity rather than a tested mechanism.",
+          "role_in_paragraph": "inference -- element 5d (finding C4 rule-out) + the contribution close that carries the ceiling implicitly.",
+          "type": "framing",
+          "reason": "The C4 rule-out and the contribution statement close the abstract: ruling out the most immediate alternative justifies the disclosure-state reading, and the closing phrase keeps the correlational/no-mechanism ceiling implicit (no separate caveat sentence). Ordered last per locked depends_on.",
+          "evidence": [
+            "section_abstract_subsection_plan.json AB.8 (Phase-A inference, element 5d + contribution)",
+            "section4.1 P3 + P4 final_prose (pre-announce indicator stays significant with scrutiny and its interaction; interaction n.s.; failure-to-find not equivalence)",
+            "claim_findings_ledger.json C4 (gating_PreAnnounceQtr 0.0413***; gating_interaction -0.0056 n.s.) + thin_claim_ceiling (read as call language tracking the disclosure state; no tested mechanism, no identification)"
+          ],
+          "numbers": [
+            "pre-announce coef stays positive + sig with scrutiny in model; interaction n.s. (tab:reason_gating); scrutiny direct effect ~0 n.s. (tab:cash_scrutiny_channel)"
+          ],
+          "register_locks": [
+            "correlational",
+            "no-identification",
+            "mechanism-open",
+            "supportive-not-definitive"
+          ],
+          "depends_on": [
+            "abstract-P1-g"
+          ]
+        },
+        {
+          "prop_id": "abstract-P1-i",
+          "statement": "The residual is also unrelated to the firm's post-call bid-ask spread, a standard gauge of information asymmetry, while the scripted presentation is positively associated with it, consistent with the two parts of the call relating to the outside information environment in different ways.",
+          "role_in_paragraph": "result -- element 5 (added): the Section 4.2 outsider-reaction channel split (residual inert to the post-call spread; scripted presentation positively associated). In PROSE it sits between the C4 rule-out clause and the contribution-close clause, i.e. between the two sentences realized from abstract-P1-h.",
+          "type": "result-number",
+          "reason": "Phase-1 drift audit (2026-06-24) found this sentence in final_prose with no backing proposition; it realizes the Section 4.2 result (C5-spread residual null + C7 presentation positive). Homed here, qualitatively, to sync spine to prose. KEEP authorized by user 2026-06-24.",
+          "evidence": [
+            "section4.2_paragraph_ledger.json (Outsider Reactions: the Bid-Ask Spread; residual null all 12 specs; presentation positive 4/6 contemporaneous)",
+            "claim_findings_ledger.json C5_convergent_validity / C7 presentation",
+            "tab:h14c_ceo2_decomp (12 cols; FE grid; lagged DV)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "no-identification",
+            "channel-difference-NOT-tested-directly (two per-component facts, never a tested between-component difference -- Section 4.2 register_global)"
+          ],
+          "depends_on": [
+            "abstract-P1-h"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions homed + register/C-traps honored before prose; final_prose stays empty at planning stage",
+        "all_supported": true,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)",
+      "_phaseC_audit": {
+        "direction_audit": [
+          {
+            "claim": "residual uncertainty is elevated in the quarter before a cash acquisition",
+            "table_cell": "tab:empire_building_did col 2 PreAnnounceQtr (UncResCEO, cash)",
+            "sign": "positive, p<0.01 (0.0461***, survives two-tailed p=.0074)"
+          },
+          {
+            "claim": "no comparable rise before stock acquisitions",
+            "table_cell": "tab:empire_building_did col 6 PreAnnounceQtr (UncResCEO, stock)",
+            "sign": "negative, n.s. (-0.0429)"
+          },
+          {
+            "claim": "it becomes indistinguishable from zero once the deal is announced",
+            "table_cell": "tab:empire_drop_matched col 1 GAP (UncResCEO)",
+            "sign": "near zero, n.s. (0.0018)"
+          },
+          {
+            "claim": "the cash that funds the purchase persists on the balance sheet until the deal closes",
+            "table_cell": "tab:empire_drop_matched col 2 (CashRatio): PRE1-GAP drop n.s. (no fall at announcement) + GAP-POST 0.0210***",
+            "sign": "no decline at announcement (PRE1-GAP 0.0006 n.s.); falls only at completion (GAP-POST 0.0210***, p<0.01)"
+          },
+          {
+            "claim": "the elevation concentrates in cash acquisitions rather than stock acquisitions, a difference that survives a formal pooled test",
+            "table_cell": "tab:empire_cashspec col 1 Cash-Stock formal Wald difference (UncResCEO)",
+            "sign": "positive, p<0.05 two-tailed (0.0983**, p=.039)"
+          },
+          {
+            "claim": "not explained by analysts devoting more of the call to cash questions",
+            "table_cell": "tab:reason_gating col 1/2 PreAnnounceQtr + interaction; tab:cash_scrutiny_channel Panel A CashScrutiny",
+            "sign": "pre-announce stays positive sig (0.0413***); interaction n.s. (-0.0056); scrutiny direct effect ~0 n.s. (-0.0000)"
+          },
+          {
+            "claim": "the residual is unrelated to the firm's post-call bid-ask spread, while the scripted presentation is positively associated with it (abstract-P1-i, added 2026-06-24)",
+            "table_cell": "tab:h14c_ceo2_decomp (Section 4.2): residual UncResCEO on the 25-day post-call spread n.s. in all 12 specs (baseline -0.0594, SE 0.1068); scripted presentation UncPreCEO positive (one-tailed; 4/6 contemporaneous; all 3 firm-FE)",
+            "sign": "residual: null (n.s.); presentation: positive (one-tailed). Stated as two per-component facts, NOT a tested between-component difference."
+          }
+        ],
+        "number_audit": [
+          {
+            "number": "2002 to 2018",
+            "source": "sample window; tab:summary_stats note (sample period 2002--2018); section3.1 P4 final_prose"
+          }
+        ],
+        "dash_free": true,
+        "no_coefficients": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,286 @@
+{
+  "_derived_from": "corpus_audited.json @ commit 74b7a0f8 (FROZEN); 9 audit-only fields stripped; prose to be written fresh",
+  "_bright_lines": [
+    "masking = MOTIVATION, not mechanism / not identification",
+    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
+    "cite Shleifer-Vishny + Louis as EARNINGS/VALUATION, NEVER tone; thewissen = tone (preprint, supplementary)",
+    "SOURCE mechanism (compliance-constrained vs strategic) stays OPEN",
+    "war-chest / cash-accumulation CAUSE stays OPEN (C6 cause 0.0064 n.s.)",
+    "concentration = motivated, NOT identified; correlational, within-firm, no causal id",
+    "concentration-not-strict-specificity; 'we interpret, we do not detect'",
+    "each section's own register_locks are bright lines; a fix that hardens/removes a hedge is INVALID"
+  ],
+  "section_id": "4.2",
+  "title": "Outsider Reactions: The Bid-Ask Spread",
+  "guards_added": [],
+  "section_context": {
+    "register_global": [
+      "correlational / no causal identification",
+      "spread coefficients are in the table's basis-point-scaled units (Spread_25D x 10^4); report as shown, do not convert",
+      "speech-component IVs are tested ONE-TAILED (beta>0) per the table note; state one-tailed as an honest secondary qualifier",
+      "our linguistic measure is uncertainty-WORD frequency (DWZ), NOT BGT's Fog complexity; BGT alignment is in DIRECTION, not identical construct",
+      "regressions include a lagged dependent variable (persistence-adjusted association)",
+      "the channel split is described as two per-component facts (the presentation positively associated with the spread; the residual not detectably associated), consistent with a channel difference, never as a tested between-component difference. State once that the difference between the two components is not tested directly. This register also governs the abstract, the introduction, and the conclusion (advisor, 2026-06-15)."
+    ],
+    "allocation_coverage": {
+      "all_phaseA_props_homed": "Four planned props homed 1:1 with four paragraphs: 4.2-P1->PARA1 (setup + double anchor, 2 props), 4.2-P2->PARA2 (residual null), 4.2-P3->PARA3 (presentation positive, hedged + reconciled), 4.2-P4->PARA4 (synthesis + Section 3 shield). Residual null leads the body (clean, load-bearing); presentation positive follows (weaker, hedged). CCCL (h18) DROPPED 2026-06-15 (10-K omitted-variable confound; the same info-environment claim is made cleanly by the spread).",
+      "summary_stats_todo": "User directive 2026-06-15: add the bid-ask spread variable (BGTLevel_Spread, 25-day post-call) as ROWS in the summary-stats table. Pending investigation of the generator + sample (the h14c spread sample N=42,625 differs from the run-up sample); resolve sample basis before adding rows.",
+      "gaps": [
+        "The presentation positive is contemporaneous only and one-tailed; disclosed in PARA3, not concealed.",
+        "Our linguistic measure (uncertainty words) is not BGT's Fog; BGT alignment is directional, disclosed in PARA3.",
+        "The Section 3 shield rules out one alternative (outsider reaction); it does not positively prove the insider mechanism (PARA4)."
+      ]
+    }
+  },
+  "paragraphs": [
+    {
+      "para_id": "4.2-PARA1",
+      "order": 1,
+      "intent": {
+        "statement": "Pose the question and set the two priors. We ask whether the speech-uncertainty signal moves the post-call information environment, proxied by the bid-ask spread over the 25-trading-day window beginning on the call date (BGT 2018; the spread is the standard adverse-selection / information-asymmetry proxy). DWZ found that neither the presentation nor the residual uncertainty is associated with stock price or volume responses, and that the residual explains little of the market reaction, but DWZ never tested liquidity. BGT show that call language relates to information asymmetry with OPPOSITE signs for the scripted presentation (positive, obfuscation) and the spontaneous response (negative, informative). We decompose the spread by the three DWZ speech components.",
+        "reason": "The section's nulls and the presentation positive are only informative against a stated prior and a validated outcome proxy. P1 must (a) license the spread as an information-asymmetry proxy on BGT's own window, and (b) plant BOTH priors so P2 reads as an extension of DWZ and P3 reads as a confirmation of BGT -- the double anchor is the spine.",
+        "evidence": [
+          "tmp/nlm_bgt_spread.json (spread/illiquidity = information asymmetry; 25-day post-call window; presentation vs response split)",
+          "tmp/nlm_dwz_reactions.json (residual + presentation null for price/volume; residual explains little; DWZ never tested liquidity)",
+          "thesis_draft.tex Section 2.3 (the three-component decomposition the spread is split by)"
+        ]
+      },
+      "serves": [
+        "licenses the spread as the info-asymmetry outcome on BGT's window; plants the DWZ residual-null prior (P2 pays off) and the BGT presentation/response prior (P3 pays off)"
+      ],
+      "boundary": "Setup and anchors only; no own result. The DV is the bid-ask spread over the 25-day post-call window with a lagged DV; coefficients are in the table's basis-point-scaled units.",
+      "thin_claim": "We test whether the three speech components move the 25-day post-call bid-ask spread (an information-asymmetry proxy; BGT). Priors: DWZ found the residual and presentation inert to price/volume and never tested liquidity; BGT found presentation language raises, and response language lowers, information asymmetry.",
+      "guardrails": [
+        "Spread = info-asymmetry proxy is BGT's framing (their main DV is Amihud illiquidity; the bid-ask spread lambda is their alternative); state accordingly, do not overstate the spread as their headline measure.",
+        "DWZ never tested a spread/liquidity outcome (verbatim 'No') -- frame P2 as an EXTENSION, never a literal replication of a DWZ spread test.",
+        "BGT use Fog complexity; we use uncertainty words -- alignment is directional."
+      ],
+      "lit_body": "BGT 2018 (spread = information asymmetry; presentation vs response split; 25-day window); DWZ 2021 (residual/presentation market-null prior).",
+      "proposition_chain": [
+        {
+          "prop_id": "4.2-PARA1-a",
+          "statement": "We ask whether the speech-uncertainty signal moves the post-call information environment, proxied by the firm's bid-ask spread over the 25-trading-day window beginning on the call date, the standard adverse-selection proxy used for this purpose (BGT 2018, whose post-call window we adopt), and we decompose the spread by the three speech components of Section 2.3.",
+          "role_in_paragraph": "setup -- defines the test, the outcome proxy, and the window",
+          "type": "framing",
+          "reason": "First: the reader needs the outcome (spread = info-asymmetry proxy) and the window before any prior or result can be read.",
+          "evidence": [
+            "tmp/nlm_bgt_spread.json (bid-ask spread = information-asymmetry proxy; window 'starting the day of the call and ending 25 trading days subsequent to the call')",
+            "thesis_draft.tex Section 2.3 (three-component decomposition)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational"
+          ],
+          "depends_on": [
+            "2.3:P2.2"
+          ]
+        },
+        {
+          "prop_id": "4.2-PARA1-b",
+          "statement": "Two priors frame the test. DWZ found that neither presentation nor residual uncertainty is associated with stock price or volume responses and that the residual explains little of the market reaction, but they never examined a liquidity outcome. BGT found that call language relates to information asymmetry with opposite signs across the call's two segments: complexity in the scripted presentation is positively associated with information asymmetry (obfuscation), while complexity in the spontaneous response is negatively associated with it (information).",
+          "role_in_paragraph": "anchor -- the DWZ and BGT priors the two results pay off",
+          "type": "lit-anchor",
+          "reason": "Second: the priors must precede the results so P2 reads as extending DWZ and P3 as confirming BGT.",
+          "evidence": [
+            "tmp/nlm_dwz_reactions.json (verbatim price/volume null; residual explains little; explicit 'No' on liquidity)",
+            "tmp/nlm_bgt_spread.json (verbatim presentation positive / response negative with information asymmetry)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational"
+          ],
+          "depends_on": [
+            "4.2-PARA1-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    },
+    {
+      "para_id": "4.2-PARA2",
+      "order": 2,
+      "intent": {
+        "statement": "The residual is inert. UncResCEO carries no association with the post-call spread in any of the twelve specifications: contemporaneously the coefficients are small and insignificant (between -0.0594 and -0.1021 across the six contemporaneous columns; 42,625 calls), and they remain insignificant one quarter ahead (43,049 calls). This extends DWZ's finding that the residual carries no market reaction -- which they document for price and volume -- to the bid-ask spread, a liquidity outcome DWZ did not test, and it sits with BGT's result that the spontaneous response segment does not widen information asymmetry.",
+        "reason": "This is the load-bearing finding: a clean, consistent null across all twelve specifications. It needs no significance because it is the absence of an association; its weight comes from consistency and from matching DWZ's residual property on a new outcome.",
+        "evidence": [
+          "docs/Draft/thesis_tables.tex tab:h14c_ceo2_decomp (UncResCEO rows, all 12 cols n.s.; N 42,625 contemp / 43,049 lead)",
+          "tmp/nlm_dwz_reactions.json (DWZ residual market-null prior; never tested liquidity)",
+          "tmp/nlm_bgt_spread.json (response component negative / not widening information asymmetry)"
+        ]
+      },
+      "serves": [
+        "delivers the residual null and frames it as an extension of DWZ's residual market-inertness to liquidity; the clean half of the channel asymmetry"
+      ],
+      "boundary": "Residual row only; the presentation positive is P3. A failure to find, not an equivalence test.",
+      "thin_claim": "UncResCEO is null on the post-call spread in all twelve specifications (contemporaneous and one quarter ahead), extending DWZ's residual market-inertness to a liquidity outcome they did not test.",
+      "guardrails": [
+        "Null is absence-of-evidence, not a powered equivalence test; do not claim a proven zero.",
+        "Frame as EXTENSION of DWZ's price/volume null to liquidity, NOT a replication of a DWZ spread test (they ran none).",
+        "Report the coefficient range as shown (basis-point-scaled units); all n.s. under the one-tailed beta>0 test.",
+        "correlational."
+      ],
+      "lit_body": "DWZ 2021 (residual market-null, extended here to liquidity); BGT 2018 (response segment does not widen asymmetry).",
+      "proposition_chain": [
+        {
+          "prop_id": "4.2-PARA2-a",
+          "statement": "UncResCEO carries no association with the post-call bid-ask spread in any of the twelve specifications: contemporaneously the coefficients are small and insignificant (ranging from -0.0594 to -0.1021 across the six contemporaneous columns; 42,625 calls), and they remain insignificant one quarter ahead (43,049 calls). Because DWZ document the residual's market-inertness for price and volume but never test a liquidity outcome, this is an extension of that property to the bid-ask spread; it is also consistent with BGT's finding that the spontaneous response segment does not widen information asymmetry.",
+          "role_in_paragraph": "result -- the sole proposition; the residual null",
+          "type": "result-number",
+          "reason": "First in the body because it is the load-bearing, confound-proof finding and the half the section's identification payoff (P4) leans on; presented before the presentation positive (P3) so the clean result leads.",
+          "evidence": [
+            "docs/Draft/thesis_tables.tex tab:h14c_ceo2_decomp UncResCEO (contemp cols 1-6 -0.0594/-0.0687/-0.0882/-0.1021/-0.0757/-0.0893 all n.s.; lead cols 7-12 0.0825/0.0696/0.0742/0.0545/0.0984/0.0751 all n.s.)",
+            "tmp/nlm_dwz_reactions.json (residual 'explains little of the market reaction'; never tested liquidity)",
+            "tmp/nlm_bgt_spread.json (response Fog negative with information asymmetry)"
+          ],
+          "numbers": [
+            "UncResCEO contemporaneous -0.0594 (col 1, least negative) to -0.1021 (col 4, most negative), all n.s.",
+            "UncResCEO one-quarter-ahead 0.0545 (col 10) to 0.0984 (col 11), all n.s.",
+            "N 42,625 (contemporaneous), 43,049 (one quarter ahead)"
+          ],
+          "register_locks": [
+            "correlational",
+            "absence-of-evidence",
+            "supportive-not-definitive"
+          ],
+          "depends_on": [
+            "4.2-PARA1-b"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    },
+    {
+      "para_id": "4.2-PARA3",
+      "order": 3,
+      "intent": {
+        "statement": "The scripted presentation is the segment outsiders price. UncPreCEO loads positively on the contemporaneous spread, significant in four of the six contemporaneous specifications (0.1664, p<0.05, column 1; 0.3496, p<0.01, column 2; 0.2945, p<0.01, column 4; 0.1644, p<0.10, column 6; one-tailed), including all three firm-fixed-effect specifications; it is insignificant in the two industry-fixed-effect specifications with extended controls (columns 3 and 5) and in all six one-quarter-ahead specifications. ClarityCEO is null throughout. This is consistent with BGT's positive presentation-language / information-asymmetry relation (the obfuscation component). It does not contradict the prior finding of no presentation effect on price or volume, because the spread is an information-asymmetry outcome rather than a price or volume reaction.",
+        "reason": "The positive completes the channel asymmetry but is the weaker, more fragile result; it must be hedged (one-tailed; contemporaneous only; attenuates under industry FE with extended controls) and explicitly reconciled with the prior price/volume null to pre-empt the obvious objection.",
+        "evidence": [
+          "docs/Draft/thesis_tables.tex tab:h14c_ceo2_decomp (UncPreCEO contemp cols 1,2,4,6 sig; cols 3,5 n.s.; lead cols 7-12 n.s.; ClarityCEO all n.s.)",
+          "tmp/nlm_bgt_spread.json (presentation Fog positive with information asymmetry, obfuscation component)",
+          "tmp/nlm_dwz_reactions.json (presentation null for price/volume; 'high UncPreCEO engenders stronger analyst responses')"
+        ]
+      },
+      "serves": [
+        "delivers the presentation positive and reconciles it with DWZ (info-asymmetry, not price/volume) and BGT (obfuscation); the second half of the channel asymmetry"
+      ],
+      "boundary": "Presentation row only; synthesis and the Section 3 payoff are P4. No causal claim.",
+      "thin_claim": "UncPreCEO is positively associated with the contemporaneous spread (one-tailed; four of six contemporaneous specs; all three firm-FE specs; null one quarter ahead and under industry FE with extended controls), consistent with BGT's obfuscation component and DWZ's presentation-moves-outsiders; not in tension with DWZ's presentation price/volume null because the spread is an information-asymmetry outcome.",
+      "guardrails": [
+        "MANDATORY reconciliation: DWZ's presentation null is for PRICE and VOLUME; the spread is an INFORMATION-ASYMMETRY outcome (DWZ's analyst family), so the positive is consistent with DWZ, not a contradiction. State this explicitly.",
+        "One-tailed (beta>0) per table note; state as an honest qualifier.",
+        "Contemporaneous only -- all six one-quarter-ahead specs null; attenuates in the two industry-FE + extended-controls specs (cols 3, 5).",
+        "Uncertainty words, not BGT Fog -- 'consistent with', not 'identical to'.",
+        "ClarityCEO null throughout; do not feature the noisy large firm-FE Clarity point estimates (n.s.).",
+        "correlational / mechanism-open."
+      ],
+      "lit_body": "BGT 2018 (presentation language positively associated with information asymmetry; obfuscation); DWZ 2021 (presentation moves outsiders -- analysts; null for price/volume).",
+      "proposition_chain": [
+        {
+          "prop_id": "4.2-PARA3-a",
+          "statement": "UncPreCEO loads positively on the contemporaneous spread, significant in four of the six contemporaneous specifications (0.1664, p<0.05, column 1; 0.3496, p<0.01, column 2; 0.2945, p<0.01, column 4; 0.1644, p<0.10, column 6; one-tailed), including all three firm-fixed-effect specifications, while it is insignificant in the two industry-fixed-effect specifications with extended controls (columns 3 and 5) and in all six one-quarter-ahead specifications, and ClarityCEO is null throughout. The pattern is consistent with BGT's positive relation between scripted-presentation language and information asymmetry (the obfuscation component) and with DWZ's finding that the presentation, not the residual, is the segment outsiders respond to; it does not contradict DWZ's presentation null for stock price and volume, because the bid-ask spread is an information-asymmetry outcome rather than a price or volume reaction.",
+          "role_in_paragraph": "result -- the sole proposition; the presentation positive, hedged and reconciled",
+          "type": "result-number",
+          "reason": "Second in the body: it completes the two-audience split but is weaker and must follow the clean residual null and carry its own hedges plus the DWZ reconciliation.",
+          "evidence": [
+            "docs/Draft/thesis_tables.tex tab:h14c_ceo2_decomp UncPreCEO (col 1 0.1664**, col 2 0.3496***, col 3 0.0814 n.s., col 4 0.2945***, col 5 0.0108 n.s., col 6 0.1644*; lead cols 7-12 all n.s.) and ClarityCEO (all 12 n.s.)",
+            "tmp/nlm_bgt_spread.json (presentation positive with information asymmetry)",
+            "tmp/nlm_dwz_reactions.json (presentation null price/volume; presentation engenders stronger analyst responses)"
+          ],
+          "numbers": [
+            "UncPreCEO 0.1664** (col 1, SE 0.0946), 0.3496*** (col 2, SE 0.1253), 0.2945*** (col 4, SE 0.1229), 0.1644* (col 6, SE 0.1184) -- one-tailed",
+            "UncPreCEO 0.0814 (col 3), 0.0108 (col 5) -- n.s.; all six one-quarter-ahead n.s.",
+            "ClarityCEO n.s. in all 12 columns"
+          ],
+          "register_locks": [
+            "correlational",
+            "one-tailed",
+            "mechanism-open",
+            "contemporaneous-only"
+          ],
+          "depends_on": [
+            "4.2-PARA2-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    },
+    {
+      "para_id": "4.2-PARA4",
+      "order": 4,
+      "intent": {
+        "statement": "Synthesis and the payoff for the main analysis. The two segments of the same call split by audience: the scripted presentation moves the outside information environment (wider contemporaneous spreads), while the improvised residual does not -- a channel asymmetry that sits inside DWZ's own scripted-versus-spontaneous architecture and matches BGT's presentation-versus-response split. The payoff for Section 3: because outsiders do not price the residual, the pre-announcement run-up in the residual cannot be an artifact of outsider reaction; it reads as a private, insider-side signal.",
+        "reason": "The section earns its place by closing the loop -- naming the channel asymmetry and converting the residual null into an identification shield for the main result, which is the thesis-level reason to run these outcomes at all.",
+        "evidence": [
+          "section4.2_paragraph_ledger.json 4.2-PARA2 (residual null) + 4.2-PARA3 (presentation positive)",
+          "tmp/nlm_dwz_reactions.json (scripted-vs-spontaneous architecture; residual market-inert)",
+          "tmp/nlm_bgt_spread.json (presentation vs response split)",
+          "sec34_body_from_ledgers.tex Section 3 (the pre-announcement run-up in UncResCEO)"
+        ]
+      },
+      "serves": [
+        "names the channel asymmetry; converts the residual null into a Section 3 identification shield (the run-up is not an outsider-reaction artifact)"
+      ],
+      "boundary": "Synthesis only; no new result. The presentation effect is contemporaneous and modest; no causal or normative claim.",
+      "thin_claim": "Two segments, two audiences: presentation moves the outside information environment, the residual does not. Because outsiders do not price the residual, the Section 3 run-up cannot be an outsider-reaction artifact; it is a private insider signal.",
+      "guardrails": [
+        "Characterize a regularity within DWZ's existing architecture; do not claim novelty of the decomposition or a causal channel.",
+        "The presentation effect is contemporaneous and modest; do not inflate it in the synthesis.",
+        "The identification point is a shield (rules out one alternative), not a positive proof of the insider mechanism.",
+        "correlational / no-identification / supportive-not-definitive."
+      ],
+      "lit_body": "DWZ 2021 (scripted-vs-spontaneous architecture); BGT 2018 (presentation vs response).",
+      "proposition_chain": [
+        {
+          "prop_id": "4.2-PARA4-a",
+          "statement": "Two segments of the same call split by audience: the scripted presentation moves the outside information environment, widening the contemporaneous spread, while the improvised residual does not -- a channel asymmetry that sits within DWZ's own scripted-versus-spontaneous framing and matches BGT's presentation-versus-response split. The payoff for the main analysis is an identification one: because outsiders do not price the residual, the pre-announcement run-up documented in Section 3 is unlikely to be an artifact of outsider reaction and is more readily read as a private, insider-side signal.",
+          "role_in_paragraph": "synthesis -- the sole proposition; channel asymmetry + Section 3 shield",
+          "type": "framing",
+          "reason": "Last because it governs how the two results are read and connects them to the main analysis; it closes the subsection.",
+          "evidence": [
+            "section4.2_paragraph_ledger.json 4.2-PARA2-a + 4.2-PARA3-a",
+            "tmp/nlm_dwz_reactions.json (residual market-inert; scripted-vs-spontaneous)",
+            "tmp/nlm_bgt_spread.json (presentation vs response opposite signs)",
+            "sec34_body_from_ledgers.tex Section 3 (UncResCEO pre-announcement run-up)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "no-identification",
+            "supportive-not-definitive"
+          ],
+          "depends_on": [
+            "4.2-PARA2-a",
+            "4.2-PARA3-a",
+            "3.2-PARA2-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    }
+  ]
+}

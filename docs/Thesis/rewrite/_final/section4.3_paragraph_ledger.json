@@ -1,0 +1,265 @@
+{
+  "_derived_from": "corpus_audited.json @ commit 74b7a0f8 (FROZEN); 9 audit-only fields stripped; prose to be written fresh",
+  "_bright_lines": [
+    "masking = MOTIVATION, not mechanism / not identification",
+    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
+    "cite Shleifer-Vishny + Louis as EARNINGS/VALUATION, NEVER tone; thewissen = tone (preprint, supplementary)",
+    "SOURCE mechanism (compliance-constrained vs strategic) stays OPEN",
+    "war-chest / cash-accumulation CAUSE stays OPEN (C6 cause 0.0064 n.s.)",
+    "concentration = motivated, NOT identified; correlational, within-firm, no causal id",
+    "concentration-not-strict-specificity; 'we interpret, we do not detect'",
+    "each section's own register_locks are bright lines; a fix that hardens/removes a hedge is INVALID"
+  ],
+  "section_id": "4.3",
+  "title": "Robustness: Withdrawal as a Resolution Event",
+  "guards_added": [],
+  "section_context": {
+    "register_global": [
+      "correlational, no causal identification; coefficients in the table's units (the same scale as tab:empire_drop_matched), reported as shown; two-tailed throughout.",
+      "Author voice: state each concern as a design property and as the author's own methodological point (because the post bin is dated to completion, the peak-to-completion leg is estimated only over deals that complete), never as the objection of an outside party, in any prose or the title.",
+      "Do not oversell: adding 89 firm-quarters and one firm is about 0.3 percent of the sample, so the decline is near-mechanically unchanged; survival is a weak attenuation check, not strong evidence against selection (advisor, 2026-06-15).",
+      "The load-bearing reassurance is structural: the peak-to-gap (announcement) leg never conditions on which deals complete, so paragraph four leads with it. Use consistent with, never robust.",
+      "Use the word peak only for the residual; the cash column has no single peak here, so name cash contrasts plainly (from its pre-announcement level to resolution)."
+    ],
+    "allocation_coverage": {
+      "all_props_homed": "Four propositions homed one to one with four paragraphs: 4.3-P1 (design property and exempt leg) to PARA1; 4.3-P2 (resolution-inclusive check, modest) to PARA2; 4.3-P3 (surviving decline) to PARA3; 4.3-P4 (honest bound and structural reassurance) to PARA4.",
+      "gaps": [
+        "Low power disclosed in PARA4 (89 firm-quarters, one firm, about 0.3 percent; survival near mechanical).",
+        "The structural peak-to-gap leg, not this supplement, is the load-bearing reassurance (PARA1 plants it, PARA4 leads with it)."
+      ]
+    }
+  },
+  "paragraphs": [
+    {
+      "para_id": "4.3-PARA1",
+      "order": 1,
+      "intent": {
+        "statement": "State the design property. The Section 3.3 event study dates the post bin to completion: a deal's quarters enter the post bin only once it has closed, and quarters following a withdrawal are dropped from the event clock. Two of the three round-trip contrasts (peak-to-completion and gap-to-completion) are therefore estimated only over deals that complete; because completing and withdrawn deals need not be alike, part of the post-completion decline could in principle reflect which deals complete rather than the resolution of the disclosure state. The peak-to-gap contrast is exempt: it is measured at the public announcement, a point every announced deal reaches whatever its outcome.",
+        "reason": "The check only reads against this property, so P1 names the completion-dating, identifies the two exposed legs, and plants the exempt peak-to-gap leg (the eventual load-bearing answer) before any number.",
+        "evidence": [
+          "section3.3_paragraph_ledger.json PARA1 (the post bin is the quarters after completion) and PARA3 (the three legs).",
+          "src/f1d/econometric/empire_drop_test.py, build_event (post-withdrawal rows dropped; the post bin is completed deals).",
+          "src/f1d/econometric/robustness_drop_sec43_44.py, build_event_resolution."
+        ]
+      },
+      "serves": [
+        "names the completion-dated post bin and the two exposed legs; plants the exempt peak-to-gap leg as the structural answer paragraph four returns to"
+      ],
+      "boundary": "Design property only; no result, no check yet. Author voice; no external critic.",
+      "thin_claim": "The post bin is dated to completion, so the peak-to-completion and gap-to-completion legs are estimated only over deals that complete; the peak-to-gap leg is exempt (measured at announcement).",
+      "guardrails": [
+        "Author voice (because the post bin is dated to completion); state it as the author's own methodological point, not an outside party's.",
+        "Name the peak-to-gap leg as exempt and measured at the public announcement.",
+        "correlational, no identification."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "4.3-PARA1-a",
+          "statement": "Section 3.3's post bin is dated to completion (post-withdrawal quarters dropped), so the peak-to-completion and gap-to-completion contrasts are estimated only over deals that complete, and part of the post-completion decline could in principle reflect which deals complete.",
+          "role_in_paragraph": "premise: the exposed legs",
+          "type": "design-method",
+          "reason": "First: the completion-dating defines what the check targets.",
+          "evidence": [
+            "src/f1d/econometric/empire_drop_test.py, build_event",
+            "section3.3_paragraph_ledger.json PARA1"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "no-identification"
+          ],
+          "depends_on": [
+            "3.3-PARA3-a"
+          ]
+        },
+        {
+          "prop_id": "4.3-PARA1-b",
+          "statement": "The peak-to-gap contrast is exempt: it is measured at the public announcement, a point every announced deal reaches whatever its eventual outcome, so it conditions on nothing that follows.",
+          "role_in_paragraph": "premise: the exempt structural leg",
+          "type": "framing",
+          "reason": "Plants the structural answer that paragraph four makes load-bearing.",
+          "evidence": [
+            "section3.3_paragraph_ledger.json PARA3 (the gap is dated to announcement)"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "no-identification"
+          ],
+          "depends_on": [
+            "4.3-PARA1-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed or cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    },
+    {
+      "para_id": "4.3-PARA2",
+      "order": 2,
+      "intent": {
+        "statement": "Run the supplementary check with a modest rationale. A withdrawal ends the disclosure state as surely as a completion does: once a pending deal is called off and disclosed, the executive is no longer answering around it. Redefine the post bin so that the quarters at and after a withdrawal enter it alongside the completed quarters, and re-estimate the Section 2.4 event study on this resolution-inclusive sample (point to the table). Folding in the withdrawn deals asks whether the post-resolution decline is particular to the deals that complete or appears whenever the disclosure state resolves. The framing is modest, not a strong claim that attenuation would prove an artifact; the power bound is paragraph four.",
+        "reason": "P2 supplies the design's rationale only. A strong survives-equals-real, attenuates-equals-artifact framing would write a check the low-powered sample cannot honour, so the rationale is stated as a question the check asks, not a discriminating test.",
+        "evidence": [
+          "src/f1d/econometric/robustness_drop_sec43_44.py, build_event_resolution (the post bin counts completion or withdrawal at and after the withdrawal quarter).",
+          "docs/Draft/_empire_drop_resolution.tex, label tab:empire_drop_resolution."
+        ]
+      },
+      "serves": [
+        "defines the resolution-inclusive post bin and its modest rationale (a withdrawal resolves the disclosure state); points to the table"
+      ],
+      "boundary": "Design rationale only; no result, no power claim (paragraph four). Modest framing.",
+      "thin_claim": "Redefine the post bin to count any resolution (completion or withdrawal) and re-estimate; the check asks whether the decline is particular to completers or appears whenever the state resolves.",
+      "guardrails": [
+        "Modest rationale, not a strong attenuation-equals-artifact claim (the power bound is paragraph four).",
+        "Author voice; no external critic.",
+        "correlational."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "4.3-PARA2-a",
+          "statement": "Because a withdrawal ends the disclosure state as surely as a completion, we redefine the post bin so the quarters at and after a withdrawal enter it alongside the completed quarters and re-estimate the Section 2.4 event study; this asks whether the post-resolution decline is particular to the deals that complete or appears whenever the disclosure state resolves.",
+          "role_in_paragraph": "design: the resolution-inclusive check and its modest rationale",
+          "type": "design-method",
+          "reason": "Second: the check and its rationale precede the result, framed modestly so paragraph four need not walk back a strong claim.",
+          "evidence": [
+            "src/f1d/econometric/robustness_drop_sec43_44.py, build_event_resolution",
+            "docs/Draft/_empire_drop_resolution.tex"
+          ],
+          "numbers": [],
+          "register_locks": [
+            "correlational",
+            "supportive-not-definitive"
+          ],
+          "depends_on": [
+            "4.3-PARA1-b"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed or cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    },
+    {
+      "para_id": "4.3-PARA3",
+      "order": 3,
+      "intent": {
+        "statement": "Report the result. Residual uncertainty still falls from its pre-announcement peak to the resolved quarters by 0.0687 (p<.01), against 0.0723 in the main specification; the announcement-quarter leg (peak to gap) is 0.0457 (p<.05), almost exactly the 0.0455 of the main result; the cash leg declines from its pre-announcement level to resolution by 0.0204 (p<.01). Treating a withdrawn deal as a resolution leaves the round trip in place.",
+        "reason": "P3 pays off the design with all three numbers against the main specification; the word peak is used only for the residual, and the cash leg is named plainly.",
+        "evidence": [
+          "outputs/econometric/robustness_drop_sec43_44/2026-06-15_070702/summary.json, sec43_resolution.",
+          "docs/Draft/_empire_drop_resolution.tex."
+        ]
+      },
+      "serves": [
+        "delivers the surviving decline (0.0687), the unchanged announcement leg (0.0457), and the cash leg (0.0204)"
+      ],
+      "boundary": "Result only; the power bound is paragraph four. No causal claim.",
+      "thin_claim": "Peak-to-completion 0.0687 (against 0.0723), peak-to-gap 0.0457 (against 0.0455), cash from its pre-announcement level to resolution 0.0204.",
+      "guardrails": [
+        "Report numbers as shown (two-tailed); use the word peak only for the residual.",
+        "Frame as holds or in place, not robust (the bound is paragraph four).",
+        "correlational."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "4.3-PARA3-a",
+          "statement": "On the resolution-inclusive sample the residual falls from its pre-announcement peak to the resolved quarters by 0.0687 (p<.01) against 0.0723 in the main specification, the peak-to-gap leg is 0.0457 (p<.05) against 0.0455, and the cash leg declines from its pre-announcement level to resolution by 0.0204 (p<.01).",
+          "role_in_paragraph": "result: the surviving round trip",
+          "type": "result-number",
+          "reason": "Third: the numbers pay off the design before the power bound caps them.",
+          "evidence": [
+            "outputs/econometric/robustness_drop_sec43_44/2026-06-15_070702/summary.json, sec43_resolution",
+            "docs/Draft/_empire_drop_resolution.tex"
+          ],
+          "numbers": [
+            "residual peak-to-completion 0.0687 (p<.01), against 0.0723 (p<.01) in the main specification",
+            "residual peak-to-gap 0.0457 (p<.05), against 0.0455 (p<.05)",
+            "cash pre-announcement-to-resolution 0.0204 (p<.01)",
+            "N 28,191 over 1,321 firms"
+          ],
+          "register_locks": [
+            "correlational",
+            "supportive-not-definitive"
+          ],
+          "depends_on": [
+            "4.3-PARA2-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed or cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    },
+    {
+      "para_id": "4.3-PARA4",
+      "order": 4,
+      "intent": {
+        "statement": "Bound the check honestly and name the real reassurance. Few first deals are withdrawn and then observed for complete-case quarters within the post window, so the resolution-inclusive sample adds only 89 firm-quarters and one firm to the 28,102 of the main analysis; with so little new data the post-completion decline can barely move, so the result shows that the handful of withdrawn deals behave like the completed ones rather than ruling out a completion-driven reading on its own. The firmer ground is structural: the peak-to-gap leg is measured at announcement and conditions on nothing that follows, so the resolution of the residual at announcement never depended on which deals complete. Read as consistent with the main specification, not as an independent test.",
+        "reason": "Because the 0.3 percent sample makes survival near mechanical, P4 discloses the bound and leads the reassurance with the structural peak-to-gap argument rather than the supplement (advisor, 2026-06-15).",
+        "evidence": [
+          "outputs/econometric/robustness_drop_sec43_44/2026-06-15_070702/summary.json (the resolution-inclusive N is 28,191 against the baseline 28,102).",
+          "section3.3_paragraph_ledger.json PARA3 (the peak-to-gap leg is dated to announcement)."
+        ]
+      },
+      "serves": [
+        "discloses the bound of 89 firm-quarters and one firm (about 0.3 percent); makes the structural peak-to-gap leg the load-bearing reassurance; sets the register to consistent with"
+      ],
+      "boundary": "Honest bound and structural argument; no new result. Closes the subsection.",
+      "thin_claim": "The check adds only 89 firm-quarters and one firm, so survival is near mechanical; the real reassurance against selection is the peak-to-gap leg, which never conditions on completion; consistent with, not an independent test.",
+      "guardrails": [
+        "Disclose the addition of 89 firm-quarters and one firm and that the decline can barely move; never write robust or a defeat of selection.",
+        "Lead the reassurance with the structural peak-to-gap leg.",
+        "correlational, supportive not definitive, low power disclosed."
+      ],
+      "lit_body": "none new",
+      "proposition_chain": [
+        {
+          "prop_id": "4.3-PARA4-a",
+          "statement": "The resolution-inclusive sample adds only 89 firm-quarters and one firm to the 28,102 of the main analysis, so the post-completion decline can barely move and the check shows the few withdrawn deals behave like the completed ones rather than ruling out a completion-driven reading; the firmer reassurance is structural, the peak-to-gap leg measured at announcement, so the resolution of the residual at announcement never depended on which deals complete, and the resolution-inclusive estimates are read as consistent with the main specification rather than as an independent test.",
+          "role_in_paragraph": "caveat: the honest bound and the structural reassurance",
+          "type": "framing",
+          "reason": "Last: it governs how the surviving decline is read and re-foregrounds the structural leg.",
+          "evidence": [
+            "outputs/econometric/robustness_drop_sec43_44/2026-06-15_070702/summary.json (N 28,191 against 28,102)",
+            "section3.3_paragraph_ledger.json PARA3"
+          ],
+          "numbers": [
+            "resolution-inclusive N 28,191 over 1,321 firms, against the main 28,102 over 1,320 (89 more firm-quarters, one more firm)"
+          ],
+          "register_locks": [
+            "correlational",
+            "supportive-not-definitive",
+            "low-power-disclosed"
+          ],
+          "depends_on": [
+            "4.3-PARA3-a"
+          ]
+        }
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed or cleared before prose",
+        "all_supported": true,
+        "unlocked": true
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (chain-work clone; prose regenerated after chain ratified)"
+    }
+  ]
+}
