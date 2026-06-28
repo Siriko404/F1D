@@ -1,6 +1,6 @@
 // harness.template.mjs — Phase 3: the prose-writing Workflow (the agentic core).
-// TEMPLATE: the build step (build_harness.py) replaces __BRIEFS__ with briefs.json and
-// __GATES__ with gates.mjs source, emitting a self-contained ASCII script for the Workflow tool.
+// TEMPLATE: the build step (build_harness.py) injects briefs.json + gates.mjs source at the two
+// placeholders below (one each), emitting a self-contained ASCII script for the Workflow tool.
 // Unit = one section. Per section: L1 writers(3) -> GATE -> L2 editor -> GATE -> L3 audit(6 lanes) -> L4 judge -> FINAL GATE.
 // Lessons: §2 paraphrased panel, NO examples, identical hard constraints · §3 deterministic JS gate is the spine ·
 // §4 red-team synthesizes by reference · P9 auditors PROPOSE only · P8 null-degrade · B5 sequential batches.

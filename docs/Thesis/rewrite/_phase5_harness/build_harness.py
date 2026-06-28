@@ -12,6 +12,11 @@ gates = (H/"gates.mjs").read_text(encoding="utf-8")
 # gates.mjs -> inline: drop the `export ` keywords (no module exports in the workflow body)
 gates_inline = re.sub(r'^export\s+', '', gates, flags=re.M)
 
+# each placeholder MUST occur exactly once -- a stray mention (e.g. in a comment) would double-embed
+# the 460KB briefs and blow past the Workflow 512KB script cap (this bit us once).
+for ph, n in (("__BRIEFS__", tmpl.count("__BRIEFS__")), ("__GATES__", tmpl.count("__GATES__"))):
+    if n != 1: print(f"[FAIL] placeholder {ph} appears {n}x in template (must be exactly 1)"); sys.exit(1)
+
 out = tmpl.replace("__BRIEFS__", briefs.strip()).replace("__GATES__", gates_inline)
 
 # sanitize: transliterate common non-ASCII (template comments/prompts) -> ASCII; normalize newlines
@@ -24,9 +29,13 @@ bad = [(i, c) for i, c in enumerate(out) if ord(c) > 0x7f or (ord(c) < 0x20 and 
 if bad:
     print(f"[FAIL] {len(bad)} non-ASCII/ctrl chars remain (first @ {bad[0][0]}: {bad[0][1]!r} U+{ord(bad[0][1]):04X})"); sys.exit(1)
 
+CAP = 524288   # the Workflow tool's hard limit on BOTH `script` and `scriptPath` (bytes)
+if len(out) > CAP:
+    print(f"[FAIL] harness is {len(out)} bytes > Workflow cap {CAP} -- will not spawn. Trim briefs."); sys.exit(1)
+
 dest = H/"harness.mjs"
 dest.write_text(out, encoding="ascii", newline="\n")
-print(f"[ok] wrote {dest.name}: {len(out)} chars, pure ASCII, LF-only")
+print(f"[ok] wrote {dest.name}: {len(out)} chars ({CAP-len(out)} under cap), pure ASCII, LF-only")
 
 # syntax wrap-check via node (Function constructor; top-level await/return valid only in the async wrapper)
 checker = r'''
