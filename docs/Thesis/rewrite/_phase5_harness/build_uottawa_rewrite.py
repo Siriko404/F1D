@@ -34,7 +34,20 @@ def normalize(t):
     t = re.sub(r"\},\s*\\mathit\{", r"},\\allowbreak \\mathit{", t)
     return t
 
-prose_of = lambda sid: "\n\n".join(normalize(p["final_prose"].strip()) for p in SEC[sid]["paragraphs"])
+def repoint_45(t):
+    # Section 4.5 cites the ALL-DEALS panels; point those refs at the new combined robustness
+    # tables (which carry BOTH the first-deal and all-deals panels), and wire the two logit refs.
+    t = t.replace(r"\ref{tab:empire_building_did}", r"\ref{tab:rob_runup}")
+    t = t.replace(r"\ref{tab:empire_drop_matched}", r"\ref{tab:rob_timing_matched}")
+    t = t.replace(r"\ref{tab:empire_drop_placebo}", r"\ref{tab:rob_timing_placebo}")
+    t = t.replace(r"\ref{tab:empire_cashspec}", r"\ref{tab:rob_cashspec}")
+    t = t.replace("(Logit~A)", r"(Logit~A, Table~\ref{tab:logit_dealnext})")
+    t = t.replace("(Logit~B)", r"(Logit~B, Table~\ref{tab:logit_cashstock})")
+    return t
+
+def prose_of(sid):
+    body = "\n\n".join(normalize(p["final_prose"].strip()) for p in SEC[sid]["paragraphs"])
+    return repoint_45(body) if sid == "4.5" else body
 
 # ---- 1. clone every .tex in docs/Thesis so all \input deps resolve; originals untouched ----
 CLONE.mkdir(exist_ok=True)
@@ -62,6 +75,39 @@ SEC34 = (
  "\\section{Robustness: The Main Findings Without the First-Deal Restriction}\n\n" + prose_of("4.5") + "\n")
 (CLONE / "sec34_body_from_ledgers.tex").write_text(SEC34, encoding="utf-8")
 
+# ---- 2b. Section-4.5 robustness tables: 4 all-deals comparison tables + 2 logit ----
+# Sources: rob_4tables.tex (F1D data tree, the .tex Sina trusts) + logit_tables_final.tex (FE 3-col).
+PH3_ROOT = SRC.parents[1]                              # .../Data_Processing/F1D-phase3
+F1D_ROOT = Path(str(PH3_ROOT).replace("F1D-phase3", "F1D"))
+ROB_SRC = F1D_ROOT / "outputs" / "econometric" / "firstdeal_robustness" / "2026-06-23_162451" / "rob_4tables.tex"
+LOGIT_SRC = PH3_ROOT / "tmp" / "logit_tables_final.tex"
+
+def strip_doc(tex):
+    s = tex.split(r"\begin{document}", 1)[1].rsplit(r"\end{document}", 1)[0]
+    return s.replace(r"\pagestyle{empty}", "").strip()
+
+def fe_row(spec):                                       # one "Firm FE / Year-Qtr FE: Yes" row sized to the table
+    return "\\midrule\nFirm FE / Year-Qtr FE & " + " & ".join(["Yes"] * spec.count("c")) + " \\\\\n"
+
+rob = strip_doc(ROB_SRC.read_text(encoding="utf-8", errors="ignore"))
+chunks = [c.strip() for c in rob.split(r"\clearpage") if "\\begin{table}" in c]
+LABELS = ["tab:rob_runup", "tab:rob_timing_matched", "tab:rob_timing_placebo", "tab:rob_cashspec"]
+LAND = {0, 3}                                           # the wide run-up (16-col) + cash-spec (6-col) go landscape
+robtex = []
+for k, (c, lab) in enumerate(zip(chunks, LABELS)):
+    c = c.replace(r"\begin{table}[H]", r"\begin{table}[htbp]")          # float[H] needs a package we don't load
+    c = re.sub(r"\\caption\{Table 5\.\d+ --- ", r"\\caption{", c)       # drop the hardcoded "Table 5.x" prefix
+    c = re.sub(r"(\\caption\{[^}]*\})", r"\1\\label{%s}" % lab, c, count=1)
+    spec = re.search(r"\\begin\{tabular\}\{([lc]+)\}", c).group(1)
+    c = c.replace(r"\bottomrule", fe_row(spec) + r"\bottomrule", 1)
+    robtex.append(("\\begin{landscape}\n" + c + "\n\\end{landscape}") if k in LAND else c)
+logit = strip_doc(LOGIT_SRC.read_text(encoding="utf-8", errors="ignore"))   # already labelled tab:logit_*
+robblock = ("% Section 4.5 robustness tables -- 4 all-deals comparison tables + 2 logit (FE 3-col).\n"
+            "% Wired from rob_4tables.tex + logit_tables_final.tex; FE row added per the robustness resume.\n"
+            + "\n\n\\clearpage\n\n".join(robtex) + "\n\n\\clearpage\n\n" + logit + "\n")
+(CLONE / "_robustness_tables.tex").write_text(robblock, encoding="utf-8")
+print("wrote _robustness_tables.tex: %d all-deals tables + 2 logit" % len(robtex))
+
 # ---- 3. splice the inline Chapter-2 (sections 2.1-2.5) into the cloned wrapper ----
 SEC2 = (
  "\n\n\\section{Conceptual Framework}\n\n" + prose_of("2.1") + "\n\n"
@@ -86,20 +132,25 @@ assert HEAD in wrap and TAIL in wrap and BIBEND in wrap, "wrapper anchors not fo
 i = wrap.index(HEAD) + len(HEAD)
 j = wrap.index(TAIL)
 tail = wrap[j:].replace(BIBEND, NEW_BIBS + "\n\n" + BIBEND, 1)
+tail = tail.replace(r"\input{_tables_from_bible.tex}",
+                    "\\input{_tables_from_bible.tex}\n\n\\clearpage\n% Section 4.5 robustness tables (all-deals + logit)\n\\input{_robustness_tables.tex}", 1)
+assert "_robustness_tables.tex" in tail, "robustness \\input not wired into wrapper"
 wrap_new = wrap[:i] + SEC2 + tail
 (CLONE / "thesis_draft_uottawa.tex").write_text(wrap_new, encoding="utf-8")
 print("spliced Chapter-2 + added 5 bibitems; wrapper now %d chars" % len(wrap_new))
 
 # ---- 4. compile (pdflatex x3 for TOC / List of Tables / refs; manual bib, no bibtex) ----
+# Use a distinct -jobname so a viewer holding thesis_draft_uottawa.pdf open never blocks the write.
+JOB = "thesis_uottawa_rev"
 ok = True
 for p in range(3):
-    r = subprocess.run(["pdflatex", "-interaction=nonstopmode", "thesis_draft_uottawa.tex"],
+    r = subprocess.run(["pdflatex", "-interaction=nonstopmode", "-jobname", JOB, "thesis_draft_uottawa.tex"],
                        cwd=CLONE, capture_output=True, text=True)
     if r.returncode != 0: ok = False
-pdf = CLONE / "thesis_draft_uottawa.pdf"
-log = (CLONE / "thesis_draft_uottawa.log").read_text(encoding="utf-8", errors="ignore") if (CLONE/"thesis_draft_uottawa.log").exists() else r.stdout
+pdf = CLONE / (JOB + ".pdf")
+log = (CLONE / (JOB + ".log")).read_text(encoding="utf-8", errors="ignore") if (CLONE/(JOB+".log")).exists() else r.stdout
 if pdf.exists():
-    pages = re.search(r"Output written on thesis_draft_uottawa\.pdf \((\d+) page", log)
+    pages = re.search(JOB + r"\.pdf \((\d+) page", log)
     undef = len(re.findall(r"Citation .* undefined|Reference .* undefined|LaTeX Warning: Reference", log))
     overfull = len(re.findall(r"Overfull \\hbox", log))
     print("PDF OK: pages=%s  undefined-ref/cite=%d  overfull-hbox=%d" %
