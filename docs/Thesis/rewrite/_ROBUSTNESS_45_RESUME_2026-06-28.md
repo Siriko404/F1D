@@ -75,9 +75,20 @@ the rob PDF merely omitted the FE row. → ACTION when §4.5 tables enter the th
 - FE numbers: `tmp/fe_results.json`. Logit table source: `tmp/logit_tables_final.tex` (3-col). PDF: `docs/Thesis/rob_ALL.pdf` (8pp).
 - main rob-table numbers (Sina trusts the .tex): `F1D/outputs/econometric/firstdeal_robustness/2026-06-23_162451/rob_4tables.tex`.
 
-## SCRIPTS (session scratchpad — reproducible, NOT cross-session durable)
-blast_inventory.py · build_final.py · merge_45.py · sync_fe_props.py · fe_binary.py · fe_data.py ·
-render_logit_3col.py · check_fe.py · sync_spec.py · arsenal_probe.py · gen_schema_tree.py.
+## CANONICAL REPO + REPRODUCIBILITY (cross-tree — read carefully)
+- **Canonical repo = F1D-phase3** (this commit `b8e3748b`, branch `phase4/masking-rewrite-harness`): the
+  `_proposals/` clones, `_robustness_insert_spec.json`, both resumes, and the **F1D-phase3 copy** of `rob_ALL.pdf`.
+- **F1D repo (SEPARATE working tree — NOT committed by this session)** holds the DATA-side provenance:
+  `rob_4tables.tex`, `outputs/econometric/firstdeal_robustness/2026-06-23_162451/`, and the F1D-tree copy of
+  `rob_ALL.pdf`. `merge_rob.py` writes rob_ALL.pdf to BOTH trees, but only the phase3 copy is committed here.
+  → treat the F1D-side files as potentially dirty/regenerated; re-verify before trusting.
+- **FE RECIPE now committed under `F1D-phase3/tmp/`** (reproducible): `fe_data.py` (FE numbers→`fe_results.json`),
+  `fe_binary.py`, `check_fe.py` (within-R² + dual-arm), `render_logit_3col.py` (3-col table), `merge_45.py` (the merge),
+  `sync_fe_props.py`, `sync_spec.py`. (To re-run FE: `python tmp/fe_data.py`, run from / pointed at the F1D data home.)
+- **`rob_ALL.pdf` pages 7-8 VISUALLY VERIFIED**: the 3rd `LPM + FE` column renders + aligns; `Firm/Year-Qtr FE: Yes`
+  row present; infeasible-logit note present. ("tables ✓" is a verified claim, not just a page-count.)
+- Other scratchpad scripts (blast_inventory · build_final · arsenal_probe · gen_schema_tree) are session-only
+  (build_final + gen_schema_tree's OUTPUTS are committed; the scripts are not critical to re-run).
 
 ## BIMODAL still holds
 JSON prop statements = MECHANICAL only (number + "survives/holds/n.s."). Interpretive framing (caveat-2, the
