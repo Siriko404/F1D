@@ -62,6 +62,12 @@
    "thewissen2024",
    "verrecchia1983"
   ],
+  "allowed_tokens_all": [
+   ".0074",
+   ".039",
+   "0.0210***",
+   "0.0455**"
+  ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -351,6 +357,11 @@
    "shleifer_vishny2003",
    "thewissen2024",
    "verrecchia1983"
+  ],
+  "allowed_tokens_all": [
+   ".0074",
+   "0.0210***",
+   "0.0455**"
   ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
@@ -1012,6 +1023,7 @@
    "thewissen2024",
    "verrecchia1983"
   ],
+  "allowed_tokens_all": [],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -1768,6 +1780,7 @@
    "thewissen2024",
    "verrecchia1983"
   ],
+  "allowed_tokens_all": [],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -2090,6 +2103,7 @@
    "thewissen2024",
    "verrecchia1983"
   ],
+  "allowed_tokens_all": [],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -2347,6 +2361,9 @@
    "shleifer_vishny2003",
    "thewissen2024",
    "verrecchia1983"
+  ],
+  "allowed_tokens_all": [
+   ".0074"
   ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
@@ -2718,6 +2735,16 @@
    "thewissen2024",
    "verrecchia1983"
   ],
+  "allowed_tokens_all": [
+   "0.0001***",
+   "0.003",
+   "0.0123*",
+   "0.0124**",
+   "0.0181**",
+   "0.0187**",
+   "0.7530***",
+   "0.8519***"
+  ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -2981,6 +3008,14 @@
    "shleifer_vishny2003",
    "thewissen2024",
    "verrecchia1983"
+  ],
+  "allowed_tokens_all": [
+   "-0.0000",
+   "0.0000",
+   "0.1127",
+   "0.1708",
+   "0.1806",
+   "0.3010"
   ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
@@ -3303,6 +3338,27 @@
    "shleifer_vishny2003",
    "thewissen2024",
    "verrecchia1983"
+  ],
+  "allowed_tokens_all": [
+   "-0.0036",
+   "-0.0429",
+   ".0074",
+   "0.0017",
+   "0.0051",
+   "0.0051***",
+   "0.0057",
+   "0.0070",
+   "0.0094",
+   "0.0172",
+   "0.0307",
+   "0.0461",
+   "0.0461***",
+   "0.1708",
+   "0.3010",
+   "0.7990",
+   "0.7990***",
+   "0.8013",
+   "0.8013***"
   ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
@@ -3640,6 +3696,43 @@
    "shleifer_vishny2003",
    "thewissen2024",
    "verrecchia1983"
+  ],
+  "allowed_tokens_all": [
+   "-0.0155***",
+   "-0.0250*",
+   "0.0006",
+   "0.0008",
+   "0.0018",
+   "0.0022",
+   "0.0024",
+   "0.0034",
+   "0.0042",
+   "0.0055",
+   "0.0058",
+   "0.0061**",
+   "0.0068",
+   "0.0108",
+   "0.0130",
+   "0.0174",
+   "0.0178",
+   "0.0181",
+   "0.0187",
+   "0.0190",
+   "0.0210***",
+   "0.0221",
+   "0.0225",
+   "0.0428*",
+   "0.0455**",
+   "0.0461",
+   "0.0461***",
+   "0.0473",
+   "0.0473***",
+   "0.0486***",
+   "0.0681***",
+   "0.0723***",
+   "0.3010",
+   "0.7547",
+   "0.7547***"
   ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
@@ -4059,6 +4152,31 @@
    "thewissen2024",
    "verrecchia1983"
   ],
+  "allowed_tokens_all": [
+   "-0.0056",
+   "-0.0404",
+   "-0.0524",
+   "-0.0756*",
+   ".039",
+   "0.0055",
+   "0.0064",
+   "0.0071",
+   "0.0092*",
+   "0.0105",
+   "0.0174",
+   "0.0185",
+   "0.0187",
+   "0.0299",
+   "0.0405",
+   "0.0436",
+   "0.0459**",
+   "0.0476",
+   "0.0486***",
+   "0.0681***",
+   "0.0983",
+   "0.0983**",
+   "0.3010"
+  ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -4409,6 +4527,33 @@
    "thewissen2024",
    "verrecchia1983"
   ],
+  "allowed_tokens_all": [
+   "+0.016",
+   "-0.0000",
+   "-0.0003",
+   "-0.0056",
+   "-0.027",
+   "0.0000",
+   "0.0001",
+   "0.0013",
+   "0.0074",
+   "0.0111",
+   "0.0177",
+   "0.0189",
+   "0.0194",
+   "0.0237",
+   "0.0408**",
+   "0.0413***",
+   "0.0439**",
+   "0.0749",
+   "0.0854",
+   "0.0949",
+   "0.0967",
+   "0.1127",
+   "0.1754***",
+   "0.7530***",
+   "0.8519***"
+  ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -4756,6 +4901,26 @@
    "thewissen2024",
    "verrecchia1983"
   ],
+  "allowed_tokens_all": [
+   "-0.0594",
+   "-0.1021",
+   "0.0108",
+   "0.0545",
+   "0.0814",
+   "0.0946",
+   "0.0984",
+   "0.1184",
+   "0.1229",
+   "0.1253",
+   "0.1644",
+   "0.1644*",
+   "0.1664",
+   "0.1664**",
+   "0.2945",
+   "0.2945***",
+   "0.3496",
+   "0.3496***"
+  ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -5066,6 +5231,13 @@
    "thewissen2024",
    "verrecchia1983"
   ],
+  "allowed_tokens_all": [
+   "0.0204",
+   "0.0455",
+   "0.0457",
+   "0.0687",
+   "0.0723"
+  ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -5345,6 +5517,14 @@
    "thewissen2024",
    "verrecchia1983"
   ],
+  "allowed_tokens_all": [
+   "0.0006",
+   "0.0012",
+   "0.0189",
+   "0.0216",
+   "0.0305",
+   "0.0318"
+  ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
@@ -5611,6 +5791,60 @@
    "shleifer_vishny2003",
    "thewissen2024",
    "verrecchia1983"
+  ],
+  "allowed_tokens_all": [
+   "+0.0033**",
+   "+0.0352**",
+   "+0.0391***",
+   "+0.0401***",
+   "+0.0447**",
+   "-0.0272",
+   "-0.0348",
+   "-0.0585*",
+   "-0.0609",
+   ".0008",
+   ".0011",
+   ".013",
+   ".028",
+   ".030",
+   ".039",
+   ".205",
+   "0.0015",
+   "0.0026",
+   "0.0027",
+   "0.003",
+   "0.0062",
+   "0.0071",
+   "0.0078***",
+   "0.0086***",
+   "0.0137",
+   "0.0139",
+   "0.0140",
+   "0.0145",
+   "0.0148",
+   "0.0156",
+   "0.0180",
+   "0.026",
+   "0.0266",
+   "0.0272",
+   "0.0283",
+   "0.0355",
+   "0.0363**",
+   "0.0385",
+   "0.0423",
+   "0.0507",
+   "0.0543***",
+   "0.0544***",
+   "0.059",
+   "0.0613**",
+   "0.0644",
+   "0.078",
+   "0.0967",
+   "0.0983**",
+   "0.1056**",
+   "0.3233***",
+   "0.3399",
+   "0.7478**"
   ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",
@@ -5969,6 +6203,13 @@
    "shleifer_vishny2003",
    "thewissen2024",
    "verrecchia1983"
+  ],
+  "allowed_tokens_all": [
+   ".039",
+   "0.0064",
+   "0.0455**",
+   "0.0983",
+   "0.1127"
   ],
   "bright_lines": [
    "masking = MOTIVATION, not mechanism / not identification",

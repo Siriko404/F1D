@@ -84,11 +84,13 @@ for i,stem in enumerate(order):
             "allowed_tokens":sorted(ptoks),     # gate: number-trace
             "allowed_cites":sorted(pcites),     # gate: cite-whitelist
         })
+    sec_tokens=sorted(set().union(*[set(pa["allowed_tokens"]) for pa in paras])) if paras else []
     briefs.append({
         "section":stem.replace("section_","").replace("section",""),
         "stem":stem, "type":typ, "title":d.get("title"),
         "rulebook":rulebooks[typ],
         "allowed_cites_all":ALLOWED_CITES_ALL,
+        "allowed_tokens_all":sec_tokens,   # SECTION-level number set (back-references across paragraphs are legit)
         "bright_lines":d.get("_bright_lines") or d.get("bright_lines") or [],
         "register_global":(d.get("section_context") or {}).get("register_global") if isinstance(d.get("section_context"),dict) else None,
         "paragraphs":paras,

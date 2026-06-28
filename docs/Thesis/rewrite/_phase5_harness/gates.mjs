@@ -20,17 +20,25 @@ const coefTokens = (prose) => [...deLatexStars(prose).matchAll(COEF)]
 // ---------- GATE 1: number-trace (anti-fabrication) ----------
 // every coefficient-shaped token in prose must come from this paragraph's allowed set
 // (props' numbers, already source-verified). Magnitude citations (no stars) need only the value.
+// allowedTokens = the SECTION's full set (union of all paragraphs' prop numbers), so a paragraph may
+// back-reference a number proved elsewhere in the section. exact value+stars -> ok; bare value -> ok
+// (magnitude); value-with-extra-stars -> BLOCK (over-claims significance); a rounding/precision variant
+// of a real number -> FLAG (the audit/boss restores the exact figure); anything else -> BLOCK (fabricated).
 export function gateNumbers(prose, allowedTokens) {
-  const exact = new Set(), vals = new Set();
-  for (const t of allowedTokens) { const s = splitTok(t); if (s) { exact.add(s.val + s.stars); vals.add(s.val); } }
-  const blocks = [];
+  const exact = new Set(), vals = new Set(), nums = [];
+  for (const t of allowedTokens) { const s = splitTok(t); if (s) { exact.add(s.val + s.stars); vals.add(s.val); nums.push(parseFloat(t.replace(/\*/g, ""))); } }
+  const blocks = [], flags = [];
   for (const s of coefTokens(prose)) {
-    if (exact.has(s.val + s.stars)) continue;                 // exact match -> ok
-    if (s.stars === "" && vals.has(s.val)) continue;          // bare value = magnitude citation -> ok
-    if (vals.has(s.val)) blocks.push(`number "${s.raw}": value present but with WRONG/EXTRA stars (over-claims significance)`);
-    else blocks.push(`number "${s.raw}": NOT in this paragraph's allowed set (fabricated/altered)`);
+    if (exact.has(s.val + s.stars)) continue;
+    if (s.stars === "" && vals.has(s.val)) continue;
+    if (vals.has(s.val)) { blocks.push(`number "${s.raw}": value present but with WRONG/EXTRA stars (over-claims significance)`); continue; }
+    const pf = parseFloat(s.raw.replace(/\*/g, ""));
+    const dec = ((s.raw.split(".")[1] || "").replace(/\*/g, "")).length;
+    const isRounding = nums.some(n => Math.abs(Number(n.toFixed(dec)) - pf) < 1e-9);
+    if (isRounding) flags.push(`number "${s.raw}": rounded/precision variant of a source figure -- restore exact value`);
+    else blocks.push(`number "${s.raw}": NOT in this section's allowed set (fabricated/altered)`);
   }
-  return blocks;
+  return { blocks, flags };
 }
 
 // ---------- GATE 2: honesty-FORBID (register floor) ----------
@@ -77,7 +85,8 @@ export function gateLatex(prose) {
 // ---------- runner ----------
 export function runGates(par) {
   const blocks = [], flags = [];
-  blocks.push(...gateNumbers(par.prose, par.allowedTokens));
+  const n = gateNumbers(par.prose, par.allowedTokens);
+  blocks.push(...n.blocks); flags.push(...n.flags);
   blocks.push(...gateHonesty(par.prose));
   blocks.push(...gateCites(par.prose, par.allowedKeys));
   blocks.push(...gateLatex(par.prose));

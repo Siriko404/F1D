@@ -50,5 +50,16 @@ check("BROKEN LaTeX (unbalanced brace) -> blocked", !r6.pass && r6.blocks.some(b
 const r7 = runGates({ ...base, prose: CORRECT + " The 0.0391 figure is about fifteen percent of a residual standard deviation." });
 check("MAGNITUDE cite (bare 0.0391, no stars) -> allowed", r7.pass);
 
+// ---- REALISTIC-PROSE tests (the gate must PASS good prose, not only BLOCK bad) ----
+// 9. back-reference: a section number recapped in another sentence (section-level set) -> passes
+const r8 = runGates({ ...base, prose: String.raw`Recapping, the binary forward result ($0.0086^{***}$) reinforces the run-up established above.` });
+check("BACK-REFERENCE to a section number -> passes", r8.pass);
+// 10. rounded figure -> FLAG (audit restores exact), NOT a hard block
+const r9 = runGates({ ...base, prose: CORRECT + " The fixed-effects point estimate is about 0.008." });
+check("ROUNDING 0.008 (from 0.0078) -> FLAGGED not blocked", r9.pass && r9.flags.some(f => f.includes("0.008") && f.includes("rounded")));
+// 11. percentage + 4-digit year -> not coefficient-shaped, must NOT false-block
+const r10 = runGates({ ...base, prose: CORRECT + " The deal rate is 2.84\\% across 2002--2018." });
+check("PERCENTAGE 2.84% + year 2002 -> not false-blocked", r10.pass);
+
 console.log(`\n${"=".repeat(40)}\n${fail === 0 ? "ALL GATES WORK" : "GATES BROKEN"}: ${pass} pass, ${fail} fail`);
 process.exit(fail === 0 ? 0 : 1);

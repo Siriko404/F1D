@@ -23,7 +23,7 @@ function sectionGate(out, brief) {
     const b = byId[par.para_id]; if (!b) { blocks.push(`${par.para_id}: unknown paragraph`); continue; }
     const r = runGates({
       prose: par.final_prose || '',
-      allowedTokens: b.allowed_tokens,
+      allowedTokens: (brief.allowed_tokens_all && brief.allowed_tokens_all.length ? brief.allowed_tokens_all : b.allowed_tokens),
       allowedKeys: (b.allowed_cites_all && b.allowed_cites_all.length ? b.allowed_cites_all : b.allowed_cites),
       props: b.props.map(p => ({ prop_id: p.prop_id, signature: p.signature })),
     });
