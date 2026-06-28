@@ -1,0 +1,295 @@
+{
+  "_derived_from": "_robustness_insert_spec.json (6 objects RU-1/RU-2/TI-1/TI-2/CC-1/CC-2) cross-checked verbatim against rob_4tables.tex (F1D/outputs/econometric/firstdeal_robustness/2026-06-23_162451) for the table objects and logit_fullcontrols_results.json (TEST_A/TEST_B) for the logit objects; wrapper + field set cloned from section4.4_paragraph_ledger.json; PROPOSAL (Agent-B), prose to be written fresh after the chain is ratified",
+  "_bright_lines": [
+    "masking = MOTIVATION, not mechanism / not identification",
+    "NO 'stock suppressed' -- stock -0.0429 n.s. (noisy flat null); the gap is CASH RISING",
+    "cite Shleifer-Vishny + Louis as EARNINGS/VALUATION, NEVER tone; thewissen = tone (preprint, supplementary)",
+    "SOURCE mechanism (compliance-constrained vs strategic) stays OPEN",
+    "war-chest / cash-accumulation CAUSE stays OPEN (C6 cause 0.0064 n.s.)",
+    "concentration = motivated, NOT identified; correlational, within-firm, no causal id",
+    "concentration-not-strict-specificity; 'we interpret, we do not detect'",
+    "each section's own register_locks are bright lines; a fix that hardens/removes a hedge is INVALID"
+  ],
+  "section_id": "4.5",
+  "title": "Robustness: The Main Findings Without the First-Deal Restriction",
+  "guards_added": [
+    "FEATURE, not swap: the first-deal specification stays the MAIN result (one clean event per firm, no overlapping within-firm windows, conservative); the all-deals-stacked panels and the two binary logits are robustness that SURVIVES dropping the first-deal restriction and ANSWERS the first-deal-contamination threat disclosed at section2.4 P5.2. Never present all-deals as the main spec.",
+    "No 'stock suppressed' -- the all-deals stock run-up is a noisy flat null (-0.0348 n.s., Table 5.2 all-deals); the cash-vs-stock gap is cash rising, not stock falling. We interpret, we do not detect (masking register, 2.1/2.2).",
+    "The all-deals stock Drop PRE1-GAP -0.0585* (Table 5.4 all-deals) is significant-but-NEGATIVE -- stock moves the OPPOSITE way across announcement; it is NOT a crack in the stock flat-null and must not be read as one.",
+    "Both logits (RU-2 / CC-2) carry NO fixed effects (pooled cross-section; firm-FE infeasible at this base rate) -> direction-consistent with, not equivalent to, the within-firm main. Logit A pools ALL payment types -> backs the GENERAL run-up only and cannot separate cash from stock (that is Logit B).",
+    "CC-1: the Wald EFFECT is stronger all-deals (0.1056** vs first-deal 0.0983**) but the proposed cause (matched CashRatio Cash-Stock 0.0071 n.s.) stays n.s. -> mechanism OPEN; concentration, not strict specificity; supportive, not definitive.",
+    "No-redundancy: cite ONLY the all-deals-stacked panel of each rob table; the first-deal panel == the existing main tables (tab:empire_building_did / tab:empire_drop_matched / tab:empire_drop_placebo / tab:empire_cashspec) and is never restated. At most ONE main coefficient may be cited inline for a survives/stronger contrast (the first-deal Wald 0.0983** in PARA3)."
+  ],
+  "section_context": {
+    "register_global": [
+      "correlational, no causal identification throughout; two-tailed.",
+      "FEATURE, not swap: first-deal = conservative MAIN; the all-deals-stacked panels and the two binary logits are robustness that survives dropping the first-deal restriction and answers the first-deal-contamination threat at section2.4 P5.2. Never present all-deals as the main.",
+      "No-redundancy: cite ONLY the all-deals-stacked panel of each rob table; the first-deal panel == the existing main tables and is never restated. At most ONE main coefficient may be cited inline for a survives/stronger contrast (the first-deal Wald 0.0983** in PARA3).",
+      "Honesty floor: the all-deals cash run-up +0.0391*** with stock -0.0348 n.s. = a noisy flat null, NEVER 'stock suppressed/dampened'; the Wald 0.1056** is concentration, NOT strict specificity; the cause 0.0071 n.s. = mechanism OPEN. Supportive, not definitive.",
+      "Both logits carry no fixed effects (pooled cross-section; firm-FE infeasible at this base rate) -> frame as direction-consistent with the within-firm main, not equivalent. Logit A pools all payment types -> backs the general run-up only; Logit B is the cash-vs-stock binary.",
+      "Author voice: every robustness check and every caveat is the author's own methodological point, first person, never attributed to an outside party, in any prose or the title."
+    ],
+    "allocation_coverage": {
+      "all_objects_homed": "Six spec objects homed one-to-one into three dimension paragraphs in table-then-logit order: run-up (RU-1 all-deals Table 5.2, RU-2 Logit A) -> 4.5-PARA1; timing (TI-1 all-deals Table 5.3 matched-universe, TI-2 all-deals Table 5.4 by-payment-type) -> 4.5-PARA2; cash-concentration (CC-1 all-deals Table 5.5 formal Wald, CC-2 Logit B) -> 4.5-PARA3. None split, merged, dropped, or duplicated.",
+      "gaps": [
+        "Logit A (RU-2) pools all payment types: it backs the GENERAL run-up (H1) only and cannot separate cash from stock; the cash-vs-stock binary is Logit B (CC-2).",
+        "CC-1: the EFFECT Wald is stronger all-deals but the war-chest CAUSE (matched CashRatio Cash-Stock 0.0071 n.s.) stays open; concentration, not strict specificity.",
+        "The stock arm is a flat/opposite null across all three dimensions, by design, not a detected suppression (all-deals run-up -0.0348 n.s.; by-arm timing PRE1 -0.0272 n.s. with Drop PRE1-GAP -0.0585* the opposite direction; Wald stock arm -0.0609 n.s.).",
+        "All interpretation (the FEATURE narrative, the three logit/stock caveats, the answers-P5.2 reading, the cash-spec stronger-stacked / cause-open reading) is deferred to the FRAMING-TODO; the JSON carries mechanical survives/holds claims only."
+      ]
+    }
+  },
+  "paragraphs": [
+    {
+      "para_id": "4.5-PARA1",
+      "order": 1,
+      "intent": {
+        "statement": "Report that the pre-announcement run-up survives dropping the first-deal restriction on the all-deals-stacked panel of Table 5.2 and reappears in binary forward form (Logit A): the all-deals cash arm shows the run-up on both clocks (residual uncertainty +0.0391***, cash ratio +0.0033**) with the stock arm a flat null (-0.0348 n.s.), and among all firm-quarters higher CEO Q&A residual uncertainty is associated with a deal announced next quarter of any payment type (LPM 0.0086***, logit 0.3233***).",
+        "reason": "Homes the two run-up robustness objects (RU-1 table, RU-2 logit) against the first-deal run-up of 3.2-PARA2-a; cites only the all-deals-stacked panel (the first-deal panel is tab:empire_building_did, already delivered in 3.2). The table leads (within-firm, all-deals); the logit corroborates in a different functional form (pooled cross-section, no fixed effects, all payment types). Answers the first-deal-contamination threat at section2.4 P5.2 for the run-up.",
+        "evidence": [
+          "rob Table 5.2 all-deals-stacked panel (rob_4tables.tex, 2026-06-23_162451)",
+          "logit_fullcontrols_results.json TEST_A",
+          "spec objects RU-1, RU-2",
+          "answers section2.4 P5.2 (first-deal contamination) for the run-up"
+        ]
+      },
+      "serves": [
+        "robustifies the 3.2 run-up (3.2-PARA2-a) across all deals and in binary forward form; answers the first-deal-contamination threat (section2.4 P5.2) for the run-up"
+      ],
+      "boundary": "Run-up robustness only (all-deals-stacked Table 5.2 + Logit A); cites only the all-deals panel, never the first-deal panel (== tab:empire_building_did). Timing and cash-concentration are PARA2/PARA3. No causal claim; the logit is associational with no fixed effects and pools all payment types.",
+      "thin_claim": "The run-up survives all-deals (cash +0.0391*** residual, +0.0033** cash ratio; stock -0.0348 n.s.) and appears in binary forward form (Logit A 0.3233***).",
+      "lit_body": "none new",
+      "guardrails": [
+        "RU-1: cite ONLY the all-deals-stacked panel; the first-deal panel == tab:empire_building_did (already in 3.2), never restated.",
+        "No 'stock suppressed': the all-deals stock run-up -0.0348 n.s. is a noisy flat null; the cash-vs-stock gap is cash rising, not stock falling.",
+        "RU-2 (Logit A) has NO fixed effects (pooled cross-section) and POOLS all payment types -> backs the GENERAL run-up only, direction-consistent not equivalent; do not let it read as predicting stock deals.",
+        "Logit language is associational/forward, NOT causal.",
+        "correlational / within-firm (table) / no-identification."
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (Agent-B section4.5 proposal; prose to be written after chain ratified)",
+      "proposition_chain": [
+        {
+          "prop_id": "4.5-PARA1-a",
+          "statement": "The pre-announcement run-up survives dropping the first-deal restriction: on the all-deals-stacked panel the cash-arm residual-uncertainty coefficient is +0.0391*** and the cash-ratio coefficient is +0.0033**, while the stock-arm residual coefficient is -0.0348 (n.s.).",
+          "role_in_paragraph": "result -- the all-deals table survival of the run-up (within-firm, primary)",
+          "type": "result-number",
+          "numbers": [
+            "cash UncResCEO PreAnnounceQtr +0.0391*** (Table 5.2 all-deals-stacked, cash UncR; SE 0.0140)",
+            "cash CashRatio PreAnnounceQtr +0.0033** (Table 5.2 all-deals-stacked, cash CshR; SE 0.0015)",
+            "stock UncResCEO PreAnnounceQtr -0.0348 n.s. (Table 5.2 all-deals-stacked, stock UncR; SE 0.0272)"
+          ],
+          "register_locks": [
+            "correlational",
+            "within-firm",
+            "no-identification"
+          ],
+          "evidence": [
+            "Table 5.2 all-deals-stacked panel, PreAnnounceQtr row (cash UncR, cash CshR, stock UncR cells)",
+            "spec object RU-1"
+          ],
+          "depends_on": [
+            "3.2-PARA2-a"
+          ]
+        },
+        {
+          "prop_id": "4.5-PARA1-b",
+          "statement": "In binary forward form, among all firm-quarters higher CEO Q&A residual uncertainty is associated with a deal announced the next quarter of any payment type: LPM 0.0086*** and logit 0.3233***.",
+          "role_in_paragraph": "corroboration -- the binary forward logit of the run-up (pooled, no fixed effects, all payment types; secondary)",
+          "type": "result-number",
+          "numbers": [
+            "LPM 0.0086*** (logit_fullcontrols_results.json TEST_A; SE 0.0026, p=.0011)",
+            "logit 0.3233*** (logit_fullcontrols_results.json TEST_A; SE 0.0967, p=.0008)",
+            "N 40,004 / 1,422 firms; deal rate 2.84%; pseudo-R2 0.026 (logit_fullcontrols_results.json TEST_A)"
+          ],
+          "register_locks": [
+            "correlational"
+          ],
+          "evidence": [
+            "logit_fullcontrols_results.json TEST_A (LPM + logit + sample)",
+            "spec object RU-2"
+          ],
+          "depends_on": [
+            "3.2-PARA2-a"
+          ]
+        }
+      ]
+    },
+    {
+      "para_id": "4.5-PARA2",
+      "order": 2,
+      "intent": {
+        "statement": "Report that the differential-timing round-trip survives all-deals: on the matched universe (Table 5.3 all-deals) residual uncertainty spikes at PRE1 (+0.0352**) and unwinds (Drop PRE1-GAP 0.0363**, Drop PRE1-POST 0.0544***), and by payment type (Table 5.4 all-deals) the round-trip holds in the cash arm (PRE1 +0.0401***, Drop PRE1-POST 0.0543***) and not the stock arm (PRE1 -0.0272 n.s.), where the stock arm moves the opposite way across announcement (Drop PRE1-GAP -0.0585*).",
+        "reason": "Homes the two timing robustness objects (TI-1 matched-universe round-trip, TI-2 by-payment-type) against the 3.3 round-trip (3.3-PARA3-a, 3.3-PARA4-a) and the 3.4 descriptive stock arm (3.4-PARA1-a); cites only the all-deals-stacked panels. TI-1 (matched universe, both clocks) leads; TI-2 (by arm) carries the cash/stock asymmetry. The all-deals stock Drop PRE1-GAP -0.0585* is the opposite-direction move, not a crack in the flat null. Answers section2.4 P5.2 for the timing.",
+        "evidence": [
+          "rob Table 5.3 and Table 5.4 all-deals-stacked panels (rob_4tables.tex, 2026-06-23_162451)",
+          "spec objects TI-1, TI-2",
+          "answers section2.4 P5.2 (first-deal contamination) for the timing"
+        ]
+      },
+      "serves": [
+        "robustifies the 3.3 differential-timing round-trip (3.3-PARA3-a, 3.3-PARA4-a) across all deals on the matched universe and by payment type; ties the stock-opposite arm to 3.4-PARA1-a; answers section2.4 P5.2 for the timing"
+      ],
+      "boundary": "Timing robustness only (all-deals-stacked Tables 5.3 and 5.4); cites only the all-deals panels, never the first-deal panels (== tab:empire_drop_matched / tab:empire_drop_placebo). This is the event-study (timing) content, NOT the formal cash-vs-stock test (that is CC-1 / PARA3). No causal claim.",
+      "thin_claim": "The round-trip survives all-deals on the matched universe (Drop PRE1-POST 0.0544***) and holds in the cash arm but not the stock arm by payment type (cash Drop PRE1-POST 0.0543***; stock PRE1 -0.0272 n.s., Drop PRE1-GAP -0.0585*).",
+      "lit_body": "none new",
+      "guardrails": [
+        "TI-1 / TI-2: cite ONLY the all-deals-stacked panels; the first-deal panels == tab:empire_drop_matched / tab:empire_drop_placebo (already in 3.3 / 3.4), never restated.",
+        "TI-2 stock Drop PRE1-GAP -0.0585* is significant-but-NEGATIVE = stock moves the OPPOSITE way across announcement; NOT a crack in the stock flat-null.",
+        "TI-2 is the event-study (timing) table, NOT the formal cash-vs-stock test (that is CC-1).",
+        "Lead with the cash round-trip; the stock arm is the comparison and moves the other way.",
+        "correlational / within-firm / no-identification."
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (Agent-B section4.5 proposal; prose to be written after chain ratified)",
+      "proposition_chain": [
+        {
+          "prop_id": "4.5-PARA2-a",
+          "statement": "The round-trip survives all-deals on the matched universe: residual uncertainty PRE1 is +0.0352**, the Drop PRE1-GAP is 0.0363**, and the Drop PRE1-POST is 0.0544***.",
+          "role_in_paragraph": "result -- the matched-universe round-trip, all-deals (primary)",
+          "type": "result-number",
+          "numbers": [
+            "UncRes PRE1 +0.0352** (Table 5.3 all-deals-stacked, UncRes; SE 0.0148)",
+            "Drop PRE1-GAP UncRes 0.0363** (Table 5.3 all-deals-stacked, UncRes; SE 0.0156)",
+            "Drop PRE1-POST UncRes 0.0544*** (Table 5.3 all-deals-stacked, UncRes; SE 0.0139)"
+          ],
+          "register_locks": [
+            "correlational",
+            "within-firm",
+            "no-identification"
+          ],
+          "evidence": [
+            "Table 5.3 all-deals-stacked panel, UncRes column (PRE1, Drop PRE1-GAP, Drop PRE1-POST cells)",
+            "spec object TI-1"
+          ],
+          "depends_on": [
+            "3.3-PARA3-a",
+            "3.3-PARA4-a"
+          ]
+        },
+        {
+          "prop_id": "4.5-PARA2-b",
+          "statement": "By payment type on the all-deals-stacked panel the round-trip holds in the cash arm (PRE1 +0.0401***, Drop PRE1-POST 0.0543***) and not in the stock arm (PRE1 -0.0272 n.s.), where the stock Drop PRE1-GAP is -0.0585* (significant and negative, the opposite direction across announcement).",
+          "role_in_paragraph": "result -- the by-payment-type round-trip, all-deals (cash holds, stock opposite; the by-arm content)",
+          "type": "result-number",
+          "numbers": [
+            "cash PRE1 +0.0401*** (Table 5.4 all-deals-stacked, Cash; SE 0.0145)",
+            "cash Drop PRE1-POST 0.0543*** (Table 5.4 all-deals-stacked, Cash; SE 0.0137)",
+            "stock PRE1 -0.0272 n.s. (Table 5.4 all-deals-stacked, Stock; SE 0.0266)",
+            "stock Drop PRE1-GAP -0.0585* (Table 5.4 all-deals-stacked, Stock; SE 0.0355)"
+          ],
+          "register_locks": [
+            "correlational",
+            "within-firm",
+            "no-identification"
+          ],
+          "evidence": [
+            "Table 5.4 all-deals-stacked panel, Cash and Stock columns (PRE1, Drop PRE1-GAP, Drop PRE1-POST cells)",
+            "spec object TI-2"
+          ],
+          "depends_on": [
+            "3.3-PARA3-a",
+            "3.4-PARA1-a"
+          ]
+        }
+      ]
+    },
+    {
+      "para_id": "4.5-PARA3",
+      "order": 3,
+      "intent": {
+        "statement": "Report that the formal cash-concentration result survives and strengthens all-deals: the pooled cash-minus-stock Wald difference is 0.1056** (cash arm +0.0447**, stock arm -0.0609 n.s.) against the first-deal 0.0983**, and the binary cash-vs-stock logit (Logit B) is positive (LPM 0.0613**, logit 0.7478**), while the proposed cause (matched cash-ratio cash-minus-stock 0.0071 n.s.) remains insignificant.",
+        "reason": "Homes the two cash-concentration objects (CC-1 formal Wald, CC-2 Logit B) against the formal EFFECT of 3.4-PARA3-a and the open cause of 3.4-PARA4-a; cites only the all-deals-stacked panel plus the single sanctioned inline first-deal Wald (0.0983**) for the stronger-stacked contrast. The EFFECT firms up; the cause stays open (mechanism-open); concentration, not strict specificity. Answers section2.4 P5.2 for the cash-concentration result.",
+        "evidence": [
+          "rob Table 5.5 all-deals-stacked Wald panel, with the single inline first-deal Wald 0.0983** for the stronger-stacked contrast (rob_4tables.tex, 2026-06-23_162451)",
+          "logit_fullcontrols_results.json TEST_B",
+          "spec objects CC-1, CC-2",
+          "firms up the fragile load-bearing cash-specificity of 3.4; answers section2.4 P5.2 for cash-concentration"
+        ]
+      },
+      "serves": [
+        "robustifies and strengthens the 3.4 formal cash-concentration EFFECT (3.4-PARA3-a) across all deals and in binary form; keeps the war-chest cause open (3.4-PARA4-a); answers section2.4 P5.2 for cash-concentration"
+      ],
+      "boundary": "Cash-concentration robustness only (all-deals-stacked Table 5.5 Wald + Logit B); cites the all-deals panel plus the single inline first-deal Wald 0.0983** for the contrast (the one permitted main coefficient). The EFFECT only; the cause (0.0071 n.s.) stays open; concentration, not strict specificity; supportive, not definitive.",
+      "thin_claim": "The formal cash-minus-stock Wald difference holds and is larger all-deals (0.1056** vs first-deal 0.0983**) and appears in binary form (Logit B 0.7478**); the cause stays n.s. (0.0071).",
+      "lit_body": "none new",
+      "guardrails": [
+        "CC-1: the formal cash-minus-stock Wald difference is the test (anti-Gelman-Stern), stronger all-deals (0.1056** vs first-deal 0.0983**); state it as the linear restriction, never as a sig-vs-n.s. side-by-side.",
+        "CC-1 cause (matched CashRatio Cash-Stock 0.0071 n.s.) stays n.s. -> war-chest mechanism OPEN; concentration, not strict specificity.",
+        "CC-1 stock arm -0.0609 n.s. is the imprecise / underpowered arm the difference rides on (disclose the fragility); supportive-not-definitive.",
+        "CC-2 (Logit B) has NO fixed effects and an underpowered stock arm (N=123, 88.9% cash base rate) -> direction-consistent, supportive-not-definitive.",
+        "Cite at most ONE main coefficient (the first-deal Wald 0.0983**) for the contrast; no other first-deal panel restated.",
+        "correlational / concentration-not-strict-specificity / no-identification / mechanism-open / supportive-not-definitive."
+      ],
+      "prose_gate": {
+        "rule": "all propositions confirmed/cleared before prose",
+        "all_supported": false,
+        "unlocked": false
+      },
+      "final_prose": "",
+      "prose_status": "PROSE-STRIPPED (Agent-B section4.5 proposal; prose to be written after chain ratified)",
+      "proposition_chain": [
+        {
+          "prop_id": "4.5-PARA3-a",
+          "statement": "The formal cash-minus-stock Wald difference holds and is larger all-deals: 0.1056** (cash arm +0.0447**, stock arm -0.0609 n.s.) against the first-deal 0.0983**; the proposed cause, the matched cash-ratio cash-minus-stock difference, is 0.0071 (n.s.).",
+          "role_in_paragraph": "result -- the formal Wald cash-concentration EFFECT, stronger all-deals, with the cause still n.s. (primary)",
+          "type": "result-number",
+          "numbers": [
+            "Cash-Stock Wald 0.1056** (Table 5.5 all-deals-stacked, UncRes Cash-Stock; SE 0.0423; z~2.50, p~.013)",
+            "cash arm +0.0447** (Table 5.5 all-deals-stacked, UncRes Pre-announce Cash; SE 0.0180)",
+            "stock arm -0.0609 n.s. (Table 5.5 all-deals-stacked, UncRes Pre-announce Stock; SE 0.0385)",
+            "matched CashRatio Cash-Stock cause 0.0071 n.s. (Table 5.5 all-deals-stacked, CashR(m) Cash-Stock; SE 0.0062)",
+            "first-deal Wald 0.0983** (Table 5.5 thesis-matched / tab:empire_cashspec col 1 Cash-Stock; p=.039) -- the single inline main cite for the stronger-stacked contrast"
+          ],
+          "register_locks": [
+            "correlational",
+            "concentration-not-strict-specificity",
+            "no-identification",
+            "mechanism-open",
+            "supportive-not-definitive"
+          ],
+          "evidence": [
+            "Table 5.5 all-deals-stacked panel (UncRes Cash-Stock Wald, Pre-announce Cash, Pre-announce Stock, CashR(m) Cash-Stock cells; thesis Cash-Stock 0.0983** for the inline contrast)",
+            "spec object CC-1"
+          ],
+          "depends_on": [
+            "3.4-PARA3-a",
+            "3.4-PARA4-a"
+          ]
+        },
+        {
+          "prop_id": "4.5-PARA3-b",
+          "statement": "In binary form, among deals at e=-1 higher residual uncertainty is associated with a cash deal (1) versus a stock deal (0): LPM 0.0613** and logit 0.7478**.",
+          "role_in_paragraph": "corroboration -- the binary cash-vs-stock logit (pooled, no fixed effects, underpowered stock arm; secondary)",
+          "type": "result-number",
+          "numbers": [
+            "LPM 0.0613** (logit_fullcontrols_results.json TEST_B; SE 0.0283, p=.030)",
+            "logit 0.7478** (logit_fullcontrols_results.json TEST_B; SE 0.3399, p=.028)",
+            "N 1,105 / 563 firms; cash 982 / stock 123; cash base rate 88.9%; pseudo-R2 0.078 (logit_fullcontrols_results.json TEST_B)"
+          ],
+          "register_locks": [
+            "correlational",
+            "concentration-not-strict-specificity"
+          ],
+          "evidence": [
+            "logit_fullcontrols_results.json TEST_B (LPM + logit + sample)",
+            "spec object CC-2"
+          ],
+          "depends_on": [
+            "3.4-PARA3-a"
+          ]
+        }
+      ]
+    }
+  ]
+}

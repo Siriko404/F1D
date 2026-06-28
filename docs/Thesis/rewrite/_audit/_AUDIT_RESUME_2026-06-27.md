@@ -1,5 +1,10 @@
 # ⚠️ NEXT-SESSION REVIEW REQUIRED — Proposition-chain referee AUDIT (2026-06-27)
 
+> 🆕 **NEWER WORKSTREAM (2026-06-28): §4.5 robustness-insert + FE** — see
+> `../  _ROBUSTNESS_45_RESUME_2026-06-28.md` (built a §4.5 proposal from rob_ALL.pdf's all-deals tables
+> + 2 logits; ran FE; NOT yet placed). That doc is the entry point for the §4.5 work; THIS doc is the
+> 16-ledger audit/build truth. Both active.
+
 ## ✅ SESSION 2026-06-27 (cont.2) — FINAL-FILE BUILD DONE, read this FIRST
 > Supersedes the Q1/Q2 fork in the (cont.) banner below — BOTH RESOLVED.
 

@@ -1,0 +1,115 @@
+{
+  "_purpose": "Clean insert-object spec for the robustness-placement harness. 6 objects to add to ONE new robustness subsection. FEATURE framing: first-deal stays the MAIN spec; these all-deals + logit objects are the robustness that survives + answers the already-disclosed first-deal threat (2.4 P5.2).",
+  "_global_framing": {
+    "decision": "FEATURE (not swap): first-deal = conservative MAIN (one clean event per firm, no overlapping within-firm windows); all-deals-stacked = robustness.",
+    "answers": "2.4 P5.2 already discloses 'only the FIRST deal sets the event clock ... first-deal focus remain assumptions' -> these objects ARE the answer to that disclosed threat.",
+    "no_redundancy": "Cite ONLY the all-deals-stacked panel of each rob table; the first-deal panel == the existing main tables (tab:empire_building_did etc.) -> never restate.",
+    "placement": "ONE consolidated robustness subsection (Sina-ratified).",
+    "register_locks_global": [
+      "correlational",
+      "within-firm",
+      "no-identification",
+      "concentration-not-strict-specificity",
+      "mechanism-open",
+      "supportive-not-definitive"
+    ],
+    "bright_lines": "no 'stock suppressed' (stock all-deals run-up -0.0348 n.s. = noisy flat null); cause stays OPEN; concentration not specificity; we interpret, we do not detect."
+  },
+  "_number_provenance": {
+    "logits": "EXACT from tmp/logit_fullcontrols_results.json (verified this session).",
+    "tables_5_2_to_5_5": "VERIFIED verbatim against rob_4tables.tex (F1D/outputs/econometric/firstdeal_robustness/2026-06-23_162451 -- the .tex Sina trusts). One transcription error caught + fixed: CC-1 cash arm is 0.0447** not ***.",
+    "fe": "FE-LPM (Firm + Year-Qtr FE) for both binary tests from fe_results.json; within-R2 (A 0.003, B 0.059) + dual-arm count (48/563 = 8.5%) independently re-verified (check_fe.py). Logit-FE infeasible (perfect separation 59%/91%). Tables: logit cols gained a (3) LPM+FE column + FE row."
+  },
+  "objects": [
+    {
+      "id": "RU-1",
+      "dimension": "run-up",
+      "type": "table",
+      "source": "rob Table 5.2 (Pre-Announcement Run-Up), ALL-DEALS-STACKED panel",
+      "shows": "the pre-announce run-up survives dropping the first-deal restriction: cash UncResCEO +0.0391*** (SE 0.0140); stock -0.0348 n.s.; cash CashRatio +0.0033**.",
+      "robustifies": "MA1 / C1 (the run-up, currently first-deal 0.0461***)",
+      "register_locks": [
+        "correlational",
+        "within-firm",
+        "no-identification"
+      ],
+      "caveat": null,
+      "gate": "verify 0.0391/0.0140, -0.0348, 0.0033 vs gen_firstdeal_robustness output"
+    },
+    {
+      "id": "RU-2",
+      "dimension": "run-up",
+      "type": "logit",
+      "source": "Logit A (logit_fullcontrols_results.json TEST_A)",
+      "shows": "binary + forward form: among ALL firm-quarters, higher CEO Q&A uncertainty predicts a deal announced next quarter (any payment). LPM 0.0086*** (SE 0.0026, p=.0011); Logit 0.3233*** (SE 0.0967, p=.0008). N 40,004 / 1,422 firms; deal rate 2.84%; pseudo-R2 0.026. FE ADDENDUM: re-estimated with firm + year-quarter FE, the coefficient is essentially unchanged and stays significant (LPM 0.0078***, SE 0.00275, N 39,557; within-R2 0.003 -- robust to FE, NOT a within-firm-signal claim). A firm-FE logit is infeasible (perfect separation: 59% of firms no within variation).",
+      "robustifies": "MA1 / C1 run-up (different functional form + predictive direction)",
+      "register_locks": [
+        "correlational"
+      ],
+      "caveat": "Predictive/associational, NOT causal. POOLS ALL PAYMENT TYPES -> backs the GENERAL run-up (H1) only; cannot separate cash from stock (that is Logit B). FE: robust (0.0078***) but within-R2 0.003 -> robustness, not within-firm signal; logit-FE infeasible. See ratified caveat-2.",
+      "gate": "EXACT (JSON-sourced)"
+    },
+    {
+      "id": "TI-1",
+      "dimension": "timing",
+      "type": "table",
+      "source": "rob Table 5.3 (Matched Universe Event Study), ALL-DEALS-STACKED panel",
+      "shows": "the round-trip survives all-deals on the matched universe: UncRes PRE1 +0.0352** (SE 0.0148); Drop PRE1-GAP 0.0363**; Drop PRE1-POST 0.0544***; cash leg present.",
+      "robustifies": "MA2 / two-clocks differential timing",
+      "register_locks": [
+        "correlational",
+        "within-firm",
+        "no-identification"
+      ],
+      "caveat": null,
+      "gate": "verify 0.0352/0.0148, 0.0363, 0.0544 vs source"
+    },
+    {
+      "id": "TI-2",
+      "dimension": "timing",
+      "type": "table",
+      "source": "rob Table 5.4 (Event Study by Payment Type / placebo), ALL-DEALS-STACKED panel",
+      "shows": "the timing round-trip holds in the CASH arm and not the stock arm, all-deals: cash PRE1 +0.0401*** (SE 0.0145), Drop PRE1-POST 0.0543***; stock PRE1 -0.0272 n.s. (stock Drop PRE1-GAP -0.0585*).",
+      "robustifies": "MA2 timing read, by-arm (event-study content; used in 3.4 as the informal step but its CONTENT is the round-trip)",
+      "register_locks": [
+        "correlational",
+        "within-firm",
+        "no-identification"
+      ],
+      "caveat": "this is the event-study (timing) table, NOT the formal cash-vs-stock test (that is CC-1). The stock Drop PRE1-GAP -0.0585* IS significant but NEGATIVE -> tie to the existing 'stock, if anything, moves the OPPOSITE way' (first-deal -0.0756*); it is NOT a crack in the stock flat-null -- frame it that way.",
+      "gate": "verify 0.0401/0.0145, 0.0543, -0.0272 vs source"
+    },
+    {
+      "id": "CC-1",
+      "dimension": "cash-concentration",
+      "type": "table",
+      "source": "rob Table 5.5 (Formal Cash-Specificity, pooled Wald), ALL-DEALS-STACKED panel",
+      "shows": "the formal Cash-minus-Stock Wald is STRONGER all-deals: 0.1056** (SE 0.0423; z~2.50, p~.013) vs first-deal 0.0983** (p=.039) -> directly firms up the fragile load-bearing cash-specificity. Cash arm +0.0447** (SE 0.0180), stock -0.0609 n.s. (SE 0.0385). Proposed cause (matched CashRatio Cash-Stock) 0.0071 n.s. -> mechanism STILL open.",
+      "robustifies": "MA3 / C6 (the formal cash-specificity, the fragile load-bearing result)",
+      "register_locks": [
+        "correlational",
+        "concentration-not-strict-specificity",
+        "no-identification",
+        "mechanism-open",
+        "supportive-not-definitive"
+      ],
+      "caveat": "EFFECT stronger but cause stays n.s. (war-chest mechanism NOT established); concentration, not strict specificity.",
+      "gate": "verify 0.1056/0.0423, 0.0447, -0.0609, 0.0071 vs source"
+    },
+    {
+      "id": "CC-2",
+      "dimension": "cash-concentration",
+      "type": "logit",
+      "source": "Logit B (logit_fullcontrols_results.json TEST_B)",
+      "shows": "binary form of cash-concentration: among deals at e=-1, higher uncertainty predicts CASH(1) vs STOCK(0). LPM 0.0613** (SE 0.0283, p=.030); Logit 0.7478** (SE 0.3399, p=.028). N 1,105 / 563 firms; cash 982 / stock 123; cash base-rate 88.9%; pseudo-R2 0.078. FE ADDENDUM: under firm + year-quarter FE the coefficient keeps its sign but is insignificant (LPM 0.0644, SE 0.05076, n.s., N 1,063); only 48/563 firms (8.5%) make BOTH a cash and a stock deal -> too few to identify within-firm. A firm-FE logit is infeasible (perfect separation: 91% of firms no within variation).",
+      "robustifies": "MA3 / H1a cash-concentration (different functional form)",
+      "register_locks": [
+        "correlational",
+        "concentration-not-strict-specificity"
+      ],
+      "caveat": "STOCK ARM UNDERPOWERED (N=123, 88.9% cash base rate) -> same fragility as the C6 Wald. FE: same sign, insignificant (0.0644 n.s.); only 8.5% dual-arm firms identify it within-firm; logit-FE infeasible. Frame as direction-consistent + supportive-not-definitive. See ratified caveat-2.",
+      "gate": "EXACT (JSON-sourced)"
+    }
+  ],
+  "_fe_addendum_ratified_caveat_2": "We re-estimate both binary tests with firm and year-quarter fixed effects. Logit A's coefficient is essentially unchanged and stays significant (0.0078***) -- robust to firm and year-quarter fixed effects, hence not an artifact of stable between-firm differences or common time trends; its within-firm R2 is small (0.003), as expected for a rare event, so this is a robustness check, not a claim that the signal is primarily within-firm. Logit B keeps its sign but loses significance (0.0644, n.s.): only the 8.5% of firms (48 of 563) that make both a cash and a stock deal identify it within-firm -- too few for precision, consistent with cash-concentration being a cross-firm pattern. A firm-fixed-effects logit is infeasible for both (perfect separation: 59% / 91% of firms have no within-firm outcome variation)."
+}
