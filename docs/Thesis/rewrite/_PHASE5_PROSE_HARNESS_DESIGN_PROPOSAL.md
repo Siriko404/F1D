@@ -99,13 +99,24 @@ External Python build script (reads the ledgers + rulebooks DIRECTLY, embeds per
   → It becomes the VALIDATE-FIRST unit (small, results-type, honesty-sensitive) the moment Sina unlocks it.
 - **Compile target**: `thesis_draft.tex` (inline biblio) vs `uo-ethesis` uottawa template (.bib). Recommend uottawa (formal).
 
-## 8. Open decisions for Sina (the real forks)
-1. **★ BIMODAL trade (§6.3):** authorize agents to write the load-bearing honesty framing (audited draft + flagged
-   residuals, not a hands-off thesis)? GO / NO-GO. — *the one that matters.*
-2. **L4 auto-fix:** bounded-single-pass + flag-residual (recommend) vs flag-ALL-to-human (safest, no auto-apply).
-3. **Readiness criterion:** confirm "corpus-audited (74b7a0f8) = ready for prose" (one yes) — unblocks the 15 sections.
-4. **Pilot:** §4.5 end-to-end-to-PDF (recommend) — needs the §4.5 `unlock` first.
-- (Settled by evidence, not asking: unit = section, for flow; `unlocked` flag is stale, ignored.)
+## 8. Decisions — DEFAULTED (Sina numb; advisor: stop polling, own them; veto anytime)
+1. **BIMODAL trade:** GO — agents write all prose; audited draft + flagged residuals, not a hands-off thesis. (Sina: "NOTHING is for me to write.")
+2. **L4 auto-fix:** bounded single-fix → final deterministic gate → flag residual. LOCKED.
+3. **§2.3–2.5 rulebook:** methods. DEFAULTED.
+4. **§4.5:** unlock it; it is the pilot (69/69-verified, advisor-cleared, git-reversible). DEFAULTED.
+5. **Honesty skim:** stays; fires before SUBMISSION, never blocks the build/run. LOCKED.
+- (Settled by evidence: unit = section; `unlocked` flag stale, ignored; inputs number-verified 16/16.)
+
+## 8a. "100% SAFE" — the shippable definition (the finish line; open-ended version is what grinds)
+```
+✅ every input traced to source              DONE (16/16 numbers; every prop anchored; theory verbatim quotes; 11 bibitems)
+⬜ every in-harness gate deterministic        BUILD NEXT (the spine)
+⬜ pilot proves the machine on §4.5 → PDF     one real section before the other 15
+⬜ human reads ~15 load-bearing sentences     pre-SUBMISSION (not before the run; "drafted ≠ shipped")
+```
+"100% with nothing to check" is NOT achievable on a generation run. INPUT-side checking is now CLOSED — the only
+remaining verification is the §4.5 pilot. Everything else is BUILD. (Optional last input nicety: extend the number
+checker to SEs once, 10 min agent-free — then truly no more input checks.)
 
 ## 9. SAFETY AUDIT — single-run hardening (adversarial self-check)
 **Honest verdict: NOT 100% machine-safe.** Three risks cannot be driven to zero by gates alone — (i) semantic honesty
