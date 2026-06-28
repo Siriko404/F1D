@@ -13,8 +13,10 @@ near-full; large prose rewrites under context pressure introduced errors twice �
   - Per-section prose tweaks are done as small assert-guarded TRANSFORMS in this file
     (`normalize`, `repoint_45`, `augment_25`, `fix_21`, `fix_34`, `drop_thesis_panel`). Add new
     transforms the same way — keep `phaseB_result.json` pristine.
-- Latest PDF: `thesis_uottawa_rev2.pdf` (70pp). The `_rev`/`_rev2` name bumps because each opened
-  PDF stays viewer-locked; once Sina closes all viewers, set `JOB="thesis_draft_uottawa"` and rebuild.
+- CURRENT PDF = ONLY `thesis_uottawa_rev2.pdf` (70pp). `thesis_draft_uottawa.pdf` and
+  `thesis_uottawa_rev.pdf` in the clone are STALE (frozen pre-fixes by viewer locks) -- do NOT open
+  them. The `_rev` name bumps because each opened PDF stays viewer-locked; once Sina closes all
+  viewers, set `JOB="thesis_draft_uottawa"` in the generator and rebuild to mint the canonical name.
 - Recent commits: 11acaf85 (panel fixes), then the advisor-correction commit, then the
   Thesis-panel-drop commit. Coherence panel (numbers/story/register) already PASSED; honesty floor holds.
 - Tables: 21 total. 5.2-5.14 from `_tables_from_bible.tex`; 5.15-5.20 = §4.5 robustness
@@ -22,8 +24,9 @@ near-full; large prose rewrites under context pressure introduced errors twice �
 
 ## VERIFICATION GATES (run after EVERY change; non-negotiable)
 1. `python build_uottawa_rewrite.py` -> "PDF OK: pages=70 undefined-ref/cite=0 overfull-hbox=0".
-2. orphan check (`scratchpad/orphan.py`) -> 0/21 orphaned, no broken refs.
-3. number check (`scratchpad/check_coherence.py`) -> no new desync (2 known false positives ok).
+2. orphan check (`docs/Thesis/rewrite/_phase5_harness/_audit/orphan.py`) -> 0/21 orphaned, no broken refs.
+3. number check (`docs/Thesis/rewrite/_phase5_harness/_audit/check_coherence.py`) -> no new desync (2 known false positives ok).
+   (also in `_audit/`: `flatten.py` = one-file flattener; `build_audit_input.py` = panel-input builder.)
 4. For prose edits: re-derive every number/claim from the TABLE CELL (mechanical checks CANNOT catch
    claim-vs-table errors — that is how the §2.5 errors slipped). Re-run the register agent on the
    flat file to confirm the honesty floor still holds. Advisor before commit.
@@ -44,8 +47,10 @@ near-full; large prose rewrites under context pressure introduced errors twice �
 ## ISSUE 2 — coefficients: stars -> p-values + economic effect (match the OLD prose)
 - Evidence: phaseB prose states coefs as `$0.0461^{***}$ (standard error $0.0172$)` (stars).
   Inline stars in PROSE are non-standard; the ORIGINAL prose used p-values + an economic-magnitude
-  reading. TEMPLATE = read the pre-phaseB style: original `docs/Thesis/sec34_body_from_ledgers.tex`
-  (Phase-C, ~0 stars) and the original §2.5 ("coefficient 0.0001, $p<0.01$ ... about 5% of a SD").
+  reading. TEMPLATE LOCATION UNVERIFIED -- the grep for the old p-value style returned empty this
+  session, and the SRC sec34 may already be the stars version. CONFIRM the template in git history
+  (a pre-phaseB commit) or the original pre-rewrite files before trusting it; the old §2.5 used
+  "coefficient 0.0001, $p<0.01$ ... about 5% of a SD" (p-value + economic effect), which is the goal.
 - REQUIREMENT (per headline coefficient, in PROSE):
   (a) drop the inline stars; state the p-level: `***`->`$p<.01$`, `**`->`$p<.05$`, `*`->`$p<.10$`;
       use the EXACT p where the prose/tables already give it (run-up two-tailed $p=0.0074$;
