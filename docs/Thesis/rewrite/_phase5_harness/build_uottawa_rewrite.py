@@ -45,9 +45,63 @@ def repoint_45(t):
     t = t.replace("(Logit~B)", r"(Logit~B, Table~\ref{tab:logit_cashstock})")
     return t
 
+# Section 2.5 lost its measure-validation content in the phaseB rewrite (4 orphaned tables).
+# Restore it in the plain phaseB register: a new "construction" paragraph (DWZ replication ->
+# tab:dwz_replication), a 2->3 roadmap renumber, and source cites + table refs on the convergent
+# paragraph (-> tab:h11/h24/h24b). Numbers verified vs Table 5.21 body AND its footnotes:
+# DWZ R^2 is reported incremental (~0.05 over a 0.31 base ~= 0.36 total) vs our total 0.369; the
+# firm-controls match in sign not magnitude because they are standardized here, not because samples differ.
+DWZ_CONSTRUCTION = (
+    r"The first check is construction. Before we lean on the residual, we confirm that building it "
+    r"our own way, on our own data, reproduces the estimates the method was validated on. We re-estimate "
+    r"the \citet{dwz} decomposition on our sample and place our numbers beside their published ones, line "
+    r"by line, in Table~\ref{tab:dwz_replication}. The largest piece lines up almost exactly: the loading "
+    r"on the CEO's own prepared-remarks uncertainty is $0.089$ in our data against $0.093$ in theirs, and "
+    r"the other two speech controls keep the same sign and significance. The fit lines up too, once the two "
+    r"are put on the same footing: their published figure is the controls' added explanatory power, about "
+    r"$0.05$ on top of a $0.31$ baseline, so roughly $0.36$ in total, against our total $R^2$ of $0.369$. "
+    r"The samples are not identical, ours covering non-financial, non-utility United States firms over 2002 "
+    r"to 2018 and theirs 2003 to 2015; and because we standardize the firm-performance controls for numerical "
+    r"stability, they match theirs in sign and significance rather than in raw size. The point is narrow but "
+    r"enough: because we build the residual the same way \citeauthor{dwz} do, the construct validity they "
+    r"establish for the measure carries over to our setting, which leaves how it behaves in our own data as "
+    r"the question for the checks below."
+)
+
+def augment_25(t):
+    # A: roadmap two -> three checks (construction becomes the first)
+    a_old = (r"We ask two things of $\mathrm{UncResCEO}$. First, is it convergent: does it move together with "
+             r"measures of uncertainty that are already established? That is the check we run in this section. "
+             r"Second, could a plausible rival")
+    a_new = (r"We ask three things of $\mathrm{UncResCEO}$. First, does rebuilding it on our own data reproduce "
+             r"the published estimates the method rests on? Second, is it convergent: does it move together with "
+             r"measures of uncertainty that are already established? Those first two are the checks we run in this "
+             r"section. Third, could a plausible rival")
+    # B: insert the construction paragraph before the convergent-validity paragraph
+    b_anchor = "We begin with convergent validity."
+    # C: add source citations + table refs to the three convergent measures (numbers unchanged)
+    c_old = (r"It rises with firm-level political risk (PRisk), with a coefficient of $0.0001^{***}$; with US "
+             r"economic policy uncertainty (US-EPU), at $0.0124^{**}$ and $0.0123^{*}$, the second estimate only "
+             r"marginally significant once firm fixed effects are included; and with global economic policy "
+             r"uncertainty (GEPU), at $0.0181^{**}$ and $0.0187^{**}$.")
+    c_new = (r"It rises with firm-level political risk (PRisk), the call-based measure of \citet{hassan2020}, with "
+             r"a coefficient of $0.0001^{***}$ (Table~\ref{tab:h11_prisk_uncertainty}); with US economic policy "
+             r"uncertainty (US-EPU), the newspaper-based index of \citet{baker2016}, at $0.0124^{**}$ and "
+             r"$0.0123^{*}$ (Table~\ref{tab:h24_us_epu}), the second estimate only marginally significant once firm "
+             r"fixed effects are included; and with global economic policy uncertainty (GEPU), the index of "
+             r"\citet{davis2016}, at $0.0181^{**}$ and $0.0187^{**}$ (Table~\ref{tab:h24b_global_epu}).")
+    for tag, old in (("A", a_old), ("B", b_anchor), ("C", c_old)):
+        assert old in t, "augment_25 anchor %s not found -- section 2.5 prose changed" % tag
+    t = t.replace(a_old, a_new, 1)
+    t = t.replace(b_anchor, DWZ_CONSTRUCTION + "\n\n" + b_anchor, 1)
+    t = t.replace(c_old, c_new, 1)
+    return t
+
 def prose_of(sid):
     body = "\n\n".join(normalize(p["final_prose"].strip()) for p in SEC[sid]["paragraphs"])
-    return repoint_45(body) if sid == "4.5" else body
+    if sid == "4.5": body = repoint_45(body)
+    if sid == "2.5": body = augment_25(body)
+    return body
 
 # ---- 1. clone every .tex in docs/Thesis so all \input deps resolve; originals untouched ----
 CLONE.mkdir(exist_ok=True)
