@@ -341,8 +341,13 @@ _old_sig = "are excluded. Significance: $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.
 _new_sig = "are excluded; significant coefficients are shown in \\textbf{bold}. $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed)."
 assert _old_sig in _nt, "dwz significance-legend anchor not found"
 _nt = _nt.replace(_old_sig, _new_sig)
+# Issue #10: unify the lead author's surname to plain "Dzielinski" (caption + notes used a mis-placed
+# accent "Dzielin\'ski" -- accent lands on the s; the bibitem and every in-text cite render plain).
+_ndz = _nt.count("Dzielin\\'ski")
+assert _ndz == 2, "dwz accent: expected 2 occurrences of Dzielin\\'ski, got %d" % _ndz
+_nt = _nt.replace("Dzielin\\'ski", "Dzielinski")
 _dwz.write_text(_nt, encoding="utf-8")
-print("patched _dwz_replication.tex: note + bolded %d significant coefs + no-zero legend" % _nb)
+print("patched _dwz_replication.tex: note + bolded %d significant coefs + no-zero legend + %d Dzielinski" % (_nb, _ndz))
 
 # Issue 3: unify the significance legend in the bible tables to no-leading-zero (matches the prose + the
 # robustness tables). Note-only -- the legend string can never occur in a data cell. (Sina 2026-06-28.)
@@ -354,6 +359,30 @@ _nleg = _bt.count(_old_leg)
 assert _nleg == 13, "bible legend: expected 13 occurrences, got %d (drift)" % _nleg
 _bib.write_text(_bt.replace(_old_leg, _new_leg), encoding="utf-8")
 print("unified %d bible-table legends to no-leading-zero" % _nleg)
+
+# Audit fix batch (Sina 2026-06-28): bible-table notes/headers -- H2 placebo->comparison, #16/#22 event-time
+# index t->e, #2 bid-ask DV-scaling disclosure. Notes/headers/row-labels only; NO data cell is touched.
+_bibt = CLONE / "_tables_from_bible.tex"
+_bf = _bibt.read_text(encoding="utf-8")
+for _o, _n in [   # H2: the stock arm is a managed comparison, not a clean placebo (matches the 2.2 prose)
+  ("Stock acquirers (placebo)", "Stock acquirers (comparison)"),
+  ("the at-least-half-in-stock placebo", "the at-least-half-in-stock managed comparison"),
+  ("and, as a placebo, stock acquirers", "and, as a managed comparison, stock acquirers"),
+]:
+    assert _bf.count(_o) == 1, "bible placebo anchor %r: expected 1, got %d" % (_o, _bf.count(_o))
+    _bf = _bf.replace(_o, _n)
+for _o, _n in [   # #16/#22: $t{-}k$ overloads the calendar index t -> $e{=}{-}k$ (matches prose + the same notes)
+  ("($t{-}2$, pre-trend)", "($e{=}{-}2$, pre-trend)"),
+  ("($t{-}1$, pre-announce)", "($e{=}{-}1$, pre-announce)"),
+]:
+    assert _bf.count(_o) == 4, "bible event-time %r: expected 4, got %d" % (_o, _bf.count(_o))
+    _bf = _bf.replace(_o, _n)
+_bk = "and a lagged dependent variable is included. Standard errors clustered by firm"  # #2 Table 5.12 bid-ask
+assert _bf.count(_bk) == 1, "bid-ask note anchor: expected 1, got %d" % _bf.count(_bk)
+_bf = _bf.replace(_bk, "and a lagged dependent variable is included. The dependent variable (the bid-ask spread) "
+                       "is rescaled by $10^{4}$ (basis points) for readability. Standard errors clustered by firm")
+_bibt.write_text(_bf, encoding="utf-8")
+print("patched bible tables: placebo->comparison (3), event-time t->e (8), bid-ask 1e4 disclosure")
 
 # ---- 2. regenerate the standalone body files from phaseB prose ----
 (CLONE / "_abstract_body.tex").write_text(prose_of("abstract") + "\n", encoding="utf-8")
@@ -442,7 +471,7 @@ ROB_NOTE = {
    r"\textit{Notes:} All-deals differential-timing event study on the matched universe. " + _ROB_LEG),
  "tab:rob_timing_placebo": (
    r"\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed); SE clustered by firm.",
-   r"\textit{Notes:} All-deals differential-timing event study, split by payment type (cash arm and stock placebo). " + _ROB_LEG),
+   r"\textit{Notes:} All-deals differential-timing event study, split by payment type (cash arm and stock comparison). " + _ROB_LEG),
  "tab:rob_cashspec": (
    r"\textit{Notes:} $^{*}p<.10$, $^{**}p<.05$, $^{***}p<.01$ (two-tailed); SE clustered by firm.",
    r"\textit{Notes:} All-deals pooled cash-specificity test: both treatments enter one regression and the cash-minus-stock difference is evaluated by a Wald restriction. " + _ROB_LEG),
@@ -458,6 +487,7 @@ for k, (c, lab) in enumerate(zip(chunks, LABELS)):
     c = c.replace(r"\begin{table}[H]", r"\begin{table}[htbp]")          # float[H] needs a package we don't load
     c = re.sub(r"\\caption\{Table 5\.\d+ --- ", r"\\caption{", c)       # drop the hardcoded "Table 5.x" prefix
     c = drop_thesis_panel(c, lab)                                       # keep only the all-deals columns
+    c = c.replace("Payment Type (placebo)", "Payment Type")            # H2: drop 'placebo' from the caption
     c = restyle_robnote(c, lab)                                         # Issue 3: note -> bible template
     c = re.sub(r"(\\caption\{[^}]*\})", r"\1\\label{%s}" % lab, c, count=1)
     spec = re.search(r"\\begin\{tabular\}\{([lc]+)\}", c).group(1)
@@ -508,8 +538,26 @@ tail = tail.replace(r"\input{_tables_from_bible.tex}",
                     "\\input{_tables_from_bible.tex}\n\n\\clearpage\n% Section 4.5 robustness tables (all-deals + logit)\n\\input{_robustness_tables.tex}", 1)
 assert "_robustness_tables.tex" in tail, "robustness \\input not wired into wrapper"
 wrap_new = wrap[:i] + SEC2 + tail
+
+# Issue #11: re-sort the manual \thebibliography into ONE alphabetical-by-label sequence (it had three runs:
+# the original 11, a second pre-existing block, and the 5 phaseB additions). Reorder ONLY -- assert the entry
+# count and the citekey SET are identical before and after, so no entry can be dropped or mangled (advisor).
+def _sort_bib(w):
+    m = re.search(r"(\\begin\{thebibliography\}\{[^}]*\}\s*)(.*?)(\\end\{thebibliography\})", w, flags=re.S)
+    assert m, "thebibliography block not found for sort"
+    head, mid, end = m.group(1), m.group(2), m.group(3)
+    entries = [e for e in re.split(r"(?=\\bibitem\[)", mid) if e.lstrip().startswith("\\bibitem")]
+    assert len(entries) == 22, "bib sort: expected 22 entries, got %d" % len(entries)
+    keys_before = sorted(re.search(r"\]\{([^}]+)\}", e).group(1) for e in entries)
+    entries.sort(key=lambda e: re.search(r"\\bibitem\[([^\]]*)\]", e).group(1).lower())
+    keys_after = sorted(re.search(r"\]\{([^}]+)\}", e).group(1) for e in entries)
+    assert keys_before == keys_after, "bib sort: citekey set changed -- aborting"
+    body = "".join(e.rstrip() + "\n\n" for e in entries)   # normalize: every entry ends with one blank line
+    return w[:m.start()] + head + body + end + w[m.end():]
+wrap_new = _sort_bib(wrap_new)
+
 (CLONE / "thesis_draft_uottawa.tex").write_text(wrap_new, encoding="utf-8")
-print("spliced Chapter-2 + added 5 bibitems; wrapper now %d chars" % len(wrap_new))
+print("spliced Chapter-2 + added 5 bibitems + re-sorted bibliography; wrapper now %d chars" % len(wrap_new))
 
 # ---- 4. compile (pdflatex x3 for TOC / List of Tables / refs; manual bib, no bibtex) ----
 # Use a distinct -jobname so a viewer holding thesis_draft_uottawa.pdf open never blocks the write.
