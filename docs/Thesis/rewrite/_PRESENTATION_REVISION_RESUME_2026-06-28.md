@@ -44,7 +44,15 @@ near-full; large prose rewrites under context pressure introduced errors twice â
   where it is the only statement in that section.
 - CAUTION: the register agent must re-confirm the floor still holds after thinning (don't over-cut).
 
-## ISSUE 2 â€” coefficients: stars -> p-values + economic effect (match the OLD prose)
+## ISSUE 2 â€” [DONE 2026-06-28, commit c084ed52] coefficients: stars -> compact p (PROSE ONLY)
+> RESOLVED: Sina chose COMPACT (`$0.0461$ (standard error $0.0172$, $p<.01$)`), NOT worded "significant at
+> the N percent level" (he viewed a worded MA1 sample and judged compact neater) and NOT bare `$p<.01$`.
+> Done via `destars()` in build_uottawa_rewrite.py: a regex copies value+SE verbatim, computes only
+> star->threshold (*** $p<.01$, ** $p<.05$, * $p<.10$); two no-SE forms get asserted bespoke handling;
+> exact-p coefs (logits, Wald) just lose the star. Verified: `_audit/destars_verify.py` PASS + full
+> end-to-end read of sec34 + 2.5 splice. PROSE ONLY -- tables keep stars. The notes below are superseded.
+
+## ISSUE 2 (original spec, superseded) â€” stars -> p-values + economic effect
 - Evidence: phaseB prose states coefs as `$0.0461^{***}$ (standard error $0.0172$)` (stars).
   Inline stars in PROSE are non-standard; the ORIGINAL prose used p-values + an economic-magnitude
   reading. TEMPLATE LOCATION UNVERIFIED -- the grep for the old p-value style returned empty this
@@ -78,9 +86,8 @@ near-full; large prose rewrites under context pressure introduced errors twice â
   or patch in the generator after the clone step, like the existing dwz-note patch).
 - CAUTION: edit ONLY the notes; never a number/cell.
 
-## RECOMMENDED EXECUTION ORDER (fresh session)
-1. Confirm the Issue-2 open decision with Sina (prose-only vs tables-too).
-2. Issue 3 first (most mechanical, contained) -> verify gates.
-3. Issue 2 section-by-section (verify each coef vs table) -> gates + advisor.
-4. Issue 1 last (thin hedges) -> register-agent re-check it still holds.
-5. Final: re-run the 3-agent coherence panel on the flat file; advisor; set canonical JOB name.
+## RECOMMENDED EXECUTION ORDER
+1. [x] Issue 2 -- DONE (commit c084ed52). Compact p, prose only, verified end-to-end.
+2. [ ] Issue 3 next (most mechanical: standardize table notes) -> verify gates.
+3. [ ] Issue 1 last (thin hedges) -> register-agent re-check the floor still holds.
+4. [ ] Final: re-run the 3-agent coherence panel on the flat file; advisor; set canonical JOB name.
