@@ -249,11 +249,12 @@ def fix_openers(t, sid):
 # Item 1: split over-long Ch2 paragraphs at a natural topic boundary (insert a blank line at the anchor's first ". ").
 # Equation-bearing paras already break visually at the display math and are left whole (advisor). Anchors are unique.
 SPLITS = {
- "2.1": ["rather than a bright line. Yet the same law that makes the deal material also limits",            # ch2 291w
+ "2.1": ["withholding is not, by itself, a giveaway. The pending deal can matter to investors",            # ch2 291w: theory-of-silence | legal-materiality+bind (clean topic seam; avoids a 'Yet' opener)
          "so a cash bid reflects an accumulated balance-sheet position. The second difference is about incentives",  # ch2 438w (1/2)
          "before a stock-for-stock acquisition. Two clarifications keep this in its proper place."],          # ch2 438w (2/2)
  "2.3": ["not a different object. The measure itself is not new to us:"],  # ch2 437w: tame the post-equation tail (eq already breaks the para; do NOT orphan the where-clause)
- "2.4": ["the two-step standard-error caveat noted earlier applies to every design here. Fourth, the choice of controls:"],  # ch2 337w
+ # 2.4 "Several threats..." (337w) left WHOLE: it is a single First-Fifth enumeration; splitting it mid-list
+ # orphans "Fourth," from its "First-Third" antecedents and damages flow (Sina: content-aware; slight imbalance OK).
  "2.5": ["the other two speech controls keep the same sign and significance. The fit lines up too, once the two are put on the same footing:",  # ch2 292w
          "the formal side-test, its hedged verdict, and the underpowered caveat are all reported in Section~4.1. One might object that this test merely repeats"],  # ch2 293w
 }
@@ -261,6 +262,17 @@ def fix_splits(t, sid):
     for anchor in SPLITS.get(sid, []):
         assert anchor in t, "fix_splits[%s] anchor not found: %s" % (sid, anchor[:45])
         t = t.replace(anchor, anchor.replace(". ", ".\n\n", 1), 1)
+    return t
+
+# Ad-hoc prose edits made while Sina reviews the rendered PDF (exact-string, assert-guarded).
+MISC = {
+ "2.1": [("Such a firm sits in a particular disclosure state, not a particular balance-sheet state: the pending deal",
+          "Such a firm sits in a particular disclosure state: the pending deal")],
+}
+def fix_misc(t, sid):
+    for old, new in MISC.get(sid, []):
+        assert old in t, "fix_misc[%s] anchor not found: %s" % (sid, old[:45])
+        t = t.replace(old, new, 1)
     return t
 
 def global_fixes(t):
@@ -365,6 +377,7 @@ def prose_of(sid):
     if sid == "5":   body = fix_5(body)        # #5 50%-threshold limitation
     if sid in ("2.3", "2.4"): body = number_equations(body, sid)  # Item 4: number the 5 display equations
     body = fix_openers(body, sid)              # Item 2: rhetorical-Q openers -> declarative
+    body = fix_misc(body, sid)                 # ad-hoc prose edits from PDF review
     body = fix_splits(body, sid)               # Item 1: split over-long Ch2 paragraphs
     body = destars(body, sid)                  # Issue 2: significance stars -> compact p (PROSE ONLY)
     body = dehedge(body, sid)                  # Issue 1: thin redundant honesty-floor closers (PROSE; never math)
