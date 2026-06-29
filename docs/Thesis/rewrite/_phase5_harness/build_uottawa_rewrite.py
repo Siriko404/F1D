@@ -390,8 +390,17 @@ _bk = "and a lagged dependent variable is included. Standard errors clustered by
 assert _bf.count(_bk) == 1, "bid-ask note anchor: expected 1, got %d" % _bf.count(_bk)
 _bf = _bf.replace(_bk, "and a lagged dependent variable is included. The dependent variable (the bid-ask spread) "
                        "is rescaled by $10^{4}$ (basis points) for readability. Standard errors clustered by firm")
+# #6 (Sina: disclose the CLEAN first-deal deal counts; stay silent on the unreproducible all-deals cashspec count).
+# 837/282 = pre_counts from empire_cashspec 2026-06-08 summary.json -- VERIFIED: that run's coefs (0.0459/-0.0524/
+# 0.0983) + N (25,600/24,347/61,876) + firms (1,191/...) match THIS table's row exactly. Self-checkable here:
+# 837+282=1,119 <= the 1,191 firms shown. Plain statement, no cross-table comparison (avoids drawing eyes to the
+# different-sample Logit-B 982/123). All-deals deal split is already in the Logit-B table.
+_d6 = "the baseline is firms making neither a cash nor a stock acquisition."
+assert _bf.count(_d6) == 1, "5.6 deal-count anchor: expected 1, got %d" % _bf.count(_d6)
+_bf = _bf.replace(_d6, _d6 + " The pooled sample includes 837 firms making a first cash acquisition and "
+                       "282 making a first stock acquisition.")
 _bibt.write_text(_bf, encoding="utf-8")
-print("patched bible tables: placebo->comparison (3), event-time t->e (8), bid-ask 1e4 disclosure")
+print("patched bible tables: placebo->comparison (3), event-time t->e (8), bid-ask 1e4 disclosure, 5.6 deal counts (837/282)")
 
 # Issue #1 (Sina: ADD defs, not soften): Appendix II omitted 7 vars that appear as table rows -- FirmMat/EarnVol
 # (Tables 5.1, 5.6-5.8), HighCash (5.9), StockPrice/Turnover/DailyVola/AbsSurpDec (5.12) -- contradicting the

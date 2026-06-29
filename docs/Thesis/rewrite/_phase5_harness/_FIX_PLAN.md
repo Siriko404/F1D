@@ -57,8 +57,20 @@ HIGH H1 = DONE (6b378581/2cf3fb40). Everything below is open.
 - DECLINED: H2-prose upper-bound caveat (referee's "beta_s biased negative" conflicts with locked floor
   "stock arm = noisy flat null, never suppressed"; + overclaims). Existing hedge kept.
 - DEFERRED (Sina): #13 variable typography (math-mode regex risk near submission).
-- SKIPPED (Sina "else skip"; OUTSTANDING transparency gap): #6 first-deal cash/stock deal counts (not cheap;
-  all-deals 982/123 already in via Logit B).
+- #6 SPLIT (Sina RATIFIED 2026-06-28): disclose the CLEAN count, stay silent on the FISHY one.
+  DISCLOSED: first-deal cash/stock deal counts = 837 cash / 282 stock, added to the Table 5.6 note (plain, no
+  cross-table clause). VERIFIED: that count's run (empire_cashspec 2026-06-08 summary.json pre_counts) matches
+  5.6 exactly (coefs 0.0459/-0.0524/0.0983 + N 25,600/24,347/61,876 + firms 1,191). Self-checkable: 837+282=1,119
+  <= 1,191 firms shown. All-deals deal split (982/123) already in the Logit-B table.
+  SILENT on the FISHY all-deals cashspec count -- reasoning: (1) PROVENANCE FRAGILE -- the
+  outputs/econometric/firstdeal_robustness/2026-06-23_162451 dir holds INCONSISTENT artifacts: stray
+  summary_cashspec.json (40,002 obs, cash 0.0394, Wald 0.0631) vs the thesis source rob_4tables.tex
+  (27,095 obs, cash 0.0447, Wald 0.1056) -- same folder, different runs; with reruns OFF, an inserted count
+  can't be regenerated if a referee asks. (2) LOW gap -- firms+obs are in every table; all-deals cash/stock
+  split (982/123) is already in Logit B. (3) ODD optic -- the only verified first-deal split (837 cash/282
+  stock; empire_cashspec 2026-06-08 summary.json, matches Table 5.6 exactly) totals 1,119 > all-deals Logit B
+  1,105 (different samples, but reads as first>all). Leave the finalized thesis clean. NOTE for future: that
+  robustness dir is not internally consistent -- trust rob_4tables.tex (the generator's source), not the JSONs.
 - HEADS-UP: FirmMat appendix def is approximate (data source says "lifecycle ... such as age/sales-growth/
   capital-structure"; the -317.57 min isn't explained by "lifecycle stage"). Ships fine; flag if examiner probes.
 
