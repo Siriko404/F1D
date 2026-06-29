@@ -264,6 +264,27 @@ def fix_splits(t, sid):
         t = t.replace(anchor, anchor.replace(". ", ".\n\n", 1), 1)
     return t
 
+# Sina (PDF review): each Main-Analysis section must OPEN by naming the hypothesis it tests + a one-line
+# qualitative verdict (support + strength), floor-consistent. Mapping per Section 2.4: MA1->H1, MA2->H1b, MA3->H1a.
+# Verdicts mirror the section's own later wording (3.2 "supportive but not definitive"; 3.4 "supported but
+# fragile"; 3.3 "supportive, not definitive"). Em-dash-free so it adds nothing to the pending dash pass.
+HYP_OPEN = {
+ "3.2": ("This analysis tests hypothesis~H1: that residual chief-executive Q\\&A uncertainty (\\textit{UncResCEO}) "
+         "is elevated in the pre-announcement quarter of cash acquirers, relative to those same firms' other quarters. "
+         "We find H1 supported: the run-up is present and statistically significant, though its magnitude is modest "
+         "and the reading is correlational. "),
+ "3.3": ("This analysis tests hypothesis~H1b: that residual uncertainty resolves at the announcement, falling even "
+         "before the deal closes, while the acquirer's cash persists until completion. We find H1b supported: the two "
+         "paths separate as predicted, with the uncertainty round trip the load-bearing pattern, read as supportive "
+         "rather than definitive. "),
+ "3.4": ("This analysis tests hypothesis~H1a: that the pre-announcement uncertainty run-up is stronger for cash "
+         "acquirers than for stock acquirers. We find H1a supported but fragile: one formal cash-minus-stock test "
+         "clears the five-percent level, but its significance rides on the imprecise stock estimate, so we read the "
+         "result as concentration in cash deals rather than strict specificity. "),
+}
+def fix_hyp_open(t, sid):
+    return HYP_OPEN.get(sid, "") + t
+
 # Ad-hoc prose edits made while Sina reviews the rendered PDF (exact-string, assert-guarded).
 MISC = {
  "2.1": [("Such a firm sits in a particular disclosure state, not a particular balance-sheet state: the pending deal",
@@ -378,6 +399,7 @@ def prose_of(sid):
     if sid in ("2.3", "2.4"): body = number_equations(body, sid)  # Item 4: number the 5 display equations
     body = fix_openers(body, sid)              # Item 2: rhetorical-Q openers -> declarative
     body = fix_misc(body, sid)                 # ad-hoc prose edits from PDF review
+    body = fix_hyp_open(body, sid)             # MA sections open by naming the hypothesis + qualitative verdict
     body = fix_splits(body, sid)               # Item 1: split over-long Ch2 paragraphs
     body = destars(body, sid)                  # Issue 2: significance stars -> compact p (PROSE ONLY)
     body = dehedge(body, sid)                  # Issue 1: thin redundant honesty-floor closers (PROSE; never math)
