@@ -218,6 +218,51 @@ def fix_5(t):
                         "fifty-percent-of-consideration cutoff whose sensitivity we do not test; and the sample, "
                         "United States public firms")
 
+# ===== Readability pass (Sina 2026-06-28; plan in _FIX_PLAN2.md). All PROSE/typography; no number/coef/hedge moves. =====
+# Item 4: the 5 display equations are unnumbered \[ ... \]; convert to numbered equation envs (number-only, no \eqref).
+EQ_LABELS = {"2.3": ["eq:uncans", "eq:dwz"], "2.4": ["eq:ma1", "eq:ma2", "eq:ma3"]}
+def number_equations(t, sid):
+    labels = EQ_LABELS[sid]
+    ms = list(re.finditer(r"\\\[\s*(.+?)\s*\\\]", t, flags=re.S))
+    assert len(ms) == len(labels), "number_equations[%s]: expected %d display \\[..\\], got %d" % (sid, len(labels), len(ms))
+    for lab, m in zip(reversed(labels), reversed(ms)):
+        t = t[:m.start()] + "\\begin{equation}\\label{%s}\n%s\n\\end{equation}" % (lab, m.group(1)) + t[m.end():]
+    return t
+
+# Item 2: rephrase non-standard rhetorical-question openers as declarative (meaning + floor preserved).
+OPENERS = {
+ "2.1": [("Where does this leave our paper relative to the nearest work? The closest study reads how deal-related language is managed.",
+          "We can now place our paper relative to the nearest work. The closest study reads how deal-related language is managed.")],
+ "2.3": [("Why a residual at all? As established earlier, an anticipatory signal",
+          "The residual is necessary for the reason established earlier: an anticipatory signal")],
+ "3.2": [("How large are these effects? They are material but modest.",
+          "These effects are material but modest.")],
+ "4.4": [("How should we read the two side by side? The lag belongs in the main specification,",
+          "The two specifications should be read together. The lag belongs in the main specification,")],
+}
+def fix_openers(t, sid):
+    for old, new in OPENERS.get(sid, []):
+        assert old in t, "fix_openers[%s] anchor not found: %s" % (sid, old[:45])
+        t = t.replace(old, new, 1)
+    return t
+
+# Item 1: split over-long Ch2 paragraphs at a natural topic boundary (insert a blank line at the anchor's first ". ").
+# Equation-bearing paras already break visually at the display math and are left whole (advisor). Anchors are unique.
+SPLITS = {
+ "2.1": ["rather than a bright line. Yet the same law that makes the deal material also limits",            # ch2 291w
+         "so a cash bid reflects an accumulated balance-sheet position. The second difference is about incentives",  # ch2 438w (1/2)
+         "before a stock-for-stock acquisition. Two clarifications keep this in its proper place."],          # ch2 438w (2/2)
+ "2.3": ["not a different object. The measure itself is not new to us:"],  # ch2 437w: tame the post-equation tail (eq already breaks the para; do NOT orphan the where-clause)
+ "2.4": ["the two-step standard-error caveat noted earlier applies to every design here. Fourth, the choice of controls:"],  # ch2 337w
+ "2.5": ["the other two speech controls keep the same sign and significance. The fit lines up too, once the two are put on the same footing:",  # ch2 292w
+         "the formal side-test, its hedged verdict, and the underpowered caveat are all reported in Section~4.1. One might object that this test merely repeats"],  # ch2 293w
+}
+def fix_splits(t, sid):
+    for anchor in SPLITS.get(sid, []):
+        assert anchor in t, "fix_splits[%s] anchor not found: %s" % (sid, anchor[:45])
+        t = t.replace(anchor, anchor.replace(". ", ".\n\n", 1), 1)
+    return t
+
 def global_fixes(t):
     # #12 (whole-unit "Section~N"/"Sections~N" render as Chapters): -> Chapter~N, keeping "Section~N.M" subsection refs
     t = re.sub(r"\bSection~([1-5])(?![.0-9])", r"Chapter~\1", t)
@@ -318,6 +363,9 @@ def prose_of(sid):
     if sid in ("2.1", "2.2"): body = fix_unmanaged(body, sid)  # #9 flat "unmanaged"
     if sid == "2.4": body = fix_24(body)       # #14 leading-zero p
     if sid == "5":   body = fix_5(body)        # #5 50%-threshold limitation
+    if sid in ("2.3", "2.4"): body = number_equations(body, sid)  # Item 4: number the 5 display equations
+    body = fix_openers(body, sid)              # Item 2: rhetorical-Q openers -> declarative
+    body = fix_splits(body, sid)               # Item 1: split over-long Ch2 paragraphs
     body = destars(body, sid)                  # Issue 2: significance stars -> compact p (PROSE ONLY)
     body = dehedge(body, sid)                  # Issue 1: thin redundant honesty-floor closers (PROSE; never math)
     if sid == "4.5": body = fix_45_se(body)    # #18 SE 4dp (AFTER destars, whose NOSE[4.5] anchor reads $0.00275$)
