@@ -217,3 +217,13 @@ Defensive assets the thesis ALREADY contains (use these verbatim in answers):
 - 2026-07-09: Ledger conflation caught during slide build: 0.7530/0.8519 belong to CashRatio (validity cols 1-2, one-tailed), NOT HighCash (0.1754/0.1921, cols 3-4). Slides corrected before commit. Lesson: never quote a ledger number without opening the table.
 - 2026-07-09: Two-way clustering note (C6, p=.043) exists ONLY in claim ledger `_open_decisions_resolved`, NOT in thesis prose: deliberately not claimed on slides. If an examiner asks about clustering, it exists as a private rerun (tmp/cashspec_twoway_cluster.py, holds at 5%) but IS NOT in the defended document; answer must flag that distinction.
 - 2026-07-09: Subagent delegation for defense prep banned by Sina; all analysis in-session, recorded incrementally.
+- 2026-07-09 STALENESS AUDIT (Sina asked "are your docs outdated?"): NO.
+  (a) Slide numbers were verified against _tables_from_bible.tex (Jul 3, current) — safe.
+  (b) All 5 slide prose quotes (sample line, fifteen-percent magnitude, contributions
+  enumeration, "concentrated", "indistinguishable once announced") re-verified PRESENT in
+  the Jul 3 body files (_abstract_body/_intro_body/sec34_body_from_ledgers/_conclusion_body).
+  (c) FLAT's staleness delta was confined to table-note wording (placebo->comparison),
+  which the slides never used. (d) Ledger Q&A answers predate the full read -> not wrong,
+  but B-section answers should be UPGRADED with section-F assets before ratification.
+  Build structure noted: thesis_draft_uottawa.tex inlines ch1-2 prose and \inputs the
+  abstract/intro/sec34/conclusion bodies + tables (input map at its lines 122-353).
