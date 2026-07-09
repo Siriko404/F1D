@@ -145,6 +145,13 @@ material thing, and cannot deny it either."
 
 (Acts 2-4 recorded below as ratified.)
 
+ACT 2a: THE MEASURE (S4) — RATIFIED.
+Steps spoken: (1) take CEO Q&A answers call by call; (2) count uncertainty words, share
+per call; (3) some CEOs always hedgy = style not signal; (4) estimate each CEO's normal
+level, subtract; (5) leftover = UncResCEO, today's signal only.
+SPOKEN CARRIER LINE (verbatim): "Levels compare tentative speakers to confident ones.
+The residual compares each CEO to his own baseline."
+
 Narrative traps found (fix candidates for Phase 1 ratification):
 - T1: S3 RQ line says "receding once announced" as part of the QUESTION. As a question it does
   not violate the floor (the CLAIM slides all say "indistinguishable from zero"), but consider
