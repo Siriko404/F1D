@@ -11,11 +11,51 @@ Governing rules:
 
 ## A. COMMITTEE INTEL
 
-### A1. Dr. Shantanu Dutta (Telfer)
-(pending; researched by main session, sources recorded per fact)
+### A1. Dr. Shantanu Dutta (Telfer) — researched 2026-07-09 (main session)
 
-### A2. Dr. Rengong (Alex) Zhang (Telfer)
-(pending)
+Profile: Full Professor of finance, Ian Telfer Fellowship in Global Finance. Research: M&A,
+media coverage + financial decisions, corporate governance, market efficiency, dividend policy,
+ML/NLP in financial decisions. [https://telfer.uottawa.ca/en/directory/shantanu-dutta/]
+
+Key papers (Google Scholar v9T9-D0AAAAJ + Telfer directory):
+- Long-term performance of acquiring firms, JBF 2009 (298 cites)
+- Does payment method matter in cross-border acquisitions? IREF 2013 — METHOD-OF-PAYMENT paper
+- Inside the "black box" of private in-house meetings, RAS 2018 (191 cites) — selective disclosure
+- Does governance quality influence insider trading around private meetings? Acct Horizons 2023
+- Does media coverage affect credit rating change decisions? JBF 2022
+- Using 10-K text to gauge COVID-related corporate disclosure, PLOS ONE 2024 — textual analysis
+- CEO power + M&A (JMFM 2011); CEO tenure + M&A (FRL 2020); Are good performers bad acquirers? (FM 2012)
+- Do say-on-pay votes affect M&A decisions? JCF 2025
+
+Methodological taste: event studies, panel corporate finance, TEXTUAL ANALYSIS + NLP/ML
+(active interest), media data, insider-trading data. He knows earnings-call/disclosure
+literature first-hand (private meetings work).
+
+READ: He is the closest thing to a domain expert on this thesis's intersection
+(M&A x textual disclosure x private information flows). Expect informed, specific questions,
+not generic ones. UNVERIFIED: no direct statement of his causality standards found.
+
+### A2. Dr. Rengong (Alex) Zhang (Telfer) — researched 2026-07-09 (main session)
+
+Profile: joined Telfer 2024 (accounting; directory now shows Associate Professor), PhD
+U Alberta, ex-City University of Hong Kong. Research: big data / alternative data,
+workplace safety + labor ESG, capital markets. Certified fintech / big-data / ESG.
+[https://telfer.uottawa.ca/en/directory/rengong-alex-zhang/]
+
+Key papers:
+- Does Sunlight Kill Germs? Stock Market Listing and Workplace Safety, JFQA 2023 (listing
+  status -> monitoring; quasi-experimental taste)
+- Short-Selling Pressure and Workplace Safety, Organization Science 2023
+- Media Co-coverage and Overreaction in Cross-Industry Information Transfers, EAR 2024
+- Post-Earnings-Announcement Drift and Parameter Uncertainty, RQFA 2020 — UNCERTAINTY + PRICES
+- Voluntary Risk Disclosures of Entrepreneurial Firms (OTC), 2025 preprint — DISCLOSURE
+- Competition and Slack, JOM 2022
+Teaches Data Analytics in Accounting.
+
+READ: alt-data/ML methodologist + disclosure/information-transfer interests. Expect
+data-pipeline drilling (speaker attribution, lexicon choice vs modern ML), media/information
+-transfer confounds, and price-based "does the market see it?" questions (his PEAD +
+parameter-uncertainty paper makes the bid-ask/returns angle personal).
 
 ### A3. Supervisors' known positions
 - Dr. Ali Akyol, Dr. Harshit Rajaiya: co-advisors; approved the thesis register. (No dossier needed; they are allies. Intel from Sina welcome.)
@@ -37,7 +77,20 @@ Seed set from handoff Sec 5 (to be expanded by my own lens passes + committee in
 | Q5 | Why would cash acquirers hide but not stock acquirers? | M&A | M | Masking asymmetry is MOTIVATION only (stock acquirer defends its currency, manages narrative); thesis does not identify the channel. | 2.1-2.2; floor | B8 | drafted |
 | Q6 | Is 15% of a residual SD economically meaningful? | M&A | M | Thesis words it "material but modest" (3.2); the claim is a readable trace, not a tradable signal; contribution is characterizing, not recommending action. | 3.2 prose L280 | S7 | drafted |
 
-(Q7+ to be added from my committee-sim passes below.)
+Examiner-derived (from A1/A2 dossiers, drafted 2026-07-09):
+
+| Q-ID | Question | Lens | Threat | Answer sketch | Grounding | Backup | Status |
+|---|---|---|---|---|---|---|---|
+| Q7 | Payment method is endogenous (his IREF 2013): firms CHOOSE cash vs stock. Isn't your "concentration" just selection into payment method? | Dutta/M&A | H | Concede: no identification claimed; arms differ observably and thesis discloses it. Firm FE absorb time-invariant selection; comparison is "managed" (>=half definitions); claim is a within-firm descriptive contrast, cause leg n.s. keeps even the cash build-up non-specific. The pattern is worth documenting whichever way selection runs. | 2.2, 3.4, floor | B8 | drafted |
+| Q8 | Your own committee member showed firms hold private in-house meetings (RAS 2018). Private communication could drive both scrutiny and the residual. | Dutta/disclosure | M | Unobserved channel, concede openly: we cannot rule out private communication; the finding stands on the PUBLIC record: the run-up is in the public call regardless of what happens privately; mechanism explicitly open. | floor; 4.1 | B9 | drafted |
+| Q9 | Does the language run-up line up with price run-up or insider trading before announcement? | Dutta/M&A | M | Not tested; scope is the spoken record. Bid-ask result suggests the residual is NOT priced contemporaneously; we claim a readable trace ex post, never a tradable signal. Natural extension. | 4.2; 5 | S11 | drafted |
+| Q10 | Why a word list (LM) instead of modern NLP/embeddings/LLMs? Both examiners work with ML. | Dutta+Zhang/ML | M | Comparability (DWZ decomposition is the anchor), transparency, replicability; the innovation is the RESIDUALIZATION, not the lexicon; embedding-based rescoring is a clean extension that reuses the same design. | 2.3 | B4 | drafted |
+| Q11 | Does pre-announcement uncertainty predict deal quality or long-run acquirer performance (his JBF 2009)? | Dutta/M&A | L | Not tested; descriptive scope; would require outcome data joins; flagged as future work. | 5 | none | drafted |
+| Q12 | Media leaks deals (Zhang EAR 2024 co-coverage; Dutta media-JBF 2022): is the elevation just RUMORED deals, where the market already knows? | Zhang+Dutta/media | M | Not controlled, concede. Partial comfort: analyst cash-scrutiny (the in-call reflection of outside attention) rises pre-announcement yet does not carry the run-up; and if rumor made the deal effectively public, the sharp PRE1->GAP announcement contrast should be attenuated, not sharp. But no media data in the thesis: open. | tab:reason_gating; 3.3 | B9 | drafted |
+| Q13 | How reliable is CEO speaker attribution in Capital IQ transcripts? Tagging errors contaminate the measure. | Zhang/data | M | TO VERIFY in 2.3/appendix before ratifying: describe attribution procedure; generic answer: misattribution adds noise to the outcome, attenuating toward zero; >=5-call filter stabilizes the style FE. | 2.3 (VERIFY) | B4 | NEEDS-VERIFY |
+| Q14 | If the residual carries information, why doesn't the bid-ask spread react? Isn't that a contradiction (his RQFA 2020 is prices+uncertainty)? | Zhang/prices | M | Not a contradiction under the thesis reading: the trace is statistically readable in panel data ex post, not necessarily detected/priced call-by-call in real time; scripted presentation (the managed, expected channel) does relate. Two per-component facts, no between-component test claimed. | 4.2 | S11 | drafted |
+| Q15 | Did you search event windows until one worked? Why is PRE1 the window? | Zhang/multiple-testing | M | Windows are the deal's institutional states (PRE2/PRE1/GAP/POST), not a search grid; PRE2 null is the pre-trend check; the design was fixed by the private->public framing. | 2.4; tab:empire_drop_matched | B2 | drafted |
+| Q16 | Why 2002-2018? Why stop in 2018? | either | L | TO VERIFY: state thesis's data-coverage rationale from 3.1/2.3 before ratifying. | 3.1 (VERIFY) | S5 | NEEDS-VERIFY |
 
 ---
 
@@ -49,7 +102,45 @@ the story AND the scrutiny.
 
 Schema per core slide: | job | claim on screen | question it PLANTS | where answered |
 
-(pending: filled by my slide-by-slide lens passes, then ratified as the Phase 1 message map)
+Slide-by-slide map (drafted 2026-07-09, main session, three lenses: econometrics / M&A / disclosure).
+This IS the Phase-1 message-map draft; each row needs Sina ratification.
+
+| Slide | Job | Question it PLANTS | Answered where | Glorious? |
+|---|---|---|---|---|
+| S1 title | 4-word thesis: "Cash Got Your Tongue?" | what does that mean? | S2-S3 | - |
+| S2 bind | Establish organizing primitive (may stay silent / may not mislead) | "so does the language show it?" | whole deck | YES: the hook |
+| S3 this paper | RQ + 3-finding preview | "how do you MEASURE that?" | S4 | yes |
+| S4 measure | Style vs state; residual logic | "is the residual valid / generated-regressand?" | B4 + B6 | yes (Q2, Q10) |
+| S5 data | Scope + disclosed selection | "5-call filter selection?" | inline + S14 | yes |
+| S6 design | 3 analyses, one primitive | "why these windows?" | S8 | yes (Q15) |
+| S7 H1 | First result: cash rises, stock noisy-null | "is stock REALLY null? size meaningful?" | S10 + B7/B8; inline 15% | yes (Q4, Q6) |
+| S8 event-time | STAR figure: the round trip | "why gone at announcement but before closing?!" | S9 | YES: THE plant |
+| S9 two clocks | The reading: information vs transaction clock | "is cash persistence mechanical?" | conceded inline | yes |
+| S10 H1a | Formal pooled test | "Gelman-Stern? cause?" | B7 preempts; mechanism-open inline | yes (Q3) |
+| S11 rule-outs | Scrutiny + bid-ask honesty | "underpowered null? market doesn't price it?" | conceded inline; Q14 answer | yes |
+| S12 robustness | Pattern is not fragile | "withdrawn deals?" | B10 | yes |
+| S13 contributions | 4 descriptive, to-our-knowledge | "what's new vs DWZ 2021?" | B4 + talk track | needs crisp verbal answer |
+| S14 limitations | PREEMPT the causality attack before Q&A | "(defuses Q1 before it's asked)" | - | YES: the shield |
+| S15 takeaways | 3 lines they remember | - | - | - |
+
+Narrative traps found (fix candidates for Phase 1 ratification):
+- T1: S3 RQ line says "receding once announced" as part of the QUESTION. As a question it does
+  not violate the floor (the CLAIM slides all say "indistinguishable from zero"), but consider
+  aligning the RQ wording to the floor verbatim to remove any over-reading risk. DECIDE.
+- T2: No backup slide on securities-law / Reg-FD / quiet-period institutions; S2 leans on
+  Basic v. Levinson + 10b-5, which invites an institutional question the deck cannot answer
+  deeply. Candidate: new backup "Institutional detail: what the law does and does not require."
+  DECIDE.
+- T3: No backup for unobserved-channel questions (Q8 private meetings, Q12 media rumors).
+  Candidate: new backup "Channels we do not observe" that concedes both openly and points to
+  the scrutiny rule-out as the measurable slice. DECIDE.
+- T4: Q13 (speaker attribution) + Q16 (why 2002-2018) need verification against thesis 2.3/3.1
+  before their answers are ratified. VERIFY NEXT SESSION.
+- T5: "What exactly is new vs DWZ?" has no single slide; the answer lives in contribution 1
+  phrasing. Candidate: one line added to B4 ("DWZ decompose; we take the residual to a place
+  it has not been read: the anticipatory window"). DECIDE.
+- T6: 20-min timing: 15 core slides = ~80 s/slide; S8+S9 (the star) deserve 4+ min combined,
+  so S4-S6 must run tight (~60 s each). Timing budget to be set in Phase 4 script. NOTE.
 
 ---
 
