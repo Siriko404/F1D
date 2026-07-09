@@ -161,6 +161,15 @@ hidden weakness. Same fact, opposite outcomes.
 SPOKEN CARRIER LINE (verbatim): "The residual needs five calls per CEO, so this sample
 skews toward larger, better-covered firms. Every table reports its own counts."
 
+ACT 2c: THE DESIGN (S6) — RATIFIED.
+One idea three angles: MA1 = is there a run-up (one flag, yes/no); MA2 = when does it
+appear/vanish (four windows: two-before, one-before, announced-not-closed, completed);
+MA3 = cash vs stock in ONE model, gap tested directly (Gelman-Stern shield).
+Two guards named out loud: (1) firm FE + calendar FE ("compares the firm to itself, and
+to the same quarter at other firms"); (2) two-tailed reading of focal tests.
+SPOKEN CARRIER LINE (verbatim): "Three designs, one primitive: the firm against itself,
+before the deal versus its normal life."
+
 Narrative traps found (fix candidates for Phase 1 ratification):
 - T1: S3 RQ line says "receding once announced" as part of the QUESTION. As a question it does
   not violate the floor (the CLAIM slides all say "indistinguishable from zero"), but consider
