@@ -129,6 +129,22 @@ This IS the Phase-1 message-map draft; each row needs Sina ratification.
 | S14 limitations | PREEMPT the causality attack before Q&A | "(defuses Q1 before it's asked)" | - | YES: the shield |
 | S15 takeaways | 3 lines they remember | - | - | - |
 
+### C2. STORY ARC (ratified act by act, 2026-07-09, verbatim record)
+
+ACT 1: THE BIND (S2-S3, ~3 min) — RATIFIED.
+Job: make committee FEEL the trap before any data. The trap, in order: (1) firm secretly
+commits to acquisition; (2) deal is MATERIAL (Basic 1988); (3) but NO duty to announce
+merger talks, silence legal; (4) earnings call still happens, CEO must take questions;
+(5) may not lie or half-lie once speaking (Rule 10b-5), denial illegal; (6) so: can't
+confirm, can't deny, must talk, only option answer AROUND it. Why safe: all settled law
++ theory (Verrecchia 1983 silence rational; Dye 1985 silence survives) — none of it is
+Sina's claim, zero attack surface. What it PLANTS: listener self-generates the research
+question ("would we SEE that in his words?") before slide 3 shows it.
+SPOKEN CARRIER LINE (verbatim): "The CEO must host the call, cannot address the one
+material thing, and cannot deny it either."
+
+(Acts 2-4 recorded below as ratified.)
+
 Narrative traps found (fix candidates for Phase 1 ratification):
 - T1: S3 RQ line says "receding once announced" as part of the QUESTION. As a question it does
   not violate the floor (the CLAIM slides all say "indistinguishable from zero"), but consider
