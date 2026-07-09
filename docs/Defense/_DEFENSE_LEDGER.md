@@ -152,6 +152,15 @@ level, subtract; (5) leftover = UncResCEO, today's signal only.
 SPOKEN CARRIER LINE (verbatim): "Levels compare tentative speakers to confident ones.
 The residual compares each CEO to his own baseline."
 
+ACT 2b: THE DATA (S5) — RATIFIED.
+Show: 88,205 calls / 1,884 firms / 2002-2018; US public, no banks/utilities; Capital IQ
+calls + SDC deals; cash deal >= half cash, stock deal >= half stock.
+KEY MOVE: concede selection UNPROMPTED (5+ calls per CEO + Execucomp/S&P1500 coverage ->
+skews to larger firms). Rationale: if YOU say it = careful researcher; if THEY find it =
+hidden weakness. Same fact, opposite outcomes.
+SPOKEN CARRIER LINE (verbatim): "The residual needs five calls per CEO, so this sample
+skews toward larger, better-covered firms. Every table reports its own counts."
+
 Narrative traps found (fix candidates for Phase 1 ratification):
 - T1: S3 RQ line says "receding once announced" as part of the QUESTION. As a question it does
   not violate the floor (the CLAIM slides all say "indistinguishable from zero"), but consider
