@@ -57,6 +57,12 @@ data-pipeline drilling (speaker attribution, lexicon choice vs modern ML), media
 -transfer confounds, and price-based "does the market see it?" questions (his PEAD +
 parameter-uncertainty paper makes the bid-ask/returns angle personal).
 
+### A2b. Sina-sourced intel (not web; higher trust)
+- Dutta LIKES QUICK DEFENSES (grad-office hearsay, 2026-07-09). STRATEGIC IMPLICATION:
+  hit 20 min cleanly or under; no meandering; lead to results fast; do not over-explain
+  setup; have crisp answers ready so Q&A does not drag. This favors a tight, findings-
+  forward talk track. RATIFIED as a planning constraint 2026-07-09.
+
 ### A3. Supervisors' known positions
 - Dr. Ali Akyol, Dr. Harshit Rajaiya: co-advisors; approved the thesis register. (No dossier needed; they are allies. Intel from Sina welcome.)
 
@@ -153,6 +159,58 @@ Narrative traps found (fix candidates for Phase 1 ratification):
 - Talk length = 20 min confirmed; date unknown.
 
 ---
+
+## F. FULL-THESIS READ (2026-07-09, main session; entire _thesis_FLAT.tex lines 1-580 prose + previously verified tables)
+
+SOURCE-OF-TRUTH RULE (discovered): `_thesis_FLAT.tex` is a Jun-28 SNAPSHOT and is STALE in
+places (run-up table note said "placebo"; final build says "comparison"; only remaining
+"placebo" in the defended doc = internal label tab:empire_drop_placebo + the deliberate
+prose "managed comparison rather than an inert placebo"). VERIFY PROSE AGAINST
+`thesis_draft_uottawa.tex` (Jul 3 build) from now on.
+
+Defensive assets the thesis ALREADY contains (use these verbatim in answers):
+1. Q2 generated regressand: 2.3 cites Pagan (1984) explicitly, flags two-step SEs +
+   the bootstrap that would address it, notes DWZ themselves use the residual two-step.
+   2.4 repeats the caveat for every design. Answer = "flagged in the thesis, with the fix named."
+2. FIREWALL argument (2.2): documented pre-deal management (Louis accruals, Thewissen tone)
+   operates on SCRIPTED artifacts; our DV is the unscripted Q&A, hardest to stage-manage.
+   The signal is not an artifact of the tone-management literature. Strength, not gap.
+3. CONSERVATIVE FLOOR (2.3): if anticipation leaks into the vetted script, the residual
+   (net of UncPreCEO) UNDERSTATES the signal. Measure is a floor, not a ceiling.
+4. DWZ REPLICATION (2.5, tab:dwz_replication): rebuilt their decomposition on our data:
+   UncPre loading 0.089 vs their 0.093; R2 0.369 vs their ~0.36. Construct validity carries over.
+5. Q15 window-searching: bins ARE the deal's institutional states; PRE2 = pre-trend check
+   (0.0068 n.s. / 0.0008 n.s.); "we impose no ordering across bins, every coefficient two-tailed."
+6. Q13 speaker attribution: Capital IQ transcripts "parsed so that we know each speaker's
+   role and whether a turn falls in the scripted presentation or Q&A" (3.1); CEO identity from
+   Execucomp monthly tenure panel; sample restricted to Execucomp coverage (~S&P 1500).
+   Partial answer only: parsing accuracy itself not quantified in the thesis.
+7. Sample frame: S&P1500/Execucomp restriction is DISCLOSED (3.1) and echoed in conclusion
+   ("may not extend to... smaller firms outside it"). Q16 (why stop 2018): NO stated rationale
+   in thesis; need Sina/production answer before ratifying.
+8. All-deals robustness STRENGTHENS cash-concentration: Wald 0.1056 (p~.013) vs 0.0983
+   (p=.039) first-deal (4.5, tab:rob_cashspec). Logit A: high residual -> deal next quarter
+   (0.3233, p=.0008); Logit B: at e=-1, residual -> cash vs stock deal (0.7478, p=.028;
+   n.s. under firm FE, disclosed).
+9. Withdrawal-as-resolution numbers: peak-to-resolved 0.0687***, peak-to-gap 0.0457**
+   (vs 0.0455** main); only +89 firm-quarters, power-bounded, "consistent, not independent test."
+10. Static-FE cash check: no fall at announcement (-0.0012 n.s.), fall at completion
+   (GAP-to-POST 0.0318***); timing conclusion survives without the dynamic term (Nickell guard).
+11. Bid-ask (4.2): residual inert in ALL 12 specs; UncPre positive contemporaneous in 4/6
+   (incl. all 3 firm-FE cols), one-tailed; ClarityCEO null throughout; "we do not test the
+   between-segment difference directly"; interpretation payoff: run-up unlikely to be an
+   artifact of OUTSIDER reaction -> read as insider-side signal ("supportive, not proof").
+12. Hedged register lines worth SPEAKING verbatim: "we interpret, and we do not detect"
+   (H1a); "silence speaks" (Hollander hook); "the empty cell is where this paper sits" (2.1
+   positioning); "material but modest" (magnitudes); "a failure to find, not a powered
+   equivalence test" (scrutiny).
+13. GAP cash caution (3.3): cash persistence rests on ABSENCE of PRE1->GAP decline
+   (GAP level 0.0055 n.s. by itself). Do not overstate "cash stays elevated."
+14. Cash-arm corroboration on second sample (tab:empire_drop_placebo col 1): PRE1 0.0486***,
+   GAP 0.0058 n.s., drop 0.0428*; stock arm PRE1 -0.0404 n.s., PRE1-GAP -0.0756* "we do not
+   read as directional."
+15. Convergent validity honesty (2.5): PRisk assoc. economically trivial (R2~0.003); EPU/GEPU
+   identified only by within-year aggregate co-movement; "supportive but weak."
 
 ## E. LEARNING LOG (process, as-learned)
 
