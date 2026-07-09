@@ -212,6 +212,22 @@ Defensive assets the thesis ALREADY contains (use these verbatim in answers):
 15. Convergent validity honesty (2.5): PRisk assoc. economically trivial (R2~0.003); EPU/GEPU
    identified only by within-year aggregate co-movement; "supportive but weak."
 
+## G. WALKTHROUGH PROGRESS (teacher-mode ratification session, 2026-07-09)
+
+- Section A (committee intel): RATIFIED. Sina intel added: Dutta likes quick defenses.
+- Baseline concepts taught + confirmed: generated regressand (radio/scale analogies FAILED;
+  actual-case, no-analogy version LANDED), Gelman-Stern ("two different questions" framing LANDED).
+- Sina's defense lines he now owns:
+  (1) Generated regressand: "The error is random and unrelated to deal timing. It can't
+      create a pre-deal pattern, only blur one. The run-up survived that blur."
+  (2) Gelman-Stern: "Stars answer 'different from zero?'. I care about 'cash different
+      from stock?'. So I test cash-minus-stock directly: 0.0983, p=.039."
+- PEDAGOGY RULES FOR SINA (learned this session, apply everywhere):
+  NO analogies. Explain the ACTUAL case. Short sentences. Many small titled sections.
+  Lists over prose. "One idea" beats completeness. Verbose enough to walk each step,
+  never a wall.
+- Next: Section B (question bank) ratification, high-threat rows first.
+
 ## E. LEARNING LOG (process, as-learned)
 
 - 2026-07-09: Ledger conflation caught during slide build: 0.7530/0.8519 belong to CashRatio (validity cols 1-2, one-tailed), NOT HighCash (0.1754/0.1921, cols 3-4). Slides corrected before commit. Lesson: never quote a ledger number without opening the table.
