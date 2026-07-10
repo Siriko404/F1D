@@ -170,6 +170,14 @@ to the same quarter at other firms"); (2) two-tailed reading of focal tests.
 SPOKEN CARRIER LINE (verbatim): "Three designs, one primitive: the firm against itself,
 before the deal versus its normal life."
 
+ACT 3a: FIRST RESULT (S7) — RATIFIED.
+Show: cash 0.0461 p=.0074, ~15% of an SD, "material but modest"; stock = noisy flat null.
+Floor wording: "no comparable rise DETECTED"; never "suppress"/"falls"; the gap is CASH
+RISING. PLANT: "is stock really different or just noisy?" — wanted question, walks into
+MA3; do NOT answer here, say only "the formal comparison comes in a moment."
+SPOKEN CARRIER LINE (verbatim): "Cash acquirers get hedgier the quarter before the deal.
+Stock acquirers show nothing comparable. Material but modest, and correlational."
+
 Narrative traps found (fix candidates for Phase 1 ratification):
 - T1: S3 RQ line says "receding once announced" as part of the QUESTION. As a question it does
   not violate the floor (the CLAIM slides all say "indistinguishable from zero"), but consider
