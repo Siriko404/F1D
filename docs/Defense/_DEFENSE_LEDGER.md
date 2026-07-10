@@ -178,6 +178,16 @@ MA3; do NOT answer here, say only "the formal comparison comes in a moment."
 SPOKEN CARRIER LINE (verbatim): "Cash acquirers get hedgier the quarter before the deal.
 Stock acquirers show nothing comparable. Material but modest, and correlational."
 
+ACT 3b: THE REVEAL (S8 figure) — RATIFIED. THE STAR.
+Walk left panel slowly: PRE2 0.0068 flat ("no pre-trend, the story hasn't started");
+PRE1 SPIKE 0.0473 p<.01; GAP 0.0018 GONE; POST slightly below normal, don't dwell.
+Magic moment: deal NOT done at announcement (money unmoved, integration not begun) yet
+hedginess ALREADY gone -> listener asks "why gone so early?!" = THE planted question,
+wanted out loud. Floor wording: "indistinguishable from zero once announced"; never
+falls/reverses/unwinds.
+SPOKEN CARRIER LINE (verbatim, pause after): "The deal is announced but not completed.
+The cash has not moved. And the extra uncertainty is already indistinguishable from zero."
+
 Narrative traps found (fix candidates for Phase 1 ratification):
 - T1: S3 RQ line says "receding once announced" as part of the QUESTION. As a question it does
   not violate the floor (the CLAIM slides all say "indistinguishable from zero"), but consider
