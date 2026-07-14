@@ -1,7 +1,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **F1D** (11044 symbols, 19756 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **F1D** (11811 symbols, 20940 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
@@ -41,3 +41,55 @@ This project is indexed by GitNexus as **F1D** (11044 symbols, 19756 relationshi
 | Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
 
 <!-- gitnexus:end -->
+
+# ChatGPT Web — Universal Reasoning Gate
+
+This gate applies to **every task**, not only thesis or defense work.
+
+## Triage Before Work
+
+Before beginning substantive work, explicitly decide whether the task is
+reasoning-heavy. Treat a task as reasoning-heavy when it materially involves one
+or more of the following:
+
+- planning or architecture;
+- investigation, diagnosis, or competing explanations;
+- deep or multi-source web research;
+- high-stakes factual, legal, academic, financial, or technical judgment;
+- synthesis across long files, datasets, or conflicting evidence;
+- ambiguous requirements or consequential trade-offs;
+- creating a substantial artifact whose structure or content requires judgment;
+- reviewing or auditing work where an independent second reasoning pass is useful.
+
+Routine deterministic execution is not reasoning-heavy: simple file operations,
+direct lookups, mechanical formatting, running an already-approved plan, or small
+unambiguous corrections may proceed locally.
+
+If the task is reasoning-heavy, stop before the substantive decision or execution
+and prepare a ChatGPT Web package under:
+
+`../F1D-phase3/docs/Defense/chatgpt/current_upload/`
+
+The governing protocol is:
+
+`../F1D-phase3/docs/Defense/chatgpt/CHATGPT_WEB_PROTOCOL.json`
+
+## Required Web Delivery
+
+- The task, questions, scope, authority hierarchy, and requested outputs must be
+  encoded in `WEB_REVIEW_REQUEST.json`.
+- ChatGPT Web may research, investigate, reason, plan, perform requested work, and
+  create or modify artifacts when the request authorizes it.
+- The main response must always be an actual downloadable JSON file conforming to
+  `WEB_RESPONSE_SCHEMA.json`.
+- Any requested artifacts must be returned as additional downloadable files and
+  listed in the main JSON's artifact manifest.
+- ChatGPT Web must emit **no conversational text at all**: no acknowledgment, no
+  summary, no markdown, and no code block. Its entire response consists only of
+  the main JSON attachment and any artifact attachments.
+- If it cannot complete the work, it must still return only the main JSON file,
+  with `status` set to `PARTIAL` or `BLOCKED` and the limitation recorded there.
+
+Sina transports the files to and from ChatGPT Web. Codex validates the returned
+JSON and artifacts, independently checks important claims, and treats the Web
+result as advisory rather than automatically authoritative.
