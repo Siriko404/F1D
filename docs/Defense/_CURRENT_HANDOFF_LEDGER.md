@@ -1,6 +1,6 @@
 # CURRENT DEFENSE HANDOFF LEDGER
 
-Last updated: 2026-07-13 22:37 EDT, America/Toronto
+Last updated: 2026-07-13 22:40 EDT, America/Toronto
 Status: ACTIVE CANONICAL HANDOFF
 
 ## 1. READ THIS FIRST
@@ -219,6 +219,12 @@ current Act 1 is:
 
 ### Work completed
 
+- The first continuous-preservation checkpoint was committed in the defense fork
+  as `1525e6bb73c8` (`defense: checkpoint redesign and Act 2 review package`). It
+  preserves the defense sources, audit, historical artifacts, archived counsel
+  material, active Web package, and continuity files while excluding reproducible
+  browser caches and unrelated working-tree files. The persistent universal Web
+  gate in the sibling F1D repository was committed separately as `a5cd61ebb150`.
 - The Act 2 task was classified as reasoning-heavy. A task-specific ChatGPT Web
   request was created to compare two or three measure-and-design bridge
   architectures, recommend one concise narrative, partition core versus deferred
