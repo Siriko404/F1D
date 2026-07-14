@@ -1,0 +1,13 @@
+{
+  "aspect": "institutional, audience, and visual-production validity",
+  "journal": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/counsel-runs/2026-07-13-master-reference-hard-scrutiny/journal/institutional-visual.jsonl",
+  "manifest": [
+    {
+      "id": "C1",
+      "source": "audit_target",
+      "path": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/DEFENSE_PRESENTATION_MASTER_REFERENCE.txt",
+      "what": "The complete presentation master reference being audited. This is the sole preassigned source; independently discover and raw-capture every comparison source you need.",
+      "must_read": true
+    }
+  ]
+}

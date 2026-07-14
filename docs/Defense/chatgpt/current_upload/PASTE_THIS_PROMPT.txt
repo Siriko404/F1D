@@ -1,0 +1,13 @@
+Do not write anything in the chat. Your entire final delivery must consist only of downloadable file attachments.
+
+Read every uploaded file completely. WEB_REVIEW_REQUEST.json is the governing task. Follow its objective, scope, source-authority hierarchy, web-research permissions, requested work, questions, artifact specifications, acceptance criteria, response filename, and stop condition exactly. WEB_RESPONSE_SCHEMA.json is the mandatory schema for the main response.
+
+Perform the authorized reasoning, planning, investigation, research, execution, and artifact creation. You may use the uploaded files and, only when authorized by WEB_REVIEW_REQUEST.json, the web. If artifacts are requested, create them as real downloadable files and list each one in artifacts_manifest inside the main JSON response.
+
+Create the main response as an actual downloadable JSON file using the exact filename in response_contract.main_json_filename. It must be valid JSON and validate against WEB_RESPONSE_SCHEMA.json. It must account for every requested work item, question, and artifact.
+
+Return only:
+1. the main downloadable JSON file; and
+2. any requested downloadable artifact files.
+
+Emit no acknowledgment, explanation, summary, markdown, code fence, link text, or other conversational text. If the task is incomplete or blocked, still say nothing in chat: return only the main JSON file with status PARTIAL or BLOCKED and record every limitation inside it.

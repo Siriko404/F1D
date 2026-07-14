@@ -1,0 +1,109 @@
+{
+  "template": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/counsel-runs/2026-07-13-master-reference-hard-scrutiny/tools/prompt-template.md",
+  "journal_js": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/counsel-runs/2026-07-13-master-reference-hard-scrutiny/tools/journal.js",
+  "run_dir": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/counsel-runs/2026-07-13-master-reference-hard-scrutiny",
+  "subject": "Is the master reference a trustworthy and complete guide for building and delivering Sina's 20-minute thesis-defense presentation, when checked against the flattened thesis, the approved presentation map, the current rendered deck, and authoritative institutional and branding sources?",
+  "sources": {
+    "audit_target": {
+      "path": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/DEFENSE_PRESENTATION_MASTER_REFERENCE.txt",
+      "what": "The complete presentation master reference being audited. This is the sole preassigned source; independently discover and raw-capture every comparison source you need."
+    }
+  },
+  "experts": [
+    {
+      "slug": "quantitative-results",
+      "aspect": "quantitative results and definitions",
+      "role": "Act as a forensic empirical-results auditor. Establish whether every quantitative and definitional statement in the master reference exactly matches independently located underlying thesis and result artifacts.",
+      "duties": [
+        "Inventory and verify every sample count, subsample count, date range, coefficient, standard error, p-value, confidence interval, sign, magnitude, unit, percentage, table reference, figure reference, and numerical comparison stated or implied by the master reference.",
+        "Verify every variable, outcome, treatment, control, sample, event-window, and model-label definition, including consistency of terminology and units across the reference.",
+        "Independently locate the flattened thesis and any underlying tables, appendices, outputs, or code-generated artifacts needed for verification; raw-copy each discovered source into the active downloads directory and register it before citation.",
+        "Check arithmetic derived by the reference, but leave presentation-time arithmetic and narrative feasibility to the narrative expert.",
+        "Record each mismatch, unsupported value, ambiguous definition, missing verification source, and correctly verified material claim atomically; do not evaluate causal interpretation, story sequencing, or visual design."
+      ],
+      "tools": "bash — Git Bash for read-only exploration under the Thesis_Bmad project tree, rg/find/sed/awk extraction, git show or plain-copy raw local capture, curl/wget raw web capture, installed PDF command-line extraction, and Node journal enforcement; writes only to your journal and the active run downloads directory; never enter the run archive directory; provider secrets are stripped.\nweb_search — candidate-URL discovery only; returned text is never evidence and every cited page must be captured raw through bash, registered, and cited by W-id.",
+      "cids": [
+        "audit_target"
+      ],
+      "must_read": [
+        "audit_target"
+      ]
+    },
+    {
+      "slug": "empirical-interpretation",
+      "aspect": "empirical design, interpretation, and limitations",
+      "role": "Act as a skeptical applied-econometrics examiner. Determine whether the reference describes the design and evidence accurately and whether every interpretation stays within what the thesis can support.",
+      "duties": [
+        "Verify descriptions of the research question, institutional setting, empirical specification, identifying variation, estimand, treatment timing, controls, fixed effects, standard errors, first-stage or generated-regressand construction, and all stated assumptions.",
+        "Audit causal language and distinguish supported causal claims, descriptive associations, timing evidence, suggestive mechanisms, observational equivalence, and unsupported inference.",
+        "Check the treatment of null results, robustness checks, placebo or scrutiny tests, alternative specifications, generated-regressand caveats, external validity, statistical power, and limitations.",
+        "Independently locate the flattened thesis, appendices, and any authoritative methodological sources actually needed; raw-capture and register every discovered source before citation.",
+        "Record every overclaim, underclaim, omitted caveat, design misstatement, interpretive contradiction, and unresolved identification gap atomically; do not re-audit numerical transcription, story timing, or branding."
+      ],
+      "tools": "bash — Git Bash for read-only exploration under the Thesis_Bmad project tree, rg/find/sed/awk extraction, git show or plain-copy raw local capture, curl/wget raw web capture, installed PDF command-line extraction, and Node journal enforcement; writes only to your journal and the active run downloads directory; never enter the run archive directory; provider secrets are stripped.\nweb_search — candidate-URL discovery only; returned text is never evidence and every cited page must be captured raw through bash, registered, and cited by W-id.",
+      "cids": [
+        "audit_target"
+      ],
+      "must_read": [
+        "audit_target"
+      ]
+    },
+    {
+      "slug": "narrative-timing",
+      "aspect": "narrative architecture and timing",
+      "role": "Act as an experienced thesis-defense story editor and rehearsal planner. Determine whether the proposed presentation forms a complete, persuasive, nonredundant, and realistically deliverable 20-minute argument.",
+      "duties": [
+        "Reconstruct the complete promised story and test whether the problem, motivation, gap, design, evidence, interpretation, contribution, limitations, and conclusion appear in a defensible order.",
+        "Audit the 12-slide structure for missing argumentative steps, duplication, premature detail, weak transitions, inconsistent emphasis, and claims whose setup or payoff is absent.",
+        "Verify all slide-level and section-level time allocations arithmetically and judge practical speakability from the specified narration and on-screen content, including transition overhead and emphasis on core evidence.",
+        "Independently locate relevant thesis, deck, rehearsal, or authoritative defense-convention material needed to test the proposed map; raw-capture and register discovered evidence before citation.",
+        "Record each structural flaw, timing risk, missing beat, redundancy, transition failure, and well-supported strength atomically; do not re-audit individual empirical values, causal identification, or brand compliance."
+      ],
+      "tools": "bash — Git Bash for read-only exploration under the Thesis_Bmad project tree, rg/find/sed/awk extraction, git show or plain-copy raw local capture, curl/wget raw web capture, installed PDF command-line extraction, and Node journal enforcement; writes only to your journal and the active run downloads directory; never enter the run archive directory; provider secrets are stripped.\nweb_search — candidate-URL discovery only; returned text is never evidence and every cited page must be captured raw through bash, registered, and cited by W-id.",
+      "cids": [
+        "audit_target"
+      ],
+      "must_read": [
+        "audit_target"
+      ]
+    },
+    {
+      "slug": "slide-consistency",
+      "aspect": "slide specification and internal consistency",
+      "role": "Act as a meticulous presentation-specification auditor. Test whether the master reference is internally coherent and whether its slide-by-slide instructions agree with independently located current deck artifacts.",
+      "duties": [
+        "For every slide, test agreement among stated purpose, visible content, visualization, narration, takeaway, timing, and transition, and identify any instruction that promises evidence or content unavailable elsewhere in the reference.",
+        "Cross-check titles, numbers of slides, timings, terminology, filenames, implementation status, source links, and repeated claims across all sections of the reference for contradictions or drift.",
+        "Independently locate the current HTML/CSS, LaTeX, PDF, screenshots, presentation map, ledgers, and handoff artifacts; establish their status rather than assuming filenames imply authority, then raw-copy and register cited files.",
+        "Check whether the reference clearly distinguishes approved content, provisional ideas, outdated attempts, speaker notes, backup material, and production instructions.",
+        "Record each contradiction, stale-status claim, slide-level mismatch, ambiguous instruction, missing dependency, and verified consistency atomically; do not decide empirical truth, causal validity, or institutional brand compliance."
+      ],
+      "tools": "bash — Git Bash for read-only exploration under the Thesis_Bmad project tree, rg/find/sed/awk extraction, git show or plain-copy raw local capture, curl/wget raw web capture, installed PDF command-line extraction, and Node journal enforcement; writes only to your journal and the active run downloads directory; never enter the run archive directory; provider secrets are stripped.\nweb_search — candidate-URL discovery only; returned text is never evidence and every cited page must be captured raw through bash, registered, and cited by W-id.",
+      "cids": [
+        "audit_target"
+      ],
+      "must_read": [
+        "audit_target"
+      ]
+    },
+    {
+      "slug": "institutional-visual",
+      "aspect": "institutional, audience, and visual-production validity",
+      "role": "Act as a university-defense and professional-presentation standards auditor. Verify institutional, committee-audience, branding, typography, accessibility, and production claims while separating factual requirements from design judgment.",
+      "duties": [
+        "Verify claims about uOttawa or Telfer thesis-defense format, timing, committee roles, presentation expectations, and any other institutional convention against independently discovered authoritative sources.",
+        "Verify factual claims about committee members or supervisors only when relevant to audience strategy, using authoritative profiles or records; distinguish confirmed facts from inferred preferences.",
+        "Audit every source link, logo, color, typography, brand, attribution, and institutional naming instruction against raw-captured authoritative materials.",
+        "Assess whether the stated visual-production plan supports projection legibility, hierarchy, accessibility, professional tone, meaningful visualization, and consistent rendering; label subjective judgment as judgment and record perceptual questions that command-line evidence cannot establish as gaps.",
+        "Independently locate current deck source/PDF metadata and authoritative institutional or brand sources, raw-capture and register each cited source, and record every unsupported convention, broken link, brand error, accessibility risk, misclassified opinion, and verified requirement atomically; do not re-audit empirical numbers or causal interpretation."
+      ],
+      "tools": "bash — Git Bash for read-only exploration under the Thesis_Bmad project tree, rg/find/sed/awk extraction, git show or plain-copy raw local capture, curl/wget raw web capture, installed PDF command-line extraction, and Node journal enforcement; writes only to your journal and the active run downloads directory; never enter the run archive directory; provider secrets are stripped.\nweb_search — candidate-URL discovery only; returned text is never evidence and every cited page must be captured raw through bash, registered, and cited by W-id.",
+      "cids": [
+        "audit_target"
+      ],
+      "must_read": [
+        "audit_target"
+      ]
+    }
+  ]
+}

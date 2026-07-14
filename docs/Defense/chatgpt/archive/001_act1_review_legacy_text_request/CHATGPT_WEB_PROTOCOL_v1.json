@@ -1,0 +1,36 @@
+{
+  "protocol_version": "1.0",
+  "purpose": "Independent external scrutiny of substantial defense-presentation reasoning and planning decisions.",
+  "directory_contract": {
+    "current_upload": "Contains only the files Sina should upload for the active review.",
+    "received": "Stores normalized or directly downloaded JSON responses returned by ChatGPT Web.",
+    "archive": "Preserves superseded request packages and earlier response formats without deletion."
+  },
+  "workflow": [
+    "Codex develops a thesis-grounded proposal before requesting external review.",
+    "Codex creates a task-specific WEB_REVIEW_REQUEST.json with structured questions.",
+    "Codex copies the current authoritative source files, WEB_RESPONSE_SCHEMA.json, and PASTE_THIS_PROMPT.txt into current_upload.",
+    "Codex verifies JSON syntax, source hashes, package contents, and ledger continuity.",
+    "Sina uploads every file in current_upload to ChatGPT Web and pastes PASTE_THIS_PROMPT.txt.",
+    "ChatGPT Web returns an actual downloadable JSON file with the exact filename specified in the request.",
+    "Sina gives the downloaded JSON response to Codex.",
+    "Codex validates the response against WEB_RESPONSE_SCHEMA.json, checks its claims against the thesis, integrates warranted corrections, and records the decision in the ledger.",
+    "The completed package and response are archived before the next request replaces current_upload."
+  ],
+  "non_negotiable_rules": [
+    "The flattened thesis is the sole authority for empirical, theoretical, legal, and contribution claims.",
+    "External sources may inform presentation conventions only, never thesis findings.",
+    "Questions must be represented as individually identified JSON objects.",
+    "The requested response must conform to the supplied JSON schema.",
+    "A prose answer or JSON displayed only in a markdown code block is not an acceptable deliverable.",
+    "The response must be an actual downloadable .json file.",
+    "No master-reference or deck implementation begins before the relevant narrative design is approved."
+  ],
+  "source_authority_order": [
+    "_thesis_FLAT.tex",
+    "_CURRENT_HANDOFF_LEDGER.md",
+    "2026-07-13-master-reference-audit-report.md",
+    "DEFENSE_PRESENTATION_MASTER_REFERENCE.txt"
+  ],
+  "active_request": null
+}

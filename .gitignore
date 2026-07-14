@@ -137,6 +137,9 @@ Desktop.ini
 # Node
 node_modules/
 
+# Headless Chromium profiles used only while rendering defense-slide reviews
+docs/Defense/web_deck/.chrome-profile*/
+
 # ==============================================================================
 # DATA DIRECTORIES (ARCH-03 structure)
 # ==============================================================================

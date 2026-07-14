@@ -1,0 +1,9 @@
+Read every uploaded file completely before responding.
+
+WEB_REVIEW_REQUEST.json is the governing task and question set. Follow its source-authority hierarchy, scope, evaluation criteria, response filename, and stop condition exactly. WEB_RESPONSE_SCHEMA.json is the mandatory output contract.
+
+Create an actual downloadable JSON file using the exact filename specified at response_contract.filename in WEB_REVIEW_REQUEST.json. The file must be valid JSON and must validate against WEB_RESPONSE_SCHEMA.json. Populate every required field and answer every question by its question_id.
+
+Do not respond with ordinary prose. Do not place JSON only inside a markdown code block. If necessary, use the available data-analysis or file-creation capability to generate and attach the requested .json file. The downloadable file is the required deliverable.
+
+Do not introduce outside empirical claims. The flattened thesis is the sole authority for thesis content. External sources may be used only when WEB_REVIEW_REQUEST.json explicitly asks for current presentation-convention evidence.

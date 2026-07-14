@@ -1,0 +1,93 @@
+{
+  "template": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/counsel-runs/2026-07-13-master-reference-hard-scrutiny/tools/prompt-template.md",
+  "journal_js": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/counsel-runs/2026-07-13-master-reference-hard-scrutiny/tools/journal.js",
+  "run_dir": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/counsel-runs/2026-07-13-master-reference-hard-scrutiny",
+  "subject": "Is the master reference a trustworthy, thesis-faithful, internally coherent guide for Sina's 20-minute defense, and what evidence-grounded visualizations should be added, where, and why, when checked against the flattened thesis and authoritative web sources?",
+  "sources": {
+    "master_reference": {
+      "path": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/counsel-runs/2026-07-13-master-reference-hard-scrutiny/context-sources/DEFENSE_PRESENTATION_MASTER_REFERENCE.txt",
+      "what": "The complete presentation master reference being audited."
+    },
+    "flattened_thesis": {
+      "path": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/counsel-runs/2026-07-13-master-reference-hard-scrutiny/context-sources/_thesis_FLAT.tex",
+      "what": "The authoritative flattened LaTeX thesis used to verify thesis content, results, design, interpretation, and available evidence."
+    }
+  },
+  "experts": [
+    {
+      "slug": "quantitative-results",
+      "aspect": "quantitative results and definitions",
+      "role": "Act as a forensic empirical-results auditor. Establish whether every quantitative and definitional statement in the master reference exactly matches the flattened thesis.",
+      "duties": [
+        "Inventory and verify every sample count, subsample count, date range, coefficient, standard error, p-value, confidence interval, sign, magnitude, unit, percentage, table reference, figure reference, and numerical comparison stated or implied by the master reference.",
+        "Verify every variable, outcome, treatment, control, sample, event-window, and model-label definition, including consistency of terminology and units across the reference and thesis.",
+        "Check arithmetic derived by the reference except presentation-time arithmetic, which belongs to the narrative expert.",
+        "Use web sources only when a genuinely external quantitative or definitional claim requires them; independently raw-capture and register every cited page.",
+        "Record each mismatch, unsupported value, ambiguous definition, missing evidence, and correctly verified material claim atomically; do not evaluate causal interpretation, story sequencing, or visualization strategy."
+      ],
+      "tools": "bash — policy-enforced Git Bash proxy. It permits rg/sed/awk/head/tail/wc-style text extraction only against C1, C2, and your own registered snapshots; curl/wget raw HTTP capture only into downloads/quantitative-results/; and the exact Node journal append command only against your journal. Repository listing, traversal, every other local path, other experts' files, enforcement-source reads, arbitrary writes, and provider secrets are denied.\nweb_search — public-web candidate discovery only; returned text is never evidence. Every cited page must be captured raw through bash into your private download subtree, registered, and cited by W-id.",
+      "cids": ["master_reference", "flattened_thesis"],
+      "must_read": ["master_reference", "flattened_thesis"]
+    },
+    {
+      "slug": "empirical-interpretation",
+      "aspect": "empirical design, interpretation, and limitations",
+      "role": "Act as a skeptical applied-econometrics examiner. Determine whether the reference describes the thesis design and evidence accurately and keeps every interpretation within what the thesis supports.",
+      "duties": [
+        "Verify descriptions of the research question, institutional setting, empirical specification, identifying variation, estimand, treatment timing, controls, fixed effects, standard errors, first-stage or generated-regressand construction, and stated assumptions.",
+        "Audit causal language and distinguish supported causal claims, descriptive associations, timing evidence, suggestive mechanisms, observational equivalence, and unsupported inference.",
+        "Check null results, robustness checks, placebo or scrutiny tests, alternative specifications, generated-regressand caveats, external validity, statistical power, and limitations.",
+        "Use authoritative web sources only when external methodological or institutional verification is genuinely necessary; independently raw-capture and register every cited page.",
+        "Record every overclaim, underclaim, omitted caveat, design misstatement, interpretive contradiction, and unresolved identification gap atomically; do not re-audit numerical transcription, story timing, or visualization placement."
+      ],
+      "tools": "bash — policy-enforced Git Bash proxy. It permits rg/sed/awk/head/tail/wc-style text extraction only against C1, C2, and your own registered snapshots; curl/wget raw HTTP capture only into downloads/empirical-interpretation/; and the exact Node journal append command only against your journal. Repository listing, traversal, every other local path, other experts' files, enforcement-source reads, arbitrary writes, and provider secrets are denied.\nweb_search — public-web candidate discovery only; returned text is never evidence. Every cited page must be captured raw through bash into your private download subtree, registered, and cited by W-id.",
+      "cids": ["master_reference", "flattened_thesis"],
+      "must_read": ["master_reference", "flattened_thesis"]
+    },
+    {
+      "slug": "narrative-timing",
+      "aspect": "narrative architecture and timing",
+      "role": "Act as an experienced thesis-defense story editor and rehearsal planner. Determine whether the proposed presentation forms a complete, persuasive, nonredundant, and realistically deliverable 20-minute argument.",
+      "duties": [
+        "Reconstruct the complete promised story and test whether the problem, motivation, gap, design, evidence, interpretation, contribution, limitations, and conclusion appear in a defensible order.",
+        "Audit the proposed slide structure for missing argumentative steps, duplication, premature detail, weak transitions, inconsistent emphasis, and claims whose setup or payoff is absent.",
+        "Verify all slide-level and section-level time allocations arithmetically and judge practical speakability from the specified narration and content, including transition overhead and emphasis on core evidence.",
+        "Use authoritative public guidance when needed to distinguish defense convention from professional judgment; independently raw-capture and register every cited page.",
+        "Record each structural flaw, timing risk, missing beat, redundancy, transition failure, and well-supported strength atomically; do not re-audit individual empirical values, causal identification, or visualization standards."
+      ],
+      "tools": "bash — policy-enforced Git Bash proxy. It permits rg/sed/awk/head/tail/wc-style text extraction only against C1, C2, and your own registered snapshots; curl/wget raw HTTP capture only into downloads/narrative-timing/; and the exact Node journal append command only against your journal. Repository listing, traversal, every other local path, other experts' files, enforcement-source reads, arbitrary writes, and provider secrets are denied.\nweb_search — public-web candidate discovery only; returned text is never evidence. Every cited page must be captured raw through bash into your private download subtree, registered, and cited by W-id.",
+      "cids": ["master_reference", "flattened_thesis"],
+      "must_read": ["master_reference", "flattened_thesis"]
+    },
+    {
+      "slug": "slide-consistency",
+      "aspect": "slide specification and internal consistency",
+      "role": "Act as a meticulous presentation-specification auditor. Test whether the master reference is internally coherent and whether every proposed slide is supported by the flattened thesis.",
+      "duties": [
+        "For every proposed slide, test agreement among stated purpose, visible content, narration, takeaway, timing, and transition, and identify instructions that promise evidence unavailable in the thesis.",
+        "Cross-check titles, slide counts, timings, terminology, source links, and repeated claims across all sections of the reference for contradictions or drift.",
+        "Check whether the reference clearly distinguishes approved content, provisional ideas, speaker notes, backup material, and production instructions without consulting any other project artifact.",
+        "Use web sources only to verify genuinely external presentation claims; independently raw-capture and register every cited page.",
+        "Record each contradiction, unsupported status assertion, slide-level mismatch, ambiguous instruction, missing dependency, and verified consistency atomically; do not decide numerical correctness, causal validity, or visualization standards."
+      ],
+      "tools": "bash — policy-enforced Git Bash proxy. It permits rg/sed/awk/head/tail/wc-style text extraction only against C1, C2, and your own registered snapshots; curl/wget raw HTTP capture only into downloads/slide-consistency/; and the exact Node journal append command only against your journal. Repository listing, traversal, every other local path, other experts' files, enforcement-source reads, arbitrary writes, and provider secrets are denied.\nweb_search — public-web candidate discovery only; returned text is never evidence. Every cited page must be captured raw through bash into your private download subtree, registered, and cited by W-id.",
+      "cids": ["master_reference", "flattened_thesis"],
+      "must_read": ["master_reference", "flattened_thesis"]
+    },
+    {
+      "slug": "visualization-standards",
+      "aspect": "visualization strategy and institutional standards",
+      "role": "Act as an evidence-based defense-visualization and university-presentation standards auditor. Determine where visualizations should be used in this specific defense story while separating formal requirements, research-supported practice, and professional judgment.",
+      "duties": [
+        "Verify claims about uOttawa or Telfer defense format, timing, committee roles, presentation expectations, institutional naming, branding, typography, accessibility, and source links against independently captured authoritative web sources.",
+        "Research authoritative or high-quality evidence on visualization use in academic oral presentations and determine where the master reference's story would materially benefit from a visualization.",
+        "For every visualization recommendation, identify its precise location in the proposed story, communication purpose, thesis content or evidence it must represent, and why it improves comprehension or persuasion without overstating the thesis.",
+        "Identify locations where a visualization would be decorative, redundant, misleading, too dense, unsupported by the thesis, or inferior to direct verbal or textual communication.",
+        "Record formal requirements, best-practice findings, visualization recommendations, risks, unsupported convention claims, and verification gaps atomically; make no perceptual claim about an unavailable deck and do not re-audit empirical correctness or causal interpretation."
+      ],
+      "tools": "bash — policy-enforced Git Bash proxy. It permits rg/sed/awk/head/tail/wc-style text extraction only against C1, C2, and your own registered snapshots; curl/wget raw HTTP capture only into downloads/visualization-standards/; and the exact Node journal append command only against your journal. Repository listing, traversal, every other local path, other experts' files, enforcement-source reads, arbitrary writes, and provider secrets are denied.\nweb_search — public-web candidate discovery only; returned text is never evidence. Every cited page must be captured raw through bash into your private download subtree, registered, and cited by W-id.",
+      "cids": ["master_reference", "flattened_thesis"],
+      "must_read": ["master_reference", "flattened_thesis"]
+    }
+  ]
+}

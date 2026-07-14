@@ -1,0 +1,20 @@
+{
+  "aspect": "empirical design, interpretation, and limitations",
+  "journal": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/counsel-runs/2026-07-13-master-reference-hard-scrutiny/journal/empirical-interpretation.jsonl",
+  "manifest": [
+    {
+      "id": "C1",
+      "source": "master_reference",
+      "path": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/counsel-runs/2026-07-13-master-reference-hard-scrutiny/context-sources/DEFENSE_PRESENTATION_MASTER_REFERENCE.txt",
+      "what": "The complete presentation master reference being audited.",
+      "must_read": true
+    },
+    {
+      "id": "C2",
+      "source": "flattened_thesis",
+      "path": "C:/Users/sinas/OneDrive/Desktop/Projects/Thesis_Bmad/Data/Data/Datasets/Datasets/Data_Processing/F1D-phase3/docs/Defense/counsel-runs/2026-07-13-master-reference-hard-scrutiny/context-sources/_thesis_FLAT.tex",
+      "what": "The authoritative flattened LaTeX thesis used to verify thesis content, results, design, interpretation, and available evidence.",
+      "must_read": true
+    }
+  ]
+}

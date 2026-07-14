@@ -1,0 +1,165 @@
+% Fresh defense deck, built slide by slide from the thesis.
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usetheme{metropolis}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{frame numbering}[fraction]
+
+\definecolor{ink}{HTML}{231F20}
+\definecolor{signalblue}{HTML}{2166AC}
+\definecolor{cashorange}{HTML}{D97706}
+\definecolor{softgray}{HTML}{667085}
+\definecolor{paper}{HTML}{F4F2EF}
+\definecolor{telfergarnet}{HTML}{8F001A}
+
+\setbeamercolor{normal text}{fg=ink,bg=paper}
+\setbeamercolor{frametitle}{fg=ink,bg=paper}
+\setbeamercolor{progress bar}{fg=telfergarnet,bg=ink!12}
+\setbeamercolor{alerted text}{fg=telfergarnet}
+\setbeamercolor{title separator}{fg=telfergarnet}
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+\setbeamertemplate{footline}{%
+  \hfill{\color{softgray}\scriptsize\insertframenumber}\hspace{0.45cm}\vspace{0.22cm}%
+}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{fontspec}
+\setsansfont{Roboto}
+\newfontfamily\titlefont{Roboto Condensed}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,calc,positioning}
+
+\newcommand{\source}[1]{\vfill{\tiny\color{softgray}#1}}
+
+\title{Cash Got Your Tongue?}
+\subtitle{CEO Language-Uncertainty Around Undisclosed Cash Acquisitions}
+\author{Sina Soleimanipour}
+\institute{MSc in Management, Finance\\Telfer School of Management, University of Ottawa\\[0.8em]
+{\small Supervisors: Ali Akyol and Harshit Rajaiya}}
+\date{Thesis Defense \enspace|\enspace July 2026}
+
+\begin{document}
+
+% 1. TITLE
+\begin{frame}[plain,noframenumbering]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[paper] (current page.south west) rectangle (current page.north east);
+    \fill[telfergarnet]
+      ([xshift=-4.45cm]current page.north east) rectangle (current page.south east);
+    \fill[telfergarnet]
+      (current page.north west) rectangle ([yshift=-0.09cm]current page.north east);
+
+    \node[anchor=north west,text=telfergarnet,font=\bfseries\scriptsize]
+      at ([xshift=0.92cm,yshift=-0.66cm]current page.north west)
+      {MSc THESIS DEFENSE \enspace / \enspace JULY 2026};
+
+    \node[anchor=north west,text=ink,text width=8.9cm,align=left]
+      at ([xshift=0.92cm,yshift=-1.34cm]current page.north west)
+      {{\titlefont\fontsize{27}{28}\selectfont\bfseries
+        Cash Got Your\\Tongue?}};
+
+    \node[anchor=north west,text=ink!76,text width=8.75cm,align=left]
+      at ([xshift=0.94cm,yshift=-3.55cm]current page.north west)
+      {{\fontsize{12.5}{15.2}\selectfont
+        CEO Language-Uncertainty Around\\Undisclosed Cash Acquisitions}};
+
+    \draw[telfergarnet,line width=1.2pt]
+      ([xshift=0.94cm,yshift=-4.73cm]current page.north west) -- ++(0.78cm,0);
+
+    \node[anchor=north west,text=ink,font=\large]
+      at ([xshift=0.94cm,yshift=-5.10cm]current page.north west)
+      {Sina Soleimanipour};
+    \node[anchor=north west,text=softgray,font=\small]
+      at ([xshift=0.94cm,yshift=-5.58cm]current page.north west)
+      {MSc in Management, Finance};
+    \node[anchor=north west,text=softgray,font=\scriptsize]
+      at ([xshift=0.94cm,yshift=-6.08cm]current page.north west)
+      {Supervisors: Ali Akyol and Harshit Rajaiya};
+
+    % Compact vertical event clock in the brand panel.
+    \node[anchor=north,text=white!72,font=\bfseries\scriptsize]
+      at ([xshift=-2.23cm,yshift=-0.72cm]current page.north east) {THE EVENT CLOCK};
+    \draw[white!42,line width=0.8pt]
+      ([xshift=-3.52cm,yshift=-1.17cm]current page.north east) -- ++(0,-3.75cm);
+    \foreach \yy in {-1.55,-3.00,-4.45}{
+      \fill[white] ([xshift=-3.52cm,yshift=\yy cm]current page.north east) circle (0.075cm);
+    }
+    \node[anchor=west,text=white!72,text width=2.75cm,align=left,font=\tiny\bfseries]
+      at ([xshift=-3.18cm,yshift=-1.55cm]current page.north east) {PRIVATE COMMITMENT};
+    \node[anchor=west,text=white,text width=2.75cm,align=left,font=\scriptsize\bfseries]
+      at ([xshift=-3.18cm,yshift=-3.00cm]current page.north east) {EARNINGS CALL Q\&A};
+    \node[anchor=west,text=white!72,text width=2.75cm,align=left,font=\tiny\bfseries]
+      at ([xshift=-3.18cm,yshift=-4.45cm]current page.north east) {PUBLIC ANNOUNCEMENT};
+    \node[anchor=north,text=white!72,text width=3.25cm,align=center,font=\scriptsize]
+      at ([xshift=-2.23cm,yshift=-5.15cm]current page.north east)
+      {Can the spoken record reveal what the firm withholds?};
+
+    \node[anchor=south]
+      at ([xshift=-2.23cm,yshift=1.72cm]current page.south east)
+      {\includegraphics[width=2.25cm]{assets/telfer-primary-white.png}};
+    \node[anchor=south east,inner sep=0pt]
+      at (current page.south east)
+      {\includegraphics[width=4.45cm]{assets/uottawa-horizontal-white-garnet-wide.png}};
+  \end{tikzpicture}
+\end{frame}
+
+% 2. MOTIVATING SETTING
+\begin{frame}{A firm knows, but cannot say}
+  \centering
+  \begin{tikzpicture}[
+      every node/.style={font=\small},
+      event/.style={circle,minimum size=0.22cm,inner sep=0pt},
+    ]
+    \useasboundingbox (0,0) rectangle (14.00,5.72);
+
+    % Phase labels and a single continuous clock.
+    \node[anchor=west,text=telfergarnet,font=\bfseries\scriptsize]
+      at (0.62,4.82) {PRIVATE};
+    \draw[telfergarnet!55,line width=0.8pt] (1.52,4.82) -- (9.70,4.82);
+    \node[anchor=west,text=softgray,font=\bfseries\scriptsize]
+      at (10.20,4.82) {PUBLIC};
+    \draw[ink!24,line width=0.8pt] (11.15,4.82) -- (13.34,4.82);
+
+    \draw[-{Latex[length=2mm]},line width=0.8pt,draw=ink!38]
+      (1.05,3.55) -- (13.05,3.55);
+    \node[event,fill=ink,minimum size=0.22cm] (deal) at (1.75,3.55) {};
+    \node[event,fill=telfergarnet,minimum size=0.29cm] (call) at (7.00,3.55) {};
+    \node[event,fill=paper,draw=telfergarnet,line width=1pt,minimum size=0.29cm]
+      (announce) at (11.65,3.55) {};
+
+    \node[fill=white,draw=telfergarnet!35,text=ink,rounded corners=2pt,
+      text width=5.25cm,align=center,inner sep=4pt]
+      (bind) at (7.00,4.23)
+      {{\color{telfergarnet}\tiny\bfseries THE DISCLOSURE BIND}\\[-1pt]
+       {\scriptsize May stay silent. If it speaks,\\it cannot mislead.}};
+    \draw[telfergarnet,line width=0.7pt] (bind.south) -- (call.north);
+
+    \node[anchor=north,text=ink,text width=3.0cm,align=center,font=\bfseries\small]
+      at (1.75,3.15) {Private deal\\commitment};
+    \node[anchor=north,text=softgray,text width=3.0cm,align=center,font=\scriptsize]
+      at (1.75,2.18) {Firm knows about the pending acquisition.};
+
+    \node[anchor=north,text=ink,text width=3.2cm,align=center,font=\bfseries\small]
+      at (7.00,3.15) {Scheduled\\earnings call};
+    \node[anchor=north,text=softgray,text width=3.35cm,align=center,font=\scriptsize]
+      at (7.00,2.18) {Analysts ask questions in unscripted Q\&A.};
+
+    \node[anchor=north,text=ink,text width=2.8cm,align=center,font=\bfseries\small]
+      at (11.65,3.15) {Public\\announcement};
+    \node[anchor=north,text=softgray,text width=2.7cm,align=center,font=\scriptsize]
+      at (11.65,2.18) {The deal becomes observable.};
+
+    \fill[white,rounded corners=2pt] (0.55,0.43) rectangle (13.45,1.27);
+    \draw[telfergarnet,line width=1.1pt] (0.90,0.85) -- (1.68,0.85);
+    \node[anchor=west,text=ink,font=\bfseries\large]
+      at (1.95,0.85) {Does withholding leave a trace in the CEO's language?};
+
+    \node[anchor=south west,text=softgray,font=\tiny]
+      at (0.62,0.08) {Conceptual setting: thesis Chapter 2; Basic v. Levinson (1988); Rule 10b-5.};
+  \end{tikzpicture}
+\end{frame}
+
+\end{document}

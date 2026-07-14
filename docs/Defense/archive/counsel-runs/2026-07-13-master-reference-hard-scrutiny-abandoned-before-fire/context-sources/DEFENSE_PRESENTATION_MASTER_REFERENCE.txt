@@ -1,0 +1,1651 @@
+================================================================================
+MSc THESIS DEFENSE - MASTER PRESENTATION REFERENCE
+================================================================================
+
+Candidate: Sina Soleimanipour
+Program: MSc in Management, Finance
+Institution: Telfer School of Management, University of Ottawa
+Thesis title: Cash Got Your Tongue? CEO Language-Uncertainty Around
+              Undisclosed Cash Acquisitions
+Supervisors: Ali Akyol and Harshit Rajaiya
+Examiners: Shantanu Dutta and Rengong (Alex) Zhang
+Presentation limit confirmed by Sina: 20 minutes
+Reference date: 2026-07-13
+
+This file is the authoritative working reference for the defense presentation.
+It records the story, slide map, timing, exact empirical claims, cautions,
+anticipated questions, visual standards, and current build status discussed in
+the defense-design sessions.
+
+The previous session's handoff and old Beamer deck were treated only as input.
+They are not authoritative. The presentation was redesigned from the thesis
+itself, especially the fully flattened LaTeX thesis file:
+
+  docs/Thesis/_uottawa_rewrite/_thesis_FLAT.tex
+
+The flattened thesis was read carefully in full. The numbers and claims below
+must remain consistent with that document and the defended thesis tables.
+
+
+================================================================================
+1. THE BIG PICTURE
+================================================================================
+
+1.1 The presentation is not a chapter-by-chapter thesis summary
+----------------------------------------------------------------
+
+The defense should tell one results-forward story:
+
+  A firm privately commits to a potentially material acquisition.
+  It may remain silent about the deal, but it cannot mislead if it speaks.
+  A scheduled earnings call still occurs, and analysts ask questions in Q&A.
+  The thesis asks whether this private information state leaves a trace in the
+  CEO's unscripted language, and whether that trace changes when the deal
+  becomes public.
+
+The central verbal question is:
+
+  Does withholding leave a trace in the CEO's language?
+
+The central empirical answer is:
+
+  CEO residual uncertainty rises within firm in the quarter before a cash
+  acquisition. It is indistinguishable from zero after announcement but before
+  completion. The run-up concentrates in cash deals relative to stock deals.
+
+This remains a correlational descriptive result. The thesis does not identify
+a causal mechanism.
+
+
+1.2 The primitive setting
+-------------------------
+
+Use this safe formulation:
+
+  - The firm knows about a pending acquisition.
+  - The pending deal may be material.
+  - The firm may stay silent.
+  - If the firm speaks, it cannot mislead.
+  - A routine or scheduled earnings call still occurs.
+  - Analysts ask questions in unscripted Q&A.
+
+Do NOT say:
+
+  "The CEO is legally required to host an earnings call."
+
+That statement is not needed and is unsafe. The presentation only needs the
+observational fact that routine calls continue during the private period.
+
+
+1.3 What the thesis adds
+------------------------
+
+Prior work has studied signals such as:
+
+  - Market prices.
+  - Managed tone.
+  - Strategy or deal-specific vocabulary.
+
+This thesis studies something different:
+
+  Residual uncertainty in the CEO's unscripted Q&A answers before a private
+  acquisition becomes public.
+
+The contribution is best stated as:
+
+  A within-firm language signature aligned with the private-to-public boundary.
+
+Do not call it a causal effect, a proven mechanism, a trading strategy, or a
+general detector of all hidden corporate events.
+
+
+================================================================================
+2. DEFENSE CONVENTION AND AUDIENCE
+================================================================================
+
+2.1 University convention
+-------------------------
+
+The current official University of Ottawa oral-defense page indicates that the
+chair invites the student to present the thesis subject and specifies the
+presentation time according to the academic unit's procedure. The defense is
+normally public unless confidentiality applies. Sina confirmed that this
+presentation remains 20 minutes.
+
+Official page:
+  https://www.uottawa.ca/study/graduate-studies/thesis/oral-defence
+
+The Telfer 2021 graduate handbook notes that a final MSc thesis has an oral
+exam before at least two examiners. Its approximate 20-minute presentation
+language concerns the proposal stage, so it was not used as proof of the final
+defense limit. Sina's direct confirmation controls here.
+
+Telfer handbook:
+  https://telfer.uottawa.ca/assets/phd/documents/Telfer-Graduate-Students-Handbook-for-Research-Programs_Final-_April-2021.pdf
+
+General Canadian defense guidance supports focusing on the research question,
+main results, contribution, and conclusions rather than reproducing every
+chapter.
+
+
+2.2 Committee
+-------------
+
+Supervisors:
+
+  - Ali Akyol
+  - Harshit Rajaiya
+
+Examiners:
+
+  - Shantanu Dutta
+  - Rengong (Alex) Zhang
+
+Verified current profile themes:
+
+Shantanu Dutta:
+  - Finance and mergers and acquisitions.
+  - Machine learning and NLP in financial decisions.
+  - Financial irregularities.
+  - Media, private meetings, governance, and financial decisions.
+
+Official profile:
+  https://telfer.uottawa.ca/en/directory/shantanu-dutta/
+
+Rengong (Alex) Zhang:
+  - Big data and accounting data analytics.
+  - Capital markets.
+  - Financial accounting.
+  - Workplace safety and labour topics.
+
+Official profile:
+  https://telfer.uottawa.ca/en/directory/rengong-alex-zhang/
+
+Presentation implications:
+
+  - Move quickly to the design and results.
+  - Do not spend time teaching basic finance concepts.
+  - Explain the unusual language measure clearly.
+  - Be precise about data attribution, event timing, and identification.
+  - Expect questions about payment method, NLP choices, data construction,
+    endogeneity, market reactions, and alternative information channels.
+
+These question expectations are reasoned inferences from the committee's
+research profiles. They are not claims about what an examiner will certainly
+ask.
+
+An old local note reports that Dutta prefers quick defenses. That is personal
+hearsay from Sina's prior information, not a verified public fact. It can be
+used only as a planning reason to keep answers concise.
+
+
+================================================================================
+3. TWENTY-MINUTE MAP
+================================================================================
+
+3.1 Core deck
+-------------
+
+The core deck contains 12 slides, including the title slide.
+
+Target speaking time: approximately 18 minutes 20 seconds.
+Safety margin: approximately 1 minute 40 seconds.
+
+The safety margin is important because transitions, interruptions, and natural
+speaking variation add time. Rehearsal should target 18:00 to 18:30, not 20:00.
+
+Recommended timing:
+
+  Slide  1  Title                                      0:25
+  Slide  2  Motivating disclosure setting              1:30
+  Slide  3  Research question and gap                   1:30
+  Slide  4  Language measure                            1:35
+  Slide  5  Data and sample                             1:10
+  Slide  6  Empirical design and event clock            2:00
+  Slide  7  Pre-announcement cash result                1:35
+  Slide  8  Private-to-public timing result             2:00
+  Slide  9  Two clocks: language and cash               1:30
+  Slide 10  Cash-versus-stock concentration             1:45
+  Slide 11  Credibility, scrutiny, and robustness       1:45
+  Slide 12  Conclusion and limits                       1:35
+                                                        -----
+  Total                                                 18:20
+
+
+3.2 Four-part narrative
+-----------------------
+
+PART I - THE QUESTION
+  Slides 1-3
+  Approximate time: 3:25
+
+  Establish the private-information setting, formulate the research question,
+  and show why the spoken record is a distinct object of study.
+
+PART II - MEASURE, DATA, AND DESIGN
+  Slides 4-6
+  Approximate time: 4:45
+
+  Explain how UncResCEO is constructed, identify the sample and data sources,
+  and define the event clock and three empirical tests.
+
+PART III - MAIN FINDINGS
+  Slides 7-10
+  Approximate time: 6:50
+
+  Present the pre-announcement cash result, the private-to-public timing, the
+  contrast with the cash-holdings clock, and the formal cash-stock difference.
+
+PART IV - CREDIBILITY, MEANING, AND LIMITS
+  Slides 11-12
+  Approximate time: 3:20
+
+  Address measured analyst scrutiny and robustness, then state exactly what the
+  thesis establishes and what it does not establish.
+
+
+================================================================================
+4. SLIDE-BY-SLIDE CONTENT AND DELIVERY
+================================================================================
+
+-------------------------------------------------------------------------------
+SLIDE 1 - TITLE
+-------------------------------------------------------------------------------
+
+Title:
+  Cash Got Your Tongue?
+
+Subtitle:
+  CEO Language-Uncertainty Around Undisclosed Cash Acquisitions
+
+On screen:
+  - Sina Soleimanipour
+  - MSc in Management, Finance
+  - Supervisors: Ali Akyol and Harshit Rajaiya
+  - Thesis defense, July 2026
+  - Official Telfer and uOttawa logos
+  - A compact vertical event clock:
+      Private commitment -> Earnings call Q&A -> Public announcement
+
+Purpose:
+  Establish the topic and signal immediately that the presentation is organized
+  around an information event clock.
+
+Suggested spoken opening:
+
+  "My thesis asks whether a private acquisition leaves a trace in what a CEO
+  sounds like before the deal is announced. I focus on uncertainty in the CEO's
+  unscripted earnings-call answers."
+
+Audience takeaway:
+  This is a finance-and-language thesis about an anticipatory signal before a
+  public acquisition announcement.
+
+Transition:
+
+  "The setting begins with a simple disclosure problem."
+
+Timing:
+  20 to 25 seconds.
+
+
+-------------------------------------------------------------------------------
+SLIDE 2 - A FIRM KNOWS, BUT CANNOT SAY
+-------------------------------------------------------------------------------
+
+Title:
+  A firm knows, but cannot say
+
+On screen:
+  A clean horizontal timeline:
+
+    PRIVATE DEAL COMMITMENT
+            ->
+    SCHEDULED EARNINGS CALL
+            ->
+    PUBLIC ANNOUNCEMENT
+
+  A disclosure-bind card above the earnings call:
+
+    The firm may stay silent.
+    If it speaks, it cannot mislead.
+
+  Bottom question:
+
+    Does withholding leave a trace in the CEO's language?
+
+Purpose:
+  Create the motivating economic and disclosure setting without turning the
+  slide into a legal lecture.
+
+Suggested spoken content:
+
+  1. The firm has privately committed to a pending acquisition.
+  2. The deal may be material even before it is announced.
+  3. The firm may remain silent about merger discussions.
+  4. If it chooses to speak, it cannot make misleading statements.
+  5. The scheduled call continues, and analysts still ask questions in Q&A.
+  6. This creates the empirical question: does withholding affect the spoken
+     record even when the deal itself is not disclosed?
+
+Safe legal framing:
+  - Basic v. Levinson (1988) is relevant to merger materiality.
+  - Rule 10b-5 supports the point that speech cannot be misleading.
+
+Do not say:
+  - The CEO is legally required to hold the call.
+  - The firm is prohibited from mentioning the deal in every circumstance.
+  - Silence itself proves misconduct.
+
+Audience takeaway:
+  The CEO is speaking in a routine setting while one important subject remains
+  private. This is where a language trace could appear.
+
+Transition:
+
+  "That setting leads to a more precise question about what the existing
+  literature sees and what it leaves unmeasured."
+
+Timing:
+  Approximately 1:30.
+
+
+-------------------------------------------------------------------------------
+SLIDE 3 - DOES THE SPOKEN RECORD TRACK THE HIDDEN DEAL?
+-------------------------------------------------------------------------------
+
+Title:
+  Does the spoken record track the hidden deal?
+
+Research question on screen:
+
+  When an acquisition is still private, does CEO uncertainty in unscripted Q&A
+  rise, and does it resolve when the deal becomes public?
+
+Prior work panel:
+  - Market prices
+  - Managed tone
+  - Deal vocabulary
+
+This thesis panel:
+  - Call-specific CEO Q&A uncertainty
+  - Residual uncertainty net of persistent speaking style and predictable call
+    conditions
+  - Within-firm timing
+  - Private-to-public boundary
+
+Contribution band:
+
+  A within-firm language signature aligned with the private-to-public boundary.
+
+Purpose:
+  State the research question exactly and distinguish the thesis from related
+  language and market-signal work.
+
+Suggested spoken content:
+
+  "Prior work shows that hidden information can affect prices, managed tone, or
+  deal-specific vocabulary. My question is narrower. After removing a CEO's
+  persistent speaking style and predictable call conditions, does call-specific
+  uncertainty rise while a deal is private and change when it becomes public?"
+
+Important precision:
+  The presentation should say that the thesis "measures" residual uncertainty,
+  not that it causally isolates a mechanism.
+
+Audience takeaway:
+  The novelty is the residual state-like component of unscripted CEO answers,
+  tracked within firm around the disclosure boundary.
+
+Transition:
+
+  "To test this, I first need a measure that separates how a CEO normally speaks
+  from what is unusual about a specific call."
+
+Timing:
+  Approximately 1:30.
+
+
+-------------------------------------------------------------------------------
+SLIDE 4 - SEPARATING SPEAKING STYLE FROM CALL-SPECIFIC UNCERTAINTY
+-------------------------------------------------------------------------------
+
+Title:
+  Separating speaking style from call-specific uncertainty
+
+Main decomposition on screen:
+
+  Observed CEO Q&A uncertainty
+      = CEO style
+      + predictable call factors
+      + UncResCEO
+
+Three-stage pipeline:
+
+  1. START WITH LANGUAGE
+     Raw uncertainty share
+
+     Loughran-McDonald uncertainty words divided by total words in the CEO's
+     Q&A answers.
+
+  2. REMOVE WHAT IS PREDICTABLE
+     Style and call conditions
+
+     - CEO fixed effects
+     - Prepared-remarks uncertainty (UncPreCEO)
+     - Analyst-question uncertainty (UncQue)
+     - Call negativity (NegCall)
+     - Firm performance controls
+     - Calendar year
+
+  3. KEEP THE RESIDUAL
+     UncResCEO
+
+     The call-specific component of CEO uncertainty, net of persistent style
+     and observable call conditions.
+
+Bottom guardrails:
+  - Q&A only: unscripted CEO answers
+  - At least five calls required for each CEO
+  - State, not personality: interpreted within CEO over time
+
+Purpose:
+  Make the dependent variable intuitive before showing data or regressions.
+
+Suggested spoken content:
+
+  "I begin with the share of Loughran-McDonald uncertainty words in the CEO's
+  Q&A answers. Raw levels are not enough because executives differ persistently
+  in how tentatively they speak. I therefore residualize the raw share using CEO
+  fixed effects and observable call conditions. The residual, UncResCEO, is the
+  call-specific component used in the main tests. A CEO needs at least five calls
+  for the measure to be constructed."
+
+Important statistical caveat for questions or backup:
+
+  UncResCEO is a generated regressand. Conventional second-stage standard errors
+  may be understated unless uncertainty from the first stage is carried through,
+  for example through a two-step correction or bootstrap. Do not dismiss this as
+  merely adding harmless measurement noise.
+
+Audience takeaway:
+  The dependent variable is not the CEO's general personality or average
+  tentativeness. It captures what is unusual about that CEO on that call.
+
+Transition:
+
+  "I construct this measure for a large panel of earnings calls and link those
+  calls to acquisition events."
+
+Timing:
+  Approximately 1:35.
+
+
+-------------------------------------------------------------------------------
+SLIDE 5 - CALLS, FIRMS, AND ACQUISITIONS
+-------------------------------------------------------------------------------
+
+Title:
+  Calls, firms, and acquisitions
+
+Core numbers:
+  - 88,205 earnings calls
+  - 1,884 U.S. public firms
+  - 2002-2018
+  - Nonfinancial, nonutility firms
+
+Data sources and their roles:
+  - Capital IQ: transcripts
+  - SDC: acquisition announcements, completion, and payment method
+  - Compustat: accounting variables
+  - CRSP: market data
+  - IBES: analyst and earnings information used in the research data pipeline
+  - Execucomp: CEO identity
+
+Important correction:
+  Execucomp identifies the CEO. Do not describe Execucomp as a generic source of
+  control variables.
+
+Deal classification:
+  - Cash deal: at least 50 percent cash consideration
+  - Stock deal: at least 50 percent stock consideration
+  - Event clock based on the first qualifying acquisition
+
+Selection caveat:
+  Requiring at least five CEO calls and Execucomp coverage shifts the sample
+  toward larger, better-covered firms, including firms associated with the
+  Execucomp and S&P 1500 universe.
+
+Suggested visual:
+  Four large number tiles plus a compact source-to-variable flow. Avoid a dense
+  sample-construction table in the core deck.
+
+Suggested spoken content:
+
+  "The final call panel contains 88,205 calls for 1,884 U.S. public
+  nonfinancial, nonutility firms from 2002 through 2018. I link Capital IQ
+  transcripts to SDC acquisitions and standard accounting, market, analyst, and
+  executive-identity sources. The five-call requirement improves the style
+  adjustment but means the sample is tilted toward larger, better-covered firms."
+
+Audience takeaway:
+  This is a large call panel with explicit event and speaker linkage, but it is
+  not a random sample of every U.S. firm.
+
+Transition:
+
+  "The data support three related tests organized around one event clock."
+
+Timing:
+  Approximately 1:10.
+
+
+-------------------------------------------------------------------------------
+SLIDE 6 - THREE TESTS, ONE EVENT CLOCK
+-------------------------------------------------------------------------------
+
+Title:
+  Three tests, one event clock
+
+Correct event-time sequence:
+
+  PRE2 -> PRE1 -> ANNOUNCEMENT -> GAP -> COMPLETION -> POST
+
+Conceptual observation bins:
+
+  PRE2  Earlier pre-announcement quarter
+  PRE1  Quarter immediately before announcement
+  GAP   Announced but not yet completed
+  POST  After completion
+
+Important visual rule:
+  Announcement and completion are boundaries between periods. They are not
+  themselves observation bins.
+
+Three tests:
+
+  1. RUN-UP
+     Is UncResCEO elevated in PRE1 before cash acquisitions?
+
+  2. TIMING
+     Does the language pattern align with announcement rather than completion?
+     Key contrast: PRE1 minus GAP.
+
+  3. CASH CONCENTRATION
+     Is the run-up stronger for cash than stock deals in a pooled formal test?
+
+Common empirical structure:
+  - Firm fixed effects
+  - Calendar year-quarter fixed effects
+  - Firm controls
+  - Standard errors clustered by firm
+
+Main interpretation:
+  These are within-firm correlations around event time. They are not causal
+  estimates.
+
+Suggested visual:
+  A single horizontal clock with the two disclosure boundaries, plus three test
+  cards linked to the relevant portions of the clock.
+
+Suggested spoken content:
+
+  "All three analyses use the same event logic. PRE1 is the last quarter while
+  the deal is private. GAP contains calls after announcement but before
+  completion. POST begins after completion. The first test asks whether there is
+  a PRE1 run-up. The second asks whether it ends at announcement or completion.
+  The third formally compares cash and stock deals. The specifications are
+  within firm and remain correlational."
+
+Audience takeaway:
+  The design distinguishes the information boundary from the transaction-closing
+  boundary and reserves the payment-method comparison for a formal pooled test.
+
+Transition:
+
+  "The first result is the simple pre-announcement run-up."
+
+Timing:
+  Approximately 2:00.
+
+
+-------------------------------------------------------------------------------
+SLIDE 7 - CEO UNCERTAINTY RISES BEFORE CASH ACQUISITIONS
+-------------------------------------------------------------------------------
+
+Title:
+  CEO uncertainty rises before cash acquisitions
+
+Preferred visual:
+  A coefficient plot with point estimates and 95 percent confidence intervals.
+
+Exact values:
+
+  Cash acquisitions:
+    Coefficient = 0.0461
+    SE          = 0.0172
+    95% CI      = [0.0124, 0.0798]
+    Two-tailed p = 0.0074
+
+  Stock acquisitions:
+    Coefficient = -0.0429
+    SE          = 0.0307
+    95% CI      = [-0.1031, 0.0173]
+    Not statistically significant
+
+Economic scale:
+  0.0461 / 0.3010 = 15.3 percent of the all-universe residual standard deviation.
+
+Correct interpretation:
+  - Within a firm, CEO residual uncertainty is higher in the quarter before a
+    cash acquisition.
+  - No comparable rise is detected before stock acquisitions.
+  - The formal cash-stock difference is NOT established on this slide. That
+    comes later in the pooled Wald test.
+
+Do not say:
+  - Stock uncertainty "falls." The stock estimate is negative but imprecise and
+    statistically insignificant.
+  - Cash is a perfect treatment and stock is a placebo.
+  - The coefficient is causal.
+
+Do not put the cash-holdings result on this slide:
+  The cash-ratio panel uses a broader sample basis. Mixing it into this visual
+  would imply a sample comparability that is not clean. Cash holdings belong on
+  the two-clock slide using the matched timing sample.
+
+Suggested spoken content:
+
+  "In the quarter before a cash acquisition, UncResCEO is 0.046 higher within
+  firm, with a two-tailed p-value of 0.007. That is about 15 percent of the
+  residual's standard deviation. The stock estimate is noisy and not
+  statistically different from zero. At this point, the safe claim is a cash
+  run-up and no comparable detected stock run-up; the formal cash-stock
+  difference comes later."
+
+Audience takeaway:
+  The main pre-announcement regularity is economically meaningful and precisely
+  estimated for cash deals.
+
+Transition:
+
+  "The more informative result is where that trace appears on the event clock."
+
+Timing:
+  Approximately 1:35.
+
+
+-------------------------------------------------------------------------------
+SLIDE 8 - THE LANGUAGE TRACE ENDS WHEN THE DEAL BECOMES PUBLIC
+-------------------------------------------------------------------------------
+
+Title:
+  The language trace ends when the deal becomes public
+
+Preferred visual:
+  Event-time coefficient plot with PRE2, PRE1, GAP, and POST. Include 95 percent
+  confidence intervals and visually mark announcement and completion as
+  boundaries.
+
+Matched event-study sample:
+  - 28,102 calls
+  - 1,320 firms
+
+Exact UncResCEO values:
+
+  PRE2:
+    Coefficient = 0.0068
+    SE          = 0.0178
+    Not significant
+
+  PRE1:
+    Coefficient = 0.0473
+    SE          = 0.0178
+    p < 0.01
+
+  GAP:
+    Coefficient = 0.0018
+    SE          = 0.0187
+    Not significant
+
+  POST:
+    Coefficient = -0.0250
+    SE          = 0.0130
+    Marginal, p < 0.10
+
+Key contrast:
+
+  PRE1 minus GAP:
+    Difference  = 0.0455
+    SE          = 0.0225
+    p < 0.05
+
+Additional contrast available for questions:
+
+  PRE1 minus POST uncertainty = 0.0723
+
+Correct interpretation:
+  - PRE2 provides no evidence of an earlier pretrend.
+  - Uncertainty is elevated in PRE1, the last private quarter.
+  - It is indistinguishable from zero during GAP, after announcement but before
+    completion.
+  - The PRE1-GAP contrast is statistically significant.
+  - The negative POST estimate is marginal and should not be made into a strong
+    substantive claim.
+
+Preferred language:
+
+  "The trace is concentrated in the last private quarter and does not persist
+  into the announced-but-unclosed period."
+
+Avoid:
+  - "Uncertainty becomes negative after completion."
+  - "Announcement causally reduces uncertainty."
+  - "Every CEO reveals the deal through uncertainty."
+
+Suggested spoken content:
+
+  "The event-time result is the thesis's strongest timing evidence. PRE2 is near
+  zero, PRE1 rises to 0.047, and GAP is again indistinguishable from zero even
+  though the transaction has not yet completed. The PRE1-GAP difference is
+  statistically significant. The timing therefore aligns with the
+  private-to-public information boundary rather than mechanically with closing."
+
+Audience takeaway:
+  The language signal is anticipatory and aligns with public disclosure.
+
+Transition:
+
+  "The distinction becomes clearer when I place the language clock next to the
+  firm's cash clock."
+
+Timing:
+  Approximately 2:00.
+
+
+-------------------------------------------------------------------------------
+SLIDE 9 - LANGUAGE FOLLOWS INFORMATION; CASH FOLLOWS COMPLETION
+-------------------------------------------------------------------------------
+
+Title:
+  Language follows information; cash follows completion
+
+Preferred visual:
+  Two aligned panels using the same matched sample and event periods.
+
+  Left panel: UncResCEO
+  Right panel: cash holdings / cash ratio
+
+Important visual rule:
+  Use separate vertical axes. Do not invite viewers to compare the numerical
+  magnitudes of language and cash coefficients.
+
+Uncertainty clock:
+  PRE1 = 0.0473
+  GAP  = 0.0018, not significant
+  PRE1-GAP = 0.0455, p < 0.05
+
+Cash clock:
+  PRE1 = 0.0061
+    SE = 0.0024
+    p < 0.05
+
+  GAP = 0.0055
+    SE = 0.0034
+    Not significant as a level
+
+  PRE1-GAP = 0.0006
+    Not significant
+
+  GAP-POST = 0.0210
+    SE = 0.0042
+    p < 0.01
+
+  POST cash coefficient = -0.0155
+    SE = 0.0022
+    p < 0.01
+
+Correct interpretation:
+  - Language changes at announcement.
+  - Cash does not show a PRE1-to-GAP decline.
+  - Cash declines around completion.
+  - This is consistent with two clocks: an information clock for language and a
+    transaction-settlement clock for cash.
+
+Important caveat:
+  Cash persistence in GAP is inferred from the absence of a PRE1-GAP decline.
+  The GAP cash level itself is statistically insignificant. State both facts if
+  challenged.
+
+Suggested spoken content:
+
+  "The two panels separate the information boundary from the cash-settlement
+  boundary. Language is elevated in PRE1 and near zero in GAP. Cash, by contrast,
+  does not decline from PRE1 to GAP; its sharp decline occurs from GAP to POST,
+  around completion. I use separate axes because the two outcomes are measured
+  on different scales."
+
+Audience takeaway:
+  The language pattern is not merely mirroring the mechanical depletion of cash
+  at transaction completion.
+
+Transition:
+
+  "The final main test asks whether the pre-announcement language run-up is
+  statistically stronger for cash than for stock deals."
+
+Timing:
+  Approximately 1:30.
+
+
+-------------------------------------------------------------------------------
+SLIDE 10 - THE RUN-UP CONCENTRATES IN CASH DEALS
+-------------------------------------------------------------------------------
+
+Title:
+  The run-up concentrates in cash deals
+
+Preferred visual:
+  A pooled coefficient comparison with cash and stock estimates, 95 percent
+  confidence intervals, and a clearly labeled Wald difference.
+
+Exact values:
+
+  Cash:
+    Coefficient = 0.0459
+    SE          = 0.0185
+
+  Stock:
+    Coefficient = -0.0524
+    SE          = 0.0436
+
+  Formal cash-minus-stock Wald difference:
+    Difference  = 0.0983
+    SE          = 0.0476
+    Two-tailed p = 0.039
+
+Mechanism-related cash-ratio difference:
+    Difference  = 0.0064
+    Not significant
+
+Correct interpretation:
+  - The pooled cash-stock difference is statistically significant.
+  - The result supports concentration in cash deals.
+  - The stock estimate is imprecise.
+  - The result does not prove strict specificity to cash deals.
+  - The nonsignificant cash-ratio difference leaves the mechanism open.
+
+Use this wording:
+
+  "The pre-announcement run-up concentrates in cash deals relative to stock
+  deals."
+
+Do not use this wording:
+
+  "The effect is specific only to cash deals."
+  "Stock deals are a placebo."
+  "The payment method causes the language pattern."
+
+Why stock is an imperfect comparison:
+  Stock deals may create different disclosure and currency-protection incentives.
+  The stock group is therefore a managed comparison, not a clean untreated
+  counterfactual.
+
+Suggested spoken content:
+
+  "In the pooled specification, the cash coefficient is positive and the stock
+  coefficient is negative but imprecise. The formal cash-minus-stock difference
+  is 0.098 with a two-tailed p-value of 0.039. This supports concentration in
+  cash deals, not strict specificity. The payment-method mechanism remains open,
+  especially because the corresponding cash-ratio difference is not
+  statistically significant."
+
+Audience takeaway:
+  The descriptive language pattern is significantly stronger for cash deals,
+  but payment-method causality is not identified.
+
+Transition:
+
+  "A natural alternative explanation is that analysts simply ask more about
+  cash before these deals."
+
+Timing:
+  Approximately 1:45.
+
+
+-------------------------------------------------------------------------------
+SLIDE 11 - MEASURED ANALYST SCRUTINY DOES NOT ACCOUNT FOR THE RUN-UP
+-------------------------------------------------------------------------------
+
+Title:
+  Measured analyst scrutiny does not account for the run-up
+
+Alternative explanation:
+  Analysts may ask more cash-related questions before a cash acquisition, and
+  the CEO's uncertainty may simply respond to those questions.
+
+Exact results:
+
+  Pre-announcement effect with measured cash scrutiny:
+    Coefficient = 0.0413
+    SE          = 0.0177
+
+  Alternative interaction specification pre-announcement effect:
+    Coefficient = 0.0439
+    SE          = 0.0189
+
+  Cash-scrutiny interaction:
+    Coefficient = -0.0056
+    SE          = 0.0111
+    Not significant
+
+Correct claim:
+
+  "Measured cash scrutiny does not account for the pre-announcement run-up."
+
+Required caveat:
+  The interaction test is underpowered. Failure to detect the interaction is not
+  proof that analyst scrutiny never matters.
+
+Robustness strip:
+  - Withdrawal-resolution analysis
+  - Static fixed-effects specification removes the cash lag; timing result remains
+  - All-deals specification
+
+All-deals result available for backup or questions:
+  Cash-stock difference = 0.1056
+  p approximately 0.013
+
+Correct interpretation:
+  The run-up survives the measured cash-question control and several timing or
+  sample variations, but the evidence remains descriptive and the mechanism is
+  not identified.
+
+Suggested spoken content:
+
+  "I test whether measured cash-related analyst questions explain the result.
+  The pre-announcement coefficient remains about 0.041, while the scrutiny
+  interaction is small and statistically insignificant. The safe conclusion is
+  that measured cash scrutiny does not account for the run-up. The interaction
+  is underpowered, so I do not claim to rule scrutiny out. The timing pattern
+  also survives withdrawal-resolution, static fixed-effects, and all-deals
+  checks."
+
+Audience takeaway:
+  A leading measured alternative does not absorb the result, but the thesis does
+  not claim a definitive mechanism test.
+
+Transition:
+
+  "Taken together, the evidence establishes a timing regularity, with clear
+  boundaries on what it can mean."
+
+Timing:
+  Approximately 1:45.
+
+
+-------------------------------------------------------------------------------
+SLIDE 12 - WHAT THE THESIS ESTABLISHES
+-------------------------------------------------------------------------------
+
+Title:
+  What the thesis establishes
+
+Three established findings:
+
+  1. Within firm, CEO residual uncertainty rises in the quarter before a cash
+     acquisition.
+
+  2. The language pattern is concentrated in the private period and is
+     indistinguishable from zero after announcement but before completion.
+
+  3. The pre-announcement run-up is significantly stronger for cash than stock
+     deals in a formal pooled comparison.
+
+What the thesis does not establish:
+
+  - Causal identification
+  - The psychological reason the CEO uses more uncertain language
+  - A unique or exclusive cash-deal mechanism
+  - A profitable trading strategy
+  - Generalization beyond the observed sample and setting
+
+Core interpretive boundary:
+  Compliance-constrained speech and strategic silence may be observationally
+  equivalent in these data. The thesis cannot distinguish them cleanly.
+
+Preferred final sentence:
+
+  "A withheld acquisition leaves a readable, anticipatory trace in the CEO's
+  unscripted answers."
+
+Suggested spoken close:
+
+  "The thesis establishes a within-firm pre-announcement language run-up, a
+  sharp change at the private-to-public boundary, and a formal concentration in
+  cash deals relative to stock deals. It does not identify why the CEO's
+  language changes or claim a causal mechanism. The main takeaway is that a
+  withheld acquisition leaves a readable, anticipatory trace in the CEO's
+  unscripted answers."
+
+Audience takeaway:
+  The result is interesting because of its timing and within-firm structure, and
+  credible because the limitations are stated explicitly.
+
+Timing:
+  Approximately 1:35.
+
+
+================================================================================
+5. VERIFIED THESIS FACTS AND RESULT REGISTER
+================================================================================
+
+5.1 Abstract-level facts
+------------------------
+
+  - 88,205 calls
+  - 1,884 U.S. public nonfinancial, nonutility firms
+  - 2002-2018
+  - CEO Q&A uncertainty residualized for persistent style and call conditions
+  - Elevated in the quarter before a cash acquisition within firm
+  - No comparable detected rise before stock acquisitions
+  - Indistinguishable from zero after announcement but before completion
+  - Cash remains until completion in the timing comparison
+  - Formal pooled result supports cash concentration relative to stock
+  - Measured cash scrutiny does not account for the run-up
+  - All results remain correlational
+
+
+5.2 Main Analysis 1 register
+----------------------------
+
+Cash pre-announcement UncResCEO:
+  beta = 0.0461
+  SE   = 0.0172
+  p    = 0.0074, two-tailed
+  95% CI = [0.0124, 0.0798]
+
+Cash-ratio association in its broader panel:
+  beta = 0.0051
+  SE   = 0.0017
+
+Stock pre-announcement UncResCEO:
+  beta = -0.0429
+  SE   = 0.0307
+  not significant
+  95% CI = [-0.1031, 0.0173]
+
+UncResCEO all-universe SD:
+  0.3010
+
+Economic scale:
+  0.0461 / 0.3010 = 15.3 percent
+
+
+5.3 Main Analysis 2 event-time register
+---------------------------------------
+
+UncResCEO:
+
+  PRE2  0.0068   SE 0.0178   not significant
+  PRE1  0.0473   SE 0.0178   p < 0.01
+  GAP   0.0018   SE 0.0187   not significant
+  POST -0.0250   SE 0.0130   p < 0.10, marginal
+
+Cash:
+
+  PRE2  0.0008   SE 0.0024   not significant
+  PRE1  0.0061   SE 0.0024   p < 0.05
+  GAP   0.0055   SE 0.0034   not significant
+  POST -0.0155   SE 0.0022   p < 0.01
+
+Contrasts:
+
+  PRE1-GAP UncResCEO = 0.0455   SE 0.0225   p < 0.05
+  PRE1-GAP cash      = 0.0006   not significant
+  GAP-POST cash      = 0.0210   SE 0.0042   p < 0.01
+  PRE1-POST uncertainty = 0.0723
+
+Matched timing sample:
+  28,102 calls
+  1,320 firms
+
+
+5.4 Main Analysis 3 cash-stock register
+---------------------------------------
+
+Cash UncResCEO:
+  beta = 0.0459
+  SE   = 0.0185
+
+Stock UncResCEO:
+  beta = -0.0524
+  SE   = 0.0436
+
+Formal cash-minus-stock Wald test:
+  difference = 0.0983
+  SE         = 0.0476
+  p          = 0.039, two-tailed
+
+Cash-ratio matched difference:
+  0.0064, not significant
+
+
+5.5 Cash-scrutiny and robustness register
+-----------------------------------------
+
+Pre-announcement result with measured cash scrutiny:
+  beta = 0.0413
+  SE   = 0.0177
+
+Alternative interaction specification pre-announcement result:
+  beta = 0.0439
+  SE   = 0.0189
+
+Cash-scrutiny interaction:
+  beta = -0.0056
+  SE   = 0.0111
+  not significant
+
+All-deals cash-stock difference:
+  0.1056
+  p approximately 0.013
+
+Secondary bid-ask result:
+  - UncResCEO is not directly related to bid-ask spread in the main secondary
+    interpretation.
+  - UncPreCEO is positive in some one-tailed specifications.
+  - There is no direct between-segment test.
+  - Keep this in backup unless an examiner asks about market consequences.
+
+
+================================================================================
+6. WORDING AND INTERPRETATION GUARDRAILS
+================================================================================
+
+Always use:
+  - "Within firm"
+  - "Correlational"
+  - "Concentrates in cash deals"
+  - "No comparable rise detected before stock deals"
+  - "Indistinguishable from zero during GAP"
+  - "Measured cash scrutiny does not account for the run-up"
+  - "Mechanism remains open"
+  - "Stock estimate is imprecise"
+  - "Announcement and completion are distinct boundaries"
+
+Avoid:
+  - "Causal effect"
+  - "Cash deals cause uncertainty"
+  - "The result is specific only to cash"
+  - "Stock deals are a placebo"
+  - "Stock uncertainty falls"
+  - "The GAP coefficient proves cash remains high"
+  - "Analyst scrutiny is ruled out"
+  - "The CEO is legally required to host a call"
+  - "The measure reveals deception"
+  - "The result identifies strategic silence"
+  - "The result proves legal compliance pressure"
+  - "The model predicts acquisitions"
+  - "The thesis establishes a profitable trading strategy"
+
+Specific nuance on GAP uncertainty:
+  The GAP uncertainty level is indistinguishable from zero. The PRE1-GAP
+  contrast is significant. It is acceptable to say the private-period trace
+  does not persist after announcement. Do not exaggerate the negative POST
+  estimate.
+
+Specific nuance on cash persistence:
+  There is no PRE1-GAP decline in cash. GAP's cash level is itself insignificant.
+  The sharp cash change is GAP-POST around completion.
+
+Specific nuance on cash versus stock:
+  The Wald difference is significant, but stock is a noisy comparison group and
+  may face distinct currency-protection incentives. Say "concentration," not
+  "strict specificity."
+
+Specific nuance on mechanism:
+  The language trace could be consistent with compliance-constrained speech,
+  strategic silence, cognitive load, planning uncertainty, or other unobserved
+  states. The data do not discriminate cleanly among them.
+
+
+================================================================================
+7. ANTICIPATED QUESTIONS AND SHORT ANSWER LOGIC
+================================================================================
+
+Q1. Why cash deals?
+
+Short answer:
+  The main evidence indicates that the pre-announcement language run-up is
+  concentrated in cash deals. Cash and stock transactions create different
+  financing and disclosure incentives, so stock is a useful managed comparison,
+  not a perfect counterfactual. The thesis does not identify payment method as a
+  causal mechanism.
+
+
+Q2. Why is stock not a placebo?
+
+Short answer:
+  Stock deals can have their own information and currency-protection incentives.
+  The comparison tests whether the run-up is stronger in cash deals, not whether
+  stock firms are untreated in every relevant dimension.
+
+
+Q3. Why use a dictionary rather than machine learning?
+
+Short answer:
+  The Loughran-McDonald lexicon is transparent, reproducible, finance-specific,
+  and interpretable. The thesis question concerns a stable uncertainty construct,
+  and residualization addresses persistent speaker style. A supervised model
+  could improve prediction but would introduce training-label and interpretability
+  choices outside this thesis's design.
+
+
+Q4. How do you know the words belong to the CEO?
+
+Short answer:
+  Capital IQ transcripts identify speakers, and Execucomp is used to identify the
+  CEO. The measure uses the CEO's Q&A answers, not the full transcript.
+
+
+Q5. Why require at least five calls?
+
+Short answer:
+  The residualization needs repeated observations to distinguish persistent CEO
+  style from call-specific variation. The tradeoff is sample selection toward
+  larger, better-covered firms.
+
+
+Q6. Is UncResCEO a generated dependent variable?
+
+Short answer:
+  Yes. It is estimated in a first stage and then used in the event regressions.
+  Conventional second-stage standard errors may understate total uncertainty if
+  first-stage estimation error is ignored. A bootstrap or explicit two-step
+  correction would be a useful extension.
+
+
+Q7. Is the result causal?
+
+Short answer:
+  No. Firm fixed effects and event timing remove important stable differences and
+  organize the correlation, but no exogenous assignment or instrument identifies
+  causality. The thesis establishes a within-firm timing regularity.
+
+
+Q8. Could analysts simply ask more cash-related questions?
+
+Short answer:
+  The pre-announcement coefficient remains approximately 0.041 after incorporating
+  measured cash scrutiny, and the interaction is insignificant. The correct
+  conclusion is that measured scrutiny does not account for the run-up. The test
+  is underpowered, so scrutiny is not ruled out generally.
+
+
+Q9. Could ordinary firm uncertainty drive the result?
+
+Short answer:
+  The residualization removes prepared-remarks uncertainty, question uncertainty,
+  call negativity, firm performance, CEO style, and time effects. Firm and
+  calendar fixed effects are also included. Remaining time-varying omitted states
+  are still possible, which is why the result is correlational.
+
+
+Q10. Why is announcement more important than completion?
+
+Short answer:
+  Announcement changes the information state: the deal becomes public. Completion
+  changes the transaction state: payment occurs and cash is depleted. Language
+  aligns with the first boundary, while cash aligns with the second.
+
+
+Q11. What does the negative POST uncertainty coefficient mean?
+
+Short answer:
+  It is marginal at the 10 percent level and is not a central result. The robust
+  claim is that PRE1 is elevated and GAP is indistinguishable from zero, with a
+  significant PRE1-GAP contrast.
+
+
+Q12. Does the result generalize to small firms?
+
+Short answer:
+  The sample requires repeated calls and Execucomp CEO coverage, so it is tilted
+  toward larger, better-covered firms. Generalization to small or sparsely covered
+  firms is an open question.
+
+
+Q13. Does the language measure predict returns or spreads?
+
+Short answer:
+  The thesis's market-consequence evidence is secondary and limited. UncResCEO is
+  not robustly related to bid-ask spreads in the secondary analysis. The core
+  contribution is the event-time language regularity, not a market-trading claim.
+
+
+Q14. What is the most important result?
+
+Short answer:
+  The event-time result: residual CEO uncertainty is elevated in the last private
+  quarter, but is indistinguishable from zero once the deal is public even before
+  completion. That timing separates the information boundary from closing.
+
+
+Q15. What would you do next?
+
+Short answer:
+  Improve first-stage uncertainty propagation, test alternative language models,
+  broaden the firm universe, study additional private corporate events, and seek
+  designs that better separate strategic silence, compliance constraints, and
+  general managerial uncertainty.
+
+
+================================================================================
+8. BACKUP SLIDE PLAN
+================================================================================
+
+Backup slides should be prepared after the 12 core slides. They are not part of
+the 20-minute narrative unless an examiner asks.
+
+BACKUP 1 - Sample construction
+  - Inclusion and exclusion steps
+  - Five-call requirement
+  - Execucomp linkage
+  - Firm-size and coverage selection caveat
+
+BACKUP 2 - Full UncResCEO construction
+  - Raw dictionary formula
+  - Speaker segmentation
+  - First-stage controls
+  - CEO fixed effects
+  - Generated-regressand standard-error caveat
+
+BACKUP 3 - Event-window definitions
+  - Exact PRE2, PRE1, GAP, and POST definitions
+  - Announcement and completion boundaries
+  - First qualifying deal rule
+
+BACKUP 4 - Main regression specifications
+  - Firm fixed effects
+  - Calendar year-quarter fixed effects
+  - Firm controls
+  - Firm-clustered standard errors
+  - Full table excerpts
+
+BACKUP 5 - Cash and stock classification
+  - At least 50 percent cash
+  - At least 50 percent stock
+  - Why stock is a managed comparison rather than a placebo
+
+BACKUP 6 - Formal Wald test
+  - Cash coefficient
+  - Stock coefficient
+  - Cash-minus-stock difference
+  - Two-tailed p-value
+
+BACKUP 7 - Analyst cash scrutiny
+  - Cash-question measure
+  - Main controlled estimate
+  - Interaction estimate
+  - Power caveat
+
+BACKUP 8 - Withdrawal-resolution robustness
+  - How withdrawn deals are handled
+  - Why resolution timing matters
+
+BACKUP 9 - Static and all-deals robustness
+  - Static fixed-effects specification
+  - Removal of cash lag
+  - All-deals result
+
+BACKUP 10 - Market-consequence evidence
+  - Bid-ask spread results
+  - UncResCEO versus UncPreCEO distinction
+  - No direct between-segment test
+  - Explicitly secondary status
+
+BACKUP 11 - Limitations and identification
+  - Correlational design
+  - Unobserved time-varying states
+  - Mechanism ambiguity
+  - Sample selection
+  - Generated-regressand inference
+
+BACKUP 12 - Data-source map
+  - Capital IQ, SDC, Compustat, CRSP, IBES, Execucomp
+  - Exact role of each source
+
+
+================================================================================
+9. VISUAL AND BUILD STANDARD
+================================================================================
+
+9.1 Current format
+------------------
+
+The Beamer experiment was stopped. The active presentation is built in HTML and
+CSS, then printed through Chromium to a vector PDF.
+
+Active source directory:
+
+  docs/Defense/web_deck/
+
+Primary files:
+
+  docs/Defense/web_deck/index.html
+  docs/Defense/web_deck/styles.css
+
+Latest four-slide PDF at the time this reference was created:
+
+  docs/Defense/web_deck/defense-web-review-4.pdf
+
+Current completed core slides:
+
+  1. Title
+  2. Motivating disclosure setting
+  3. Research question and gap
+  4. Language measure
+
+Planned but not yet built at this point:
+
+  5. Data and sample
+  6. Empirical design
+  7. Pre-announcement cash result
+  8. Event-time timing result
+  9. Two clocks
+ 10. Cash-stock concentration
+ 11. Cash scrutiny and robustness
+ 12. Conclusion
+
+Old files such as defense_slides.tex, defense_slides_v2.tex, and old PDF exports
+are historical working artifacts. They should not be used as the final deck.
+
+
+9.2 Branding
+------------
+
+Official Telfer brand palette used:
+
+  Garnet:    #8F001A
+  Charcoal:  #231F20
+  Light beige: #F4F2EF
+
+Brand manual:
+  https://telfer.uottawa.ca/assets/documents/2020/brand/DOC_Brand-Guidelines_2021_E_Final.pdf
+
+Typography:
+  - Roboto for body text
+  - Roboto Condensed for titles and high-hierarchy labels
+  - Do not use Times New Roman for the deck
+
+Times New Roman is professionally acceptable in documents, but it is less
+legible at presentation distance and looks document-like. Roboto and Roboto
+Condensed match Telfer's brand system and are preferred here.
+
+Logo use:
+  - Official Telfer and uOttawa logo assets
+  - Logos are prominent on the title slide
+  - Content slides should rely on the visual system rather than repeating large
+    logos on every page
+  - Never distort, recolor, redraw, or crowd the logos
+
+
+9.3 Typography and layout rules
+-------------------------------
+
+  - 16:9 canvas
+  - Large projection-safe type
+  - Current meaningful body text generally 27-28 CSS pixels or larger
+  - Titles approximately 64 CSS pixels on content slides
+  - Sources approximately 19 CSS pixels
+  - Strong whitespace and a clear reading order
+  - No dense core regression tables
+  - One main claim per slide
+  - Use cards, timelines, and coefficient plots only when they improve meaning
+  - Keep decorative elements subordinate to the empirical message
+
+
+9.4 Quantitative visuals
+------------------------
+
+The thesis contains few presentation-ready figures. It is acceptable to create
+presentation-only coefficient plots directly from verified thesis table values.
+
+Requirements:
+  - Use exact coefficients and standard errors from the thesis
+  - Use 95 percent confidence intervals unless explicitly labeled otherwise
+  - Add a source footer with the relevant thesis table or chapter
+  - Do not create new empirical estimates
+  - Do not imply significance through color alone
+  - Use separate axes for different units, especially language and cash
+  - Keep full regression tables in backup slides
+
+
+9.5 Authoritative rendering and review pipeline
+------------------------------------------------
+
+The only acceptable review pipeline is:
+
+  HTML/CSS source
+      -> Chromium PDF
+      -> rasterize the compiled PDF page
+      -> inspect the PDF-derived PNG
+
+Do not approve slides from a browser screenshot taken before PDF compilation.
+Browser and print CSS can differ. Every review image must be derived from the
+actual compiled PDF.
+
+Current PDF page geometry:
+  - 16:9
+  - 1440 x 810 PDF points
+  - Produced from a 20 inch x 11.25 inch print page
+
+Current review rasterization:
+  - pdftoppm
+  - 192 DPI
+  - Produces 3840 x 2160 PNG pages
+
+
+================================================================================
+10. PRESENTATION DELIVERY PRINCIPLES
+================================================================================
+
+1. Lead with the result, not the process.
+
+2. Use the event clock consistently. The audience should always know whether a
+   call occurs while the deal is private, announced but unclosed, or completed.
+
+3. Say "within firm" early and repeatedly.
+
+4. State "correlational" before an examiner needs to force the concession.
+
+5. Do not narrate every control variable. Explain why the control block matters.
+
+6. Do not read coefficients mechanically. State the pattern, then give the key
+   number and confidence interval or p-value.
+
+7. Pause on slide 8. It is the strongest timing result.
+
+8. Keep slide 9 short. Its purpose is conceptual separation of two clocks, not a
+   second full event-study lecture.
+
+9. Use slide 10 for the formal cash-stock difference. Earlier slides should not
+   imply that the formal comparison is already established.
+
+10. State limitations confidently. Accuracy strengthens the defense.
+
+11. If interrupted, answer the question directly and return using the slide's
+    transition sentence.
+
+12. If time is running short:
+    - Keep slide 8 intact.
+    - Keep slide 10's formal difference.
+    - Compress slide 11's robustness list.
+    - Do not sacrifice the limitations on slide 12.
+
+
+================================================================================
+11. ONE-SENTENCE MAP FOR MEMORY
+================================================================================
+
+Slide 1:
+  I study whether a private acquisition leaves a trace in CEO Q&A language.
+
+Slide 2:
+  The firm may stay silent but cannot mislead while routine questions continue.
+
+Slide 3:
+  I ask whether residual uncertainty tracks the private-to-public boundary.
+
+Slide 4:
+  UncResCEO separates call-specific uncertainty from persistent CEO style.
+
+Slide 5:
+  I link 88,205 calls for 1,884 firms to acquisition events and firm data.
+
+Slide 6:
+  Three tests use one event clock to separate announcement from completion.
+
+Slide 7:
+  Residual CEO uncertainty rises before cash acquisitions within firm.
+
+Slide 8:
+  The trace is concentrated in the last private quarter and ends by announcement.
+
+Slide 9:
+  Language follows the information boundary; cash follows completion.
+
+Slide 10:
+  The pre-announcement run-up is significantly stronger for cash than stock.
+
+Slide 11:
+  Measured cash scrutiny does not account for the run-up, with power caveats.
+
+Slide 12:
+  The thesis establishes a correlational anticipatory language trace, not a
+  causal mechanism.
+
+
+================================================================================
+12. FINAL DEFENSE MESSAGE
+================================================================================
+
+If the committee remembers only one idea, it should be this:
+
+  The CEO's unscripted language changes before a cash acquisition becomes
+  public, and the timing of that change follows disclosure rather than the
+  mechanical completion of the transaction.
+
+The strongest final wording is:
+
+  "A withheld acquisition leaves a readable, anticipatory trace in the CEO's
+  unscripted answers."
+
+Always follow that sentence, if needed, with the boundary:
+
+  "The evidence is within-firm and correlational; the mechanism remains open."
+
+================================================================================
+END OF MASTER REFERENCE
+================================================================================

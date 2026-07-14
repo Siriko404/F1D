@@ -1,0 +1,162 @@
+{
+  "protocol_version": "1.0",
+  "request_id": "defense-act1-independent-review-001",
+  "verdict": "REVISE",
+  "executive_assessment": "Retain the disclosure-boundary spine. Revise Act 1 to qualify the novelty claim, describe the adjacent literatures precisely, scope the empirical question to cash acquisitions, and remove premature deal attribution from the transition.",
+  "question_responses": [
+    {
+      "question_id": "Q1",
+      "judgment": "SUPPORTED",
+      "answer": "The disclosure-boundary spine is the strongest thesis-supported narrative because informed withholding is the organizing primitive and the announcement-versus-completion round trip is the strongest result.",
+      "thesis_evidence": [
+        {
+          "source_file": "_thesis_FLAT.tex",
+          "line_range": "195-207",
+          "support": "The thesis develops informed withholding as its organizing primitive and preserves the mechanism boundary."
+        },
+        {
+          "source_file": "_thesis_FLAT.tex",
+          "line_range": "176-178, 286-296",
+          "support": "The purpose tracks the private-to-public passage, and the two-clock round trip is identified as the strongest result."
+        }
+      ],
+      "required_changes": []
+    },
+    {
+      "question_id": "Q2",
+      "judgment": "SUPPORTED",
+      "answer": "The legal premise is faithful if the routine call is described as an observed setting rather than a legal obligation.",
+      "thesis_evidence": [
+        {
+          "source_file": "_thesis_FLAT.tex",
+          "line_range": "170, 195",
+          "support": "A firm may remain silent, but once it speaks it may not mislead."
+        }
+      ],
+      "required_changes": [
+        "Do not imply that hosting the earnings call is legally required."
+      ]
+    },
+    {
+      "question_id": "Q3",
+      "judgment": "PARTIALLY_SUPPORTED",
+      "answer": "The literature gap is coherent but must be qualified with 'To our knowledge' and must not imply that the dictionary measure or residual itself is new.",
+      "thesis_evidence": [
+        {
+          "source_file": "_thesis_FLAT.tex",
+          "line_range": "174, 197, 223-225",
+          "support": "The thesis labels novelty as a positioning claim and adopts rather than invents the measurement apparatus and residual."
+        }
+      ],
+      "required_changes": [
+        "Add 'To our knowledge' to the novelty statement.",
+        "Describe the distinct adjacent literatures precisely."
+      ]
+    },
+    {
+      "question_id": "Q4",
+      "judgment": "PARTIALLY_SUPPORTED",
+      "answer": "The research question must be scoped to cash acquisitions, with stock acquisitions retained as the comparison.",
+      "thesis_evidence": [
+        {
+          "source_file": "_thesis_FLAT.tex",
+          "line_range": "176-180, 302-308",
+          "support": "The central elevation concerns cash acquisitions, and the pooled cash-stock test supports concentration rather than strict specificity."
+        }
+      ],
+      "required_changes": [
+        "Replace the generic undisclosed-acquisition question with a cash-acquisition question."
+      ]
+    },
+    {
+      "question_id": "Q5",
+      "judgment": "PARTIALLY_SUPPORTED",
+      "answer": "The sequence is coherent for a finance committee, but the transition must ask how call-specific uncertainty is isolated rather than call the residual a deal-related trace before attribution is established.",
+      "thesis_evidence": [
+        {
+          "source_file": "_thesis_FLAT.tex",
+          "line_range": "184, 207, 225-227",
+          "support": "UncResCEO is a call-specific residual, the design is correlational, and the mechanism is not identified."
+        }
+      ],
+      "required_changes": [
+        "Use a neutral transition about separating call-specific uncertainty from persistent style and predictable call conditions."
+      ]
+    }
+  ],
+  "critical_findings": [
+    {
+      "priority": 1,
+      "category": "Novelty",
+      "finding": "The original gap statement was categorical.",
+      "why_it_matters": "The thesis makes a qualified positioning claim rather than proving exhaustive novelty.",
+      "required_change": "Add 'To our knowledge' and avoid claiming novelty for the measurement method."
+    },
+    {
+      "priority": 2,
+      "category": "Empirical scope",
+      "finding": "The original research question referred to undisclosed acquisitions generally.",
+      "why_it_matters": "The load-bearing evidence concerns cash acquisitions, with stock acquisitions as a comparison.",
+      "required_change": "Scope the question explicitly to a cash acquisition remaining undisclosed."
+    },
+    {
+      "priority": 3,
+      "category": "Attribution",
+      "finding": "The phrase 'deal-related trace' prejudged what the residual represents.",
+      "why_it_matters": "The residual is an operationalized call-specific measure and the mechanism remains unidentified.",
+      "required_change": "Ask neutrally how call-specific uncertainty is separated from persistent CEO style and other predictable call conditions."
+    }
+  ],
+  "unsupported_or_overstated_wording": [
+    {
+      "original_wording": "It has not examined",
+      "issue": "Categorical novelty overstatement.",
+      "replacement": "To our knowledge, it has not examined"
+    },
+    {
+      "original_wording": "Pre-deal prices, managed tone, and strategy vocabulary",
+      "issue": "The adjacent literatures occur in distinct settings and windows.",
+      "replacement": "Pre-announcement price run-ups, managed tone before stock-for-stock acquisitions, and strategy vocabulary around acquisition activity"
+    },
+    {
+      "original_wording": "Does this private information state leave a trace in CEO Q&A language?",
+      "issue": "The empirical question is too broad relative to the cash-acquisition evidence.",
+      "replacement": "Is uncertainty in the CEO's unscripted Q&A answers elevated while a cash acquisition remains undisclosed-and does it recede once the deal becomes public?"
+    },
+    {
+      "original_wording": "deal-related trace",
+      "issue": "Premature attribution of a generated residual to the deal.",
+      "replacement": "call-specific uncertainty"
+    }
+  ],
+  "revised_proposal": {
+    "narrative_spine": "Disclosure boundary",
+    "act_1": {
+      "paragraphs": [
+        "Consider a firm that has privately committed to an acquisition. The firm knows; the market does not. It may remain silent about the deal. Yet a routine earnings call still occurs, and once management speaks, it cannot mislead.",
+        "Prior work documents pre-announcement price run-ups, managed tone before stock-for-stock acquisitions, and strategy vocabulary around acquisition activity. To our knowledge, it has not examined uncertainty language in the CEO's unscripted Q&A answers during the anticipatory window before an undisclosed acquisition.",
+        "Is uncertainty in the CEO's unscripted Q&A answers elevated while a cash acquisition remains undisclosed-and does it recede once the deal becomes public?",
+        "The evidence suggests that it does."
+      ],
+      "transition": "How can we separate call-specific uncertainty from persistent CEO speaking style and other predictable call conditions?"
+    }
+  },
+  "spine_judgment": {
+    "retain": true,
+    "assessment": "No alternative materially outperforms the disclosure-boundary spine. Keep the two-clock result as the central empirical reveal rather than the opening narrative."
+  },
+  "residual_risks": [
+    "Do not describe routine earnings calls as legally mandated.",
+    "Do not imply that the measurement apparatus or UncResCEO residual is invented by this thesis.",
+    "Do not generalize the central cash-acquisition evidence to all withheld corporate events."
+  ],
+  "next_step": "Use the revised Act 1 and develop the measure-and-design bridge that answers its neutral transition.",
+  "provenance": {
+    "response_origin": "CODEX_NORMALIZED_LEGACY_PROSE",
+    "normalized_by_codex": true
+  },
+  "file_contract": {
+    "downloadable_file_created": true,
+    "filename": "2026-07-13_act1_review_response.json"
+  }
+}

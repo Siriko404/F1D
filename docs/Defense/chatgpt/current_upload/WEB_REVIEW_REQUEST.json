@@ -1,0 +1,315 @@
+{
+  "protocol_version": "2.0",
+  "request_id": "defense-act2-measure-design-bridge-2026-07-13-v1",
+  "created_at": "2026-07-13T22:31:57-04:00",
+  "reasoning_heavy_assessment": {
+    "is_reasoning_heavy": true,
+    "triggers": [
+      "Narrative architecture and consequential sequencing",
+      "Synthesis across a complete thesis, historical presentation plan, and audit",
+      "Academic judgment about methodological detail, caveats, and audience comprehension",
+      "Creation of a substantial presentation-design artifact"
+    ],
+    "justification": "Act 2 must translate a two-stage language measure and empirical design into a concise committee-facing narrative without overstating the construct, losing essential inference boundaries, or becoming a methods lecture."
+  },
+  "task_type": "independent narrative design and academic scrutiny",
+  "title": "Design Act 2: the measure-and-design bridge",
+  "objective": "Independently design and scrutinize the second narrative act of a 20-minute MSc finance thesis defense. Act 2 must answer the approved Act 1 transition—how call-specific CEO Q&A uncertainty is separated from persistent CEO speaking style and predictable call conditions—and carry the audience efficiently from the research question to readiness for the empirical results.",
+  "scope": {
+    "in_scope": [
+      "Reconstruct the relevant measurement, sample, and empirical-design logic from the uploaded thesis",
+      "Compare two or three genuinely distinct Act 2 narrative architectures",
+      "Recommend one architecture and explain why it best serves a finance thesis committee",
+      "Draft a concise Act 2 narrative that follows directly from the approved Act 1",
+      "Determine what methodological information must appear in the core narrative and what should be deferred to later slides, limitations, backup, or Q&A",
+      "Preserve the distinction between first-stage residual construction and second-stage acquisition regressions",
+      "Keep the generated-regressand limitation visible but proportionate",
+      "Recommend conceptual visualization jobs only where they materially improve comprehension",
+      "Cite exact thesis locations for every thesis-content judgment"
+    ],
+    "out_of_scope": [
+      "Changing the approved disclosure-boundary narrative spine or rewriting Act 1 except to flag a direct incompatibility",
+      "Locking the final slide count, slide titles, timings, layouts, typography, or visual styling",
+      "Producing HTML, CSS, PDF, or finished slides",
+      "Using external empirical evidence, repository datasets, analysis code, or unstated results",
+      "Treating the historical master or audit report as empirical authority",
+      "Claiming that UncResCEO directly measures a mental state, mechanism, or deal-specific signal",
+      "Making causal claims"
+    ]
+  },
+  "source_authority": [
+    {
+      "rank": 1,
+      "source": "_thesis_FLAT.tex",
+      "role": "Sole authority for thesis content, empirical claims, values, methods, limitations, and interpretation",
+      "allowed_uses": [
+        "Support every substantive thesis claim",
+        "Resolve conflicts with all other uploaded files",
+        "Provide exact line references"
+      ],
+      "prohibited_uses": [
+        "None within the authorized thesis-design task"
+      ]
+    },
+    {
+      "rank": 2,
+      "source": "_CURRENT_HANDOFF_LEDGER.md",
+      "role": "Authority for user-approved decisions, workflow state, and non-negotiable presentation boundaries",
+      "allowed_uses": [
+        "Preserve the approved Act 1 and disclosure-boundary spine",
+        "Apply user decisions and workflow constraints"
+      ],
+      "prohibited_uses": [
+        "Substitute for the thesis on empirical or methodological facts"
+      ]
+    },
+    {
+      "rank": 3,
+      "source": "2026-07-13-master-reference-audit-report.md",
+      "role": "Diagnostic input on academic presentation standards, factual risks, visual communication, and prior architecture weaknesses",
+      "allowed_uses": [
+        "Apply verified guardrails and presentation-design findings",
+        "Identify issues that Act 2 should avoid"
+      ],
+      "prohibited_uses": [
+        "Override the thesis",
+        "Treat its provisional eleven-slide architecture as binding"
+      ]
+    },
+    {
+      "rank": 4,
+      "source": "DEFENSE_PRESENTATION_MASTER_REFERENCE.txt",
+      "role": "Historical presentation input only",
+      "allowed_uses": [
+        "Identify potentially reusable explanations",
+        "Diagnose density, sequencing, duplication, and wording risks"
+      ],
+      "prohibited_uses": [
+        "Inherit its slide order, timings, titles, or claims without independent evaluation",
+        "Override the thesis, ledger, or audit"
+      ]
+    }
+  ],
+  "web_research": {
+    "enabled": false,
+    "objectives": [],
+    "source_requirements": [
+      "Use only the uploaded files",
+      "Do not introduce outside empirical, legal, methodological, or presentation-design claims"
+    ],
+    "citation_required": false
+  },
+  "context": {
+    "presentation_limit": "20 minutes",
+    "rehearsal_target": "17:30–18:00, provisional until rehearsed",
+    "audience": "MSc finance thesis committee",
+    "supervisors": [
+      "Ali Akyol",
+      "Harshit Rajaiya"
+    ],
+    "examiners": [
+      "Shantanu Dutta",
+      "Rengong (Alex) Zhang"
+    ],
+    "approved_spine": "The disclosure boundary: track the acquisition's passage from private to public through the CEO's unscripted Q&A language.",
+    "approved_act_1": [
+      "Consider a firm that has privately committed to an acquisition. The firm knows; the market does not. It may remain silent about the deal. Yet a routine earnings call still occurs, and once management speaks, it cannot mislead.",
+      "Prior work documents pre-announcement price run-ups, managed tone before stock-for-stock acquisitions, and strategy vocabulary around acquisition activity. To our knowledge, it has not examined uncertainty language in the CEO's unscripted Q&A answers during the anticipatory window before an undisclosed acquisition.",
+      "Is uncertainty in the CEO's unscripted Q&A answers elevated while a cash acquisition remains undisclosed—and does it recede once the deal becomes public?",
+      "The evidence suggests that it does."
+    ],
+    "act_1_transition": "How can we separate call-specific uncertainty from persistent CEO speaking style and other predictable call conditions?",
+    "current_design_state": "Only the narrative spine and thesis-corrected Act 1 are approved. Acts 2 onward, slide map, timing allocation, and visualization program remain open.",
+    "non_negotiable_interpretive_boundaries": [
+      "Evidence is descriptive, correlational, and within firm",
+      "No causal mechanism is identified",
+      "Compliance-constrained speech and strategic silence are observationally equivalent",
+      "UncResCEO is a call-specific residual, not a direct measurement of mental state or a directly identified deal signal",
+      "The measure is adapted from Dzieliński, Wagner, and Zeckhauser and re-estimated on this thesis sample; the contribution is its application, not invention",
+      "First-stage measure controls and second-stage design controls must remain distinct",
+      "Generated-regressand uncertainty is not propagated into the conventional second-stage standard errors",
+      "The existing master and four-slide HTML deck are not binding"
+    ]
+  },
+  "inputs": [
+    {
+      "file": "_thesis_FLAT.tex",
+      "purpose": "Read completely; sole empirical and methodological authority"
+    },
+    {
+      "file": "_CURRENT_HANDOFF_LEDGER.md",
+      "purpose": "Read completely; preserve approved decisions and current state"
+    },
+    {
+      "file": "2026-07-13-master-reference-audit-report.md",
+      "purpose": "Read completely; apply diagnostic and presentation guardrails"
+    },
+    {
+      "file": "DEFENSE_PRESENTATION_MASTER_REFERENCE.txt",
+      "purpose": "Read completely; use only as historical design input"
+    },
+    {
+      "file": "WEB_RESPONSE_SCHEMA.json",
+      "purpose": "Mandatory schema for the main response JSON"
+    }
+  ],
+  "requested_work": [
+    {
+      "id": "W1",
+      "action": "Reconstruct the minimum thesis-faithful conceptual chain required to answer the Act 1 transition and prepare the audience for the empirical evidence.",
+      "deliverable": "A concise evidence map identifying essential concepts, their narrative order, and exact thesis locations.",
+      "acceptance_criteria": [
+        "Distinguishes raw CEO answer uncertainty, persistent CEO style, predictable call factors, and UncResCEO",
+        "Distinguishes first-stage construction from second-stage acquisition regressions",
+        "Identifies which sample and inference caveats are essential at this point",
+        "Uses exact thesis line references"
+      ]
+    },
+    {
+      "id": "W2",
+      "action": "Generate and compare two or three genuinely distinct narrative architectures for Act 2.",
+      "deliverable": "A structured comparison of alternatives with strengths, weaknesses, audience risks, and transition quality.",
+      "acceptance_criteria": [
+        "Alternatives differ in narrative logic, not merely wording",
+        "Comparison considers comprehension, pacing, academic defensibility, and continuity with Act 1",
+        "No option assumes the historical slide map is fixed"
+      ]
+    },
+    {
+      "id": "W3",
+      "action": "Recommend one Act 2 architecture and draft its presentation-ready narrative.",
+      "deliverable": "A recommended Act 2 with narrative role, ordered beats, concise spoken-language draft, and closing transition into the empirical evidence.",
+      "acceptance_criteria": [
+        "Directly answers the Act 1 transition",
+        "Does not become a control-variable inventory or methods lecture",
+        "Preserves ownership and inference caveats",
+        "Leaves the audience ready to understand the event clock and results",
+        "Does not prematurely lock slide count or layout"
+      ]
+    },
+    {
+      "id": "W4",
+      "action": "Partition content between the Act 2 core, later core narrative, limitations, and backup/Q&A.",
+      "deliverable": "A keep/defer table with rationale and thesis support.",
+      "acceptance_criteria": [
+        "Keeps generated-regressand caveat visible and proportionate",
+        "Defers technical details that do not improve immediate comprehension",
+        "Does not conceal selection, measurement, or identification boundaries"
+      ]
+    },
+    {
+      "id": "W5",
+      "action": "Perform an adversarial thesis-fidelity and committee-comprehension audit of the recommended Act 2.",
+      "deliverable": "A risk register with exact corrections for any overstatement, ambiguity, missing bridge, or likely examiner objection.",
+      "acceptance_criteria": [
+        "Checks every methodological and interpretive statement against the thesis",
+        "Flags attribution of the residual to the deal or a mental state",
+        "Flags confusion between the two control stages",
+        "Flags unnecessary detail, jargon, and abrupt transitions"
+      ]
+    },
+    {
+      "id": "W6",
+      "action": "Create the requested standalone Act 2 design artifact.",
+      "deliverable": "ACT2_DESIGN_PROPOSAL.md",
+      "acceptance_criteria": [
+        "Contains the evidence map, alternatives comparison, recommendation, spoken narrative, keep/defer table, conceptual visual jobs, transitions, and risk audit",
+        "Is self-contained and usable by Codex for subsequent validation and user discussion",
+        "Uses exact thesis citations and clearly labels judgments versus thesis facts"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "question": "What is the minimum conceptual chain Act 2 must communicate so a finance committee can understand what UncResCEO is and why it is the relevant outcome?",
+      "evaluation_criteria": [
+        "Thesis fidelity",
+        "Conceptual clarity",
+        "Economy of explanation",
+        "Correct measure attribution"
+      ],
+      "required_evidence": "Exact citations to the uploaded thesis, especially the measure-construction and empirical-design sections."
+    },
+    {
+      "id": "Q2",
+      "question": "Which of the proposed Act 2 architectures best continues the approved disclosure-boundary story without becoming a methods lecture?",
+      "evaluation_criteria": [
+        "Narrative continuity",
+        "Committee comprehension",
+        "Academic defensibility",
+        "Pacing within a 17:30–18:00 presentation"
+      ],
+      "required_evidence": "Comparison grounded in the thesis, approved Act 1, and uploaded audit guardrails."
+    },
+    {
+      "id": "Q3",
+      "question": "How should Act 2 sequence the measure, data/sample, event clock, and two-stage design while leaving final slide boundaries open?",
+      "evaluation_criteria": [
+        "Logical dependency",
+        "Cognitive load",
+        "Transition quality",
+        "No premature slide-map lock"
+      ],
+      "required_evidence": "Thesis-supported dependencies and explicit reasoning about audience needs."
+    },
+    {
+      "id": "Q4",
+      "question": "Which caveats must be stated during Act 2, which should appear later in the core limitations, and which can safely move to backup?",
+      "evaluation_criteria": [
+        "Materiality",
+        "Transparency",
+        "Proportionality",
+        "Likely examiner relevance"
+      ],
+      "required_evidence": "Exact thesis and audit locations for generated-regressand inference, sample selection, construct validity, and within-firm correlational interpretation."
+    },
+    {
+      "id": "Q5",
+      "question": "What exact narrative transition should close Act 2 and make the first empirical result feel inevitable rather than merely next in the deck?",
+      "evaluation_criteria": [
+        "Continuity with the disclosure-boundary spine",
+        "No result overstatement",
+        "Clear setup for the event evidence"
+      ],
+      "required_evidence": "The thesis's stated hypotheses, three designs, and result hierarchy."
+    },
+    {
+      "id": "Q6",
+      "question": "What conceptual visualizations, if any, have a distinct explanatory job in Act 2 before statistical results are shown?",
+      "evaluation_criteria": [
+        "Meaningful analytical job",
+        "Thesis-only content",
+        "No decorative complexity",
+        "Compatibility with later slide-map decisions"
+      ],
+      "required_evidence": "Thesis concepts and the uploaded audit's visualization principles; do not design finished slides."
+    }
+  ],
+  "requested_artifacts": [
+    {
+      "id": "A1",
+      "filename": "ACT2_DESIGN_PROPOSAL.md",
+      "media_type": "text/markdown",
+      "purpose": "A self-contained design proposal containing the detailed reasoning and presentation-ready Act 2 recommendation for Codex to validate and discuss with Sina.",
+      "required": true,
+      "acceptance_criteria": [
+        "Contains all six requested work products in a clear structure",
+        "Every thesis-content claim includes an exact thesis line citation",
+        "Clearly separates thesis facts, design judgments, and unresolved choices",
+        "Contains no external empirical content",
+        "Does not lock slide count, layout, or styling"
+      ]
+    }
+  ],
+  "response_contract": {
+    "main_json_filename": "2026-07-13_act2_measure_design_review.json",
+    "media_type": "application/json",
+    "schema_file": "WEB_RESPONSE_SCHEMA.json",
+    "actual_downloadable_file_required": true,
+    "additional_artifact_files_allowed": true,
+    "chat_silence_required": true,
+    "only_file_attachments": true
+  },
+  "stop_condition": "Stop after returning only the schema-valid main JSON attachment and the required ACT2_DESIGN_PROPOSAL.md attachment. Do not emit any chat text and do not create finished slides, code, PDF, or visual assets."
+}

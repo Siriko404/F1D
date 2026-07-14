@@ -1,0 +1,52 @@
+Act as an independent senior finance-thesis examiner and academic-presentation designer.
+
+Read all four uploaded source files carefully before evaluating anything.
+
+Evidence hierarchy:
+1. _thesis_FLAT.tex is the sole authority for empirical, theoretical, legal, and contribution claims.
+2. 2026-07-13-master-reference-audit-report.md is diagnostic evidence and presentation-design guidance.
+3. DEFENSE_PRESENTATION_MASTER_REFERENCE.txt is outdated historical input only.
+4. _CURRENT_HANDOFF_LEDGER.md records constraints and approved decisions, but its proposed design must still be scrutinized.
+
+Context:
+- This is a 20-minute MSc finance thesis defense.
+- Target rehearsed duration: 17:30-18:00.
+- We are redesigning it from first principles.
+- Do not evaluate or redesign the individual slides yet.
+- Do not introduce empirical information from outside the thesis.
+- External sources may be used only to verify current academic-presentation conventions.
+
+We selected this proposed narrative spine:
+
+"The disclosure-boundary story:
+The firm knows; the market does not -> routine Q&A continues -> can this withholding state be heard? -> isolate call-specific CEO uncertainty -> track it across announcement and completion -> reveal the two-clocks result -> test cash concentration and alternatives -> close with contribution and limitations."
+
+Proposed Act 1:
+
+"Consider a firm that has privately committed to an acquisition. The firm knows; the market does not. It may remain silent about the deal, but a routine earnings call still occurs-and once management speaks, it cannot mislead.
+
+Prior research observes pre-deal prices, managed tone, and strategy vocabulary. It has not examined call-specific uncertainty in the CEO's unscripted answers while the acquisition remains undisclosed.
+
+Does this private information state leave a trace in CEO Q&A language-and does that trace recede when the deal becomes public?
+
+The evidence suggests that it does.
+
+Transition: How can we separate a deal-related trace from the CEO's normal speaking style?"
+
+Independently scrutinize:
+
+1. Whether the disclosure-boundary spine is genuinely the strongest story supported by the thesis.
+2. Whether Act 1 faithfully represents the thesis without legal, empirical, or novelty overstatement.
+3. Whether the problem, research gap, question, restrained result preview, and transition form a coherent opening.
+4. Whether this opening is appropriate for a finance committee and a 20-minute defense.
+5. Whether another narrative spine would materially outperform it.
+
+Return only:
+
+- Verdict: APPROVE, REVISE, or REJECT.
+- The 3-5 most important reasons, each tied to exact thesis passages or line numbers.
+- Any wording that is unsupported or overstated.
+- A precise revised Act 1 only if revision is necessary.
+- A direct judgment on whether to retain or replace the disclosure-boundary spine.
+
+Do not produce a slide deck or a complete presentation outline.
