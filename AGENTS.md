@@ -66,9 +66,15 @@ direct lookups, mechanical formatting, running an already-approved plan, or smal
 unambiguous corrections may proceed locally.
 
 If the task is reasoning-heavy, stop before the substantive decision or execution
-and prepare a ChatGPT Web package under:
+and create one exchange folder under:
 
-`../F1D-phase3/docs/Defense/chatgpt/current_upload/`
+`../F1D-phase3/docs/Defense/chatgpt/calls/YYYY-MM-DD_HHMMSS_short_subject/`
+
+Every Web call is one self-contained exchange. Its timestamped subject folder must
+contain `request/` for every file Sina uploads, `response/` for every file ChatGPT
+Web returns, and `EXCHANGE_MANIFEST.json` linking the two sides. Never mix request
+or response files from separate calls, and do not use a shared global upload or
+received folder for new exchanges.
 
 The governing protocol is:
 
