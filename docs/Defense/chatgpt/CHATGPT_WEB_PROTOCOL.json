@@ -37,21 +37,26 @@
     "return_multiple_files": true
   },
   "directory_contract": {
-    "current_upload": "Contains only the files Sina should upload for the active request.",
-    "received": "Stores the main downloaded JSON response and every returned artifact.",
-    "archive": "Preserves completed or superseded packages and legacy protocols without deletion."
+    "exchange_root": "Every Web call is one exchange under docs/Defense/chatgpt/calls/YYYY-MM-DD_HHMMSS_short_subject/.",
+    "exchange_naming": "Use local America/Toronto creation time with seconds, followed by a concise snake_case subject: YYYY-MM-DD_HHMMSS_short_subject.",
+    "request": "Each exchange has request/ containing every file Sina uploads for that call and no response files.",
+    "response": "Each exchange has response/ where Sina places every file ChatGPT Web returns for that call and no files from another exchange.",
+    "manifest": "Each exchange root contains EXCHANGE_MANIFEST.json linking its request ID, subject, request directory, response directory, status, and expected outputs.",
+    "persistence": "The complete exchange folder remains in place after validation. Completed calls are not split into global upload and received directories.",
+    "legacy_archive": "Pre-exchange-layout packages and protocols are preserved under archive without deletion."
   },
   "workflow": [
     "Codex classifies the task before substantive work.",
     "For a reasoning-heavy task, Codex gathers only the necessary inputs and creates WEB_REVIEW_REQUEST.json.",
     "The request encodes objective, scope, source authority, research permissions, requested work, questions, artifact requirements, acceptance criteria, and stop condition.",
-    "Codex places the request, relevant input files, WEB_RESPONSE_SCHEMA.json, and PASTE_THIS_PROMPT.txt in current_upload.",
+    "Codex creates one timestamped subject exchange folder under calls/, with request/ and response/ subfolders plus EXCHANGE_MANIFEST.json.",
+    "Codex places the request, relevant input files, WEB_RESPONSE_SCHEMA.json, and PASTE_THIS_PROMPT.txt in that exchange's request/ folder.",
     "Codex validates JSON syntax and schemas, verifies source hashes and package contents, updates continuity records, and tells Sina the package is ready.",
-    "Sina uploads every file in current_upload and pastes PASTE_THIS_PROMPT.txt into ChatGPT Web.",
+    "Sina uploads every file in the exchange's request/ folder and pastes its PASTE_THIS_PROMPT.txt into ChatGPT Web.",
     "ChatGPT Web performs the authorized work and returns only file attachments: the required main JSON response plus any requested artifacts.",
-    "Sina returns all downloaded files to Codex.",
+    "Sina saves every downloaded file into the same exchange's response/ folder and tells Codex they are ready.",
     "Codex validates the main JSON against WEB_RESPONSE_SCHEMA.json, checks the artifact manifest against the returned files and acceptance criteria, independently verifies important claims, and integrates only warranted conclusions.",
-    "Codex archives the completed exchange and updates the relevant ledger before the next request replaces current_upload."
+    "Codex updates EXCHANGE_MANIFEST.json and the continuity ledger after validation, commits the complete exchange, and leaves it intact under calls/."
   ],
   "delivery_contract": {
     "main_response": "An actual downloadable JSON file is mandatory for every request.",
@@ -62,9 +67,13 @@
   "authority_rule": "Source authority and permitted web research are defined separately in each task-specific request. For thesis-defense requests, the flattened thesis remains the sole authority for thesis content.",
   "advisory_rule": "ChatGPT Web output is advisory. Codex validates it and Sina retains final authority.",
   "active_request": {
+    "exchange_id": "2026-07-13_223157_act2_measure_design_bridge",
+    "exchange_directory": "docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge",
+    "request_directory": "docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge/request",
+    "response_directory": "docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge/response",
     "request_id": "defense-act2-measure-design-bridge-2026-07-13-v1",
-    "request_file": "docs/Defense/chatgpt/current_upload/WEB_REVIEW_REQUEST.json",
-    "status": "READY_FOR_UPLOAD",
+    "request_file": "docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge/request/WEB_REVIEW_REQUEST.json",
+    "status": "VALIDATED_AWAITING_USER_REVIEW",
     "expected_main_response": "2026-07-13_act2_measure_design_review.json",
     "required_artifacts": [
       "ACT2_DESIGN_PROPOSAL.md"

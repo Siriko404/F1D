@@ -1,6 +1,6 @@
 # CURRENT DEFENSE HANDOFF LEDGER
 
-Last updated: 2026-07-13 22:57 EDT, America/Toronto
+Last updated: 2026-07-13 22:40 EDT, America/Toronto
 Status: ACTIVE CANONICAL HANDOFF
 
 ## 1. READ THIS FIRST
@@ -51,9 +51,8 @@ log. Do not turn this into a transcript or research dump.
 - Reasoning-heavy work includes planning, architecture, investigation, diagnosis,
   deep or multi-source web research, consequential judgment or trade-offs,
   synthesis across substantial evidence, and substantial artifact design or
-  creation. For such work, pause and create one self-contained exchange under
-  `docs/Defense/chatgpt/calls/YYYY-MM-DD_HHMMSS_short_subject/` before doing the
-  substantive work. Each exchange contains `request/` and `response/`.
+  creation. For such work, pause and prepare a self-contained package in
+  `docs/Defense/chatgpt/current_upload/` before doing the substantive work.
 - Routine deterministic work—simple file operations, direct authoritative
   lookups, mechanical formatting, execution of an approved plan, and small
   unambiguous corrections—may proceed locally without a Web call.
@@ -71,10 +70,6 @@ log. Do not turn this into a transcript or research dump.
 - Commit each meaningful checkpoint as work proceeds so the redesign, review
   packages, returned artifacts, and continuity records remain recoverable. Stage
   only in-scope work and preserve unrelated user changes.
-- Every ChatGPT Web call is one exchange folder named with its local date, time to
-  the second, and a short snake_case subject. The exchange's `request/` contains
-  everything uploaded; its `response/` receives everything returned. Never mix
-  files from separate exchanges or split a new call across global folders.
 
 ## 3. SOURCE AUTHORITY
 
@@ -185,24 +180,16 @@ current Act 1 is:
 
 - Protocol: `docs/Defense/chatgpt/CHATGPT_WEB_PROTOCOL.json`
   - Version: `2.0`, universal reasoning gate.
-  - SHA-256: `870FD341DD5252DF4522F3A443CC0C66D3B92D5339BF7100CC2C2C0349109C08`
-- Active exchange:
-  `docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge/`
-  - Manifest SHA-256:
-    `7C53E2F18721BA0766C44185336460081655DDD35405E376393AE1016BCF9AC3`.
-  - Request files: `request/`.
-  - Returned files drop zone: `response/`.
-  - Exchange status: response received and validated; awaiting Sina's Act 2
-    narrative decision.
-- Request schema: `docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge/request/WEB_REQUEST_SCHEMA.json`
+  - SHA-256: `ED2493A2EC680845A6F2B36CEF3A3EFF004EDCC2B4F488422B56EFEDDB848DC0`
+- Request schema: `docs/Defense/chatgpt/current_upload/WEB_REQUEST_SCHEMA.json`
   - SHA-256: `044889EA731E8066A5FA6AA0D1A66CB82F6B266172C9EFD2A25D5463BEBF5F1F`
-- Response schema: `docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge/request/WEB_RESPONSE_SCHEMA.json`
+- Response schema: `docs/Defense/chatgpt/current_upload/WEB_RESPONSE_SCHEMA.json`
   - SHA-256: `4DD078CF1A0D56FA6EBED0A5B1CAF6A377505D08E035646C6835C8DC0EE54B59`
 - Silent paste prompt:
-  `docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge/request/PASTE_THIS_PROMPT.txt`
+  `docs/Defense/chatgpt/current_upload/PASTE_THIS_PROMPT.txt`
   - SHA-256: `F6697B008CB46FA004BAE2C45103B78893323EB82A82E08CD3844C4CE290E6CA`
 - Active request:
-  `docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge/request/WEB_REVIEW_REQUEST.json`
+  `docs/Defense/chatgpt/current_upload/WEB_REVIEW_REQUEST.json`
   - Request ID: `defense-act2-measure-design-bridge-2026-07-13-v1`.
   - SHA-256: `26BBFC79181B2BC70E29687845EF5D8FEFA89634AF175EB3A0127273FC9EC6EE`.
   - Expected main response: `2026-07-13_act2_measure_design_review.json`.
@@ -213,42 +200,25 @@ current Act 1 is:
   - SHA-256: `57902076B7D2A44BD47AF43057B7247E3B5FFFC103FDE8238BEF073D2D0BA120`
   - Provenance is explicitly `CODEX_NORMALIZED_LEGACY_PROSE`; the first response
     was pasted as prose before the downloadable-JSON rule existed.
-- The active Act 2 exchange follows the timestamped exchange layout. Its
-  `request/` contains the exact eight submitted files. Its `response/` is the only
-  location where Sina should place this call's returned JSON and artifact. The old
-  shared `current_upload/` layout is legacy and is archived without deletion.
+- `current_upload/` is now the active Act 2 submission package. It contains the
+  four refreshed source copies, the two schemas, the silent paste prompt, and the
+  task-specific `WEB_REVIEW_REQUEST.json`—eight files in total. Sina must upload
+  every file in this directory and paste `PASTE_THIS_PROMPT.txt` verbatim.
 - The prior prose-based Act 1 request is preserved under
   `docs/Defense/chatgpt/archive/001_act1_review_legacy_text_request/`.
   That archive also preserves protocol and schema version 1, which governs the
   normalized legacy response. New responses use universal schema version 2.
 - Persistent workspace instructions were added to `F1D/AGENTS.md` so the triage
   and silent file-delivery gate survives beyond the defense workflow.
-  - SHA-256: `4028AEDC7A99565ED8A9D2F91994CF351D535A2F1E0220A9714623443850627F`
+  - SHA-256: `AFDE4A0652680CED960BB5BD9D402258448F8408A9D6D78F67E6F2F4C127D20E`
 - Fresh end-to-end package verification at 2026-07-13 22:35 EDT found exactly
   eight expected upload files, parsed every JSON file, validated both version-2
   schemas and the active request, matched all four source copies, matched the
   active request/response/artifact contract, scanned the package for API-key
   patterns, and returned `FAILURES=0`.
-- Fresh exchange-layout verification at 2026-07-13 22:49 EDT confirmed the
-  timestamped subject name, exact `request/` file set, empty `response/` drop zone,
-  manifest/protocol/request ID chain, schema validity, byte-for-byte migration from
-  the archived legacy upload folder, absence of a live shared `current_upload/`,
-  and no API-key patterns; it returned `FAILURES=0`.
-- The Act 2 response was received at 2026-07-13 22:57 EDT. The main JSON validates
-  against the response schema with zero errors; request ID and response filename
-  match; status is `COMPLETE`; verdict is `APPROVE`; silent delivery is declared;
-  and the required artifact's actual SHA-256 exactly matches its manifest entry.
-  Both files were read completely. Fresh thesis spot checks at lines 223–239,
-  268–270, 284–290, 506–508, 571–579, and 630–636 found no material fidelity error.
 
 ### Work completed
 
-- ChatGPT Web's Act 2 review and `ACT2_DESIGN_PROPOSAL.md` were moved into the
-  active exchange's `response/` folder, formally validated, read in full, and
-  independently checked against the thesis. The recommended architecture is
-  `answer first, then track it`. Its 406-word proposed spoken block is treated as
-  a content reservoir rather than approved final speech because it would take
-  approximately 2:54–3:23 at 140–120 words per minute.
 - The first continuous-preservation checkpoint was committed in the defense fork
   as `1525e6bb73c8` (`defense: checkpoint redesign and Act 2 review package`). It
   preserves the defense sources, audit, historical artifacts, archived counsel
@@ -309,9 +279,9 @@ current Act 1 is:
 
 ### Work not yet completed
 
-- The Act 2 response is validated but its narrative recommendation has not yet
-  been approved by Sina. No slide count, slide boundaries, timing allocation,
-  visual layout, or final spoken script is locked by the Web review.
+- The active Act 2 Web request has not yet been submitted, and no response or
+  artifact has been received or adopted. The request is a review brief, not an
+  approved Act 2 design.
 - The disclosure-boundary story is approved as the first-principles narrative
   spine, and the thesis-corrected version of Act 1 above is the current design.
   Acts 2 onward, the slide count, order, timing allocation, and visualization
@@ -331,14 +301,17 @@ current Act 1 is:
 
 1. Do not restart the Slide 5 audit prompt and do not design Act 2 locally before
    the external response.
-2. Present the validated `answer first, then track it` Act 2 architecture concisely
-   to Sina, including the minimum narrative beats and the one important density
-   reservation, for approve/revise/reject discussion.
-3. If Sina approves the architecture, refine its 406-word content reservoir into
-   proportionate speaking notes without yet fixing slide boundaries.
-4. Continue the same exchange-folder and Web-gate process for later heavy design
-   decisions.
-5. Only after the story is approved, define the slide map and revise or replace the
+2. Sina uploads all eight files from `docs/Defense/chatgpt/current_upload/` to
+   ChatGPT Web and pastes `PASTE_THIS_PROMPT.txt` verbatim.
+3. ChatGPT Web must return no chat text—only
+   `2026-07-13_act2_measure_design_review.json` and
+   `ACT2_DESIGN_PROPOSAL.md` as downloadable attachments.
+4. Sina returns both downloaded files. Validate the JSON against the response
+   schema, verify the artifact hash and manifest, and independently check important
+   thesis claims before use.
+5. Integrate only warranted conclusions, then present Act 2 concisely for Sina's
+   approval. Continue the same process for later heavy design decisions.
+6. Only after the story is approved, define the slide map and revise or replace the
    master reference. Build HTML/CSS slides only after content approval.
 
 ## 5. EXISTING DECK LOCATION
@@ -596,8 +569,3 @@ For every meaningful work unit:
   preservation checkpoint includes the defense sources, historical review
   artifacts, archives, current Web package, and continuity records; reproducible
   Chromium profile caches and LaTeX intermediate files remain ignored.
-- Sina replaced the shared upload/received convention with one-folder-per-call
-  exchanges. Each folder is named `YYYY-MM-DD_HHMMSS_short_subject` and contains
-  paired `request/` and `response/` subfolders. The currently processing Act 2
-  call was migrated byte-for-byte into
-  `calls/2026-07-13_223157_act2_measure_design_bridge/`.

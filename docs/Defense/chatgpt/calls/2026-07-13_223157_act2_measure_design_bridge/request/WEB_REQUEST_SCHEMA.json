@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "universal-web-work-request.schema.json",
+  "title": "Universal ChatGPT Web Work Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "request_id",
+    "created_at",
+    "reasoning_heavy_assessment",
+    "task_type",
+    "title",
+    "objective",
+    "scope",
+    "source_authority",
+    "web_research",
+    "context",
+    "inputs",
+    "requested_work",
+    "questions",
+    "requested_artifacts",
+    "response_contract",
+    "stop_condition"
+  ],
+  "properties": {
+    "protocol_version": { "type": "string", "const": "2.0" },
+    "request_id": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "minLength": 1 },
+    "reasoning_heavy_assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["is_reasoning_heavy", "triggers", "justification"],
+      "properties": {
+        "is_reasoning_heavy": { "type": "boolean", "const": true },
+        "triggers": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "justification": { "type": "string", "minLength": 1 }
+      }
+    },
+    "task_type": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "objective": { "type": "string", "minLength": 1 },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["in_scope", "out_of_scope"],
+      "properties": {
+        "in_scope": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "out_of_scope": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "source_authority": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["rank", "source", "role", "allowed_uses", "prohibited_uses"],
+        "properties": {
+          "rank": { "type": "integer", "minimum": 1 },
+          "source": { "type": "string", "minLength": 1 },
+          "role": { "type": "string", "minLength": 1 },
+          "allowed_uses": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+          "prohibited_uses": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        }
+      }
+    },
+    "web_research": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "objectives", "source_requirements", "citation_required"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "objectives": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "source_requirements": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "citation_required": { "type": "boolean" }
+      }
+    },
+    "context": { "type": "object" },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["file", "purpose"],
+        "properties": {
+          "file": { "type": "string", "minLength": 1 },
+          "purpose": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "requested_work": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "action", "deliverable", "acceptance_criteria"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^W[0-9]+$" },
+          "action": { "type": "string", "minLength": 1 },
+          "deliverable": { "type": "string", "minLength": 1 },
+          "acceptance_criteria": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "question", "evaluation_criteria", "required_evidence"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^Q[0-9]+$" },
+          "question": { "type": "string", "minLength": 1 },
+          "evaluation_criteria": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+          "required_evidence": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "requested_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "filename", "media_type", "purpose", "required", "acceptance_criteria"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^A[0-9]+$" },
+          "filename": { "type": "string", "minLength": 1 },
+          "media_type": { "type": "string", "minLength": 1 },
+          "purpose": { "type": "string", "minLength": 1 },
+          "required": { "type": "boolean" },
+          "acceptance_criteria": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        }
+      }
+    },
+    "response_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "main_json_filename",
+        "media_type",
+        "schema_file",
+        "actual_downloadable_file_required",
+        "additional_artifact_files_allowed",
+        "chat_silence_required",
+        "only_file_attachments"
+      ],
+      "properties": {
+        "main_json_filename": { "type": "string", "pattern": "^[A-Za-z0-9._-]+\\.json$" },
+        "media_type": { "type": "string", "const": "application/json" },
+        "schema_file": { "type": "string", "const": "WEB_RESPONSE_SCHEMA.json" },
+        "actual_downloadable_file_required": { "type": "boolean", "const": true },
+        "additional_artifact_files_allowed": { "type": "boolean", "const": true },
+        "chat_silence_required": { "type": "boolean", "const": true },
+        "only_file_attachments": { "type": "boolean", "const": true }
+      }
+    },
+    "stop_condition": { "type": "string", "minLength": 1 }
+  }
+}

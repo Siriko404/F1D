@@ -1,0 +1,382 @@
+{
+  "protocol_version": "2.0",
+  "request_id": "defense-act2-measure-design-bridge-2026-07-13-v1",
+  "status": "COMPLETE",
+  "verdict": "APPROVE",
+  "executive_summary": "Approve the proposed answer-first, then-track-it architecture as the strongest Act 2 candidate for Sina's discussion and approval. It answers the approved Act 1 transition by moving from raw CEO Q&A uncertainty to the DWZ-derived, thesis-sample residual UncResCEO; then shows sample feasibility, explicitly separates the measurement and acquisition-regression stages, places the outcome on the disclosure clock, and closes on the MA1 within-firm question. Approval here is of the reviewer's proposal, not a claim that Sina has approved Act 2 or that any slide count, timing, layout, or styling is fixed.",
+  "work_performed": [
+    {
+      "work_id": "W1",
+      "status": "COMPLETE",
+      "summary": "Reconstructed the minimum conceptual chain from raw CEO-answer uncertainty through persistent style, predictable call conditions, UncResCEO, the feasible sample, the stage-one/stage-two handoff, the event clock, and the inference boundaries, with exact thesis line references."
+    },
+    {
+      "work_id": "W2",
+      "status": "COMPLETE",
+      "summary": "Compared three distinct narrative logics: answer-first residual construction, event-clock-first derivation, and a data-to-regression audit trail. Evaluated continuity, comprehension, pacing, defensibility, and likely committee risks without inheriting the historical slide map."
+    },
+    {
+      "work_id": "W3",
+      "status": "COMPLETE",
+      "summary": "Recommended the answer-first architecture and supplied its narrative role, seven ordered beats, a presentation-ready spoken draft, an entry transition, and an exact closing transition into MA1."
+    },
+    {
+      "work_id": "W4",
+      "status": "COMPLETE",
+      "summary": "Partitioned content among the Act 2 core, later interpretation and limitations, and backup/Q&A. Kept construct ownership, two-stage controls, selection, correlational interpretation, and generated-regressand inference visible but proportionate."
+    },
+    {
+      "work_id": "W5",
+      "status": "COMPLETE",
+      "summary": "Performed an adversarial fidelity and comprehension audit covering mental-state and deal attribution, measure ownership, control-layer confusion, generated-regressand inference, denominator and unit errors, sample selection, causal overreading, event-clock baselines, PRE2 overstatement, and the unresolved exact-50/50 classification."
+    },
+    {
+      "work_id": "W6",
+      "status": "COMPLETE",
+      "summary": "Created ACT2_DESIGN_PROPOSAL.md as a self-contained design artifact containing the evidence map, alternatives, recommendation, spoken narrative, keep/defer table, visualization jobs, transitions, direct question answers, unresolved choices, and risk audit."
+    }
+  ],
+  "question_responses": [
+    {
+      "question_id": "Q1",
+      "judgment": "SUPPORTED",
+      "answer": "The minimum chain is: raw uncertainty-word share in the CEO's Q&A answers; separation of persistent CEO style and included predictable call conditions; the first-stage residual UncResCEO; correct attribution to the DWZ specification re-estimated on this thesis sample; the sample-feasibility funnel; the explicit handoff to separate second-stage acquisition regressions; and the within-firm, correlational, generated-regressand boundaries. UncResCEO is relevant because an acquisition-timed pattern that appears and disappears within one executive's tenure cannot reside in a fixed speaking trait, while the residual is the call-varying component carried into the event tests.",
+      "reasoning_summary": "The audience must understand the observable input, why it is confounded, what the residual removes, what it does not measure, and how it becomes the outcome before it can interpret any event-time coefficient. Ownership and inference boundaries belong in the same chain because otherwise residualization can be mistaken for invention, mental-state measurement, or causal isolation.",
+      "evidence": [
+        {
+          "source": "_thesis_FLAT.tex",
+          "location": "lines 201 and 223-227",
+          "support": "Defines persistent style, the raw CEO-answer uncertainty share, the DWZ decomposition re-estimated on the thesis sample, UncResCEO, measure ownership, and the generated-regressand caution."
+        },
+        {
+          "source": "_thesis_FLAT.tex",
+          "location": "lines 231-239",
+          "support": "Defines MA1-MA3, the separate second-stage controls and fixed effects, within-firm descriptive interpretation, sample selection, and the two-step inference boundary."
+        },
+        {
+          "source": "_thesis_FLAT.tex",
+          "location": "lines 268-270 and 506-508",
+          "support": "Documents the five-call and coverage filters, the 88,205-call/1,884-firm panel, and 44,900 UncResCEO observations."
+        }
+      ],
+      "required_changes": [
+        "Define the residual and its non-mental-state, non-deal-specific boundary in the same narrative beat.",
+        "State that the measure is adapted from DWZ and re-estimated on this sample rather than invented by the thesis.",
+        "Keep the first-stage and second-stage control sets visibly separate."
+      ]
+    },
+    {
+      "question_id": "Q2",
+      "judgment": "SUPPORTED",
+      "answer": "The answer-first, then-track-it architecture best continues the disclosure-boundary story. It begins with the exact question Act 1 leaves open, defines and bounds UncResCEO, then shows sample feasibility and carries the residual to the clock and tests. The clock-first alternative preserves theme but delays the answer and risks circularity; the data-first audit trail is transparent but most likely to become a methods lecture.",
+      "reasoning_summary": "The recommended logic follows the audience's dependency chain rather than the historical slide order. It provides the shortest defensible route from the approved transition to the estimable MA1 question while reserving technical proof and provenance for backup.",
+      "evidence": [
+        {
+          "source": "_CURRENT_HANDOFF_LEDGER.md",
+          "location": "lines 152-177 and 280-315",
+          "support": "Establishes the approved disclosure-boundary spine and Act 1 transition while leaving Act 2 and the slide map open."
+        },
+        {
+          "source": "2026-07-13-master-reference-audit-report.md",
+          "location": "lines 207-240",
+          "support": "Requires the call-specific residual wording, distinct control layers, visible generated-regressand caveat, sample contraction, and a correct event-clock baseline."
+        },
+        {
+          "source": "DEFENSE_PRESENTATION_MASTER_REFERENCE.txt",
+          "location": "lines 410-540",
+          "support": "Provides historically useful measure and sample explanations while revealing density and wording risks that should not be inherited as a fixed architecture."
+        }
+      ],
+      "required_changes": [
+        "Use the answer-first architecture as the proposal presented to Sina for approval.",
+        "Retain only the useful conceptual motivation from the clock-first option.",
+        "Move the full data audit trail to backup/Q&A."
+      ]
+    },
+    {
+      "question_id": "Q3",
+      "judgment": "SUPPORTED",
+      "answer": "Sequence Act 2 as narrative units rather than fixed slides: observed CEO-answer word share; why raw language is insufficient; first-stage residual construction and ownership; construct boundary; sample funnel; explicit stage handoff; disclosure clock; three test jobs; inference boundary; transition into MA1. The measure must precede the sample and event treatments because it is the outcome being made feasible, and the clock must precede the test suite because PRE1, GAP, and POST define the questions the regressions answer.",
+      "reasoning_summary": "This order follows logical dependency and limits cognitive load. It states the job of each stage rather than narrating two equations or a variable inventory, and it leaves the later decision about how many slides represent those narrative units entirely open.",
+      "evidence": [
+        {
+          "source": "_thesis_FLAT.tex",
+          "location": "lines 223-239",
+          "support": "Establishes that the residual is constructed first and then used in three separate event designs with different controls."
+        },
+        {
+          "source": "_thesis_FLAT.tex",
+          "location": "lines 260-270",
+          "support": "Documents source roles, language construction, layered samples, and design-specific trims."
+        },
+        {
+          "source": "_thesis_FLAT.tex",
+          "location": "lines 286 and 630-636",
+          "support": "Defines the event bins, baseline, matched timing sample, and announcement/completion boundaries."
+        }
+      ],
+      "required_changes": [
+        "Do not decide slide boundaries while approving the narrative sequence.",
+        "Explain the jobs of MA1-MA3 without narrating the full equations.",
+        "Label the sample unit and denominator wherever a sample count appears."
+      ]
+    },
+    {
+      "question_id": "Q4",
+      "judgment": "SUPPORTED",
+      "answer": "Act 2 must state measure attribution, the call-specific-residual boundary, the distinct control stages, selection from repeated-call and CEO-coverage requirements, within-firm correlational interpretation, and one sentence that conventional second-stage standard errors do not propagate first-stage estimation uncertainty. The later core limitations should revisit generated-regressand inference and fully state the word-list context limitation, sample/external-validity limits, observational equivalence, and lack of causal mechanism. Backup/Q&A should hold equations, complete control lists, replication and convergent-validity tables, bootstrapping detail, database joins, event-window mechanics, the role of never-acquirers, and the unresolved exact-50/50 classification.",
+      "reasoning_summary": "The chosen partition discloses every material boundary at the moment it becomes relevant while preventing the bridge from becoming a validity or econometrics lecture. The generated-regressand caveat is introduced during the two-stage explanation and repeated later because it affects every main design.",
+      "evidence": [
+        {
+          "source": "_thesis_FLAT.tex",
+          "location": "lines 225-249",
+          "support": "Defines measure ownership, generated-regressand inference, separate design controls, selection, and the replication/convergent-validity evidence."
+        },
+        {
+          "source": "_thesis_FLAT.tex",
+          "location": "lines 376-380",
+          "support": "States correlational and mechanism boundaries, observational equivalence, dictionary/context limitations, selection, external validity, and future extensions."
+        },
+        {
+          "source": "2026-07-13-master-reference-audit-report.md",
+          "location": "lines 292-302 and 333-361",
+          "support": "Places generated-regressand inference and selection in core limitations and consolidates technical measure/design details in backup."
+        }
+      ],
+      "required_changes": [
+        "Surface the generated-regressand caveat in Act 2 and repeat it in the core limitations.",
+        "Keep word-list context and full external-validity discussion for the later core limitations.",
+        "Keep detailed equations, validation tables, window trims, and the 50/50 issue in backup/Q&A."
+      ]
+    },
+    {
+      "question_id": "Q5",
+      "judgment": "SUPPORTED",
+      "answer": "Use: 'Once the predictable voice has been removed and every call is placed on the disclosure clock, the first empirical test follows directly: within the same firm, is UncResCEO elevated in PRE1—the final private quarter before a cash acquisition is announced?'",
+      "reasoning_summary": "The wording completes the design chain and converts it into the exact H1/MA1 estimand. It does not preview a coefficient, claim causality, call the residual deal-specific, or pre-empt the later MA2 timing and MA3 pooled-difference evidence.",
+      "evidence": [
+        {
+          "source": "_thesis_FLAT.tex",
+          "location": "lines 211-217",
+          "support": "States H1, H1a, and H1b and distinguishes the run-up, cash concentration, and announcement-versus-completion predictions."
+        },
+        {
+          "source": "_thesis_FLAT.tex",
+          "location": "lines 231-237",
+          "support": "Maps MA1, MA2, and MA3 to the three hypotheses and specifies the within-firm estimands."
+        },
+        {
+          "source": "_thesis_FLAT.tex",
+          "location": "lines 274-276",
+          "support": "Defines the first empirical result as the PRE1 cash-arm run-up in UncResCEO."
+        }
+      ],
+      "required_changes": [
+        "Replace any generic 'next, the results' transition with the specified estimand question.",
+        "Reserve announcement-versus-completion and cash-versus-stock claims for MA2 and MA3."
+      ]
+    },
+    {
+      "question_id": "Q6",
+      "judgment": "SUPPORTED",
+      "answer": "Two conceptual visuals have essential, distinct jobs before statistical results: a decomposition-and-stage-handoff graphic, and a disclosure-clock graphic labeled by the jobs of MA1-MA3. A compact sample funnel is also useful if it cannot be integrated legibly into the handoff. A database-logo map, full regression table, control-variable constellation, causal DAG, or repeated clock adds complexity without a new analytical job.",
+      "reasoning_summary": "The decomposition answers the transition, the clock defines treatment timing and boundaries, and the funnel prevents denominator inflation. These are visualization jobs only; whether they occupy one or several later slides remains unresolved.",
+      "evidence": [
+        {
+          "source": "_thesis_FLAT.tex",
+          "location": "lines 223-239",
+          "support": "Supplies the exact decomposition, stage distinction, designs, and inference boundaries the visuals must encode."
+        },
+        {
+          "source": "_thesis_FLAT.tex",
+          "location": "lines 268-270, 506-508, and 571-579",
+          "support": "Supplies the sample-funnel values and design-specific first-result denominator."
+        },
+        {
+          "source": "2026-07-13-master-reference-audit-report.md",
+          "location": "lines 304-331",
+          "support": "Assigns distinct analytical jobs to the measure decomposition, sample flow, and event clock and rejects dense core regression tables."
+        }
+      ],
+      "required_changes": [
+        "Treat the decomposition/handoff and disclosure clock as essential explanatory jobs.",
+        "Use a sample funnel only as a compact denominator clarification.",
+        "Do not convert these jobs into fixed slide or layout decisions yet."
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "priority": 1,
+      "severity": "CRITICAL",
+      "category": "Construct interpretation",
+      "finding": "UncResCEO must not be described as the CEO's mental state, the acquisition's uncertainty, or a deal signal by construction.",
+      "why_it_matters": "A regression residual is an operationalized call-specific language component; stronger wording would exceed the thesis and invite a direct examiner correction.",
+      "recommended_action": "Define it as the residual left after included predictable components are removed, and attach the non-mental-state, non-deal-specific boundary to the definition."
+    },
+    {
+      "priority": 2,
+      "severity": "CRITICAL",
+      "category": "Measure ownership",
+      "finding": "The measure is adapted from DWZ and re-estimated on the thesis sample; the contribution is application, not invention.",
+      "why_it_matters": "Misstating ownership would overclaim methodological novelty and weaken academic credibility.",
+      "recommended_action": "Name DWZ during the measure explanation and state that the thesis applies the established residual around undisclosed acquisitions."
+    },
+    {
+      "priority": 3,
+      "severity": "CRITICAL",
+      "category": "Two-stage design",
+      "finding": "The first-stage language/performance controls and second-stage firm-financial controls perform different jobs and cannot be merged into one control list.",
+      "why_it_matters": "Collapsing them obscures what is built into the outcome and what adjusts the acquisition regressions.",
+      "recommended_action": "Use an explicit stage handoff and describe each control block by purpose rather than narrating all variables."
+    },
+    {
+      "priority": 4,
+      "severity": "CRITICAL",
+      "category": "Inference",
+      "finding": "UncResCEO is a generated regressand and conventional second-stage standard errors do not propagate first-stage estimation uncertainty.",
+      "why_it_matters": "The issue affects all main designs and cannot remain hidden in backup without understating uncertainty.",
+      "recommended_action": "State one sentence in Act 2, repeat the limitation in the core conclusion, and keep bootstrap/two-step detail in backup."
+    },
+    {
+      "priority": 5,
+      "severity": "MAJOR",
+      "category": "Sample and units",
+      "finding": "The 88,205-call panel, 44,900 residual observations, and design-specific firm-quarter samples are not interchangeable denominators.",
+      "why_it_matters": "A call/firm-quarter or base/effective-sample error is a high-risk quantitative-defense mistake.",
+      "recommended_action": "Show a sample funnel and label the unit and denominator with every result."
+    },
+    {
+      "priority": 6,
+      "severity": "MAJOR",
+      "category": "Identification",
+      "finding": "Firm fixed effects support a within-firm descriptive contrast but do not identify causality or a mechanism.",
+      "why_it_matters": "Residualization and fixed effects can be overread as purification or causal isolation.",
+      "recommended_action": "Say 'within firm and correlational' during Act 2 and preserve the mechanism boundary through the close."
+    },
+    {
+      "priority": 7,
+      "severity": "MAJOR",
+      "category": "Event clock",
+      "finding": "Announcement and completion are boundaries rather than bins, the event-study baseline is e<=-3 plus never-acquirers, and one PRE2 coefficient is only a limited pre-period check.",
+      "why_it_matters": "Misstating the clock or calling PRE2 proof of no pretrend would overstate the design.",
+      "recommended_action": "Use a boundary-based clock, state the baseline, and call PRE2 a limited check."
+    },
+    {
+      "priority": 8,
+      "severity": "MAJOR",
+      "category": "Sample selection",
+      "finding": "Repeated-call and CEO-coverage requirements tilt the uncertainty sample toward larger, better-covered firms.",
+      "why_it_matters": "The filter limits external validity and explains the sample contraction.",
+      "recommended_action": "State the selection boundary once in Act 2 and revisit external validity in the core limitations."
+    },
+    {
+      "priority": 9,
+      "severity": "MAJOR",
+      "category": "Deal classification",
+      "finding": "The uploaded thesis does not resolve how exact 50/50 cash/stock deals are classified.",
+      "why_it_matters": "The stated at-least-50-percent definitions overlap mathematically at exactly 50/50.",
+      "recommended_action": "Keep this as an unresolved pre-defense verification item and do not describe the arms as mutually exclusive."
+    },
+    {
+      "priority": 10,
+      "severity": "MINOR",
+      "category": "Narrative density",
+      "finding": "Equations, complete control inventories, data joins, validation coefficients, and window mechanics would turn Act 2 into a methods lecture.",
+      "why_it_matters": "They delay the answer to Act 1 and consume attention needed for the empirical result hierarchy.",
+      "recommended_action": "Keep the core at conceptual job level and move technical substantiation to backup/Q&A."
+    }
+  ],
+  "recommendations": [
+    "Present the answer-first, then-track-it architecture to Sina as the recommended Act 2 for approval.",
+    "Define raw CEO Q&A uncertainty before naming UncResCEO.",
+    "State DWZ attribution, sample-specific re-estimation, and application-not-invention ownership explicitly.",
+    "Attach the non-mental-state and non-deal-specific boundary to the residual's definition.",
+    "Use an explicit measurement-stage to acquisition-stage handoff with the two control blocks separated by purpose.",
+    "Show 88,205 calls/1,884 firms, 44,900 residual observations, and the 27,622-firm-quarter/1,248-firm first-result sample as a funnel or equally clear denominator sequence.",
+    "Introduce PRE1 and preview the full disclosure clock before the first coefficient, while deferring window mechanics.",
+    "State within-firm/correlational interpretation and the generated-regressand limitation once in Act 2.",
+    "Close Act 2 with the exact MA1 estimand question supplied in the proposal.",
+    "Do not decide final slide count, titles, timings, layouts, typography, or styling until the narrative is approved."
+  ],
+  "sources_consulted": [
+    {
+      "source": "_thesis_FLAT.tex",
+      "source_type": "UPLOADED_FILE",
+      "purpose": "Read completely as the sole authority for thesis content, methods, samples, results, limitations, and exact line evidence."
+    },
+    {
+      "source": "_CURRENT_HANDOFF_LEDGER.md",
+      "source_type": "UPLOADED_FILE",
+      "purpose": "Read completely to preserve the approved disclosure-boundary spine, corrected Act 1, workflow state, and non-negotiable presentation boundaries."
+    },
+    {
+      "source": "2026-07-13-master-reference-audit-report.md",
+      "source_type": "UPLOADED_FILE",
+      "purpose": "Read completely for diagnostic guardrails on fidelity, sample units, two-stage controls, generated-regressand inference, visualization jobs, and density."
+    },
+    {
+      "source": "DEFENSE_PRESENTATION_MASTER_REFERENCE.txt",
+      "source_type": "UPLOADED_FILE",
+      "purpose": "Read completely as historical input to identify reusable explanations and inherited wording, sequencing, duplication, and density risks."
+    },
+    {
+      "source": "WEB_REVIEW_REQUEST.json",
+      "source_type": "UPLOADED_FILE",
+      "purpose": "Read completely as the governing task, scope, authority hierarchy, question set, artifact contract, and stop condition."
+    },
+    {
+      "source": "WEB_RESPONSE_SCHEMA.json",
+      "source_type": "UPLOADED_FILE",
+      "purpose": "Read completely as the mandatory schema for this main response."
+    },
+    {
+      "source": "WEB_REQUEST_SCHEMA.json",
+      "source_type": "UPLOADED_FILE",
+      "purpose": "Read completely to verify the structure and interpretation of the governing request."
+    },
+    {
+      "source": "PASTE_THIS_PROMPT.txt",
+      "source_type": "UPLOADED_FILE",
+      "purpose": "Read completely for the silent file-only delivery instructions and artifact requirements."
+    }
+  ],
+  "artifacts_manifest": [
+    {
+      "artifact_id": "A1",
+      "filename": "ACT2_DESIGN_PROPOSAL.md",
+      "media_type": "text/markdown",
+      "purpose": "Self-contained Act 2 design proposal containing the evidence map, architecture comparison, recommendation, spoken narrative, keep/defer partition, conceptual visualization jobs, transitions, direct answers, unresolved choices, and adversarial risk audit.",
+      "status": "CREATED",
+      "sha256": "352669870942a2626f52a53ec631bfb62782ca9110105da427612c21d81952a9",
+      "validation_summary": "Created as a 362-line Markdown artifact; contains all W1-W6 work products and Q1-Q6 answers; uses exact thesis line citations for thesis-content judgments; labels thesis facts, design judgments, and unresolved choices; contains no external empirical content; and does not fix slide count, layout, timing, or styling."
+    }
+  ],
+  "limitations": [
+    "No web research or external evidence was used because the governing request disabled web research.",
+    "The proposal is an independent reviewer recommendation and has not been approved by Sina.",
+    "Final slide count, slide titles, timing allocation, layout, typography, and visual styling remain intentionally open.",
+    "The exact treatment of deals that are precisely 50 percent cash and 50 percent stock remains unresolved in the uploaded thesis; the working assumption recorded in the ledger is not treated as a thesis fact.",
+    "All thesis citations refer to the uploaded 1,621-line _thesis_FLAT.tex snapshot."
+  ],
+  "next_actions": [
+    "Validate the JSON against WEB_RESPONSE_SCHEMA.json and verify the ACT2_DESIGN_PROPOSAL.md hash before adoption.",
+    "Independently spot-check the proposal's load-bearing thesis claims at lines 223-239, 268-270, 286, 506-508, 571-579, and 630-636.",
+    "Present the recommended Act 2 architecture and spoken bridge to Sina for approve/revise/reject discussion.",
+    "Only after narrative approval, decide slide boundaries and visualization placement; do not build finished slides from this proposal yet.",
+    "Verify exact 50/50 deal classification before the defense or retain it as an explicit unresolved backup item."
+  ],
+  "provenance": {
+    "response_origin": "CHATGPT_WEB_DOWNLOAD",
+    "generated_by_chatgpt_web": true
+  },
+  "delivery_contract": {
+    "main_json_filename": "2026-07-13_act2_measure_design_review.json",
+    "chat_text_emitted": false,
+    "attached_files": [
+      "2026-07-13_act2_measure_design_review.json",
+      "ACT2_DESIGN_PROPOSAL.md"
+    ],
+    "all_requested_artifacts_accounted_for": true
+  }
+}
