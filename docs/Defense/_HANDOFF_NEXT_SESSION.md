@@ -3,13 +3,27 @@
 Read this file, then `_SESSION_STATE.json` beside it. Between them they carry the
 whole state. You do not need the previous conversation.
 
+## 0. The deck to present
+
+```
+docs/Defense/REV22/production/thesis_defense_main_deck_slides_01-13_rev22.pdf
+```
+
+**REV22, not REV21.** REV21 is the audited artifact and the fidelity reference;
+it stays untouched. REV22 is REV21 with the audit's four wording findings fixed
+and nothing else changed. Slides 8, 11, 12 and 13 differ; the other nine are
+identical span for span. Read `REV22/REV22_CHANGE_LOG.md` before quoting any
+slide.
+
 ## 1. Where the work stands
 
 Sina defends his MSc thesis at Telfer, uOttawa. The 13-slide main deck is
 finished, approved, and production-locked.
 
-- **Deliverable 1, audit the deck: DONE.** No blocker, no major defect.
-- **Deliverable 2, speaker notes for all 13 slides: NOT STARTED.** This is next.
+- **Deliverable 1, audit the deck: DONE.** No blocker, no major defect. Every
+  finding is applied in REV22.
+- **Deliverable 2, speaker notes for all 13 slides: NOT STARTED.** This is next,
+  and nothing blocks it.
 - Deliverable 3, the indexed Q&A appendix: architecture approved, content not
   designed, out of scope until the notes exist.
 
@@ -37,8 +51,9 @@ Five independent passes, plus mechanical verification by the operator.
 | Claim strength | No causal, mechanism, or cash-only overstatement |
 | Rendering | All 13 pages clean |
 
-Four cosmetic wording items remain, listed as decision `D-OPEN-1` in the state
-file. None changes a claim, a number, or an interpretation.
+Four cosmetic wording items were left open as decision `D-OPEN-1`. Sina chose to
+fix them. They are fixed in REV22 and the decision is closed. None changed a
+claim, a number, or an interpretation.
 
 **The one thing that matters is not a deck defect.** An examiner can ask what
 evidence there is that the CEO knew about the acquisition at the pre-announcement
@@ -48,16 +63,25 @@ only route is a clean concession. It belongs in preparation, not on a slide.
 
 Full detail: `audit/AUDIT_REGISTER.md`. Raw pass outputs: `audit/findings/`.
 
-## 4. Reproduce the audit instead of believing it
+## 4. Reproduce everything instead of believing it
 
 ```
-python docs/Defense/audit/scripts/verify_deck.py
+python docs/Defense/REV22/verify_rev22.py          # 16 checks, the deck you present
+python docs/Defense/audit/scripts/verify_deck.py   # 13 checks, the audited REV21
 ```
 
-Thirteen checks, no model involved, exit code 0 when they all reproduce. It
-verifies the deck hash and geometry, the absence of em and en dashes, that
-exactly the two recorded dash constructions remain, and that every plotted point
-on slides 8, 9 and 10 sits where its printed coefficient puts it.
+No model is involved in either. Exit code 0 means every check reproduced.
+
+`verify_rev22.py` answers two questions that must not be merged. First, does this
+machine render like the machine that built the locked deck? It renders a
+byte-identical copy of the REV21 source and compares all 13 slides against the
+locked PDF; the answer is yes, 538 spans, 0.0000 pt drift. Second, did the edit
+touch only what it should? Exactly slides 8, 11, 12 and 13 differ, no drawing
+moved anywhere, and nothing overflows its page.
+
+`verify_deck.py` targets REV21 and still expects the two dash constructions REV22
+removed. That is correct. It checks the audited artifact, not the deck to be
+presented. Do not repoint it at REV22.
 
 One trap is encoded in that script and worth knowing: **slide 8 must be measured
 against the drawn axis ticks, never the tick labels.** Text centres sit about two
@@ -65,11 +89,8 @@ points below the rules they annotate, which looks exactly like a real defect.
 
 ## 5. The next action, concretely
 
-Write speaker notes for all 13 slides.
-
-Before drafting, settle `D-OPEN-1` with Sina, because notes quote slide wording
-and a change to slide 12 or 13 means reworking those notes. The recommendation on
-file is to ship the deck as is.
+Write speaker notes for all 13 slides, against **REV22**. Nothing blocks this.
+Slides 8, 11, 12 and 13 were reworded, so quote REV22 and never REV21.
 
 The full notes plan is in `audit/DECK_AUDIT_PLAN.md` under "Speaker-notes
 production plan". The essentials:
@@ -109,6 +130,29 @@ approved, and it was not audited; it is out of scope.
    audience-facing.
 6. Do the work yourself. He has banned subagent delegation on this task.
 7. Record decisions as they happen. Anything unrecorded is lost.
+
+## 7a. If you need to render the deck
+
+```
+python docs/Defense/REV22/render.py both
+```
+
+WeasyPrint works on this machine, but only because `render.py` calls
+`os.add_dll_directory(r"C:\Program Files\Tesseract-OCR")` before importing it.
+Tesseract bundles the full GLib and Pango stack that WeasyPrint needs.
+
+**Do not try to fix a WeasyPrint import error by putting anything on `PATH`.**
+Since Python 3.8, Windows DLL resolution for ctypes and cffi ignores `PATH`
+entirely. It looks like it should work and it does nothing. This cost real time
+once already.
+
+Fontconfig prints `Cannot load default config file` on every run. Ignore it.
+Every font is embedded in the HTML as base64, so no system font is consulted.
+
+Do not substitute Chrome or any other engine. A different layout engine reflows
+all 13 slides and destroys the standardization lock. After any render, run
+`verify_rev22.py`, then look at the changed slides as images. Clipped text still
+extracts cleanly, so only the eye catches overflow.
 
 ## 8. If you need another ChatGPT web call
 

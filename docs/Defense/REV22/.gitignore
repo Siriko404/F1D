@@ -1,0 +1,4 @@
+# Page rasters are renders of the PDF beside them, so they are regenerable.
+# Regenerate with:
+#   python -c "import fitz; d=fitz.open('production/thesis_defense_main_deck_slides_01-13_rev22.pdf'); [d[i].get_pixmap(dpi=150).save(f'production/individual_pages/rev22_slide_{i+1:02d}.png') for i in range(13)]"
+production/individual_pages/*.png

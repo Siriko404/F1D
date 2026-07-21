@@ -7,73 +7,100 @@
   "read_order_for_a_fresh_session": [
     "docs/Defense/_HANDOFF_NEXT_SESSION.md",
     "docs/Defense/_SESSION_STATE.json",
+    "docs/Defense/REV22/REV22_CHANGE_LOG.md",
     "docs/Defense/audit/AUDIT_REGISTER.md",
     "docs/Defense/REV21/THESIS_DEFENSE_CONTINUITY_LEDGER_REV21.json"
   ],
 
+  "the_deck_to_present": {
+    "path": "docs/Defense/REV22/production/thesis_defense_main_deck_slides_01-13_rev22.pdf",
+    "sha256": "bb8bf58d754ba9a6b403cc6233aa5cd07fd955bbedeea136b7ad9582570c9cc7",
+    "note": "REV22 supersedes REV21 as the deck to present. 13 pages, 1152 x 648 points. REV21 remains untouched as the provenance record and as the fidelity reference."
+  },
+
   "stale_authority_warning": {
     "file": "docs/Defense/REV21/THESIS_DEFENSE_CONTINUITY_LEDGER_REV21.json",
-    "problem": "Its current_state.next_action says to resume the indexed Q&A appendix. That is no longer the next action. The user redirected to a full audit of the main deck plus speaker notes, and the audit is complete. The ledger was deliberately left unmodified rather than rewritten by hand, because it is a 346 KB control document produced by another workstream and a hand edit risks corrupting it.",
+    "problem": "Its current_state.next_action says to resume the indexed Q&A appendix. That is no longer the next action. The user redirected to a full audit of the main deck plus speaker notes; the audit is complete and its findings have been applied as REV22. The ledger was deliberately left unmodified rather than rewritten by hand, because it is a 346 KB control document produced by another workstream and a hand edit risks corrupting it.",
     "still_authoritative_for": "The operating contract, the 38 approved decisions, the visual system, the production and QA workflow, the do-not-repeat lessons, and the appendix architecture for when the appendix work resumes.",
-    "not_authoritative_for": "current_state.next_action"
+    "not_authoritative_for": "current_state.next_action, and the identity of the production deck, which is now REV22"
   },
 
   "current_state": {
-    "stage": "Main-deck audit complete. Speaker notes not started.",
-    "next_action": "Write speaker notes for all 13 main-deck slides, against the deck as it stands.",
-    "next_action_is_blocked_by": "One open user decision, recorded below as D-OPEN-1. The notes reference slide wording, so a decision to edit slide 12 or 13 would require reworking the affected notes.",
-    "deliverable_1_deck_audit": "complete",
-    "deliverable_2_speaker_notes": "not started",
+    "stage": "Main-deck audit complete. All findings applied as REV22. Speaker notes not started.",
+    "next_action": "Write speaker notes for all 13 main-deck slides, against REV22.",
+    "next_action_is_blocked_by": "Nothing.",
+    "deliverable_1_deck_audit": "complete, and the four open wording items are fixed in REV22",
+    "deliverable_2_speaker_notes": "not started, and now unblocked",
     "deliverable_3_qa_appendix": "architecture approved in REV21, content not designed, out of scope until the notes are done"
   },
 
-  "open_decisions": [
+  "open_decisions": [],
+
+  "closed_decisions": [
     {
       "id": "D-OPEN-1",
       "question": "Fix the four remaining cosmetic wording items, or ship the deck as it is?",
-      "items": [
-        "Slide 12, two dash-based sentence constructions, which violate an explicit user rule",
-        "Slide 13, the closing sentence asserts what the thesis hedges with 'these patterns suggest that'",
-        "Slides 8 against 9 and 10, the same controls are labelled 'size' and 'dividends' on one and 'ln(assets)' and 'dividend indicator' on the others",
-        "Slide 11, 'cash acquisitions rather than stock' compares unlike things"
-      ],
-      "assistant_recommendation": "Ship as is. None of the four changes a claim, a number, or an interpretation.",
-      "blocked_by": "B-1 if the user chooses to fix",
-      "status": "awaiting user"
+      "decision": "Fix, as a new revision. Decided by the user on 2026-07-21.",
+      "outcome": "REV22. Five string replacements, four slides. See docs/Defense/REV22/REV22_CHANGE_LOG.md.",
+      "status": "closed"
     }
   ],
 
-  "blockers": [
+  "blockers": [],
+
+  "closed_blockers": [
     {
       "id": "B-1",
-      "blocker": "WeasyPrint is installed but cannot load its GTK dependency libgobject-2.0-0 on this machine.",
-      "consequence": "No edit to the locked deck can be rendered to production standard. The audit never needed it. Any fix does.",
-      "do_not_do": "Do not substitute Chrome or any other engine. A different layout engine reflows all 13 slides and destroys the value of the standardized-v2 lock.",
-      "resolution_if_needed": "Install the GTK3 runtime, then render the unmodified merged HTML and diff it against the locked PDF before touching any content."
+      "blocker": "WeasyPrint was believed unable to run on this machine, because importing it fails with 'cannot load library libgobject-2.0-0', no GTK runtime is installed, and WSL2 is disabled at the BIOS level.",
+      "resolution": "The premise was wrong. Since Python 3.8, Windows DLL resolution for ctypes and cffi ignores PATH, so putting a GLib and Pango directory on PATH looks correct and does nothing. os.add_dll_directory() works. Tesseract-OCR bundles the complete stack WeasyPrint needs, so pointing add_dll_directory at 'C:\\Program Files\\Tesseract-OCR' before importing weasyprint is sufficient. Implemented in docs/Defense/REV22/render.py.",
+      "proof_that_it_is_faithful": "A byte-identical copy of the REV21 source HTML was rendered here and compared against the locked REV21 PDF across all 13 slides and 538 text spans. Maximum positional drift 0.0000 pt, zero text mismatches.",
+      "versions": "WeasyPrint 69.0, Pango 1.52.2, Python 3.13.5",
+      "note": "WeasyPrint output is not bit-reproducible, so two renders of the same input differ in bytes. Hash equality is the wrong test; span geometry is the right one.",
+      "status": "closed"
     }
   ],
 
   "verification": {
-    "how_to_reproduce_every_mechanical_claim": "python docs/Defense/audit/scripts/verify_deck.py",
-    "checks": 13,
-    "last_run": "2026-07-21, all 13 reproduced, exit code 0",
-    "what_it_proves": "Artifact identity and page geometry, absence of em and en dashes, that exactly the two recorded dash constructions remain, and that every plotted point on slides 8, 9 and 10 sits within a hundredth of a point of where its printed coefficient puts it.",
-    "trap_encoded_in_the_script": "Slide 8 must be measured against the drawn axis ticks, never the tick labels. Text centres sit about two points below the rules they annotate, which looks exactly like a real defect."
+    "rev22_render": {
+      "command": "python docs/Defense/REV22/verify_rev22.py",
+      "checks": 16,
+      "last_run": "2026-07-21, all passed, exit code 0",
+      "what_it_proves": "Two separate things. First, that this rendering environment reproduces the locked REV21 deck span for span, which is what makes the edited render trustworthy. Second, that the edit changed exactly slides 8, 11, 12 and 13 and nothing else, that no drawing moved on any slide, that the five approved strings landed, that no em or en dash remains, and that every span sits inside its page."
+    },
+    "rev21_audit": {
+      "command": "python docs/Defense/audit/scripts/verify_deck.py",
+      "checks": 13,
+      "last_run": "2026-07-21, all 13 reproduced, exit code 0",
+      "what_it_proves": "The REV21 audit's mechanical claims: artifact identity and page geometry, the absence of em and en dashes, that exactly the two recorded dash constructions remain, and that every plotted point on slides 8, 9 and 10 sits within a hundredth of a point of where its printed coefficient puts it.",
+      "note": "This script targets REV21 and still expects the two dash constructions that REV22 removed. It is a check on the audited artifact, not on the deck to be presented. Do not repoint it at REV22.",
+      "trap_encoded_in_the_script": "Slide 8 must be measured against the drawn axis ticks, never the tick labels. Text centres sit about two points below the rules they annotate, which looks exactly like a real defect."
+    },
+    "what_no_script_can_check": "Clipped text still extracts cleanly from a PDF, so overflow inside a fixed box is invisible to every automated check here. The four changed slides were rasterised and inspected by eye on 2026-07-21 and nothing is clipped. Any future edit needs the same visual pass."
   },
 
   "key_files": {
-    "locked_deck_pdf": {
+    "deck_to_present": "docs/Defense/REV22/production/thesis_defense_main_deck_slides_01-13_rev22.pdf",
+    "rev22_change_log": "docs/Defense/REV22/REV22_CHANGE_LOG.md",
+    "rev22_source_html": "docs/Defense/REV22/source/rev22_edited.html",
+    "rev22_control_html": {
+      "path": "docs/Defense/REV22/source/rev22_control.html",
+      "sha256": "52b47bf58dfb491cc1d3cbe0be41c8b46e21b7b63648da183ba2e0461e39cc7b",
+      "note": "A byte-identical copy of the REV21 source. It exists only as the fidelity control and must never be edited."
+    },
+    "rev22_renderer": "docs/Defense/REV22/render.py",
+    "rev22_verifier": "docs/Defense/REV22/verify_rev22.py",
+    "locked_deck_pdf_rev21": {
       "path": "docs/Defense/REV21/production/thesis_defense_main_deck_slides_01-13_standardized_v2.pdf",
       "sha256": "b1f396191295e320019d8123fe9cd588088e80f992c46150c5fd270f8e6aa94b",
-      "note": "13 pages, 1152 x 648 points. This exact file is the artifact under audit and the one to be presented."
+      "note": "The audited artifact and the fidelity reference. Superseded as the deck to present. Do not modify."
     },
-    "locked_deck_html_source": "docs/Defense/REV21/production/thesis_defense_main_deck_slides_01-13_standardized_v2.html",
     "authoritative_thesis": {
       "path": "docs/Thesis/_uottawa_rewrite/_thesis_FLAT.tex",
       "sha256": "6f2e003ff63eebb23bed8fe26dbd1601d0b5392a6628320d8782f60d5f936310",
       "note": "Byte-identical to source/_thesis_FLAT(2).tex inside the REV21 package. Contains the complete reference list."
     },
     "thesis_tables_byte_exact": "docs/Thesis/_uottawa_rewrite/_tables_from_bible.tex",
+    "thesis_control_definitions": "docs/Thesis/_uottawa_rewrite/appendix_II_controls.tex",
     "thesis_main_analysis_prose": "docs/Thesis/_uottawa_rewrite/sec34_body_from_ledgers.tex",
     "thesis_intro": "docs/Thesis/_uottawa_rewrite/_intro_body.tex",
     "thesis_conclusion": "docs/Thesis/_uottawa_rewrite/_conclusion_body.tex",
@@ -85,20 +112,21 @@
     "committee_profiles": "docs/Defense/audit/passes/examiner/COMMITTEE_PROFILES.md"
   },
 
-  "audit_result_in_one_paragraph": "No blocker and no major defect. Every number on the deck was verified twice, once mechanically by the operator against the byte-exact thesis tables and once independently by a web call, with zero exceptions across 136 items on slides 6 to 13. Chart geometry was measured directly from the PDF drawing objects and every plotted point lands within a hundredth of a point. All twelve citations exist with the correct year and support the proposition they are attached to. No slide asserts causation, claims an established mechanism, or reads the payment-method result as strict cash specificity. What remains is four cosmetic wording items and one substantial exposure in the question period that is not a deck problem.",
+  "audit_result_in_one_paragraph": "No blocker and no major defect. Every number on the deck was verified twice, once mechanically by the operator against the byte-exact thesis tables and once independently by a web call, with zero exceptions across 136 items on slides 6 to 13. Chart geometry was measured directly from the PDF drawing objects and every plotted point lands within a hundredth of a point. All twelve citations exist with the correct year and support the proposition they are attached to. No slide asserts causation, claims an established mechanism, or reads the payment-method result as strict cash specificity. What remained was four cosmetic wording items, now fixed in REV22, and one substantial exposure in the question period that is not a deck problem.",
 
   "single_most_important_finding": {
     "what": "An examiner can ask what evidence there is that the CEO knew about the acquisition at the pre-announcement call.",
     "why_it_bites": "The event clock is anchored on the announcement date. The thesis observes neither when negotiations began nor when the chief executive learned of the deal.",
     "thesis_answers_it": false,
-    "route": "Concede cleanly. Nothing on the deck should change because of it.",
+    "route": "Concede cleanly. Nothing on the deck should change because of it. It belongs in the speaker notes and question preparation.",
     "found_by": "The examiner pass, run blind. The operator had not anticipated it."
   },
 
   "speaker_notes_brief_when_that_work_starts": {
-    "scope": "All 13 main-deck slides. The Q&A appendix is separate and later.",
+    "scope": "All 13 main-deck slides, against REV22. The Q&A appendix is separate and later.",
+    "wording_note": "Slides 8, 11, 12 and 13 changed in REV22. Quote REV22, never REV21.",
     "time_budget": "18 minutes with a 2 minute buffer inside a hard 20 minute limit. Sections are 5 minutes for slides 1 to 5, 10 minutes for slides 6 to 10, and 3 minutes for slides 11 to 13.",
-    "word_budget_method": "Do not invent a per-slide time. Measure the presenter's own speaking rate on two timed passages, take the lower clean rate, and multiply by 17 minutes to leave a minute for pauses and navigation. Allocate by the 5:10:3 section ratio.",
+    "word_budget_method": "Do not invent a per-slide time. Measure the presenter's own speaking rate on two timed passages, take the lower clean rate, and multiply by 17 minutes to leave a minute for pauses and navigation. Allocate by the 5:10:3 section ratio. The measurement is an input only the presenter can supply; do not fake it from an assumed rate.",
     "grounding_rule": "Every academic sentence and every number in the notes must trace to an exact thesis file and location. Where the thesis is silent, the notes must say so rather than fill the gap.",
     "hard_constraint": "The notes may explain the visible slide. They may not add a result, a mechanism, a causal claim, or an appendix-only analysis to the main talk.",
     "committee_context": "One examiner prefers defenses that finish promptly, so a tight findings-forward delivery matters more than completeness.",
@@ -108,19 +136,21 @@
   "untested_and_owed": [
     "The deck has never been rehearsed or timed. The 18 minute target is a design assumption, not a measured fact. Only the presenter can close this.",
     "No adversarial second reviewer ran over the claims and examiner passes, so their completeness rests on a single read each. The mechanical dimensions do not share this limitation.",
-    "The thesis itself was not audited. It is submitted and approved and out of scope. A faithful deck reproducing a thesis error would pass every check here."
+    "The thesis itself was not audited. It is submitted and approved and out of scope. A faithful deck reproducing a thesis error would pass every check here.",
+    "The HTML <title> still contains one em dash and one en dash. It is PDF metadata, never visible on a slide, present since REV21, and left alone deliberately as outside the four approved fixes."
   ],
 
   "web_call_infrastructure": {
     "root": "C:/Users/sinas/OneDrive/Desktop/Projects/GptWebCall",
     "protocol": "WEB_CALL_PROTOCOL.md at that root, read it before preparing any call",
     "branch": "feat/global-web-call-system",
-    "built_this_session": [
+    "built_earlier_this_session": [
       "Correction rounds, so a delivery that fails validation is repaired in the same conversation instead of costing a fresh call",
       "Parallel calls, each bound to its own tab, with a file lock around all shared state",
       "Filename allocation, so two calls can never claim the same deliverable name"
     ],
     "operational_rule_learned_the_hard_way": "Download every returned file before clicking Done and validate. Done stops monitoring, and anything that arrives afterwards is not collected. Recovery is to copy the files into the exchange response directory and run validate --exchange.",
-    "all_six_exchanges_preserved_at": "GptWebCall/calls/, with request snapshots, responses, and validation reports"
+    "state_on_2026-07-21": "No prepared or active calls. A render call was prepared and then deleted unsent once local rendering was shown to work.",
+    "audit_exchanges_preserved_at": "GptWebCall/calls/, with request snapshots, responses, and validation reports"
   }
 }
