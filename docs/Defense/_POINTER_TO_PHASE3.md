@@ -19,7 +19,9 @@ C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets
 This file exists because a session can open in the F1D tree while the defense
 work sits in F1D-phase3, and nothing here would otherwise point across.
 
-State as of 2026-07-21: the 13-slide deck is production-locked and its audit is
-complete with no blocker and no major defect. The next action is speaker notes
-for all 13 slides. One decision is open, on whether to fix four cosmetic wording
-items or ship as is. Both files above carry the detail.
+State as of 2026-07-21: the deck to present is REV22, at
+`F1D-phase3/docs/Defense/REV22/production/thesis_defense_main_deck_slides_01-13_rev22.pdf`.
+It is the audited REV21 deck with the audit's four wording findings fixed and
+nothing else changed, proved against REV21 span for span. REV21 is untouched.
+The next action is speaker notes for all 13 slides and nothing blocks it. Both
+files above carry the detail.
