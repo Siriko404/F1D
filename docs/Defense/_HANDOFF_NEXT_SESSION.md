@@ -10,10 +10,10 @@ docs/Defense/REV22/production/thesis_defense_main_deck_slides_01-13_rev22.pdf
 ```
 
 **REV22, not REV21.** REV21 is the audited artifact and the fidelity reference;
-it stays untouched. REV22 is REV21 with the audit's four wording findings fixed
-and nothing else changed. Slides 8, 11, 12 and 13 differ; the other nine are
-identical span for span. Read `REV22/REV22_CHANGE_LOG.md` before quoting any
-slide.
+it stays untouched. REV22 is REV21 with the audit's four wording findings fixed,
+the em and en dash removed from the PDF title, and one limitation added to
+slide 12. Slides 8, 11, 12 and 13 differ; the other nine are identical span for
+span. Read `REV22/REV22_CHANGE_LOG.md` before quoting any slide.
 
 ## 1. Where the work stands
 
@@ -55,18 +55,53 @@ Four cosmetic wording items were left open as decision `D-OPEN-1`. Sina chose to
 fix them. They are fixed in REV22 and the decision is closed. None changed a
 claim, a number, or an interpretation.
 
-**The one thing that matters is not a deck defect.** An examiner can ask what
-evidence there is that the CEO knew about the acquisition at the pre-announcement
-call. The event clock is anchored on the announcement date; the thesis observes
-neither the negotiation start nor the CEO's knowledge. There is no answer. The
-only route is a clean concession. It belongs in preparation, not on a slide.
+Slide 12 then gained a fifth change that is **not** cosmetic. It now carries the
+CEO-timing limitation, which the thesis states nowhere and which no other slide
+or prepared answer covered. Recorded as `D-OPEN-2`. The rule that settled what
+belongs there: if the thesis discloses a caveat, answer it aloud and cite the
+page; if the thesis discloses it nowhere, it goes on the slide.
+
+**Read `_DEFENSE_LEDGER.md`.** It holds committee dossiers, sixteen prepared
+examiner questions with answers, and fifteen defensive assets already inside the
+thesis. It was missed for an entire working session because nothing pointed at
+it. It is the richest single input to the speaker notes. Its section C slide
+numbers refer to a retired Beamer draft and do not map to REV22.
+
+**The sharpest question, and the answer it does have.** An examiner can ask what
+evidence there is that the executive knew of the acquisition at the
+pre-announcement call. Sharpened, the attack is about onset, not knowledge: a
+chief executive is party to their own negotiations by definition, but SDC gives
+only the announcement date, so a flagged call could predate the point there was
+anything to withhold.
+
+An earlier reading of this file said there was no answer and only a clean
+concession. That was too defeatist. Two real rebuttals exist and belong in the
+speaker notes:
+
+1. Misflagged quarters dilute a binary treatment indicator, which drags the
+   estimate toward zero. The effect was found anyway, so the flaw is
+   conservative. Sina already owns this sentence for the generated-regressand
+   question, ratified 2026-07-09: *"The error is random and unrelated to deal
+   timing. It can't create a pre-deal pattern, only blur one. The run-up survived
+   that blur."*
+2. The event study constrains the onset. `PRE2` is flat at 0.0068 and
+   insignificant; `PRE1` is 0.0473 at the one-percent level. A long private window
+   would light `PRE2` too; talks starting after the `PRE1` call would leave `PRE1`
+   flat. Neither happens.
+
+Both rebuttals hold only while the noise is unrelated to deal timing. Noise that
+tracks the pre-announcement window is a confound, not noise, and runs the other
+way. The thesis claims no mechanism, which is what bounds the damage.
+
+Slide 12 now states the boundary and names the `PRE2` guard. The rebuttal itself
+stays off the slide and goes in the notes.
 
 Full detail: `audit/AUDIT_REGISTER.md`. Raw pass outputs: `audit/findings/`.
 
 ## 4. Reproduce everything instead of believing it
 
 ```
-python docs/Defense/REV22/verify_rev22.py          # 16 checks, the deck you present
+python docs/Defense/REV22/verify_rev22.py          # 21 checks, the deck you present
 python docs/Defense/audit/scripts/verify_deck.py   # 13 checks, the audited REV21
 ```
 

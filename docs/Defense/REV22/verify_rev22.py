@@ -201,6 +201,14 @@ def verify_edits_landed(edited) -> None:
          "disclosure, no more and no less", "disclosure - no more"),
         ("R22-05 slide 13 restores the hedge", 13,
          "These patterns suggest that", None),
+        ("R22-07 slide 12 names the window boundary", 12,
+         "not when negotiations began", "A direct reading of the"),
+        ("R22-07 slide 12 keeps the pre-trend guard with it", 12,
+         "flat quarter two before", None),
+        ("R22-08 slide 12 merges the two imperfect instruments", 12,
+         "Imperfect instruments", "A perfect comparison"),
+        ("R22-09 slide 12 footer names the event-study design", 12,
+         "event-study design, Section 2.4", None),
     ]
     for label, number, present, absent in expected:
         ok = present in text[number]

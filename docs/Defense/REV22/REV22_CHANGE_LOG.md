@@ -1,8 +1,8 @@
 # REV22 change log
 
 REV22 is the presentation deck. It is REV21 with four wording defects corrected,
-plus one dash in the PDF title that no check had been looking at, and nothing
-else changed.
+one dash in the PDF title that no check had been looking at, and one limitation
+added to slide 12 that the thesis never states.
 
 REV21 is untouched and remains the provenance record.
 
@@ -11,8 +11,10 @@ Deck to present:
 
 ## 1. What changed
 
-Six string replacements in the deck source HTML. The first five close the items
-the audit left open as `D-OPEN-1`; the sixth is explained in section 4.
+Nine string replacements in the deck source HTML. The first five close the items
+the audit left open as `D-OPEN-1`. The sixth is explained in section 4. The last
+three add a limitation the audit found and the thesis never states, and are
+explained in section 5.
 
 | ID | Slide | Was | Is |
 |---|---|---|---|
@@ -22,6 +24,9 @@ the audit left open as `D-OPEN-1`; the sixth is explained in section 4.
 | R22-04 | 12 | `What it does not show - and where it may not carry` | `What it does not show, and where it may not carry` |
 | R22-05 | 13 | `Unscripted CEO Q&A carries a ...` | `These patterns suggest that unscripted CEO Q&A carries a ...` |
 | R22-06 | all | `<title>Thesis Defense — ... Slides 1–13` | `<title>Thesis Defense: ... Slides 1 to 13` |
+| R22-07 | 12 | box 3 `A direct reading of the CEO` | `The anticipatory window` |
+| R22-08 | 12 | box 4 `A perfect comparison` | `Imperfect instruments`, absorbing the old box 3 proxy point |
+| R22-09 | 12 | footer cited the Conclusion only | footer also cites the event-study design, Section 2.4 |
 
 ### Why each one
 
@@ -129,7 +134,7 @@ lines to three, which happens to balance it against the first column.
 Full check list, all passing: REV21 unchanged, control page count and size,
 13-slide span reproduction, edited page count and size, renders distinct, edit
 scope, the approved strings landed, no em or en dash on any slide, no em or en
-dash in the PDF metadata, containment. Seventeen in all.
+dash in the PDF metadata, containment. Twenty-one in all.
 
 ## 4. R22-06, the dash the checks could not see
 
@@ -168,3 +173,81 @@ on the announcement date and the thesis observes neither the start of
 negotiations nor the chief executive's knowledge. The only sound response is a
 clean concession, prepared in advance. It belongs in the speaker notes and the
 question preparation, not on a slide.
+
+## 5. R22-07 to R22-09, the limitation the thesis never states
+
+This is a content change, not a cosmetic one. `D-OPEN-1` authorized four cosmetic
+fixes; adding a limitation is new scope, authorized separately by the user on
+2026-07-21 and recorded as `D-OPEN-2`.
+
+### The question it answers
+
+An examiner can ask what evidence there is that the executive knew of the deal at
+the pre-announcement call. The audit's examiner pass raised it and it is the
+sharpest question on the deck. It appears in none of the sixteen questions already
+prepared in `_DEFENSE_LEDGER.md`.
+
+Sharpened, the attack is not about knowledge but about **onset**. A chief
+executive is party to their own firm's negotiations by definition, and the thesis
+already cites *Basic v. Levinson* that preliminary negotiations are material well
+before a definitive agreement. The unobserved quantity is when those negotiations
+began. SDC supplies announcement, completion and withdrawal dates and nothing
+else, so a call flagged `PreAnnounceQtr` could in principle predate the point at
+which there was anything to withhold.
+
+### Why it earns slide space when the generated-regressand caveat does not
+
+The rule applied, and worth keeping:
+
+> If the thesis already discloses it, answer it aloud and cite the page. If the
+> thesis discloses it nowhere, it belongs on the slide.
+
+The word `assum` appears zero times across `_intro_body.tex`,
+`sec34_body_from_ledgers.tex` and `_conclusion_body.tex`. This premise is carried
+entirely implicitly. By contrast the generated-regressand issue is disclosed in
+section 2.3 with *Pagan (1984)* cited and the bootstrap fix named, so it stays off
+the slide and is answered verbally, with backup slide `B6` already assigned to it
+in the defense ledger.
+
+### Why the wording carries its own guard
+
+An earlier draft read *"the executive's knowledge of the deal is assumed, not
+observed"*. That was rejected as an over-concession: it invites the reading that
+the whole mechanism is an assumption, and it understates the evidence.
+
+The event study already speaks to onset. `PRE2`, two quarters before announcement,
+is flat and insignificant at 0.0068. `PRE1`, one quarter before, is 0.0473 and
+significant at the one-percent level. A long private window would light up `PRE2`
+as well; negotiations beginning after the `PRE1` call would leave `PRE1` flat.
+Neither happens. The shape of the pattern therefore constrains the onset, and the
+defense ledger already calls `PRE2` the pre-trend check.
+
+So the box states the boundary and names the guard in the same breath, which also
+plants a question the presenter can answer. That is the deck's own design method,
+recorded in `_DEFENSE_LEDGER.md` section C.
+
+### Why the two other boxes merged
+
+The four boxes must stay four; the standardization audit forbids altering box 1's
+causal statement or splitting box 2's merged generalizability item, so only boxes
+3 and 4 could move.
+
+Folding the window point into box 3 was rejected because box 3 was about
+measurement validity and the window point is about design timing. Two different
+failure modes joined only by the word CEO reads as muddled. Instead the old box 3
+proxy point and the old box 4 counterfactual point merged into `Imperfect
+instruments`, which is genuinely one idea, and the window point took its own box.
+
+### The footer
+
+The slide cited `Conclusion, limitations and evidence-boundary paragraphs`. The
+new box is not from those paragraphs, so that source line would have been false,
+which is the same defect class as the title dashes in section 4. The footer now
+also cites the event-study design in Section 2.4, where the event-time definition
+and the `PRE2` bin actually live.
+
+### What stays off the slide
+
+The rebuttal. The attenuation argument, the `PRE2` reasoning and the
+`Basic v. Levinson` grounding belong in the speaker notes, not on screen. The
+slide states the boundary; the presenter supplies the answer.

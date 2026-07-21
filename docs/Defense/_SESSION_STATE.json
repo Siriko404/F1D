@@ -7,12 +7,13 @@
     "docs/Defense/_HANDOFF_NEXT_SESSION.md",
     "docs/Defense/_SESSION_STATE.json",
     "docs/Defense/REV22/REV22_CHANGE_LOG.md",
+    "docs/Defense/_DEFENSE_LEDGER.md",
     "docs/Defense/audit/AUDIT_REGISTER.md",
     "docs/Defense/REV21/THESIS_DEFENSE_CONTINUITY_LEDGER_REV21.json"
   ],
   "the_deck_to_present": {
     "path": "docs/Defense/REV22/production/thesis_defense_main_deck_slides_01-13_rev22.pdf",
-    "sha256": "433738e712e23009b78bd69f8e1cf16186194cd506b2e05010e8384623256947",
+    "sha256": "7577c5aff964fd37110f85ffd104c40b8281c7f5166ebb6e4b38d51708977026",
     "note": "REV22 supersedes REV21 as the deck to present. 13 pages, 1152 x 648 points. REV21 remains untouched as the provenance record and as the fidelity reference."
   },
   "stale_authority_warning": {
@@ -37,6 +38,14 @@
       "decision": "Fix, as a new revision. Decided by the user on 2026-07-21.",
       "outcome": "REV22. Five string replacements, four slides. See docs/Defense/REV22/REV22_CHANGE_LOG.md.",
       "status": "closed"
+    },
+    {
+      "id": "D-OPEN-2",
+      "question": "Add the CEO-timing limitation to slide 12, keeping the item count at four?",
+      "decision": "Yes, as its own box. Decided by the user on 2026-07-21. This is a content change, not a cosmetic one, and was authorized separately from D-OPEN-1.",
+      "outcome": "REV22 edits R22-07 to R22-09. Box 3 becomes 'The anticipatory window'; the old box 3 proxy point and box 4 counterfactual point merge into 'Imperfect instruments'; the footer gains the Section 2.4 citation. See REV22_CHANGE_LOG.md section 5.",
+      "rule_that_settled_what_goes_on_the_slide": "If the thesis already discloses a caveat, answer it aloud and cite the page. If the thesis discloses it nowhere, it belongs on the slide. 'assum' appears zero times in the intro, main analysis and conclusion, so the timing premise is carried entirely implicitly. The generated-regressand caveat is disclosed in 2.3 with Pagan (1984) and the bootstrap fix named, so it stays off the slide and keeps backup B6.",
+      "status": "closed"
     }
   ],
   "blockers": [],
@@ -54,7 +63,7 @@
   "verification": {
     "rev22_render": {
       "command": "python docs/Defense/REV22/verify_rev22.py",
-      "checks": 17,
+      "checks": 21,
       "last_run": "2026-07-21, all passed, exit code 0",
       "what_it_proves": "Two separate things. First, that this rendering environment reproduces the locked REV21 deck span for span, which is what makes the edited render trustworthy. Second, that the edit changed exactly slides 8, 11, 12 and 13 and nothing else, that no drawing moved on any slide, that the five approved strings landed, that no em or en dash remains, and that every span sits inside its page. It also scans the PDF metadata for em and en dashes, which the page-text scan could not see and which the shipped REV21 title violated."
     },
@@ -106,8 +115,9 @@
     "what": "An examiner can ask what evidence there is that the CEO knew about the acquisition at the pre-announcement call.",
     "why_it_bites": "The event clock is anchored on the announcement date. The thesis observes neither when negotiations began nor when the chief executive learned of the deal.",
     "thesis_answers_it": false,
-    "route": "Concede cleanly. Nothing on the deck should change because of it. It belongs in the speaker notes and question preparation.",
-    "found_by": "The examiner pass, run blind. The operator had not anticipated it."
+    "route": "Slide 12 now states the boundary and names the PRE2 guard. The rebuttal goes in the speaker notes: misflagged quarters dilute a binary indicator and drag the estimate toward zero, and the flat PRE2 against the significant PRE1 constrains the onset. An earlier version of this file said no answer existed; that was too defeatist.",
+    "found_by": "The examiner pass, run blind. The operator had not anticipated it.",
+    "recorded_on_the_deck": "REV22 slide 12, box 3, The anticipatory window"
   },
   "speaker_notes_brief_when_that_work_starts": {
     "scope": "All 13 main-deck slides, against REV22. The Q&A appendix is separate and later.",
@@ -136,5 +146,24 @@
     "operational_rule_learned_the_hard_way": "Download every returned file before clicking Done and validate. Done stops monitoring, and anything that arrives afterwards is not collected. Recovery is to copy the files into the exchange response directory and run validate --exchange.",
     "state_on_2026-07-21": "No prepared or active calls. A render call was prepared and then deleted unsent once local rendering was shown to work.",
     "audit_exchanges_preserved_at": "GptWebCall/calls/, with request snapshots, responses, and validation reports"
+  },
+  "defense_ledger": {
+    "path": "docs/Defense/_DEFENSE_LEDGER.md",
+    "what_it_is": "Committee dossiers, a sixteen-question attack matrix with drafted answers, the slide-by-slide plant-ask-answer design, and a catalogue of fifteen defensive assets already inside the thesis. Written 2026-07-09, before the REV21 deck existed.",
+    "still_live": "Section A committee intel, section B question bank, section F thesis defensive assets, sections E and G working and pedagogy rules.",
+    "history_only": "Section C story-arc rows reference a retired 15-slide Beamer draft. Slide numbers there do not map to REV22.",
+    "why_it_is_in_the_read_order": "It was missed for a whole working session because nothing pointed at it. It is the single richest input to the speaker notes.",
+    "open_items_inside_it": [
+      "Q13, reliability of CEO speaker attribution in Capital IQ transcripts, marked NEEDS-VERIFY. The thesis describes the parsing but does not quantify its accuracy.",
+      "Q16, why the sample stops in 2018, marked NEEDS-VERIFY. Section F records that the thesis states no rationale, so only the presenter can close this.",
+      "The CEO-timing question is absent from all sixteen rows. REV22 slide 12 now carries it and the speaker notes must carry its rebuttal."
+    ],
+    "three_attenuation_arguments_it_records": [
+      "Q2 generated regressand: the residual is the dependent variable, so there is no coefficient bias, but first-stage noise inflates outcome noise and biases against finding the run-up.",
+      "Q13 speaker misattribution: adds noise to the outcome, attenuating toward zero.",
+      "Section 2.3 conservative floor: if anticipation leaks into the vetted script, the residual understates the signal, so the measure is a floor and not a ceiling.",
+      "A fourth, inverted, at Q12: if media rumor had made deals effectively public, the PRE1 to GAP contrast would be blunted rather than sharp. Here it is the absence of attenuation that helps."
+    ],
+    "condition_on_all_of_them": "They hold only while the noise is unrelated to deal timing. Noise that systematically tracks the pre-announcement window is a confound, not noise, and it runs the other way. The thesis claims no mechanism, which is what limits the damage."
   }
 }
