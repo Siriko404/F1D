@@ -11,7 +11,7 @@ Deck to present:
 
 ## 1. What changed
 
-Nine string replacements in the deck source HTML. The first five close the items
+Ten string replacements in the deck source HTML. The first five close the items
 the audit left open as `D-OPEN-1`. The sixth is explained in section 4. The last
 three add a limitation the audit found and the thesis never states, and are
 explained in section 5.
@@ -27,6 +27,7 @@ explained in section 5.
 | R22-07 | 12 | box 3 `A direct reading of the CEO` | `The anticipatory window` |
 | R22-08 | 12 | box 4 `A perfect comparison` | `Imperfect instruments`, absorbing the old box 3 proxy point |
 | R22-09 | 12 | footer cited the Conclusion only | footer also cites the event-study design, Section 2.4 |
+| R22-10 | 12 | box 3 carried a `PRE2` guard clause | guard removed; it defended the wrong direction, see section 5 |
 
 ### Why each one
 
@@ -209,22 +210,41 @@ section 2.3 with *Pagan (1984)* cited and the bootstrap fix named, so it stays o
 the slide and is answered verbally, with backup slide `B6` already assigned to it
 in the defense ledger.
 
-### Why the wording carries its own guard
+### R22-10, the guard that defended the wrong direction
 
 An earlier draft read *"the executive's knowledge of the deal is assumed, not
 observed"*. That was rejected as an over-concession: it invites the reading that
-the whole mechanism is an assumption, and it understates the evidence.
+the whole mechanism is an assumption.
 
-The event study already speaks to onset. `PRE2`, two quarters before announcement,
-is flat and insignificant at 0.0068. `PRE1`, one quarter before, is 0.0473 and
-significant at the one-percent level. A long private window would light up `PRE2`
-as well; negotiations beginning after the `PRE1` call would leave `PRE1` flat.
-Neither happens. The shape of the pattern therefore constrains the onset, and the
-defense ledger already calls `PRE2` the pre-trend check.
+The replacement went too far the other way. It read *"The flat quarter two before
+is the check that the window sits where it should"*, and it was shipped, rendered
+and committed before the error was caught. It is removed by `R22-10`.
 
-So the box states the boundary and names the guard in the same breath, which also
-plants a question the presenter can answer. That is the deck's own design method,
-recorded in `_DEFENSE_LEDGER.md` section C.
+The onset can be wrong in two directions, and they are not symmetric:
+
+| | What went wrong | Does a flat `PRE2` catch it? |
+|---|---|---|
+| A | negotiations began **earlier** than the window | yes, they would light up `PRE2` |
+| B | negotiations began **after** the flagged call | no |
+
+The limitation the box states is direction B. The guard tested direction A. A firm
+in case B contributes nothing to `PRE1` and nothing to `PRE2` alike, so a flat
+`PRE2` is consistent with any amount of B.
+
+A second, related overstatement was made while arguing for the guard: that
+negotiations beginning after the `PRE1` call would leave `PRE1` flat. `PRE1` is an
+average over every flagged firm, so contamination attenuates it rather than
+flattening it. A significant `PRE1` rules out total contamination and nothing
+less.
+
+What actually answers direction B is the attenuation argument: misflagged calls
+dilute a binary treatment indicator and drag the estimate toward zero, so the
+effect was found despite the flaw rather than because of it. That is a rebuttal,
+and it belongs in the speaker notes.
+
+So box 3 is now a single clean line in the same register as the other three. The
+`PRE1` and `PRE2` shape remains a real and useful argument, but for what it
+actually shows: that the signal is tightly timed and has no pre-trend.
 
 ### Why the two other boxes merged
 

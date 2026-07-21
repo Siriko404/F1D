@@ -13,7 +13,7 @@
   ],
   "the_deck_to_present": {
     "path": "docs/Defense/REV22/production/thesis_defense_main_deck_slides_01-13_rev22.pdf",
-    "sha256": "7577c5aff964fd37110f85ffd104c40b8281c7f5166ebb6e4b38d51708977026",
+    "sha256": "550c820c04ee9982b56d804b61f3a9619fd999f5d94b71e5e6b3e48488af78c4",
     "note": "REV22 supersedes REV21 as the deck to present. 13 pages, 1152 x 648 points. REV21 remains untouched as the provenance record and as the fidelity reference."
   },
   "stale_authority_warning": {
@@ -115,9 +115,10 @@
     "what": "An examiner can ask what evidence there is that the CEO knew about the acquisition at the pre-announcement call.",
     "why_it_bites": "The event clock is anchored on the announcement date. The thesis observes neither when negotiations began nor when the chief executive learned of the deal.",
     "thesis_answers_it": false,
-    "route": "Slide 12 now states the boundary and names the PRE2 guard. The rebuttal goes in the speaker notes: misflagged quarters dilute a binary indicator and drag the estimate toward zero, and the flat PRE2 against the significant PRE1 constrains the onset. An earlier version of this file said no answer existed; that was too defeatist.",
+    "route": "Slide 12 box 3 states the boundary in one line: the data mark the announcement date, not when negotiations began. Both rebuttals go in the speaker notes. Rebuttal 1, the only one that answers the real direction of the attack: misflagged calls dilute a binary treatment indicator and drag the estimate toward zero, so the effect was found despite the flaw. Rebuttal 2, narrower than it looks: the flat PRE2 against the significant PRE1 shows the signal is tightly timed with no pre-trend.",
     "found_by": "The examiner pass, run blind. The operator had not anticipated it.",
-    "recorded_on_the_deck": "REV22 slide 12, box 3, The anticipatory window"
+    "recorded_on_the_deck": "REV22 slide 12, box 3, The anticipatory window",
+    "trap_do_not_repeat": "A flat PRE2 catches negotiations that began EARLIER than the window. It says nothing about negotiations that began AFTER the flagged call, which is the direction the limitation states, because such a firm contributes nothing to PRE1 and nothing to PRE2 alike. A significant PRE1 does not rule it out either, since PRE1 is an average and contamination attenuates rather than flattens it. A guard clause making this mistake was shipped on slide 12 and removed as R22-10. Do not reintroduce it."
   },
   "speaker_notes_brief_when_that_work_starts": {
     "scope": "All 13 main-deck slides, against REV22. The Q&A appendix is separate and later.",

@@ -84,17 +84,29 @@ speaker notes:
    question, ratified 2026-07-09: *"The error is random and unrelated to deal
    timing. It can't create a pre-deal pattern, only blur one. The run-up survived
    that blur."*
-2. The event study constrains the onset. `PRE2` is flat at 0.0068 and
-   insignificant; `PRE1` is 0.0473 at the one-percent level. A long private window
-   would light `PRE2` too; talks starting after the `PRE1` call would leave `PRE1`
-   flat. Neither happens.
+2. The event study shows the signal is tightly timed with no pre-trend. `PRE2` is
+   flat at 0.0068 and insignificant; `PRE1` is 0.0473 at the one-percent level.
 
-Both rebuttals hold only while the noise is unrelated to deal timing. Noise that
-tracks the pre-announcement window is a confound, not noise, and runs the other
-way. The thesis claims no mechanism, which is what bounds the damage.
+**Do not confuse the two.** The onset can be wrong in two directions and `PRE2`
+only catches one of them:
 
-Slide 12 now states the boundary and names the `PRE2` guard. The rebuttal itself
-stays off the slide and goes in the notes.
+| | What went wrong | Flat `PRE2` catches it? |
+|---|---|---|
+| A | negotiations began earlier than the window | yes |
+| B | negotiations began after the flagged call | **no** |
+
+A firm in case B contributes nothing to `PRE1` and nothing to `PRE2` alike, so a
+flat `PRE2` is consistent with any amount of B. Nor does a significant `PRE1` rule
+B out: `PRE1` is an average, so contamination attenuates it rather than flattening
+it. **Only rebuttal 1 answers direction B.** A guard clause pointing at `PRE2` was
+briefly shipped on slide 12 and removed as `R22-10`; do not reintroduce it.
+
+Rebuttal 1 holds only while the misflagging is unrelated to deal timing. Noise
+that tracks the pre-announcement window is a confound, not noise, and runs the
+other way. The thesis claims no mechanism, which is what bounds the damage.
+
+Slide 12 states the boundary in one line. Both rebuttals stay off the slide and go
+in the notes.
 
 Full detail: `audit/AUDIT_REGISTER.md`. Raw pass outputs: `audit/findings/`.
 

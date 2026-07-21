@@ -203,8 +203,15 @@ def verify_edits_landed(edited) -> None:
          "These patterns suggest that", None),
         ("R22-07 slide 12 names the window boundary", 12,
          "not when negotiations began", "A direct reading of the"),
-        ("R22-07 slide 12 keeps the pre-trend guard with it", 12,
-         "flat quarter two before", None),
+        # R22-10 removed a guard clause that pointed at the flat PRE2 quarter.
+        # It defended the wrong direction: PRE2 catches negotiations that began
+        # EARLIER than the window, while the limitation stated in this box is
+        # that they may have begun LATER than the flagged call. A firm in that
+        # case contributes nothing to PRE1 and nothing to PRE2 alike, so a flat
+        # PRE2 is consistent with any amount of it. Only the attenuation
+        # argument answers that direction, and it belongs in the notes.
+        ("R22-10 slide 12 carries no PRE2 guard clause", 12,
+         "not when negotiations began", "flat quarter two before"),
         ("R22-08 slide 12 merges the two imperfect instruments", 12,
          "Imperfect instruments", "A perfect comparison"),
         ("R22-09 slide 12 footer names the event-study design", 12,
