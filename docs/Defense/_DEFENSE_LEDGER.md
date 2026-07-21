@@ -1,4 +1,13 @@
-# DEFENSE LEDGER (single source of truth for defense prep; append-only, commit after every chunk)
+# DEFENSE LEDGER
+
+> **SUPERSEDED IN PART (2026-07-16).** The presentation is now owned by the REV21 package
+> (`THESIS_DEFENSE_PROJECT_LOCKED_REV21.zip` in Downloads), whose 13-slide deck is locked.
+> The story-arc records in section C reference a retired 15-slide Beamer draft: HISTORY ONLY.
+> Still live and portable: section A (committee intel), section B (question bank),
+> section F (thesis defensive assets), section E/G (working + pedagogy rules).
+> Start from `_HANDOFF_NEXT_SESSION.md`.
+
+(original header: single source of truth for defense prep; append-only, commit after every chunk)
 
 Governing rules:
 - NO DELEGATION (Sina 2026-07-09): all research/analysis done by the main session, recorded here as learned.
