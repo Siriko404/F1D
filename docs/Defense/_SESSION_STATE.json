@@ -3,7 +3,6 @@
   "written_on": "2026-07-21",
   "written_by": "Claude Code session, F1D working tree",
   "purpose": "Machine-readable state of the thesis defense work. Written so that a session which loses its conversation history can resume without asking the user to reconstruct anything. Read _HANDOFF_NEXT_SESSION.md first; this file is the precise companion to it.",
-
   "read_order_for_a_fresh_session": [
     "docs/Defense/_HANDOFF_NEXT_SESSION.md",
     "docs/Defense/_SESSION_STATE.json",
@@ -11,20 +10,17 @@
     "docs/Defense/audit/AUDIT_REGISTER.md",
     "docs/Defense/REV21/THESIS_DEFENSE_CONTINUITY_LEDGER_REV21.json"
   ],
-
   "the_deck_to_present": {
     "path": "docs/Defense/REV22/production/thesis_defense_main_deck_slides_01-13_rev22.pdf",
-    "sha256": "bb8bf58d754ba9a6b403cc6233aa5cd07fd955bbedeea136b7ad9582570c9cc7",
+    "sha256": "433738e712e23009b78bd69f8e1cf16186194cd506b2e05010e8384623256947",
     "note": "REV22 supersedes REV21 as the deck to present. 13 pages, 1152 x 648 points. REV21 remains untouched as the provenance record and as the fidelity reference."
   },
-
   "stale_authority_warning": {
     "file": "docs/Defense/REV21/THESIS_DEFENSE_CONTINUITY_LEDGER_REV21.json",
     "problem": "Its current_state.next_action says to resume the indexed Q&A appendix. That is no longer the next action. The user redirected to a full audit of the main deck plus speaker notes; the audit is complete and its findings have been applied as REV22. The ledger was deliberately left unmodified rather than rewritten by hand, because it is a 346 KB control document produced by another workstream and a hand edit risks corrupting it.",
     "still_authoritative_for": "The operating contract, the 38 approved decisions, the visual system, the production and QA workflow, the do-not-repeat lessons, and the appendix architecture for when the appendix work resumes.",
     "not_authoritative_for": "current_state.next_action, and the identity of the production deck, which is now REV22"
   },
-
   "current_state": {
     "stage": "Main-deck audit complete. All findings applied as REV22. Speaker notes not started.",
     "next_action": "Write speaker notes for all 13 main-deck slides, against REV22.",
@@ -33,9 +29,7 @@
     "deliverable_2_speaker_notes": "not started, and now unblocked",
     "deliverable_3_qa_appendix": "architecture approved in REV21, content not designed, out of scope until the notes are done"
   },
-
   "open_decisions": [],
-
   "closed_decisions": [
     {
       "id": "D-OPEN-1",
@@ -45,9 +39,7 @@
       "status": "closed"
     }
   ],
-
   "blockers": [],
-
   "closed_blockers": [
     {
       "id": "B-1",
@@ -59,13 +51,12 @@
       "status": "closed"
     }
   ],
-
   "verification": {
     "rev22_render": {
       "command": "python docs/Defense/REV22/verify_rev22.py",
-      "checks": 16,
+      "checks": 17,
       "last_run": "2026-07-21, all passed, exit code 0",
-      "what_it_proves": "Two separate things. First, that this rendering environment reproduces the locked REV21 deck span for span, which is what makes the edited render trustworthy. Second, that the edit changed exactly slides 8, 11, 12 and 13 and nothing else, that no drawing moved on any slide, that the five approved strings landed, that no em or en dash remains, and that every span sits inside its page."
+      "what_it_proves": "Two separate things. First, that this rendering environment reproduces the locked REV21 deck span for span, which is what makes the edited render trustworthy. Second, that the edit changed exactly slides 8, 11, 12 and 13 and nothing else, that no drawing moved on any slide, that the five approved strings landed, that no em or en dash remains, and that every span sits inside its page. It also scans the PDF metadata for em and en dashes, which the page-text scan could not see and which the shipped REV21 title violated."
     },
     "rev21_audit": {
       "command": "python docs/Defense/audit/scripts/verify_deck.py",
@@ -77,7 +68,6 @@
     },
     "what_no_script_can_check": "Clipped text still extracts cleanly from a PDF, so overflow inside a fixed box is invisible to every automated check here. The four changed slides were rasterised and inspected by eye on 2026-07-21 and nothing is clipped. Any future edit needs the same visual pass."
   },
-
   "key_files": {
     "deck_to_present": "docs/Defense/REV22/production/thesis_defense_main_deck_slides_01-13_rev22.pdf",
     "rev22_change_log": "docs/Defense/REV22/REV22_CHANGE_LOG.md",
@@ -111,9 +101,7 @@
     "deck_numeric_inventory": "docs/Defense/audit/DECK_NUMERIC_INVENTORY.csv",
     "committee_profiles": "docs/Defense/audit/passes/examiner/COMMITTEE_PROFILES.md"
   },
-
   "audit_result_in_one_paragraph": "No blocker and no major defect. Every number on the deck was verified twice, once mechanically by the operator against the byte-exact thesis tables and once independently by a web call, with zero exceptions across 136 items on slides 6 to 13. Chart geometry was measured directly from the PDF drawing objects and every plotted point lands within a hundredth of a point. All twelve citations exist with the correct year and support the proposition they are attached to. No slide asserts causation, claims an established mechanism, or reads the payment-method result as strict cash specificity. What remained was four cosmetic wording items, now fixed in REV22, and one substantial exposure in the question period that is not a deck problem.",
-
   "single_most_important_finding": {
     "what": "An examiner can ask what evidence there is that the CEO knew about the acquisition at the pre-announcement call.",
     "why_it_bites": "The event clock is anchored on the announcement date. The thesis observes neither when negotiations began nor when the chief executive learned of the deal.",
@@ -121,7 +109,6 @@
     "route": "Concede cleanly. Nothing on the deck should change because of it. It belongs in the speaker notes and question preparation.",
     "found_by": "The examiner pass, run blind. The operator had not anticipated it."
   },
-
   "speaker_notes_brief_when_that_work_starts": {
     "scope": "All 13 main-deck slides, against REV22. The Q&A appendix is separate and later.",
     "wording_note": "Slides 8, 11, 12 and 13 changed in REV22. Quote REV22, never REV21.",
@@ -132,14 +119,11 @@
     "committee_context": "One examiner prefers defenses that finish promptly, so a tight findings-forward delivery matters more than completeness.",
     "source_of_the_full_plan": "docs/Defense/audit/DECK_AUDIT_PLAN.md, section 'Speaker-notes production plan'"
   },
-
   "untested_and_owed": [
     "The deck has never been rehearsed or timed. The 18 minute target is a design assumption, not a measured fact. Only the presenter can close this.",
     "No adversarial second reviewer ran over the claims and examiner passes, so their completeness rests on a single read each. The mechanical dimensions do not share this limitation.",
-    "The thesis itself was not audited. It is submitted and approved and out of scope. A faithful deck reproducing a thesis error would pass every check here.",
-    "The HTML <title> still contains one em dash and one en dash. It is PDF metadata, never visible on a slide, present since REV21, and left alone deliberately as outside the four approved fixes."
+    "The thesis itself was not audited. It is submitted and approved and out of scope. A faithful deck reproducing a thesis error would pass every check here."
   ],
-
   "web_call_infrastructure": {
     "root": "C:/Users/sinas/OneDrive/Desktop/Projects/GptWebCall",
     "protocol": "WEB_CALL_PROTOCOL.md at that root, read it before preparing any call",

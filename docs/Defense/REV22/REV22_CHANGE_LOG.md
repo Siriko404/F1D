@@ -1,7 +1,8 @@
 # REV22 change log
 
-REV22 is the presentation deck. It is REV21 with four wording defects corrected
-and nothing else changed.
+REV22 is the presentation deck. It is REV21 with four wording defects corrected,
+plus one dash in the PDF title that no check had been looking at, and nothing
+else changed.
 
 REV21 is untouched and remains the provenance record.
 
@@ -10,8 +11,8 @@ Deck to present:
 
 ## 1. What changed
 
-Five string replacements in the deck source HTML, closing the four items the
-audit left open as `D-OPEN-1`.
+Six string replacements in the deck source HTML. The first five close the items
+the audit left open as `D-OPEN-1`; the sixth is explained in section 4.
 
 | ID | Slide | Was | Is |
 |---|---|---|---|
@@ -20,6 +21,7 @@ audit left open as `D-OPEN-1`.
 | R22-03 | 12 | `around disclosure - no more, and no less` | `around disclosure, no more and no less` |
 | R22-04 | 12 | `What it does not show - and where it may not carry` | `What it does not show, and where it may not carry` |
 | R22-05 | 13 | `Unscripted CEO Q&A carries a ...` | `These patterns suggest that unscripted CEO Q&A carries a ...` |
+| R22-06 | all | `<title>Thesis Defense — ... Slides 1–13` | `<title>Thesis Defense: ... Slides 1 to 13` |
 
 ### Why each one
 
@@ -126,16 +128,36 @@ lines to three, which happens to balance it against the first column.
 
 Full check list, all passing: REV21 unchanged, control page count and size,
 13-slide span reproduction, edited page count and size, renders distinct, edit
-scope, five edits landed, no em or en dash, containment.
+scope, the approved strings landed, no em or en dash on any slide, no em or en
+dash in the PDF metadata, containment. Seventeen in all.
 
-## 4. Known and accepted
+## 4. R22-06, the dash the checks could not see
 
-The HTML `<title>` still contains one em dash and one en dash:
-`Thesis Defense — Standardized Main Deck, Slides 1–13`. This is PDF metadata. It
-never appears on a slide and is visible only in a PDF viewer's title bar or
-properties panel. It was present in REV21, was seen by the audit, and is left
-alone here because it falls outside the four approved fixes. Changing it is a
-one-line, zero-layout-risk edit if wanted.
+The four fixes above came from the audit. This sixth one came from noticing that
+the check which said there were no dashes had never looked at the whole file.
+
+The HTML `<title>` read `Thesis Defense — Standardized Main Deck, Slides 1–13`,
+one em dash and one en dash. WeasyPrint copies `<title>` into the PDF's `/Title`,
+so the shipped deck carried both in its metadata, visible in a viewer's title bar
+and properties panel. It now reads
+`Thesis Defense: Standardized Main Deck, Slides 1 to 13`.
+
+The part worth remembering is why it survived. Both verifiers built their dash
+scan from `page.get_text()`, which is rendered page text and nothing else. A
+check named "no em dash or en dash anywhere" was passing while the deliverable
+violated the rule, because metadata was never in its field of view. A green light
+on an unexamined surface is worse than no check at all, since it actively
+discourages looking.
+
+`verify_rev22.py` now scans `document.metadata` as well, so the word "anywhere"
+is true. This is also the reason the title was changed rather than filed as
+accepted: the standing instruction is that no em dash appears in anything
+audience-facing, and a PDF title is reachable by the audience.
+
+The edit was made in `rev22_edited.html` only. `rev22_control.html` still carries
+both dashes, because it must stay byte-identical to the REV21 source or it stops
+being a fidelity control. The title is not page text, so the edit-scope check is
+unaffected: exactly slides 8, 11, 12 and 13 still differ.
 
 ## 5. What REV22 does not address
 

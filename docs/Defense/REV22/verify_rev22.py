@@ -218,7 +218,21 @@ def verify_edits_landed(edited) -> None:
     )
 
     joined = " ".join(text.values())
-    check("no em dash or en dash anywhere", "—" not in joined and "–" not in joined)
+    check("no em dash or en dash on any slide", "—" not in joined and "–" not in joined)
+
+    # Page text is not the whole document. The PDF's own /Title is audience
+    # reachable through a viewer's title bar and properties panel, and REV21
+    # carried an em dash and an en dash there for exactly as long as nobody
+    # thought to look. A check called "anywhere" has to mean anywhere.
+    metadata = " ".join(
+        str(edited.metadata.get(key) or "")
+        for key in ("title", "author", "subject", "keywords", "creator", "producer")
+    )
+    check(
+        "no em dash or en dash in the PDF metadata",
+        "—" not in metadata and "–" not in metadata,
+        f"title is {edited.metadata.get('title')!r}",
+    )
 
 
 def verify_no_overflow(edited) -> None:

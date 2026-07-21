@@ -1,3 +1,8 @@
+> **SUPERSEDED, 2026-07-21.** This ledger belongs to the July 14 web-call
+> workstream and its "immediate next action" is long finished. For the current
+> state of the defense work read `_HANDOFF_NEXT_SESSION.md` and
+> `_SESSION_STATE.json` beside it. The deck to present is REV22.
+
 # CURRENT DEFENSE HANDOFF LEDGER
 
 Last updated: 2026-07-13 22:57 EDT, America/Toronto
@@ -75,6 +80,11 @@ log. Do not turn this into a transcript or research dump.
   the second, and a short snake_case subject. The exchange's `request/` contains
   everything uploaded; its `response/` receives everything returned. Never mix
   files from separate exchanges or split a new call across global folders.
+- Beginning with the next not-yet-submitted exchange after
+  `2026-07-14_131515_web_call_assistant_system_design`, every paste-in instruction
+  file must be named `PROMPT_YYYY-MM-DD_HHMMSS.txt`, with the exact date-time
+  segment from its exchange-folder name. Existing submitted snapshots retain
+  their historical prompt filenames unchanged.
 
 ## 3. SOURCE AUTHORITY
 
@@ -185,38 +195,54 @@ current Act 1 is:
 
 - Protocol: `docs/Defense/chatgpt/CHATGPT_WEB_PROTOCOL.json`
   - Version: `2.0`, universal reasoning gate.
-  - SHA-256: `870FD341DD5252DF4522F3A443CC0C66D3B92D5339BF7100CC2C2C0349109C08`
+  - SHA-256: `B47977D16AB6365031F126BD4E418A1EDD9B6090EDCEE8B3A660B2316E4653B8`
 - Active exchange:
-  `docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge/`
+  `docs/Defense/chatgpt/calls/2026-07-14_131515_web_call_assistant_system_design/`
   - Manifest SHA-256:
-    `7C53E2F18721BA0766C44185336460081655DDD35405E376393AE1016BCF9AC3`.
+    `F9E69F50D771A6C75E4D0F3CD8DC085F1A22A70F1827D5DF1FB7AAB316DB80DD`.
   - Request files: `request/`.
   - Returned files drop zone: `response/`.
-  - Exchange status: response received and validated; awaiting Sina's Act 2
-    narrative decision.
-- Request schema: `docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge/request/WEB_REQUEST_SCHEMA.json`
+  - Exchange status: response received and structurally validated; candidate
+    architecture awaits Sina's blocking decisions before implementation.
+- Request schema: `docs/Defense/chatgpt/calls/2026-07-14_131515_web_call_assistant_system_design/request/WEB_REQUEST_SCHEMA.json`
   - SHA-256: `044889EA731E8066A5FA6AA0D1A66CB82F6B266172C9EFD2A25D5463BEBF5F1F`
-- Response schema: `docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge/request/WEB_RESPONSE_SCHEMA.json`
+- Response schema: `docs/Defense/chatgpt/calls/2026-07-14_131515_web_call_assistant_system_design/request/WEB_RESPONSE_SCHEMA.json`
   - SHA-256: `4DD078CF1A0D56FA6EBED0A5B1CAF6A377505D08E035646C6835C8DC0EE54B59`
 - Silent paste prompt:
-  `docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge/request/PASTE_THIS_PROMPT.txt`
+  `docs/Defense/chatgpt/calls/2026-07-14_131515_web_call_assistant_system_design/request/PASTE_THIS_PROMPT.txt`
   - SHA-256: `F6697B008CB46FA004BAE2C45103B78893323EB82A82E08CD3844C4CE290E6CA`
 - Active request:
-  `docs/Defense/chatgpt/calls/2026-07-13_223157_act2_measure_design_bridge/request/WEB_REVIEW_REQUEST.json`
-  - Request ID: `defense-act2-measure-design-bridge-2026-07-13-v1`.
-  - SHA-256: `26BBFC79181B2BC70E29687845EF5D8FEFA89634AF175EB3A0127273FC9EC6EE`.
-  - Expected main response: `2026-07-13_act2_measure_design_review.json`.
-  - Required artifact: `ACT2_DESIGN_PROPOSAL.md`.
-  - Web research is disabled; only uploaded files may be used.
+  `docs/Defense/chatgpt/calls/2026-07-14_131515_web_call_assistant_system_design/request/WEB_REVIEW_REQUEST.json`
+  - Request ID: `web-call-assistant-system-design-2026-07-14-v1`.
+  - SHA-256: `B60E65AEFB2E4787804AA35E51A2E7EFEAB802B4E745FA63380CAA3F42CBA00E`.
+  - Expected main response: `2026-07-14_web_call_assistant_design_review.json`.
+  - Required artifacts: `CHATGPT_WEB_CALL_ASSISTANT_SYSTEM_DESIGN.md` and
+    `CHATGPT_WEB_CALL_ASSISTANT_IMPLEMENTATION_ROADMAP.md`.
+  - Current web research is enabled for official, time-sensitive platform
+    constraints and mature primary implementation evidence.
+- Validated response files:
+  - `response/2026-07-14_web_call_assistant_design_review.json` — SHA-256
+    `7892337715CBBA9B8356D8C4F059E3902F61BADF48EB727DB8A5B6347AE7FBC4`.
+  - `response/CHATGPT_WEB_CALL_ASSISTANT_SYSTEM_DESIGN.md` — SHA-256
+    `F2C8ECE0092D0B7873C218534BF5B924E5A52A0B701E14712F5425777DED1E36`.
+  - `response/CHATGPT_WEB_CALL_ASSISTANT_IMPLEMENTATION_ROADMAP.md` — SHA-256
+    `6A4E89DA453416D2E70746218986F1BDB757E4F38116016783A6FAE2611FC335`.
 - Normalized first response:
   `docs/Defense/chatgpt/received/2026-07-13_act1_review_response.json`
   - SHA-256: `57902076B7D2A44BD47AF43057B7247E3B5FFFC103FDE8238BEF073D2D0BA120`
   - Provenance is explicitly `CODEX_NORMALIZED_LEGACY_PROSE`; the first response
     was pasted as prose before the downloadable-JSON rule existed.
-- The active Act 2 exchange follows the timestamped exchange layout. Its
-  `request/` contains the exact eight submitted files. Its `response/` is the only
-  location where Sina should place this call's returned JSON and artifact. The old
-  shared `current_upload/` layout is legacy and is archived without deletion.
+- The active system-design exchange follows the timestamped exchange layout. Its
+  `request/` contains the exact ten submitted files. Its `response/` contains the
+  schema-valid main JSON plus both required artifacts. Request ID, filenames,
+  delivery contract, and artifact hashes all match. Independent checks confirmed
+  the load-bearing OpenAI Terms restriction on automatic/programmatic Output
+  extraction and the cited Chrome native-messaging constraints. The design is
+  accepted only as a candidate pending Sina's decisions. Its historical
+  `PASTE_THIS_PROMPT.txt` references are overridden for future calls by the newer
+  `PROMPT_YYYY-MM-DD_HHMMSS.txt` rule. The prior Act 2 exchange remains complete
+  and validated in its original folder. The old shared `current_upload/` layout
+  is legacy and is archived without deletion.
 - The prior prose-based Act 1 request is preserved under
   `docs/Defense/chatgpt/archive/001_act1_review_legacy_text_request/`.
   That archive also preserves protocol and schema version 1, which governs the
