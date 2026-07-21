@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Slide 8 - Pre-announcement Run-up</title>
+<style>
+  @page { size: 16in 9in; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 16in; height: 9in; }
+  body {
+    background: #F4F1EC;
+    color: #231F20;
+    font-family: "Times New Roman", Times, serif;
+  }
+  .slide {
+    position: relative;
+    width: 16in;
+    height: 9in;
+    overflow: hidden;
+    background: #F4F1EC;
+  }
+
+  .finding {
+    position: absolute;
+    left: 0.86in;
+    top: 0.56in;
+    color: #8F001A;
+    font-size: 15pt;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  h1 {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    top: 0.88in;
+    margin: 0;
+    font-size: 40pt;
+    line-height: 1;
+    font-weight: 400;
+    letter-spacing: -0.018em;
+    white-space: nowrap;
+  }
+  .title-rule {
+    position: absolute;
+    left: 0.86in;
+    top: 1.54in;
+    width: 1.18in;
+    height: 0.032in;
+    background: #8F001A;
+  }
+  .takeaway {
+    position: absolute;
+    left: 0.86in;
+    top: 1.82in;
+    width: 13.4in;
+    margin: 0;
+    color: #3E3937;
+    font-size: 24pt;
+    line-height: 1.14;
+  }
+  .takeaway strong {
+    color: #8F001A;
+    font-weight: 700;
+  }
+
+  .plot-column {
+    position: absolute;
+    left: 0.86in;
+    top: 2.72in;
+    width: 9.18in;
+    height: 4.18in;
+  }
+  .plot-title {
+    margin: 0;
+    color: #5E5855;
+    font-size: 16.5pt;
+    line-height: 1;
+  }
+  .plot-title strong {
+    color: #231F20;
+    font-weight: 400;
+  }
+  .coefficient-plot {
+    display: block;
+    width: 9.18in;
+    height: 3.28in;
+    margin-top: 0.14in;
+    overflow: visible;
+  }
+  .benchmark {
+    margin: 0.02in 0 0 0;
+    width: 9.00in;
+    color: #4E4946;
+    font-size: 16.5pt;
+    line-height: 1.18;
+    text-align: center;
+  }
+
+  .result-column {
+    position: absolute;
+    left: 10.56in;
+    top: 2.72in;
+    width: 4.58in;
+    height: 4.12in;
+    border-top: 1.2pt solid #B7AEA7;
+    padding-top: 0.19in;
+  }
+  .result-label {
+    color: #5E5855;
+    font-size: 12pt;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .estimate {
+    margin-top: 0.11in;
+    color: #8F001A;
+    font-size: 54pt;
+    line-height: 0.94;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .stat-list {
+    margin-top: 0.18in;
+    color: #3E3937;
+    font-size: 18pt;
+    line-height: 1.36;
+  }
+  .stat-list .ci {
+    color: #8F001A;
+  }
+  .magnitude {
+    margin-top: 0.34in;
+    padding-top: 0.20in;
+    border-top: 1.1pt solid rgba(35,31,32,0.16);
+  }
+  .magnitude strong {
+    display: block;
+    color: #8F001A;
+    font-size: 25pt;
+    line-height: 1.04;
+    font-weight: 700;
+  }
+  .magnitude span {
+    display: block;
+    margin-top: 0.07in;
+    color: #4E4946;
+    font-size: 17pt;
+    line-height: 1.18;
+  }
+  .magnitude small {
+    display: block;
+    margin-top: 0.11in;
+    color: #6A6461;
+    font-size: 14pt;
+    line-height: 1.12;
+  }
+
+  .method-strip {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    top: 7.17in;
+    height: 1.02in;
+    border-top: 1.1pt solid rgba(35,31,32,0.18);
+    border-bottom: 1.1pt solid rgba(35,31,32,0.18);
+    display: grid;
+    grid-template-columns: 2.72in 7.14in 2.28in 1.42in;
+    column-gap: 0.24in;
+    align-items: center;
+  }
+  .method-item {
+    min-width: 0;
+  }
+  .method-label {
+    color: #5E5855;
+    font-size: 10.8pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 0.055in;
+  }
+  .method-value {
+    color: #3E3937;
+    font-size: 13.8pt;
+    line-height: 1.13;
+  }
+  .method-value strong {
+    color: #231F20;
+    font-weight: 700;
+  }
+
+  .footer {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    bottom: 0.27in;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    color: #6A6461;
+  }
+  .source {
+    font-size: 11pt;
+    line-height: 1.1;
+  }
+  .page {
+    color: #8F001A;
+    font-size: 13pt;
+    letter-spacing: 0.06em;
+  }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="finding">Finding 1</div>
+  <h1>Pre-announcement Run-up</h1>
+  <div class="title-rule"></div>
+  <p class="takeaway">Before a cash acquisition is announced, the same firm's CEO shows a <strong>small but clear rise</strong><br>in residual Q&amp;A uncertainty.</p>
+
+  <div class="plot-column">
+    <p class="plot-title"><strong>Estimated change in residual CEO uncertainty</strong></p>
+    <svg class="coefficient-plot" viewBox="0 0 900 390" role="img" aria-label="Vertical coefficient plot showing an estimate of 0.0461 and a 95 percent confidence interval from 0.012 to 0.080 on a scale from minus 0.301 to plus 0.301.">
+      <!-- One numeric scale: +0.301 at y=38, zero at y=194, -0.301 at y=350. -->
+      <line x1="130" y1="38" x2="130" y2="350" stroke="#6A6461" stroke-width="1.6" />
+      <line x1="121" y1="38" x2="139" y2="38" stroke="#6A6461" stroke-width="1.6" />
+      <line x1="121" y1="194" x2="139" y2="194" stroke="#6A6461" stroke-width="1.6" />
+      <line x1="121" y1="350" x2="139" y2="350" stroke="#6A6461" stroke-width="1.6" />
+      <text x="108" y="45" text-anchor="end" font-family="Times New Roman, Times, serif" font-size="20" fill="#3E3937">+0.301</text>
+      <text x="108" y="201" text-anchor="end" font-family="Times New Roman, Times, serif" font-size="20" fill="#231F20">0.000</text>
+      <text x="108" y="357" text-anchor="end" font-family="Times New Roman, Times, serif" font-size="20" fill="#3E3937">-0.301</text>
+
+      <!-- Explicit contextual range marker for +/- one residual standard deviation. -->
+      <line x1="196" y1="38" x2="196" y2="350" stroke="#8A837F" stroke-width="1.8" />
+      <line x1="196" y1="38" x2="222" y2="38" stroke="#8A837F" stroke-width="1.8" />
+      <line x1="196" y1="350" x2="222" y2="350" stroke="#8A837F" stroke-width="1.8" />
+      <text x="236" y="48" font-family="Times New Roman, Times, serif" font-size="18" fill="#5E5855">Usual across-call spread</text>
+      <text x="236" y="72" font-family="Times New Roman, Times, serif" font-size="18" fill="#231F20">+/- 0.301 (one SD from zero)</text>
+
+      <!-- The only reference line is zero. -->
+      <line x1="130" y1="194" x2="820" y2="194" stroke="#231F20" stroke-opacity="0.58" stroke-width="1.8" />
+
+      <!-- CI coordinates use the displayed endpoints 0.012 and 0.080. -->
+      <line x1="585" y1="152.54" x2="585" y2="187.78" stroke="#8F001A" stroke-width="4" />
+      <line x1="568" y1="152.54" x2="602" y2="152.54" stroke="#8F001A" stroke-width="4" />
+      <line x1="568" y1="187.78" x2="602" y2="187.78" stroke="#8F001A" stroke-width="4" />
+
+      <!-- 0.0461 / 0.3010 = 0.153156: y = 194 - 0.153156*(194-38) = 170.11. -->
+      <circle cx="585" cy="170.11" r="9.5" fill="#8F001A" />
+      <text x="585" y="381" text-anchor="middle" font-family="Times New Roman, Times, serif" font-size="19" fill="#4E4946">Final private quarter</text>
+    </svg>
+    <p class="benchmark">The model compares each firm's final private quarter with its ordinary quarters.</p>
+  </div>
+
+  <aside class="result-column">
+    <div class="result-label">Estimated within-firm shift</div>
+    <div class="estimate">+0.0461</div>
+    <div class="stat-list">
+      <div class="ci">Approx. 95% CI&nbsp; [0.012, 0.080]</div>
+      <div>SE&nbsp; 0.0172</div>
+      <div>Two-tailed p&nbsp; = 0.0074</div>
+    </div>
+    <div class="magnitude">
+      <strong>About 15% of the usual spread</strong>
+      <span>A modest but statistically clear increase.</span>
+      <small>0.0461 / 0.3010 = 15.3%</small>
+    </div>
+  </aside>
+
+  <div class="method-strip">
+    <div class="method-item">
+      <div class="method-label">Sample</div>
+      <div class="method-value"><strong>27,622</strong> firm-quarters<br><strong>1,248</strong> firms</div>
+    </div>
+    <div class="method-item">
+      <div class="method-label">Controls and fixed effects</div>
+      <div class="method-value">Leverage, size, Tobin's Q, ROA, capex, dividends, cash-flow volatility; firm and calendar year-quarter fixed effects</div>
+    </div>
+    <div class="method-item">
+      <div class="method-label">Inference</div>
+      <div class="method-value">Standard errors<br>clustered by firm</div>
+    </div>
+    <div class="method-item">
+      <div class="method-label">Boundary</div>
+      <div class="method-value"><strong>Descriptive,<br>not causal</strong></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="source">Thesis source: Main Analysis 1 and its table notes. Approximate 95% CI derived from the reported estimate and SE.</div>
+    <div class="page">08 / 13</div>
+  </div>
+</section>
+</body>
+</html>

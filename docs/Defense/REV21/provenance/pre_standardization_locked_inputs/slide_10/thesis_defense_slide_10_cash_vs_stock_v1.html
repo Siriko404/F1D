@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Slide 10 - Cash vs. Stock</title>
+<style>
+  @page { size: 16in 9in; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 16in; height: 9in; }
+  body {
+    background: #F4F1EC;
+    color: #231F20;
+    font-family: "Times New Roman", Times, serif;
+  }
+  .slide {
+    position: relative;
+    width: 16in;
+    height: 9in;
+    overflow: hidden;
+    background: #F4F1EC;
+  }
+
+  .finding {
+    position: absolute;
+    left: 0.86in;
+    top: 0.56in;
+    color: #8F001A;
+    font-size: 15pt;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  h1 {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    top: 0.88in;
+    margin: 0;
+    font-size: 40pt;
+    line-height: 1;
+    font-weight: 400;
+    letter-spacing: -0.018em;
+    white-space: nowrap;
+  }
+  .title-rule {
+    position: absolute;
+    left: 0.86in;
+    top: 1.54in;
+    width: 1.18in;
+    height: 0.032in;
+    background: #8F001A;
+  }
+  .takeaway {
+    position: absolute;
+    left: 0.86in;
+    top: 1.82in;
+    width: 14.28in;
+    margin: 0;
+    color: #3E3937;
+    font-size: 22pt;
+    line-height: 1.16;
+  }
+  .takeaway strong {
+    color: #8F001A;
+    font-weight: 700;
+  }
+
+  .figure-grid {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    top: 2.71in;
+    height: 4.18in;
+    display: grid;
+    grid-template-columns: 8.70in 5.05in;
+    column-gap: 0.53in;
+  }
+  .section-label {
+    color: #8F001A;
+    font-size: 11.4pt;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .section-subtitle {
+    margin-top: 0.07in;
+    color: #5E5855;
+    font-size: 12.7pt;
+    line-height: 1.08;
+  }
+
+  .descriptive-panel {
+    min-width: 0;
+  }
+  .event-chart {
+    display: block;
+    width: 8.70in;
+    height: 3.70in;
+    margin-top: 0.06in;
+  }
+
+  .formal-panel {
+    min-width: 0;
+    height: 4.18in;
+    padding-left: 0.35in;
+    border-left: 1.1pt solid rgba(35,31,32,0.18);
+  }
+  .formal-chart {
+    display: block;
+    width: 4.70in;
+    height: 1.06in;
+    margin-top: 0.08in;
+  }
+  .wald-block {
+    margin-top: 0.03in;
+    padding-top: 0.09in;
+    border-top: 1.1pt solid rgba(35,31,32,0.18);
+  }
+  .wald-label {
+    color: #5E5855;
+    font-size: 10.6pt;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+  .wald-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.17in;
+    margin-top: 0.03in;
+  }
+  .wald-name {
+    color: #231F20;
+    font-size: 17pt;
+    font-weight: 700;
+  }
+  .wald-value {
+    color: #8F001A;
+    font-size: 32pt;
+    line-height: 0.92;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .wald-stats {
+    margin-top: 0.05in;
+    color: #3E3937;
+    font-size: 12.9pt;
+    line-height: 1.11;
+  }
+  .wald-stats .sig {
+    color: #8F001A;
+    font-weight: 700;
+  }
+  .interpretation {
+    margin-top: 0.08in;
+    padding-top: 0.09in;
+    border-top: 1.1pt solid rgba(35,31,32,0.18);
+  }
+  .interpretation-title {
+    color: #8F001A;
+    font-size: 17pt;
+    line-height: 1.05;
+    font-weight: 700;
+  }
+  .interpretation-text {
+    margin-top: 0.055in;
+    color: #3E3937;
+    font-size: 12.5pt;
+    line-height: 1.12;
+  }
+  .interpretation-text strong {
+    color: #231F20;
+    font-weight: 700;
+  }
+
+  .method-strip {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    top: 7.12in;
+    height: 1.14in;
+    border-top: 1.1pt solid rgba(35,31,32,0.18);
+    border-bottom: 1.1pt solid rgba(35,31,32,0.18);
+    display: grid;
+    grid-template-columns: 2.15in 3.15in 5.65in 2.61in;
+    column-gap: 0.24in;
+    align-items: center;
+  }
+  .method-item { min-width: 0; }
+  .method-label {
+    color: #5E5855;
+    font-size: 10.4pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 0.045in;
+  }
+  .method-value {
+    color: #3E3937;
+    font-size: 12.1pt;
+    line-height: 1.09;
+  }
+  .method-value strong {
+    color: #231F20;
+    font-weight: 700;
+  }
+
+  .footer {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    bottom: 0.27in;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    color: #6A6461;
+  }
+  .source {
+    max-width: 13.55in;
+    font-size: 10.7pt;
+    line-height: 1.08;
+  }
+  .page {
+    color: #8F001A;
+    font-size: 13pt;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="finding">Finding 3</div>
+  <h1>Cash vs. Stock</h1>
+  <div class="title-rule"></div>
+  <p class="takeaway">Cash deals show the pre-announcement run-up; a <strong>direct pooled test</strong> supports a larger effect than stock.<br>The evidence supports <strong>concentration in cash</strong>, not proof of a cash-only effect.</p>
+
+  <div class="figure-grid">
+    <div class="descriptive-panel">
+      <div class="section-label">1 &nbsp;Descriptive side-by-side</div>
+      <div class="section-subtitle">Separate complete-case panels; baseline is e &le; -3 plus never-acquirers. Descriptive only.</div>
+      <svg class="event-chart" viewBox="0 0 950 390" role="img" aria-label="Separate event studies for cash and stock acquirers. Cash-acquirer residual uncertainty rises in PRE1 while the stock-acquirer PRE1 estimate is negative and imprecise. Points are coefficients and whiskers are approximate 95 percent confidence intervals derived from reported standard errors.">
+        <!-- Shared event-stage headers. -->
+        <g text-anchor="middle" font-family="Times New Roman, Times, serif">
+          <text x="310" y="18" font-size="17" font-weight="700" fill="#231F20">PRE2</text>
+          <text x="310" y="36" font-size="14" fill="#6A6461">2 qtrs before</text>
+          <text x="500" y="18" font-size="17" font-weight="700" fill="#231F20">PRE1</text>
+          <text x="500" y="36" font-size="14" fill="#6A6461">1 qtr before</text>
+          <text x="690" y="18" font-size="17" font-weight="700" fill="#231F20">GAP</text>
+          <text x="690" y="36" font-size="14" fill="#6A6461">announced</text>
+          <text x="880" y="18" font-size="17" font-weight="700" fill="#231F20">POST</text>
+          <text x="880" y="36" font-size="14" fill="#6A6461">completed</text>
+        </g>
+        <text x="0" y="51" font-family="Times New Roman, Times, serif" font-size="13.5" fill="#6A6461">Points = coefficients; whiskers = approx. 95% CIs</text>
+
+        <!-- Cash panel label and scale. -->
+        <text x="0" y="91" font-family="Times New Roman, Times, serif" font-size="14" font-weight="700" letter-spacing="1.6" fill="#8F001A">CASH ACQUIRERS</text>
+        <text x="0" y="115" font-family="Times New Roman, Times, serif" font-size="15" fill="#3E3937">29,535 firm-quarters</text>
+        <text x="0" y="134" font-family="Times New Roman, Times, serif" font-size="14" fill="#6A6461">1,326 firms</text>
+        <line x1="225" y1="72" x2="225" y2="162" stroke="#6A6461" stroke-width="1.4" />
+        <line x1="219" y1="76.09" x2="231" y2="76.09" stroke="#6A6461" stroke-width="1.4" />
+        <line x1="219" y1="117" x2="231" y2="117" stroke="#6A6461" stroke-width="1.4" />
+        <line x1="219" y1="157.91" x2="231" y2="157.91" stroke="#6A6461" stroke-width="1.4" />
+        <text x="208" y="81" text-anchor="end" font-family="Times New Roman, Times, serif" font-size="14" fill="#5E5855">+0.10</text>
+        <text x="208" y="122" text-anchor="end" font-family="Times New Roman, Times, serif" font-size="14" fill="#231F20">0</text>
+        <text x="208" y="163" text-anchor="end" font-family="Times New Roman, Times, serif" font-size="14" fill="#5E5855">-0.10</text>
+        <line x1="225" y1="117" x2="930" y2="117" stroke="#6A6461" stroke-opacity="0.52" stroke-width="1.4" />
+
+        <!-- Cash path and derived 95% CIs. -->
+        <polyline points="310,112.70 500,97.12 690,114.63 880,124.98" fill="none" stroke="#8F001A" stroke-opacity="0.64" stroke-width="2.2" />
+        <g stroke="#8F001A" stroke-width="3">
+          <line x1="310" y1="98.75" x2="310" y2="126.66" /><line x1="301" y1="98.75" x2="319" y2="98.75" /><line x1="301" y1="126.66" x2="319" y2="126.66" />
+          <line x1="500" y1="83.17" x2="500" y2="111.07" /><line x1="491" y1="83.17" x2="509" y2="83.17" /><line x1="491" y1="111.07" x2="509" y2="111.07" />
+          <line x1="690" y1="100.11" x2="690" y2="129.14" /><line x1="681" y1="100.11" x2="699" y2="100.11" /><line x1="681" y1="129.14" x2="699" y2="129.14" />
+          <line x1="880" y1="114.79" x2="880" y2="135.16" /><line x1="871" y1="114.79" x2="889" y2="114.79" /><line x1="871" y1="135.16" x2="889" y2="135.16" />
+        </g>
+        <g fill="#8F001A">
+          <circle cx="310" cy="112.70" r="5.8" /><circle cx="500" cy="97.12" r="5.8" /><circle cx="690" cy="114.63" r="5.8" /><circle cx="880" cy="124.98" r="5.8" />
+        </g>
+        <g text-anchor="middle" font-family="Times New Roman, Times, serif">
+          <text x="310" y="181" font-size="16.5" font-weight="700" fill="#231F20">0.0105</text><text x="310" y="197" font-size="13.5" fill="#6A6461">SE 0.0174; ns</text>
+          <text x="500" y="181" font-size="16.5" font-weight="700" fill="#8F001A">0.0486</text><text x="500" y="197" font-size="13.5" fill="#6A6461">SE 0.0174; p &lt; .01</text>
+          <text x="690" y="181" font-size="16.5" font-weight="700" fill="#231F20">0.0058</text><text x="690" y="197" font-size="13.5" fill="#6A6461">SE 0.0181; ns</text>
+          <text x="880" y="181" font-size="16.5" font-weight="700" fill="#231F20">-0.0195</text><text x="880" y="197" font-size="13.5" fill="#6A6461">SE 0.0127; ns</text>
+        </g>
+
+        <!-- Stock panel label and scale. -->
+        <text x="0" y="249" font-family="Times New Roman, Times, serif" font-size="14" font-weight="700" letter-spacing="1.6" fill="#5E5855">STOCK ACQUIRERS</text>
+        <text x="0" y="273" font-family="Times New Roman, Times, serif" font-size="15" fill="#3E3937">39,819 firm-quarters</text>
+        <text x="0" y="292" font-family="Times New Roman, Times, serif" font-size="14" fill="#6A6461">1,363 firms</text>
+        <line x1="225" y1="230" x2="225" y2="320" stroke="#6A6461" stroke-width="1.4" />
+        <line x1="219" y1="234.09" x2="231" y2="234.09" stroke="#6A6461" stroke-width="1.4" />
+        <line x1="219" y1="275" x2="231" y2="275" stroke="#6A6461" stroke-width="1.4" />
+        <line x1="219" y1="315.91" x2="231" y2="315.91" stroke="#6A6461" stroke-width="1.4" />
+        <text x="208" y="239" text-anchor="end" font-family="Times New Roman, Times, serif" font-size="14" fill="#5E5855">+0.10</text>
+        <text x="208" y="280" text-anchor="end" font-family="Times New Roman, Times, serif" font-size="14" fill="#231F20">0</text>
+        <text x="208" y="321" text-anchor="end" font-family="Times New Roman, Times, serif" font-size="14" fill="#5E5855">-0.10</text>
+        <line x1="225" y1="275" x2="930" y2="275" stroke="#6A6461" stroke-opacity="0.52" stroke-width="1.4" />
+
+        <!-- Stock path and derived 95% CIs. -->
+        <polyline points="310,277.29 500,291.53 690,260.56 880,276.96" fill="none" stroke="#4A4542" stroke-opacity="0.68" stroke-width="2.2" />
+        <g stroke="#4A4542" stroke-width="3">
+          <line x1="310" y1="247.78" x2="310" y2="306.80" /><line x1="301" y1="247.78" x2="319" y2="247.78" /><line x1="301" y1="306.80" x2="319" y2="306.80" />
+          <line x1="500" y1="267.55" x2="500" y2="315.50" /><line x1="491" y1="267.55" x2="509" y2="267.55" /><line x1="491" y1="315.50" x2="509" y2="315.50" />
+          <line x1="690" y1="235.06" x2="690" y2="286.06" /><line x1="681" y1="235.06" x2="699" y2="235.06" /><line x1="681" y1="286.06" x2="699" y2="286.06" />
+          <line x1="880" y1="257.24" x2="880" y2="296.69" /><line x1="871" y1="257.24" x2="889" y2="257.24" /><line x1="871" y1="296.69" x2="889" y2="296.69" />
+        </g>
+        <g fill="#4A4542">
+          <circle cx="310" cy="277.29" r="5.8" /><circle cx="500" cy="291.53" r="5.8" /><circle cx="690" cy="260.56" r="5.8" /><circle cx="880" cy="276.96" r="5.8" />
+        </g>
+        <g text-anchor="middle" font-family="Times New Roman, Times, serif">
+          <text x="310" y="339" font-size="16.5" font-weight="700" fill="#231F20">-0.0056</text><text x="310" y="355" font-size="13.5" fill="#6A6461">SE 0.0368; ns</text>
+          <text x="500" y="339" font-size="16.5" font-weight="700" fill="#231F20">-0.0404</text><text x="500" y="355" font-size="13.5" fill="#6A6461">SE 0.0299; ns</text>
+          <text x="690" y="339" font-size="16.5" font-weight="700" fill="#231F20">0.0353</text><text x="690" y="355" font-size="13.5" fill="#6A6461">SE 0.0318; ns</text>
+          <text x="880" y="339" font-size="16.5" font-weight="700" fill="#231F20">-0.0048</text><text x="880" y="355" font-size="13.5" fill="#6A6461">SE 0.0246; ns</text>
+        </g>
+        <text x="930" y="382" text-anchor="end" font-family="Times New Roman, Times, serif" font-size="13.2" font-style="italic" fill="#6A6461">Stock PRE1 is imprecise; it is not read as a decline.</text>
+      </svg>
+    </div>
+
+    <div class="formal-panel">
+      <div class="section-label">2 &nbsp;Formal pooled test</div>
+      <div class="section-subtitle">Cash and stock indicators enter the same regression.</div>
+      <svg class="formal-chart" viewBox="0 0 500 125" role="img" aria-label="Pooled pre-announcement coefficients with approximate 95 percent confidence intervals. Cash is 0.0459 and significant; stock is negative and imprecise at minus 0.0524.">
+        <line x1="100" y1="24" x2="330" y2="24" stroke="#6A6461" stroke-opacity="0.55" stroke-width="1.3" />
+        <line x1="100" y1="20" x2="100" y2="28" stroke="#6A6461" stroke-width="1.3" />
+        <line x1="198.57" y1="18" x2="198.57" y2="114" stroke="#B7AEA7" stroke-width="1.4" stroke-dasharray="5 5" />
+        <line x1="330" y1="20" x2="330" y2="28" stroke="#6A6461" stroke-width="1.3" />
+        <text x="100" y="41" text-anchor="middle" font-family="Times New Roman, Times, serif" font-size="12.5" fill="#6A6461">-0.15</text>
+        <text x="198.57" y="41" text-anchor="middle" font-family="Times New Roman, Times, serif" font-size="12.5" fill="#231F20">0</text>
+        <text x="330" y="41" text-anchor="middle" font-family="Times New Roman, Times, serif" font-size="12.5" fill="#6A6461">+0.20</text>
+
+        <text x="0" y="66" font-family="Times New Roman, Times, serif" font-size="15" font-weight="700" fill="#8F001A">Cash</text>
+        <line x1="204.91" y1="61" x2="252.56" y2="61" stroke="#8F001A" stroke-width="3" />
+        <line x1="204.91" y1="55" x2="204.91" y2="67" stroke="#8F001A" stroke-width="2.2" />
+        <line x1="252.56" y1="55" x2="252.56" y2="67" stroke="#8F001A" stroke-width="2.2" />
+        <circle cx="228.73" cy="61" r="5.5" fill="#8F001A" />
+        <text x="350" y="59" font-family="Times New Roman, Times, serif" font-size="15" font-weight="700" fill="#8F001A">0.0459</text>
+        <text x="350" y="74" font-family="Times New Roman, Times, serif" font-size="12.7" fill="#6A6461">SE 0.0185; p &lt; .05</text>
+
+        <text x="0" y="106" font-family="Times New Roman, Times, serif" font-size="15" font-weight="700" fill="#4A4542">Stock</text>
+        <line x1="107.98" y1="101" x2="220.29" y2="101" stroke="#4A4542" stroke-width="3" />
+        <line x1="107.98" y1="95" x2="107.98" y2="107" stroke="#4A4542" stroke-width="2.2" />
+        <line x1="220.29" y1="95" x2="220.29" y2="107" stroke="#4A4542" stroke-width="2.2" />
+        <circle cx="164.13" cy="101" r="5.5" fill="#4A4542" />
+        <text x="350" y="99" font-family="Times New Roman, Times, serif" font-size="15" font-weight="700" fill="#231F20">-0.0524</text>
+        <text x="350" y="114" font-family="Times New Roman, Times, serif" font-size="12.7" fill="#6A6461">SE 0.0436; ns</text>
+      </svg>
+
+      <div class="wald-block">
+        <div class="wald-label">Direct Wald difference</div>
+        <div class="wald-line">
+          <div class="wald-name">Cash − Stock</div>
+          <div class="wald-value">+0.0983</div>
+        </div>
+        <div class="wald-stats">SE 0.0476 &nbsp;&middot;&nbsp; approx. 95% CI [0.005, 0.192]<br><span class="sig">Two-tailed p = .039</span></div>
+      </div>
+
+      <div class="interpretation">
+        <div class="interpretation-title">Concentrated in cash</div>
+        <div class="interpretation-text">The direct Wald difference, not two separate significance results, is the test.<br><strong>Supported, but fragile:</strong> stock is imprecisely negative. The thesis therefore says concentrated, not strictly cash-specific.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="method-strip">
+    <div class="method-item">
+      <div class="method-label">Pooled sample</div>
+      <div class="method-value"><strong>25,600</strong> firm-quarters<br><strong>1,191</strong> firms</div>
+    </div>
+    <div class="method-item">
+      <div class="method-label">Sample and baseline</div>
+      <div class="method-value">Pre-deal quarters before the first &ge;50% cash or stock acquisition, plus firms making neither. Neither-deal firms are the baseline.</div>
+    </div>
+    <div class="method-item">
+      <div class="method-label">Controls and fixed effects</div>
+      <div class="method-value">Leverage, ln(assets), Tobin's Q, ROA, capex, dividend indicator, cash-flow volatility; firm and calendar year-quarter fixed effects.</div>
+    </div>
+    <div class="method-item">
+      <div class="method-label">Inference</div>
+      <div class="method-value">Firm-clustered SEs; two-tailed tests. <strong>Within-firm, descriptive; not causal.</strong></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="source">Thesis source: Main Analysis 3; Tables “Event Study by Payment Type: Cash versus Stock Acquirers” and “Cash-Specificity Test: Cash versus Stock Acquirers.” Approximate 95% CIs derived from reported SEs.</div>
+    <div class="page">10 / 13</div>
+  </div>
+</section>
+</body>
+</html>

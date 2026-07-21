@@ -1,0 +1,209 @@
+{
+  "request_id": "deck-audit-language-v1",
+  "status": "COMPLETE",
+  "results": {
+    "coverage": [
+      {
+        "slide": 1,
+        "items_checked": 6,
+        "exceptions": 0
+      },
+      {
+        "slide": 2,
+        "items_checked": 14,
+        "exceptions": 1
+      },
+      {
+        "slide": 3,
+        "items_checked": 13,
+        "exceptions": 0
+      },
+      {
+        "slide": 4,
+        "items_checked": 15,
+        "exceptions": 1
+      },
+      {
+        "slide": 5,
+        "items_checked": 14,
+        "exceptions": 0
+      },
+      {
+        "slide": 6,
+        "items_checked": 15,
+        "exceptions": 1
+      },
+      {
+        "slide": 7,
+        "items_checked": 18,
+        "exceptions": 0
+      },
+      {
+        "slide": 8,
+        "items_checked": 18,
+        "exceptions": 2
+      },
+      {
+        "slide": 9,
+        "items_checked": 25,
+        "exceptions": 3
+      },
+      {
+        "slide": 10,
+        "items_checked": 26,
+        "exceptions": 0
+      },
+      {
+        "slide": 11,
+        "items_checked": 15,
+        "exceptions": 1
+      },
+      {
+        "slide": 12,
+        "items_checked": 13,
+        "exceptions": 0
+      },
+      {
+        "slide": 13,
+        "items_checked": 9,
+        "exceptions": 0
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "L-001",
+        "slide": 4,
+        "severity": "major",
+        "verdict": "BROKEN",
+        "deck_quote": "Uncertainty and cash = PRE1 + GAP + POST",
+        "problem": "PRE1, GAP, and POST are relied on in the empirical roadmap before the deck defines them. Their first plain-language definitions appear on slide 9.",
+        "evidence": "deck_text_extracted(4).json pages 4 and 9; thesis_defense_main_deck_slides_01-13_standardized_v2(5).pdf slides 4 and 9; _thesis_FLAT(3).tex, Methodology and Empirical Design, defines PRE1 as one quarter before announcement, GAP as announced but not closed, and POST as after completion.",
+        "why_it_matters": "RQ2 is the audience's first map of the timing design, so a first-time listener cannot decode the equation without silently guessing or waiting five slides.",
+        "suggested_action": "Replace the symbols with plain-language stages on slide 4, or define them at first use: PRE1 (one quarter before), GAP (announced, not closed), and POST (after completion).",
+        "confidence": "high"
+      },
+      {
+        "finding_id": "L-002",
+        "slide": 2,
+        "severity": "minor",
+        "verdict": "INCONSISTENT",
+        "deck_quote": "Thesis framework: Verrecchia (1983); Dye (1985); Basic (1988); Rule 10b-5; Matsumoto et al. (2011); Hollander et al. (2010)",
+        "problem": "The footer presents a court decision and an SEC rule in the same undifferentiated list as disclosure theory and empirical conference-call research. It also shortens the thesis author form Basic Inc. v. Levinson (1988) to Basic (1988), making the case look like an academic author citation.",
+        "evidence": "_thesis_FLAT(3).tex, Conceptual Framework, identifies Basic as a Court holding and Rule 10b-5 as legal authority; the reference list gives Basic Inc. v. Levinson (1988) and the SEC Rule 10b-5 entry. The same section uses Verrecchia and Dye as theory and Matsumoto and Hollander as academic evidence.",
+        "why_it_matters": "The statement that a firm may stay silent but cannot mislead depends on legal authority, and the current source line obscures that evidentiary role.",
+        "suggested_action": "Separate the footer into disclosure theory, legal authorities, and earnings-call evidence, and print Basic Inc. v. Levinson (1988) in full.",
+        "confidence": "high"
+      },
+      {
+        "finding_id": "L-003",
+        "slide": 6,
+        "severity": "minor",
+        "verdict": "BROKEN",
+        "deck_quote": "Calls with an estimated UncResCEO measure.",
+        "problem": "UncResCEO is used as a named measure before the deck introduces or decodes the symbol. The definition appears on slide 7.",
+        "evidence": "deck_text_extracted(4).json pages 6 and 7; thesis_defense_main_deck_slides_01-13_standardized_v2(5).pdf slides 6 and 7; _thesis_FLAT(3).tex, Estimation of the Main Variable, defines UncResCEO as the residual part of CEO answer uncertainty left after the first-stage decomposition.",
+        "why_it_matters": "The sample funnel asks the audience to understand what qualifies the 44,900 calls, but the measure name is opaque at that point.",
+        "suggested_action": "Write Calls with an estimated residual CEO uncertainty measure (UncResCEO) on slide 6, then retain the short label thereafter.",
+        "confidence": "high"
+      },
+      {
+        "finding_id": "L-004",
+        "slide": 8,
+        "severity": "minor",
+        "verdict": "BROKEN",
+        "deck_quote": "one SD from zero; SE; Approx. 95% CI",
+        "problem": "The statistical abbreviations SD, SE, and CI are used without being expanded before reliance. The deck later continues with the same shorthand.",
+        "evidence": "deck_text_extracted(4).json pages 7 through 10 and thesis_defense_main_deck_slides_01-13_standardized_v2(5).pdf slides 7 through 10. No audience-facing legend expands these abbreviations before their first use.",
+        "why_it_matters": "The quantities are compact but load-bearing, and a listener should not have to translate the labels while also following the substantive result.",
+        "suggested_action": "Add one compact first-use legend: SD = standard deviation; SE = standard error; CI = confidence interval.",
+        "confidence": "high"
+      },
+      {
+        "finding_id": "L-005",
+        "slide": 8,
+        "severity": "minor",
+        "verdict": "INCONSISTENT",
+        "deck_quote": "Leverage, size, Tobin's Q, ROA, capex, dividends, cash-flow volatility",
+        "problem": "The same control set is named differently on later slides: slide 8 says size and dividends, while slides 9 and 10 say ln(assets) and dividend indicator. The latter wording identifies the actual variables; the former can imply a different size measure and a continuous dividend amount.",
+        "evidence": "deck_text_extracted(4).json pages 8 through 10; _thesis_FLAT(3).tex, Methodology and Empirical Design and Appendix II, defines lnAssets as the natural log of assets and DivDummy as a dividend-payer indicator.",
+        "why_it_matters": "An examiner comparing specifications may reasonably wonder whether the controls changed across findings.",
+        "suggested_action": "Use the same labels on all three slides, preferably ln(assets) and dividend indicator, or introduce them once as firm size measured by ln(assets) and dividend-payer indicator.",
+        "confidence": "high"
+      },
+      {
+        "finding_id": "L-006",
+        "slide": 9,
+        "severity": "minor",
+        "verdict": "BROKEN",
+        "deck_quote": "ns",
+        "problem": "ns is used repeatedly as a result label but is never defined as not statistically significant.",
+        "evidence": "deck_text_extracted(4).json pages 9 and 10; thesis_defense_main_deck_slides_01-13_standardized_v2(5).pdf slides 9 and 10. The deck supplies no legend for ns.",
+        "why_it_matters": "Unlike the displayed p-value thresholds, ns has no spoken or written decoding on the deck.",
+        "suggested_action": "Add ns = not statistically significant to the first statistical legend, or replace each ns with not significant.",
+        "confidence": "high"
+      },
+      {
+        "finding_id": "L-007",
+        "slide": 9,
+        "severity": "minor",
+        "verdict": "BROKEN",
+        "deck_quote": "POST dip is marginal; not over-read",
+        "problem": "The second clause is missing the verb and object needed for speech. It cannot be read aloud as written without changing it to an instruction or passive construction.",
+        "evidence": "deck_text_extracted(4).json page 9; thesis_defense_main_deck_slides_01-13_standardized_v2(5).pdf slide 9; _thesis_FLAT(3).tex, Main Analysis 2, says the POST uncertainty estimate should not be over-read.",
+        "why_it_matters": "This annotation carries an interpretive boundary, and a grammatical stumble weakens the caution at the moment it is needed.",
+        "suggested_action": "Use The POST dip is marginal; do not over-read it.",
+        "confidence": "high"
+      },
+      {
+        "finding_id": "L-008",
+        "slide": 9,
+        "severity": "minor",
+        "verdict": "BROKEN",
+        "deck_quote": "Cash adds its own lag: 0.7547 (SE 0.0108), p < .01.",
+        "problem": "Cash does not add a lag. The cash-ratio regression includes the outcome's own lag, so the written subject makes the sentence semantically and orally awkward.",
+        "evidence": "deck_text_extracted(4).json page 9; thesis_defense_main_deck_slides_01-13_standardized_v2(5).pdf slide 9; _thesis_FLAT(3).tex, Methodology and Empirical Design, states that the CashRatio outcome adds its own one-quarter within-firm lag.",
+        "why_it_matters": "The current wording makes the model specification sound like an action performed by the cash variable.",
+        "suggested_action": "Use The cash-ratio regression includes its own one-quarter lag: 0.7547 (SE 0.0108), p < .01.",
+        "confidence": "high"
+      },
+      {
+        "finding_id": "L-009",
+        "slide": 11,
+        "severity": "minor",
+        "verdict": "BROKEN",
+        "deck_quote": "Documents that the language pattern concentrates in cash acquisitions rather than stock.",
+        "problem": "The comparison is grammatically unbalanced: cash acquisitions is compared with stock, rather than with stock acquisitions.",
+        "evidence": "deck_text_extracted(4).json page 11; thesis_defense_main_deck_slides_01-13_standardized_v2(5).pdf slide 11; _thesis_FLAT(3).tex, Introduction contribution paragraph and Conclusion, consistently compare cash acquisitions with stock acquisitions.",
+        "why_it_matters": "The intended contrast is clear, but a presenter must silently repair the final phrase to say it naturally.",
+        "suggested_action": "Use Documents that the language pattern concentrates in cash acquisitions rather than in stock acquisitions.",
+        "confidence": "high"
+      }
+    ],
+    "clean_dimensions": [
+      "Citation support: no cited work is attached to a proposition outside the role for which the thesis uses it.",
+      "Citation existence and years: no new exception beyond the operator-settled status.",
+      "Author identity: otherwise consistent; slide 5 ampersand versus and forms are excluded house-style variation.",
+      "Dash constructions: no third construction beyond the two operator-settled slide 12 items.",
+      "Speakability and terminology: all remaining audience-facing sentences and concept labels produced no reportable exception."
+    ],
+    "operator_should_check_locally": []
+  },
+  "artifacts_manifest": [
+    {
+      "filename": "audit_language_findings.md",
+      "status": "CREATED",
+      "media_type": "text/markdown",
+      "size": 13260,
+      "sha256": "2c61e2ed6d4226842660fc68b1b8f7e342342d29fa9e6271d7682627e62f843f"
+    }
+  ],
+  "limitations": [
+    "Source-closed audit using only the attached thesis, deck text extraction, deck PDF, request, schema, and audit brief.",
+    "Citation existence and years were accepted as operator-settled and were inventoried rather than independently re-derived.",
+    "Numbers, claim strength, causal language, layout, spelling, doubled words, and mathematical minus signs were outside this pass."
+  ],
+  "delivery": [
+    "audit_language_response.json",
+    "audit_language_findings.md"
+  ]
+}

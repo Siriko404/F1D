@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "written_on": "2026-07-21",
+  "written_by": "Claude Code session, F1D working tree",
+  "purpose": "Machine-readable state of the thesis defense work. Written so that a session which loses its conversation history can resume without asking the user to reconstruct anything. Read _HANDOFF_NEXT_SESSION.md first; this file is the precise companion to it.",
+
+  "read_order_for_a_fresh_session": [
+    "docs/Defense/_HANDOFF_NEXT_SESSION.md",
+    "docs/Defense/_SESSION_STATE.json",
+    "docs/Defense/audit/AUDIT_REGISTER.md",
+    "docs/Defense/REV21/THESIS_DEFENSE_CONTINUITY_LEDGER_REV21.json"
+  ],
+
+  "stale_authority_warning": {
+    "file": "docs/Defense/REV21/THESIS_DEFENSE_CONTINUITY_LEDGER_REV21.json",
+    "problem": "Its current_state.next_action says to resume the indexed Q&A appendix. That is no longer the next action. The user redirected to a full audit of the main deck plus speaker notes, and the audit is complete. The ledger was deliberately left unmodified rather than rewritten by hand, because it is a 346 KB control document produced by another workstream and a hand edit risks corrupting it.",
+    "still_authoritative_for": "The operating contract, the 38 approved decisions, the visual system, the production and QA workflow, the do-not-repeat lessons, and the appendix architecture for when the appendix work resumes.",
+    "not_authoritative_for": "current_state.next_action"
+  },
+
+  "current_state": {
+    "stage": "Main-deck audit complete. Speaker notes not started.",
+    "next_action": "Write speaker notes for all 13 main-deck slides, against the deck as it stands.",
+    "next_action_is_blocked_by": "One open user decision, recorded below as D-OPEN-1. The notes reference slide wording, so a decision to edit slide 12 or 13 would require reworking the affected notes.",
+    "deliverable_1_deck_audit": "complete",
+    "deliverable_2_speaker_notes": "not started",
+    "deliverable_3_qa_appendix": "architecture approved in REV21, content not designed, out of scope until the notes are done"
+  },
+
+  "open_decisions": [
+    {
+      "id": "D-OPEN-1",
+      "question": "Fix the four remaining cosmetic wording items, or ship the deck as it is?",
+      "items": [
+        "Slide 12, two dash-based sentence constructions, which violate an explicit user rule",
+        "Slide 13, the closing sentence asserts what the thesis hedges with 'these patterns suggest that'",
+        "Slides 8 against 9 and 10, the same controls are labelled 'size' and 'dividends' on one and 'ln(assets)' and 'dividend indicator' on the others",
+        "Slide 11, 'cash acquisitions rather than stock' compares unlike things"
+      ],
+      "assistant_recommendation": "Ship as is. None of the four changes a claim, a number, or an interpretation.",
+      "blocked_by": "B-1 if the user chooses to fix",
+      "status": "awaiting user"
+    }
+  ],
+
+  "blockers": [
+    {
+      "id": "B-1",
+      "blocker": "WeasyPrint is installed but cannot load its GTK dependency libgobject-2.0-0 on this machine.",
+      "consequence": "No edit to the locked deck can be rendered to production standard. The audit never needed it. Any fix does.",
+      "do_not_do": "Do not substitute Chrome or any other engine. A different layout engine reflows all 13 slides and destroys the value of the standardized-v2 lock.",
+      "resolution_if_needed": "Install the GTK3 runtime, then render the unmodified merged HTML and diff it against the locked PDF before touching any content."
+    }
+  ],
+
+  "verification": {
+    "how_to_reproduce_every_mechanical_claim": "python docs/Defense/audit/scripts/verify_deck.py",
+    "checks": 13,
+    "last_run": "2026-07-21, all 13 reproduced, exit code 0",
+    "what_it_proves": "Artifact identity and page geometry, absence of em and en dashes, that exactly the two recorded dash constructions remain, and that every plotted point on slides 8, 9 and 10 sits within a hundredth of a point of where its printed coefficient puts it.",
+    "trap_encoded_in_the_script": "Slide 8 must be measured against the drawn axis ticks, never the tick labels. Text centres sit about two points below the rules they annotate, which looks exactly like a real defect."
+  },
+
+  "key_files": {
+    "locked_deck_pdf": {
+      "path": "docs/Defense/REV21/production/thesis_defense_main_deck_slides_01-13_standardized_v2.pdf",
+      "sha256": "b1f396191295e320019d8123fe9cd588088e80f992c46150c5fd270f8e6aa94b",
+      "note": "13 pages, 1152 x 648 points. This exact file is the artifact under audit and the one to be presented."
+    },
+    "locked_deck_html_source": "docs/Defense/REV21/production/thesis_defense_main_deck_slides_01-13_standardized_v2.html",
+    "authoritative_thesis": {
+      "path": "docs/Thesis/_uottawa_rewrite/_thesis_FLAT.tex",
+      "sha256": "6f2e003ff63eebb23bed8fe26dbd1601d0b5392a6628320d8782f60d5f936310",
+      "note": "Byte-identical to source/_thesis_FLAT(2).tex inside the REV21 package. Contains the complete reference list."
+    },
+    "thesis_tables_byte_exact": "docs/Thesis/_uottawa_rewrite/_tables_from_bible.tex",
+    "thesis_main_analysis_prose": "docs/Thesis/_uottawa_rewrite/sec34_body_from_ledgers.tex",
+    "thesis_intro": "docs/Thesis/_uottawa_rewrite/_intro_body.tex",
+    "thesis_conclusion": "docs/Thesis/_uottawa_rewrite/_conclusion_body.tex",
+    "audit_register": "docs/Defense/audit/AUDIT_REGISTER.md",
+    "audit_plan": "docs/Defense/audit/DECK_AUDIT_PLAN.md",
+    "pass_outputs": "docs/Defense/audit/findings/",
+    "deck_text_layer": "docs/Defense/audit/deck_text_extracted.json",
+    "deck_numeric_inventory": "docs/Defense/audit/DECK_NUMERIC_INVENTORY.csv",
+    "committee_profiles": "docs/Defense/audit/passes/examiner/COMMITTEE_PROFILES.md"
+  },
+
+  "audit_result_in_one_paragraph": "No blocker and no major defect. Every number on the deck was verified twice, once mechanically by the operator against the byte-exact thesis tables and once independently by a web call, with zero exceptions across 136 items on slides 6 to 13. Chart geometry was measured directly from the PDF drawing objects and every plotted point lands within a hundredth of a point. All twelve citations exist with the correct year and support the proposition they are attached to. No slide asserts causation, claims an established mechanism, or reads the payment-method result as strict cash specificity. What remains is four cosmetic wording items and one substantial exposure in the question period that is not a deck problem.",
+
+  "single_most_important_finding": {
+    "what": "An examiner can ask what evidence there is that the CEO knew about the acquisition at the pre-announcement call.",
+    "why_it_bites": "The event clock is anchored on the announcement date. The thesis observes neither when negotiations began nor when the chief executive learned of the deal.",
+    "thesis_answers_it": false,
+    "route": "Concede cleanly. Nothing on the deck should change because of it.",
+    "found_by": "The examiner pass, run blind. The operator had not anticipated it."
+  },
+
+  "speaker_notes_brief_when_that_work_starts": {
+    "scope": "All 13 main-deck slides. The Q&A appendix is separate and later.",
+    "time_budget": "18 minutes with a 2 minute buffer inside a hard 20 minute limit. Sections are 5 minutes for slides 1 to 5, 10 minutes for slides 6 to 10, and 3 minutes for slides 11 to 13.",
+    "word_budget_method": "Do not invent a per-slide time. Measure the presenter's own speaking rate on two timed passages, take the lower clean rate, and multiply by 17 minutes to leave a minute for pauses and navigation. Allocate by the 5:10:3 section ratio.",
+    "grounding_rule": "Every academic sentence and every number in the notes must trace to an exact thesis file and location. Where the thesis is silent, the notes must say so rather than fill the gap.",
+    "hard_constraint": "The notes may explain the visible slide. They may not add a result, a mechanism, a causal claim, or an appendix-only analysis to the main talk.",
+    "committee_context": "One examiner prefers defenses that finish promptly, so a tight findings-forward delivery matters more than completeness.",
+    "source_of_the_full_plan": "docs/Defense/audit/DECK_AUDIT_PLAN.md, section 'Speaker-notes production plan'"
+  },
+
+  "untested_and_owed": [
+    "The deck has never been rehearsed or timed. The 18 minute target is a design assumption, not a measured fact. Only the presenter can close this.",
+    "No adversarial second reviewer ran over the claims and examiner passes, so their completeness rests on a single read each. The mechanical dimensions do not share this limitation.",
+    "The thesis itself was not audited. It is submitted and approved and out of scope. A faithful deck reproducing a thesis error would pass every check here."
+  ],
+
+  "web_call_infrastructure": {
+    "root": "C:/Users/sinas/OneDrive/Desktop/Projects/GptWebCall",
+    "protocol": "WEB_CALL_PROTOCOL.md at that root, read it before preparing any call",
+    "branch": "feat/global-web-call-system",
+    "built_this_session": [
+      "Correction rounds, so a delivery that fails validation is repaired in the same conversation instead of costing a fresh call",
+      "Parallel calls, each bound to its own tab, with a file lock around all shared state",
+      "Filename allocation, so two calls can never claim the same deliverable name"
+    ],
+    "operational_rule_learned_the_hard_way": "Download every returned file before clicking Done and validate. Done stops monitoring, and anything that arrives afterwards is not collected. Recovery is to copy the files into the exchange response directory and run validate --exchange.",
+    "all_six_exchanges_preserved_at": "GptWebCall/calls/, with request snapshots, responses, and validation reports"
+  }
+}

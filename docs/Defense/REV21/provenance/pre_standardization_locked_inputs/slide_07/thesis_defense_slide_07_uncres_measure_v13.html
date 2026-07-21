@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Slide 7 - Measuring UncResCEO</title>
+<style>
+  @page { size: 16in 9in; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#f4f1ec; font-family:"Times New Roman", Times, serif; color:#231f20; }
+  .slide { width:16in; height:9in; position:relative; overflow:hidden; background:#f4f1ec; padding:0.62in 0.88in 0.45in; }
+  .section { font-size:15pt; letter-spacing:0.22em; color:#8f001a; font-weight:700; margin-bottom:0.14in; }
+  h1 { margin:0; font-weight:400; font-size:38pt; line-height:1.02; letter-spacing:-0.025em; }
+  .underline { width:1.15in; height:0.03in; background:#8f001a; margin-top:0.16in; }
+  .subtitle { margin-top:0.18in; color:#4e4946; font-size:17.2pt; line-height:1.20; width:13.9in; }
+
+  .formula { position:absolute; left:0.88in; right:0.88in; top:2.46in; height:2.55in; display:grid; grid-template-columns:3.72in 0.42in 5.18in 0.42in 3.72in; column-gap:0.19in; align-items:stretch; }
+  .panel { border-top:3px solid #8f001a;  padding:0.16in 0 0.12in; height:2.42in; }
+  .panel.remove { border-top-color:#b7aea7; }
+  .eyebrow { color:#8f001a; font-size:12pt; letter-spacing:0.18em; font-weight:700; text-transform:uppercase; margin-bottom:0.10in; }
+  .title { font-size:24pt; font-weight:400; line-height:1.03; margin-bottom:0.10in; }
+  .title.red { color:#8f001a; }
+  .desc { font-size:14.5pt; line-height:1.20; color:#4f4946; }
+  .operator { display:flex; align-items:center; justify-content:center; font-size:34pt; color:#8f001a; padding-bottom:0.18in; }
+  .components { margin-top:0.10in; display:grid; grid-template-columns:1fr 1fr; column-gap:0.22in; row-gap:0.075in; }
+  .component { border-left:2px solid #d2cac2; padding-left:0.10in; min-height:0.32in; }
+  .component .k { color:#8f001a; font-size:9.4pt; font-weight:700; letter-spacing:0.10em; text-transform:uppercase; margin-bottom:0.015in; white-space:nowrap; }
+  .component .v { color:#4c4643; font-size:11.3pt; line-height:1.08; }
+
+  .stats { position:absolute; left:0.88in; right:0.88in; top:5.55in; height:1.45in; display:grid; grid-template-columns:3.72in 5.18in 3.72in; column-gap:0.61in; }
+  .statbox { border-top:1px solid #d2cac2; padding-top:0.14in; }
+  .stat-title { color:#8f001a; font-size:11.4pt; letter-spacing:0.14em; font-weight:700; text-transform:uppercase; margin-bottom:0.11in; }
+  .statgrid { display:grid; grid-template-columns:repeat(3, 1fr); column-gap:0.16in; }
+  .statgrid.two { grid-template-columns:1.1fr 1fr 0.8fr; }
+  .num { font-size:20.5pt; line-height:1; color:#231f20; white-space:nowrap; }
+  .label { margin-top:0.055in; color:#8f001a; font-size:9.6pt; letter-spacing:0.07em; text-transform:uppercase; line-height:1.08; }
+
+  .takeaway { position:absolute; left:0.88in; right:0.88in; bottom:0.77in; border-top:1px solid #d2cac2; padding-top:0.14in; font-size:14.1pt; line-height:1.25; color:#4f4946; }
+  .takeaway b { color:#231f20; }
+  .footer { position:absolute; left:0.88in; right:0.88in; bottom:0.27in; display:flex; justify-content:space-between; align-items:center; color:#8f001a; font-size:12pt; letter-spacing:0.06em; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="section">MESSAGE</div>
+  <h1>Measuring residual CEO uncertainty</h1>
+  <div class="underline"></div>
+  <div class="subtitle">Raw CEO-answer uncertainty is residualized to isolate call-specific uncertainty.</div>
+
+  <div class="formula">
+    <div class="panel">
+      <div class="eyebrow">Count</div>
+      <div class="title">Raw answer uncertainty</div>
+      <div class="desc">Uncertainty words in CEO answers divided by total CEO answer words.</div>
+    </div>
+    <div class="operator">−</div>
+    <div class="panel remove">
+      <div class="eyebrow">Remove</div>
+      <div class="title">Predictable components</div>
+      <div class="components">
+        <div class="component"><div class="k">CEO style</div><div class="v">CEO fixed effects</div></div>
+        <div class="component"><div class="k">Prepared language</div><div class="v">CEO uncertainty in remarks</div></div>
+        <div class="component"><div class="k">Analyst language</div><div class="v">question uncertainty</div></div>
+        <div class="component"><div class="k">Call tone</div><div class="v">negative-call language</div></div>
+        <div class="component"><div class="k">Firm performance</div><div class="v">earnings surprise; EPS growth</div></div>
+        <div class="component"><div class="k">Market conditions</div><div class="v">firm and market returns</div></div>
+        <div class="component"><div class="k">Time</div><div class="v">year effects</div></div>
+      </div>
+    </div>
+    <div class="operator">=</div>
+    <div class="panel">
+      <div class="eyebrow">Keep</div>
+      <div class="title red">UncResCEO</div>
+      <div class="desc">The residual answer uncertainty left unexplained on that CEO's specific call.</div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="statbox">
+      <div class="stat-title">Raw input</div>
+      <div class="statgrid">
+        <div><div class="num">71,748</div><div class="label">answer observations</div></div>
+        <div><div class="num">0.7806</div><div class="label">mean</div></div>
+        <div><div class="num">0.3925</div><div class="label">SD</div></div>
+      </div>
+    </div>
+    <div class="statbox">
+      <div class="stat-title">Decomposition sample</div>
+      <div class="statgrid two">
+        <div><div class="num">44,900</div><div class="label">observations</div></div>
+        <div><div class="num">2,197</div><div class="label">distinct CEOs</div></div>
+        <div><div class="num">0.369</div><div class="label">R²</div></div>
+      </div>
+    </div>
+    <div class="statbox">
+      <div class="stat-title">Residual kept</div>
+      <div class="statgrid">
+        <div><div class="num">44,900</div><div class="label">observations</div></div>
+        <div><div class="num">−0.0000</div><div class="label">mean</div></div>
+        <div><div class="num">0.3010</div><div class="label">SD</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="takeaway"><b>Boundary:</b> UncResCEO is generated in a first-stage decomposition, so the thesis treats two-step estimation uncertainty as a limitation.</div>
+  <div class="footer"><span>THESIS TABLE 1 AND DZIELINSKI ET AL. REPLICATION TABLE</span><span>07 / 13</span></div>
+</div>
+</body>
+</html>

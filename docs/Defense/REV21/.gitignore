@@ -1,0 +1,15 @@
+# The rasters in this package are renders of the PDFs that sit beside them, so
+# they are regenerable and not worth 21.5 MB of history. Everything that cannot
+# be regenerated is tracked: the ledger, the HTML sources, every PDF, the thesis
+# source, the assembly scripts, the manifest, and the two logo assets.
+#
+# To regenerate any page raster from the exact production PDF:
+#
+#   python -c "import fitz; d=fitz.open('production/thesis_defense_main_deck_slides_01-13_standardized_v2.pdf'); [d[i].get_pixmap(dpi=300).save(f'slide_{i+1:02d}.png') for i in range(d.page_count)]"
+
+production/*_filmstrip_300dpi.png
+production/individual_pages/*.png
+provenance/pre_standardization_locked_inputs/**/*.png
+
+# The logo images are source assets, not renders. Keep them.
+!provenance/assets/*.png

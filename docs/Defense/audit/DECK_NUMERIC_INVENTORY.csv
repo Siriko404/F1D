@@ -1,0 +1,211 @@
+id,slide,value,kind,context
+S02-001,2,01,bullet_label,CONCEPTUAL FRAMEWORK I Why Uncertainty Appears 01 Private acquisition The firm holds potentially material dea
+S02-002,2,02,page_number,y material deal information that investors do not yet have. 02 Routine Q&A call The CEO still faces analysts in the less-s
+S02-003,2,03,bullet_label,"es analysts in the less-scripted part of the earnings call. 03 No clean answer The firm may stay silent, but once it speak"
+S02-004,2,04,bullet_label,"firm may stay silent, but once it speaks it cannot mislead. 04 Language trace Answers may become more hedged, qualified, a"
+S02-005,2,1983,citation_year,ined or strategically chosen. Thesis framework: Verrecchia (1983); Dye (1985); Basic (1988); Rule 10b-5; Matsumoto et al. (2
+S02-006,2,1985,citation_year,tegically chosen. Thesis framework: Verrecchia (1983); Dye (1985); Basic (1988); Rule 10b-5; Matsumoto et al. (2011); Hollan
+S02-007,2,1988,citation_year,en. Thesis framework: Verrecchia (1983); Dye (1985); Basic (1988); Rule 10b-5; Matsumoto et al. (2011); Hollander et al. (20
+S02-008,2,10,other,ramework: Verrecchia (1983); Dye (1985); Basic (1988); Rule 10b-5; Matsumoto et al. (2011); Hollander et al. (2010) 02 / 1
+S02-009,2,-5,other,ework: Verrecchia (1983); Dye (1985); Basic (1988); Rule 10b-5; Matsumoto et al. (2011); Hollander et al. (2010) 02 / 13
+S02-010,2,2011,citation_year,3); Dye (1985); Basic (1988); Rule 10b-5; Matsumoto et al. (2011); Hollander et al. (2010) 02 / 13
+S02-011,2,2010,citation_year,88); Rule 10b-5; Matsumoto et al. (2011); Hollander et al. (2010) 02 / 13
+S02-012,2,02,page_number,ule 10b-5; Matsumoto et al. (2011); Hollander et al. (2010) 02 / 13
+S02-013,2,13,other,0b-5; Matsumoto et al. (2011); Hollander et al. (2010) 02 / 13
+S03-014,3,1999,citation_year, public COMPLETION Cash is paid Framework sources: Harford (1999); Shleifer and Vishny (2003); Louis (2004); Thewissen et al
+S03-015,3,2003,citation_year,aid Framework sources: Harford (1999); Shleifer and Vishny (2003); Louis (2004); Thewissen et al. (2024) 03 / 13
+S03-016,3,2004,citation_year,sources: Harford (1999); Shleifer and Vishny (2003); Louis (2004); Thewissen et al. (2024) 03 / 13
+S03-017,3,2024,citation_year,Shleifer and Vishny (2003); Louis (2004); Thewissen et al. (2024) 03 / 13
+S03-018,3,03,page_number,er and Vishny (2003); Louis (2004); Thewissen et al. (2024) 03 / 13
+S03-019,3,13,other,d Vishny (2003); Louis (2004); Thewissen et al. (2024) 03 / 13
+S04-020,4,1,other,map Each question becomes one plain descriptive equation. RQ1 A P P E A R A N C E Does CEO Q&A uncertainty rise before a 
+S04-021,4,2,other,"pation quarter, against the firm's own ordinary quarters. RQ2 T I M I N G Does uncertainty resolve at announcement while "
+S04-022,4,1,other,le cash remains until completion? Uncertainty and cash = PRE1 + GAP + POST Read: uncertainty should drop from PRE1 to GAP
+S04-023,4,1,other,h = PRE1 + GAP + POST Read: uncertainty should drop from PRE1 to GAP; cash should drop only after completion. RQ3 PAY M E
+S04-024,4,3,other,from PRE1 to GAP; cash should drop only after completion. RQ3 PAY M E N T M E T H O D Is the pre-announcement run-up stro
+S04-025,4,2.4,statistic,"sal effects. Thesis source: Main empirical designs, Section 2.4 04 / 13"
+S04-026,4,04,page_number,"effects. Thesis source: Main empirical designs, Section 2.4 04 / 13"
+S04-027,4,13,other,"ts. Thesis source: Main empirical designs, Section 2.4 04 / 13"
+S05-028,5,2024,sample_size,H E C L O S E S T W O R K R E A D S TO N E Thewissen et al. 2024 Scripted press-release tone before stock- for-stock acquisi
+S05-029,5,2024,sample_size,- for-stock acquisitions. VOCA B U L A RY Ragozzino & Reuer 2024 Corporate-strategy vocabulary on earnings calls around deal
+S05-030,5,1981,sample_size,gs calls around deal activity. PR I C E S Keown & Pinkerton 1981 Abnormal stock-price run-up before public merger announceme
+S05-031,5,2024,citation_year,onceptual Framework. Nearest cited works: Thewissen et al. (2024); Ragozzino and Reuer (2024); Keown and Pinkerton (1981). 0
+S05-032,5,2024,citation_year, cited works: Thewissen et al. (2024); Ragozzino and Reuer (2024); Keown and Pinkerton (1981). 05 / 13
+S05-033,5,1981,citation_year,l. (2024); Ragozzino and Reuer (2024); Keown and Pinkerton (1981). 05 / 13
+S05-034,5,05,page_number,4); Ragozzino and Reuer (2024); Keown and Pinkerton (1981). 05 / 13
+S05-035,5,13,other,agozzino and Reuer (2024); Keown and Pinkerton (1981). 05 / 13
+S06-036,6,"88,205",sample_size,"t cash-deal test. S A M P L E PA T H BA S E CA L L PA N E L 88,205 calls 1,884 firms U.S. public nonfinancial and nonutility f"
+S06-037,6,"1,884",sample_size,"est. S A M P L E PA T H BA S E CA L L PA N E L 88,205 calls 1,884 firms U.S. public nonfinancial and nonutility firms, 2002 t"
+S06-038,6,2002,sample_size," 1,884 firms U.S. public nonfinancial and nonutility firms, 2002 to 2018. L A NG UAG E M E A S U R E 44,900 calls Calls with"
+S06-039,6,2018.,statistic,"irms U.S. public nonfinancial and nonutility firms, 2002 to 2018. L A NG UAG E M E A S U R E 44,900 calls Calls with an estim"
+S06-040,6,"44,900",sample_size," nonutility firms, 2002 to 2018. L A NG UAG E M E A S U R E 44,900 calls Calls with an estimated UncResCEO measure. F I R ST C"
+S06-041,6,"27,622",sample_size,"stimated UncResCEO measure. F I R ST CA S H - DE A L T E ST 27,622 firm-quarters 1,248 firms Focal uncertainty sample for the "
+S06-042,6,"1,248",sample_size,"asure. F I R ST CA S H - DE A L T E ST 27,622 firm-quarters 1,248 firms Focal uncertainty sample for the pre- announcement ru"
+S06-043,6,1,other,uirer deals with known payment split and value of at least $1 million. Cash arm: at least 50% cash. Stock comparison: at 
+S06-044,6,50%,percentage, split and value of at least $1 million. Cash arm: at least 50% cash. Stock comparison: at least 50% stock. Sample note: re
+S06-045,6,50%,percentage,on. Cash arm: at least 50% cash. Stock comparison: at least 50% stock. Sample note: repeated CEO calls and Execucomp covera
+S06-046,6,1,other,nd Variable Construction; Summary Statistics; Main Analysis 1 table notes. 06 / 13
+S06-047,6,06,page_number,struction; Summary Statistics; Main Analysis 1 table notes. 06 / 13
+S06-048,6,13,other,tion; Summary Statistics; Main Analysis 1 table notes. 06 / 13
+S07-049,7,"71,748",sample_size,"ty left unexplained on that CEO's specific call. R AW INPUT 71,748 ANSWER OBSERVATIONS 0.7806 MEAN 0.3925 SD DECOMPOSITION SAM"
+S07-050,7,0.7806,statistic," CEO's specific call. R AW INPUT 71,748 ANSWER OBSERVATIONS 0.7806 MEAN 0.3925 SD DECOMPOSITION SAMPLE 44,900 OBSERVATIONS 2,1"
+S07-051,7,0.3925,statistic,"fic call. R AW INPUT 71,748 ANSWER OBSERVATIONS 0.7806 MEAN 0.3925 SD DECOMPOSITION SAMPLE 44,900 OBSERVATIONS 2,197 DISTINCT "
+S07-052,7,"44,900",sample_size,"WER OBSERVATIONS 0.7806 MEAN 0.3925 SD DECOMPOSITION SAMPLE 44,900 OBSERVATIONS 2,197 DISTINCT CEOS 0.369 R² R ESIDUAL K EP T "
+S07-053,7,"2,197",sample_size,"806 MEAN 0.3925 SD DECOMPOSITION SAMPLE 44,900 OBSERVATIONS 2,197 DISTINCT CEOS 0.369 R² R ESIDUAL K EP T 44,900 OBSERVATIONS"
+S07-054,7,0.369,statistic,"ECOMPOSITION SAMPLE 44,900 OBSERVATIONS 2,197 DISTINCT CEOS 0.369 R² R ESIDUAL K EP T 44,900 OBSERVATIONS −0.0000 MEAN 0.3010"
+S07-055,7,"44,900",sample_size," OBSERVATIONS 2,197 DISTINCT CEOS 0.369 R² R ESIDUAL K EP T 44,900 OBSERVATIONS −0.0000 MEAN 0.3010 SD Measurement note: UncRe"
+S07-056,7,−0.0000,statistic,"DISTINCT CEOS 0.369 R² R ESIDUAL K EP T 44,900 OBSERVATIONS −0.0000 MEAN 0.3010 SD Measurement note: UncResCEO is generated in "
+S07-057,7,0.3010,statistic," 0.369 R² R ESIDUAL K EP T 44,900 OBSERVATIONS −0.0000 MEAN 0.3010 SD Measurement note: UncResCEO is generated in a first-stag"
+S07-058,7,1,other,stimation uncertainty as a limitation. Thesis source: Table 1 and Dzielinski et al. replication table. 07 / 13
+S07-059,7,07,page_number,is source: Table 1 and Dzielinski et al. replication table. 07 / 13
+S07-060,7,13,other,urce: Table 1 and Dzielinski et al. replication table. 07 / 13
+S08-061,8,1,other,F I N D I N G 1 Pre-announcement Run-up Before a cash acquisition is announ
+S08-062,8,+0.301,statistic,A uncertainty. Estimated change in residual CEO uncertainty +0.301 0.000 -0.301 Usual across-call spread +/- 0.301 (one SD fro
+S08-063,8,0.000,statistic,tainty. Estimated change in residual CEO uncertainty +0.301 0.000 -0.301 Usual across-call spread +/- 0.301 (one SD from zero
+S08-064,8,-0.301,statistic,. Estimated change in residual CEO uncertainty +0.301 0.000 -0.301 Usual across-call spread +/- 0.301 (one SD from zero) Final
+S08-065,8,0.301,statistic,ncertainty +0.301 0.000 -0.301 Usual across-call spread +/- 0.301 (one SD from zero) Final private quarter The model compares
+S08-066,8,+0.0461,statistic,"y quarters. E ST IM AT ED W I T H IN-FIR M SH IF T ESTIMATE +0.0461 SE 0.0172 TWO-TAILED P 0.0074 Approx. 95% CI [0.012, 0.080]"
+S08-067,8,0.0172,statistic," E ST IM AT ED W I T H IN-FIR M SH IF T ESTIMATE +0.0461 SE 0.0172 TWO-TAILED P 0.0074 Approx. 95% CI [0.012, 0.080] About 15%"
+S08-068,8,0.0074,statistic," H IN-FIR M SH IF T ESTIMATE +0.0461 SE 0.0172 TWO-TAILED P 0.0074 Approx. 95% CI [0.012, 0.080] About 15% of the usual spread"
+S08-069,8,95%,percentage,"IF T ESTIMATE +0.0461 SE 0.0172 TWO-TAILED P 0.0074 Approx. 95% CI [0.012, 0.080] About 15% of the usual spread A modest bu"
+S08-070,8,0.012,statistic,"IMATE +0.0461 SE 0.0172 TWO-TAILED P 0.0074 Approx. 95% CI [0.012, 0.080] About 15% of the usual spread A modest but statisti"
+S08-071,8,0.080,statistic,"0.0461 SE 0.0172 TWO-TAILED P 0.0074 Approx. 95% CI [0.012, 0.080] About 15% of the usual spread A modest but statistically c"
+S08-072,8,15%,percentage,"172 TWO-TAILED P 0.0074 Approx. 95% CI [0.012, 0.080] About 15% of the usual spread A modest but statistically clear increa"
+S08-073,8,0.0461,statistic,"the usual spread A modest but statistically clear increase. 0.0461 / 0.3010 = 15.3% SAMPLE 27,622 firm-quarters 1,248 firms CO"
+S08-074,8,0.3010,statistic," spread A modest but statistically clear increase. 0.0461 / 0.3010 = 15.3% SAMPLE 27,622 firm-quarters 1,248 firms CONTROLS AN"
+S08-075,8,15.3%,percentage," modest but statistically clear increase. 0.0461 / 0.3010 = 15.3% SAMPLE 27,622 firm-quarters 1,248 firms CONTROLS AND FI XED"
+S08-076,8,"27,622",sample_size,"tatistically clear increase. 0.0461 / 0.3010 = 15.3% SAMPLE 27,622 firm-quarters 1,248 firms CONTROLS AND FI XED EFFECTS Lever"
+S08-077,8,"1,248",sample_size,"crease. 0.0461 / 0.3010 = 15.3% SAMPLE 27,622 firm-quarters 1,248 firms CONTROLS AND FI XED EFFECTS Leverage, size, Tobin's Q"
+S08-078,8,1,other,ndard errors clustered by firm Thesis source: Main Analysis 1 and its table notes. Approximate 95% CI derived from the re
+S08-079,8,95%,percentage,is source: Main Analysis 1 and its table notes. Approximate 95% CI derived from the reported estimate and SE. Note: the est
+S08-080,8,08,page_number,"mate and SE. Note: the estimate is descriptive, not causal. 08 / 13"
+S08-081,8,13,other,"and SE. Note: the estimate is descriptive, not causal. 08 / 13"
+S09-082,9,2,other,F I N D I N G 2 Announcement vs. Completion Two clocks: residual uncertaint
+S09-083,9,-3,other,ement; cash falls only at completion. Omitted baseline: e ≤ -3 (three or more quarters before announcement) plus never-acq
+S09-084,9,2,other,"irers. Both outcomes use the same matched firm-quarters. PRE2 2 quarters before PRE1 1 quarter before GAP announced, not "
+S09-085,9,2,other,"ers. Both outcomes use the same matched firm-quarters. PRE2 2 quarters before PRE1 1 quarter before GAP announced, not cl"
+S09-086,9,1,other,"e the same matched firm-quarters. PRE2 2 quarters before PRE1 1 quarter before GAP announced, not closed POST after compl"
+S09-087,9,1,other,"the same matched firm-quarters. PRE2 2 quarters before PRE1 1 quarter before GAP announced, not closed POST after complet"
+S09-088,9,4,other,"er before GAP announced, not closed POST after completion (≤4 qtrs) ANNOUNCEMENT COMPLETION Points = coefficients; whiske"
+S09-089,9,95%,percentage,CEMENT COMPLETION Points = coefficients; whiskers = approx. 95% CIs; brackets = adjacent-stage Wald tests INFORMATION CLOCK
+S09-090,9,+0.10,statistic,"ANSACTION CLOCK Cash ratio decline appears after completion +0.10 0 -0.06 PRE1 - GAP Wald: 0.0455 (SE 0.0225), p < .05 GAP - "
+S09-091,9,0,other,"ION CLOCK Cash ratio decline appears after completion +0.10 0 -0.06 PRE1 - GAP Wald: 0.0455 (SE 0.0225), p < .05 GAP - PO"
+S09-092,9,-0.06,statistic,"N CLOCK Cash ratio decline appears after completion +0.10 0 -0.06 PRE1 - GAP Wald: 0.0455 (SE 0.0225), p < .05 GAP - POST Wal"
+S09-093,9,1,other,"ash ratio decline appears after completion +0.10 0 -0.06 PRE1 - GAP Wald: 0.0455 (SE 0.0225), p < .05 GAP - POST Wald: 0."
+S09-094,9,0.0455,statistic,"ine appears after completion +0.10 0 -0.06 PRE1 - GAP Wald: 0.0455 (SE 0.0225), p < .05 GAP - POST Wald: 0.0268 (SE 0.0199), n"
+S09-095,9,0.0225,statistic," after completion +0.10 0 -0.06 PRE1 - GAP Wald: 0.0455 (SE 0.0225), p < .05 GAP - POST Wald: 0.0268 (SE 0.0199), ns 0.0068 SE"
+S09-096,9,05,other,"ion +0.10 0 -0.06 PRE1 - GAP Wald: 0.0455 (SE 0.0225), p < .05 GAP - POST Wald: 0.0268 (SE 0.0199), ns 0.0068 SE 0.0178; n"
+S09-097,9,0.0268,statistic,"E1 - GAP Wald: 0.0455 (SE 0.0225), p < .05 GAP - POST Wald: 0.0268 (SE 0.0199), ns 0.0068 SE 0.0178; ns 0.0473 SE 0.0178; p < "
+S09-098,9,0.0199,statistic,"ld: 0.0455 (SE 0.0225), p < .05 GAP - POST Wald: 0.0268 (SE 0.0199), ns 0.0068 SE 0.0178; ns 0.0473 SE 0.0178; p < .01 0.0018 "
+S09-099,9,0.0068,statistic,"SE 0.0225), p < .05 GAP - POST Wald: 0.0268 (SE 0.0199), ns 0.0068 SE 0.0178; ns 0.0473 SE 0.0178; p < .01 0.0018 SE 0.0187; n"
+S09-100,9,0.0178,statistic,", p < .05 GAP - POST Wald: 0.0268 (SE 0.0199), ns 0.0068 SE 0.0178; ns 0.0473 SE 0.0178; p < .01 0.0018 SE 0.0187; ns -0.0250 "
+S09-101,9,0.0473,statistic,"AP - POST Wald: 0.0268 (SE 0.0199), ns 0.0068 SE 0.0178; ns 0.0473 SE 0.0178; p < .01 0.0018 SE 0.0187; ns -0.0250 SE 0.0130; "
+S09-102,9,0.0178,statistic,"Wald: 0.0268 (SE 0.0199), ns 0.0068 SE 0.0178; ns 0.0473 SE 0.0178; p < .01 0.0018 SE 0.0187; ns -0.0250 SE 0.0130; p < .10 +0"
+S09-103,9,01,bullet_label,"(SE 0.0199), ns 0.0068 SE 0.0178; ns 0.0473 SE 0.0178; p < .01 0.0018 SE 0.0187; ns -0.0250 SE 0.0130; p < .10 +0.016 0 -0"
+S09-104,9,0.0018,statistic," 0.0199), ns 0.0068 SE 0.0178; ns 0.0473 SE 0.0178; p < .01 0.0018 SE 0.0187; ns -0.0250 SE 0.0130; p < .10 +0.016 0 -0.024 PR"
+S09-105,9,0.0187,statistic,ns 0.0068 SE 0.0178; ns 0.0473 SE 0.0178; p < .01 0.0018 SE 0.0187; ns -0.0250 SE 0.0130; p < .10 +0.016 0 -0.024 PRE1 - GAP W
+S09-106,9,-0.0250,statistic,E 0.0178; ns 0.0473 SE 0.0178; p < .01 0.0018 SE 0.0187; ns -0.0250 SE 0.0130; p < .10 +0.016 0 -0.024 PRE1 - GAP Wald: 0.0006 
+S09-107,9,0.0130,statistic,s 0.0473 SE 0.0178; p < .01 0.0018 SE 0.0187; ns -0.0250 SE 0.0130; p < .10 +0.016 0 -0.024 PRE1 - GAP Wald: 0.0006 (SE 0.0039
+S09-108,9,10,other,".0178; p < .01 0.0018 SE 0.0187; ns -0.0250 SE 0.0130; p < .10 +0.016 0 -0.024 PRE1 - GAP Wald: 0.0006 (SE 0.0039), ns GAP"
+S09-109,9,+0.016,statistic,"78; p < .01 0.0018 SE 0.0187; ns -0.0250 SE 0.0130; p < .10 +0.016 0 -0.024 PRE1 - GAP Wald: 0.0006 (SE 0.0039), ns GAP - POST"
+S09-110,9,0,other," .01 0.0018 SE 0.0187; ns -0.0250 SE 0.0130; p < .10 +0.016 0 -0.024 PRE1 - GAP Wald: 0.0006 (SE 0.0039), ns GAP - POST W"
+S09-111,9,-0.024,statistic,"01 0.0018 SE 0.0187; ns -0.0250 SE 0.0130; p < .10 +0.016 0 -0.024 PRE1 - GAP Wald: 0.0006 (SE 0.0039), ns GAP - POST Wald: 0."
+S09-112,9,1,other,"SE 0.0187; ns -0.0250 SE 0.0130; p < .10 +0.016 0 -0.024 PRE1 - GAP Wald: 0.0006 (SE 0.0039), ns GAP - POST Wald: 0.0210 "
+S09-113,9,0.0006,statistic,"-0.0250 SE 0.0130; p < .10 +0.016 0 -0.024 PRE1 - GAP Wald: 0.0006 (SE 0.0039), ns GAP - POST Wald: 0.0210 (SE 0.0042), p < .0"
+S09-114,9,0.0039,statistic,"0.0130; p < .10 +0.016 0 -0.024 PRE1 - GAP Wald: 0.0006 (SE 0.0039), ns GAP - POST Wald: 0.0210 (SE 0.0042), p < .01 0.0008 SE"
+S09-115,9,0.0210,statistic,"24 PRE1 - GAP Wald: 0.0006 (SE 0.0039), ns GAP - POST Wald: 0.0210 (SE 0.0042), p < .01 0.0008 SE 0.0024; ns 0.0061 SE 0.0024;"
+S09-116,9,0.0042,statistic,"AP Wald: 0.0006 (SE 0.0039), ns GAP - POST Wald: 0.0210 (SE 0.0042), p < .01 0.0008 SE 0.0024; ns 0.0061 SE 0.0024; p < .05 0."
+S09-117,9,01,bullet_label,"6 (SE 0.0039), ns GAP - POST Wald: 0.0210 (SE 0.0042), p < .01 0.0008 SE 0.0024; ns 0.0061 SE 0.0024; p < .05 0.0055 SE 0."
+S09-118,9,0.0008,statistic,"SE 0.0039), ns GAP - POST Wald: 0.0210 (SE 0.0042), p < .01 0.0008 SE 0.0024; ns 0.0061 SE 0.0024; p < .05 0.0055 SE 0.0034; n"
+S09-119,9,0.0024,statistic,", ns GAP - POST Wald: 0.0210 (SE 0.0042), p < .01 0.0008 SE 0.0024; ns 0.0061 SE 0.0024; p < .05 0.0055 SE 0.0034; ns -0.0155 "
+S09-120,9,0.0061,statistic,"POST Wald: 0.0210 (SE 0.0042), p < .01 0.0008 SE 0.0024; ns 0.0061 SE 0.0024; p < .05 0.0055 SE 0.0034; ns -0.0155 SE 0.0022; "
+S09-121,9,0.0024,statistic," 0.0210 (SE 0.0042), p < .01 0.0008 SE 0.0024; ns 0.0061 SE 0.0024; p < .05 0.0055 SE 0.0034; ns -0.0155 SE 0.0022; p < .01 M "
+S09-122,9,05,other,".0042), p < .01 0.0008 SE 0.0024; ns 0.0061 SE 0.0024; p < .05 0.0055 SE 0.0034; ns -0.0155 SE 0.0022; p < .01 M ATCHED SA"
+S09-123,9,0.0055,statistic,"42), p < .01 0.0008 SE 0.0024; ns 0.0061 SE 0.0024; p < .05 0.0055 SE 0.0034; ns -0.0155 SE 0.0022; p < .01 M ATCHED SAMPLE 28"
+S09-124,9,0.0034,statistic,"01 0.0008 SE 0.0024; ns 0.0061 SE 0.0024; p < .05 0.0055 SE 0.0034; ns -0.0155 SE 0.0022; p < .01 M ATCHED SAMPLE 28,102 firm-"
+S09-125,9,-0.0155,statistic,"E 0.0024; ns 0.0061 SE 0.0024; p < .05 0.0055 SE 0.0034; ns -0.0155 SE 0.0022; p < .01 M ATCHED SAMPLE 28,102 firm-quarters 1,3"
+S09-126,9,0.0022,statistic,"s 0.0061 SE 0.0024; p < .05 0.0055 SE 0.0034; ns -0.0155 SE 0.0022; p < .01 M ATCHED SAMPLE 28,102 firm-quarters 1,320 firms; "
+S09-127,9,01,bullet_label,".0024; p < .05 0.0055 SE 0.0034; ns -0.0155 SE 0.0022; p < .01 M ATCHED SAMPLE 28,102 firm-quarters 1,320 firms; identical"
+S09-128,9,"28,102",sample_size,"55 SE 0.0034; ns -0.0155 SE 0.0022; p < .01 M ATCHED SAMPLE 28,102 firm-quarters 1,320 firms; identical rows CONTROLS AND FI X"
+S09-129,9,"1,320",sample_size,"155 SE 0.0022; p < .01 M ATCHED SAMPLE 28,102 firm-quarters 1,320 firms; identical rows CONTROLS AND FI XED EFFECTS Leverage,"
+S09-130,9,0.7547,statistic,"; firm and calendar year-quarter FE. Cash adds its own lag: 0.7547 (SE 0.0108), p < .01. INFER ENCE Firm-clustered SEs; two-ta"
+S09-131,9,0.0108,statistic,"calendar year-quarter FE. Cash adds its own lag: 0.7547 (SE 0.0108), p < .01. INFER ENCE Firm-clustered SEs; two-tailed tests "
+S09-132,9,01.,statistic,"quarter FE. Cash adds its own lag: 0.7547 (SE 0.0108), p < .01. INFER ENCE Firm-clustered SEs; two-tailed tests Thesis sour"
+S09-133,9,2,other,lustered SEs; two-tailed tests Thesis source: Main Analysis 2; Table “Uncertainty and Cash Around the Announcement (Match
+S09-134,9,95%,percentage,Cash Around the Announcement (Matched Sample).” Approximate 95% CIs derived from reported SEs. Note: GAP cash is not signif
+S09-135,9,09,page_number,"partly mechanical; the evidence is descriptive, not causal. 09 / 13"
+S09-136,9,13,other,"y mechanical; the evidence is descriptive, not causal. 09 / 13"
+S10-137,10,3,other,F I N D I N G 3 Cash vs. Stock Cash deals show the pre-announcement run-up;
+S10-138,10,1,other,"rts concentration in cash, not proof of a cash-only effect. 1 DE SCR IP T I V E SIDE -BY- SIDE Separate complete-case pan"
+S10-139,10,-3,other,DE -BY- SIDE Separate complete-case panels; baseline is e ≤ -3 plus never-acquirers. Descriptive only. 2 FOR M AL P OOLED 
+S10-140,10,2,other, baseline is e ≤ -3 plus never-acquirers. Descriptive only. 2 FOR M AL P OOLED T E ST Cash and stock indicators enter the
+S10-141,10,+0.0983,statistic," regression. DIR ECT WALD DIFFER ENCE Cash − Stock ESTIMATE +0.0983 SE 0.0476 TWO-TAILED P .039 Approx. 95% CI [0.005, 0.192] C"
+S10-142,10,0.0476,statistic,". DIR ECT WALD DIFFER ENCE Cash − Stock ESTIMATE +0.0983 SE 0.0476 TWO-TAILED P .039 Approx. 95% CI [0.005, 0.192] Concentrate"
+S10-143,10,039,other," ENCE Cash − Stock ESTIMATE +0.0983 SE 0.0476 TWO-TAILED P .039 Approx. 95% CI [0.005, 0.192] Concentrated in cash The dire"
+S10-144,10,95%,percentage," Stock ESTIMATE +0.0983 SE 0.0476 TWO-TAILED P .039 Approx. 95% CI [0.005, 0.192] Concentrated in cash The direct Wald diff"
+S10-145,10,0.005,statistic,"STIMATE +0.0983 SE 0.0476 TWO-TAILED P .039 Approx. 95% CI [0.005, 0.192] Concentrated in cash The direct Wald difference, no"
+S10-146,10,0.192,statistic," +0.0983 SE 0.0476 TWO-TAILED P .039 Approx. 95% CI [0.005, 0.192] Concentrated in cash The direct Wald difference, not two s"
+S10-147,10,2,other,"therefore says concentrated, not strictly cash-specific. PRE2 2 qtrs before PRE1 1 qtr before GAP announced POST complete"
+S10-148,10,2,other,"erefore says concentrated, not strictly cash-specific. PRE2 2 qtrs before PRE1 1 qtr before GAP announced POST completed "
+S10-149,10,1,other,"entrated, not strictly cash-specific. PRE2 2 qtrs before PRE1 1 qtr before GAP announced POST completed Points = coeffici"
+S10-150,10,1,other,"trated, not strictly cash-specific. PRE2 2 qtrs before PRE1 1 qtr before GAP announced POST completed Points = coefficien"
+S10-151,10,95%,percentage,"ed POST completed Points = coefficients; whiskers = approx. 95% CIs CASH ACQUIRERS 29,535 firm-quarters 1,326 firms +0.10 0"
+S10-152,10,"29,535",sample_size,"s = coefficients; whiskers = approx. 95% CIs CASH ACQUIRERS 29,535 firm-quarters 1,326 firms +0.10 0 -0.10 0.0105 SE 0.0174; n"
+S10-153,10,"1,326",sample_size,"skers = approx. 95% CIs CASH ACQUIRERS 29,535 firm-quarters 1,326 firms +0.10 0 -0.10 0.0105 SE 0.0174; ns 0.0486 SE 0.0174; "
+S10-154,10,+0.10,statistic,"ox. 95% CIs CASH ACQUIRERS 29,535 firm-quarters 1,326 firms +0.10 0 -0.10 0.0105 SE 0.0174; ns 0.0486 SE 0.0174; p < .01 0.00"
+S10-155,10,0,other,"% CIs CASH ACQUIRERS 29,535 firm-quarters 1,326 firms +0.10 0 -0.10 0.0105 SE 0.0174; ns 0.0486 SE 0.0174; p < .01 0.0058"
+S10-156,10,-0.10,statistic,"CIs CASH ACQUIRERS 29,535 firm-quarters 1,326 firms +0.10 0 -0.10 0.0105 SE 0.0174; ns 0.0486 SE 0.0174; p < .01 0.0058 SE 0."
+S10-157,10,0.0105,statistic,"SH ACQUIRERS 29,535 firm-quarters 1,326 firms +0.10 0 -0.10 0.0105 SE 0.0174; ns 0.0486 SE 0.0174; p < .01 0.0058 SE 0.0181; n"
+S10-158,10,0.0174,statistic,"RS 29,535 firm-quarters 1,326 firms +0.10 0 -0.10 0.0105 SE 0.0174; ns 0.0486 SE 0.0174; p < .01 0.0058 SE 0.0181; ns -0.0195 "
+S10-159,10,0.0486,statistic,"irm-quarters 1,326 firms +0.10 0 -0.10 0.0105 SE 0.0174; ns 0.0486 SE 0.0174; p < .01 0.0058 SE 0.0181; ns -0.0195 SE 0.0127; "
+S10-160,10,0.0174,statistic,"rs 1,326 firms +0.10 0 -0.10 0.0105 SE 0.0174; ns 0.0486 SE 0.0174; p < .01 0.0058 SE 0.0181; ns -0.0195 SE 0.0127; ns STOCK A"
+S10-161,10,01,bullet_label,s +0.10 0 -0.10 0.0105 SE 0.0174; ns 0.0486 SE 0.0174; p < .01 0.0058 SE 0.0181; ns -0.0195 SE 0.0127; ns STOCK ACQUIRERS 
+S10-162,10,0.0058,statistic,"0.10 0 -0.10 0.0105 SE 0.0174; ns 0.0486 SE 0.0174; p < .01 0.0058 SE 0.0181; ns -0.0195 SE 0.0127; ns STOCK ACQUIRERS 39,819 "
+S10-163,10,0.0181,statistic,"10 0.0105 SE 0.0174; ns 0.0486 SE 0.0174; p < .01 0.0058 SE 0.0181; ns -0.0195 SE 0.0127; ns STOCK ACQUIRERS 39,819 firm-quart"
+S10-164,10,-0.0195,statistic,"E 0.0174; ns 0.0486 SE 0.0174; p < .01 0.0058 SE 0.0181; ns -0.0195 SE 0.0127; ns STOCK ACQUIRERS 39,819 firm-quarters 1,363 fi"
+S10-165,10,0.0127,statistic,"s 0.0486 SE 0.0174; p < .01 0.0058 SE 0.0181; ns -0.0195 SE 0.0127; ns STOCK ACQUIRERS 39,819 firm-quarters 1,363 firms +0.10 "
+S10-166,10,"39,819",sample_size," 0.0058 SE 0.0181; ns -0.0195 SE 0.0127; ns STOCK ACQUIRERS 39,819 firm-quarters 1,363 firms +0.10 0 -0.10 -0.0056 SE 0.0368; "
+S10-167,10,"1,363",sample_size," -0.0195 SE 0.0127; ns STOCK ACQUIRERS 39,819 firm-quarters 1,363 firms +0.10 0 -0.10 -0.0056 SE 0.0368; ns -0.0404 SE 0.0299"
+S10-168,10,+0.10,statistic,"0.0127; ns STOCK ACQUIRERS 39,819 firm-quarters 1,363 firms +0.10 0 -0.10 -0.0056 SE 0.0368; ns -0.0404 SE 0.0299; ns 0.0353 "
+S10-169,10,0,other,"; ns STOCK ACQUIRERS 39,819 firm-quarters 1,363 firms +0.10 0 -0.10 -0.0056 SE 0.0368; ns -0.0404 SE 0.0299; ns 0.0353 SE"
+S10-170,10,-0.10,statistic,"ns STOCK ACQUIRERS 39,819 firm-quarters 1,363 firms +0.10 0 -0.10 -0.0056 SE 0.0368; ns -0.0404 SE 0.0299; ns 0.0353 SE 0.031"
+S10-171,10,-0.0056,statistic,"CK ACQUIRERS 39,819 firm-quarters 1,363 firms +0.10 0 -0.10 -0.0056 SE 0.0368; ns -0.0404 SE 0.0299; ns 0.0353 SE 0.0318; ns -0"
+S10-172,10,0.0368,statistic,"S 39,819 firm-quarters 1,363 firms +0.10 0 -0.10 -0.0056 SE 0.0368; ns -0.0404 SE 0.0299; ns 0.0353 SE 0.0318; ns -0.0048 SE 0"
+S10-173,10,-0.0404,statistic,"rm-quarters 1,363 firms +0.10 0 -0.10 -0.0056 SE 0.0368; ns -0.0404 SE 0.0299; ns 0.0353 SE 0.0318; ns -0.0048 SE 0.0246; ns St"
+S10-174,10,0.0299,statistic," 1,363 firms +0.10 0 -0.10 -0.0056 SE 0.0368; ns -0.0404 SE 0.0299; ns 0.0353 SE 0.0318; ns -0.0048 SE 0.0246; ns Stock PRE1 i"
+S10-175,10,0.0353,statistic,s +0.10 0 -0.10 -0.0056 SE 0.0368; ns -0.0404 SE 0.0299; ns 0.0353 SE 0.0318; ns -0.0048 SE 0.0246; ns Stock PRE1 is imprecise
+S10-176,10,0.0318,statistic,-0.10 -0.0056 SE 0.0368; ns -0.0404 SE 0.0299; ns 0.0353 SE 0.0318; ns -0.0048 SE 0.0246; ns Stock PRE1 is imprecise; it is no
+S10-177,10,-0.0048,statistic,56 SE 0.0368; ns -0.0404 SE 0.0299; ns 0.0353 SE 0.0318; ns -0.0048 SE 0.0246; ns Stock PRE1 is imprecise; it is not read as a 
+S10-178,10,0.0246,statistic,8; ns -0.0404 SE 0.0299; ns 0.0353 SE 0.0318; ns -0.0048 SE 0.0246; ns Stock PRE1 is imprecise; it is not read as a decline. -
+S10-179,10,1,other,299; ns 0.0353 SE 0.0318; ns -0.0048 SE 0.0246; ns Stock PRE1 is imprecise; it is not read as a decline. -0.15 0 +0.20 Ca
+S10-180,10,-0.15,statistic,6; ns Stock PRE1 is imprecise; it is not read as a decline. -0.15 0 +0.20 Cash 0.0459 SE 0.0185; p < .05 Stock -0.0524 SE 0.0
+S10-181,10,0,other,Stock PRE1 is imprecise; it is not read as a decline. -0.15 0 +0.20 Cash 0.0459 SE 0.0185; p < .05 Stock -0.0524 SE 0.043
+S10-182,10,+0.20,statistic,ock PRE1 is imprecise; it is not read as a decline. -0.15 0 +0.20 Cash 0.0459 SE 0.0185; p < .05 Stock -0.0524 SE 0.0436; ns 
+S10-183,10,0.0459,statistic, imprecise; it is not read as a decline. -0.15 0 +0.20 Cash 0.0459 SE 0.0185; p < .05 Stock -0.0524 SE 0.0436; ns POOLED SAMPL
+S10-184,10,0.0185,statistic,"; it is not read as a decline. -0.15 0 +0.20 Cash 0.0459 SE 0.0185; p < .05 Stock -0.0524 SE 0.0436; ns POOLED SAMPLE 25,600 f"
+S10-185,10,05,other,"ead as a decline. -0.15 0 +0.20 Cash 0.0459 SE 0.0185; p < .05 Stock -0.0524 SE 0.0436; ns POOLED SAMPLE 25,600 firm-quart"
+S10-186,10,-0.0524,statistic,"decline. -0.15 0 +0.20 Cash 0.0459 SE 0.0185; p < .05 Stock -0.0524 SE 0.0436; ns POOLED SAMPLE 25,600 firm-quarters 1,191 firm"
+S10-187,10,0.0436,statistic,".15 0 +0.20 Cash 0.0459 SE 0.0185; p < .05 Stock -0.0524 SE 0.0436; ns POOLED SAMPLE 25,600 firm-quarters 1,191 firms SAMPLE A"
+S10-188,10,"25,600",sample_size,"E 0.0185; p < .05 Stock -0.0524 SE 0.0436; ns POOLED SAMPLE 25,600 firm-quarters 1,191 firms SAMPLE AND BASELINE Pre-deal quar"
+S10-189,10,"1,191",sample_size,"ck -0.0524 SE 0.0436; ns POOLED SAMPLE 25,600 firm-quarters 1,191 firms SAMPLE AND BASELINE Pre-deal quarters before the firs"
+S10-190,10,50%,percentage,"rms SAMPLE AND BASELINE Pre-deal quarters before the first ≥50% cash or stock acquisition, plus firms making neither. Neith"
+S10-191,10,3,other,ustered SEs; two-tailed tests. Thesis source: Main Analysis 3; Tables “Event Study by Payment Type: Cash versus Stock Acq
+S10-192,10,95%,percentage,Specificity Test: Cash versus Stock Acquirers.” Approximate 95% CIs derived from reported SEs. Note: the comparisons are wi
+S10-193,10,10,page_number,"e comparisons are within-firm, descriptive, and not causal. 10 / 13"
+S10-194,10,13,other,"parisons are within-firm, descriptive, and not causal. 10 / 13"
+S11-195,11,01,bullet_label,"indow, a formal contrast, and a bridge between literatures. 01 THE ANTICIPATORY W INDOW Before the deal is public Reads re"
+S11-196,11,02,bullet_label,"work had read managed tone, strategy vocabulary, or prices. 02 A FOR M AL CONTR AST Cash against stock Documents that the "
+S11-197,11,03,bullet_label,"model, rather than comparing separate significance results. 03 A LITER ATUR E BR IDGE Private to public Reads unscripted Q"
+S11-198,11,11,page_number,"s source: Introduction, contribution paragraph; Conclusion. 11 / 13"
+S11-199,11,13,other,"rce: Introduction, contribution paragraph; Conclusion. 11 / 13"
+S12-200,12,01,bullet_label,"W H AT I T DOE S NOT SHOW - AND W HER E I T M AY NOT CAR RY 01 Cause and effect The design is descriptive, not causal. It "
+S12-201,12,02,bullet_label,"ive, not causal. It characterizes a within-firm regularity. 02 Generalizability The sample skews toward larger, more heavi"
+S12-202,12,"1500,",sample_size,"re heavily covered U.S. public firms (approximately the S&P 1500, 2002-2018), limiting generalizability. 03 A direct reading "
+S12-203,12,2002,sample_size,"vily covered U.S. public firms (approximately the S&P 1500, 2002-2018), limiting generalizability. 03 A direct reading of th"
+S12-204,12,-2018,citation_year," covered U.S. public firms (approximately the S&P 1500, 2002-2018), limiting generalizability. 03 A direct reading of the CEO"
+S12-205,12,03,bullet_label,"mately the S&P 1500, 2002-2018), limiting generalizability. 03 A direct reading of the CEO The finance-specific word count"
+S12-206,12,04,bullet_label,at abstracts from context; it does not read the CEO's mind. 04 A perfect comparison Stock deals share the disclosure setti
+S12-207,12,12,page_number,": Conclusion, limitations and evidence-boundary paragraphs. 12 / 13"
+S12-208,12,13,other,"clusion, limitations and evidence-boundary paragraphs. 12 / 13"
+S13-209,13,13,page_number,ome your questions and comments. Thesis source: Conclusion. 13 / 13
+S13-210,13,13,page_number,our questions and comments. Thesis source: Conclusion. 13 / 13

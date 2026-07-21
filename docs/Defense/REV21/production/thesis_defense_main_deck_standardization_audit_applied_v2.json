@@ -1,0 +1,134 @@
+{
+  "deck_status": "The prior standardization audit and the user-authorized slide revisions have been applied. The final 13-page deck is visually cohesive, uses one embedded Times-compatible family, uses one physical 16:9 page size, and has no critical, major, or minor issue remaining after PDF-derived visual QA.",
+  "assembly_validation": {
+    "slides_in_order": true,
+    "all_pages_16_9": true,
+    "all_locked_versions_used": true,
+    "pdf_screenshots_used_for_audit": true,
+    "filmstrip_created": true
+  },
+  "critical_issues": [],
+  "major_issues": [],
+  "minor_issues": [],
+  "applied_changes": [
+    {
+      "change_id": "APPLIED-01",
+      "slides_affected": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "change": "Embedded Nimbus Roman consistently for regular, bold, italic, and bold-italic text across the complete deck.",
+      "validation": "PDF font inspection reports only the embedded Nimbus Roman Standardized family and its intended weight/style variants."
+    },
+    {
+      "change_id": "APPLIED-02",
+      "slides_affected": [
+        1,
+        2
+      ],
+      "change": "Normalized the physical page boxes to 1152 x 648 points by uniformly scaling the complete Slide 1 and Slide 2 canvases without internal reflow.",
+      "validation": "All 13 PDF media boxes are exactly 1152 x 648 points; every 300-DPI raster is exactly 4800 x 2700 pixels."
+    },
+    {
+      "change_id": "APPLIED-03",
+      "slides_affected": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "change": "Unified the footer convention to a muted source line and garnet NN / 13 page marker while preserving Slide 1's intentional title-slide treatment.",
+      "validation": "PDF text extraction and visual inspection confirm sequential page markers from 02 / 13 through 13 / 13."
+    },
+    {
+      "change_id": "APPLIED-04",
+      "slides_affected": [
+        4
+      ],
+      "change": "Rebuilt the equation tokens as single compact rounded rectangles, removed the three Main Analysis labels, kept the cash and stock payment terms on one line, and separated the shared descriptive boundary as a standalone sentence.",
+      "validation": "The exact PDF raster shows one clean outline per token, no overlap or wrapping in the payment-method equation, no Main Analysis labels, and clear footer clearance."
+    },
+    {
+      "change_id": "APPLIED-05",
+      "slides_affected": [
+        8,
+        9,
+        10
+      ],
+      "change": "Reduced oversized coefficient emphasis and grouped estimate, standard error, and p-value as coordinated peer statistics; retained every approved value, confidence interval, plotted point, and Wald contrast.",
+      "validation": "Full-resolution PDF crops confirm balanced hierarchy, unchanged numeric content, correct confidence-interval geometry, and no wrapping or clipping."
+    },
+    {
+      "change_id": "APPLIED-06",
+      "slides_affected": [
+        2,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "change": "Moved repeated boundary and limitation language out of main content into true footnote treatment. Slide 4 remains the empirical-design boundary and Slide 12 remains the dedicated limitations slide.",
+      "validation": "The final PDF-derived pages show the repeated caveats in muted footer or footnote positions without competing with the main message."
+    },
+    {
+      "change_id": "APPLIED-07",
+      "slides_affected": [
+        13
+      ],
+      "change": "Aligned the announcement dot precisely to the timeline axis and marker line, removed the standalone Questions label, and retained the explicit defense closing: Thank you for your attention. I welcome your questions and comments.",
+      "validation": "The final PDF raster shows a centered marker with no offset and a balanced, unclipped closing strip."
+    },
+    {
+      "change_id": "APPLIED-08",
+      "slides_affected": [
+        12
+      ],
+      "change": "Preserved the causal-limitation statement and the merged generalizability limitation while allowing the deck-wide font, page-box, and footer standards to remain consistent.",
+      "validation": "PDF text extraction confirms: The evidence identifies a language pattern, not its cause; the generalizability limitation remains one combined item."
+    }
+  ],
+  "qa_evidence": {
+    "pdf_pages": 13,
+    "pdf_page_size_points": [
+      1152,
+      648
+    ],
+    "pdf_raster_dpi": 300,
+    "pdf_raster_page_pixels": [
+      4800,
+      2700
+    ],
+    "filmstrip_pixels": [
+      6592,
+      3792
+    ],
+    "html_sha256": "52b47bf58dfb491cc1d3cbe0be41c8b46e21b7b63648da183ba2e0461e39cc7b",
+    "pdf_sha256": "b1f396191295e320019d8123fe9cd588088e80f992c46150c5fd270f8e6aa94b",
+    "filmstrip_sha256": "9692373564d7e7e6b67438d3c4963ae43caf47289bb95d3b83cb8dafc96b6c26"
+  },
+  "minimal_standardization_plan": [],
+  "do_not_change": [
+    "Do not alter Slide 12's causal-limitation statement or split its merged generalizability limitation.",
+    "Do not change any reported coefficient, standard error, p-value, confidence interval, event-stage label, Wald contrast, chart point, or confidence-interval endpoint.",
+    "Do not add a source footer or page number to Slide 1; its title-slide treatment remains intentional.",
+    "Do not reintroduce repeated causal-boundary blocks into the main content of Slides 2 or 6-11.",
+    "Do not replace Slide 13's explicit thank-you and invitation with a generic Questions and Discussion label.",
+    "Do not update the continuity ledger as part of this production pass."
+  ],
+  "final_recommendation": "Use the standardized v2 deck as the production main deck. The merged HTML, rendered PDF, and PDF-derived filmstrip are synchronized and pass the final visual, page-order, page-size, font, footer, and text-integrity checks."
+}

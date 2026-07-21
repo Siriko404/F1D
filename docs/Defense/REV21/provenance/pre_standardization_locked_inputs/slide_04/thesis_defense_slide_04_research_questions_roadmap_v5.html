@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Research Questions and Empirical Roadmap</title>
+  <style>
+    @page { size: 16in 9in; margin: 0; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 16in; height: 9in; }
+    body { background:#f4f1ec; font-family:"Times New Roman", Times, serif; color:#231f20; }
+    .slide { width:16in; height:9in; position:relative; overflow:hidden; background:#f4f1ec; padding:0.55in 0.82in 0.42in 0.82in; }
+    .eyebrow { font-size:16pt; letter-spacing:4.2pt; text-transform:uppercase; color:#8f001a; font-weight:700; margin-bottom:0.11in; }
+    h1 { font-size:41pt; line-height:1.02; font-weight:400; margin:0; letter-spacing:-0.6pt; }
+    .rule { width:1.38in; height:0.035in; background:#8f001a; margin:0.20in 0 0.22in 0; }
+    .lead { font-size:21pt; line-height:1.12; max-width:11.2in; margin:0 0 0.23in 0; }
+    .roadmap { display:grid; grid-template-rows: repeat(3, 1fr); row-gap:0.19in; width:100%; height:5.18in; }
+    .row { display:grid; grid-template-columns:0.80in 4.52in 0.30in 8.12in; min-height:1.56in; align-items:start; }
+    .num { color:#8f001a; font-size:25pt; font-weight:700; line-height:1; padding-top:0.06in; border-top:1.1pt solid rgba(143,0,26,0.50); }
+    .question { border-top:1.1pt solid rgba(35,31,32,0.18); padding:0.045in 0.20in 0 0; }
+    .tag { font-size:12.5pt; letter-spacing:2.3pt; text-transform:uppercase; font-weight:700; color:#8f001a; margin-bottom:0.075in; }
+    .qtext { font-size:19.2pt; line-height:1.12; margin:0; }
+    .link { position:relative; min-height:1.0in; }
+    .link:before { content:""; position:absolute; top:0.61in; left:0.06in; right:0.06in; height:1.1pt; background:rgba(143,0,26,0.42); }
+    .equation { border-top:1.1pt solid rgba(35,31,32,0.18); padding-top:0.045in; }
+    .formula { display:flex; align-items:center; flex-wrap:wrap; gap:0.07in 0.10in; margin-top:0.030in; max-width:8.0in; }
+    .chunk { border:1.0pt solid rgba(35,31,32,0.24); background:rgba(255,255,255,0.28); border-radius:999px; padding:0.072in 0.13in 0.080in 0.13in; font-size:16.6pt; line-height:1; color:#231f20; }
+    .chunk.key { border-color:rgba(143,0,26,0.56); color:#8f001a; font-weight:700; background:rgba(143,0,26,0.055); }
+    .op { font-size:18.2pt; color:#8f001a; line-height:1; }
+    .read { font-size:15.7pt; line-height:1.15; color:#5b5553; margin-top:0.085in; max-width:7.75in; }
+    .read strong { color:#231f20; font-weight:700; }
+    .spine { position:absolute; left:0.82in; right:0.82in; bottom:0.63in; border-top:1.1pt solid rgba(35,31,32,0.17); padding-top:0.09in; display:flex; justify-content:center; color:#5c5654; font-size:14.8pt; line-height:1.08; text-align:center; }
+    .footer { position:absolute; left:0.82in; right:0.82in; bottom:0.29in; border-top:1.2pt solid rgba(35,31,32,0.16); padding-top:0.085in; display:flex; justify-content:space-between; align-items:baseline; color:#7b7673; }
+    .source { font-size:10.2pt; line-height:1.15; }
+    .page { font-size:13.5pt; }
+  </style>
+</head>
+<body>
+  <section class="slide">
+    <div class="eyebrow">Intro</div>
+    <h1>Research Questions and Empirical Roadmap</h1>
+    <div class="rule"></div>
+    <p class="lead">Each question becomes one plain descriptive equation.</p>
+
+    <div class="roadmap">
+      <div class="row">
+        <div class="num">RQ1</div>
+        <div class="question">
+          <div class="tag">Appearance</div>
+          <p class="qtext">Does CEO Q&amp;A uncertainty rise before a cash acquisition is announced?</p>
+        </div>
+        <div class="link"></div>
+        <div class="equation">
+          <div class="tag">Main Analysis 1</div>
+          <div class="formula">
+            <span class="chunk">Uncertainty</span><span class="op">=</span><span class="chunk key">pre-announcement quarter</span>
+          </div>
+          <div class="read"><strong>Read:</strong> within-firm shift in the anticipation quarter, against the firm's own ordinary quarters.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="num">RQ2</div>
+        <div class="question">
+          <div class="tag">Timing</div>
+          <p class="qtext">Does uncertainty resolve at announcement while cash remains until completion?</p>
+        </div>
+        <div class="link"></div>
+        <div class="equation">
+          <div class="tag">Main Analysis 2</div>
+          <div class="formula">
+            <span class="chunk">Uncertainty and cash</span><span class="op">=</span><span class="chunk key">PRE1</span><span class="op">+</span><span class="chunk key">GAP</span><span class="op">+</span><span class="chunk key">POST</span>
+          </div>
+          <div class="read"><strong>Read:</strong> uncertainty should drop from PRE1 to GAP; cash should drop only after completion.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="num">RQ3</div>
+        <div class="question">
+          <div class="tag">Payment method</div>
+          <p class="qtext">Is the pre-announcement run-up stronger for cash acquirers than stock acquirers?</p>
+        </div>
+        <div class="link"></div>
+        <div class="equation">
+          <div class="tag">Main Analysis 3</div>
+          <div class="formula">
+            <span class="chunk">Uncertainty</span><span class="op">=</span><span class="chunk key">cash pre-announcement</span><span class="op">+</span><span class="chunk key">stock pre-announcement</span>
+          </div>
+          <div class="read"><strong>Read:</strong> test the cash-minus-stock difference directly, not just whether one side is significant.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spine">Common spine: firm controls, firm fixed effects, year-quarter fixed effects, firm-clustered errors, descriptive interpretation.</div>
+
+    <div class="footer">
+      <div class="source">Thesis source: Main empirical designs, Section 2.4</div>
+      <div class="page">04</div>
+    </div>
+  </section>
+</body>
+</html>

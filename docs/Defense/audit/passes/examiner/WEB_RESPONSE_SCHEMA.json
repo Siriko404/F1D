@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["request_id", "status", "results", "artifacts_manifest", "delivery"],
+  "properties": {
+    "request_id": {"type": "string"},
+    "status": {"enum": ["COMPLETE", "PARTIAL", "BLOCKED"]},
+    "results": {
+      "type": "object",
+      "required": ["ranked_questions", "no_good_answer", "avoidable_invitations", "top_three"],
+      "properties": {
+        "ranked_questions": {
+          "type": "array",
+          "minItems": 8,
+          "description": "Ordered by the damage an unprepared answer would do, most damaging first.",
+          "items": {
+            "type": "object",
+            "required": [
+              "rank",
+              "question",
+              "asked_by",
+              "prompted_by",
+              "damage_if_unprepared",
+              "thesis_answers",
+              "answer_shape",
+              "source"
+            ],
+            "properties": {
+              "rank": {"type": "integer", "minimum": 1},
+              "question": {
+                "type": "string",
+                "description": "Phrased as the examiner would actually say it out loud."
+              },
+              "asked_by": {"enum": ["Dutta", "Zhang", "either", "both"]},
+              "prompted_by": {
+                "type": "string",
+                "description": "The specific slide element or thesis passage that invites it."
+              },
+              "damage_if_unprepared": {"enum": ["severe", "moderate", "minor"]},
+              "thesis_answers": {"enum": ["yes", "partial", "no"]},
+              "answer_shape": {
+                "type": "string",
+                "description": "One or two sentences using only what the thesis establishes. Where the thesis is silent, this is a concession."
+              },
+              "source": {
+                "type": "string",
+                "description": "The file and passage that supports the answer, or an explicit statement that the thesis is silent."
+              },
+              "route_to": {"enum": ["speaker_notes", "appendix", "concede", "deck_change"]}
+            }
+          }
+        },
+        "no_good_answer": {
+          "type": "array",
+          "description": "Questions the thesis cannot answer. State them plainly.",
+          "items": {
+            "type": "object",
+            "required": ["question", "why_unanswerable", "best_concession"],
+            "properties": {
+              "question": {"type": "string"},
+              "why_unanswerable": {"type": "string"},
+              "best_concession": {"type": "string"}
+            }
+          }
+        },
+        "avoidable_invitations": {
+          "type": "array",
+          "description": "Anything on the deck that draws a question better wording would not, without changing any claim.",
+          "items": {
+            "type": "object",
+            "required": ["slide", "element", "question_it_invites", "why_avoidable"],
+            "properties": {
+              "slide": {"type": "integer", "minimum": 1, "maximum": 13},
+              "element": {"type": "string"},
+              "question_it_invites": {"type": "string"},
+              "why_avoidable": {"type": "string"}
+            }
+          }
+        },
+        "top_three": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {"type": "string"},
+          "description": "The three questions this deck is most likely to actually get."
+        }
+      }
+    },
+    "artifacts_manifest": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["filename", "status", "media_type", "size", "sha256"],
+        "properties": {
+          "filename": {"type": "string"},
+          "status": {"enum": ["CREATED", "MISSING", "NOT_CREATED"]},
+          "media_type": {"type": "string"},
+          "size": {"type": "integer"},
+          "sha256": {"type": "string"}
+        }
+      }
+    },
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "delivery": {"type": "array", "items": {"type": "string"}}
+  }
+}

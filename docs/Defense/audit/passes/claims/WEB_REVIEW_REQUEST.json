@@ -1,0 +1,72 @@
+{
+  "request_id": "deck-audit-claims-v1",
+  "objective": "Compare the strength of every claim the deck makes against the strength the thesis actually supports, and report each place the deck says more, or less, than its source.",
+  "why_this_call": "A deck can be numerically perfect and still overclaim. Slide wording is compressed for an audience, and compression is where hedges get dropped, a correlation turns into a cause, a motivation turns into a mechanism, and a qualified contrast turns into a general one. Catching that requires reading the thesis and the deck side by side and judging strength, which no mechanical check can do.",
+  "authority_hierarchy": [
+    "_intro_body.tex - the thesis introduction, controlling for the positioning claim, the contributions, and the stated interpretive limits",
+    "_conclusion_body.tex - the thesis conclusion, controlling for the findings summary and every limitation",
+    "sec34_body_from_ledgers.tex - the main-analysis prose, controlling for how each result is interpreted at the point it is reported",
+    "_abstract_body.tex - the compact statement of the same claims",
+    "deck_text_extracted.json and the deck PDF - the artifact under audit"
+  ],
+  "scope": {
+    "included": [
+      "Causal language: any wording that converts a within-firm association into a cause, effect, impact, consequence, driver, or identified response",
+      "Mechanism language: any wording that presents a reason for the language pattern as established rather than as motivation or an open question, including the war-chest or cash-accumulation channel and the choice between compliance-constrained and strategically chosen silence",
+      "Payment-method language: any wording that turns concentration in cash into strict cash-specificity, or reads the imprecise stock estimate as evidence of no effect",
+      "Inferential form: any between-group or between-stage conclusion that rests on one estimate being significant and another not, rather than on the formal contrast built to test it",
+      "Hedge fidelity: every place the thesis qualifies a claim and the deck states it flat, or the thesis states it flat and the deck weakens it",
+      "Load-bearing omissions: a qualification the thesis treats as necessary that the deck drops where the same claim is made",
+      "Internal consistency: whether the same claim is asserted at the same strength everywhere it recurs across the 13 slides",
+      "Whether the deck's stated boundaries actually cover the claims the deck makes"
+    ],
+    "excluded": [
+      "Numerical values, sample sizes, standard errors, and confidence intervals, which belong to a separate numbers pass",
+      "Citations, author names, and publication years, which belong to a separate citations pass",
+      "Typography, layout, charts, and rendering, which belong to a separate visual pass",
+      "Material the deck deliberately leaves out. The main talk covers only the three main analyses. The analyst-scrutiny analysis, the post-call bid-ask-spread analysis, the withdrawal and static-cash robustness checks, the all-deals stacked results, and the logit specifications are all approved for a separate question-and-answer appendix. The thesis states four contributions and the deck presents three, dropping the bid-ask contribution deliberately. None of these omissions is a defect and none should be reported as one.",
+      "Any suggestion that the deck should add a slide, a finding, or a section"
+    ]
+  },
+  "web_research": {
+    "allowed": false,
+    "rules": "Source-closed. Judge the deck only against the four attached thesis files. If none of them settles whether a claim is supported, report it UNVERIFIABLE and name the file that would."
+  },
+  "method": [
+    "Read the four thesis files first and build your own picture of exactly what this study claims and how strongly.",
+    "Then walk the deck slide by slide, from 2 to 13, and for each substantive assertion ask one question: is this the same strength as the source, stronger, or weaker?",
+    "Quote the deck exactly and quote the controlling thesis sentence exactly. A finding that paraphrases either side is not usable.",
+    "Weigh the whole slide, not the sentence alone. A qualification carried in a footnote or a nearby label still qualifies the claim, and a claim is not overstated merely because its hedge sits a line away. Say where the qualification is when you rely on it.",
+    "Report exceptions only."
+  ],
+  "requested_work": [
+    "Every place the deck states a claim more strongly than the thesis supports it, with both quotations",
+    "Every place a causal, mechanistic, or strict-cash-specificity reading is available to a reasonable listener, even if no forbidden word appears",
+    "Every place a between-group or between-stage claim is not tied to the formal contrast that tests it",
+    "Any load-bearing qualification present in the thesis and absent from the deck where the deck makes the same claim",
+    "Any place two slides assert the same thing at different strengths"
+  ],
+  "questions": [
+    {"id": "q1", "question": "Does any slide assert or imply causation, and if so, in what exact words?"},
+    {"id": "q2", "question": "Does any slide present a mechanism as established rather than as motivation or an open question?"},
+    {"id": "q3", "question": "Does any slide read the payment-method result as stricter than concentration in cash, or treat the imprecise stock estimate as evidence of absence?"},
+    {"id": "q4", "question": "Is every between-group and between-stage claim tied to the formal contrast built to test it?"},
+    {"id": "q5", "question": "Where does the deck drop a hedge that the thesis uses for the same claim?"},
+    {"id": "q6", "question": "Do the four boundaries stated on slide 12 actually cover the claims the rest of the deck makes, and is any boundary stated more narrowly than the thesis states it?"},
+    {"id": "q7", "question": "Is any claim asserted at one strength on one slide and a different strength on another?"}
+  ],
+  "required_artifacts": [
+    {
+      "filename": "audit_claims_findings.md",
+      "description": "The exceptions in readable form, ordered by severity then slide. Each entry gives the slide, the exact deck wording, the exact controlling thesis sentence with its file, what the difference in strength is, and what a listener could wrongly conclude. If the deck is faithful throughout, say so in one line and list the claims you checked most closely."
+    }
+  ],
+  "acceptance_criteria": [
+    "Every finding quotes the deck and the thesis exactly, and names the thesis file",
+    "Every one of q1 through q7 is answered explicitly, including where the answer is none",
+    "No finding concerns a number, a citation, or a layout choice",
+    "No finding asks for content the deck deliberately excludes",
+    "Qualifications carried in footnotes and labels are accounted for before a claim is called overstated"
+  ],
+  "stop_condition": "If the attached thesis files do not settle whether a claim is supported, return status PARTIAL and name the exact missing file rather than judging from general knowledge of the literature."
+}

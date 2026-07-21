@@ -1,0 +1,408 @@
+{
+  "package_name": "THESIS_DEFENSE_PROJECT_REV21",
+  "ledger_revision": 21,
+  "created_on": "2026-07-16",
+  "migration_base": {
+    "revision": 20,
+    "sha256": "b010f865422dbdfc8458439c04d5b7c6114bbeda43b2b4284e3f052d0f094930"
+  },
+  "manifest_scope": "All package members present before manifest creation; package_manifest.json and SHA256SUMS.txt are verified separately.",
+  "file_count_excluding_manifest_files": 79,
+  "files": [
+    {
+      "archive_path": "THESIS_DEFENSE_CONTINUITY_LEDGER.json",
+      "sha256": "5398e70fb1cb86fcaaa61c92864a4456b17de87bc76f1f030458ca86a2e93cb2",
+      "size_bytes": 346322
+    },
+    {
+      "archive_path": "THESIS_DEFENSE_CONTINUITY_LEDGER_REV21.json",
+      "sha256": "5398e70fb1cb86fcaaa61c92864a4456b17de87bc76f1f030458ca86a2e93cb2",
+      "size_bytes": 346322
+    },
+    {
+      "archive_path": "manifest/SHA256SUMS.txt",
+      "sha256": "483e6bd21f185f051312d1e877d987968bfc17d10b1810ac61b507aafecb536a",
+      "size_bytes": 11825
+    },
+    {
+      "archive_path": "manifest/package_manifest.json",
+      "sha256": "d3e6df05ff4e9e42cdb86c1c88f22994afe1c276f170ecc39d9fa81b1287162e",
+      "size_bytes": 18782
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_01.pdf",
+      "sha256": "771c62bc94243f03b1e128e6b6da02047550d2a2d92a84dbdc5c6b417abf25b9",
+      "size_bytes": 168256
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_01_300dpi.png",
+      "sha256": "9c51776a8dabab16b5b3becec22b179f8f25b7f3aab14b31e71ffee2c51a299c",
+      "size_bytes": 334991
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_02.pdf",
+      "sha256": "9492c0effa7b81613b7488cf90399f7680f09ed6360e671f8195551dcfe941f5",
+      "size_bytes": 170302
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_02_300dpi.png",
+      "sha256": "9d2b479b37cd7401d80d3417ac07bf3a51901504a3b7fc5ce54e967708c5d9cc",
+      "size_bytes": 390651
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_03.pdf",
+      "sha256": "5307257e6786e57d92bb90ad1bd9f2b6fae2bcae19d0cfbc128d3ebc54d4cd3f",
+      "size_bytes": 170051
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_03_300dpi.png",
+      "sha256": "7621a20753a36cf0722a88f0fc301106f6f05505d1b6f0b1a74cf2fc2e695477",
+      "size_bytes": 403096
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_04.pdf",
+      "sha256": "724946e9ed7e0473ac8c67608bbbbc5fafdb50956532e3e5cb6eedce385a53f8",
+      "size_bytes": 171937
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_04_300dpi.png",
+      "sha256": "22bd2161ea30083df3e85e0da1a9c890f0f47332d24084cc8556c5e9aac97e3d",
+      "size_bytes": 545005
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_05.pdf",
+      "sha256": "a0b4150de910324f9bd5831d8f45f91e3a7fafccf24a24c9efb48c42c68cec6b",
+      "size_bytes": 170220
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_05_300dpi.png",
+      "sha256": "5a2730e450d916fbb1017ee7aa86ac094cf8350ee5a2f2e441919672c7d49ccc",
+      "size_bytes": 493077
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_06.pdf",
+      "sha256": "4d64aac5b06984a8a0aeee6dfd4009ad8a961b7b6cce1ccd0f1364dce9d9163d",
+      "size_bytes": 170398
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_06_300dpi.png",
+      "sha256": "b95ee27a970f5bb1328d14fbb0486343363ecc024cc217a11d893c810746c4e0",
+      "size_bytes": 422601
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_07.pdf",
+      "sha256": "4a3f22e602e907ac1f376c2f6d6ffe151d8f0ccd3c4caa2bbc30a0d00193e32c",
+      "size_bytes": 170295
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_07_300dpi.png",
+      "sha256": "0a3c356f12b6d00c6842d42a54a8e979d15e5ef134ffc453e4e36a85e35f5a8f",
+      "size_bytes": 452694
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_08.pdf",
+      "sha256": "c924b4d17fb8d126cc2209986610985eb88bac7101e7d153f227786f5a44170c",
+      "size_bytes": 170544
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_08_300dpi.png",
+      "sha256": "6e57224c587222bd1cf3a45eba8dfb2ee3a972e25de770ac32f3c8aaec2bb3b8",
+      "size_bytes": 443362
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_09.pdf",
+      "sha256": "dcb43f3d3e8ea990251d9b0b195058d1cd9c22f09934ee64f36f754b3b2616f0",
+      "size_bytes": 172843
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_09_300dpi.png",
+      "sha256": "14a25ba04a37f03a2a2825d5a6b7165af8f1d130bf73f55a60ed087d34a5eb5c",
+      "size_bytes": 651776
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_10.pdf",
+      "sha256": "9b53e783c5f7a40f74ed7e680cbc015ca7105c6f5e299e789d80ed6708090cb3",
+      "size_bytes": 173873
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_10_300dpi.png",
+      "sha256": "d08b6a6f1301e41f7077670d31632b07d149ccea5c7537aeff0dc6b89c13b9d0",
+      "size_bytes": 776185
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_11.pdf",
+      "sha256": "1e3bd71612f5734ab1f77491781ce889c5fe8e247a426c4fe86a4720aa8fb576",
+      "size_bytes": 169784
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_11_300dpi.png",
+      "sha256": "96fe587193f0dda303555cae3c17f70d7c8b2224e88f77296f390aed786d7e0d",
+      "size_bytes": 374078
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_12.pdf",
+      "sha256": "c3623033cd815dec76d50c4e21ef06215bbcce63847ee7ee71ae154bc8abbf89",
+      "size_bytes": 169972
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_12_300dpi.png",
+      "sha256": "ec37ea7db263474a09e2e1c84c5eb4fb39b71ce5d0aa72db0cb9d4a53f89e0c5",
+      "size_bytes": 512766
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_13.pdf",
+      "sha256": "beb241202f9ccb3da0ff8d91b7cb939bb7c1d059c9557b2b1dd94c3b37334163",
+      "size_bytes": 169368
+    },
+    {
+      "archive_path": "production/individual_pages/thesis_defense_standardized_slide_13_300dpi.png",
+      "sha256": "0a4026de575a70028b357f59c603097dd16a886cabbb72c9f6647ec046661ed7",
+      "size_bytes": 357584
+    },
+    {
+      "archive_path": "production/thesis_defense_main_deck_slides_01-13_standardized_v2.html",
+      "sha256": "52b47bf58dfb491cc1d3cbe0be41c8b46e21b7b63648da183ba2e0461e39cc7b",
+      "size_bytes": 816975
+    },
+    {
+      "archive_path": "production/thesis_defense_main_deck_slides_01-13_standardized_v2.pdf",
+      "sha256": "b1f396191295e320019d8123fe9cd588088e80f992c46150c5fd270f8e6aa94b",
+      "size_bytes": 192708
+    },
+    {
+      "archive_path": "production/thesis_defense_main_deck_slides_01-13_standardized_v2_pdf_filmstrip_300dpi.png",
+      "sha256": "9692373564d7e7e6b67438d3c4963ae43caf47289bb95d3b83cb8dafc96b6c26",
+      "size_bytes": 11497647
+    },
+    {
+      "archive_path": "production/thesis_defense_main_deck_standardization_audit_applied_v2.json",
+      "sha256": "cde7de3e5e22c872c55e2848baa0691c58895bdd51101fcde1b926c163c7d6a4",
+      "size_bytes": 5940
+    },
+    {
+      "archive_path": "provenance/assets/Primary_Black3.png",
+      "sha256": "bc38e7cfa5b3da3f1174fe9e7e379c2c8d3caf49b2efa95332a1234a8fb7b4e0",
+      "size_bytes": 97602
+    },
+    {
+      "archive_path": "provenance/assets/uottawa.png",
+      "sha256": "9e6117f54bfb505fa07ad2a2d270c6ad9941ebaa98a8c32530c7ee54f765a0b7",
+      "size_bytes": 18874
+    },
+    {
+      "archive_path": "provenance/ledger/THESIS_DEFENSE_CONTINUITY_LEDGER_REV20.json",
+      "sha256": "b010f865422dbdfc8458439c04d5b7c6114bbeda43b2b4284e3f052d0f094930",
+      "size_bytes": 243161
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_01/thesis_defense_slide_01_corrected.html",
+      "sha256": "5f6964197d2864085edf7b294a6fa29abe25ab0660835b29fd6f91947a7d9df1",
+      "size_bytes": 158251
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_01/thesis_defense_slide_01_corrected.pdf",
+      "sha256": "d4bf732d0d52c2b9eaabc08fe135eb18240ce9e285e056770629beaf4968b25a",
+      "size_bytes": 140553
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_01/thesis_defense_slide_01_corrected.png",
+      "sha256": "2bc7215f12879daa5a996bd8a6b899d270813a3b4db9a0a15bac12f523598e71",
+      "size_bytes": 94215
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_02/thesis_defense_slide_02_conceptual_framework_I_v2.html",
+      "sha256": "035b4715157051a4e5d7adeadff1a6c33bb372593daeda6a55c08c17965ebf24",
+      "size_bytes": 5881
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_02/thesis_defense_slide_02_conceptual_framework_I_v2.pdf",
+      "sha256": "669a00e10e9ece8dcd0be88006c86824101442893ce7046fef20b3aa11c885ed",
+      "size_bytes": 12665
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_02/thesis_defense_slide_02_conceptual_framework_I_v2.png",
+      "sha256": "60548679e220447806f81b735eb6d90eb84a30d6e6a75fd893d3dd4c13bb3c84",
+      "size_bytes": 140267
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_03/thesis_defense_slide_03_conceptual_framework_II_v5.html",
+      "sha256": "bf337f0a8865606d4d266309a3a113cfba693ea298b95eecb770c9da424ae4b9",
+      "size_bytes": 6931
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_03/thesis_defense_slide_03_conceptual_framework_II_v5.pdf",
+      "sha256": "ec5adb42ba3ae2af1b26fc4b6319b648c537cc36176267d4e7749da6095e74be",
+      "size_bytes": 18402
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_03/thesis_defense_slide_03_conceptual_framework_II_v5.png",
+      "sha256": "ed9ae0b8030c6a534704747df94b62bc083733b87784d9760ee1074983983375",
+      "size_bytes": 163020
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_04/thesis_defense_slide_04_research_questions_roadmap_v5.html",
+      "sha256": "cb582d43b65661888398d9ca741645d239fe41921ce4159662b646e2f9e68197",
+      "size_bytes": 5999
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_04/thesis_defense_slide_04_research_questions_roadmap_v5.pdf",
+      "sha256": "a0be7f06c00bd75ccb9fcb36ef386883c42691e230a6666b3a5222163647c4c9",
+      "size_bytes": 60434
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_04/thesis_defense_slide_04_research_questions_roadmap_v5.png",
+      "sha256": "97e467e9240a663c1bd8fbe084b13d3a18bb7920db10886add2cd6756399ec9e",
+      "size_bytes": 211558
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_05/thesis_defense_slide_05_literature_nearest_work_v4.html",
+      "sha256": "ac2a867cc440d29662b5f5c4c86182224cf16fe7a69d30116bc150feff1fb9fb",
+      "size_bytes": 5922
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_05/thesis_defense_slide_05_literature_nearest_work_v4.pdf",
+      "sha256": "2f9aac3a4fff122b87b0561db64e367ca4468b2df4dff60c44b99c3b07439960",
+      "size_bytes": 13547
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_05/thesis_defense_slide_05_literature_nearest_work_v4.png",
+      "sha256": "53faf8e819d399aec8a640c3e3725aff83c2e6e5111c40bcca5e81d553b62dcd",
+      "size_bytes": 196338
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_06/thesis_defense_slide_06_data_sample_v6.html",
+      "sha256": "342befcc392db62c8d534a369674b2e948d7cf42e8c7b5b20ba194f6117d709a",
+      "size_bytes": 5820
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_06/thesis_defense_slide_06_data_sample_v6.pdf",
+      "sha256": "79bd21e03c84c16b405618e82e67f99a590d82c0c3fceaaff8d5a4d46a39ff27",
+      "size_bytes": 16239
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_06/thesis_defense_slide_06_data_sample_v6.png",
+      "sha256": "a55ee7b6f20cf40bbd2ab0dd15010b9541ed736d8d02460a7fa3b139ce566d3b",
+      "size_bytes": 172965
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_07/thesis_defense_slide_07_uncres_measure_v13.html",
+      "sha256": "fb9c7697651678fc1acafb852c03d142a9d3a797bd4ce9c7e4345bbb8bf0914f",
+      "size_bytes": 6423
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_07/thesis_defense_slide_07_uncres_measure_v13.pdf",
+      "sha256": "7493d46a148cb5d25b0a81707ef721dec531f08a113be556b526a6a6ad4d791f",
+      "size_bytes": 13070
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_07/thesis_defense_slide_07_uncres_measure_v13.png",
+      "sha256": "8a06f856e82c407dc51a5f9b18ddbaa115a3472c1d8a6af2f0190bba440fcd7f",
+      "size_bytes": 172872
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_08/thesis_defense_slide_08_preannouncement_runup_v1.html",
+      "sha256": "bc6c3d89847afc33ec42447f325c9e4ac33e2a1dc3b137e41b8abe8f9fbf326e",
+      "size_bytes": 8717
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_08/thesis_defense_slide_08_preannouncement_runup_v1.pdf",
+      "sha256": "d8c162c988268a14455ac76b2fb523553dc22a703df0ac467e1080b3ab58b15a",
+      "size_bytes": 20675
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_08/thesis_defense_slide_08_preannouncement_runup_v1.png",
+      "sha256": "fea9d46e18eb96edea324990a50ac0935e86e13c416d210a09fcfb1cffc6feed",
+      "size_bytes": 479365
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_09/thesis_defense_slide_09_announcement_vs_completion_v1.html",
+      "sha256": "f5d1d8540e3e5659793c3e09c5bcf572ba757bd92ac8482ca464ca02d07a082b",
+      "size_bytes": 15720
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_09/thesis_defense_slide_09_announcement_vs_completion_v1.pdf",
+      "sha256": "746266f31202f69968b6a6e2ca4d85208897c2857103d14d63d4b122cb24c6ed",
+      "size_bytes": 38264
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_09/thesis_defense_slide_09_announcement_vs_completion_v1.png",
+      "sha256": "b352a8829f4f9980c94118121c2d67c001f062e9966e6c148402705d4ac5cf33",
+      "size_bytes": 797876
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_10/thesis_defense_slide_10_cash_vs_stock_v1.html",
+      "sha256": "e93a84e101aa1b673c12922d0c0348a3ffdc48d4a9ce4058c019ba6b3dbff137",
+      "size_bytes": 18028
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_10/thesis_defense_slide_10_cash_vs_stock_v1.pdf",
+      "sha256": "26eca56483a904a756f094ef44ea37d7c0575250921b5e6202861100de1cbe80",
+      "size_bytes": 42895
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_10/thesis_defense_slide_10_cash_vs_stock_v1.png",
+      "sha256": "5fbde261502d47d19dff871047f04d68adc3e3f07d1a26882e034463aa94619c",
+      "size_bytes": 868236
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_11/thesis_defense_slide_11_contributions_v1.html",
+      "sha256": "e77adc5aa9e4364a77658aaf41a7161d1a51c0b7e5118c0cc3d2a583b26ca60b",
+      "size_bytes": 6307
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_11/thesis_defense_slide_11_contributions_v1.pdf",
+      "sha256": "9f130ecf96d2479d3a1a1302b0c77229a81e66aa5d4425b36e66fad50b2e8240",
+      "size_bytes": 14584
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_11/thesis_defense_slide_11_contributions_v1.png",
+      "sha256": "f200a023b9fd961fa2a721a4c42d5cbdf6ae5f501eaa21b4bb7d15c9c9e98d4d",
+      "size_bytes": 571327
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_12/thesis_defense_slide_12_evidence_boundaries_v1.html",
+      "sha256": "4e1a20b83a35bbcf9a2dbdb38fe90f050c688a7504f15d3102ed444f1c5213e3",
+      "size_bytes": 5918
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_12/thesis_defense_slide_12_evidence_boundaries_v1.pdf",
+      "sha256": "6fb435fe718eae4456d50d4d9c057e230e9ca44db530f8e70de84913792d1765",
+      "size_bytes": 16279
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_12/thesis_defense_slide_12_evidence_boundaries_v1.png",
+      "sha256": "ec37ea7db263474a09e2e1c84c5eb4fb39b71ce5d0aa72db0cb9d4a53f89e0c5",
+      "size_bytes": 512766
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_13/thesis_defense_slide_13_conclusion_v2.html",
+      "sha256": "96e7b158c540e346d59f45b5e1a91188420ce69b8c19b2503c3960df9df3d06a",
+      "size_bytes": 6486
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_13/thesis_defense_slide_13_conclusion_v2.pdf",
+      "sha256": "e0383c96a80309b3308cfb9109f48813589d9ee700e2f41e18c230dce6d3fb17",
+      "size_bytes": 13506
+    },
+    {
+      "archive_path": "provenance/pre_standardization_locked_inputs/slide_13/thesis_defense_slide_13_conclusion_v2.png",
+      "sha256": "db5e82463508f7438f05ffce56a5e0b0405e6551a7ec6856088eb38bac707f7f",
+      "size_bytes": 442824
+    },
+    {
+      "archive_path": "scripts/assemble_standardized_deck.py",
+      "sha256": "f117455dd527b979a0c1a4b35413f7aa76afc422cb6e77c76e69b93bf79b753d",
+      "size_bytes": 28489
+    },
+    {
+      "archive_path": "scripts/migrate_ledger_rev20_to_rev21.py",
+      "sha256": "f0bfb6e980afb915cfc515730896c210956c16f90e6ff1bd5b97fefd532615c2",
+      "size_bytes": 61759
+    },
+    {
+      "archive_path": "source/_thesis_FLAT(2).tex",
+      "sha256": "6f2e003ff63eebb23bed8fe26dbd1601d0b5392a6628320d8782f60d5f936310",
+      "size_bytes": 162954
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+{
+  "request_id": "deck-audit-claims-v1",
+  "status": "COMPLETE",
+  "results": {
+    "coverage": [
+      {
+        "slide": 1,
+        "items_checked": 0,
+        "exceptions": 0
+      },
+      {
+        "slide": 2,
+        "items_checked": 6,
+        "exceptions": 0
+      },
+      {
+        "slide": 3,
+        "items_checked": 8,
+        "exceptions": 0
+      },
+      {
+        "slide": 4,
+        "items_checked": 8,
+        "exceptions": 0
+      },
+      {
+        "slide": 5,
+        "items_checked": 8,
+        "exceptions": 1
+      },
+      {
+        "slide": 6,
+        "items_checked": 5,
+        "exceptions": 0
+      },
+      {
+        "slide": 7,
+        "items_checked": 6,
+        "exceptions": 0
+      },
+      {
+        "slide": 8,
+        "items_checked": 5,
+        "exceptions": 0
+      },
+      {
+        "slide": 9,
+        "items_checked": 9,
+        "exceptions": 0
+      },
+      {
+        "slide": 10,
+        "items_checked": 10,
+        "exceptions": 0
+      },
+      {
+        "slide": 11,
+        "items_checked": 7,
+        "exceptions": 0
+      },
+      {
+        "slide": 12,
+        "items_checked": 8,
+        "exceptions": 0
+      },
+      {
+        "slide": 13,
+        "items_checked": 4,
+        "exceptions": 3
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "CLM-001",
+        "slide": 5,
+        "severity": "major",
+        "verdict": "OVERSTATED",
+        "deck_quote": "No prior work occupies this exact cell.",
+        "problem": "The deck removes the epistemic hedge 'To our knowledge' and turns a bounded positioning claim into a categorical claim about the entire literature.",
+        "evidence": "_intro_body.tex: \"To our knowledge no prior work reads uncertainty language in the unscripted question-and-answer session in the anticipatory window before a withheld deal; we offer this as a positioning claim about where the contribution sits, not as a tested mechanism.\"",
+        "why_it_matters": "A listener could conclude that the thesis has established exhaustively that no prior study occupies the cell, rather than reporting the author's literature-based positioning judgment.",
+        "suggested_action": "Restore an explicit epistemic hedge such as 'To our knowledge.'",
+        "confidence": "high"
+      },
+      {
+        "finding_id": "CLM-002",
+        "slide": 13,
+        "severity": "major",
+        "verdict": "OVERSTATED",
+        "deck_quote": "Unscripted CEO Q&A carries a readable, anticipatory trace\nof a deal's passage from private to public.",
+        "problem": "The final slide removes 'these patterns suggest that' and presents the interpretive conclusion as an established property of CEO Q&A. Slide 11 states the recurring claim more cautiously as a reading.",
+        "evidence": "_conclusion_body.tex: \"Taken together, these patterns suggest that the unscripted language of earnings calls carries a readable, anticipatory trace of a deal's passage from private to public, a signature researchers can in principle observe before the announcement.\"",
+        "why_it_matters": "A listener could conclude that the design directly establishes a readable trace, rather than that the descriptive patterns support that interpretation.",
+        "suggested_action": "Restore an interpretive hedge such as 'The patterns suggest that' or 'appears to carry.'",
+        "confidence": "high"
+      },
+      {
+        "finding_id": "CLM-003",
+        "slide": 13,
+        "severity": "minor",
+        "verdict": "OVERSTATED",
+        "deck_quote": "The pre-announcement run-up is\nstronger in cash deals than in stock\ndeals.",
+        "problem": "The final recap repeats the between-group conclusion without its load-bearing qualifications that the result is fragile and rests on the formal cash-minus-stock test. Slide 10 carries both qualifications, but slide 13 states the claim flat.",
+        "evidence": "sec34_body_from_ledgers(1).tex: \"This analysis tests hypothesis~H1a: that the pre-announcement uncertainty run-up is stronger for cash acquirers than for stock acquirers. We find H1a supported but fragile: one formal cash-minus-stock test clears the five-percent level, but its significance rides on the imprecise stock estimate, so we read the result as concentration in cash deals rather than strict specificity.\"",
+        "why_it_matters": "A listener could treat the cash-versus-stock difference as a stable, unqualified comparison or infer it from the separate arm estimates rather than from the formal pooled contrast.",
+        "suggested_action": "Tie the recap to the formal pooled contrast and retain the fragility qualification.",
+        "confidence": "high"
+      },
+      {
+        "finding_id": "CLM-004",
+        "slide": 13,
+        "severity": "minor",
+        "verdict": "MISMATCH",
+        "deck_quote": "The uncertainty signal\nfades.",
+        "problem": "'Fades' weakens the thesis's stronger timing claim that residual uncertainty becomes indistinguishable from zero at announcement. It also differs from slide 9, which says it becomes indistinguishable from baseline at announcement.",
+        "evidence": "_conclusion_body.tex: \"We find that residual uncertainty is elevated in the quarter before a cash acquisition, with no comparable rise before stock acquisitions; that it becomes indistinguishable from zero once the deal is announced, even before it closes, while the cash that funds it persists to completion; and that the elevation concentrates in cash acquisitions rather than stock on a formal pooled test.\"",
+        "why_it_matters": "A listener could conclude that uncertainty merely declines after announcement rather than returning to the estimated baseline.",
+        "suggested_action": "Use the thesis-level claim that residual uncertainty becomes indistinguishable from baseline at announcement.",
+        "confidence": "high"
+      }
+    ],
+    "clean_dimensions": [
+      "causal language",
+      "established-mechanism language",
+      "strict cash-specificity and stock-null interpretation",
+      "slide 12 evidence boundaries"
+    ],
+    "operator_should_check_locally": [],
+    "question_answers": [
+      {
+        "id": "q1",
+        "answer": "None after accounting for the deck's explicit descriptive and noncausal qualifiers."
+      },
+      {
+        "id": "q2",
+        "answer": "None. Slide 2 leaves compliance-constrained versus strategically chosen silence unresolved, and the deck does not establish a war-chest or cash-accumulation mechanism."
+      },
+      {
+        "id": "q3",
+        "answer": "None. Slide 10 explicitly says concentration in cash, not proof of a cash-only effect, and does not read the imprecise stock estimate as a decline."
+      },
+      {
+        "id": "q4",
+        "answer": "No. Slide 13 repeats the cash-versus-stock claim without the formal pooled-test basis or fragility qualification. The between-stage recap also weakens the formally supported return-to-baseline claim. See CLM-003 and CLM-004."
+      },
+      {
+        "id": "q5",
+        "answer": "Slide 5 drops 'To our knowledge.' Slide 13 drops 'these patterns suggest that' and omits 'supported but fragile' from the cash-versus-stock recap. See CLM-001 through CLM-003."
+      },
+      {
+        "id": "q6",
+        "answer": "No exception. Read with the explicit notes on slides 2, 7, 10, and 11, the boundaries cover causal identification, mechanism, observational equivalence, measurement, generalizability, strict cash-specificity, and the imperfect stock comparison."
+      },
+      {
+        "id": "q7",
+        "answer": "Yes. Slide 13's flat 'carries' is stronger than slide 11's interpretive reading and the thesis's 'patterns suggest.' Slide 13's 'fades' is weaker than slide 9's 'becomes indistinguishable from baseline.' Slide 13 also omits the fragility stated on slide 10. See CLM-002 through CLM-004."
+      }
+    ]
+  },
+  "artifacts_manifest": [
+    {
+      "filename": "audit_claims_findings.md",
+      "status": "CREATED",
+      "media_type": "text/markdown",
+      "size": 6254,
+      "sha256": "96182cc028d8565ded8038bbd06d01d25d2e2f310f8403e31f21ee667f36d737"
+    }
+  ],
+  "limitations": [],
+  "delivery": [
+    "audit_claims_response.json",
+    "audit_claims_findings.md"
+  ]
+}

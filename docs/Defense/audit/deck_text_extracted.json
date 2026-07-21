@@ -1,0 +1,80 @@
+[
+ {
+  "page": 1,
+  "w": 1152.0,
+  "h": 648.0,
+  "text": "MSc Thesis Defense\nCash Got Your Tongue?\nCEO Language-Uncertainty Around\nUndisclosed Cash Acquisitions\nCANDIDATE\nSina Soleimanipour\nMSc in Management, Finance\nCO-ADVISORS\nDr. Ali Akyol\nDr. Harshit Rajaiya\n"
+ },
+ {
+  "page": 2,
+  "w": 1152.0,
+  "h": 648.0,
+  "text": "CONCEPTUAL FRAMEWORK I\nWhy Uncertainty Appears\n01\nPrivate\nacquisition\nThe firm holds potentially\nmaterial deal information\nthat investors do not yet\nhave.\n02\nRoutine Q&A call\nThe CEO still faces analysts\nin the less-scripted part of\nthe earnings call.\n03\nNo clean answer\nThe firm may stay silent, but\nonce it speaks it cannot\nmislead.\n04\nLanguage trace\nAnswers may become more\nhedged, qualified, and\nuncertain before\nannouncement.\nCORE PREDICTION\nCEO Q&A uncertainty should rise while the acquisition is still\nprivate.\nFramework note: the prediction concerns the language pattern, not whether silence is legally constrained or strategically chosen.\nThesis framework: Verrecchia (1983); Dye (1985); Basic (1988); Rule 10b-5; Matsumoto et al. (2011); Hollander et al. (2010)\n02 / 13\n"
+ },
+ {
+  "page": 3,
+  "w": 1152.0,
+  "h": 648.0,
+  "text": "C O N C E P T U A L  F R A M E W O R K  I I\nTiming and Payment Method\nThe language signal should follow the information event, while the cash position\nfollows the transaction event.\nP A Y M E N T  M E T H O D\nCash and stock deals share the disclosure\nbind, but stock deals add an equity-\ncurrency incentive.\nCash\nNo equity currency to protect.\nRelatively cleaner window onto the\ndisclosure state.\nStock\nEquity is the acquisition currency.\nPrior work documents pre-deal\nmanagement.\nCEO Q&A uncertainty\nCash position\nsettles at announcement\npersists until completion\nUNANNOUNCED\nDeal not yet public\nANNOUNCEMENT\nInformation becomes public\nCOMPLETION\nCash is paid\nFramework sources: Harford (1999); Shleifer and Vishny (2003); Louis (2004); Thewissen et al. (2024)\n03 / 13\n"
+ },
+ {
+  "page": 4,
+  "w": 1152.0,
+  "h": 648.0,
+  "text": "I N T R O\nResearch Questions and Empirical Roadmap\nEach question becomes one plain descriptive equation.\nRQ1 A P P E A R A N C E\nDoes CEO Q&A uncertainty rise before\na cash acquisition is announced?\nUncertainty\n=\npre-announcement quarter\nRead: within-firm shift in the anticipation quarter, against the firm's own ordinary\nquarters.\nRQ2 T I M I N G\nDoes uncertainty resolve at\nannouncement while cash remains until\ncompletion?\nUncertainty and cash\n=\nPRE1\n+\nGAP\n+\nPOST\nRead: uncertainty should drop from PRE1 to GAP; cash should drop only after\ncompletion.\nRQ3 PAY M E N T  M E T H O D\nIs the pre-announcement run-up\nstronger for cash acquirers than stock\nacquirers?\nUncertainty = cash pre-announcement + stock pre-announcement\nRead: test the cash-minus-stock difference directly, not just whether one side is\nsignificant.\nCOMMON DESIGN\nFirm controls; firm and year-quarter fixed effects; firm-clustered errors.\nAll three empirical tests are descriptive within-firm comparisons; they do not identify causal\neffects.\nThesis source: Main empirical designs, Section 2.4\n04 / 13\n"
+ },
+ {
+  "page": 5,
+  "w": 1152.0,
+  "h": 648.0,
+  "text": "I N T R O\nLiterature Review and Nearest Work\nPrior work reads deal tone, strategy vocabulary, and prices. The missing cell is uncertainty in CEO Q&A\nbefore unannounced cash acquisitions.\nW H A T  T H E  C L O S E S T  W O R K  R E A D S\nTO N E\nThewissen et al.\n2024\nScripted press-release tone before stock-\nfor-stock acquisitions.\nVOCA B U L A RY\nRagozzino & Reuer\n2024\nCorporate-strategy vocabulary on\nearnings calls around deal activity.\nPR I C E S\nKeown & Pinkerton\n1981\nAbnormal stock-price run-up before\npublic merger announcements.\nT H I S  T H E S I S\nUncertainty in\nunscripted CEO Q&A\nUncertainty, not tone.\nQ&A answers, not press releases.\nLanguage, not prices.\nP O S I T I O N I N G  C L A I M\nNo prior work occupies this exact cell.\nThesis source: Introduction and Conceptual Framework. Nearest cited works: Thewissen et al. (2024); Ragozzino and Reuer (2024); Keown and Pinkerton (1981).\n05 / 13\n"
+ },
+ {
+  "page": 6,
+  "w": 1152.0,
+  "h": 648.0,
+  "text": "M E S S A G E\nData and Sample\nA broad call panel narrows to the residual language measure, then to the first cash-deal test.\nS A M P L E  PA T H\nBA S E  CA L L  PA N E L\n88,205 calls\n1,884 firms\nU.S. public nonfinancial and nonutility\nfirms, 2002 to 2018.\nL A NG UAG E  M E A S U R E\n44,900 calls\nCalls with an estimated UncResCEO\nmeasure.\nF I R ST  CA S H - DE A L  T E ST\n27,622 firm-quarters\n1,248 firms\nFocal uncertainty sample for the pre-\nannouncement run-up.\nCEO identity\n+ five calls\nAcquisition event\n+ design filters\nDATA  L I N K\nCapital IQ transcripts + Execucomp CEO identity + SDC deals/payment +\nCompustat, CRSP, and I/B/E/S controls.\nD E A L  S C R E E N\nSDC U.S. public-acquirer deals with known payment split and value of at least $1\nmillion. Cash arm: at least 50% cash. Stock comparison: at least 50% stock.\nSample note: repeated CEO calls and Execucomp coverage tilt the sample toward larger, better-covered firms.\nThesis source: Data, Sample, and Variable Construction; Summary Statistics; Main Analysis 1 table notes.\n06 / 13\n"
+ },
+ {
+  "page": 7,
+  "w": 1152.0,
+  "h": 648.0,
+  "text": "M E S S A G E\nMeasuring residual CEO uncertainty\nRaw CEO-answer uncertainty is residualized to isolate call-specific uncertainty.\nC O U N T\nRaw answer uncertainty\nUncertainty words in CEO answers divided\nby total CEO answer words.\n\u2212\nR E M OV E\nPredictable components\nCEO STYLE\nCEO fixed effects\nPREPARED LANGUAGE\nCEO uncertainty in remarks\nANALYST LANGUAGE\nquestion uncertainty\nCALL TONE\nnegative-call language\nFIRM PERFORMANCE\nearnings surprise; EPS growth\nMARKET CONDITIONS\nfirm and market returns\nTIME\nyear effects\n=\nK E E P\nUncResCEO\nThe residual answer uncertainty left\nunexplained on that CEO's specific call.\nR AW INPUT\n71,748\nANSWER\nOBSERVATIONS\n0.7806\nMEAN\n0.3925\nSD\nDECOMPOSITION SAMPLE\n44,900\nOBSERVATIONS\n2,197\nDISTINCT CEOS\n0.369\nR\u00b2\nR ESIDUAL K EP T\n44,900\nOBSERVATIONS\n\u22120.0000\nMEAN\n0.3010\nSD\nMeasurement note: UncResCEO is generated in a first-stage decomposition; the thesis treats two-step estimation uncertainty as a limitation.\nThesis source: Table 1 and Dzielinski et al. replication table.\n07 / 13\n"
+ },
+ {
+  "page": 8,
+  "w": 1152.0,
+  "h": 648.0,
+  "text": "F I N D I N G  1\nPre-announcement Run-up\nBefore a cash acquisition is announced, the same firm's CEO shows a small but clear rise\nin residual Q&A uncertainty.\nEstimated change in residual CEO uncertainty\n+0.301\n0.000\n-0.301\nUsual across-call spread\n+/- 0.301 (one SD from zero)\nFinal private quarter\nThe model compares each firm's final private quarter with its ordinary quarters.\nE ST IM AT ED W I T H IN-FIR M SH IF T\nESTIMATE\n+0.0461\nSE\n0.0172\nTWO-TAILED P\n0.0074\nApprox. 95% CI\u00a0 [0.012, 0.080]\nAbout 15% of the usual spread\nA modest but statistically clear increase.\n0.0461 / 0.3010 = 15.3%\nSAMPLE\n27,622 firm-quarters\n1,248 firms\nCONTROLS AND FI XED EFFECTS\nLeverage, size, Tobin's Q, ROA, capex, dividends, cash-flow volatility; firm and calendar year-quarter\nfixed effects\nINFER ENCE\nStandard errors\nclustered by firm\nThesis source: Main Analysis 1 and its table notes. Approximate 95% CI derived from the reported estimate and SE. Note: the estimate is descriptive, not causal.\n08 / 13\n"
+ },
+ {
+  "page": 9,
+  "w": 1152.0,
+  "h": 648.0,
+  "text": "F I N D I N G  2\nAnnouncement vs. Completion\nTwo clocks: residual uncertainty becomes indistinguishable from baseline at announcement;\ncash falls only at completion.\nOmitted baseline: e \u2264 -3 (three or more quarters before announcement) plus never-acquirers. Both outcomes use the same matched firm-quarters.\nPRE2\n2 quarters before\nPRE1\n1 quarter before\nGAP\nannounced, not closed\nPOST\nafter completion (\u22644 qtrs)\nANNOUNCEMENT\nCOMPLETION\nPoints = coefficients; whiskers = approx. 95% CIs; brackets = adjacent-stage Wald tests\nINFORMATION CLOCK\nResidual CEO\nuncertainty\nshift fades at announcement\nPOST dip is marginal; not over-read\nTRANSACTION CLOCK\nCash ratio\ndecline appears after completion\n+0.10\n0\n-0.06\nPRE1 - GAP Wald: 0.0455 (SE 0.0225), p < .05\nGAP - POST Wald: 0.0268 (SE 0.0199), ns\n0.0068\nSE 0.0178; ns\n0.0473\nSE 0.0178; p < .01\n0.0018\nSE 0.0187; ns\n-0.0250\nSE 0.0130; p < .10\n+0.016\n0\n-0.024\nPRE1 - GAP Wald: 0.0006 (SE 0.0039), ns\nGAP - POST Wald: 0.0210 (SE 0.0042), p < .01\n0.0008\nSE 0.0024; ns\n0.0061\nSE 0.0024; p < .05\n0.0055\nSE 0.0034; ns\n-0.0155\nSE 0.0022; p < .01\nM ATCHED SAMPLE\n28,102 firm-quarters\n1,320 firms; identical rows\nCONTROLS AND FI XED EFFECTS\nLeverage, ln(assets), Tobin's Q, ROA, capex, dividend indicator, cash-flow volatility; firm and calendar year-quarter FE. Cash\nadds its own lag: 0.7547 (SE 0.0108), p < .01.\nINFER ENCE\nFirm-clustered SEs;\ntwo-tailed tests\nThesis source: Main Analysis 2; Table \u201cUncertainty and Cash Around the Announcement (Matched Sample).\u201d Approximate 95% CIs derived from reported SEs. Note: GAP cash is not significant; the closing decline is partly mechanical; the evidence\nis descriptive, not causal.\n09 / 13\n"
+ },
+ {
+  "page": 10,
+  "w": 1152.0,
+  "h": 648.0,
+  "text": "F I N D I N G  3\nCash vs. Stock\nCash deals show the pre-announcement run-up; a direct pooled test supports a larger effect than stock.\nThe evidence supports concentration in cash, not proof of a cash-only effect.\n1  \u00a0DE SCR IP T I V E SIDE -BY- SIDE\nSeparate complete-case panels; baseline is e \u2264 -3 plus never-acquirers. Descriptive only.\n2  \u00a0FOR M AL P OOLED T E ST\nCash and stock indicators enter the same regression.\nDIR ECT WALD DIFFER ENCE\nCash \u2212 Stock\nESTIMATE\n+0.0983\nSE\n0.0476\nTWO-TAILED P\n.039\nApprox. 95% CI [0.005, 0.192]\nConcentrated in cash\nThe direct Wald difference, not two separate significance results, is\nthe test.\nSupported, but fragile: stock is imprecisely negative. The thesis\ntherefore says concentrated, not strictly cash-specific.\nPRE2\n2 qtrs before\nPRE1\n1 qtr before\nGAP\nannounced\nPOST\ncompleted\nPoints = coefficients; whiskers = approx. 95% CIs\nCASH ACQUIRERS\n29,535 firm-quarters\n1,326 firms\n+0.10\n0\n-0.10\n0.0105\nSE 0.0174; ns\n0.0486\nSE 0.0174; p < .01\n0.0058\nSE 0.0181; ns\n-0.0195\nSE 0.0127; ns\nSTOCK ACQUIRERS\n39,819 firm-quarters\n1,363 firms\n+0.10\n0\n-0.10\n-0.0056\nSE 0.0368; ns\n-0.0404\nSE 0.0299; ns\n0.0353\nSE 0.0318; ns\n-0.0048\nSE 0.0246; ns\nStock PRE1 is imprecise; it is not read as a decline.\n-0.15\n0\n+0.20\nCash\n0.0459\nSE 0.0185; p < .05\nStock\n-0.0524\nSE 0.0436; ns\nPOOLED SAMPLE\n25,600 firm-quarters\n1,191 firms\nSAMPLE AND BASELINE\nPre-deal quarters before the first \u226550% cash\nor stock acquisition, plus firms making\nneither. Neither-deal firms are the baseline.\nCONTROLS AND FI XED EFFECTS\nLeverage, ln(assets), Tobin's Q, ROA, capex, dividend indicator, cash-flow\nvolatility; firm and calendar year-quarter fixed effects.\nINFER ENCE\nFirm-clustered SEs; two-tailed tests.\nThesis source: Main Analysis 3; Tables \u201cEvent Study by Payment Type: Cash versus Stock Acquirers\u201d and \u201cCash-Specificity Test: Cash versus Stock Acquirers.\u201d Approximate 95% CIs derived from reported SEs. Note: the comparisons are within-firm,\ndescriptive, and not causal.\n10 / 13\n"
+ },
+ {
+  "page": 11,
+  "w": 1152.0,
+  "h": 648.0,
+  "text": "W H A T  T H I S  T H E S I S  A D D S\nContributions\nThree descriptive additions: an anticipatory window, a formal contrast, and a bridge between literatures.\n01\nTHE ANTICIPATORY W INDOW\nBefore the deal is public\nReads residual CEO Q&A uncertainty\nin the anticipatory window before an\nacquisition becomes public.\nPositions uncertainty language where prior work\nhad read managed tone, strategy vocabulary, or\nprices.\n02\nA FOR M AL CONTR AST\nCash against stock\nDocuments that the language pattern\nconcentrates in cash acquisitions rather\nthan stock.\nTests the contrast directly in a pooled model,\nrather than comparing separate significance\nresults.\n03\nA LITER ATUR E BR IDGE\nPrivate to public\nReads unscripted Q&A as tracking a\ndeal's passage from private to public.\nConnects research on withholding private\ninformation with evidence that markets\nanticipate corporate transactions.\nContribution note: the thesis characterizes a descriptive regularity; it does not identify a causal channel.\nThesis source: Introduction, contribution paragraph; Conclusion.\n11 / 13\n"
+ },
+ {
+  "page": 12,
+  "w": 1152.0,
+  "h": 648.0,
+  "text": "E V I D E N C E  B O U N D A R Y\nWhat the Evidence Does and Does Not Show\nThe evidence identifies a language pattern, not its cause.\nW H AT I T SHOWS\nA readable\npattern\nCEO Q&A uncertainty tracks\nthe point when an acquisition\nmoves from private to public.\nA within-firm regularity around\ndisclosure - no more, and no less.\nW H AT I T DOE S NOT SHOW - AND W HER E I T M AY NOT CAR RY\n01\nCause and effect\nThe design is descriptive, not causal. It characterizes a within-firm\nregularity.\n02\nGeneralizability\nThe sample skews toward larger, more heavily covered U.S. public firms\n(approximately the S&P 1500, 2002-2018), limiting generalizability.\n03\nA direct reading of the\nCEO\nThe finance-specific word count is an imperfect proxy that abstracts from\ncontext; it does not read the CEO's mind.\n04\nA perfect comparison\nStock deals share the disclosure setting, but remain an imperfect\ncomparison for cash deals.\nThesis source: Conclusion, limitations and evidence-boundary paragraphs.\n12 / 13\n"
+ },
+ {
+  "page": 13,
+  "w": 1152.0,
+  "h": 648.0,
+  "text": "C L O S I N G  M E S S A G E\nConclusion\nUnscripted CEO Q&A carries a readable, anticipatory trace\nof a deal's passage from private to public.\nACRO S S PAYMEN T MET HODS\nStronger in cash\nThe pre-announcement run-up is\nstronger in cash deals than in stock\ndeals.\nT HE DISCLO SUR E CLOCK\nPR IVATE\nPUBLIC\nBEFORE ANNOUNCEMENT\nResidual uncertainty rises.\nAT ANNOUNCEMENT\nThe uncertainty signal\nfades.\nThank you for your attention.\nI welcome your questions and comments.\nThesis source: Conclusion.\n13 / 13\n"
+ }
+]

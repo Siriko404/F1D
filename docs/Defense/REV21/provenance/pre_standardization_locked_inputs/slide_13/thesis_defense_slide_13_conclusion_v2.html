@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Slide 13 - Conclusion</title>
+<style>
+  @page { size: 16in 9in; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 16in; height: 9in; }
+  body {
+    background: #F4F1EC;
+    color: #231F20;
+    font-family: "Times New Roman", Times, serif;
+  }
+  .slide {
+    position: relative;
+    width: 16in;
+    height: 9in;
+    overflow: hidden;
+    background: #F4F1EC;
+  }
+
+  .kicker {
+    position: absolute;
+    left: 0.86in;
+    top: 0.56in;
+    color: #8F001A;
+    font-size: 15pt;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  h1 {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    top: 0.88in;
+    margin: 0;
+    font-size: 40pt;
+    line-height: 1;
+    font-weight: 400;
+    letter-spacing: -0.018em;
+  }
+  .title-rule {
+    position: absolute;
+    left: 0.86in;
+    top: 1.54in;
+    width: 1.18in;
+    height: 0.032in;
+    background: #8F001A;
+  }
+
+  .closing {
+    position: absolute;
+    left: 0.86in;
+    top: 1.87in;
+    width: 13.95in;
+    margin: 0;
+    color: #231F20;
+    font-size: 36pt;
+    line-height: 1.12;
+    font-weight: 400;
+    letter-spacing: -0.016em;
+  }
+  .closing strong {
+    color: #8F001A;
+    font-weight: 700;
+  }
+
+  .recap-grid {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    top: 3.75in;
+    height: 2.55in;
+    display: grid;
+    grid-template-columns: 9.24in 4.53in;
+    column-gap: 0.51in;
+  }
+  .timing {
+    position: relative;
+    padding-right: 0.50in;
+    border-right: 1.1pt solid rgba(35,31,32,0.18);
+  }
+  .section-label {
+    color: #5E5855;
+    font-size: 10.8pt;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .timeline {
+    position: absolute;
+    left: 0;
+    right: 0.50in;
+    top: 0.58in;
+    height: 1.78in;
+  }
+  .axis {
+    position: absolute;
+    left: 0.24in;
+    right: 0.24in;
+    top: 0.66in;
+    height: 1.4pt;
+    background: rgba(35,31,32,0.34);
+  }
+  .axis::after {
+    content: "";
+    position: absolute;
+    right: -0.01in;
+    top: -0.055in;
+    width: 0;
+    height: 0;
+    border-top: 0.065in solid transparent;
+    border-bottom: 0.065in solid transparent;
+    border-left: 0.12in solid rgba(35,31,32,0.42);
+  }
+  .announcement-marker {
+    position: absolute;
+    left: 55.5%;
+    top: 0.47in;
+    width: 0.18in;
+    height: 0.18in;
+    margin-left: -0.09in;
+    border-radius: 50%;
+    background: #8F001A;
+  }
+  .announcement-line {
+    position: absolute;
+    left: 55.5%;
+    top: 0.06in;
+    height: 1.39in;
+    width: 1.3pt;
+    background: rgba(143,0,26,0.45);
+  }
+  .endpoint {
+    position: absolute;
+    top: 0.31in;
+    color: #6A6461;
+    font-size: 11pt;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+  .private { left: 0.24in; }
+  .public { right: 0.24in; }
+  .beat {
+    position: absolute;
+    top: 0.93in;
+  }
+  .beat-before { left: 0.24in; width: 3.60in; }
+  .beat-at { left: 5.13in; width: 3.04in; }
+  .beat-label {
+    color: #8F001A;
+    font-size: 11pt;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .beat-text {
+    margin-top: 0.105in;
+    color: #231F20;
+    font-size: 21pt;
+    line-height: 1.08;
+  }
+
+  .comparison {
+    padding: 0.02in 0 0 0.08in;
+  }
+  .comparison-head {
+    margin-top: 0.40in;
+    color: #8F001A;
+    font-size: 31pt;
+    line-height: 1.02;
+    font-weight: 700;
+    letter-spacing: -0.018em;
+  }
+  .comparison-copy {
+    margin: 0.22in 0 0 0;
+    max-width: 3.95in;
+    color: #3E3937;
+    font-size: 18pt;
+    line-height: 1.20;
+  }
+
+  .closing-strip {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    top: 6.72in;
+    height: 1.12in;
+    border-top: 1.1pt solid rgba(35,31,32,0.18);
+    border-bottom: 1.1pt solid rgba(35,31,32,0.18);
+    display: grid;
+    grid-template-columns: 5.05in 8.77in;
+    column-gap: 0.46in;
+    align-items: center;
+  }
+  .thanks-text {
+    color: #8F001A;
+    font-size: 22.5pt;
+    line-height: 1;
+    font-weight: 700;
+  }
+  .qa-label {
+    color: #5E5855;
+    font-size: 10.5pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .qa-text {
+    margin-top: 0.055in;
+    color: #231F20;
+    font-size: 20.5pt;
+    line-height: 1;
+    font-weight: 700;
+  }
+
+  .footer {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    bottom: 0.27in;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    color: #6A6461;
+  }
+  .source {
+    font-size: 11pt;
+    line-height: 1.08;
+  }
+  .page {
+    color: #8F001A;
+    font-size: 13pt;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="kicker">Closing message</div>
+  <h1>Conclusion</h1>
+  <div class="title-rule"></div>
+
+  <p class="closing">Unscripted CEO Q&amp;A carries a <strong>readable, anticipatory trace</strong><br>of a deal's passage from private to public.</p>
+
+  <div class="recap-grid">
+    <section class="timing">
+      <div class="section-label">The disclosure clock</div>
+      <div class="timeline">
+        <div class="axis"></div>
+        <div class="announcement-line"></div>
+        <div class="announcement-marker"></div>
+        <div class="endpoint private">Private</div>
+        <div class="endpoint public">Public</div>
+
+        <div class="beat beat-before">
+          <div class="beat-label">Before announcement</div>
+          <div class="beat-text">Residual uncertainty rises.</div>
+        </div>
+
+        <div class="beat beat-at">
+          <div class="beat-label">At announcement</div>
+          <div class="beat-text">The uncertainty signal fades.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="comparison">
+      <div class="section-label">Across payment methods</div>
+      <div class="comparison-head">Stronger in cash</div>
+      <p class="comparison-copy">The pre-announcement run-up is stronger in cash deals than in stock deals.</p>
+    </section>
+  </div>
+
+  <div class="closing-strip">
+    <div class="thanks-text">Thank you for your attention.</div>
+    <div>
+      <div class="qa-label">Questions</div>
+      <div class="qa-text">I welcome your questions and comments.</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="source">Thesis source: Conclusion.</div>
+    <div class="page">13 / 13</div>
+  </div>
+</section>
+</body>
+</html>

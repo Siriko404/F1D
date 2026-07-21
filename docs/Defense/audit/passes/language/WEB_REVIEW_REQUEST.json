@@ -1,0 +1,78 @@
+{
+  "request_id": "deck-audit-language-v1",
+  "objective": "Check the deck's wording and citations: that every cited work exists in the thesis and is used for what it actually supports, that every term and symbol is decodable by a first-time listener, and that every sentence can be spoken aloud as written.",
+  "why_this_call": "The operator has already run the mechanical checks: character-level dash detection, doubled words, and spelling. What remains needs a reader. Whether a citation supports the sentence it sits under, whether an acronym was introduced before it was used, and whether a line can be said out loud without silently repairing it are all judgements.",
+  "authority_hierarchy": [
+    "_thesis_FLAT.tex - the complete thesis including its full reference list. This is the authority for whether a cited work exists, what its year and author form are, and what proposition it is cited for.",
+    "deck_text_extracted.json - the deck text layer, reliable for wording",
+    "The deck PDF - for seeing where a line sits and how a footnote relates to the claim above it",
+    "AUDIT_BRIEF.md - the wording constraints"
+  ],
+  "scope": {
+    "included": [
+      "Citations: whether every author-year reference on the deck appears in the thesis reference list, with the same year and the same author form",
+      "Citation roles: whether legal authorities are distinguishable from academic literature where their evidentiary roles differ. Slide 2 lists Basic Inc. v. Levinson and Rule 10b-5 inline among theory and empirical papers.",
+      "Citation support: whether each cited work is used on the deck for the same proposition the thesis uses it for",
+      "Terminology: whether every acronym, abbreviation, symbol, and notation is introduced before it is relied on, and stays consistent afterwards. Candidates include UncResCEO, the event stages PRE2, PRE1, GAP and POST, the baseline notation e <= -3, SE, ns, FE, and the p-value conventions.",
+      "Speakability: whether each sentence can be read aloud once, in its written order, without adding a qualifier, reversing a clause, or repairing the grammar mid-sentence",
+      "Wording consistency: whether the same concept is named the same way on every slide, and whether any two labels imply different things when the same thing is meant",
+      "Dash-based sentence constructions, which the ledger prohibits in audience-facing wording"
+    ],
+    "excluded": [
+      "Numerical correctness, which a separate numbers pass has already closed",
+      "Claim strength, hedging, and causal language, which belong to a separate claims pass",
+      "Layout, typography, charts, and rendering, which belong to a separate visual pass",
+      "Letter-spaced headings. The deck sets some headings with wide tracking, and the text extraction renders those as single spaced letters, for example F I N D I N G 2. That is an artifact of extraction, not a defect, and must not be reported as a spacing error or a doubled word.",
+      "The minus sign character U+2212 where it is used mathematically, for example in Cash - Stock and in negative coefficients. That is correct typography, not a prohibited dash.",
+      "Preferences about house style, capitalisation conventions, or serial commas"
+    ]
+  },
+  "web_research": {
+    "allowed": false,
+    "rules": "Source-closed. A citation is verified only against the attached thesis. Do not confirm or correct a reference from your own knowledge of the literature; if the thesis does not contain it, that is the finding."
+  },
+  "already_settled_by_the_operator": {
+    "note": "These were checked mechanically against the sources and are closed. Confirm them in passing if you wish, but do not spend the pass re-deriving them, and do not report them as new findings.",
+    "citation_existence_and_years": "All twelve references printed on the deck exist in the thesis reference list with matching years. Rule 10b-5 is printed without a year on the deck and carries 2014 in the list, which is not a mismatch.",
+    "dash_characters": "The deck contains no em dash and no en dash. The only U+2212 characters are mathematical minus signs and are correct.",
+    "dash_constructions": "Two dash-based sentence constructions exist on slide 12 and are already recorded. Report a third only if you find one elsewhere.",
+    "spelling_and_doubled_words": "A character-level scan found none. Every apparent duplication was letter-spaced heading text."
+  },
+  "method": [
+    "Build the citation inventory first: every author-year reference and legal authority visible anywhere on the deck, including source footers. Existence and years are already settled, so spend your effort on whether each work is used for what it actually supports, and on author-form consistency within a slide.",
+    "Then read the deck aloud in your head, slide by slide, as if presenting it, and mark every place you would have to stop, reorder, or add a word.",
+    "Then track first use of every acronym, symbol, and event-stage name across the slide order, and flag any that is relied on before it is introduced.",
+    "Report exceptions only."
+  ],
+  "requested_work": [
+    "The citation inventory as a table: reference as printed on the deck, slide, whether it appears in the thesis reference list, and the thesis entry it matches",
+    "Every citation whose year or author form differs from the thesis",
+    "Every citation used for a proposition the thesis does not use it for",
+    "Every acronym or symbol used before it is introduced",
+    "Every sentence that cannot be spoken as written",
+    "Every dash-based sentence construction"
+  ],
+  "questions": [
+    {"id": "q1", "question": "Does every reference printed on the deck appear in the thesis reference list with the same year and author form?"},
+    {"id": "q2", "question": "Is any cited work used on the deck for a proposition the thesis does not cite it for?"},
+    {"id": "q3", "question": "Slide 2 lists a court decision and a securities rule among academic papers in one source line. Can a reader tell which items are legal authority and which are research, and does it matter here?"},
+    {"id": "q4", "question": "Is any acronym, symbol, or event-stage label used before the deck introduces it?"},
+    {"id": "q5", "question": "Which sentences cannot be read aloud once, in written order, without repair?"},
+    {"id": "q6", "question": "Is the same concept named consistently across all 13 slides?"},
+    {"id": "q7", "question": "Where does the deck use a dash-based sentence construction?"}
+  ],
+  "required_artifacts": [
+    {
+      "filename": "audit_language_findings.md",
+      "description": "The citation inventory table first, then the exceptions ordered by severity then slide. Each exception gives the slide, the exact text, what is wrong, and the correction. If a category is clean, say so in one line rather than padding it."
+    }
+  ],
+  "acceptance_criteria": [
+    "The citation inventory covers every reference visible on the deck, including source footers",
+    "Every citation verdict names the matching thesis reference-list entry or states that none exists",
+    "No finding concerns a number, a claim's strength, or a layout choice",
+    "No letter-spaced heading is reported as a spacing or duplication defect",
+    "No mathematical minus sign is reported as a prohibited dash"
+  ],
+  "stop_condition": "If the thesis reference list is not present in the attached file, return status PARTIAL and say so rather than verifying citations from memory."
+}

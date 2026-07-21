@@ -1,0 +1,112 @@
+{
+  "request_id": "deck-audit-visual-v1",
+  "status": "COMPLETE",
+  "results": {
+    "coverage": [
+      {
+        "slide": 1,
+        "items_checked": 4,
+        "exceptions": 0
+      },
+      {
+        "slide": 2,
+        "items_checked": 5,
+        "exceptions": 0
+      },
+      {
+        "slide": 3,
+        "items_checked": 6,
+        "exceptions": 0
+      },
+      {
+        "slide": 4,
+        "items_checked": 5,
+        "exceptions": 0
+      },
+      {
+        "slide": 5,
+        "items_checked": 5,
+        "exceptions": 0
+      },
+      {
+        "slide": 6,
+        "items_checked": 5,
+        "exceptions": 0
+      },
+      {
+        "slide": 7,
+        "items_checked": 5,
+        "exceptions": 0
+      },
+      {
+        "slide": 8,
+        "items_checked": 7,
+        "exceptions": 0
+      },
+      {
+        "slide": 9,
+        "items_checked": 7,
+        "exceptions": 0
+      },
+      {
+        "slide": 10,
+        "items_checked": 7,
+        "exceptions": 0
+      },
+      {
+        "slide": 11,
+        "items_checked": 5,
+        "exceptions": 0
+      },
+      {
+        "slide": 12,
+        "items_checked": 5,
+        "exceptions": 0
+      },
+      {
+        "slide": 13,
+        "items_checked": 5,
+        "exceptions": 0
+      }
+    ],
+    "findings": [],
+    "clean_dimensions": [
+      "No clipped text, overflow, overlap, malformed glyph, broken rule, broken whisker, or page-edge cutoff was observed on any slide.",
+      "No load-bearing title, message, chart label, series distinction, stage label, or result annotation failed the reduced-view legibility check.",
+      "Slides 8, 9, and 10 visually support the sentence printed above each chart without materially overstating the estimates.",
+      "On slides 9 and 10, categorical event stages are explicitly named, their pooled windows are described, and event separators make the connected points read as ordered stages rather than equal-duration continuous time.",
+      "On slide 9, separate axes, outcome labels, and panel headings adequately prevent visual-height comparison between residual uncertainty and cash ratio.",
+      "Coefficient labels, standard errors, significance markers, confidence intervals, and Wald brackets on slides 8, 9, and 10 attach to the intended estimate, series, stage, and panel.",
+      "Accent colour and weight are used consistently as focal emphasis, with grey reserved for secondary structure, baselines, or comparison series.",
+      "The intended first-look hierarchy is preserved on all 13 slides."
+    ],
+    "operator_should_check_locally": [
+      "Actual back-row legibility can still vary with room size, projector brightness, focus, and ambient light; those physical conditions were not available in the source-closed review."
+    ]
+  },
+  "artifacts_manifest": [
+    {
+      "filename": "audit_visual_response.json",
+      "status": "CREATED",
+      "media_type": "application/json",
+      "size": 3789,
+      "sha256": "fd068c6a3c8537808218db4d1aaea22c333bfec47c0caa4ffdef597a9909e4d9"
+    },
+    {
+      "filename": "audit_visual_findings.md",
+      "status": "CREATED",
+      "media_type": "text/markdown",
+      "size": 3832,
+      "sha256": "8c740a5191263d0da6617e0a1bb6ff2f4a2d82cfc7bec54ecbde7995d885b6d8"
+    }
+  ],
+  "limitations": [
+    "The review was source-closed and did not verify numerical values, wording, citations, or thesis claims outside the supplied visual-audit brief.",
+    "No pixel measurement or coordinate inference was used.",
+    "The SHA-256 value for audit_visual_response.json is calculated from the exact UTF-8 file with its own sha256 field replaced by 64 zero characters; this avoids an impossible self-referential hash."
+  ],
+  "delivery": [
+    "audit_visual_response.json",
+    "audit_visual_findings.md"
+  ]
+}

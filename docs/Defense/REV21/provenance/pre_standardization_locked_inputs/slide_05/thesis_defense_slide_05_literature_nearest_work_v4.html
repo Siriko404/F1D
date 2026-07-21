@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Literature Review and Nearest Work</title>
+<style>
+  @page { size: 16in 9in; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; width:16in; height:9in; }
+  body { background:#f4f1ec; font-family:"Times New Roman", Times, serif; color:#231f20; }
+  .slide { width:16in; height:9in; position:relative; overflow:hidden; background:#f4f1ec; padding:0.56in 0.84in 0.42in 0.84in; }
+  .eyebrow { font-size:15pt; letter-spacing:4.3pt; text-transform:uppercase; color:#8f001a; font-weight:700; margin-bottom:0.10in; }
+  h1 { font-size:39pt; line-height:1.02; font-weight:400; margin:0; letter-spacing:-0.35pt; }
+  .rule { width:1.36in; height:0.035in; background:#8f001a; margin:0.18in 0 0.16in 0; }
+  .lead { font-size:20.5pt; line-height:1.14; margin:0; max-width:12.0in; color:#3e3937; }
+
+  .content { position:absolute; left:0.84in; right:0.84in; top:2.62in; height:5.35in; display:grid; grid-template-columns:9.10in 4.42in; column-gap:0.80in; align-items:center; }
+
+  .smallcap { color:#8f001a; font-weight:700; font-size:12.5pt; letter-spacing:2.7pt; text-transform:uppercase; }
+
+  .closest { width:8.98in; height:4.15in; display:grid; grid-template-columns:8.36in 0.42in; grid-template-rows:0.40in repeat(3, 1.18in); column-gap:0.20in; align-items:stretch; justify-self:center; }
+  .closest-title { grid-column:1 / 3; text-align:center; align-self:start; padding-top:0.01in; }
+  .rows { grid-column:1; grid-row:2 / 5; border-top:1.15pt solid rgba(35,31,32,0.21); }
+  .row { height:1.18in; display:grid; grid-template-columns:1.70in 2.18in 4.05in; column-gap:0.22in; border-bottom:1.15pt solid rgba(35,31,32,0.21); align-items:center; }
+  .tag { font-size:12.4pt; letter-spacing:1.95pt; text-transform:uppercase; color:#8f001a; font-weight:700; }
+  .paper { font-size:19.5pt; line-height:1.06; }
+  .paper .year { color:#8f001a; }
+  .reads { font-size:17.6pt; line-height:1.11; color:#231f20; }
+
+  .connector { grid-column:2; grid-row:2 / 5; position:relative; height:3.54in; align-self:start; }
+  .connector:before { content:""; position:absolute; left:50%; top:0; bottom:0; width:1.2pt; background:#8f001a; opacity:0.62; transform:translateX(-50%); }
+  .dot { position:absolute; left:50%; width:0.145in; height:0.145in; border-radius:50%; transform:translate(-50%, -50%); background:#8f001a; }
+  .dot.d1 { top:0.59in; } .dot.d2 { top:1.77in; } .dot.d3 { top:2.95in; }
+
+  .thesis-wrap { justify-self:center; align-self:center; width:4.36in; }
+  .thesis { border:1.35pt solid rgba(143,0,26,0.52); padding:0.34in 0.37in 0.32in 0.37in; min-height:3.44in; background:rgba(255,255,255,0.16); }
+  .thesis-label { margin-bottom:0.23in; }
+  .thesis-title { font-size:29.5pt; line-height:1.05; letter-spacing:-0.45pt; margin:0 0 0.26in 0; }
+  .contrast { border-top:1.1pt solid rgba(35,31,32,0.17); padding-top:0.18in; }
+  .contrast-line { font-size:17.0pt; line-height:1.16; color:#4d4745; margin:0 0 0.07in 0; }
+  .contrast-line b { color:#8f001a; font-weight:700; }
+  .claim { margin-top:0.30in; border-top:1.15pt solid rgba(35,31,32,0.18); padding-top:0.18in; }
+  .claim p { margin:0.09in 0 0 0; font-size:18.2pt; line-height:1.13; color:#231f20; }
+
+  .footer { position:absolute; left:0.84in; right:0.84in; bottom:0.29in; border-top:1.1pt solid rgba(35,31,32,0.16); padding-top:0.085in; display:flex; justify-content:space-between; align-items:baseline; color:#7b7673; }
+  .source { font-size:10.4pt; line-height:1.15; max-width:11.3in; }
+  .page { font-size:13.5pt; }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="eyebrow">Intro</div>
+  <h1>Literature Review and Nearest Work</h1>
+  <div class="rule"></div>
+  <p class="lead">Prior work reads deal tone, strategy vocabulary, and prices. The missing cell is uncertainty in CEO Q&amp;A before unannounced cash acquisitions.</p>
+
+  <div class="content">
+    <div class="closest">
+      <div class="smallcap closest-title">What the closest work reads</div>
+      <div class="rows">
+        <div class="row">
+          <div class="tag">Tone</div>
+          <div class="paper">Thewissen et al.<br><span class="year">2024</span></div>
+          <div class="reads">Scripted press-release tone before stock-for-stock acquisitions.</div>
+        </div>
+        <div class="row">
+          <div class="tag">Vocabulary</div>
+          <div class="paper">Ragozzino &amp; Reuer<br><span class="year">2024</span></div>
+          <div class="reads">Corporate-strategy vocabulary on earnings calls around deal activity.</div>
+        </div>
+        <div class="row">
+          <div class="tag">Prices</div>
+          <div class="paper">Keown &amp; Pinkerton<br><span class="year">1981</span></div>
+          <div class="reads">Abnormal stock-price run-up before public merger announcements.</div>
+        </div>
+      </div>
+      <div class="connector">
+        <div class="dot d1"></div>
+        <div class="dot d2"></div>
+        <div class="dot d3"></div>
+      </div>
+    </div>
+
+    <div class="thesis-wrap">
+      <div class="thesis">
+        <div class="smallcap thesis-label">This thesis</div>
+        <p class="thesis-title">Uncertainty in unscripted CEO Q&amp;A</p>
+        <div class="contrast">
+          <p class="contrast-line"><b>Uncertainty</b>, not tone.</p>
+          <p class="contrast-line"><b>Q&amp;A answers</b>, not press releases.</p>
+          <p class="contrast-line"><b>Language</b>, not prices.</p>
+        </div>
+      </div>
+      <div class="claim">
+        <div class="smallcap">Positioning claim</div>
+        <p>No prior work occupies this exact cell.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="source">Thesis source: Introduction and Conceptual Framework. Nearest cited works: Thewissen et al. (2024); Ragozzino and Reuer (2024); Keown and Pinkerton (1981).</div>
+    <div class="page">05</div>
+  </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,1122 @@
+{
+  "request_id": "thesis-defense-deck-audit-plan-v2",
+  "status": "COMPLETE",
+  "results": {
+    "q1": "The complete coverage set is D01 artifact identity and provenance; D02 source authority and claim mapping; D03 text-layer and visible-text parity; D04 numerical and specification fidelity; D05 claim strength and inferential boundaries; D06 terminology and cross-slide consistency; D07 citation and authority hygiene; D08 narrative architecture and cognitive economy; D09 quantitative visual integrity; D10 final-PDF rendering and projection robustness; D11 language compliance; D12 timing and spoken-slide interface; D13 examiner attack surface and unresolved gaps; D14 locked-deck triage and remediation governance; and D15 audit-process completeness. The dimension most likely to be underweighted by the deck builder is D13. Builders tend to equate audit quality with artifact correctness, while the defense can still be exposed by thesis-silent procedures, unexplained sample choices, predictable method questions, and counterintuitive facts that are not themselves slide defects.",
+    "q2": "The mandatory deterministic checks are artifact hashes and sizes; source-file hashes; PDF page count, page boxes, fonts, and object properties; text and character inventories; page-number sequence; exhaustive numeric-token inventory; exact source-cell equality; all derived arithmetic and rounding; chart coordinate-to-value mapping; sample/specification bundle comparison; forbidden-character searches; raster command, DPI, and pixel dimensions; elapsed rehearsal times; execution-log coverage; dependent-artifact hashes; and ledger assertions. They are unsafe to leave to model judgment because they require exhaustive coverage, exact equality, reproducible arithmetic, coordinate measurement, or binary state detection. Judgment is reserved for semantic support, causal implication, mechanism framing, novelty scope, perceptual hierarchy, audience presupposition, speakability, and defense consequence. Hybrid checks use deterministic enumeration first and human or model judgment only for contextual adjudication.",
+    "q3": "Freeze and identify inputs first. Build the authoritative source manifest and claim map second. Establish text-layer parity and language hygiene third. Verify all numbers and specifications fourth. Audit inferential boundaries, terminology, contradictions, and citations fifth. Check quantitative visual encoding sixth and exact final-PDF rendering seventh. Review narrative architecture eighth, timing ninth, and examiner exposure tenth. Only then consolidate findings and apply the locked-deck reopening rule. Finish with blind review, evidence packaging, and completion gates. Speaker-note production starts after the deck is frozen, because drafting against a moving deck creates timing and source-map churn.",
+    "q4": "A finding is fixed only when both reopening keys pass: it is an evidence-backed blocker or major violation of the thesis, ledger, or functional final-PDF requirements, and it has a bounded safe patch that can be rendered through canonical WeasyPrint, fully rebuilt, rerasterized at 300 DPI or higher, regression-checked, hashed, rolled back, ledger-updated, and explicitly authorized by the user. A minor or note never opens the deck alone. A confirmed must-fix issue with no safe renderer path remains recorded as BLOCKED; Chrome is not an acceptable substitute.",
+    "q5": "Create source-mapped notes only after audit closure. Use the fixed per-slide record in speaker_notes_plan, with each spoken claim linked to an exact thesis location and explicit prohibited-claim guards. Determine the word cap from the presenter's measured rate, cap the draft at 17 minutes, and allocate it by the approved 5:10:3 section ratio. Slide-level caps remain provisional until timed rehearsal because none are user-approved. Require three clean runs at or below 18 minutes, no rushed recovery, full visual alignment, and zero drift into causality, mechanism, cash-only claims, invented procedures, or appendix-only results.",
+    "q6": "The plan can fail through missing official requirements, unavailable or ambiguous source versions, anchoring on known candidate issues, committee overfitting, inconsistent semantic judgment, false positives that confuse taste with defects, inadequate room simulation, renderer outage, checklist completion without argument comprehension, perceptual ambiguities missed by text and geometry tools, and unstable rehearsal pace. Each has an observable signal in plan_self_critique, such as an unresolvable source manifest, reviewer disagreement, a blind-pass blocker, a real-room readability failure, or an unresolved D14-C05 renderer block.",
+    "q7": "Yes, one later independent review is warranted after the local audit is executed and the first full speaker-notes draft and rehearsal log exist. Its scope must be limited to false-negative detection and triage consistency: identify only missed blocker or major deck defects, unsupported or drifting note claims, missing evidence, and misclassified exposures. It must not redesign slides, propose a new architecture, re-open minor preferences, or draft replacement notes. Inputs must include the final PDF and hash, exact 300-DPI rasters, extracted text, ledger, this plan, completed execution and findings logs, source manifest and claim map, calculation log, dispositions, notes draft and source map, and rehearsal log. The reviewer should not receive the operator's original candidate-finding list until after its blind report.",
+    "dimensions": [
+      {
+        "dimension_id": "D01",
+        "name": "Artifact identity, provenance, and frozen baseline",
+        "why_it_matters": "Every later conclusion is invalid if the wrong deck, text extraction, or render is audited.",
+        "cost_of_failure_at_defense": "The operator may approve or repair a file that is not the production-locked deck, making all downstream work non-reproducible.",
+        "checks": [
+          {
+            "check_id": "D01-C01",
+            "what_to_check": "Confirm that the audit target is the exact production PDF recorded in the ledger by filename, byte size, and SHA-256.",
+            "evidence_source": "THESIS_DEFENSE_CONTINUITY_LEDGER_REV21(5).json; thesis_defense_main_deck_slides_01-13_standardized_v2(1).pdf",
+            "method": "deterministic",
+            "method_rationale": "Identity and byte equality are exact facts. Model inspection cannot reliably establish them.",
+            "pass_criterion": "The computed SHA-256, byte size, and production role all match the ledger record, with duplicate upload suffixes treated only as storage artifacts.",
+            "fail_criterion": "Any mismatch, missing hash record, or ambiguity about which PDF is authoritative.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D01-C02",
+            "what_to_check": "Freeze an immutable audit snapshot containing the target PDF, extracted text JSON, ledger, context file, and tool-version record.",
+            "evidence_source": "All attached files; locally generated AUDIT_SOURCE_MANIFEST.json",
+            "method": "deterministic",
+            "method_rationale": "A frozen snapshot prevents later edits or tool changes from silently invalidating evidence.",
+            "pass_criterion": "Each input has a recorded path, size, SHA-256, modification time, and role before any check runs.",
+            "fail_criterion": "Any input is overwritten, untracked, or used without a recorded hash.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D01-C03",
+            "what_to_check": "Record PDF structure facts required for reproducibility: page count, page boxes, embedded fonts, producer, encryption, and annotations.",
+            "evidence_source": "Production PDF; PyMuPDF or pdf_inspect output stored in the audit evidence folder",
+            "method": "deterministic",
+            "method_rationale": "These properties are machine-readable and must not depend on visual estimation.",
+            "pass_criterion": "A machine report is saved and all structural facts are internally consistent with the frozen baseline.",
+            "fail_criterion": "The report is absent, incomplete, or indicates inconsistent page geometry, missing fonts, encryption, or unexpected interactive content.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D01-C04",
+            "what_to_check": "Separate audit capability from repair capability by recording the canonical renderer state before triage.",
+            "evidence_source": "AUDIT_CONTEXT.md; local WeasyPrint dependency test; production_and_qa_workflow in the ledger",
+            "method": "deterministic",
+            "method_rationale": "Whether the canonical renderer starts successfully is an executable condition, not a matter of opinion.",
+            "pass_criterion": "The audit record states either RENDERER_READY with a successful smoke render or RENDERER_BLOCKED with the exact dependency error; no edit is attempted while blocked.",
+            "fail_criterion": "A repair is attempted through a different renderer or without a successful canonical-renderer smoke test.",
+            "default_severity": "blocker"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D02",
+        "name": "Source authority and claim-to-source traceability",
+        "why_it_matters": "The thesis is the sole academic authority, so every substantive slide claim must have a precise source path.",
+        "cost_of_failure_at_defense": "An examiner can expose an unsupported statement even when the deck looks polished and internally coherent.",
+        "checks": [
+          {
+            "check_id": "D02-C01",
+            "what_to_check": "Create a source manifest that records the exact local filename, SHA-256, and authority status of the flattened thesis and every newer build file used for verification.",
+            "evidence_source": "_thesis_FLAT(2).tex; operator-held byte-exact tables, introduction, main-analysis, conclusion, robustness, replication, and appendix files; AUDIT_CONTEXT.md",
+            "method": "deterministic",
+            "method_rationale": "File identity and version relationships must be fixed before claims are checked.",
+            "pass_criterion": "Every source used later has an exact filename, hash, role, and authority note. Any newer build file is confirmed as part of the approved thesis build before it can supersede a flattened-file passage for verification.",
+            "fail_criterion": "A check cites an unnamed file, an unverified derivative, or a file whose relationship to the approved thesis is unresolved.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D02-C02",
+            "what_to_check": "Extract and classify every substantive deck statement as bibliographic identity, conceptual claim, research question, sample fact, method, numerical result, interpretation, limitation, contribution, or citation.",
+            "evidence_source": "deck_text_extracted.json; 300-DPI page rasters of the production PDF",
+            "method": "hybrid",
+            "method_rationale": "Text extraction supplies exhaustive wording, while visual inspection is needed to capture meaning encoded by layout, charts, and labels.",
+            "pass_criterion": "Every substantive visible statement and visual proposition has one claim ID and one classification in DECK_CLAIM_SOURCE_MAP.",
+            "fail_criterion": "Any substantive statement, chart proposition, or source footer is unmapped or multiply classified without resolution.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D02-C03",
+            "what_to_check": "Map every claim ID to an exact source filename and line range, table label, equation, or explicitly approved ledger decision.",
+            "evidence_source": "Source manifest from D02-C01; _thesis_FLAT(2).tex; verified approved-build files; ledger approved decisions",
+            "method": "hybrid",
+            "method_rationale": "Exact locations are deterministic once found, but identifying the passage that truly supports a paraphrase requires semantic judgment.",
+            "pass_criterion": "Each claim has one controlling source citation with exact location and a short support rationale; purely process or design claims point to the ledger rather than the thesis.",
+            "fail_criterion": "A claim relies on memory, a broad section name without location, an outside source, or a passage that does not support its stated strength.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D02-C04",
+            "what_to_check": "Apply a conflict protocol whenever the flattened thesis, newer build files, ledger summary, and deck wording differ.",
+            "evidence_source": "Ledger authority_and_source_protocol; source manifest; conflicting passages",
+            "method": "judgment",
+            "method_rationale": "The conflict must be interpreted in light of approval status and source provenance, not resolved by string matching alone.",
+            "pass_criterion": "The conflict is logged, the approved thesis source is identified, and no deck verdict or notes drafting proceeds until the controlling version is explicit.",
+            "fail_criterion": "The operator silently chooses the most convenient wording or merges incompatible versions.",
+            "default_severity": "blocker"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D03",
+        "name": "Visible-text, text-layer, and glyph parity",
+        "why_it_matters": "The audience sees the rasterized page, while search and automated checks operate on the text layer. Both must represent the same content.",
+        "cost_of_failure_at_defense": "Hidden, duplicated, malformed, or missing text can escape one inspection channel and surface during projection, copying, or accessibility use.",
+        "checks": [
+          {
+            "check_id": "D03-C01",
+            "what_to_check": "Compare each page text layer with the visible 300-DPI raster and account for every difference, allowing only known letter-spacing extraction artifacts.",
+            "evidence_source": "deck_text_extracted.json; exact production PDF rasters at 300 DPI or higher",
+            "method": "hybrid",
+            "method_rationale": "Programmatic diff finds omissions and duplicates, while a human must distinguish true discrepancies from extraction artifacts.",
+            "pass_criterion": "All visible words, symbols, page numbers, and source lines are represented in the text layer, and every extra text-layer item is visibly present or explicitly explained.",
+            "fail_criterion": "Visible text is missing, hidden text is present, ordering changes meaning, or an unexplained discrepancy remains.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D03-C02",
+            "what_to_check": "Search for malformed Unicode, replacement characters, broken ligatures, control characters, and encoding artifacts in extracted text.",
+            "evidence_source": "deck_text_extracted.json; raw PDF character extraction",
+            "method": "deterministic",
+            "method_rationale": "Exhaustive character-set checks are safer and faster than visual memory.",
+            "pass_criterion": "The character inventory contains only approved punctuation, symbols, and explained extraction artifacts.",
+            "fail_criterion": "Unexpected control characters, replacement glyphs, private-use characters, or malformed statistical symbols appear.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D03-C03",
+            "what_to_check": "Detect duplicate, off-page, zero-size, or invisible text objects that could contaminate extraction or copying.",
+            "evidence_source": "Production PDF object and word-coordinate extraction",
+            "method": "deterministic",
+            "method_rationale": "Object coordinates, opacity, and duplication are exact PDF properties.",
+            "pass_criterion": "No substantive text object is duplicated, outside the page box, effectively invisible, or unrelated to the visible slide.",
+            "fail_criterion": "Any hidden or duplicate substantive text object is found without an intentional documented reason.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D03-C04",
+            "what_to_check": "Confirm that source footers and page-number text are extractable and ordered consistently on all applicable pages.",
+            "evidence_source": "Production PDF text coordinates; ledger footer standard",
+            "method": "deterministic",
+            "method_rationale": "Footer presence and page sequence are enumerable facts.",
+            "pass_criterion": "The title-slide exception is preserved, and every content page contains the expected footer text and sequential page marker in a stable reading order.",
+            "fail_criterion": "A footer or marker is missing, duplicated, out of sequence, or inserted into the main reading order in a misleading way.",
+            "default_severity": "major"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D04",
+        "name": "Numerical, statistical, and specification fidelity",
+        "why_it_matters": "Load-bearing numbers and econometric descriptors must reproduce the approved thesis exactly and consistently.",
+        "cost_of_failure_at_defense": "A single wrong coefficient, sample, baseline, test, or derived quantity can dominate the defense and undermine trust in the entire analysis.",
+        "checks": [
+          {
+            "check_id": "D04-C01",
+            "what_to_check": "Build an exhaustive inventory of every number, threshold, date range, inequality, sample count, coefficient, uncertainty measure, standard error, p-value, confidence interval, effect-size calculation, and axis label in the deck.",
+            "evidence_source": "deck_text_extracted.json; visible chart labels in 300-DPI rasters",
+            "method": "hybrid",
+            "method_rationale": "Regex can enumerate textual numbers, but chart scales and visual values require image-based confirmation.",
+            "pass_criterion": "Every visible numerical token and visually encoded quantitative value has a unique audit ID and slide location.",
+            "fail_criterion": "Any number or quantitative visual is omitted from the inventory.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D04-C02",
+            "what_to_check": "Verify each non-derived numerical item against a named approved-thesis source file and exact line or table cell.",
+            "evidence_source": "D02 source manifest and claim map; named approved-thesis files and table labels",
+            "method": "deterministic",
+            "method_rationale": "Once the source cell is identified, exact equality and sign/decimal-format checks must not be left to model memory.",
+            "pass_criterion": "The deck value, sign, unit, rounding, sample definition, and test label match the controlling source.",
+            "fail_criterion": "Any mismatch, unsupported rounding, transposed value, omitted unit, or wrong source cell is found.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D04-C03",
+            "what_to_check": "Recompute every derived value using a documented formula, full-precision inputs from the thesis, and a fixed rounding rule.",
+            "evidence_source": "D04 inventory; controlling thesis values; local calculation log",
+            "method": "deterministic",
+            "method_rationale": "Arithmetic and rounding are reproducible and are especially unsafe to trust to language-model estimation.",
+            "pass_criterion": "Every derived interval, difference, ratio, percentage, or effect-size statement reproduces under the recorded formula and rounding rule.",
+            "fail_criterion": "A derived item cannot be reproduced exactly or depends on rounded display values when full-precision inputs exist.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D04-C04",
+            "what_to_check": "Verify that each chart point, whisker, bracket, label, and axis range is generated from the intended estimate, uncertainty measure, and comparison.",
+            "evidence_source": "Production PDF chart coordinates and labels; D04 calculation log; named thesis table cells",
+            "method": "hybrid",
+            "method_rationale": "Data equality is deterministic, while deciding whether the visual mapping communicates the intended estimand requires judgment.",
+            "pass_criterion": "Every graphical mark maps to the correct audit ID, and its position, uncertainty interval, and comparison label agree with the source map within the rendering tolerance recorded by the operator.",
+            "fail_criterion": "A mark uses the wrong value, wrong uncertainty measure, wrong baseline, wrong test, or materially misleading scale.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D04-C05",
+            "what_to_check": "Verify specification descriptors as a complete bundle: outcome, event window, omitted baseline, sample restrictions, controls, fixed effects, clustering, tails, and matched-row status.",
+            "evidence_source": "Deck claim map; main-analysis source files; table notes; thesis methods text",
+            "method": "hybrid",
+            "method_rationale": "Exact descriptors can be compared mechanically, but completeness and equivalence across prose and table notes require interpretation.",
+            "pass_criterion": "Each empirical display has a source-matched specification record and no descriptor is borrowed from a different model or sample.",
+            "fail_criterion": "A descriptor is absent where needed, inconsistent across the deck, or attached to the wrong analysis.",
+            "default_severity": "blocker"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D05",
+        "name": "Claim strength, causal boundaries, and inferential discipline",
+        "why_it_matters": "The deck must state exactly what the descriptive evidence supports and no more.",
+        "cost_of_failure_at_defense": "Overstatement gives examiners an immediate route to challenge identification, mechanism, payment-method specificity, or statistical logic.",
+        "checks": [
+          {
+            "check_id": "D05-C01",
+            "what_to_check": "Scan every audience-facing claim for causal verbs, causal nouns, treatment-effect language, or implied identification.",
+            "evidence_source": "Deck claim map; ledger fidelity_protocol; approved thesis interpretation passages",
+            "method": "hybrid",
+            "method_rationale": "Keyword search is exhaustive, but causal implication can arise without an explicit forbidden word.",
+            "pass_criterion": "Every claim is either plainly descriptive or directly supported by an approved causal design stated in the thesis; no implied causality remains.",
+            "fail_criterion": "Any wording converts a within-firm association into cause, impact, effect, consequence, or identified response beyond the thesis.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D05-C02",
+            "what_to_check": "Test all mechanism language against the thesis boundary that the reason for the language pattern is not identified.",
+            "evidence_source": "Deck claim map; ledger mechanism and cash_mechanism rules; thesis conceptual and limitation passages",
+            "method": "judgment",
+            "method_rationale": "Mechanism overstatement is semantic and can be conveyed through framing, sequence, or implication rather than a single phrase.",
+            "pass_criterion": "Mechanisms are presented only as motivation, observationally equivalent possibilities, or open questions, with no established intent or channel.",
+            "fail_criterion": "The deck states or implies that legal constraint, strategic silence, cash accumulation, war-chest behavior, or another channel is established.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D05-C03",
+            "what_to_check": "Test payment-method language for the approved qualification: stronger for or concentrated in cash, not strictly cash-only.",
+            "evidence_source": "Deck claim map; ledger cash_language rule; controlling thesis conclusion and payment-method analysis",
+            "method": "hybrid",
+            "method_rationale": "Exact prohibited phrases can be found programmatically, but equivalent overstatement requires semantic review.",
+            "pass_criterion": "Every payment-method conclusion preserves the thesis qualification and does not infer absence of an effect from imprecision.",
+            "fail_criterion": "Any claim says cash-specific, cash-only, unique to cash, or treats an imprecise comparison estimate as proof of no pattern.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D05-C04",
+            "what_to_check": "Check that statistical conclusions rely on the correct formal contrast rather than comparing separate significance labels.",
+            "evidence_source": "Deck claim map; named thesis tests; ledger do_not_repeat_lessons",
+            "method": "hybrid",
+            "method_rationale": "Test labels and values are exact, but whether prose commits the difference-in-significance fallacy requires judgment.",
+            "pass_criterion": "Every between-stage or between-payment claim is tied to the direct thesis contrast intended to test it.",
+            "fail_criterion": "A conclusion is based only on one estimate being significant and another not significant, or on visual separation without a formal test.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D05-C05",
+            "what_to_check": "Check that uncertainty, fragility, limitations, and non-significant or marginal evidence are neither hidden nor overemphasized.",
+            "evidence_source": "Deck claim map; thesis result and limitation passages; ledger approved slide boundaries",
+            "method": "judgment",
+            "method_rationale": "Balanced evidentiary strength depends on context, hierarchy, and wording rather than token equality.",
+            "pass_criterion": "Qualifications appear where needed to prevent a reasonable audience from drawing a stronger conclusion than the thesis supports, without burying the main finding.",
+            "fail_criterion": "A load-bearing qualification is absent, visually inaccessible, contradicted, or repeated so heavily that it distorts the approved narrative.",
+            "default_severity": "major"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D06",
+        "name": "Definitions, terminology, and cross-slide semantic consistency",
+        "why_it_matters": "A defense deck is one argument. Terms, stages, samples, and baselines must retain the same meaning across all pages.",
+        "cost_of_failure_at_defense": "Inconsistent labels force the presenter to repair definitions live and can make correct analyses appear contradictory.",
+        "checks": [
+          {
+            "check_id": "D06-C01",
+            "what_to_check": "Create a controlled vocabulary for constructs, datasets, units, event stages, payment categories, and abbreviations.",
+            "evidence_source": "Deck claim map; thesis variable definitions; ledger thesis_digest and approved decisions",
+            "method": "hybrid",
+            "method_rationale": "Term extraction can be automated, but deciding which variants are legitimate simplifications requires semantic comparison.",
+            "pass_criterion": "Every recurring concept has one preferred audience label, an exact thesis term, and an approved-shortening rule.",
+            "fail_criterion": "Two labels imply different constructs, an abbreviation is undefined, or a simplification changes the estimand.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D06-C02",
+            "what_to_check": "Compare event-stage names, temporal boundaries, omitted baselines, and pooled-period definitions wherever they recur.",
+            "evidence_source": "Deck text and visuals; named thesis event-study definitions; ledger timing lessons",
+            "method": "hybrid",
+            "method_rationale": "Repeated strings can be compared mechanically, while equivalence of temporal definitions requires interpretation.",
+            "pass_criterion": "Each recurring stage and baseline has the same definition, or any analysis-specific difference is explicit at the point of use.",
+            "fail_criterion": "The same label refers to different periods, a different label refers to the same period without explanation, or a pooled stage is visually presented as a single equal-duration quarter.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D06-C03",
+            "what_to_check": "Compare sample, unit-of-observation, and restriction wording across data, measurement, and finding sections.",
+            "evidence_source": "Deck claim map; source-matched specification records from D04-C05",
+            "method": "deterministic",
+            "method_rationale": "Once sample descriptors are normalized, cross-slide mismatches can be exhaustively compared.",
+            "pass_criterion": "Every sample statement matches its analysis and changes in observations or firms are explained by explicit filters rather than implied continuity.",
+            "fail_criterion": "A sample count or definition is carried across analyses without the correct restriction, or two panels appear directly comparable when they are not.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D06-C04",
+            "what_to_check": "Trace each approved research question through its roadmap, empirical design, finding, contribution, boundary, and conclusion.",
+            "evidence_source": "Presentation architecture; deck claim map; thesis_digest research questions and main findings",
+            "method": "judgment",
+            "method_rationale": "The mapping is conceptual and depends on whether the audience can follow the argument, not only on label recurrence.",
+            "pass_criterion": "Each research question has one identifiable evidence path and no finding is orphaned, duplicated, or assigned to the wrong question.",
+            "fail_criterion": "A question lacks a result, a result answers a different question, or the conclusion introduces a claim not established earlier.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D06-C05",
+            "what_to_check": "Run a contradiction matrix across all slide claims and approved ledger boundaries.",
+            "evidence_source": "DECK_CLAIM_SOURCE_MAP; ledger fidelity protocol and approved decisions",
+            "method": "hybrid",
+            "method_rationale": "Exact oppositions can be flagged by rules, but subtle contradiction and scope drift need judgment.",
+            "pass_criterion": "No pair of claims differs in direction, scope, sample, timing, or evidentiary strength without an explicit analysis-specific reason.",
+            "fail_criterion": "Any unresolved contradiction, silent scope change, or stronger restatement appears.",
+            "default_severity": "blocker"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D07",
+        "name": "Citation, legal-authority, and source-footer hygiene",
+        "why_it_matters": "Citations must establish provenance without confusing legal authority, academic evidence, and thesis sourcing.",
+        "cost_of_failure_at_defense": "A citation-category error or unsupported positioning claim can distract the committee from the thesis and invite avoidable credibility questions.",
+        "checks": [
+          {
+            "check_id": "D07-C01",
+            "what_to_check": "Inventory every author-year reference, legal authority, rule, dataset attribution, and thesis-source footer.",
+            "evidence_source": "deck_text_extracted.json; visible 300-DPI rasters; thesis reference list",
+            "method": "deterministic",
+            "method_rationale": "Citation tokens are enumerable and should not depend on visual memory.",
+            "pass_criterion": "Every citation-like item has a type, full source identity, deck location, and thesis/reference-list status.",
+            "fail_criterion": "A citation-like item is omitted, malformed, or has no identified authority type.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D07-C02",
+            "what_to_check": "Check that legal authorities and academic papers are visually and verbally distinguished where their roles differ.",
+            "evidence_source": "Citation inventory; relevant deck raster; thesis conceptual framework and reference list",
+            "method": "judgment",
+            "method_rationale": "The problem is categorical interpretation and audience expectation, not only punctuation.",
+            "pass_criterion": "A reasonable reader can tell whether each item is legal authority, theoretical literature, empirical literature, data source, or thesis section.",
+            "fail_criterion": "Different authority types are presented as an undifferentiated scholarly list or their evidentiary roles are ambiguous.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D07-C03",
+            "what_to_check": "Verify that every cited work or authority appears in the approved thesis and is used for the same proposition.",
+            "evidence_source": "Citation inventory; _thesis_FLAT(2).tex reference list and cited passages",
+            "method": "hybrid",
+            "method_rationale": "Presence is deterministic, but proposition-level support needs semantic judgment.",
+            "pass_criterion": "Each citation is present in the thesis and supports the local claim at the strength shown.",
+            "fail_criterion": "A source is outside the thesis, absent from the reference list where applicable, or attached to a claim it does not support.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D07-C04",
+            "what_to_check": "Check footer style, density, legibility, and consistency against the locked visual system.",
+            "evidence_source": "300-DPI production PDF rasters; ledger visual_system.footer and typography rules",
+            "method": "hybrid",
+            "method_rationale": "Presence and size can be measured, while readability and excessive density require projection-oriented judgment.",
+            "pass_criterion": "Applicable pages use the approved footer convention, remain legible, and do not compete with the slide message.",
+            "fail_criterion": "A footer is missing, inconsistent, unreadable, clipped, or visually dominant.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D07-C05",
+            "what_to_check": "Test novelty and positioning statements against the exact literature scope claimed in the thesis.",
+            "evidence_source": "Deck claim map; thesis introduction and literature review; cited nearest-work passages",
+            "method": "judgment",
+            "method_rationale": "Novelty claims are scope-sensitive and cannot be validated through citation presence alone.",
+            "pass_criterion": "The statement matches the thesis qualification and defines the comparison cell precisely enough to avoid a universal priority claim.",
+            "fail_criterion": "The deck broadens the thesis positioning claim, treats an incomplete search as proof, or omits the dimensions that make the claim defensible.",
+            "default_severity": "major"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D08",
+        "name": "Narrative architecture, reading order, and cognitive economy",
+        "why_it_matters": "The approved 13-slide structure must produce one coherent, findings-forward argument within the time limit.",
+        "cost_of_failure_at_defense": "A correct deck can still fail if the audience cannot see why each slide exists or how the evidence answers the questions.",
+        "checks": [
+          {
+            "check_id": "D08-C01",
+            "what_to_check": "Confirm that the approved Intro, Message, and Outro architecture, slide count, sequence, and section boundaries remain unchanged.",
+            "evidence_source": "Ledger presentation_architecture and approved decisions; production PDF page order",
+            "method": "deterministic",
+            "method_rationale": "The approved map and page order are exact and should be compared mechanically.",
+            "pass_criterion": "All 13 pages appear once, in approved order, with no new or missing architecture element.",
+            "fail_criterion": "A page is missing, duplicated, reordered, substituted, or functions as an unapproved new slide category.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D08-C02",
+            "what_to_check": "State the single communication job of each slide and test every visible element against that job.",
+            "evidence_source": "Ledger per-slide communication goals; production PDF rasters; deck claim map",
+            "method": "judgment",
+            "method_rationale": "Relevance and cognitive load are functions of meaning, hierarchy, and audience attention.",
+            "pass_criterion": "Each element either advances the slide job, supplies necessary evidence, or provides an essential boundary/source.",
+            "fail_criterion": "An element is decorative, redundant, premature, or competes with the slide job.",
+            "default_severity": "minor"
+          },
+          {
+            "check_id": "D08-C03",
+            "what_to_check": "Audit prerequisite order: every term, design choice, and inference must be introduced before it is required.",
+            "evidence_source": "Production PDF sequence; controlled vocabulary; claim map",
+            "method": "judgment",
+            "method_rationale": "Audience presupposition is semantic and sequence-dependent.",
+            "pass_criterion": "A first-time viewer can understand each slide without knowledge introduced only later.",
+            "fail_criterion": "A slide relies on an undefined construct, baseline, event stage, or comparison that appears later.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D08-C04",
+            "what_to_check": "Audit cross-slide redundancy and deliberate reinforcement.",
+            "evidence_source": "Claim matrix grouped by proposition; production PDF sequence",
+            "method": "hybrid",
+            "method_rationale": "Duplicate propositions can be detected programmatically, but useful reinforcement must be distinguished from repetition.",
+            "pass_criterion": "Repeated claims serve a different narrative function or are shortened appropriately; no slide re-teaches completed material.",
+            "fail_criterion": "Substantial wording, evidence, or qualification repeats without advancing the argument, or a key claim appears only once with no closure.",
+            "default_severity": "minor"
+          },
+          {
+            "check_id": "D08-C05",
+            "what_to_check": "Assess whether the deck remains findings-forward for the known committee while preserving methods needed to defend the evidence.",
+            "evidence_source": "AUDIT_CONTEXT.md committee intelligence; presentation architecture; production PDF",
+            "method": "judgment",
+            "method_rationale": "The balance between speed, technical defensibility, and narrative emphasis is audience-specific.",
+            "pass_criterion": "The main results receive the greatest explanatory time and visual emphasis, while method detail is sufficient to support rather than delay them.",
+            "fail_criterion": "Background crowds out findings, or findings are presented without enough design context to withstand immediate questioning.",
+            "default_severity": "major"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D09",
+        "name": "Quantitative visual encoding and statistical readability",
+        "why_it_matters": "Charts and diagrams must encode the intended estimands without creating false comparisons or temporal implications.",
+        "cost_of_failure_at_defense": "Misleading geometry can cause the committee to infer a result the regression does not establish, even if every printed number is correct.",
+        "checks": [
+          {
+            "check_id": "D09-C01",
+            "what_to_check": "Extract or reconstruct the coordinate map for every quantitative mark and compare it with the source-matched values.",
+            "evidence_source": "Production PDF vector/object coordinates or high-resolution raster measurements; D04 calculation log",
+            "method": "deterministic",
+            "method_rationale": "Point and interval positions are measurable and should be checked independently of visual impression.",
+            "pass_criterion": "Coordinates reproduce the intended values under the documented scale within a predeclared rendering tolerance.",
+            "fail_criterion": "A point, interval, endpoint, or bracket is positioned inconsistently with the documented scale.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D09-C02",
+            "what_to_check": "Check axes, zero lines, units, scale ranges, direction, and separate-scale treatment for every quantitative visual.",
+            "evidence_source": "Production PDF rasters; D04 specification records; ledger chart-treatment rules",
+            "method": "hybrid",
+            "method_rationale": "Labels and ranges are exact, while whether scale choices invite a false magnitude comparison requires judgment.",
+            "pass_criterion": "Every scale is explicit enough for the intended comparison, and different units are visibly separated rather than compared by height.",
+            "fail_criterion": "A unit, baseline, or scale is ambiguous, truncated without explanation, reversed, or visually invites an invalid magnitude comparison.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D09-C03",
+            "what_to_check": "Check temporal diagrams and event studies for accurate stage boundaries and pooled-duration communication.",
+            "evidence_source": "Production PDF rasters; thesis event definitions; ledger do_not_repeat_lessons",
+            "method": "hybrid",
+            "method_rationale": "Boundary locations can be measured, but implied continuity and equal duration are perception questions.",
+            "pass_criterion": "Announcement and completion are explicit, categorical stages are labeled, and pooled stages are not silently depicted as equal-duration continuous time.",
+            "fail_criterion": "The visual implies a continuous time series, equal interval lengths, or an event order inconsistent with the design.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D09-C04",
+            "what_to_check": "Check direct-test annotations, uncertainty intervals, significance labels, and nearby interpretation for one-to-one correspondence.",
+            "evidence_source": "Production PDF rasters; D04 inventory; thesis test records",
+            "method": "hybrid",
+            "method_rationale": "Annotation identity can be matched mechanically, while proximity and reading order require visual judgment.",
+            "pass_criterion": "Each annotation is visually attached to the correct mark or contrast, with no plausible alternative reading.",
+            "fail_criterion": "An annotation can be read as applying to the wrong series, stage, estimate, or test.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D09-C05",
+            "what_to_check": "Check that visual hierarchy reflects evidentiary importance rather than statistical drama.",
+            "evidence_source": "Production PDF rasters; ledger visual hierarchy rules; thesis interpretation strength",
+            "method": "judgment",
+            "method_rationale": "Emphasis is a perceptual design property and cannot be reduced to exact text matching.",
+            "pass_criterion": "The formal estimand and its uncertainty are prominent together; non-significant or fragile elements are not visually sensationalized.",
+            "fail_criterion": "Color, size, position, or annotation overstates a coefficient, hides uncertainty, or makes a descriptive comparison look definitive.",
+            "default_severity": "major"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D10",
+        "name": "Final-PDF rendering, geometry, typography, and projection robustness",
+        "why_it_matters": "The exact PDF used at the defense must remain clean and readable after real rendering, not merely in source code.",
+        "cost_of_failure_at_defense": "Clipping, overlap, poor contrast, or small labels can make correct content unusable in the room.",
+        "checks": [
+          {
+            "check_id": "D10-C01",
+            "what_to_check": "Rasterize the exact frozen PDF at 300 DPI or higher and record the command, engine, page images, and dimensions.",
+            "evidence_source": "Production PDF; ledger production_and_qa_workflow",
+            "method": "deterministic",
+            "method_rationale": "Render provenance and pixel dimensions are exact and required by the locked workflow.",
+            "pass_criterion": "All pages are rasterized from the exact frozen PDF at the required resolution, with hashes recorded for the page images.",
+            "fail_criterion": "Images come from HTML, a different PDF, an unknown engine, a lower resolution, or an unrecorded command.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D10-C02",
+            "what_to_check": "Inspect every page for clipping, overflow, overlap, missing glyphs, malformed lines, broken symbols, and object collisions.",
+            "evidence_source": "Exact 300-DPI or higher PDF-derived page rasters",
+            "method": "judgment",
+            "method_rationale": "These defects can be subtle and contextual; visual inspection is the authority.",
+            "pass_criterion": "No text or graphical object is clipped, overlapped, malformed, or lost at full-page and zoomed inspection.",
+            "fail_criterion": "Any substantive content is obscured, malformed, or outside its intended bounds.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D10-C03",
+            "what_to_check": "Measure alignment of correspondence-encoding objects: dots, lines, cells, axes, connectors, labels, rules, and repeated margins.",
+            "evidence_source": "PDF object coordinates where available; high-resolution rasters; ledger visual system",
+            "method": "hybrid",
+            "method_rationale": "Coordinates reveal exact deviations, while perceptual alignment determines whether the deviation is visible and meaningful.",
+            "pass_criterion": "Objects intended to correspond share the same documented centerline or baseline within tolerance, and repeated margins remain consistent.",
+            "fail_criterion": "A visible misalignment weakens correspondence, reading order, or polish.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D10-C04",
+            "what_to_check": "Inspect hierarchy, white-space balance, grouping, line wrapping, orphaned words, and title/body/footnote separation.",
+            "evidence_source": "Exact PDF rasters; ledger hierarchy_and_spacing and typography ranges",
+            "method": "judgment",
+            "method_rationale": "These are perceptual layout properties that require page-level and deck-level viewing.",
+            "pass_criterion": "Each page has a clear first, second, and supporting reading level; line breaks appear intentional; whitespace supports grouping.",
+            "fail_criterion": "The eye is pulled to the wrong element, groups are ambiguous, or wrapping and whitespace look accidental.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D10-C05",
+            "what_to_check": "Run a projection-simulation review at full-screen fit, reduced contrast, and typical back-of-room thumbnail scale without altering the source file.",
+            "evidence_source": "PDF-derived rasters and a documented display simulation",
+            "method": "judgment",
+            "method_rationale": "Legibility depends on perceptual conditions not captured by source font sizes alone.",
+            "pass_criterion": "All load-bearing text, labels, series distinctions, and boundaries remain readable and distinguishable in the simulation.",
+            "fail_criterion": "A load-bearing item disappears, merges, or requires close zoom to interpret.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D10-C06",
+            "what_to_check": "Confirm deck-wide visual-system invariants: page size, font family, palette roles, footer convention, page sequence, and logo placement.",
+            "evidence_source": "Production PDF metadata and rasters; ledger visual_system",
+            "method": "hybrid",
+            "method_rationale": "Metadata can test dimensions and fonts, while palette roles and visual exceptions require judgment.",
+            "pass_criterion": "All pages comply with the locked system and only documented exceptions occur.",
+            "fail_criterion": "An undocumented font, page box, logo, footer, palette role, or numbering exception appears.",
+            "default_severity": "major"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D11",
+        "name": "Language, punctuation, and audience-facing wording compliance",
+        "why_it_matters": "The deck has explicit wording constraints and must remain simple enough to speak naturally.",
+        "cost_of_failure_at_defense": "A small wording violation can trigger needless reopening, while dense or ambiguous prose can cause live delivery errors.",
+        "checks": [
+          {
+            "check_id": "D11-C01",
+            "what_to_check": "Run an exact search for em dashes and dash-based sentence constructions prohibited by the ledger, then review all hyphens in context.",
+            "evidence_source": "deck_text_extracted.json; raw PDF character inventory; ledger collaboration_protocol.language_preference",
+            "method": "hybrid",
+            "method_rationale": "Character detection is deterministic, but distinguishing compound-word hyphens from sentence constructions requires context.",
+            "pass_criterion": "No prohibited dash character or sentence construction remains; legitimate compound terms are documented as allowed.",
+            "fail_criterion": "Any prohibited construction appears in audience-facing wording.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D11-C02",
+            "what_to_check": "Run spelling, grammar, punctuation, capitalization, spacing, and duplicate-word checks with a project-specific dictionary.",
+            "evidence_source": "deck_text_extracted.json; controlled vocabulary from D06; visible rasters",
+            "method": "hybrid",
+            "method_rationale": "Automated checking finds candidates, while finance terms, names, and deliberate labels require human adjudication.",
+            "pass_criterion": "All flagged items are corrected or explicitly accepted as proper names, notation, or intentional style.",
+            "fail_criterion": "An unexplained typo, punctuation error, doubled word, spacing defect, or inconsistent capitalization remains.",
+            "default_severity": "minor"
+          },
+          {
+            "check_id": "D11-C03",
+            "what_to_check": "Check acronym introduction, symbol pronunciation, and audience-friendly expansion of technical shorthand.",
+            "evidence_source": "Deck sequence; controlled vocabulary; speaker-notes production rules",
+            "method": "judgment",
+            "method_rationale": "Whether a first-time listener can decode shorthand is an audience comprehension question.",
+            "pass_criterion": "Every acronym or symbol is expanded before first use or is universally clear within the deck itself, and later short forms remain consistent.",
+            "fail_criterion": "The presenter must improvise an expansion or a symbol can be pronounced or interpreted in multiple ways.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D11-C04",
+            "what_to_check": "Check that simplifications preserve thesis meaning and that sentences are speakable without silently repairing them.",
+            "evidence_source": "Deck claim map; source passages; oral read-through recording",
+            "method": "judgment",
+            "method_rationale": "Speakability and faithful paraphrase are semantic and performance properties.",
+            "pass_criterion": "Each sentence can be read aloud once, in its written order, without adding qualifiers or changing the claim.",
+            "fail_criterion": "The presenter must insert missing logic, reverse clauses, or add a qualification not shown on the slide.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D11-C05",
+            "what_to_check": "Check source and limitation text for minimum necessary density rather than deletion or overloading.",
+            "evidence_source": "PDF rasters; claim map; ledger approved boundaries",
+            "method": "judgment",
+            "method_rationale": "The correct density balances provenance, evidence boundaries, and projection readability.",
+            "pass_criterion": "The main message remains dominant while necessary source and boundary language is accessible.",
+            "fail_criterion": "Essential provenance or qualification is omitted, or supporting text becomes unreadable and performatively useless.",
+            "default_severity": "major"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D12",
+        "name": "Timing, density, and spoken-slide interface",
+        "why_it_matters": "The deck is approved for an 18-minute talk with a 2-minute buffer, so visual density and speech must be tested as one system.",
+        "cost_of_failure_at_defense": "A deck that requires more than 18 minutes forces rushed findings, skipped limitations, or a breach of the hard limit.",
+        "checks": [
+          {
+            "check_id": "D12-C01",
+            "what_to_check": "Time a slide-only walkthrough that explains each visible element without drafted notes and records section and total duration.",
+            "evidence_source": "Production PDF; approved section budgets of 5, 10, and 3 minutes; rehearsal log",
+            "method": "judgment",
+            "method_rationale": "The walkthrough tests the natural explanatory burden of the artifact before script optimization.",
+            "pass_criterion": "The operator can explain the deck coherently within the approved section structure and identify no slide that requires reading all text verbatim.",
+            "fail_criterion": "A slide cannot be explained without skipping load-bearing content or exceeding its section budget.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D12-C02",
+            "what_to_check": "After notes exist, run at least three complete timed rehearsals and record total, section, slide, interruption, and recovery times.",
+            "evidence_source": "Approved speaker-notes draft; production PDF; REHEARSAL_LOG.csv",
+            "method": "deterministic",
+            "method_rationale": "Elapsed time is objective and must be measured, not estimated from word count alone.",
+            "pass_criterion": "All three clean runs finish at or below 18:00, no run approaches the hard 20:00 limit, and section overruns are corrected rather than offset by rushing later sections.",
+            "fail_criterion": "Any clean run exceeds 18:00, timing varies enough to threaten 20:00, or the presenter relies on rushing to recover.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D12-C03",
+            "what_to_check": "Measure the ratio of visible text to spoken content and identify any page that tempts verbatim reading or leaves unexplained visual evidence.",
+            "evidence_source": "Deck text inventory; speaker-notes beat map; rehearsal recordings",
+            "method": "hybrid",
+            "method_rationale": "Text counts are exact, while whether the slide and speech complement each other requires judgment.",
+            "pass_criterion": "Notes guide attention to the key visual evidence and do not duplicate all visible wording; every load-bearing visual receives spoken interpretation.",
+            "fail_criterion": "The presenter reads paragraphs, ignores a central chart, or speaks claims not anchored to the visible page.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D12-C04",
+            "what_to_check": "Count transitions, pauses, chart-orientation time, and likely examiner interruptions inside the timing model.",
+            "evidence_source": "Rehearsal log; slide transition plan; AUDIT_CONTEXT.md",
+            "method": "deterministic",
+            "method_rationale": "These durations can be timed and otherwise tend to be omitted from word-based estimates.",
+            "pass_criterion": "The timing record includes non-script time and still preserves the approved buffer.",
+            "fail_criterion": "Timing is calculated from spoken words only or excludes navigation and orientation time.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D12-C05",
+            "what_to_check": "Define a safe cut hierarchy that removes optional explanation without deleting a research question, main finding, or required boundary.",
+            "evidence_source": "Claim map; presentation architecture; speaker-notes beat map",
+            "method": "judgment",
+            "method_rationale": "Safe cuts depend on narrative function and evidentiary priority.",
+            "pass_criterion": "Each slide has a marked core beat and optional elaboration; the total emergency cut recovers time without changing claims.",
+            "fail_criterion": "The only available cuts remove a main finding, qualification, or transition needed for comprehension.",
+            "default_severity": "major"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D13",
+        "name": "Examiner attack surface and defense-exposure register",
+        "why_it_matters": "Some high-risk questions are not deck defects. They must be identified, sourced, and routed to notes or the appendix without inventing answers.",
+        "cost_of_failure_at_defense": "The presenter may be surprised by predictable questions even when the deck is fully correct.",
+        "checks": [
+          {
+            "check_id": "D13-C01",
+            "what_to_check": "Build an examiner-question inventory from the ledger risk register, committee intelligence, each slide claim, each method choice, and every stated limitation.",
+            "evidence_source": "qa_risk_register in the ledger; AUDIT_CONTEXT.md; deck claim map; thesis limitations and methods",
+            "method": "hybrid",
+            "method_rationale": "Existing risks can be imported deterministically, while claim-specific follow-ups require expert judgment.",
+            "pass_criterion": "Every load-bearing claim and design choice has at least one plausible challenge, and duplicate questions are consolidated without losing scope.",
+            "fail_criterion": "A central construct, sample choice, identification boundary, data pipeline step, or result has no challenge entry.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D13-C02",
+            "what_to_check": "Classify each exposure as deck defect, speaker-notes need, appendix need, acknowledged thesis gap, logistics question, or stylistic preference.",
+            "evidence_source": "Examiner-question inventory; thesis source map; ledger scope boundaries",
+            "method": "judgment",
+            "method_rationale": "The disposition depends on whether the deck violates an authority or merely cannot answer a broader question.",
+            "pass_criterion": "Every exposure has exactly one primary class, a rationale, an owner, and a next action.",
+            "fail_criterion": "An exposure is mislabeled as a deck defect merely because it is uncomfortable, or a true deck error is deferred to Q&A.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D13-C03",
+            "what_to_check": "For known thesis-silent issues, record the absence explicitly and prepare a bounded response strategy that does not invent a rationale or procedure.",
+            "evidence_source": "AUDIT_CONTEXT.md known unresolved gaps; exhaustive search log across approved thesis files",
+            "method": "hybrid",
+            "method_rationale": "The absence can be established by search, while the safest response strategy requires judgment.",
+            "pass_criterion": "The search scope and negative result are recorded; the planned response distinguishes what the thesis states, what the presenter knows from verified project records, and what remains unknown.",
+            "fail_criterion": "The plan fills the gap with speculation, outside assumptions, or an unverified recollection.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D13-C04",
+            "what_to_check": "Prioritize exposures by probability, consequence, thesis answerability, and committee relevance without changing the deck solely to pre-answer every question.",
+            "evidence_source": "AUDIT_CONTEXT.md; risk register; completed finding log",
+            "method": "judgment",
+            "method_rationale": "Priority is context-sensitive and must balance preparedness against slide overload.",
+            "pass_criterion": "High-priority answerable exposures receive notes or appendix coverage; unresolved gaps receive explicit acknowledgment; low-priority items do not bloat the main deck.",
+            "fail_criterion": "The main deck becomes a defensive appendix, or high-consequence predictable questions remain unprepared.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D13-C05",
+            "what_to_check": "Check that every exposure disposition is compatible with the locked appendix architecture and main-deck scope.",
+            "evidence_source": "Ledger appendix_architecture; presentation_vs_appendix rule; exposure register",
+            "method": "deterministic",
+            "method_rationale": "Once categories are defined, routing can be checked systematically.",
+            "pass_criterion": "Each appendix-routed issue maps to an approved appendix category, and no appendix-only analysis is moved into the main talk without authorization.",
+            "fail_criterion": "An exposure has no destination, creates a new architecture, or causes scope leakage into the main deck.",
+            "default_severity": "major"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D14",
+        "name": "Locked-deck triage, remediation safety, and re-lock governance",
+        "why_it_matters": "The cost of any fix includes a full render, raster, audit, hash, and ledger cascade.",
+        "cost_of_failure_at_defense": "Unnecessary reopening can create more defects than it removes and can destroy the value of the production lock.",
+        "checks": [
+          {
+            "check_id": "D14-C01",
+            "what_to_check": "Record every candidate finding in a structured log with violated authority, evidence, defense consequence, scope, reproducibility, and proposed disposition.",
+            "evidence_source": "All completed audit evidence; DECK_AUDIT_FINDINGS.json schema defined in this plan",
+            "method": "hybrid",
+            "method_rationale": "Evidence fields are objective, while consequence and scope require reasoned classification.",
+            "pass_criterion": "No finding enters triage without a reproducible evidence packet and an identified thesis, ledger, or functional-render requirement.",
+            "fail_criterion": "A preference, hunch, or unsupported concern is treated as a defect.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D14-C02",
+            "what_to_check": "Apply the severity rubric and must-fix threshold consistently, with a second reviewer blind to the proposed fix.",
+            "evidence_source": "Finding log; severity rubric in this plan; independent reviewer record",
+            "method": "judgment",
+            "method_rationale": "Severity depends on defense consequence, but blind review limits builder bias and solution anchoring.",
+            "pass_criterion": "Two reviewers agree on severity or record a resolved disagreement using the rubric definitions.",
+            "fail_criterion": "Severity is chosen to justify a desired edit, or disagreement remains undocumented.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D14-C03",
+            "what_to_check": "Apply the fix-versus-record gate before reopening the deck.",
+            "evidence_source": "Finding log; fix_versus_record_rule in the response JSON; renderer readiness record",
+            "method": "deterministic",
+            "method_rationale": "The gate is a fixed decision rule designed to prevent ad hoc editing.",
+            "pass_criterion": "Only blocker or major defects that satisfy all reopening conditions are authorized for repair; all other items are recorded and left alone.",
+            "fail_criterion": "A minor, note, or stylistic preference triggers reopening, or a must-fix defect is ignored without explicit risk acceptance.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D14-C04",
+            "what_to_check": "Require a bounded patch specification before editing: exact object or wording, authoritative replacement, affected files, reflow risk, and rollback path.",
+            "evidence_source": "Authorized finding; source map; merged standardized-v2 HTML; ledger D037 precedent",
+            "method": "hybrid",
+            "method_rationale": "The patch can be precisely specified, but its likely cascade and semantic equivalence need review.",
+            "pass_criterion": "The patch changes only the proven defect, preserves architecture and thesis meaning, and has a tested rollback.",
+            "fail_criterion": "The patch broadens scope, redesigns a slide, changes an unconnected claim, or lacks a rollback.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D14-C05",
+            "what_to_check": "Do not apply any patch until the canonical WeasyPrint environment is restored and a parity smoke test succeeds.",
+            "evidence_source": "Renderer readiness record; merged standardized-v2 HTML; a one-page smoke test and representative full-deck test",
+            "method": "deterministic",
+            "method_rationale": "Renderer availability and output parity are executable facts.",
+            "pass_criterion": "WeasyPrint runs successfully and representative page geometry/font output matches the production pipeline before the real patch.",
+            "fail_criterion": "Chrome or another layout engine is substituted, or the canonical renderer remains broken.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D14-C06",
+            "what_to_check": "After any authorized fix, rebuild every dependent artifact and repeat the full audit delta: merged HTML, PDF, 300-DPI rasters, filmstrip, applied-audit record, hashes, and programmatic ledger update.",
+            "evidence_source": "Ledger production workflow and update protocol; patched source; pre-fix evidence package",
+            "method": "deterministic",
+            "method_rationale": "Artifact regeneration, hashing, page comparison, and ledger assertions are reproducible steps.",
+            "pass_criterion": "All dependencies are rebuilt from the patched source, exact final rasters are inspected, unintended pixel/text changes are absent, hashes are recorded, and user approval precedes re-lock.",
+            "fail_criterion": "A later file is delivered than the one inspected, a dependent artifact remains stale, or the ledger is rewritten manually without assertions.",
+            "default_severity": "blocker"
+          }
+        ]
+      },
+      {
+        "dimension_id": "D15",
+        "name": "Audit-process completeness, bias control, and evidence retention",
+        "why_it_matters": "The audit itself must be auditable and resistant to missed checks, candidate-finding anchoring, and inconsistent judgment.",
+        "cost_of_failure_at_defense": "An incomplete or biased audit can falsely certify the deck and make later review impossible to reproduce.",
+        "checks": [
+          {
+            "check_id": "D15-C01",
+            "what_to_check": "Use one execution register containing every check ID, operator, timestamp, evidence path, result, finding IDs, and completion state.",
+            "evidence_source": "This plan; locally generated DECK_AUDIT_EXECUTION_LOG.json",
+            "method": "deterministic",
+            "method_rationale": "Coverage is a checklist property and should be machine-verifiable.",
+            "pass_criterion": "Every check is marked PASS, FAIL, NOT_APPLICABLE with rationale, or BLOCKED with exact missing condition; no blank status remains.",
+            "fail_criterion": "A check is skipped, merged with another without trace, or closed without evidence.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D15-C02",
+            "what_to_check": "Run one blind second pass that receives the frozen inputs and plan but not the operator candidate-finding list.",
+            "evidence_source": "Frozen audit snapshot; second-pass report",
+            "method": "judgment",
+            "method_rationale": "Blind review reduces anchoring on already noticed issues and builder familiarity.",
+            "pass_criterion": "The second pass independently records possible blocker and major issues, including an explicit NONE result if none are found.",
+            "fail_criterion": "The reviewer is primed with existing findings or asked for general aesthetic suggestions.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D15-C03",
+            "what_to_check": "Audit the audit for false positives, especially typography preferences, harmless extraction artifacts, and thesis-silent exposures.",
+            "evidence_source": "Finding log; raw evidence; triage classifications",
+            "method": "judgment",
+            "method_rationale": "The plan must distinguish an actual violation from taste or broader defense preparation.",
+            "pass_criterion": "Every retained defect cites a violated authority and measurable defense consequence; preferences and exposures are routed separately.",
+            "fail_criterion": "A finding survives only because multiple reviewers dislike it or because it may attract a question.",
+            "default_severity": "major"
+          },
+          {
+            "check_id": "D15-C04",
+            "what_to_check": "Declare completion only when all checks close and no unresolved blocker or must-fix major remains.",
+            "evidence_source": "Execution log; finding log; remediation record",
+            "method": "deterministic",
+            "method_rationale": "Completion criteria are binary and must not be softened near a deadline.",
+            "pass_criterion": "All checks are closed, blocker count is zero, must-fix major count is zero, and recorded-only items have explicit owners.",
+            "fail_criterion": "The audit is called complete with open checks, unresolved must-fix items, or missing evidence.",
+            "default_severity": "blocker"
+          },
+          {
+            "check_id": "D15-C05",
+            "what_to_check": "Archive the complete evidence package and produce a machine-readable summary for later independent review.",
+            "evidence_source": "All audit outputs; frozen input manifest; final hashes",
+            "method": "deterministic",
+            "method_rationale": "Retention and manifest integrity are exact package properties.",
+            "pass_criterion": "The archive contains inputs, tool records, source map, calculation log, rasters, execution log, findings, dispositions, rehearsal logs when available, and SHA-256 for every member.",
+            "fail_criterion": "Evidence cannot be traced to a frozen input or a package member is missing or unhashed.",
+            "default_severity": "major"
+          }
+        ]
+      }
+    ],
+    "severity_rubric": [
+      {
+        "level": "blocker",
+        "definition": "A reproducible defect that makes the artifact non-authoritative, academically false or unsupported, materially misleading, unusable, or impossible to re-lock safely. Examples include wrong source artifact, wrong number or specification, causal or mechanism overclaim, materially incorrect quantitative encoding, clipped load-bearing content, or an attempted fix through a noncanonical renderer.",
+        "action": "Must not be accepted for defense use. Authorize a bounded fix only after the reopening gate passes. If safe repair is blocked, record BLOCKED, preserve the locked original, and escalate to the user with the exact risk."
+      },
+      {
+        "level": "major",
+        "definition": "A reproducible defect likely to confuse an examiner, weaken a load-bearing claim, threaten the 18-minute delivery, or materially reduce readability or cross-slide coherence, but without making the entire artifact non-authoritative.",
+        "action": "Must be fixed before the final defense package when the reopening gate passes. If repair is technically blocked, record it as an unresolved major and do not relabel it minor."
+      },
+      {
+        "level": "minor",
+        "definition": "A real but low-consequence defect that does not change academic meaning, statistical interpretation, navigation, projection readability, or timing. It is more than taste, but the defense would remain credible if left unchanged.",
+        "action": "Do not reopen the locked deck for this item alone. Fix only inside an already authorized blocker/major batch when the patch is isolated, renderer-safe, and creates no reflow risk; otherwise record and leave unchanged."
+      },
+      {
+        "level": "note",
+        "definition": "A stylistic preference, optional polish idea, examiner exposure, thesis-silent question, or future appendix/notes need that is not a defect in the locked deck.",
+        "action": "Never reopen the deck on this basis. Route it to speaker notes, appendix planning, rehearsal, logistics, or the exposure register."
+      }
+    ],
+    "fix_versus_record_rule": "Use a two-key reopening rule. Key 1, necessity: the finding must be evidence-backed, violate the approved thesis, ledger, or a functional final-PDF requirement, and be rated blocker or major under the rubric. Key 2, safe executability: the exact bounded patch, authoritative replacement, canonical WeasyPrint path, full dependent-artifact rebuild, 300-DPI reinspection, hash update, rollback, and user authorization must all be available. Fix only when both keys are true. If Key 1 is false, record as minor or note and leave the lock intact. If Key 1 is true but Key 2 is false, record the confirmed defect as BLOCKED and do not substitute Chrome or another renderer. A minor item may be bundled only into an already authorized must-fix batch when it is isolated and zero-reflow; it can never initiate reopening.",
+    "execution_order": [
+      {
+        "step": 1,
+        "dimension_ids": [
+          "D01"
+        ],
+        "depends_on": [],
+        "rationale": "Freeze the exact production artifact and determine whether audit and repair capabilities are separately available."
+      },
+      {
+        "step": 2,
+        "dimension_ids": [
+          "D02"
+        ],
+        "depends_on": [
+          1
+        ],
+        "rationale": "No substantive check can run until the authority, source versions, and claim map are explicit."
+      },
+      {
+        "step": 3,
+        "dimension_ids": [
+          "D03",
+          "D11"
+        ],
+        "depends_on": [
+          1,
+          2
+        ],
+        "rationale": "Establish a trustworthy wording layer and run exhaustive language checks before interpreting claims."
+      },
+      {
+        "step": 4,
+        "dimension_ids": [
+          "D04"
+        ],
+        "depends_on": [
+          2,
+          3
+        ],
+        "rationale": "Verify the complete numerical and specification inventory only after every visible item is mapped and sourced."
+      },
+      {
+        "step": 5,
+        "dimension_ids": [
+          "D05",
+          "D06",
+          "D07"
+        ],
+        "depends_on": [
+          2,
+          3,
+          4
+        ],
+        "rationale": "Interpretive strength, terminology, contradictions, and citation roles depend on settled source and numeric records."
+      },
+      {
+        "step": 6,
+        "dimension_ids": [
+          "D09"
+        ],
+        "depends_on": [
+          4,
+          5
+        ],
+        "rationale": "Quantitative geometry can be judged only after the intended values, estimands, and inferential boundaries are known."
+      },
+      {
+        "step": 7,
+        "dimension_ids": [
+          "D10"
+        ],
+        "depends_on": [
+          1,
+          3,
+          6
+        ],
+        "rationale": "Inspect the exact final-PDF render after the content and visual mappings to avoid treating a rendering symptom as a content issue."
+      },
+      {
+        "step": 8,
+        "dimension_ids": [
+          "D08"
+        ],
+        "depends_on": [
+          5,
+          7
+        ],
+        "rationale": "Narrative and cognitive review should use a content-correct, visually understood deck."
+      },
+      {
+        "step": 9,
+        "dimension_ids": [
+          "D12"
+        ],
+        "depends_on": [
+          8
+        ],
+        "rationale": "Timing must be tested against the settled narrative and actual slide burden."
+      },
+      {
+        "step": 10,
+        "dimension_ids": [
+          "D13"
+        ],
+        "depends_on": [
+          2,
+          5,
+          8
+        ],
+        "rationale": "Defense exposures can now be separated cleanly from deck defects and routed to notes or the appendix."
+      },
+      {
+        "step": 11,
+        "dimension_ids": [
+          "D14"
+        ],
+        "depends_on": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "rationale": "Triage only after the complete defect and exposure record exists; do not edit during discovery."
+      },
+      {
+        "step": 12,
+        "dimension_ids": [
+          "D15"
+        ],
+        "depends_on": [
+          11
+        ],
+        "rationale": "Close coverage, blind review, and evidence packaging after dispositions are fixed. Speaker-note production begins only after this deck freeze."
+      }
+    ],
+    "speaker_notes_plan": {
+      "structure": "Produce notes only after the deck audit closes and the final PDF is frozen. For each slide, use a fixed record: slide job; opening cue; two to four ordered speaking beats tied to visible elements; exact academic claim IDs; interpretation; required boundary or qualification; transition cue; optional cut beat; interruption-resume cue; likely examiner follow-up; source filename and line range; prohibited claims. Keep the notes in a separate MAIN_DECK_SPEAKER_NOTES.md and maintain a SPEAKER_NOTES_SOURCE_MAP.csv so the locked PDF is not modified merely to store notes.",
+      "word_budget": "Do not invent approved per-slide times. Measure the presenter twice on 90-second thesis-grounded passages and use the lower clean words-per-minute rate. Set the total drafted-word cap to that rate multiplied by 17.0 minutes, leaving one minute inside the approved 18-minute target for pauses, navigation, and recovery. Allocate the cap by the approved section ratio 5:10:3: Intro 27.8 percent, Message 55.6 percent, Outro 16.7 percent, with transitions counted inside each section. Allocate slide-level caps only after the first timed slide-only walkthrough; record them as provisional, then cut until three complete rehearsals are at or below 18:00 without rushing. The hard 20-minute limit is never used as the drafting target.",
+      "grounding_rules": [
+        "Every academic sentence and every number in the notes must cite a claim ID that maps to an exact approved-thesis filename and line range or table cell.",
+        "Notes may explain the visible slide but may not add a new result, mechanism, causal claim, sample rationale, data procedure, or appendix-only analysis to the main talk.",
+        "When the thesis is silent, the notes must say that the thesis does not specify the point; they may record a verified project fact separately, but must not invent an answer.",
+        "Use the approved descriptive, mechanism, cash-language, and war-chest boundaries from the ledger. A spoken qualification cannot be used to excuse misleading slide wording.",
+        "Keep one terminology dictionary across slides and notes. The first spoken expansion of each acronym or symbol must match the slide sequence.",
+        "Source-map and note edits are versioned and hashed. Any change to a substantive claim triggers a source recheck and a fresh timed rehearsal.",
+        "Speaker notes remain a delivery artifact, not a substitute for appendix evidence. Detailed robustness, additional analyses, and examiner-specific tables stay in the approved appendix architecture."
+      ],
+      "quality_gates": [
+        "Grounding gate: 100 percent of academic sentences and numbers have valid source-map entries; no unresolved source conflict remains.",
+        "Slide-alignment gate: every speaking beat points to a visible slide element or is a short transition; no central visual is left uninterpreted.",
+        "Boundary gate: automated and human review find no causal, mechanism, cash-only, war-chest, or difference-in-significance drift.",
+        "Speakability gate: the presenter can deliver each slide without silently rewriting the sentence order or reading dense text verbatim.",
+        "Timing gate: three complete clean runs finish at or below 18:00, section timing remains close to 5:10:3, and no run relies on rushing.",
+        "Interruption gate: every slide has a resume cue and the presenter can answer or defer a likely question without losing the narrative path.",
+        "Freeze gate: the approved notes, source map, and rehearsal log are hashed and archived beside the final deck audit package."
+      ]
+    },
+    "plan_self_critique": [
+      {
+        "blind_spot": "Official defense requirements were not provided, so the plan cannot test unknown mandatory branding, citation, submission, or procedure rules.",
+        "detection_signal": "A later official guideline introduces a requirement not represented in D01-D15 or conflicts with the locked architecture."
+      },
+      {
+        "blind_spot": "The approved thesis source files used for execution were not attached to this planning call; the plan relies on the operator-held, hash-verified files described in AUDIT_CONTEXT.md.",
+        "detection_signal": "D02-C01 cannot produce exact filenames, hashes, and authority status for every source before substantive checks begin."
+      },
+      {
+        "blind_spot": "Committee intelligence may overweight expected questions and underweight an examiner concern not represented in the risk register.",
+        "detection_signal": "A blind reviewer generates a high-consequence question that cannot be mapped to any D13 exposure category."
+      },
+      {
+        "blind_spot": "Known candidate findings can anchor the operator and cause excessive attention to already noticed issue classes.",
+        "detection_signal": "The blind second pass finds blocker or major issues in dimensions that received little evidence in the first pass."
+      },
+      {
+        "blind_spot": "Semantic checks for causality, mechanism, novelty, and speakability can vary across reviewers.",
+        "detection_signal": "Reviewers repeatedly disagree on D05, D07-C05, D08, or D11-C04 classifications despite reading the same evidence."
+      },
+      {
+        "blind_spot": "Projection simulation cannot reproduce the actual room, projector, lighting, or viewer distance.",
+        "detection_signal": "A real-room equipment test reveals unreadable or low-contrast elements that passed D10-C05."
+      },
+      {
+        "blind_spot": "The canonical renderer outage can turn a confirmed must-fix issue into an unresolved operational risk.",
+        "detection_signal": "D14-C05 remains BLOCKED after the audit has identified a blocker or must-fix major."
+      },
+      {
+        "blind_spot": "A highly detailed checklist can produce mechanical completion without understanding the argument.",
+        "detection_signal": "All check boxes are closed, but a fresh reviewer cannot state the three research-question-to-finding paths or identifies a cross-slide contradiction."
+      },
+      {
+        "blind_spot": "Text-layer and coordinate checks can miss a perceptual ambiguity that is technically well formed.",
+        "detection_signal": "Independent viewers choose different intended reading orders, chart associations, or comparison targets on the same raster."
+      },
+      {
+        "blind_spot": "The speaker-notes timing model depends on the presenter's measured pace and may change under defense stress or interruption.",
+        "detection_signal": "Timed runs vary widely or interrupted rehearsals approach the 20-minute limit despite clean runs meeting 18:00."
+      }
+    ],
+    "later_call_recommendation": "Yes, one later independent review is warranted after the local audit is executed and the first full speaker-notes draft and rehearsal log exist. Its scope must be limited to false-negative detection and triage consistency: identify only missed blocker or major deck defects, unsupported or drifting note claims, missing evidence, and misclassified exposures. It must not redesign slides, propose a new architecture, re-open minor preferences, or draft replacement notes. Inputs must include the final PDF and hash, exact 300-DPI rasters, extracted text, ledger, this plan, completed execution and findings logs, source manifest and claim map, calculation log, dispositions, notes draft and source map, and rehearsal log. The reviewer should not receive the operator's original candidate-finding list until after its blind report."
+  },
+  "artifacts_manifest": [
+    {
+      "filename": "DECK_AUDIT_PLAN.md",
+      "status": "CREATED",
+      "media_type": "text/markdown",
+      "size": 68734,
+      "sha256": "311610c73fd0d5edd8523d3b5cd02bfe8afd3a636769f4a42a3f5e4d5ce8307e"
+    }
+  ],
+  "limitations": [
+    "This response designs the audit and speaker-notes workflow only. It contains no deck finding, numerical verification, slide verdict, or drafted speaker-note language.",
+    "Actual thesis verification requires the operator-held approved-thesis source files described in AUDIT_CONTEXT.md. D02 requires their exact filenames and hashes to be recorded before execution.",
+    "Applying any future deck fix remains blocked until the canonical WeasyPrint environment passes the renderer gate; the audit itself remains executable.",
+    "Official defense requirements were not provided and must be added as a new authority layer if received later."
+  ],
+  "delivery": [
+    "THESIS_DEFENSE_DECK_AUDIT_PLAN_RESPONSE.json",
+    "DECK_AUDIT_PLAN.md"
+  ]
+}

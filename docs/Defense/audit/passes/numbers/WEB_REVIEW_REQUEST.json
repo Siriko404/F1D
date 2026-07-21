@@ -1,0 +1,65 @@
+{
+  "request_id": "deck-audit-numbers-v1",
+  "objective": "Check that every quantitative statement on the 13-slide defense deck reports the right value AND attaches it to the right analysis, sample, stage, and test, using only the attached thesis sources.",
+  "why_this_call": "The operator has already verified the load-bearing coefficients mechanically. What a mechanical check cannot catch is a correct number attached to the wrong label: the right coefficient under the wrong stage, a sample size borrowed from a different specification, a standard error paired with the wrong estimate, or a contrast named as one test while reporting another. That is a reading task.",
+  "authority_hierarchy": [
+    "_tables_from_bible.tex - every results table byte-exact. This is the controlling source for any coefficient, standard error, sample size, or firm count.",
+    "sec34_body_from_ledgers.tex - the main-analysis prose, controlling for how a number is described and which sample it belongs to",
+    "_dwz_replication.tex - the replication of the originating measure, controlling for the decomposition statistics on slide 7",
+    "DECK_NUMERIC_INVENTORY.csv - a programmatic extraction of every numeric token in the deck text layer, with slide number and surrounding context",
+    "deck_text_extracted.json and the deck PDF - the artifact under audit"
+  ],
+  "scope": {
+    "included": [
+      "Every coefficient, standard error, p-value, confidence interval, sample size, firm count, ratio, percentage, threshold, and axis bound that carries meaning",
+      "Whether each value is attached to the correct analysis, event stage, payment arm, outcome variable, and sample",
+      "Whether a reported test is the test the thesis actually ran, in particular whether a stated contrast is the formal Wald restriction rather than a difference of two separate estimates",
+      "Whether derived values reproduce: approximate 95% confidence intervals, the effect-size ratio on slide 8, and any percentage stated as a share of a standard deviation",
+      "Whether the same quantity is stated consistently wherever it recurs across slides",
+      "Chart axis bounds, tick labels, and plotted values visible in the PDF but absent from the text layer"
+    ],
+    "excluded": [
+      "Citation years and author names. Slides 2, 3, and 5 carry bibliographic years such as 1983, 2011, and 2024; these belong to a separate citations pass and must not be reported here, nor flagged as unverifiable against the three statistics files attached.",
+      "Page numbers in the footers and the numbered labels 01 through 04 used as visual list markers",
+      "Wording, tone, hedging, and interpretive strength, which belong to a separate claims pass",
+      "Typography, layout, alignment, and rendering, which belong to a separate visual pass",
+      "Anything you would have presented differently"
+    ]
+  },
+  "web_research": {
+    "allowed": false,
+    "rules": "Source-closed. Use only the attached files. If an attached source does not settle a value, report it UNVERIFIABLE and name the file that would."
+  },
+  "method": [
+    "Work from DECK_NUMERIC_INVENTORY.csv. Rows with kind sample_size, statistic, or percentage are the substantive set. Rows marked page_number, bullet_label, or citation_year are excluded from this pass. If you judge a kind label to be wrong, say so in the finding.",
+    "For each substantive item, locate the controlling cell or passage in the attached thesis sources, then compare the value, its sign, its units, its rounding, and above all the label it sits under in the deck.",
+    "Then inspect the PDF pages visually for quantitative content that never reached the text layer: axis bounds, tick marks, plotted point positions, and whisker endpoints.",
+    "Report exceptions only. Confirmations are not wanted and inflate the response."
+  ],
+  "requested_work": [
+    "A findings list containing only exceptions, each naming the slide, the exact deck text or element, the controlling source location, and what is wrong",
+    "A coverage tally per slide showing how many substantive items were checked and how many produced exceptions, so the operator can see the pass was exhaustive",
+    "An explicit list of anything the attached sources could not settle"
+  ],
+  "questions": [
+    {"id": "q1", "question": "Which quantitative statements on the deck report a value that does not match the controlling thesis source?"},
+    {"id": "q2", "question": "Which report a correct value but attach it to the wrong analysis, stage, arm, outcome, sample, or test?"},
+    {"id": "q3", "question": "Do the derived quantities reproduce, specifically the approximate 95% confidence intervals on slides 8, 9, and 10, and the 15.3% effect-size ratio on slide 8?"},
+    {"id": "q4", "question": "Where the same quantity appears on more than one slide, is it stated consistently?"},
+    {"id": "q5", "question": "Does any chart plot a value, axis bound, or interval that disagrees with the number printed beside it?"}
+  ],
+  "required_artifacts": [
+    {
+      "filename": "audit_numbers_findings.md",
+      "description": "The exceptions in readable form, ordered by severity then slide. Each entry gives the slide, the exact deck text, the controlling source file and location, the problem, and what the correct value or label would be. Ends with the per-slide coverage tally. If there are no exceptions, say so in one line and give the tally."
+    }
+  ],
+  "acceptance_criteria": [
+    "Every finding quotes the deck exactly and names a source file with an exact location",
+    "The coverage tally accounts for every slide that carries substantive numbers, which is slides 6 through 13",
+    "No finding concerns a citation year, a page number, wording, or layout",
+    "Derived values are recomputed and the arithmetic is shown",
+    "No number, table label, or thesis passage is invented"
+  ],
+  "stop_condition": "If the attached sources are insufficient, return status PARTIAL, deliver what was verified, and name the exact missing file. Never guess a source value."
+}

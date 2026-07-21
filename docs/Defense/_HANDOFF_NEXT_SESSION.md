@@ -1,101 +1,130 @@
-# HANDOFF — Thesis Defense, next session (written 2026-07-16)
+# HANDOFF — Thesis defense (rewritten 2026-07-21)
 
-## 1. Task
+Read this file, then `_SESSION_STATE.json` beside it. Between them they carry the
+whole state. You do not need the previous conversation.
 
-Sina defends his MSc thesis (Telfer, uOttawa). The 13-slide main deck is FINISHED,
-approved, and production-locked. The next deliverable is the **indexed Q&A appendix**
-(architecture approved, ~39 slides, content not yet designed).
+## 1. Where the work stands
 
-## 2. Canonical work: the REV21 package
+Sina defends his MSc thesis at Telfer, uOttawa. The 13-slide main deck is
+finished, approved, and production-locked.
 
-`C:\Users\sinas\Downloads\THESIS_DEFENSE_PROJECT_LOCKED_REV21.zip` (79 files)
+- **Deliverable 1, audit the deck: DONE.** No blocker, no major defect.
+- **Deliverable 2, speaker notes for all 13 slides: NOT STARTED.** This is next.
+- Deliverable 3, the indexed Q&A appendix: architecture approved, content not
+  designed, out of scope until the notes exist.
 
-This package, built in a separate workstream, is the AUTHORITY for the presentation.
-Read its ledger FIRST and follow its `assistant_operating_contract` exactly.
+## 2. Read this before trusting the REV21 ledger
 
-| Inside the zip | What it is |
+`REV21/THESIS_DEFENSE_CONTINUITY_LEDGER_REV21.json` says the next action is to
+resume the Q&A appendix. **That is stale.** Sina redirected to an audit plus
+speaker notes, and the audit is complete.
+
+The ledger was left byte-unchanged on purpose. It is a 346 KB control document
+from another workstream and hand-editing it risks corrupting it. It remains the
+authority for everything else: the operating contract, the 38 approved decisions,
+the visual system, the production workflow, the do-not-repeat lessons, and the
+appendix architecture. It is not the authority for what to do next. This file is.
+
+## 3. What the audit found
+
+Five independent passes, plus mechanical verification by the operator.
+
+| Dimension | Result |
 |---|---|
-| `THESIS_DEFENSE_CONTINUITY_LEDGER_REV21.json` | THE control document: operating contract, 38 approved decisions, architecture, visual system, slide artifacts, QA risk register, 18 open decisions, current state, do-not-repeat lessons |
-| `production/thesis_defense_main_deck_slides_01-13_standardized_v2.pdf` / `.html` | The LOCKED main deck (13 pages, 1152x648) |
-| `production/individual_pages/` | Per-slide PDF + 300dpi PNG |
-| `provenance/` | Pre-standardization inputs, older ledger REV20, assets. Provenance ONLY, never production |
-| `source/_thesis_FLAT(2).tex` | The thesis source shipped with the package |
-| `scripts/`, `manifest/SHA256SUMS.txt` | Assembly script, migration script, integrity sums |
+| Numbers | 136 items on slides 6 to 13, zero exceptions, verified twice |
+| Chart geometry | Every plotted point within 0.01 pt of its coefficient |
+| Citations | All twelve exist, correct years, correct propositions |
+| Claim strength | No causal, mechanism, or cash-only overstatement |
+| Rendering | All 13 pages clean |
 
-**Its stated next action:** resume the approved indexed Q&A appendix architecture
-(A navigation index, B theory/literature, C data/sample, D measurement/validity,
-E econometric designs, F full main results, G additional analyses/robustness,
-H threats/limitations, plus one more category). Authoring format: HTML/CSS, rendered
-to PDF, inspected before locking.
+Four cosmetic wording items remain, listed as decision `D-OPEN-1` in the state
+file. None changes a claim, a number, or an interpretation.
 
-**Its hard rules:** do not alter any standardized-v2 main-deck slide unless Sina
-explicitly reopens it; provenance artifacts are not the deck; academic content comes
-only from the authoritative thesis; target 18 minutes with a 2-minute buffer.
+**The one thing that matters is not a deck defect.** An examiner can ask what
+evidence there is that the CEO knew about the acquisition at the pre-announcement
+call. The event clock is anchored on the announcement date; the thesis observes
+neither the negotiation start nor the CEO's knowledge. There is no answer. The
+only route is a clean concession. It belongs in preparation, not on a slide.
 
-## 3. Thesis sources (verification truth)
+Full detail: `audit/AUDIT_REGISTER.md`. Raw pass outputs: `audit/findings/`.
 
-Base: `C:\Users\sinas\OneDrive\Desktop\Projects\Thesis_Bmad\Data\Data\Datasets\Datasets\Data_Processing\F1D-phase3\docs\Thesis\_uottawa_rewrite\`
+## 4. Reproduce the audit instead of believing it
+
+```
+python docs/Defense/audit/scripts/verify_deck.py
+```
+
+Thirteen checks, no model involved, exit code 0 when they all reproduce. It
+verifies the deck hash and geometry, the absence of em and en dashes, that
+exactly the two recorded dash constructions remain, and that every plotted point
+on slides 8, 9 and 10 sits where its printed coefficient puts it.
+
+One trap is encoded in that script and worth knowing: **slide 8 must be measured
+against the drawn axis ticks, never the tick labels.** Text centres sit about two
+points below the rules they annotate, which looks exactly like a real defect.
+
+## 5. The next action, concretely
+
+Write speaker notes for all 13 slides.
+
+Before drafting, settle `D-OPEN-1` with Sina, because notes quote slide wording
+and a change to slide 12 or 13 means reworking those notes. The recommendation on
+file is to ship the deck as is.
+
+The full notes plan is in `audit/DECK_AUDIT_PLAN.md` under "Speaker-notes
+production plan". The essentials:
+
+- 18 minutes with a 2 minute buffer, split 5 minutes for slides 1 to 5,
+  10 minutes for 6 to 10, 3 minutes for 11 to 13.
+- Do not invent per-slide times. Measure Sina's own speaking rate first.
+- Every academic sentence and every number traces to an exact thesis file and
+  location. Where the thesis is silent, say so; never fill the gap.
+- Notes explain the visible slide. They never add a result, a mechanism, a causal
+  claim, or appendix-only material to the main talk.
+- One examiner prefers a defense that finishes promptly. Tight beats complete.
+
+## 6. Thesis sources, for verification
+
+Base: `docs/Thesis/_uottawa_rewrite/`
 
 | File | Use |
 |---|---|
-| `thesis_draft_uottawa.pdf` / `.tex` | The defended document (71 pp, Jul 3 build) |
-| `_abstract_body.tex`, `_intro_body.tex`, `sec34_body_from_ledgers.tex`, `_conclusion_body.tex` | Jul-3 prose bodies: TRUTH for quotes |
-| `_tables_from_bible.tex` | All tables byte-exact: TRUTH for every number |
-| `_robustness_tables.tex`, `_dwz_replication.tex`, `appendix_I_cash_scrutiny.tex`, `appendix_II_controls.tex` | Robustness + appendix tables (appendix source material) |
-| `_thesis_FLAT.tex` | Convenient one-file read, but a Jun-28 snapshot, STALE in places. Verify quotes against the Jul-3 files above |
+| `_tables_from_bible.tex` | Every results table, byte-exact. Truth for any number |
+| `sec34_body_from_ledgers.tex` | Main-analysis prose and interpretation |
+| `_intro_body.tex` | Positioning claim, contributions, stated limits |
+| `_conclusion_body.tex` | Findings summary and every limitation |
+| `_thesis_FLAT.tex` | One-file read including the complete reference list |
 
-Never edit anything in `_uottawa_rewrite` (regenerated build files).
+Never edit anything under `_uottawa_rewrite`. The thesis is submitted and
+approved, and it was not audited; it is out of scope.
 
-## 4. What this repo session adds (not in the REV21 ledger)
+## 7. Working rules with Sina, non-negotiable
 
-`docs\Defense\_DEFENSE_LEDGER.md` — carry these forward:
+1. Do exactly what he asks. His literal instruction beats your judgement.
+2. Replies must be very short. He is exhausted and a long reply goes unread.
+3. One decision at a time. Never batch. Never produce a finished artifact before
+   its content is approved.
+4. Verify every number and quote against the primary file before using it.
+5. No em dashes and no dash-based sentence constructions in anything
+   audience-facing.
+6. Do the work yourself. He has banned subagent delegation on this task.
+7. Record decisions as they happen. Anything unrecorded is lost.
 
-**A. Committee intel.** REV21 lists committee composition as an OPEN decision. It is known:
-- Supervisors: Dr. Ali Akyol, Dr. Harshit Rajaiya.
-- Examiner Dr. Shantanu Dutta: M&A, method-of-payment, media, textual/NLP, private
-  in-house meetings and insider trading. Closest domain expert on this thesis.
-  Sina intel: he likes QUICK defenses.
-- Examiner Dr. Rengong (Alex) Zhang: accounting, big data/ML, disclosure,
-  uncertainty and prices (PEAD). Expect data-pipeline and "why no price reaction" angles.
+## 8. If you need another ChatGPT web call
 
-**B. Question bank, 16 rows** (ledger section B), examiner-reverse-engineered: identification,
-generated regressand, Gelman-Stern, stock-arm power, payment-method endogeneity (Dutta's own
-paper), private-communication channels, media leakage, lexicon vs modern NLP, speaker
-attribution, window-searching, economic magnitude, deal-quality follow-ups.
-Q1 has a RATIFIED spoken answer, verbatim in the ledger. Two rows need Sina input:
-speaker-attribution detail, and why the sample stops in 2018 (the thesis gives no rationale).
+Read `C:\Users\sinas\OneDrive\Desktop\Projects\GptWebCall\WEB_CALL_PROTOCOL.md`
+first. Calls can now run in parallel, each bound to its own tab, and a delivery
+that fails validation can be repaired inside the same conversation.
 
-**C. Fifteen defensive assets found in the full thesis** (ledger section F): the Pagan-1984
-flag with the bootstrap named, the scripted-versus-unscripted firewall argument, the
-conservative-floor argument, the DWZ replication numbers, the all-deals robustness that
-STRENGTHENS cash concentration (0.1056, p about .013), withdrawal and static-FE checks,
-the GAP-cash caution, and the exact hedged phrases the thesis uses. This maps directly onto
-appendix categories D, G, and H.
+Two filenames may never collide across calls that can still receive files;
+`prepare` enforces this and will refuse the second one.
 
-## 5. Superseded, do not use
+**Download every returned file before clicking Done and validate.** Done stops
+monitoring and anything arriving afterwards is not collected. If that happens,
+copy the files into the exchange's `response/` directory and run
+`validate --exchange <id>`.
 
-`docs\Defense\defense_slides.tex` / `.pdf` (a 15-slide Beamer draft built here on 07-09) and
-`_CODEX_HANDOFF_2026-07-12.md` are SUPERSEDED by the REV21 deck. Their story-arc records in
-the ledger reference the dead 15-slide numbering. Keep for history only.
+## 9. Superseded, do not use
 
-## 6. Working rules with Sina (non-negotiable)
-
-1. Do exactly as said. Literal instruction beats your judgment.
-2. Ultra-terse chat. Short sentences, small titled sections, lists over prose.
-3. One decision at a time. Never batch. Never produce a finished artifact before its
-   content is approved. He has stopped this session twice for moving too fast.
-4. When explaining: no analogies. Explain the actual case in plain words, one idea per
-   chunk, then stop and check.
-5. Do the work yourself; he banned subagent delegation for this task.
-6. Verify every number and quote against the primary file before it is used.
-7. No em-dashes in any audience-facing wording.
-8. Record decisions as they happen and commit; anything unrecorded is lost.
-
-## 7. First actions in the new session
-
-1. Extract the zip to a working directory and read `THESIS_DEFENSE_CONTINUITY_LEDGER_REV21.json`
-   in full, especially `assistant_operating_contract`, `current_state`, `appendix_architecture`,
-   `visual_system`, `production_and_qa_workflow`, and `do_not_repeat_lessons`.
-2. Open the locked 13-slide PDF so appendix design matches its visual system.
-3. Report state back to Sina in a few lines and ask which appendix category to design first
-   (the ledger's own protocol: one slide at a time, approval before locking).
+`defense_slides.tex` and `defense_slides.pdf`, a 15-slide Beamer draft, and
+`_CODEX_HANDOFF_2026-07-12.md`. Both predate the REV21 deck. History only.

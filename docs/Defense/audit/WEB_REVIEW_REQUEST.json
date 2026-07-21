@@ -1,0 +1,82 @@
+{
+  "request_id": "thesis-defense-deck-audit-plan-v2",
+  "objective": "Design the audit methodology that WE will execute locally against a production-locked 13-slide MSc thesis defense deck, and design the production plan for the speaker notes that follow the audit. Return a plan, not an audit.",
+  "why_this_call": "The deck is finished, user-approved, and production-locked. Before reopening it we need an independent, hardnosed reasoning pass on HOW to audit it: which dimensions, which checks, in which order, with which pass criteria and severity rubric. An independent reasoner is more likely to name the dimensions and failure modes the local operator is blind to.",
+  "critical_role_boundary": "You design the audit. You do not perform it. Do not verify numbers, do not judge individual slides, do not rewrite slide wording, do not draft speaker notes. Any attempt to execute the audit instead of planning it makes this response unusable.",
+  "authority_hierarchy": [
+    "THESIS_DEFENSE_CONTINUITY_LEDGER_REV21.json - the binding operating contract, approved decisions, visual system, production and QA workflow, and do-not-repeat lessons",
+    "thesis_defense_main_deck_slides_01-13_standardized_v2.pdf - the exact locked artifact to be audited",
+    "deck_text_extracted.json - the deterministic PDF text layer, extracted programmatically by the operator",
+    "AUDIT_CONTEXT.md - operator-supplied environment constraints, work already completed, and committee intelligence"
+  ],
+  "scope": {
+    "included": [
+      "Enumerate the audit dimensions that together give complete coverage of this artifact",
+      "For each dimension, specify exact checks, the evidence each check requires, and an explicit pass/fail criterion",
+      "Specify which checks must be deterministic and programmatic, and which require human or model judgment, and say why",
+      "Specify execution order and dependencies between dimensions",
+      "Supply a severity rubric and a triage rule that distinguishes a genuine defect from a stylistic preference, given that the deck is locked and every fix cascades through renders, hashes, and the ledger",
+      "Supply the production plan for the speaker notes, including structure, word budget allocation, grounding rules, and quality gates",
+      "Name the failure modes of this audit itself and how to detect them",
+      "State whether any later independent review call is warranted, and if so its exact bounded scope"
+    ],
+    "excluded": [
+      "Performing any part of the audit",
+      "Verifying, recomputing, quoting, or commenting on any specific number in the deck",
+      "Assessing whether any specific slide is correct or incorrect",
+      "Writing or drafting any speaker note text",
+      "Proposing changes to the thesis itself, which is submitted and approved",
+      "Proposing a new deck architecture or new slides",
+      "Any claim that requires outside sources"
+    ]
+  },
+  "web_research": {
+    "allowed": false,
+    "rules": "This is a source-closed task. Use only the attached files. Do not introduce outside facts, citations, or defense-procedure claims."
+  },
+  "binding_constraints_from_the_ledger": [
+    "The 13-slide standardized-v2 deck is production-locked. It may only be reopened for an explicit, bounded, user-authorized pass, as was done once before under decision D037.",
+    "The approved thesis is the sole authority for every academic claim and number.",
+    "No em dashes and no dash-based sentence constructions in audience-facing wording.",
+    "Never convert a within-firm correlational result into a causal claim.",
+    "Never claim the thesis identifies why the language pattern occurs.",
+    "Say the run-up concentrates in cash or is stronger for cash. Never say strictly cash-specific.",
+    "Do not state that a war-chest or deliberate cash-accumulation mechanism is established.",
+    "The talk targets 18 minutes with a 2-minute buffer inside a 20-minute limit.",
+    "Any render must be inspected as the exact final PDF rasterized at 300 DPI or higher, never from HTML source review alone."
+  ],
+  "requested_work": [
+    "A complete audit dimension set, each with a one-line statement of what failure in that dimension would cost at the defense",
+    "A per-dimension check list with evidence source and pass/fail criterion for every check",
+    "A deterministic-versus-judgment split across all checks",
+    "A dependency-ordered execution sequence",
+    "A severity rubric with at least three levels and an explicit must-fix threshold",
+    "A triage rule for the locked-deck reopening decision",
+    "A speaker-notes production plan",
+    "A self-critique of the plan naming its own blind spots"
+  ],
+  "questions": [
+    {"id": "q1", "question": "What is the complete set of audit dimensions for this artifact, and which dimension is most likely to be underweighted by an operator who built the deck?"},
+    {"id": "q2", "question": "Which checks must be programmatic and deterministic rather than judgment-based, and what exactly makes each one unsafe to leave to model judgment?"},
+    {"id": "q3", "question": "What is the correct execution order, and which dimensions must complete before others can start?"},
+    {"id": "q4", "question": "Given a locked deck where each fix cascades through the merged HTML, the merged PDF, the filmstrip, the applied-audit JSON, and multiple ledger hashes, what rule should decide whether a finding is fixed or recorded and left alone?"},
+    {"id": "q5", "question": "How should the speaker notes be structured, budgeted, and grounded so they are defensible, deliverable in 18 minutes, and impossible to drift from the thesis?"},
+    {"id": "q6", "question": "What are the failure modes of this audit plan itself, and what observable signal would reveal each one?"},
+    {"id": "q7", "question": "Is a further independent review call warranted after we execute the audit, and if so what is its exact bounded scope and what must it receive as input?"}
+  ],
+  "required_artifacts": [
+    {
+      "filename": "DECK_AUDIT_PLAN.md",
+      "description": "The full audit and speaker-notes plan in markdown, structured so the operator can execute it check by check without further interpretation. Every check must be individually actionable and individually verifiable."
+    }
+  ],
+  "acceptance_criteria": [
+    "Every one of q1 through q7 is answered explicitly in the results object",
+    "DECK_AUDIT_PLAN.md exists and every check in it has an evidence source and a pass/fail criterion",
+    "The deterministic-versus-judgment split is stated for every check",
+    "The plan contains no verification of any specific number and no verdict on any specific slide",
+    "The severity rubric and the fix-versus-record triage rule are both explicit and applicable without further judgment calls",
+    "The plan respects every constraint listed in binding_constraints_from_the_ledger"
+  ],
+  "stop_condition": "If the attached files are insufficient to design any part of the plan, return status PARTIAL and name the exact missing input. Do not invent evidence and do not substitute an executed audit for the requested plan."
+}

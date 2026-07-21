@@ -1,0 +1,200 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Conceptual Framework II - Timing and Payment Method</title>
+  <style>
+    @page { size: 16in 9in; margin: 0; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 16in; height: 9in; }
+    body {
+      background: #f4f1ec;
+      font-family: "Times New Roman", Times, serif;
+      color: #231f20;
+    }
+    .slide {
+      width: 16in;
+      height: 9in;
+      position: relative;
+      overflow: hidden;
+      background: #f4f1ec;
+      padding: 0.55in 0.82in 0.42in 0.82in;
+    }
+    .eyebrow {
+      font-size: 16pt;
+      letter-spacing: 4.2pt;
+      text-transform: uppercase;
+      color: #8f001a;
+      font-weight: 700;
+      margin-bottom: 0.12in;
+    }
+    h1 {
+      font-size: 42pt;
+      line-height: 1.02;
+      font-weight: 400;
+      margin: 0;
+      letter-spacing: -0.7pt;
+    }
+    .rule {
+      width: 1.38in;
+      height: 0.035in;
+      background: #8f001a;
+      margin: 0.23in 0 0.28in 0;
+    }
+    .lead {
+      font-size: 23pt;
+      line-height: 1.16;
+      max-width: 11.25in;
+      margin: 0 0 0.17in 0;
+    }
+    .chart-wrap {
+      width: 100%;
+      height: 3.27in;
+      position: relative;
+      margin-top: 0.02in;
+    }
+    svg { display: block; width: 100%; height: 100%; }
+    .payment {
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      column-gap: 0.62in;
+      margin-top: 0.22in;
+      padding-top: 0.18in;
+      border-top: 1.2pt solid rgba(35,31,32,0.15);
+    }
+    .panel-title {
+      font-size: 13.5pt;
+      letter-spacing: 3.2pt;
+      text-transform: uppercase;
+      color: #8f001a;
+      font-weight: 700;
+      margin-bottom: 0.08in;
+    }
+    .payment .sentence {
+      font-size: 20.5pt;
+      line-height: 1.14;
+      margin: 0;
+      max-width: 5.0in;
+    }
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 0.52in;
+    }
+    .col h2 {
+      font-size: 25pt;
+      line-height: 1;
+      margin: 0 0 0.10in 0;
+      font-weight: 700;
+    }
+    .underline {
+      width: 0.52in;
+      height: 0.027in;
+      background: #8f001a;
+      margin-bottom: 0.14in;
+    }
+    .col p {
+      font-size: 17.7pt;
+      line-height: 1.15;
+      margin: 0 0 0.08in 0;
+      color: #464142;
+    }
+    .footer {
+      position: absolute;
+      left: 0.82in;
+      right: 0.82in;
+      bottom: 0.29in;
+      border-top: 1.2pt solid rgba(35,31,32,0.16);
+      padding-top: 0.085in;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      color: #7b7673;
+    }
+    .source { font-size: 10.2pt; line-height: 1.15; }
+    .page { font-size: 13.5pt; }
+  </style>
+</head>
+<body>
+  <section class="slide">
+    <div class="eyebrow">Conceptual Framework II</div>
+    <h1>Timing and Payment Method</h1>
+    <div class="rule"></div>
+
+    <p class="lead">The language signal should follow the information event, while the cash position follows the transaction event.</p>
+
+    <div class="chart-wrap" aria-label="Timeline chart of uncertainty and cash around acquisition announcement and completion">
+      <svg viewBox="0 0 1408 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <style>
+          .label { font-family: "Times New Roman", Times, serif; font-size: 25px; fill: #231f20; }
+          .small { font-family: "Times New Roman", Times, serif; font-size: 18px; fill: #8f001a; font-weight: 700; letter-spacing: 2.4px; }
+          .big { font-family: "Times New Roman", Times, serif; font-size: 24px; fill: #231f20; font-weight: 700; }
+          .note { font-family: "Times New Roman", Times, serif; font-size: 18px; fill: #625c59; font-style: italic; }
+        </style>
+
+        <!-- left labels -->
+        <text x="44" y="68" class="label">CEO Q&amp;A uncertainty</text>
+        <text x="44" y="154" class="label">Cash position</text>
+
+        <!-- guide lines -->
+        <line x1="350" y1="61" x2="1258" y2="61" stroke="rgba(35,31,32,0.13)" stroke-width="5" stroke-linecap="round"/>
+        <line x1="350" y1="147" x2="1258" y2="147" stroke="rgba(35,31,32,0.13)" stroke-width="5" stroke-linecap="round"/>
+
+        <!-- active paths with solid endpoint dots -->
+        <line x1="350" y1="61" x2="844" y2="61" stroke="#8f001a" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="844" cy="61" r="10" fill="#8f001a"/>
+        <text x="866" y="40" class="note">settles at announcement</text>
+
+        <line x1="350" y1="147" x2="1258" y2="147" stroke="#8f001a" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="1258" cy="147" r="10" fill="#8f001a"/>
+        <text x="1048" y="126" class="note">persists until completion</text>
+
+        <!-- connections to the bottom timeline -->
+        <line x1="844" y1="74" x2="844" y2="229" stroke="#8f001a" stroke-width="3" stroke-dasharray="8 9" opacity="0.62"/>
+        <line x1="1258" y1="160" x2="1258" y2="229" stroke="#8f001a" stroke-width="3" stroke-dasharray="8 9" opacity="0.62"/>
+
+        <!-- bottom timeline -->
+        <line x1="350" y1="241" x2="1258" y2="241" stroke="#6c6663" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="350" cy="241" r="11" fill="#f4f1ec" stroke="#8f001a" stroke-width="4"/>
+        <circle cx="844" cy="241" r="11" fill="#f4f1ec" stroke="#8f001a" stroke-width="4"/>
+        <circle cx="1258" cy="241" r="11" fill="#f4f1ec" stroke="#8f001a" stroke-width="4"/>
+
+        <text x="350" y="285" text-anchor="middle" class="small">UNANNOUNCED</text>
+        <text x="350" y="313" text-anchor="middle" class="big">Deal not yet public</text>
+
+        <text x="844" y="285" text-anchor="middle" class="small">ANNOUNCEMENT</text>
+        <text x="844" y="313" text-anchor="middle" class="big">Information becomes public</text>
+
+        <text x="1258" y="285" text-anchor="middle" class="small">COMPLETION</text>
+        <text x="1258" y="313" text-anchor="middle" class="big">Cash is paid</text>
+      </svg>
+    </div>
+
+    <div class="payment">
+      <div>
+        <div class="panel-title">Payment method</div>
+        <p class="sentence">Cash and stock deals share the disclosure bind, but stock deals add an equity-currency incentive.</p>
+      </div>
+      <div class="compare">
+        <div class="col">
+          <h2>Cash</h2>
+          <div class="underline"></div>
+          <p>No equity currency to protect.</p>
+          <p>Relatively cleaner window onto the disclosure state.</p>
+        </div>
+        <div class="col">
+          <h2>Stock</h2>
+          <div class="underline"></div>
+          <p>Equity is the acquisition currency.</p>
+          <p>Prior work documents pre-deal management.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="source">Framework sources: Harford (1999); Shleifer and Vishny (2003); Louis (2004); Thewissen et al. (2024)</div>
+      <div class="page">03</div>
+    </div>
+  </section>
+</body>
+</html>

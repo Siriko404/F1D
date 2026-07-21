@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Slide 11 - Contributions</title>
+<style>
+  @page { size: 16in 9in; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 16in; height: 9in; }
+  body {
+    background: #F4F1EC;
+    color: #231F20;
+    font-family: "Times New Roman", Times, serif;
+  }
+  .slide {
+    position: relative;
+    width: 16in;
+    height: 9in;
+    overflow: hidden;
+    background: #F4F1EC;
+  }
+
+  .kicker {
+    position: absolute;
+    left: 0.86in;
+    top: 0.56in;
+    color: #8F001A;
+    font-size: 15pt;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  h1 {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    top: 0.88in;
+    margin: 0;
+    font-size: 40pt;
+    line-height: 1;
+    font-weight: 400;
+    letter-spacing: -0.018em;
+  }
+  .title-rule {
+    position: absolute;
+    left: 0.86in;
+    top: 1.54in;
+    width: 1.18in;
+    height: 0.032in;
+    background: #8F001A;
+  }
+  .intro {
+    position: absolute;
+    left: 0.86in;
+    top: 1.82in;
+    width: 14.28in;
+    margin: 0;
+    color: #3E3937;
+    font-size: 21.5pt;
+    line-height: 1.16;
+  }
+  .intro strong {
+    color: #8F001A;
+    font-weight: 700;
+  }
+
+  .contribution-grid {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    top: 2.62in;
+    height: 3.83in;
+    display: grid;
+    grid-template-columns: 4.42in 4.42in 4.42in;
+    column-gap: 0.51in;
+  }
+  .contribution {
+    position: relative;
+    min-width: 0;
+    padding-top: 0.05in;
+  }
+  .contribution:nth-child(1),
+  .contribution:nth-child(2) {
+    padding-right: 0.34in;
+  }
+  .contribution:nth-child(2),
+  .contribution:nth-child(3) {
+    padding-left: 0.39in;
+    border-left: 1.1pt solid rgba(35,31,32,0.18);
+  }
+  .cap {
+    display: flex;
+    align-items: baseline;
+    gap: 0.15in;
+  }
+  .number {
+    color: #8F001A;
+    font-size: 26pt;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .category {
+    color: #5E5855;
+    font-size: 10.8pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .contribution h2 {
+    margin: 0.24in 0 0 0;
+    max-width: 3.75in;
+    color: #231F20;
+    font-size: 26pt;
+    line-height: 1.06;
+    font-weight: 400;
+    letter-spacing: -0.012em;
+  }
+  .mini-rule {
+    width: 0.84in;
+    height: 0.024in;
+    margin-top: 0.23in;
+    background: #8F001A;
+  }
+  .main-copy {
+    margin: 0.25in 0 0 0;
+    max-width: 3.70in;
+    min-height: 0.88in;
+    color: #3E3937;
+    font-size: 16.8pt;
+    line-height: 1.24;
+  }
+  .support-copy {
+    margin: 0.22in 0 0 0;
+    max-width: 3.72in;
+    color: #6A6461;
+    font-size: 13.6pt;
+    line-height: 1.24;
+  }
+  .support-copy strong {
+    color: #3E3937;
+    font-weight: 700;
+  }
+
+  .boundary {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    top: 6.80in;
+    height: 1.14in;
+    border-top: 1.1pt solid rgba(35,31,32,0.18);
+    border-bottom: 1.1pt solid rgba(35,31,32,0.18);
+    display: grid;
+    grid-template-columns: 2.55in 11.25in;
+    column-gap: 0.48in;
+    align-items: center;
+  }
+  .boundary-label {
+    color: #5E5855;
+    font-size: 10.5pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .boundary-type {
+    margin-top: 0.045in;
+    color: #8F001A;
+    font-size: 20pt;
+    line-height: 1;
+    font-weight: 700;
+  }
+  .boundary-text {
+    color: #3E3937;
+    font-size: 18.2pt;
+    line-height: 1.16;
+  }
+  .boundary-text strong {
+    color: #231F20;
+    font-weight: 700;
+  }
+
+  .footer {
+    position: absolute;
+    left: 0.86in;
+    right: 0.86in;
+    bottom: 0.27in;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    color: #6A6461;
+  }
+  .source {
+    font-size: 11pt;
+    line-height: 1.08;
+  }
+  .page {
+    color: #8F001A;
+    font-size: 13pt;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="kicker">What this thesis adds</div>
+  <h1>Contributions</h1>
+  <div class="title-rule"></div>
+  <p class="intro"><strong>Three descriptive additions:</strong> an anticipatory window, a formal contrast, and a bridge between literatures.</p>
+
+  <div class="contribution-grid">
+    <article class="contribution">
+      <div class="cap">
+        <div class="number">01</div>
+        <div class="category">The anticipatory window</div>
+      </div>
+      <h2>Before the deal is public</h2>
+      <div class="mini-rule"></div>
+      <p class="main-copy">Reads residual CEO Q&amp;A uncertainty in the anticipatory window before an acquisition becomes public.</p>
+      <p class="support-copy">Positions uncertainty language where prior work had read managed tone, strategy vocabulary, or prices.</p>
+    </article>
+
+    <article class="contribution">
+      <div class="cap">
+        <div class="number">02</div>
+        <div class="category">A formal contrast</div>
+      </div>
+      <h2>Cash against stock</h2>
+      <div class="mini-rule"></div>
+      <p class="main-copy">Documents that the language pattern concentrates in cash acquisitions rather than stock.</p>
+      <p class="support-copy">Tests the contrast directly in a pooled model, rather than comparing separate significance results.</p>
+    </article>
+
+    <article class="contribution">
+      <div class="cap">
+        <div class="number">03</div>
+        <div class="category">A literature bridge</div>
+      </div>
+      <h2>Private to public</h2>
+      <div class="mini-rule"></div>
+      <p class="main-copy">Reads unscripted Q&amp;A as tracking a deal's passage from private to public.</p>
+      <p class="support-copy">Connects research on withholding private information with evidence that markets anticipate corporate transactions.</p>
+    </article>
+  </div>
+
+  <div class="boundary">
+    <div>
+      <div class="boundary-label">Contribution type</div>
+      <div class="boundary-type">Descriptive</div>
+    </div>
+    <div class="boundary-text">The thesis <strong>characterizes a regularity</strong>; it does not identify a causal channel.</div>
+  </div>
+
+  <div class="footer">
+    <div class="source">Thesis source: Introduction, contribution paragraph; Conclusion.</div>
+    <div class="page">11 / 13</div>
+  </div>
+</section>
+</body>
+</html>

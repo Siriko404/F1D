@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["request_id", "status", "results", "artifacts_manifest", "delivery"],
+  "properties": {
+    "request_id": {"type": "string"},
+    "status": {"enum": ["COMPLETE", "PARTIAL", "BLOCKED"]},
+    "results": {
+      "type": "object",
+      "required": ["coverage", "findings", "clean_dimensions"],
+      "properties": {
+        "coverage": {
+          "type": "array",
+          "description": "One entry per slide examined, so the operator can see what was actually inspected.",
+          "items": {
+            "type": "object",
+            "required": ["slide", "items_checked", "exceptions"],
+            "properties": {
+              "slide": {"type": "integer", "minimum": 1, "maximum": 13},
+              "items_checked": {"type": "integer", "minimum": 0},
+              "exceptions": {"type": "integer", "minimum": 0}
+            }
+          }
+        },
+        "findings": {
+          "type": "array",
+          "description": "Exceptions only. Do not list items that passed.",
+          "items": {
+            "type": "object",
+            "required": [
+              "finding_id",
+              "slide",
+              "severity",
+              "verdict",
+              "deck_quote",
+              "problem",
+              "evidence",
+              "why_it_matters",
+              "confidence"
+            ],
+            "properties": {
+              "finding_id": {"type": "string"},
+              "slide": {"type": "integer", "minimum": 1, "maximum": 13},
+              "severity": {"enum": ["blocker", "major", "minor", "note"]},
+              "verdict": {
+                "enum": [
+                  "MISMATCH",
+                  "MISATTRIBUTED",
+                  "UNSUPPORTED",
+                  "OVERSTATED",
+                  "INCONSISTENT",
+                  "BROKEN",
+                  "UNVERIFIABLE"
+                ]
+              },
+              "deck_quote": {
+                "type": "string",
+                "description": "The exact text or element as it appears in the deck."
+              },
+              "problem": {"type": "string"},
+              "evidence": {
+                "type": "string",
+                "description": "Named source file and the exact passage, table label, or cell relied on."
+              },
+              "why_it_matters": {"type": "string"},
+              "suggested_action": {"type": "string"},
+              "confidence": {"enum": ["high", "medium", "low"]}
+            }
+          }
+        },
+        "clean_dimensions": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Aspects examined that produced no exception."
+        },
+        "operator_should_check_locally": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Anything you could not settle from the attached files."
+        }
+      }
+    },
+    "artifacts_manifest": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["filename", "status", "media_type", "size", "sha256"],
+        "properties": {
+          "filename": {"type": "string"},
+          "status": {"enum": ["CREATED", "MISSING", "NOT_CREATED"]},
+          "media_type": {"type": "string"},
+          "size": {"type": "integer"},
+          "sha256": {"type": "string"}
+        }
+      }
+    },
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "delivery": {"type": "array", "items": {"type": "string"}}
+  }
+}

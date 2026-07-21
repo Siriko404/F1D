@@ -1,0 +1,74 @@
+{
+  "request_id": "deck-audit-examiner-v1",
+  "objective": "Predict the questions this deck will actually draw from these two examiners, rank them by how much damage an unprepared answer would do, and say for each whether the thesis can answer it.",
+  "why_this_call": "The other four passes ask whether the deck is correct. This one assumes it is correct and asks what happens next. The candidate has one chance to be surprised, and the most dangerous questions are the ones that are entirely fair, that the deck invites, and that the thesis cannot fully answer.",
+  "this_pass_is_generative": "AUDIT_BRIEF.md is written for the four defect-finding passes. Two of its rules do not apply here and are overridden by this request: the instruction to report exceptions only, and the instruction to return an empty findings list when nothing is wrong. Your job is to produce questions, not to find defects, and an empty result is a failed pass rather than a clean one. Everything else in the brief still binds, in particular the interpretive boundaries, the ban on inventing evidence, and the requirement to ground every claim about the thesis in a named file. Use the response schema supplied with this request, which is specific to this pass.",
+  "authority_hierarchy": [
+    "sec34_body_from_ledgers.tex - the main analyses, their designs, and how each result is interpreted",
+    "_conclusion_body.tex - the thesis's own statement of its limitations, which is where the honest answers live",
+    "_intro_body.tex - the framing, the positioning claim, and the stated contributions",
+    "COMMITTEE_PROFILES.md - who is asking, and what each of them works on",
+    "The deck PDF and deck_text_extracted.json - what the candidate will actually put on the screen"
+  ],
+  "scope": {
+    "included": [
+      "Questions each examiner is likely to ask, given their own published work and the specific claims on these slides",
+      "Questions the deck invites by what it puts on the screen, including any number, label, or design choice that begs a follow-up",
+      "Questions the thesis's own stated limitations invite, since a limitation printed on slide 12 is an invitation to probe it",
+      "For each question, whether the thesis answers it, partly answers it, or does not answer it at all",
+      "Which questions would do real damage if answered badly, as opposed to being merely uncomfortable",
+      "The shape of a defensible answer where the thesis supports one, in one or two sentences, using only what the thesis actually establishes"
+    ],
+    "excluded": [
+      "Rewriting or redesigning the deck. If a question is best handled by preparation rather than by a slide change, say so.",
+      "Verifying numbers, wording, citations, or layout, all of which other passes cover",
+      "Inventing an answer the thesis does not support. Where the thesis is silent, the correct output is that it is silent, and the safest honest response is a concession.",
+      "Speculating about the examiners' personalities, opinions, or anything beyond their published work and stated research interests"
+    ]
+  },
+  "web_research": {
+    "allowed": false,
+    "rules": "Source-closed. Use only the attached files, including the committee profiles. Do not look up further publications and do not attribute a view to an examiner that the profile does not support."
+  },
+  "context_you_should_assume": {
+    "appendix": "A separate question-and-answer appendix is being built and is not part of this deck. Routing a question to the appendix is a valid recommendation.",
+    "already_in_the_thesis": "The thesis contains material the deck deliberately leaves out, and any of it can be deployed in an answer: an analyst cash-scrutiny test and its interaction with the pre-announcement window, a post-call bid-ask-spread analysis, a robustness check treating deal withdrawal as a resolution event, a static cash specification without the lagged dependent variable, an all-deals stacked version of all three main results, and linear-probability and logit forms. When a question is answerable by one of these, say which.",
+    "known_silences": "Where the thesis states no rationale for a design choice, say so plainly rather than constructing one."
+  },
+  "method": [
+    "Read the thesis files first and build an honest map of where this study is strong and where it is thin.",
+    "Then go through the deck slide by slide and ask what each slide invites.",
+    "Then take each examiner in turn and ask what that specific person, given their own published work, would notice first.",
+    "Rank by expected damage, not by how clever the question is. A basic question with no good answer outranks a sophisticated one with a clean answer.",
+    "For every question, state whether the thesis answers it. Be blunt when it does not."
+  ],
+  "requested_work": [
+    "A ranked list of predicted questions, each attributed to the examiner most likely to ask it or to both",
+    "For each: what prompts it, how damaging an unprepared answer would be, whether the thesis answers it, and the shape of the best honest answer",
+    "A short list of the questions that have no good answer, which the candidate must simply concede well",
+    "Anything on the deck that actively invites an avoidable question"
+  ],
+  "questions": [
+    {"id": "q1", "question": "What are the ten most dangerous questions this deck will draw, ranked by the damage an unprepared answer would do?"},
+    {"id": "q2", "question": "Which questions does Dutta specifically ask, given his work on method of payment, private in-house meetings, insider trading, and textual analysis?"},
+    {"id": "q3", "question": "Which questions does Zhang specifically ask, given his work on alternative data, machine learning, disclosure, and uncertainty in prices?"},
+    {"id": "q4", "question": "Which predicted questions does the thesis simply not answer, and what is the best honest concession for each?"},
+    {"id": "q5", "question": "Which questions are already answered by material the thesis contains but the deck omits, and which material answers them?"},
+    {"id": "q6", "question": "Does anything on the deck invite a question that better wording or a different emphasis would avoid, without changing any claim?"},
+    {"id": "q7", "question": "If the committee only has time for three questions, which three is this deck most likely to get?"}
+  ],
+  "required_artifacts": [
+    {
+      "filename": "audit_examiner_findings.md",
+      "description": "The ranked question list as the main body. For each question: the question as an examiner would actually phrase it, who asks it, what on the deck or in the thesis prompts it, the damage if unprepared, whether the thesis answers it, and the shape of the best honest answer with its source. Then a short section listing the questions with no good answer. Then anything on the deck that invites an avoidable question."
+    }
+  ],
+  "acceptance_criteria": [
+    "Every predicted question is tied to something specific on the deck or in the thesis, not to the topic in general",
+    "Every question carries an explicit verdict on whether the thesis answers it",
+    "Answer shapes use only what the thesis establishes and never assert causality or an identified mechanism",
+    "Examiner attributions rest on the published work in the profiles, not on invented preferences",
+    "The questions with no good answer are stated plainly rather than softened"
+  ],
+  "stop_condition": "If the attached files do not let you judge whether the thesis answers a question, say so for that question rather than assuming an answer exists."
+}

@@ -1,0 +1,72 @@
+{
+  "request_id": "deck-audit-visual-v1",
+  "objective": "Look at all 13 pages as an examiner in the room would see them, and report anything that is broken, illegible, or encoded in a way that invites a conclusion the data do not support.",
+  "why_this_call": "The operator built this deck and has stopped seeing it. Rendering defects, an ambiguous reading order, and a chart whose geometry implies more than the regression says are all invisible to a mechanical check and to a familiar eye. This pass is a fresh pair of eyes on the rendered page.",
+  "authority_hierarchy": [
+    "slide_08.png, slide_09.png, slide_10.png - rasters of the three results pages, rendered from the exact production PDF at 150 dpi. These are the ground truth for what the audience sees. Judge colour, stroke, position, and legibility from these images, not from your own rendering of the PDF.",
+    "The deck PDF, thesis_defense_main_deck_slides_01-13_standardized_v2.pdf - the full 13 pages, for the pages with no attached raster and for zooming into detail",
+    "deck_text_extracted.json - the text layer, useful for confirming what a page says when the rendering is hard to read",
+    "AUDIT_BRIEF.md - the interpretive boundaries the visuals must not overstate"
+  ],
+  "rendering_note": "Three pages are supplied as images because this pass depends on resolving thin vector strokes, whisker endpoints, and the difference between two accent colours. If your own rendering of a PDF page disagrees with the attached raster for that page, the raster wins. If a page has no attached raster and your rendering of it is too soft to judge a fine detail, say so and lower your confidence rather than guessing.",
+  "scope": {
+    "included": [
+      "Rendering defects: clipped text, overflow past a margin, overlapping elements, malformed glyphs, broken rules or whiskers, and anything cut off at a page edge",
+      "Legibility at projection scale: any load-bearing text, label, tick, or series distinction that would not survive being viewed from the back of a room",
+      "Reading order and hierarchy: what the eye reaches first on each page, and whether that is the thing the page exists to say",
+      "Misleading encoding: geometry, scale, colour, emphasis, or connection that invites a conclusion stronger than the underlying estimate",
+      "Whether categorical event stages that pool variable numbers of quarters are drawn in a way that implies a continuous, equal-duration time series",
+      "Whether two panels with different units invite a comparison of visual height rather than of timing",
+      "Whether colour and weight are used consistently to mean the same thing across all 13 pages",
+      "Whether each chart's visual story matches the sentence printed above it",
+      "Whether a label, annotation, or bracket can be read as belonging to the wrong series, stage, or estimate"
+    ],
+    "excluded": [
+      "Verifying numerical values against the thesis, which belongs to a separate numbers pass",
+      "Claim wording and hedging, which belong to a separate claims pass",
+      "Citations and author names, which belong to a separate citations pass",
+      "Precise pixel measurement. Do not attempt to compute exact coordinates, distances, or scale ratios from the rendered image and do not report a misalignment on the basis of estimated pixel positions. The operator performs coordinate checks locally against the PDF drawing objects, which is exact. If something looks misaligned, describe what looks wrong, say what you would expect instead, and set confidence to low or medium. A confident numeric claim about geometry that you cannot actually measure is worse than no finding.",
+      "Redesign proposals, alternative layouts, and colour-scheme preferences"
+    ]
+  },
+  "web_research": {
+    "allowed": false,
+    "rules": "Source-closed. Judge only what is visible in the attached PDF."
+  },
+  "method": [
+    "View every page at full size, then again at a reduced size that approximates how it reads from the back of a room.",
+    "For each page, first write down in your own head the single thing the page is there to say, then check whether the layout actually delivers that.",
+    "Give the three chart pages, slides 8, 9, and 10, the most attention. They carry the results and they are where a misleading encoding would do the most damage.",
+    "Report exceptions only."
+  ],
+  "requested_work": [
+    "Every rendering defect, with the page and the element",
+    "Every element that would not be legible at projection scale",
+    "Every place the visual encoding implies more than the estimate supports",
+    "Every place an annotation could attach to the wrong series or stage",
+    "For each of the 13 pages, one line stating what you judged the page's job to be and whether the layout delivers it"
+  ],
+  "questions": [
+    {"id": "q1", "question": "Is anything clipped, overlapping, malformed, or cut off on any page?"},
+    {"id": "q2", "question": "What would fail to be readable from the back of a room?"},
+    {"id": "q3", "question": "On slides 8, 9, and 10, does any element of the chart geometry invite a stronger conclusion than the estimates support?"},
+    {"id": "q4", "question": "Do the connected points on the event-stage charts imply a continuous, equal-duration time series, and if so, is that adequately corrected by the labels and separators that are present?"},
+    {"id": "q5", "question": "Can any coefficient label, standard error, significance marker, or Wald bracket be read as belonging to the wrong series, stage, or panel?"},
+    {"id": "q6", "question": "Are colour and emphasis used to mean the same thing on every page?"},
+    {"id": "q7", "question": "On any page, does the eye land first on something other than the point of the page?"}
+  ],
+  "required_artifacts": [
+    {
+      "filename": "audit_visual_findings.md",
+      "description": "The exceptions ordered by severity then page, each naming the page, the element, what is wrong, and what a viewer would wrongly take away. Then a 13-line table, one row per page, giving that page's job and whether the layout delivers it. Mark every geometry observation with your confidence."
+    }
+  ],
+  "acceptance_criteria": [
+    "All 13 pages are viewed and accounted for in the per-page table",
+    "Slides 8, 9, and 10 each receive an explicit judgement on encoding and annotation attachment",
+    "No finding rests on an estimated pixel measurement",
+    "Every geometry finding carries a confidence level",
+    "No finding concerns a number's correctness, a claim's wording, or a citation"
+  ],
+  "stop_condition": "If a page cannot be rendered or read, return status PARTIAL and say which page and why. Do not describe a page you could not actually see."
+}
