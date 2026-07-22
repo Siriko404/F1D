@@ -1,0 +1,636 @@
+{
+  "request_id": "f1d-speaker-notes-process-design-v1",
+  "status": "COMPLETE",
+  "results": {
+    "inventory": [
+      {
+        "filename": "DEFENSE_LEDGER.md",
+        "bytes": 25898,
+        "read_in_full": true
+      },
+      {
+        "filename": "REV22_CHANGE_LOG.md",
+        "bytes": 16226,
+        "read_in_full": true
+      },
+      {
+        "filename": "SPEAKER_NOTES_BUDGET.md",
+        "bytes": 7290,
+        "read_in_full": true
+      },
+      {
+        "filename": "SPEAKING_RATE_TEST.md",
+        "bytes": 7050,
+        "read_in_full": true
+      },
+      {
+        "filename": "WEB_RESPONSE_SCHEMA.json",
+        "bytes": 9141,
+        "read_in_full": true
+      },
+      {
+        "filename": "WEB_REVIEW_REQUEST.json",
+        "bytes": 11686,
+        "read_in_full": true
+      },
+      {
+        "filename": "audit_findings.md",
+        "bytes": 20284,
+        "read_in_full": true
+      },
+      {
+        "filename": "rev22_deck.pdf",
+        "bytes": 190140,
+        "pages": 13,
+        "read_in_full": true
+      },
+      {
+        "filename": "rev22_slide_text.md",
+        "bytes": 16035,
+        "read_in_full": true
+      },
+      {
+        "filename": "rev22audit_response.json",
+        "bytes": 24809,
+        "read_in_full": true
+      },
+      {
+        "filename": "thesis_flat.tex",
+        "bytes": 162954,
+        "read_in_full": true
+      },
+      {
+        "filename": "thesis_robustness_tables.tex",
+        "bytes": 13671,
+        "read_in_full": true
+      },
+      {
+        "filename": "thesis_tables.tex",
+        "bytes": 39922,
+        "read_in_full": true
+      }
+    ],
+    "dimensions": [
+      {
+        "name": "Utterance-level thesis traceability",
+        "what_it_checks": "Every spoken number, result, literature statement, sample fact, and interpretation receives a trace ID that resolves to an exact thesis location. A silent thesis produces an explicit silence flag, not a plausible explanation.",
+        "failure_it_prevents": "It prevents the notes from inventing a rationale for the 2002 to 2018 endpoint, inventing quantified speaker-attribution accuracy, or repeating a ledger number that was previously conflated with a different variable.",
+        "grounding_quote": "Every number, every quoted result and every academic claim in the notes must trace to an exact location in the thesis. Where the thesis is silent, the notes must say so rather than fill the gap.",
+        "grounding_file": "WEB_REVIEW_REQUEST.json",
+        "grounded": true,
+        "which_phase": "Phases 1, 3, 4, and 5"
+      },
+      {
+        "name": "Slide-visible scope containment",
+        "what_it_checks": "Each spoken proposition is tied to a visible slide element and may clarify that element without importing appendix-only tests, new mechanisms, causal language, or extra results.",
+        "failure_it_prevents": "It prevents the large robustness appendix and side analyses in the thesis from leaking into an 18-minute podium script and turning the locked deck into a different argument.",
+        "grounding_quote": "The notes may explain what is visible on the slide. They may not introduce a result, a mechanism, a causal claim or an appendix only analysis that the slide does not show.",
+        "grounding_file": "WEB_REVIEW_REQUEST.json",
+        "grounded": true,
+        "which_phase": "Phases 1, 2, 3, and 5"
+      },
+      {
+        "name": "Residual-object and quarterly-state fidelity",
+        "what_it_checks": "The script consistently names the measured object as residual CEO-answer uncertainty and describes PRE2, PRE1, GAP, and POST as quarterly announcement-relative states rather than exact instants or direct knowledge readings.",
+        "failure_it_prevents": "It prevents the presenter from orally amplifying slide 12's locked wording into a claim that the method observes an exact point when knowledge changes.",
+        "grounding_quote": "The sentence drops 'residual' and implies exact-point timing, although the estimated outcome is residual CEO-answer uncertainty observed on quarterly calls and grouped into announcement-relative states.",
+        "grounding_file": "audit_findings.md",
+        "grounded": true,
+        "which_phase": "Phases 1, 2, 3, and 4"
+      },
+      {
+        "name": "Unobserved-onset bias discipline",
+        "what_it_checks": "Any discussion of negotiation onset distinguishes the observed announcement clock from the unobserved start of negotiations and refuses to assign a direction to misclassification bias without the missing assumptions.",
+        "failure_it_prevents": "It prevents the unsafe claim that onset contamination necessarily weakens the PRE1 estimate and therefore makes the result conservative.",
+        "grounding_quote": "The design does not establish that unobserved negotiation-onset error must attenuate the PRE1 coefficient toward zero.",
+        "grounding_file": "audit_findings.md",
+        "grounded": true,
+        "which_phase": "Phases 1, 3, 4, and Q&A boundary control"
+      },
+      {
+        "name": "PRE2 non-equivalence discipline",
+        "what_it_checks": "The notes treat the insignificant PRE2 coefficient as no statistically detected elevation, not as proof of no earlier drift, no pre-trend, or tightly identified negotiation timing.",
+        "failure_it_prevents": "It prevents an examiner from defeating an overstatement with an equivalence-test, power, or additional-leads question.",
+        "grounding_quote": "A single statistically insignificant PRE2 coefficient does not establish that there is no pre-trend or that the signal is tightly timed.",
+        "grounding_file": "audit_findings.md",
+        "grounded": true,
+        "which_phase": "Phases 1, 3, and 4"
+      },
+      {
+        "name": "Cash-versus-stock estimand fidelity",
+        "what_it_checks": "The payment-method result is narrated from the pooled interaction and direct Wald contrast, while preserving the thesis's 'concentrated' language and the imprecision of the stock estimate.",
+        "failure_it_prevents": "It prevents the forbidden comparison of one significant coefficient with one insignificant coefficient and prevents the stronger, unsupported claim that the pattern is strictly cash-specific.",
+        "grounding_quote": "The direct Wald difference, not two separate significance results, is the test.",
+        "grounding_file": "rev22_slide_text.md",
+        "grounded": true,
+        "which_phase": "Phases 1, 2, 3, and 4"
+      },
+      {
+        "name": "Two-clock cash-GAP nuance",
+        "what_it_checks": "The slide 9 script distinguishes the information clock from the transaction clock and states cash persistence through GAP through the PRE1-to-GAP contrast, not through a significant GAP level.",
+        "failure_it_prevents": "It prevents the presenter from saying cash remains significantly elevated after announcement when the thesis reports a positive but insignificant GAP coefficient.",
+        "grounding_quote": "the persistence of cash through the gap rests on the \\emph{absence} of a \\textit{PRE1}-to-\\textit{GAP} decline, not on a significantly elevated gap level.",
+        "grounding_file": "thesis_flat.tex",
+        "grounded": true,
+        "which_phase": "Phases 1, 2, 3, and 4"
+      },
+      {
+        "name": "Deictic chart pacing",
+        "what_it_checks": "Slides 8 to 10 receive a separate pointing plan for axes, markers, confidence intervals, and the minimum result features, with pause seconds excluded from the spoken-word allowance.",
+        "failure_it_prevents": "It prevents a word-compliant chart script from overrunning because the desk rate omitted the physical pauses needed to point at the projected figure.",
+        "grounding_quote": "Walking a figure is the slowest thing a presenter does, because pointing inserts pauses that no word count predicts. It read fast because it was read at a desk with no projected figure to point at, so the pauses never happened.",
+        "grounding_file": "SPEAKER_NOTES_BUDGET.md",
+        "grounded": true,
+        "which_phase": "Phases 1, 2, 3, and 5"
+      },
+      {
+        "name": "Podium and Q&A boundary control",
+        "what_it_checks": "The two conditional rebuttals are indexed for Q&A but excluded from the podium script; slide 12 names the limitations without preemptively litigating them.",
+        "failure_it_prevents": "It prevents spending roughly seventy seconds defending attacks that may never be made, while also preventing the two rebuttals from drifting back into unsafe unconditional forms.",
+        "grounding_quote": "The full conditional rebuttals live in the Q&A preparation, not in the podium notes.",
+        "grounding_file": "SPEAKER_NOTES_BUDGET.md",
+        "grounded": true,
+        "which_phase": "Phases 1, 3, 4, and 5"
+      },
+      {
+        "name": "Terminal-slide budget protection",
+        "what_it_checks": "Word allocation, drafting order, and cuts protect slides 11 to 13 so contribution, limitations, and conclusion are complete and unrushed even if earlier slides expand.",
+        "failure_it_prevents": "It prevents the common local optimization in which early slides feel complete but consume the time and energy reserved for the most consequential closing slides.",
+        "grounding_quote": "Overrunning a slide's count is not a rounding error. It is time taken from a later slide, and the later slides are the limitations and contribution, which are the ones that must not be rushed.",
+        "grounding_file": "SPEAKER_NOTES_BUDGET.md",
+        "grounded": true,
+        "which_phase": "Phases 1, 2, 4, and 5"
+      },
+      {
+        "name": "Presenter-owned sentence architecture",
+        "what_it_checks": "The scripts use complete, short, speakable sentences, explain the actual empirical case without analogies, and keep one audience job per slide rather than packing every available qualification into prose.",
+        "failure_it_prevents": "It prevents a technically accurate script from becoming a dense wall the exhausted presenter cannot internalize and therefore begins to paraphrase unsafely under pressure.",
+        "grounding_quote": "NO analogies. Explain the ACTUAL case. Short sentences. Many small titled sections. Lists over prose. \"One idea\" beats completeness. Verbose enough to walk each step, never a wall.",
+        "grounding_file": "DEFENSE_LEDGER.md",
+        "grounded": true,
+        "which_phase": "Phases 1, 2, 3, and 4"
+      },
+      {
+        "name": "Transition debt",
+        "what_it_checks": "Every slide boundary has a defined logical handoff, one written cross-slide bridge, an assigned word-budget owner, and a last-sentence/first-sentence continuity check.",
+        "failure_it_prevents": "It prevents the talk from sounding like thirteen isolated mini-presentations, especially at the critical handoffs from measure to finding, timing to payment method, result to contribution, and limitation to conclusion.",
+        "grounding_quote": "How does the process handle the transition between slides, which is where a talk audibly falls apart and which no per slide budget covers?",
+        "grounding_file": "WEB_REVIEW_REQUEST.json",
+        "grounded": true,
+        "which_phase": "Phases 1, 2, 3, 4, and 5"
+      }
+    ],
+    "rejected_dimensions": [
+      {
+        "name": "Generic delivery mechanics",
+        "why_rejected": "Breathing, posture, clothing, remote handling, and eye contact may matter, but they do not change the written-note production process and are explicitly out of scope."
+      },
+      {
+        "name": "Deck visual redesign",
+        "why_rejected": "The deck is locked and already audited. Reopening layout would create uncontrolled scope, invalidate continuity, and distract from the missing spoken layer."
+      },
+      {
+        "name": "Thesis revision or new analysis",
+        "why_rejected": "The thesis is submitted and is the authority. A process that fixes silence by changing the thesis would evade rather than solve the note-design problem."
+      },
+      {
+        "name": "Exhaustive robustness narration",
+        "why_rejected": "The thesis contains extensive robustness material, but importing it into podium notes violates the visible-slide rule and the word budget. Relevant defenses remain Q&A assets."
+      },
+      {
+        "name": "Charisma or confidence as a standalone score",
+        "why_rejected": "It is not artifact-verifiable and can reward stronger delivery of an overclaim. The process instead checks speakability, ownership, and rehearsal evidence."
+      },
+      {
+        "name": "A complete new Q&A bank",
+        "why_rejected": "The ledger already contains a question bank. This process only controls the interface between podium notes and Q&A, including the two conditional rebuttals."
+      },
+      {
+        "name": "Maximum detail",
+        "why_rejected": "Completeness is not the objective under a measured 18-minute ceiling. The process uses one job per slide and a cut hierarchy, retaining exactness while rejecting low-value detail."
+      },
+      {
+        "name": "Memorization as a drafting dimension",
+        "why_rejected": "Internalization matters, but it cannot be certified from text. It is handled as a rehearsal gate and a defense risk, not falsely scored by a writing call."
+      }
+    ],
+    "phases": [
+      {
+        "order": 1,
+        "name": "Derive evidence, architecture, and risk controls",
+        "purpose": "Turn the thesis, locked deck, measured budget, prior audit, and committee ledger into explicit pre-draft contracts so drafting is constrained before attractive prose exists.",
+        "what_goes_wrong_if_skipped": "Drafting begins from memory and visual impression. The writer then self-grades, thesis-silent gaps are plausibly filled, chart pauses disappear from the budget, and late slides remain unprotected.",
+        "depends_on_phases": [],
+        "units_of_work": [
+          {
+            "assignment": "Create a proposition-level ledger for all 13 slides. For every visible number, result, academic claim, sample fact, and interpretation that the eventual script may need, record the visible anchor, exact thesis source, permitted claim ceiling, forbidden expansion, and whether the thesis is silent. Include explicit rows for speaker-attribution accuracy, the 2002 to 2018 endpoint rationale, residual versus raw uncertainty, PRE2, negotiation onset, the cash GAP coefficient, the cash-versus-stock Wald test, novelty hedging, and the three unapplied deck-audit findings. Do not draft speaker notes.",
+            "unit_id": "U01",
+            "input_files_needed": [
+              "Core source archive: thesis_flat.tex, thesis_tables.tex, thesis_robustness_tables.tex, rev22_deck.pdf, rev22_slide_text.md, SPEAKER_NOTES_BUDGET.md, DEFENSE_LEDGER.md, rev22audit_response.json, audit_findings.md, REV22_CHANGE_LOG.md"
+            ],
+            "returns": "A call-status JSON plus a zip containing claim_scope_ledger.csv, source_silence_register.md, and u01_acceptance_report.md.",
+            "how_output_is_checked": "Reject the unit unless all 13 slides are represented, every numeric row resolves to an exact thesis location, each open item is explicit, and no ledger, audit, or deck text is treated as higher authority than the thesis.",
+            "can_run_concurrently_with": [
+              "U02",
+              "U03"
+            ]
+          },
+          {
+            "assignment": "Design the non-prose architecture for the 13 scripts. For each slide define one audience job, must-land content, optional support, first-cut content, target words, ten-percent stopwatch corridor, seconds, register, pause allowance, and transition interface. For slides 8 to 10 define pointing beats separately from spoken words. Charge each cross-slide transition to the incoming slide. Preserve slides 11 to 13 before allocating discretionary words elsewhere. Do not draft speaker notes.",
+            "unit_id": "U02",
+            "input_files_needed": [
+              "Core source archive: rev22_deck.pdf, rev22_slide_text.md, SPEAKER_NOTES_BUDGET.md, SPEAKING_RATE_TEST.md, DEFENSE_LEDGER.md, WEB_REVIEW_REQUEST.json"
+            ],
+            "returns": "A call-status JSON plus a zip containing spoken_architecture.csv, transition_interfaces.csv, chart_pointing_plan.csv, and u02_budget_proof.md.",
+            "how_output_is_checked": "Reject the unit unless the word targets sum to 2110, the pre-rehearsal ceiling is 2110, chart pauses remain time rather than words, every slide has exactly one job and a cut order, and all 12 boundaries have an owner and purpose.",
+            "can_run_concurrently_with": [
+              "U01",
+              "U03"
+            ]
+          },
+          {
+            "assignment": "Act as an adversarial examiner, not a drafter. Identify the exact oral overclaims or ambiguities most likely to be attacked in this locked deck, using the prior audit and committee ledger. Separate podium obligations from Q&A-only defenses. Confirm the conditional placement of the onset-bias and PRE2 rebuttals. Include the locked slide 12 wording, the 'Imperfect instruments' ambiguity, the residual/exact-point issue, the cash GAP nuance, and the cash-versus-stock comparison. Do not write speaker notes or prepared answer prose.",
+            "unit_id": "U03",
+            "input_files_needed": [
+              "Core source archive: rev22_deck.pdf, rev22_slide_text.md, DEFENSE_LEDGER.md, rev22audit_response.json, audit_findings.md, REV22_CHANGE_LOG.md, thesis_flat.tex, thesis_tables.tex, SPEAKER_NOTES_BUDGET.md"
+            ],
+            "returns": "A call-status JSON plus a zip containing examiner_attack_map.csv, podium_qa_boundary.csv, and u03_risk_report.md.",
+            "how_output_is_checked": "Reject the unit if it merely repeats the audit, if an attack lacks a deck location and thesis ceiling, or if either conditional rebuttal is moved into the podium script without a quantified time cost.",
+            "can_run_concurrently_with": [
+              "U01",
+              "U02"
+            ]
+          },
+          {
+            "assignment": "Merge U01 and U02 into one 13-slide drafting contract. Resolve any conflict in favor of thesis authority first, then visible-slide scope, then the measured budget. Each slide contract must specify its audience job, exact claim IDs, mandatory content, prohibited content, target and corridor, cut order, transition interface, and acceptance tests. Preserve source-silence flags. This unit produces specifications only, not note text.",
+            "unit_id": "U04",
+            "input_files_needed": [
+              "Core source archive plus the complete U01 and U02 output zips and response JSONs, all packaged inside one input zip"
+            ],
+            "returns": "A call-status JSON plus a zip containing drafting_contract.csv, claim_trace_pack.csv, transition_contract.csv, automated_checks_spec.md, and u04_conflict_log.md.",
+            "how_output_is_checked": "Reject the unit unless there are exactly 13 slide contracts, every mandatory proposition has a trace ID, all 12 transitions are specified but not yet worded, and the contract can be split into four drafting bundles without hidden cross-bundle assumptions.",
+            "can_run_concurrently_with": []
+          }
+        ],
+        "phase_exit_check": "U01, U02, and U03 pass their own checks; U04 then contains exactly 13 drafting contracts, 12 transition interfaces, a 2110-word total, protected terminal slides, explicit source-silence flags, and no prose speaker notes."
+      },
+      {
+        "order": 2,
+        "name": "Draft complete scripts in independent bundles",
+        "purpose": "Produce all 13 full spoken scripts with bounded context, parallel wall-clock execution, and terminal slides secured first.",
+        "what_goes_wrong_if_skipped": "There are no notes. If this phase is performed serially from slide 1, fatigue and schedule pressure are most likely to leave slides 11 to 13 unfinished or rushed.",
+        "depends_on_phases": [
+          1
+        ],
+        "units_of_work": [
+          {
+            "unit_id": "U05",
+            "assignment": "Write the complete spoken scripts for slides 11, 12, and 13 from the approved drafting contract. Use full sentences and no em dash or en dash. Stay within each slide's corridor and the bundle total. Keep the contribution distinct from a result recap, keep the limitations descriptive and noncausal, and preserve the approved conclusion hedge. Do not insert the two full conditional rebuttals. Attach trace IDs to a separate trace file, not inside the spoken script.",
+            "input_files_needed": [
+              "Core source archive plus U04 drafting_contract.csv, claim_trace_pack.csv, transition_contract.csv, and automated_checks_spec.md in one input zip"
+            ],
+            "returns": "A call-status JSON plus a zip containing notes_11_13.md, trace_11_13.csv, counts_11_13.csv, entry_exit_11_13.json, and u05_self_check.md.",
+            "how_output_is_checked": "Reject the unit if any slide is missing, if spoken text contains a forbidden dash, if a claim lacks a trace ID, if slide 12 contains the full rebuttals, or if the three scripts exceed their protected allocation.",
+            "can_run_concurrently_with": [
+              "U06",
+              "U07",
+              "U08"
+            ]
+          },
+          {
+            "unit_id": "U06",
+            "assignment": "Write the complete spoken scripts for slides 1 through 4 from the approved drafting contract. Establish the problem, the two-clock intuition, and the research questions without causal or mechanism inflation. Use full, short sentences and no em dash or en dash. Keep trace IDs outside the spoken script and return explicit entry and exit intents for later cross-bundle integration.",
+            "input_files_needed": [
+              "Core source archive plus U04 drafting_contract.csv, claim_trace_pack.csv, transition_contract.csv, and automated_checks_spec.md in one input zip"
+            ],
+            "returns": "A call-status JSON plus a zip containing notes_01_04.md, trace_01_04.csv, counts_01_04.csv, entry_exit_01_04.json, and u06_self_check.md.",
+            "how_output_is_checked": "Reject the unit if the motivation outruns the thesis, any literature or sample claim is untraced, research questions are converted into causal hypotheses, or the bundle violates its word allocation.",
+            "can_run_concurrently_with": [
+              "U05",
+              "U07",
+              "U08"
+            ]
+          },
+          {
+            "unit_id": "U07",
+            "assignment": "Write the complete spoken scripts for slides 5 through 7 from the approved drafting contract. Narrate the literature cell, sample narrowing, and residual-measure construction in plain language while retaining exact methodological meaning. Use the thesis's novelty hedge and distinguish first-stage residualization from second-stage fixed-effect designs. Use full sentences and no em dash or en dash. Keep trace IDs outside spoken text.",
+            "input_files_needed": [
+              "Core source archive plus U04 drafting_contract.csv, claim_trace_pack.csv, transition_contract.csv, and automated_checks_spec.md in one input zip"
+            ],
+            "returns": "A call-status JSON plus a zip containing notes_05_07.md, trace_05_07.csv, counts_05_07.csv, entry_exit_05_07.json, and u07_self_check.md.",
+            "how_output_is_checked": "Reject the unit if residual uncertainty is described as raw uncertainty, if the sample endpoint is rationalized beyond the thesis, if speaker-attribution accuracy is invented, if novelty is asserted without its hedge, or if the bundle violates its allocation.",
+            "can_run_concurrently_with": [
+              "U05",
+              "U06",
+              "U08"
+            ]
+          },
+          {
+            "unit_id": "U08",
+            "assignment": "Write the complete spoken scripts for slides 8 through 10 from the approved drafting contract. Build a separate nonspoken pointing sequence for each figure. Preserve the PRE2 limitation, the PRE1-to-GAP information-clock contrast, the cash GAP nuance, and the pooled cash-versus-stock Wald estimand. Use full sentences and no em dash or en dash. Do not infer significance from comparing separate stars. Keep trace IDs and pointing cues outside spoken text.",
+            "input_files_needed": [
+              "Core source archive plus U04 drafting_contract.csv, claim_trace_pack.csv, transition_contract.csv, chart requirements, and automated_checks_spec.md in one input zip"
+            ],
+            "returns": "A call-status JSON plus a zip containing notes_08_10.md, trace_08_10.csv, counts_08_10.csv, entry_exit_08_10.json, chart_cues_08_10.csv, and u08_self_check.md.",
+            "how_output_is_checked": "Reject the unit if PRE2 becomes proof of no pre-trend, cash is said to have a significantly elevated GAP level, cash-versus-stock is argued from separate significance, chart cues are counted as spoken words, or pause allowances are ignored.",
+            "can_run_concurrently_with": [
+              "U05",
+              "U06",
+              "U07"
+            ]
+          }
+        ],
+        "phase_exit_check": "All four bundles pass, every slide has a complete script and separate trace file, slide-level counts remain in corridor, chart cues are nonspoken, no forbidden dash is present, and U05 was dispatched first so the ending exists even if later calls are interrupted."
+      },
+      {
+        "order": 3,
+        "name": "Integrate once, then audit from two independent perspectives",
+        "purpose": "Create one coherent talk and then prevent the assembler from certifying its own evidence, inference, timing, and listener-load decisions.",
+        "what_goes_wrong_if_skipped": "Bundle seams remain audible, transitions are unpaid word debt, duplicate framing inflates time, and a polished script can preserve the exact overclaims the previous deck audit showed authors miss in their own work.",
+        "depends_on_phases": [
+          1,
+          2
+        ],
+        "units_of_work": [
+          {
+            "unit_id": "U09",
+            "assignment": "Assemble U05 through U08 into one 13-slide candidate without silently rewriting claims. Write exactly one functional bridge at every slide boundary using the transition contract, charge its words to the incoming slide, and remove repeated openings or conclusions. Rebalance only by removing or replacing complete lowest-priority thoughts, never by stripping necessary qualifications or converting sentences into fragments. Preserve trace IDs in a separate file.",
+            "input_files_needed": [
+              "Core source archive, U04 contract outputs, and all U05 through U08 output zips and response JSONs, packaged inside one input zip"
+            ],
+            "returns": "A call-status JSON plus a zip containing full_notes_candidate.md, full_trace.csv, word_budget.csv, transition_register.csv, chart_cue_map.csv, assembly_diff.md, and u09_acceptance_report.md.",
+            "how_output_is_checked": "Reject the unit unless all 13 scripts appear in order, all 12 bridges are present, the global spoken count is at most 2110 before rehearsal, each slide is inside its corridor or has a documented neutral transfer, slides 11 to 13 remain protected, and no trace was lost during assembly.",
+            "can_run_concurrently_with": []
+          },
+          {
+            "unit_id": "U10",
+            "assignment": "Audit the assembled script sentence by sentence against the thesis and locked deck. Classify every spoken sentence as transition, visible explanation, thesis fact, number, result, interpretation, or limitation. Verify every claim trace and find any scope breach. Explicitly test residual-object wording, exact-point implications, negotiation onset, attenuation direction, PRE2, the cash GAP level, pooled cash-versus-stock comparison, novelty, causality, mechanisms, source-silent questions, and unapplied deck-audit findings. Report findings only; do not repair the script.",
+            "input_files_needed": [
+              "Core source archive, U09 full candidate and trace files, and U03 examiner-attack outputs in one input zip. In minimum-viable mode, omit U03 and derive the reduced attack list directly from audit_findings.md."
+            ],
+            "returns": "A call-status JSON plus a zip containing sentence_evidence_matrix.csv, evidence_findings.json, scope_findings.csv, and u10_audit_summary.md.",
+            "how_output_is_checked": "Reject the audit if any spoken sentence is unclassified, any number is sampled rather than exhaustively checked, findings lack exact script and source locations, or the auditor edits the script it is judging.",
+            "can_run_concurrently_with": [
+              "U11"
+            ]
+          },
+          {
+            "unit_id": "U11",
+            "assignment": "Audit the assembled script without changing it. Count spoken words per slide and globally, scan every audience-facing character for em dash and en dash, verify complete sentences, detect dense clauses and duplicate setup, test the last sentence and first sentence at every boundary as a pair, and compare chart pointing beats with pause allowances. Perform a blind one-job test: infer each slide's audience job from the script and compare it with the contract. Report findings only.",
+            "input_files_needed": [
+              "U09 full candidate, word budget, transition register, chart cue map, U04 drafting contract, SPEAKER_NOTES_BUDGET.md, SPEAKING_RATE_TEST.md, and the locked deck in one input zip"
+            ],
+            "returns": "A call-status JSON plus a zip containing timing_surface_findings.json, word_recount.csv, transition_test.csv, chart_pacing_test.csv, speakability_flags.csv, and u11_audit_summary.md.",
+            "how_output_is_checked": "Reject the audit if it treats 2110 as a target rather than a pre-rehearsal ceiling, counts nonspoken cues as words, omits a character scan, fails to inspect all 12 boundaries, or rewrites the candidate.",
+            "can_run_concurrently_with": [
+              "U10"
+            ]
+          }
+        ],
+        "phase_exit_check": "U09 yields one 13-slide candidate with 12 bridges and full traces. U10 and U11 then independently inspect the frozen candidate, return findings rather than edits, and cover every sentence, slide boundary, chart beat, word count, and audience-facing character."
+      },
+      {
+        "order": 4,
+        "name": "Repair under change control",
+        "purpose": "Convert audit findings into a single revised script without allowing local fixes to create new claim, timing, or transition failures elsewhere.",
+        "what_goes_wrong_if_skipped": "Known major errors remain, or multiple editors make untracked changes that break source traces, word totals, and terminal-slide protection.",
+        "depends_on_phases": [
+          3
+        ],
+        "units_of_work": [
+          {
+            "unit_id": "U12",
+            "assignment": "Repair the candidate using U10 and U11 findings. Resolve every critical and major finding and explicitly adjudicate each minor one. Preserve thesis meaning and visible-slide scope. When length is high, remove a complete lowest-priority thought and rebuild the local bridge rather than compressing qualifications into fragments. Re-run the deterministic checks after revision. Produce a sentence-level change log showing the finding, action, trace impact, and word impact.",
+            "input_files_needed": [
+              "Core source archive, U09 candidate package, U10 audit package, and U11 audit package in one input zip. In minimum-viable mode, U11 may be absent, but the unit must run the basic word, transition, and forbidden-character tests itself."
+            ],
+            "returns": "A call-status JSON plus a zip containing full_notes_repaired.md, full_trace_repaired.csv, word_budget_repaired.csv, transition_register_repaired.csv, chart_cue_map_repaired.csv, audit_resolution.csv, revision_diff.md, and rehearsal_log_template.csv.",
+            "how_output_is_checked": "Reject the unit if any critical or major item remains open, a repair creates an untraced claim, an essential hedge is cut for length, the global count exceeds 2110, a forbidden dash remains, or slides 11 to 13 are weakened to pay for earlier slides.",
+            "can_run_concurrently_with": []
+          }
+        ],
+        "phase_exit_check": "Every critical and major audit item is resolved, each change has source and word-impact records, deterministic checks pass, total words do not exceed 2110, and a rehearsal-ready package plus log template exists."
+      },
+      {
+        "order": 5,
+        "name": "Rehearse against the real deck and sign off",
+        "purpose": "Replace the unverified delivery discount with actual evidence and catch filler, improvisation, chart-pointing delay, and transition breakdown before declaring the notes finished.",
+        "what_goes_wrong_if_skipped": "A word-compliant script can still run long, and the presenter may add filler or unsafe paraphrases that no document audit can see.",
+        "depends_on_phases": [
+          4
+        ],
+        "units_of_work": [
+          {
+            "unit_id": "U13",
+            "assignment": "Perform final signoff on the repaired scripts using the completed full-deck rehearsal log. Re-run exhaustive claim, scope, word, character, transition, and chart-cue checks. Compare actual per-slide and total time with the budget, count filler and unscripted additions, and verify that the presenter used the actual projected figures for chart pacing. Return PASS only if every hard gate passes. Otherwise return FAIL with a bounded repair order that can be sent back through U12; do not issue a conditional pass.",
+            "input_files_needed": [
+              "Core source archive, all U12 repaired outputs, completed rehearsal_log.csv, and any rehearsal transcript or recording packaged inside one input zip"
+            ],
+            "returns": "A call-status JSON plus a zip containing final_signoff.json, final_notes_package.zip, final_trace.csv, final_word_and_time_report.csv, final_transition_report.csv, and signoff_failures.md.",
+            "how_output_is_checked": "PASS requires 13 complete scripts; zero untraced numbers or academic claims; zero slide-scope breaches; zero em dash or en dash; global words between 1930 and 2110; actual full-deck elapsed time at or below 18:00; all 12 transition tests passed; chart pauses executed; no unsafe onset, PRE2, GAP, Wald, novelty, causal, or mechanism language; no fabricated answers to source-silent items; and no unresolved critical or major audit finding.",
+            "can_run_concurrently_with": []
+          }
+        ],
+        "phase_exit_check": "The presenter completes one uninterrupted rehearsal with the real deck and records per-slide time, total time, filler, stumbles, additions, and chart pauses. U13 returns PASS only when every documentary and measured gate passes; FAIL routes a bounded list back to U12 and then repeats U13."
+      }
+    ],
+    "concurrency": {
+      "parallel_groups": [
+        {
+          "group": "A - pre-draft derivation",
+          "unit_ids": [
+            "U01",
+            "U02",
+            "U03"
+          ],
+          "why_independent": "U01 derives documentary claim ceilings, U02 derives rhetorical and timing architecture, and U03 attacks the locked argument. Each reads primary sources and does not need another unit's interpretation."
+        },
+        {
+          "group": "B - bounded drafting",
+          "unit_ids": [
+            "U05",
+            "U06",
+            "U07",
+            "U08"
+          ],
+          "why_independent": "U04 fixes shared claim, budget, and transition interfaces before drafting. Each bundle owns disjoint slides and returns entry and exit intents; cross-bundle wording is deliberately deferred to U09."
+        },
+        {
+          "group": "C - frozen-candidate audits",
+          "unit_ids": [
+            "U10",
+            "U11"
+          ],
+          "why_independent": "Both inspect the same frozen U09 candidate. U10 checks evidence and inference; U11 checks timing, surface, speakability, and transitions. Neither edits, so parallel execution cannot create version conflict."
+        }
+      ],
+      "real_dependencies": [
+        {
+          "from_unit": "U01",
+          "to_unit": "U04",
+          "why_it_is_real": "The integrated drafting contract cannot know permitted propositions or source-silent gaps until the claim ledger exists."
+        },
+        {
+          "from_unit": "U02",
+          "to_unit": "U04",
+          "why_it_is_real": "The drafting contract cannot allocate jobs, cuts, transitions, words, or chart pauses until the architecture exists."
+        },
+        {
+          "from_unit": "U04",
+          "to_unit": "U05",
+          "why_it_is_real": "The terminal scripts require approved claim, budget, and transition constraints."
+        },
+        {
+          "from_unit": "U04",
+          "to_unit": "U06",
+          "why_it_is_real": "Slides 1 to 4 require approved claim, budget, and transition constraints."
+        },
+        {
+          "from_unit": "U04",
+          "to_unit": "U07",
+          "why_it_is_real": "Slides 5 to 7 require approved claim, budget, and transition constraints."
+        },
+        {
+          "from_unit": "U04",
+          "to_unit": "U08",
+          "why_it_is_real": "Slides 8 to 10 require approved claim, budget, transition, and chart constraints."
+        },
+        {
+          "from_unit": "U05",
+          "to_unit": "U09",
+          "why_it_is_real": "The full script cannot be assembled until slides 11 to 13 exist."
+        },
+        {
+          "from_unit": "U06",
+          "to_unit": "U09",
+          "why_it_is_real": "The full script cannot be assembled until slides 1 to 4 exist."
+        },
+        {
+          "from_unit": "U07",
+          "to_unit": "U09",
+          "why_it_is_real": "The full script cannot be assembled until slides 5 to 7 exist."
+        },
+        {
+          "from_unit": "U08",
+          "to_unit": "U09",
+          "why_it_is_real": "The full script cannot be assembled until slides 8 to 10 and their chart cues exist."
+        },
+        {
+          "from_unit": "U09",
+          "to_unit": "U10",
+          "why_it_is_real": "Evidence auditing must inspect one frozen assembled version, not drifting bundle drafts."
+        },
+        {
+          "from_unit": "U03",
+          "to_unit": "U10",
+          "why_it_is_real": "The full process uses the independent examiner map as an audit test set; the minimum-viable path may derive a reduced set directly from the audit files."
+        },
+        {
+          "from_unit": "U09",
+          "to_unit": "U11",
+          "why_it_is_real": "Timing and transition auditing requires the assembled sequence and paid cross-slide bridges."
+        },
+        {
+          "from_unit": "U10",
+          "to_unit": "U12",
+          "why_it_is_real": "Repairs must be driven by exhaustive evidence and inference findings rather than the reviser's intuition."
+        },
+        {
+          "from_unit": "U11",
+          "to_unit": "U12",
+          "why_it_is_real": "The full process repairs word, surface, chart, and transition failures identified by an independent auditor."
+        },
+        {
+          "from_unit": "U12",
+          "to_unit": "U13",
+          "why_it_is_real": "Signoff must inspect the repaired version, not the pre-repair candidate."
+        }
+      ],
+      "total_calls": 13,
+      "rough_sequencing": "Seven waves: U01-U03 in parallel; U04; U05-U08 in parallel with U05 dispatched first; U09; U10-U11 in parallel; U12; one human full-deck rehearsal; U13. A failed U13 repeats U12 and U13 as a bounded repair loop."
+    },
+    "minimum_viable_subset": {
+      "unit_ids": [
+        "U01",
+        "U02",
+        "U04",
+        "U05",
+        "U06",
+        "U07",
+        "U08",
+        "U09",
+        "U10",
+        "U12",
+        "U13"
+      ],
+      "what_you_give_up": "The fast path omits U03's separate examiner-attack map and U11's independent timing, speakability, transition, and surface audit. U10 and U13 must perform reduced versions of those checks. The loss is less adversarial independence and less redundancy, not permission to omit any slide, trace, rehearsal, or final gate.",
+      "still_usable": true
+    },
+    "answers": {
+      "q1": "The process has five ordered phases: derive controls; draft four complete bundles; assemble once and audit twice; repair under change control; then rehearse and sign off. Each exists for a falsifiable reason. Without controls, claims and budgets are improvised. Without complete drafting, slides are absent. Without assembly and independent audits, seams and self-graded overclaims survive. Without controlled repair, fixes create new errors. Without rehearsal, the 15 percent delivery discount and filler burden remain guesses.",
+      "q2": "The process examines twelve deck-specific dimensions: thesis traceability; visible-slide scope; residual and quarterly-state fidelity; unobserved-onset bias discipline; PRE2 non-equivalence; cash-versus-stock Wald fidelity; the cash GAP nuance within the two-clock result; deictic chart pacing; podium versus Q&A boundaries; protection of slides 11 to 13; presenter-owned sentence architecture; and transition debt. Each dimension in results.dimensions carries a supplied-file quotation and names the exact failure it prevents here.",
+      "q3": "I rejected generic delivery mechanics, deck redesign, thesis revision, exhaustive robustness narration, charisma as a score, construction of a new complete Q&A bank, maximum detail, and memorization as a drafting metric. They were removed because they are out of scope, violate locked authorities, consume scarce podium time, are not artifact-verifiable, or belong to rehearsal rather than to the production dimensions of the written scripts.",
+      "q4": "Three groups are genuinely concurrent. U01, U02, and U03 derive evidence, architecture, and attacks independently. U05 through U08 draft disjoint slide bundles after U04 fixes shared interfaces. U10 and U11 audit the same frozen candidate from non-overlapping perspectives. Dependencies are real where an output changes the admissible input of the next unit: claims and architecture before drafting, all bundles before transitions, a frozen candidate before audits, audit findings before repair, and an actual rehearsal log before signoff.",
+      "q5": "Accuracy and plainness are resolved in U04, not postponed to final editing. U01 supplies a meaning invariant for each proposition: source, exact support, claim ceiling, and forbidden expansion. U02 supplies the listener job, sentence-load limit, and cut order. U04 joins them into one drafting contract. Drafting may simplify form but not meaning. U10 checks semantic fidelity and U11 checks listenability. If an accurate proposition cannot be made plain within budget, U12 removes the lowest-priority complete proposition rather than deleting its qualification or weakening its trace.",
+      "q6": "The budget mechanism is content selection before compression. U02 gives every slide one job, mandatory content, optional support, and a first-cut tier, plus a ten-percent per-slide corridor justified by the stopwatch precision. Drafts use complete sentences inside that contract. U09 charges transitions to the incoming slide and keeps chart pauses outside word counts. U11 recounts independently. U12 cuts whole low-priority thoughts and rewrites the local bridge, rather than shaving hedges into lifeless fragments. The global pre-rehearsal ceiling is 2110 and slides 11 to 13 cannot be used as a word bank for earlier slides.",
+      "q7": "Transitions are first designed as interfaces, then written only after the four bundles are assembled. U02 defines what question the outgoing slide leaves and what job the incoming slide begins; U04 freezes all twelve interfaces. Each draft returns entry and exit intents but does not guess cross-bundle wording. U09 writes exactly one bridge per boundary and charges it to the incoming slide. U11 audits each last-sentence and first-sentence pair in isolation. A boundary fails if a listener cannot explain why the next slide follows or if the bridge merely repeats both slides.",
+      "q8": "The two conditional rebuttals are correctly placed in Q&A. The measured hedged pair is about 129 words and roughly seventy seconds, while slide 12 has only 120 words and sixty seconds for all four limitations. Putting them on the podium would make the allocation impossible, defend attacks nobody made, and increase the expensive overrun risk. The podium script should identify the relevant boundaries without litigating them. U03 preserves both rebuttals as Q&A-only attack responses, and U10 fails any draft that restores them to the podium or states either one unconditionally.",
+      "q9": "Final signoff combines documentary gates and measured rehearsal gates. It fails for any missing slide, untraced number or academic claim, visible-slide scope breach, forbidden dash, unsafe onset or PRE2 statement, misstatement of the cash GAP result, separate-stars cash-versus-stock reasoning, causal or mechanism inflation, invented response to a thesis-silent item, failed transition, or unresolved major audit finding. It also fails if words fall outside 1930 to 2110, if the full-deck rehearsal exceeds 18:00, or if chart pauses, filler, and unscripted additions were not actually logged.",
+      "q10": "The minimum viable subset is U01, U02, U04, U05, U06, U07, U08, U09, U10, U12, and U13, plus the mandatory human rehearsal between U12 and U13. It omits U03's separate examiner-attack map and U11's independent speakability/timing audit. U10 and U13 must then run reduced versions of those checks, so the notes remain usable only if U13 passes. This subset cannot omit a drafting bundle, because a process that leaves any slide unwritten is not a usable podium script.",
+      "q11": "This process does not establish facts the thesis does not contain, including quantified transcript speaker-attribution accuracy or a rationale for ending the sample in 2018. It does not redesign the locked slide 12 wording, produce a complete Q&A pack, test room equipment, assess slide visibility from the back of the room, predict committee behavior, or certify posture, eye contact, or emotional state. It can flag source silence and rehearsal breakdown, but it cannot manufacture evidence or guarantee performance under stress.",
+      "q12": "The single most likely reason the defense still goes badly is that exhaustion prevents true internalization, so the presenter improvises, adds filler, loses chart-pointing rhythm, and runs long despite good written notes. The process touches this risk directly by drafting the closing slides first, requiring complete scripts, counting filler and deviations in a real-deck rehearsal, and refusing signoff above 18:00. It cannot eliminate fatigue or force rehearsal compliance, so this remains the largest residual risk."
+    },
+    "failure_analysis": {
+      "most_likely_failure_of_this_process": "The exhausted operator treats the full-deck rehearsal as optional or records only total time, so the process appears complete while the delivery discount, filler, per-slide overruns, chart pauses, and unsafe improvisations remain unmeasured.",
+      "what_would_detect_it": "U13 requires a completed per-slide rehearsal log with total elapsed time, filler, unscripted additions, stumbles, transition breaks, and chart-pause execution. A missing or thin log is an automatic FAIL, not a limitation note.",
+      "single_biggest_risk_to_the_defense": "The presenter has accurate notes but has not internalized them enough to resist improvisation under fatigue, causing filler, lost transitions, overstatement, and an overrun.",
+      "does_this_process_touch_it": true
+    },
+    "what_this_process_does_not_check": [
+      "Actual transcript-vendor speaker-attribution accuracy, because no quantified validation is supplied.",
+      "Why the approved sample ends in 2018, because the thesis states no rationale.",
+      "A redesign of the locked slide 12 sentence or the locked 'Imperfect instruments' heading.",
+      "A complete Q&A answer bank beyond podium-boundary control and indexing of the two conditional rebuttals.",
+      "Room hardware, projection reliability, remote operation, audio level, or back-row slide legibility.",
+      "Breathing, posture, clothing, eye contact, and other delivery mechanics.",
+      "The committee's actual questions, mood, interruptions, or enforcement of time.",
+      "Whether internalization survives acute stress; rehearsal provides evidence but not a guarantee."
+    ],
+    "anchoring_self_report": {
+      "would_this_list_fit_any_defense": false,
+      "which_dimensions_are_specific_to_this_deck": [
+        "Utterance-level thesis traceability",
+        "Slide-visible scope containment",
+        "Residual-object and quarterly-state fidelity",
+        "Unobserved-onset bias discipline",
+        "PRE2 non-equivalence discipline",
+        "Cash-versus-stock estimand fidelity",
+        "Two-clock cash-GAP nuance",
+        "Deictic chart pacing",
+        "Podium and Q&A boundary control",
+        "Terminal-slide budget protection",
+        "Presenter-owned sentence architecture",
+        "Transition debt"
+      ]
+    }
+  },
+  "artifacts_manifest": [
+    {
+      "filename": "notesplan_outputs.zip",
+      "status": "CREATED",
+      "media_type": "application/zip",
+      "size": 23350,
+      "sha256": "76e09253371a9081b6c52681d260e480ca9bedc5356932942b7a385f49792835",
+      "contains": [
+        "process_design.md",
+        "phase_table.csv",
+        "dispatch_briefs.md"
+      ]
+    }
+  ],
+  "limitations": [],
+  "delivery": [
+    "notesplan_response.json",
+    "notesplan_outputs.zip"
+  ]
+}
