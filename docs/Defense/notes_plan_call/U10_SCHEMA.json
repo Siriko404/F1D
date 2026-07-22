@@ -1,0 +1,350 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "F1D U10 speaker-note evidence audit",
+  "type": "object",
+  "required": [
+    "request_id",
+    "status",
+    "results",
+    "artifacts_manifest",
+    "limitations",
+    "delivery"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "request_id": {
+      "const": "f1d-notes-u10-evidence-audit-v1"
+    },
+    "status": {
+      "enum": [
+        "COMPLETE",
+        "PARTIAL",
+        "BLOCKED"
+      ]
+    },
+    "results": {
+      "type": "object",
+      "required": [
+        "inventory",
+        "slides_audited",
+        "sentence_census",
+        "findings",
+        "cross_slide_checks",
+        "slide13_closing",
+        "slide2_no_comment",
+        "answers",
+        "clean_dimensions"
+      ],
+      "properties": {
+        "inventory": {
+          "type": "array",
+          "minItems": 8,
+          "items": {
+            "type": "object",
+            "required": [
+              "filename",
+              "bytes",
+              "read_in_full"
+            ],
+            "properties": {
+              "filename": {
+                "type": "string"
+              },
+              "bytes": {
+                "type": "integer"
+              },
+              "read_in_full": {
+                "type": "boolean"
+              },
+              "pages": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "slides_audited": {
+          "type": "array",
+          "minItems": 13,
+          "maxItems": 13,
+          "items": {
+            "type": "integer"
+          },
+          "description": "Every slide, including those with no finding."
+        },
+        "sentence_census": {
+          "type": "object",
+          "required": [
+            "total_sentences",
+            "unclassifiable"
+          ],
+          "properties": {
+            "total_sentences": {
+              "type": "integer"
+            },
+            "by_type": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "unclassifiable": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "A sentence you cannot classify is itself a finding."
+            }
+          }
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "slide",
+              "severity",
+              "spoken_sentence",
+              "what_is_wrong",
+              "what_the_source_supports",
+              "supporting_quote",
+              "source_file",
+              "safe_replacement"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "slide": {
+                "type": "integer"
+              },
+              "severity": {
+                "enum": [
+                  "BLOCKER",
+                  "MAJOR",
+                  "MINOR",
+                  "NIT"
+                ]
+              },
+              "spoken_sentence": {
+                "type": "string",
+                "description": "Verbatim from SPEAKER_NOTES.md."
+              },
+              "what_is_wrong": {
+                "type": "string",
+                "description": "Stated so it could be shown false."
+              },
+              "what_the_source_supports": {
+                "type": "string"
+              },
+              "supporting_quote": {
+                "type": "string",
+                "description": "Verbatim from a supplied file. Name it."
+              },
+              "source_file": {
+                "type": "string"
+              },
+              "safe_replacement": {
+                "type": "string",
+                "description": "Wording, not a rewritten script. Keep it near the same length."
+              },
+              "word_delta": {
+                "type": "integer",
+                "description": "How many words the replacement adds or removes."
+              },
+              "confidence": {
+                "enum": [
+                  "HIGH",
+                  "MEDIUM",
+                  "LOW"
+                ]
+              }
+            }
+          }
+        },
+        "cross_slide_checks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "from_slide",
+              "claim_about",
+              "holds"
+            ],
+            "properties": {
+              "from_slide": {
+                "type": "integer"
+              },
+              "claim_about": {
+                "type": "string"
+              },
+              "holds": {
+                "type": "boolean"
+              },
+              "explanation": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "slide13_closing": {
+          "type": "object",
+          "required": [
+            "survives_challenge",
+            "reasoning"
+          ],
+          "properties": {
+            "survives_challenge": {
+              "type": "boolean"
+            },
+            "reasoning": {
+              "type": "string"
+            },
+            "better_wording": {
+              "type": "string"
+            }
+          }
+        },
+        "slide2_no_comment": {
+          "type": "object",
+          "required": [
+            "defeats_the_argument",
+            "reasoning",
+            "what_to_say_if_asked"
+          ],
+          "properties": {
+            "defeats_the_argument": {
+              "type": "boolean"
+            },
+            "reasoning": {
+              "type": "string"
+            },
+            "hole_in_argument_or_only_narration": {
+              "enum": [
+                "ARGUMENT",
+                "NARRATION",
+                "NEITHER"
+              ]
+            },
+            "what_to_say_if_asked": {
+              "type": "string"
+            }
+          }
+        },
+        "answers": {
+          "type": "object",
+          "required": [
+            "q1",
+            "q2",
+            "q3",
+            "q4",
+            "q5",
+            "q6",
+            "q7",
+            "q8"
+          ],
+          "additionalProperties": false,
+          "patternProperties": {
+            "^q[1-8]$": {
+              "type": "string",
+              "minLength": 60
+            }
+          }
+        },
+        "clean_dimensions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "dimension",
+              "what_was_checked"
+            ],
+            "properties": {
+              "dimension": {
+                "type": "string"
+              },
+              "what_was_checked": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "verdict": {
+          "type": "object",
+          "required": [
+            "present_as_is",
+            "reason"
+          ],
+          "properties": {
+            "present_as_is": {
+              "type": "boolean"
+            },
+            "reason": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "artifacts_manifest": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "filename",
+          "status",
+          "media_type",
+          "size",
+          "sha256"
+        ],
+        "properties": {
+          "filename": {
+            "const": "u10_outputs.zip"
+          },
+          "status": {
+            "enum": [
+              "CREATED",
+              "OMITTED"
+            ]
+          },
+          "media_type": {
+            "const": "application/zip"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{64}$"
+          },
+          "contains": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "delivery": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "enum": [
+          "u10_response.json",
+          "u10_outputs.zip"
+        ]
+      }
+    }
+  }
+}

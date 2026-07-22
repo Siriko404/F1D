@@ -149,8 +149,8 @@ size of that shift, is plus 0.0461. Its standard error is 0.0172, and the
 standard error is how uncertain the estimate itself is. The two-tailed p-value is
 0.0074, which tests departures in either direction.
 
-In plain terms, if there were no shift at all, a result this size would turn up
-in well under one percent of samples.
+In plain terms, if there were no shift at all, a result this size or larger would
+turn up in well under one percent of samples.
 
 Now the part that actually matters, which is how big this is.
 

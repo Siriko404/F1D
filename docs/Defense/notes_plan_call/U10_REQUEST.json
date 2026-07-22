@@ -1,0 +1,78 @@
+{
+  "request_id": "f1d-notes-u10-evidence-audit-v1",
+
+  "objective": "Audit thirteen finished speaker-note scripts, sentence by sentence, against the thesis and the locked deck. Report findings. Do not rewrite the scripts.",
+
+  "why_this_call": "The scripts were written by the agent that also assembled the evidence they rest on, so it is the last party that can be trusted to grade them. It has already been wrong twice on this material in ways it could not see from inside: it declared a deck airtight that an outside audit then found nine problems in, and it wrote a word budget that allocated 110 words to content requiring 129 without noticing the arithmetic contradicted itself.",
+
+  "the_base_rate_to_beat": "The previous two calls on this project returned nine and ten findings on work already declared finished. Praise is not a deliverable. Report findings, or state that a dimension is clean and say exactly what you checked to conclude that.",
+
+  "what_has_already_been_verified_so_do_not_spend_effort_here": {
+    "the_deck_numbers": "All 90 substantive numerals on the deck were matched against the thesis by exact numeral search, and all 25 coefficient and standard error pairs were confirmed co-occurring in the thesis within a short window. That work is done and does not need repeating.",
+    "the_notes_numbers": "Every number spoken in the notes was traced programmatically to the slide it is spoken on. There is one recorded exception list and each entry carries its reason.",
+    "the_mechanical_surface": "Word counts against the measured budget, mean sentence length, long-sentence share, a hard per-sentence ceiling, em and en dashes, first-use glossing of twenty three technical terms, and sixteen specific forbidden phrasings all pass a deterministic gate.",
+    "what_that_means_for_you": "Arithmetic and surface form are not your job and checking them again wastes the call. **Your job is meaning.** Whether a sentence is true, whether it claims more than the thesis supports, whether it contradicts another sentence three slides away, and whether it will survive an examiner who is listening carefully."
+  },
+
+  "authority_hierarchy": [
+    "thesis_flat.tex, thesis_tables.tex, thesis_robustness_tables.tex. Submitted and approved. Sole authority on every result.",
+    "u01_claim_ledger.md. Verified ceilings, confirmed silences, and the derived quantities that are not printed in the thesis.",
+    "rev22_deck.pdf and rev22_slide_text.md. Locked. The notes narrate these and may not exceed them.",
+    "u03_response.json and u03_risk_report.md. The examiner sweep, including the safe spoken form for each risk it found.",
+    "SPEAKER_NOTES_BUDGET.md. Explains why each slide is the length it is."
+  ],
+
+  "the_task": {
+    "classify_every_spoken_sentence": "Each sentence in SPEAKER_NOTES.md is one of: a transition, an explanation of something visible on the slide, a fact from the thesis, a number, a result, an interpretation, or a limitation. Classify all of them. A sentence you cannot classify is itself a finding.",
+    "test_each_against_its_source": "For every sentence carrying a claim, name what in the thesis or on the slide supports it, and say whether the sentence stays inside that support or exceeds it.",
+    "scope_breaches": "The notes may explain what is visible on the slide. They may not introduce a result, a mechanism, a causal claim, or an appendix-only analysis the slide does not show. Find any.",
+    "cross_slide_consistency": "This is where the one known error in this draft came from. A sentence on slide 9 claimed a figure was the same result shown on slide 8. It was a different estimate on a different sample from a different specification. Look for every other place where one slide's narration makes a claim about another slide's content, and check each."
+  },
+
+  "two_specific_hunt_targets": {
+    "slide_13_closing": {
+      "the_sentence": "It is no longer detectable once the deal is public.",
+      "why_it_is_flagged": "This is the safe detection form rather than the banned equivalence form, so it is defensible as written. It is also the last thing the committee hears and therefore the most remembered sentence in the talk, and this exact error class has already bitten this project three times: the PRE2 no-pre-trend claim, the attenuation direction claim, and the slide 9 GAP equivalence claim.",
+      "what_to_decide": "Does the closing sentence survive an examiner who says that failing to detect something is not the same as it being absent? If it does not, give the wording that does, at the same length."
+    },
+    "slide_2_no_comment": {
+      "the_gap": "Slide 2 argues the chief executive cannot confirm, cannot deny, and cannot leave, so the only move is to answer around the question. It does not address the ordinary real-world answer, which is that firms decline to comment on market rumour and speculation.",
+      "what_to_decide": "Does a standing no-comment policy defeat the premise of the whole talk? If a firm can simply refuse to engage, the bind that produces the predicted language trace may not bind. Say whether this is a hole in the argument or a hole only in the narration, and what the presenter should say when asked."
+    }
+  },
+
+  "scope": {
+    "included": [
+      "Sentence-level audit of all thirteen scripts against thesis and deck.",
+      "The two hunt targets above.",
+      "Any cross-slide claim that does not hold.",
+      "Anything the notes say that an examiner can show is more than the thesis supports."
+    ],
+    "excluded": [
+      "Rewriting the scripts. Report the defective sentence and the safe replacement wording, not a new draft of the talk.",
+      "Word counts, sentence length, dashes and jargon glossing. A deterministic gate covers these and it passes.",
+      "Re-verifying the deck's numbers against the thesis. Already done exhaustively.",
+      "Redesigning the deck or revising the thesis. Both are locked.",
+      "Style preferences. If a sentence is accurate and clear, its being not-to-your-taste is not a finding."
+    ]
+  },
+
+  "questions_to_answer_explicitly": {
+    "q1": "Which single sentence in these notes is most likely to lose the presenter marks, and why that one?",
+    "q2": "Is there any claim in the notes that the thesis does not support? Quote both.",
+    "q3": "Does any slide's narration contradict another slide's narration, or the deck itself?",
+    "q4": "Does the slide 13 closing survive a detection-versus-absence challenge?",
+    "q5": "Does a no-comment policy defeat the slide 2 argument?",
+    "q6": "The notes deliberately hold the attenuation and PRE2 rebuttals for Q&A rather than saying them from the podium. Reading the actual scripts now rather than the plan, is that still right?",
+    "q7": "Where do the notes sound like someone defending rather than explaining, and does that matter here?",
+    "q8": "If you had to delete one hundred words to buy time, which hundred, and what breaks?"
+  },
+
+  "web_research": { "allowed": false, "rules": "Everything needed is supplied." },
+
+  "response_contract": {
+    "files": "Exactly two downloadable files: u10_response.json and u10_outputs.zip. Every additional file goes inside the archive.",
+    "inventory_first": "Extract the input archive and echo an inventory of every extracted file with its byte size before reasoning about any of them. A thin inventory means the archive was skimmed and the response is rejected on that alone.",
+    "partial_is_acceptable": "If something cannot be settled, return status PARTIAL and name the gap. That status is read as an honest report and costs you nothing."
+  }
+}
