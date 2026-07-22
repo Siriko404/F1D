@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "F1D REV22 adversarial audit response",
+  "type": "object",
+  "required": ["request_id", "status", "results", "artifacts_manifest", "limitations", "delivery"],
+  "additionalProperties": true,
+  "properties": {
+    "request_id": { "const": "f1d-rev22-adversarial-audit-v1" },
+    "status": { "enum": ["COMPLETE", "PARTIAL", "BLOCKED"] },
+
+    "results": {
+      "type": "object",
+      "required": ["inventory", "pdf_diff", "findings", "answers", "clean_dimensions", "most_dangerous_unprepared_question"],
+      "properties": {
+        "inventory": {
+          "type": "array",
+          "description": "Every file extracted from the input archive. Produced before any reasoning. A short list means the archive was skimmed.",
+          "minItems": 6,
+          "items": {
+            "type": "object",
+            "required": ["filename", "bytes"],
+            "properties": {
+              "filename": { "type": "string" },
+              "bytes": { "type": "integer" },
+              "pages": { "type": "integer", "description": "PDFs only." },
+              "read_in_full": { "type": "boolean" }
+            }
+          }
+        },
+
+        "pdf_diff": {
+          "type": "object",
+          "description": "Performed on the two PDFs directly, not read off the change log.",
+          "required": ["method", "slides_that_differ", "unexplained_differences", "declared_edits_not_found"],
+          "properties": {
+            "method": { "type": "string" },
+            "slides_that_differ": { "type": "array", "items": { "type": "integer" } },
+            "unexplained_differences": { "type": "array", "items": { "type": "string" } },
+            "declared_edits_not_found": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "severity", "location", "claim", "evidence", "exploitation", "remedy"],
+            "properties": {
+              "id": { "type": "string" },
+              "severity": { "enum": ["BLOCKER", "MAJOR", "MINOR", "NIT"] },
+              "location": {
+                "type": "string",
+                "description": "Slide number, or file and line, or quoted text. Never vague."
+              },
+              "claim": { "type": "string", "description": "What is wrong, stated so it could be shown false." },
+              "evidence": { "type": "string", "description": "Quote the supplied file. Name it." },
+              "exploitation": { "type": "string", "description": "How an examiner uses this, concretely." },
+              "remedy": { "type": "string", "description": "What it should say instead, or why no change is warranted." },
+              "confidence": { "enum": ["HIGH", "MEDIUM", "LOW"] }
+            }
+          }
+        },
+
+        "answers": {
+          "type": "object",
+          "required": ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10", "q11", "q12"],
+          "additionalProperties": false,
+          "patternProperties": { "^q([1-9]|1[0-2])$": { "type": "string", "minLength": 40 } }
+        },
+
+        "clean_dimensions": {
+          "type": "array",
+          "description": "Dimensions checked that turned out clean. Say what you checked, not that it looked fine.",
+          "items": {
+            "type": "object",
+            "required": ["dimension", "what_was_checked"],
+            "properties": {
+              "dimension": { "type": "string" },
+              "what_was_checked": { "type": "string" }
+            }
+          }
+        },
+
+        "most_dangerous_unprepared_question": {
+          "type": "object",
+          "required": ["question", "why_it_bites", "can_the_thesis_answer_it", "best_available_response"],
+          "properties": {
+            "question": { "type": "string", "description": "In the words an examiner would use." },
+            "why_it_bites": { "type": "string" },
+            "can_the_thesis_answer_it": { "type": "boolean" },
+            "best_available_response": { "type": "string" }
+          }
+        },
+
+        "verdict": {
+          "type": "object",
+          "required": ["present_as_is", "reason"],
+          "properties": {
+            "present_as_is": { "type": "boolean" },
+            "reason": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "artifacts_manifest": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "description": "Exactly one archive. Do not list the main JSON here; it cannot contain its own hash.",
+      "items": {
+        "type": "object",
+        "required": ["filename", "status", "media_type", "size", "sha256"],
+        "properties": {
+          "filename": { "const": "rev22audit_outputs.zip" },
+          "status": { "enum": ["CREATED", "OMITTED"] },
+          "media_type": { "const": "application/zip" },
+          "size": { "type": "integer" },
+          "sha256": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" },
+          "contains": {
+            "type": "array",
+            "description": "The files inside the archive: findings.md, findings.csv, slide12_analysis.md.",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "limitations": {
+      "type": "array",
+      "description": "What you could not check, and why. An empty array asserts you checked everything asked.",
+      "items": { "type": "string" }
+    },
+
+    "delivery": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": { "enum": ["rev22audit_response.json", "rev22audit_outputs.zip"] }
+    }
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "request_id": "f1d-rev22-adversarial-audit-v1",
+
+  "objective": "Try to break REV22. It is a 13-slide MSc thesis defense deck that was edited nine times, then declared airtight by the operator who edited it. Find what that operator missed, and say plainly where nothing is wrong.",
+
+  "why_this_call": "Everything mechanical here has already been checked by a script that passes twenty-one times out of twenty-one. What no script can check is judgement: whether an edit that reproduces faithfully is also correct, whether a limitation is stated in the right direction, whether a rebuttal actually rebuts the objection it is aimed at, and whether the reasoning recorded in the change log matches the artifact that shipped. Two errors of exactly that kind were already caught this session by an independent reviewer, after the operator had verified the work and believed it finished. That is the base rate you are being asked to improve on.",
+
+  "the_two_errors_already_caught": [
+    "A dash check named 'no em dash or en dash anywhere' was built from rendered page text only. It passed while the shipped PDF's /Title carried both characters, because metadata was never in its field of view. A green light on an unexamined surface.",
+    "Slide 12 briefly shipped a guard clause pointing at the flat PRE2 quarter as evidence that the event window sits where it should. The limitation stated in that box is that negotiations may have begun AFTER the flagged call, and a flat PRE2 says nothing about that direction, because such a firm contributes a null to PRE1 and PRE2 alike. The guard tested the opposite direction from the one the box claimed to be conceding.",
+    "Both were plausible, both survived the operator's own checking, and both were found only by an outside reader. Look for the third."
+  ],
+
+  "authority_hierarchy": [
+    "thesis_conclusion.tex, thesis_main_analysis.tex, thesis_controls_appendix.tex. These are the submitted, approved thesis. They are the truth for every number, every claim, and every limitation. The deck may not exceed them.",
+    "thesis_defense_main_deck_rev22.pdf. The artifact under audit. What it actually says wins over what any document claims it says.",
+    "thesis_defense_main_deck_rev21_superseded.pdf. The previous revision, for diffing only. It is not the deck to present.",
+    "REV22_CHANGE_LOG.md. The operator's own account of what was changed and why. Treat it as a claim to be tested, never as evidence.",
+    "verify_rev22.py. The mechanical checks that pass. Audit the checks themselves, not only their output.",
+    "DEFENSE_LEDGER.md. Committee dossiers and sixteen prepared examiner questions, written before this deck existed."
+  ],
+
+  "scope": {
+    "included": [
+      "Whether every one of the ten REV22 edits is correct, not merely rendered correctly.",
+      "Whether slide 12 now states its limitation in the right direction, and whether four boxes is the right shape.",
+      "Whether the rebuttals the operator intends to speak actually answer the objection they are aimed at.",
+      "Whether any deck claim exceeds what the thesis supports, in either direction: overclaiming, and needless self-harm by conceding more than the evidence requires.",
+      "Whether verify_rev22.py's checks test what their names say they test.",
+      "Whether REV22_CHANGE_LOG.md is true about the artifact that shipped.",
+      "Any examiner question the sixteen in the ledger do not cover and this deck invites."
+    ],
+    "excluded": [
+      "The thesis itself. It is submitted and approved and cannot be changed. Report a thesis error if you find one, but as context, not as an action.",
+      "Visual design, typography, colour, and layout aesthetics, except where they cause a misreading.",
+      "Re-deriving the numbers from raw data, which you do not have.",
+      "Rewriting the deck. Report what is wrong and what it should say instead; do not produce a new deck."
+    ]
+  },
+
+  "web_research": {
+    "allowed": false,
+    "rules": "Everything needed is in the archive. Do not consult outside sources, and do not rely on recalled facts about any cited paper; if a citation cannot be checked from the supplied files, say so rather than asserting."
+  },
+
+  "how_to_read_the_archive": {
+    "rule": "The attachment is one zip. Unzip it and read every file in full before you reason about any of them.",
+    "mandatory_first_step": "Before answering anything, extract the archive and echo an inventory: every extracted filename with its byte size, and for the PDFs the page count. Put this in results.inventory. A short or missing inventory tells the requesting side that the archive was skimmed, and the response will be rejected on that basis alone.",
+    "why": "Attached files are normally read directly. Files inside an archive have to be extracted first, and a reader in a hurry extracts, glances, and answers. This audit is worthless if that happens."
+  },
+
+  "requested_work": [
+    "Extract and inventory the archive.",
+    "Read the two PDFs. Diff REV22 against REV21 and confirm for yourself which slides changed; do not take the change log's word for it.",
+    "Check each of the ten edits against the thesis files.",
+    "Attack slide 12 specifically, as the only substantive content addition.",
+    "Attack the intended spoken rebuttals.",
+    "Audit verify_rev22.py for checks that pass while testing the wrong thing.",
+    "Test whether the change log's factual claims hold against the artifact.",
+    "List examiner questions this deck invites that the ledger does not already prepare."
+  ],
+
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Diff REV22 against REV21 yourself. Which slides differ, and does every difference correspond to an edit the change log declares? Report any difference the change log does not account for, and any declared edit you cannot find in the artifact."
+    },
+    {
+      "id": "q2",
+      "question": "Slide 8's controls were relabelled from 'size' and 'dividends' to 'ln(assets)' and 'dividend indicator' to match slides 9 and 10, on the argument that the thesis defines exactly one control set. Check that argument against thesis_controls_appendix.tex and thesis_main_analysis.tex. Is it right that all three analyses share one control specification, or has a genuine difference between specifications been erased?"
+    },
+    {
+      "id": "q3",
+      "question": "Slide 13's closing line now reads 'These patterns suggest that unscripted CEO Q&A carries a readable, anticipatory trace of a deal's passage from private to public.' The thesis conclusion says 'the unscripted language of earnings calls'. The deck narrows this to CEO Q&A. Is that narrowing faithful to what was actually estimated, or does it overstate the specificity of the finding?"
+    },
+    {
+      "id": "q4",
+      "question": "Slide 12 box 3, 'The anticipatory window', reads: 'The data mark the announcement date, not when negotiations began.' Is this the right limitation to state, is it stated in the right direction, and is one sentence enough? Consider also whether stating it at all is wise, given that it volunteers an objection an examiner might not otherwise raise."
+    },
+    {
+      "id": "q5",
+      "question": "Slide 12 merged the old 'imperfect proxy' and 'imperfect comparison' boxes into one box called 'Imperfect instruments'. Does that merge lose anything an examiner would have engaged with separately? Is the merged sentence still accurate about both?"
+    },
+    {
+      "id": "q6",
+      "question": "The operator intends to answer the CEO-timing question by arguing that misflagged pre-announcement quarters dilute a binary treatment indicator and drag the estimate toward zero, so the effect was found despite the flaw. Attack this argument. State precisely the conditions under which it holds and the conditions under which it fails, and say whether the thesis's design satisfies them."
+    },
+    {
+      "id": "q7",
+      "question": "The operator also argues that a flat PRE2 combined with a significant PRE1 shows the signal is tightly timed with no pre-trend. Is that claim correct as stated? What exactly does the PRE2 null license, and what does it not? An earlier version of this argument was wrong; check whether the corrected version is now right."
+    },
+    {
+      "id": "q8",
+      "question": "Read verify_rev22.py as an adversary. For each check, does it test what its name says? Name any check that could pass while the property it claims to verify is false. The known example is a dash scan that read page text but not metadata."
+    },
+    {
+      "id": "q9",
+      "question": "Does REV22_CHANGE_LOG.md make any statement that is false about the deck that actually shipped? Quote the statement and the contradicting evidence."
+    },
+    {
+      "id": "q10",
+      "question": "Does any slide claim more than the thesis supports? Separately, does any slide concede more than the evidence requires, in a way that needlessly weakens the candidate? Both directions are defects."
+    },
+    {
+      "id": "q11",
+      "question": "The defense ledger contains sixteen prepared examiner questions. Given the deck as it now stands, and the two examiner dossiers in that ledger, what is the most dangerous question that is NOT among the sixteen? Give the question in the words an examiner would use, and say honestly whether the thesis can answer it."
+    },
+    {
+      "id": "q12",
+      "question": "If you had to name the single change most likely to improve this deck before the defense, what is it, and what is the argument against making it?"
+    }
+  ],
+
+  "output_discipline": {
+    "every_finding_needs": [
+      "The exact slide, file, and line or quoted text it concerns.",
+      "What is wrong, stated as a claim that could be shown false.",
+      "How an examiner would exploit it, concretely.",
+      "What it should say instead, or an explicit statement that no change is warranted."
+    ],
+    "severity": "BLOCKER if the deck should not be presented as is. MAJOR if an examiner could damage the defense with it. MINOR if it is a real defect with low cost. NIT if it is preference. Use BLOCKER and MAJOR sparingly and only with evidence.",
+    "forbidden": [
+      "Praise, encouragement, or any assessment of how good the work is.",
+      "Findings you cannot ground in a supplied file.",
+      "Restating the change log's reasoning back as if it were your own conclusion.",
+      "Inventing a defect to appear thorough. If a dimension is clean, say it is clean and say what you checked."
+    ]
+  },
+
+  "required_artifacts": [
+    {
+      "filename": "rev22audit_outputs.zip",
+      "description": "One archive containing every additional file: findings.md with the full written audit, findings.csv with one row per finding, and slide12_analysis.md with the detailed treatment of the limitation slide and the two rebuttals.",
+      "media_type": "application/zip"
+    }
+  ],
+
+  "acceptance_criteria": [
+    "Exactly two downloadable files are returned: rev22audit_response.json and rev22audit_outputs.zip. Nothing else.",
+    "results.inventory lists every extracted file with its byte size, and page counts for both PDFs.",
+    "All twelve questions are answered explicitly, including the ones where the answer is that nothing is wrong.",
+    "Every finding carries a location, a falsifiable claim, an exploitation path, and a remedy.",
+    "The diff in q1 was performed on the PDFs, not read off the change log."
+  ],
+
+  "stop_condition": "If the archive will not extract, if a file is unreadable, or if you cannot perform the PDF diff, return the main JSON with status PARTIAL or BLOCKED naming exactly what failed and what you did complete. Do not guess at a file you could not read, and do not substitute the change log's account of the deck for the deck itself. A partial audit that says what it could not check is useful; a complete-looking audit built on a skim is worse than none, because it will be believed."
+}
