@@ -1,0 +1,720 @@
+{
+  "request_id": "f1d-notes-u02-architecture-v1",
+  "status": "PARTIAL",
+  "results": {
+    "inventory": [
+      {
+        "filename": "PROMPT_2026-07-22_133056(1).md",
+        "bytes": 3337,
+        "read_in_full": true
+      },
+      {
+        "filename": "notes_architecture_u02_inputs.zip",
+        "bytes": 256590,
+        "read_in_full": true
+      },
+      {
+        "filename": "DEFENSE_LEDGER.md",
+        "bytes": 25898,
+        "read_in_full": true
+      },
+      {
+        "filename": "SPEAKER_NOTES_BUDGET.md",
+        "bytes": 7290,
+        "read_in_full": true
+      },
+      {
+        "filename": "WEB_RESPONSE_SCHEMA.json",
+        "bytes": 6810,
+        "read_in_full": true
+      },
+      {
+        "filename": "WEB_REVIEW_REQUEST.json",
+        "bytes": 6230,
+        "read_in_full": true
+      },
+      {
+        "filename": "rev22_deck.pdf",
+        "bytes": 190140,
+        "read_in_full": true,
+        "pages": 13
+      },
+      {
+        "filename": "rev22_slide_text.md",
+        "bytes": 16035,
+        "read_in_full": true
+      },
+      {
+        "filename": "thesis_flat.tex",
+        "bytes": 162954,
+        "read_in_full": true
+      },
+      {
+        "filename": "thesis_tables.tex",
+        "bytes": 39922,
+        "read_in_full": true
+      },
+      {
+        "filename": "u01_claim_ledger.md",
+        "bytes": 14294,
+        "read_in_full": true
+      }
+    ],
+    "slide_architecture": [
+      {
+        "slide": 1,
+        "one_job": "Orient the listener to the exact phenomenon the thesis studies.",
+        "must_land": [
+          "The unit is uncertainty in CEOs' unscripted Q&A answers.",
+          "The event is an acquisition that is not yet public, with cash deals as the focal setting.",
+          "The talk documents a descriptive language pattern rather than a causal mechanism."
+        ],
+        "cut_order": [
+          "Name the research object: residual CEO Q&A uncertainty around undisclosed cash acquisitions.",
+          "Clarify that the question concerns a pre-announcement language trace.",
+          "State the descriptive, noncausal scope.",
+          "Speak the degree, institution, and adviser details already visible on screen."
+        ],
+        "word_budget_ack": 65,
+        "has_more_than_one_job": false,
+        "next_slide_interface": "End with the unresolved question of why an undisclosed deal could change answers; Slide 2 must supply the disclosure bind."
+      },
+      {
+        "slide": 2,
+        "one_job": "Make the listener understand the disclosure bind that creates the prediction.",
+        "must_land": [
+          "The firm may hold material deal information while the routine earnings call still occurs.",
+          "The firm may remain silent, but anything it does say cannot mislead.",
+          "Hedged or qualified answers are a possible language trace while the deal remains private."
+        ],
+        "cut_order": [
+          "Establish the private-information plus routine-Q&A bind.",
+          "State the core prediction: residual Q&A uncertainty may rise while the deal is private.",
+          "Preserve the boundary that the framework does not decide whether silence is constrained or strategic.",
+          "Explain the legal authorities or disclosure-theory citations individually."
+        ],
+        "word_budget_ack": 150,
+        "has_more_than_one_job": false,
+        "next_slide_interface": "End with the prediction being tied to the private-information state; Slide 3 must show when that state ends and why payment method supplies a comparison."
+      },
+      {
+        "slide": 3,
+        "one_job": "Set the two empirical contrasts: the information clock versus the transaction clock, and cash versus stock.",
+        "must_land": [
+          "Announcement makes the information public, while completion is when cash leaves.",
+          "Cash and stock deals share the disclosure setting.",
+          "Stock deals add an equity-currency management incentive, which motivates comparison but does not identify a cause."
+        ],
+        "cut_order": [
+          "Distinguish announcement from completion as two different clocks.",
+          "Explain that cash and stock share the disclosure bind.",
+          "State that the payment-method contrast is motivational and descriptive, not causal.",
+          "Elaborate the prior literature on equity-currency management or cash accumulation."
+        ],
+        "word_budget_ack": 150,
+        "has_more_than_one_job": true,
+        "next_slide_interface": "End by naming timing and payment method as testable dimensions; Slide 4 must convert them into the three research questions."
+      },
+      {
+        "slide": 4,
+        "one_job": "Give the listener a three-question map for the rest of the talk.",
+        "must_land": [
+          "RQ1 asks whether residual uncertainty rises before cash-deal announcement.",
+          "RQ2 asks whether uncertainty changes at announcement while cash changes at completion.",
+          "RQ3 asks whether cash differs from stock using a direct difference test.",
+          "All tests are descriptive within-firm comparisons, not causal estimates."
+        ],
+        "cut_order": [
+          "State the three questions in appearance, timing, and payment-method order.",
+          "Anchor all three in within-firm comparisons and the noncausal scope.",
+          "Flag that the cash-minus-stock difference is tested directly.",
+          "Read the equation-like labels or recite the full control list."
+        ],
+        "word_budget_ack": 150,
+        "has_more_than_one_job": false,
+        "next_slide_interface": "End by asking what is new about these three questions; Slide 5 must locate the missing literature cell before the empirical build begins."
+      },
+      {
+        "slide": 5,
+        "one_job": "Locate the thesis's narrow contribution relative to the nearest prior work.",
+        "must_land": [
+          "Prior work reads managed tone, strategy vocabulary, or prices.",
+          "This thesis reads residual uncertainty in unscripted CEO Q&A before an unannounced acquisition.",
+          "The novelty claim remains qualified as 'to our knowledge'."
+        ],
+        "cut_order": [
+          "Define the missing cell using the three contrasts: uncertainty, Q&A, and the anticipatory window.",
+          "Retain the 'to our knowledge' qualifier.",
+          "Name the three adjacent literatures at category level.",
+          "Describe each cited paper, author pair, and finding separately."
+        ],
+        "word_budget_ack": 120,
+        "has_more_than_one_job": false,
+        "next_slide_interface": "End with the exact empirical object now located; Slide 6 must show the data path capable of observing it."
+      },
+      {
+        "slide": 6,
+        "one_job": "Show where the evidence comes from and which firms it can represent.",
+        "must_land": [
+          "The base panel contains 88,205 calls from 1,884 firms over 2002-2018.",
+          "Repeated calls and CEO identification are required to form the residual, narrowing the sample.",
+          "The focal first-cash-deal test contains 27,622 firm-quarters from 1,248 firms.",
+          "The sample tilts toward larger, better-covered U.S. public firms."
+        ],
+        "cut_order": [
+          "Give the base panel, residual-feasible sample logic, and focal test sample.",
+          "State the deal screen: known payment split, at least $1 million, and at least 50% for an arm.",
+          "Disclose the larger-firm and better-covered selection boundary.",
+          "Recite every database and every intermediate count."
+        ],
+        "word_budget_ack": 185,
+        "has_more_than_one_job": false,
+        "next_slide_interface": "End with the sample narrowing because the outcome must be constructed; Slide 7 must explain that construction."
+      },
+      {
+        "slide": 7,
+        "one_job": "Make the residual measure understandable without implying that it directly observes what the CEO knows.",
+        "must_land": [
+          "Raw uncertainty is the share of uncertainty words in CEO answers.",
+          "Predictable components, especially persistent CEO speaking style, are removed.",
+          "UncResCEO is the call-specific remainder, not raw uncertainty and not a direct measure of private knowledge.",
+          "It is a generated outcome, so two-step standard-error uncertainty remains a limitation."
+        ],
+        "cut_order": [
+          "Explain raw word share minus predictable components equals the residual.",
+          "Emphasize removal of persistent CEO style and the call-specific interpretation.",
+          "State the generated-regressand limitation without attempting the full rebuttal.",
+          "List every first-stage control, sample statistic, and replication fit number."
+        ],
+        "word_budget_ack": 185,
+        "has_more_than_one_job": false,
+        "next_slide_interface": "End with the residual defined as the outcome carried forward; Slide 8 must show its first estimated pre-announcement shift."
+      },
+      {
+        "slide": 8,
+        "one_job": "Establish that the pre-announcement rise exists and communicate its size honestly.",
+        "must_land": [
+          "The within-firm estimate is +0.0461 with two-tailed p=0.0074.",
+          "The estimate is about 15.3% of the residual's usual across-call standard deviation.",
+          "The rise is modest but statistically clear and descriptive, not causal.",
+          "The displayed interval is approximately derived from the estimate and standard error, not printed by the thesis."
+        ],
+        "cut_order": [
+          "State the direction, estimate, and descriptive comparison.",
+          "Translate magnitude as about 15% of the usual residual spread.",
+          "Give one uncertainty indicator: p-value or approximate interval, without narrating both at length.",
+          "Recite the full control list, sample counts, standard error, and both interval endpoints."
+        ],
+        "word_budget_ack": 265,
+        "has_more_than_one_job": false,
+        "next_slide_interface": "End with existence established but timing unresolved; Slide 9 must trace the measure through announcement and completion."
+      },
+      {
+        "slide": 9,
+        "one_job": "Show that language and cash move on different clocks around the same deal.",
+        "must_land": [
+          "PRE2 shows no statistically detected elevation; this is a check, not proof of no pre-trend.",
+          "Residual uncertainty rises at PRE1 and becomes indistinguishable from baseline at GAP; the PRE1-minus-GAP Wald drop is significant.",
+          "Cash shows no detected PRE1-to-GAP decline and declines after completion.",
+          "Cash persistence means absence of a detected decline, not a significantly elevated GAP level.",
+          "Both paths use the same matched firm-quarters and remain descriptive."
+        ],
+        "cut_order": [
+          "Explain the two clocks through the adjacent-stage contrasts.",
+          "Preserve the cash-persistence caveat and the noncausal scope.",
+          "Define the baseline and bins only as much as needed to read the figure.",
+          "Walk every point estimate, standard error, p-value, lag coefficient, and sample count."
+        ],
+        "word_budget_ack": 265,
+        "has_more_than_one_job": false,
+        "next_slide_interface": "End with timing established but payment-method concentration still untested; Slide 10 must perform the direct cash-versus-stock comparison."
+      },
+      {
+        "slide": 10,
+        "one_job": "Distinguish a descriptive side-by-side pattern from the formal direct cash-minus-stock test.",
+        "must_land": [
+          "The side-by-side panels show a cash run-up and an imprecise stock estimate, but separate significance is not the test.",
+          "The pooled Wald difference is +0.0983 with two-tailed p=.039.",
+          "The evidence supports concentration in cash, not a cash-only effect or a mechanism.",
+          "The result is supportive but fragile because the stock estimate is imprecisely negative."
+        ],
+        "cut_order": [
+          "Lead with the direct pooled difference and its interpretation.",
+          "State why separate stars cannot establish a difference.",
+          "Preserve the concentration-not-specificity and fragility caveats.",
+          "Walk the PRE2, GAP, and POST coefficients in both descriptive panels or recite all sample details."
+        ],
+        "word_budget_ack": 215,
+        "has_more_than_one_job": false,
+        "next_slide_interface": "End with the three findings now complete and bounded; Slide 11 must state what those findings add rather than repeat them."
+      },
+      {
+        "slide": 11,
+        "one_job": "State the thesis's three descriptive contributions without re-selling the results.",
+        "must_land": [
+          "It places residual CEO Q&A uncertainty in the anticipatory window before disclosure.",
+          "It tests cash against stock directly rather than comparing separate significance results.",
+          "It links private-information withholding research with transaction-anticipation evidence through the private-to-public passage.",
+          "The contributions characterize a regularity and identify no causal channel."
+        ],
+        "cut_order": [
+          "Name the anticipatory window, formal contrast, and literature bridge.",
+          "Keep the descriptive, noncausal ceiling explicit.",
+          "Use one clause to distinguish the thesis from prior tone, vocabulary, and price work.",
+          "Recount coefficients or restate all three result slides."
+        ],
+        "word_budget_ack": 140,
+        "has_more_than_one_job": false,
+        "next_slide_interface": "End by defining the contribution as deliberately descriptive; Slide 12 must specify the evidence boundary that follows from that choice."
+      },
+      {
+        "slide": 12,
+        "one_job": "Set the exact boundary between the observed language pattern and claims the design cannot support.",
+        "must_land": [
+          "The study identifies a within-firm language pattern, not cause and effect.",
+          "The sample's size and coverage limit generalizability.",
+          "Announcement dates do not reveal when negotiations began.",
+          "The word-list measure and stock comparison are imperfect instruments."
+        ],
+        "cut_order": [
+          "State the noncausal boundary first.",
+          "Retain the timing, sample, and measurement boundaries in compressed form.",
+          "Clarify that uncertainty words do not directly reveal private knowledge.",
+          "Repeat detailed sample dates, S&P approximation, or full descriptions already covered on Slides 6 and 7."
+        ],
+        "word_budget_ack": 120,
+        "has_more_than_one_job": false,
+        "next_slide_interface": "End with what survives all four limits: a bounded, readable within-firm pattern; Slide 13 must close on only that durable claim."
+      },
+      {
+        "slide": 13,
+        "one_job": "Leave the committee with one precise, bounded take-away.",
+        "must_land": [
+          "Unscripted CEO Q&A carries a readable anticipatory trace as a deal moves from private to public.",
+          "The signal is observed before announcement and is no longer distinguishable from baseline at announcement.",
+          "The run-up is stronger in cash than stock, stated as concentration and not strict specificity."
+        ],
+        "cut_order": [
+          "Deliver the private-to-public take-away.",
+          "Retain the stronger-in-cash qualification and descriptive language.",
+          "Use the disclosure clock as the closing structure.",
+          "Repeat exact coefficients, re-list limitations, or narrate the visible thank-you text."
+        ],
+        "word_budget_ack": 100,
+        "has_more_than_one_job": false,
+        "next_slide_interface": "No next slide: stop after the bounded take-away and hand the room to questions without adding a new claim."
+      }
+    ],
+    "transitions": [
+      {
+        "from_slide": 1,
+        "to_slide": 2,
+        "what_must_be_set_up": "The title leaves an explicit puzzle: why might an undisclosed acquisition appear in CEO answers at all?",
+        "what_must_be_picked_up": "The disclosure bind created by private material information and a routine unscripted Q&A.",
+        "difficulty": "EASY"
+      },
+      {
+        "from_slide": 2,
+        "to_slide": 3,
+        "what_must_be_set_up": "The predicted language trace exists only while the information remains private.",
+        "what_must_be_picked_up": "Announcement ends the private-information state, completion moves the cash, and payment method supplies a comparison.",
+        "difficulty": "MEDIUM"
+      },
+      {
+        "from_slide": 3,
+        "to_slide": 4,
+        "what_must_be_set_up": "Timing and payment method are the two dimensions that can distinguish the proposed pattern.",
+        "what_must_be_picked_up": "Those dimensions become the appearance, timing, and cash-versus-stock research questions.",
+        "difficulty": "EASY"
+      },
+      {
+        "from_slide": 4,
+        "to_slide": 5,
+        "what_must_be_set_up": "The listener has the empirical roadmap but still needs to know whether the questions fill a real gap.",
+        "what_must_be_picked_up": "A brief positioning step that identifies the exact missing cell before proceeding to data and measurement.",
+        "difficulty": "HARD"
+      },
+      {
+        "from_slide": 5,
+        "to_slide": 6,
+        "what_must_be_set_up": "The missing object is residual uncertainty in unscripted Q&A during the anticipatory window.",
+        "what_must_be_picked_up": "The linked transcript, CEO, deal, and financial data needed to observe that object.",
+        "difficulty": "EASY"
+      },
+      {
+        "from_slide": 6,
+        "to_slide": 7,
+        "what_must_be_set_up": "The sample narrows because the focal outcome is constructed rather than directly recorded.",
+        "what_must_be_picked_up": "The raw word share, removed predictable components, and resulting call-specific residual.",
+        "difficulty": "EASY"
+      },
+      {
+        "from_slide": 7,
+        "to_slide": 8,
+        "what_must_be_set_up": "The residual is now defined as the second-stage outcome and bounded as an imperfect measure.",
+        "what_must_be_picked_up": "The first within-firm estimate of its change in the final private quarter.",
+        "difficulty": "EASY"
+      },
+      {
+        "from_slide": 8,
+        "to_slide": 9,
+        "what_must_be_set_up": "A pre-announcement rise exists, but one coefficient cannot show when it begins or resolves.",
+        "what_must_be_picked_up": "The four event stages and the separate information and transaction clocks.",
+        "difficulty": "MEDIUM"
+      },
+      {
+        "from_slide": 9,
+        "to_slide": 10,
+        "what_must_be_set_up": "The timing pattern is established for the focal setting, while the payment-method contrast remains a separate question.",
+        "what_must_be_picked_up": "The distinction between descriptive side-by-side panels and the formal pooled cash-minus-stock test.",
+        "difficulty": "MEDIUM"
+      },
+      {
+        "from_slide": 10,
+        "to_slide": 11,
+        "what_must_be_set_up": "All three findings are complete, including the fragility and noncausal limits of the cash contrast.",
+        "what_must_be_picked_up": "Contributions stated as additions to measurement, comparison, and literature rather than stronger claims about mechanism.",
+        "difficulty": "MEDIUM"
+      },
+      {
+        "from_slide": 11,
+        "to_slide": 12,
+        "what_must_be_set_up": "The contribution is a descriptive regularity and a bridge, not causal identification.",
+        "what_must_be_picked_up": "The precise limits on cause, generalization, timing, and measurement.",
+        "difficulty": "EASY"
+      },
+      {
+        "from_slide": 12,
+        "to_slide": 13,
+        "what_must_be_set_up": "The limitations leave one claim intact: a bounded within-firm language pattern around disclosure.",
+        "what_must_be_picked_up": "A confident closing statement of that pattern without restoring any causal or cash-only claim.",
+        "difficulty": "HARD"
+      }
+    ],
+    "lay_framings": [
+      {
+        "term": "material information",
+        "shortest_honest_framing": "Information important enough to matter to investors.",
+        "word_count": 7,
+        "ceiling_respected": "none applies",
+        "first_used_on_slide": 2,
+        "use": "PODIUM"
+      },
+      {
+        "term": "disclosure state",
+        "shortest_honest_framing": "Whether the deal is private or public.",
+        "word_count": 7,
+        "ceiling_respected": "Section 3.6: describes the quarterly disclosure state, not the exact moment knowledge changed.",
+        "first_used_on_slide": 2,
+        "use": "PODIUM"
+      },
+      {
+        "term": "estimand",
+        "shortest_honest_framing": "The exact quantity the model targets.",
+        "word_count": 6,
+        "ceiling_respected": "None applies; the thesis defines a descriptive within-firm mean shift.",
+        "first_used_on_slide": 4,
+        "use": "PODIUM"
+      },
+      {
+        "term": "descriptive result",
+        "shortest_honest_framing": "A measured pattern, not a causal effect.",
+        "word_count": 7,
+        "ceiling_respected": "Sections 3.6 and 5: no causal identification or mechanism.",
+        "first_used_on_slide": 4,
+        "use": "PODIUM"
+      },
+      {
+        "term": "within-firm comparison",
+        "shortest_honest_framing": "Each firm is compared with itself.",
+        "word_count": 6,
+        "ceiling_respected": "Sections 3.6 and 5: descriptive comparison only.",
+        "first_used_on_slide": 4,
+        "use": "PODIUM"
+      },
+      {
+        "term": "fixed effects",
+        "shortest_honest_framing": "Absorb stable firm traits and shared quarter shocks.",
+        "word_count": 8,
+        "ceiling_respected": "None applies; matches the thesis's firm and year-quarter fixed-effect description.",
+        "first_used_on_slide": 4,
+        "use": "PODIUM"
+      },
+      {
+        "term": "clustered standard errors",
+        "shortest_honest_framing": "Allow observations within a firm to move together.",
+        "word_count": 8,
+        "ceiling_respected": "None applies.",
+        "first_used_on_slide": 4,
+        "use": "PODIUM"
+      },
+      {
+        "term": "identification",
+        "shortest_honest_framing": "The variation used to estimate the quantity.",
+        "word_count": 7,
+        "ceiling_respected": "Sections 3.6 and 5: must not be upgraded to causal identification.",
+        "first_used_on_slide": 4,
+        "use": "PODIUM"
+      },
+      {
+        "term": "event study",
+        "shortest_honest_framing": "Compares outcomes across stages around an event.",
+        "word_count": 7,
+        "ceiling_respected": "Section 3.2: PRE2 is a check, not proof of no pre-trend.",
+        "first_used_on_slide": 4,
+        "use": "PODIUM"
+      },
+      {
+        "term": "generalizability",
+        "shortest_honest_framing": "How far the result travels beyond this sample.",
+        "word_count": 8,
+        "ceiling_respected": "Section 2.1 and thesis limitations: sample tilts toward larger, better-covered U.S. public firms.",
+        "first_used_on_slide": 6,
+        "use": "PODIUM"
+      },
+      {
+        "term": "firm-quarter",
+        "shortest_honest_framing": "One firm observed in one quarter.",
+        "word_count": 6,
+        "ceiling_respected": "None applies.",
+        "first_used_on_slide": 6,
+        "use": "PODIUM"
+      },
+      {
+        "term": "cash ratio",
+        "shortest_honest_framing": "Cash and equivalents divided by total assets.",
+        "word_count": 7,
+        "ceiling_respected": "None applies.",
+        "first_used_on_slide": 6,
+        "use": "PODIUM"
+      },
+      {
+        "term": "residual",
+        "shortest_honest_framing": "What remains after predictable parts are removed.",
+        "word_count": 7,
+        "ceiling_respected": "Section 3.6: residual call-level uncertainty, not raw uncertainty or private knowledge.",
+        "first_used_on_slide": 6,
+        "use": "PODIUM"
+      },
+      {
+        "term": "residualization",
+        "shortest_honest_framing": "Removing predictable parts before the main analysis.",
+        "word_count": 7,
+        "ceiling_respected": "Section 3.6: does not imply exact timing or direct knowledge measurement.",
+        "first_used_on_slide": 7,
+        "use": "PODIUM"
+      },
+      {
+        "term": "word share",
+        "shortest_honest_framing": "Listed words divided by all answer words.",
+        "word_count": 7,
+        "ceiling_respected": "Thesis limitation: word counts abstract from context.",
+        "first_used_on_slide": 7,
+        "use": "PODIUM"
+      },
+      {
+        "term": "uncertainty word list",
+        "shortest_honest_framing": "A fixed finance-specific list of uncertainty terms.",
+        "word_count": 7,
+        "ceiling_respected": "Thesis limitation: one operationalization, not a direct reading of knowledge.",
+        "first_used_on_slide": 7,
+        "use": "PODIUM"
+      },
+      {
+        "term": "generated regressand",
+        "shortest_honest_framing": "An outcome estimated before the main regression.",
+        "word_count": 7,
+        "ceiling_respected": "Thesis two-step caveat: conventional standard errors may be understated.",
+        "first_used_on_slide": 7,
+        "use": "PODIUM"
+      },
+      {
+        "term": "R-squared",
+        "shortest_honest_framing": "The share of variation the model explains.",
+        "word_count": 7,
+        "ceiling_respected": "None applies.",
+        "first_used_on_slide": 7,
+        "use": "CUTTABLE"
+      },
+      {
+        "term": "coefficient",
+        "shortest_honest_framing": "The estimated change linked to one variable.",
+        "word_count": 7,
+        "ceiling_respected": "Sections 3.6 and 5: 'linked' must not become 'caused'.",
+        "first_used_on_slide": 8,
+        "use": "PODIUM"
+      },
+      {
+        "term": "standard error",
+        "shortest_honest_framing": "How uncertain the estimate is.",
+        "word_count": 5,
+        "ceiling_respected": "None applies.",
+        "first_used_on_slide": 8,
+        "use": "PODIUM"
+      },
+      {
+        "term": "confidence interval",
+        "shortest_honest_framing": "A plausible range around the estimate.",
+        "word_count": 6,
+        "ceiling_respected": "Section 2.3: deck intervals are approximate derivations, not thesis-reported intervals.",
+        "first_used_on_slide": 8,
+        "use": "PODIUM"
+      },
+      {
+        "term": "p-value",
+        "shortest_honest_framing": "Chance of results this extreme under no effect.",
+        "word_count": 8,
+        "ceiling_respected": "None applies; do not describe it as the probability the null is true.",
+        "first_used_on_slide": 8,
+        "use": "PODIUM"
+      },
+      {
+        "term": "statistical significance",
+        "shortest_honest_framing": "The result is unlikely under the no-effect benchmark.",
+        "word_count": 8,
+        "ceiling_respected": "Sections 3.2-3.4: insignificance is not proof of no effect or equivalence.",
+        "first_used_on_slide": 8,
+        "use": "PODIUM"
+      },
+      {
+        "term": "one standard deviation",
+        "shortest_honest_framing": "One usual unit of variation.",
+        "word_count": 5,
+        "ceiling_respected": "None applies.",
+        "first_used_on_slide": 8,
+        "use": "PODIUM"
+      },
+      {
+        "term": "two-tailed test",
+        "shortest_honest_framing": "Tests departures in either direction.",
+        "word_count": 5,
+        "ceiling_respected": "None applies; matches the thesis's stated reading of focal results.",
+        "first_used_on_slide": 9,
+        "use": "PODIUM"
+      },
+      {
+        "term": "omitted baseline",
+        "shortest_honest_framing": "The reference periods every estimate is compared with.",
+        "word_count": 8,
+        "ceiling_respected": "Design parameter: e<=-3 plus never-acquirers for the event study.",
+        "first_used_on_slide": 9,
+        "use": "PODIUM"
+      },
+      {
+        "term": "parallel trends",
+        "shortest_honest_framing": "Without the event, groups would move similarly.",
+        "word_count": 7,
+        "ceiling_respected": "Section 3.2: the thesis makes no parallel-trends assumption; PRE2 is only a check.",
+        "first_used_on_slide": 9,
+        "use": "Q&A-FIRST"
+      },
+      {
+        "term": "Wald test",
+        "shortest_honest_framing": "A direct test of whether two estimates differ.",
+        "word_count": 8,
+        "ceiling_respected": "Sections 3.3-3.4: direct difference, not separate significance results.",
+        "first_used_on_slide": 9,
+        "use": "PODIUM"
+      },
+      {
+        "term": "partial-adjustment lag",
+        "shortest_honest_framing": "Last quarter's cash helps predict this quarter's cash.",
+        "word_count": 8,
+        "ceiling_respected": "Section 3.4: cash persistence rests on the adjacent-stage difference, not a significant GAP level.",
+        "first_used_on_slide": 9,
+        "use": "CUTTABLE"
+      },
+      {
+        "term": "cash persistence through GAP",
+        "shortest_honest_framing": "Cash shows no detected drop after announcement.",
+        "word_count": 7,
+        "ceiling_respected": "Section 3.4: does not claim a significantly elevated GAP level.",
+        "first_used_on_slide": 9,
+        "use": "PODIUM"
+      },
+      {
+        "term": "pooled model",
+        "shortest_honest_framing": "One regression containing both cash and stock.",
+        "word_count": 7,
+        "ceiling_respected": "Section 3.3: supports concentration, not a cash-only effect.",
+        "first_used_on_slide": 10,
+        "use": "PODIUM"
+      },
+      {
+        "term": "complete-case sample",
+        "shortest_honest_framing": "Only rows with every required variable observed.",
+        "word_count": 7,
+        "ceiling_respected": "Section 7 open row: do not infer which Slide 10 panel specification generated post-announcement bins.",
+        "first_used_on_slide": 10,
+        "use": "CUTTABLE"
+      },
+      {
+        "term": "counterfactual",
+        "shortest_honest_framing": "The unobserved outcome under another condition.",
+        "word_count": 6,
+        "ceiling_respected": "Thesis limitation: stock is an imperfect comparison, not a clean counterfactual.",
+        "first_used_on_slide": 12,
+        "use": "PODIUM"
+      },
+      {
+        "term": "endogeneity",
+        "shortest_honest_framing": "Deal timing may move with unobserved factors.",
+        "word_count": 7,
+        "ceiling_respected": "Sections 3.6 and 5: no causal claim; deal timing is chosen.",
+        "first_used_on_slide": 12,
+        "use": "Q&A-FIRST"
+      },
+      {
+        "term": "nondifferential",
+        "shortest_honest_framing": "It means error unrelated to deal timing.",
+        "word_count": 7,
+        "ceiling_respected": "Section 3.1: a condition, not an established fact in this design.",
+        "first_used_on_slide": 12,
+        "use": "Q&A-FIRST"
+      },
+      {
+        "term": "attenuation",
+        "shortest_honest_framing": "Under that condition, bias would move toward zero.",
+        "word_count": 8,
+        "ceiling_respected": "Section 3.1: direction cannot be signed because negotiation onset is unobserved.",
+        "first_used_on_slide": 12,
+        "use": "Q&A-FIRST"
+      }
+    ],
+    "gloss_precedence_rule": {
+      "rule": "Apply this sequence in order: (1) if the term was glossed earlier, spend zero words and use it unglossed; (2) if not, move its first use and gloss to the earliest earlier slide that already introduces the concept and has at least the gloss's counted words of slack; (3) if no such slide exists, replace the technical term on the current slide with the lay framing; (4) if that replacement exceeds the slide ceiling, delete items from that slide's cut_order from the bottom upward until it fits; (5) if all cuttable items are gone, omit the technical term and keep only the lay framing. Never exceed the ceiling and never leave an unglossed first use.",
+      "worked_example": "Example: if 'Wald test' first arrives on Slide 9 with no room, first check whether Slide 4 has eight words of genuine slack and already introduces direct difference testing. If yes, gloss it there once. If not, use 'a direct test of whether two estimates differ' on Slide 9 and remove the last-ranked Slide 9 element, the point-by-point coefficient walk, until the slide is back within 265 words."
+    },
+    "answers": {
+      "q1": "Slide 3 has the weakest one-job discipline because it carries both the two-clock timing framework and the cash-versus-stock motivation. Keep the announcement-versus-completion distinction and one sentence that stock adds a management incentive; cut the literature and mechanism detail first.",
+      "q2": "The Slide 4-to-5 transition is hardest. Slide 4 promises an empirical roadmap, so the listener expects data or method next, but Slide 5 moves backward into literature. The boundary must label Slide 5 as a brief positioning stop and preserve the three-question spine so the talk does not sound as though it restarted.",
+      "q3": "Cash persistence through the announcement-to-completion gap is hardest to simplify because the fluent version overstates the evidence. The shortest honest framing is: 'Cash shows no detected drop after announcement.' It describes the PRE1-to-GAP contrast without claiming that the GAP cash level is significantly elevated.",
+      "q4": "Apply this sequence in order: (1) if the term was glossed earlier, spend zero words and use it unglossed; (2) if not, move its first use and gloss to the earliest earlier slide that already introduces the concept and has at least the gloss's counted words of slack; (3) if no such slide exists, replace the technical term on the current slide with the lay framing; (4) if that replacement exceeds the slide ceiling, delete items from that slide's cut_order from the bottom upward until it fits; (5) if all cuttable items are gone, omit the technical term and keep only the lay framing. Never exceed the ceiling and never leave an unglossed first use.",
+      "q5": "The order works most visibly against the listener at Slides 4 and 5: the roadmap creates forward momentum, then the literature slide interrupts it. Narration must announce the detour before Slide 5, define the missing cell quickly, and have Slide 6 explicitly resume the same appearance-timing-payment-method sequence.",
+      "q6": "Slide 10 is most likely to run long because it combines two descriptive event-study panels, a different pooled sample, the direct Wald test, and the fragility caveat inside only 215 words. The payment is the point-by-point walk of PRE2, GAP, and POST in both panels; preserve PRE1, the direct difference, and the concentration-not-specificity warning."
+    }
+  },
+  "artifacts_manifest": [
+    {
+      "filename": "u02_outputs.zip",
+      "status": "CREATED",
+      "media_type": "application/zip",
+      "size": 8557,
+      "sha256": "1f3ad8bb34a9888f9a5b53c9960ed8ae51f991876ea5c8cf85a0ab246fe748c3",
+      "contains": [
+        "slide_architecture.csv",
+        "lay_framing_bank.md",
+        "transitions.csv"
+      ]
+    }
+  ],
+  "limitations": [
+    "Slide 10 remains specification-ambiguous: the deck displays GAP and POST bins for cash and stock, while the thesis description of the pre-deal design says post-announcement quarters are dropped. The supplied claim ledger deliberately leaves the mapping unresolved, so this architecture does not claim which regression generated those panels.",
+    "The thesis gives no rationale for the 2018 sample endpoint and no validation rate for speaker attribution. The architecture therefore treats these only as stated scope and data capabilities, not defended accuracy or design choices.",
+    "The claim ledger verifies every displayed numeral but acknowledges that its prose-claim ceilings are not exhaustive. The architecture stays within the six recorded dangerous-claim ceilings, but a later drafting audit should still check every ordinary interpretive sentence."
+  ],
+  "delivery": [
+    "u02_response.json",
+    "u02_outputs.zip"
+  ]
+}

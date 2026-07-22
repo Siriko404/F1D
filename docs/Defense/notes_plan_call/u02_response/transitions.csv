@@ -1,0 +1,13 @@
+from_slide,to_slide,difficulty,what_must_be_set_up,what_must_be_picked_up
+1,2,EASY,The title leaves an explicit puzzle: why might an undisclosed acquisition appear in CEO answers at all?,The disclosure bind created by private material information and a routine unscripted Q&A.
+2,3,MEDIUM,The predicted language trace exists only while the information remains private.,"Announcement ends the private-information state, completion moves the cash, and payment method supplies a comparison."
+3,4,EASY,Timing and payment method are the two dimensions that can distinguish the proposed pattern.,"Those dimensions become the appearance, timing, and cash-versus-stock research questions."
+4,5,HARD,The listener has the empirical roadmap but still needs to know whether the questions fill a real gap.,A brief positioning step that identifies the exact missing cell before proceeding to data and measurement.
+5,6,EASY,The missing object is residual uncertainty in unscripted Q&A during the anticipatory window.,"The linked transcript, CEO, deal, and financial data needed to observe that object."
+6,7,EASY,The sample narrows because the focal outcome is constructed rather than directly recorded.,"The raw word share, removed predictable components, and resulting call-specific residual."
+7,8,EASY,The residual is now defined as the second-stage outcome and bounded as an imperfect measure.,The first within-firm estimate of its change in the final private quarter.
+8,9,MEDIUM,"A pre-announcement rise exists, but one coefficient cannot show when it begins or resolves.",The four event stages and the separate information and transaction clocks.
+9,10,MEDIUM,"The timing pattern is established for the focal setting, while the payment-method contrast remains a separate question.",The distinction between descriptive side-by-side panels and the formal pooled cash-minus-stock test.
+10,11,MEDIUM,"All three findings are complete, including the fragility and noncausal limits of the cash contrast.","Contributions stated as additions to measurement, comparison, and literature rather than stronger claims about mechanism."
+11,12,EASY,"The contribution is a descriptive regularity and a bridge, not causal identification.","The precise limits on cause, generalization, timing, and measurement."
+12,13,HARD,The limitations leave one claim intact: a bounded within-firm language pattern around disclosure.,A confident closing statement of that pattern without restoring any causal or cash-only claim.
