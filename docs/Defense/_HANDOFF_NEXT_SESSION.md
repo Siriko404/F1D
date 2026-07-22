@@ -10,10 +10,11 @@ docs/Defense/REV22/production/thesis_defense_main_deck_slides_01-13_rev22.pdf
 ```
 
 **REV22, not REV21.** REV21 is the audited artifact and the fidelity reference;
-it stays untouched. REV22 is REV21 with the audit's four wording findings fixed,
-the em and en dash removed from the PDF title, and one limitation added to
-slide 12. Slides 8, 11, 12 and 13 differ; the other nine are identical span for
-span. Read `REV22/REV22_CHANGE_LOG.md` before quoting any slide.
+it stays untouched. REV22 is REV21 with eleven edits: the audit's four wording
+findings, the em and en dash removed from the PDF title, one limitation added to
+slide 12 and then corrected, and one overclaim removed from slide 5. **Slides 5,
+8, 11, 12 and 13 differ; the other eight are identical span for span.** Read
+`REV22/REV22_CHANGE_LOG.md` before quoting any slide.
 
 ## 1. Where the work stands
 
@@ -22,8 +23,9 @@ finished, approved, and production-locked.
 
 - **Deliverable 1, audit the deck: DONE.** No blocker, no major defect. Every
   finding is applied in REV22.
-- **Deliverable 2, speaker notes for all 13 slides: NOT STARTED.** This is next,
-  and nothing blocks it.
+- **Deliverable 2, speaker notes for all 13 slides: NOT STARTED.** This is next.
+  One step gates it and only Sina can do it: the speaking-rate measurement in
+  `SPEAKING_RATE_TEST.md`. See section 5.
 - Deliverable 3, the indexed Q&A appendix: architecture approved, content not
   designed, out of scope until the notes exist.
 
@@ -48,7 +50,7 @@ Five independent passes, plus mechanical verification by the operator.
 | Numbers | 136 items on slides 6 to 13, zero exceptions, verified twice |
 | Chart geometry | Every plotted point within 0.01 pt of its coefficient |
 | Citations | All twelve exist, correct years, correct propositions |
-| Claim strength | No causal, mechanism, or cash-only overstatement |
+| Claim strength | No causal, mechanism, or cash-only overstatement. One hedge-dropping overclaim on slide 5 was missed here and later caught by the adversarial audit, fixed as `R22-11` |
 | Rendering | All 13 pages clean |
 
 Four cosmetic wording items were left open as decision `D-OPEN-1`. Sina chose to
@@ -151,8 +153,8 @@ points below the rules they annotate, which looks exactly like a real defect.
 
 ## 5. The next action, concretely
 
-Write speaker notes for all 13 slides, against **REV22**. Nothing blocks this.
-Slides 8, 11, 12 and 13 were reworded, so quote REV22 and never REV21.
+Write speaker notes for all 13 slides, against **REV22**. Slides 5, 8, 11, 12 and
+13 were reworded, so quote REV22 and never REV21.
 
 The full notes plan is in `audit/DECK_AUDIT_PLAN.md` under "Speaker-notes
 production plan". The essentials:
@@ -252,7 +254,28 @@ with a size as they land, and Done stays disabled until they all have. Forcing i
 takes a second, deliberate click. If files are missed anyway, copy them into the
 exchange's `response/` directory and run `validate --exchange <id>`.
 
+## 8a. Durability, unresolved
+
+Everything here is committed on both trees, so a lost conversation costs nothing.
+A lost disk costs all of it.
+
+`phase4/masking-rewrite-harness`, the branch holding every REV22 artifact, has
+never been pushed and does not exist on the remote; it is 406 commits ahead of
+`origin/master`. The `F1D` tree is 291 ahead. `GptWebCall` has no remote at all,
+so the two-file protocol, the rebuilt side panel and every preserved exchange sit
+on one machine.
+
+OneDrive is sync, not backup. It propagates a deletion exactly as faithfully as
+it propagates a file.
+
+Pushing is Sina's call and was not authorized. If he says the word, push; do not
+do it quietly.
+
 ## 9. Superseded, do not use
 
 `defense_slides.tex` and `defense_slides.pdf`, a 15-slide Beamer draft, and
-`_CODEX_HANDOFF_2026-07-12.md`. Both predate the REV21 deck. History only.
+`_CODEX_HANDOFF_2026-07-12.md`. All predate the REV21 deck. History only.
+
+`_CURRENT_HANDOFF_LEDGER.md` is also superseded and carries a banner saying so.
+It belongs to the July 14 web-call workstream and its "immediate next action" was
+finished a week ago. Do not act on it.

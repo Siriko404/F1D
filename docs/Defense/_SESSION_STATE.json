@@ -26,10 +26,18 @@
   "current_state": {
     "stage": "Main-deck audit complete. All findings applied as REV22. Speaker notes not started.",
     "next_action": "Write speaker notes for all 13 main-deck slides, against REV22.",
-    "next_action_is_blocked_by": "Nothing.",
+    "next_action_is_blocked_by": "One step only Sina can do: the speaking-rate measurement in docs/Defense/SPEAKING_RATE_TEST.md. Until speaker_notes_brief_when_that_work_starts.measured_speaking_rate is filled in, every per-slide word budget would be invented.",
     "deliverable_1_deck_audit": "complete, and the four open wording items are fixed in REV22",
-    "deliverable_2_speaker_notes": "not started, and now unblocked",
-    "deliverable_3_qa_appendix": "architecture approved in REV21, content not designed, out of scope until the notes are done"
+    "deliverable_2_speaker_notes": "not started, gated on the speaking-rate measurement",
+    "deliverable_3_qa_appendix": "architecture approved in REV21, content not designed, out of scope until the notes are done",
+    "slides_that_differ_from_rev21": [
+      5,
+      8,
+      11,
+      12,
+      13
+    ],
+    "total_edits": 11
   },
   "open_decisions": [],
   "closed_decisions": [
