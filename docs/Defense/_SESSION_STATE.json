@@ -133,14 +133,68 @@
     "scope": "All 13 main-deck slides, against REV22. The Q&A appendix is separate and later.",
     "wording_note": "Slides 8, 11, 12 and 13 changed in REV22. Quote REV22, never REV21.",
     "time_budget": "18 minutes with a 2 minute buffer inside a hard 20 minute limit. Sections are 5 minutes for slides 1 to 5, 10 minutes for slides 6 to 10, and 3 minutes for slides 11 to 13.",
-    "word_budget_method": "Do not invent a per-slide time. Measure the presenter's own speaking rate on two timed passages, take the lower clean rate, and multiply by 17 minutes to leave a minute for pauses and navigation. Allocate by the 5:10:3 section ratio. The measurement is an input only the presenter can supply; do not fake it from an assumed rate.",
+    "word_budget_method": "Superseded by the five-register measurement. Each slide is budgeted at the rate of its own register times 0.85, not at a blended average. Chart slides additionally carry an explicit pause allowance because the chart passage could not measure pointing pauses. See docs/Defense/SPEAKER_NOTES_BUDGET.md for the per-slide table.",
     "grounding_rule": "Every academic sentence and every number in the notes must trace to an exact thesis file and location. Where the thesis is silent, the notes must say so rather than fill the gap.",
     "hard_constraint": "The notes may explain the visible slide. They may not add a result, a mechanism, a causal claim, or an appendix-only analysis to the main talk.",
     "committee_context": "One examiner prefers defenses that finish promptly, so a tight findings-forward delivery matters more than completeness.",
     "source_of_the_full_plan": "docs/Defense/audit/DECK_AUDIT_PLAN.md, section 'Speaker-notes production plan'",
-    "step_one_before_anything_else": "docs/Defense/SPEAKING_RATE_TEST.md. Two timed passages, one prose and one number-heavy, read aloud by Sina. Nothing else about the notes can be correct until this is done.",
-    "measured_speaking_rate": null,
-    "what_null_means": "The measurement has not happened. Do not draft notes. Do not assume a rate. Ask Sina to run SPEAKING_RATE_TEST.md and record both times and both rates here first."
+    "step_one_before_anything_else": "DONE 2026-07-22. See measured_speaking_rate and docs/Defense/SPEAKER_NOTES_BUDGET.md.",
+    "measured_speaking_rate": {
+      "status": "COMPLETE. All five registers measured 2026-07-22. Drafting is unblocked.",
+      "passages_remaining": [],
+      "p1_narrative": {
+        "words": 128,
+        "sight_read_seconds": 70,
+        "sight_read_wpm": 109.7,
+        "familiar_read_seconds": 50,
+        "familiar_read_wpm": 153.6,
+        "note": "Two reads deliberately. The first is sight-reading unfamiliar text and understates delivery speed. The second is the same text once known and overstates it, because rereading immediately is faster than speaking to a room. The truth is between them and closer to the familiar read. Do not budget on 153.6."
+      },
+      "p2_numbers": {
+        "words": 126,
+        "cold_seconds": 60,
+        "cold_wpm": 126.0,
+        "warm_seconds": 52,
+        "warm_wpm": 145.4,
+        "familiarity_ratio": 1.15
+      },
+      "inference_from_p1_vs_p2": "P1 cold (110 wpm) is an outlier caused by warming up, not by register. Evidence: P2 cold (126 wpm) is FASTER than P1 cold despite numbers being the slower register, and P2 warm (145) is slower than P1 warm (154) as expected. So the clean familiarity ratio is P2's 1.15, not P1's 1.40. Passages 3 to 5 are read once each, after warm-up, and multiplied by 1.15 to estimate their warm rate.",
+      "p3_method": {
+        "words": 131,
+        "cold_seconds": 65,
+        "cold_wpm": 120.9,
+        "warm_seconds": 55,
+        "warm_wpm": 142.9,
+        "familiarity_ratio": 1.18
+      },
+      "p4_chart_walking": {
+        "words": 116,
+        "cold_seconds": 50,
+        "cold_wpm": 139.2,
+        "warm_seconds": 45,
+        "warm_wpm": 154.7,
+        "familiarity_ratio": 1.11,
+        "MEASUREMENT_CAVEAT": "This number is not usable as a chart-slide delivery rate. It came out the FASTEST of all five warm rates, which contradicts the reason the passage exists: pointing at a projected figure inserts pauses. It was read at a desk with no figure to point at, so the pauses never happened. What it actually measures is the raw text rate of deictic prose. Chart slides must therefore be budgeted at a word rate PLUS an explicit pause allowance, not at 154.7 wpm. Treat 143 (the slowest measured warm rate) as the chart-slide word rate and add roughly 3 seconds per pointing beat."
+      },
+      "p5_hedged_rebuttal": {
+        "words": 129,
+        "cold_seconds": 70,
+        "cold_wpm": 110.6,
+        "warm_seconds": 60,
+        "warm_wpm": 129.0,
+        "familiarity_ratio": 1.17
+      },
+      "warm_rates_wpm": {
+        "narrative": 154,
+        "numbers": 145,
+        "method": 143,
+        "chart_walking_INVALID": 155,
+        "hedged_rebuttal": 129
+      },
+      "familiarity_ratio_used": 1.15,
+      "delivery_discount_used": 0.85,
+      "delivery_discount_is_a_judgement_not_a_measurement": "Reading familiar text at a desk has no slide changes, no eye contact, no thinking on your feet and no examiner in the room. I applied a 15 percent discount to every warm rate to cover that. It is not measured and cannot be from this test. The direction is deliberate: under-estimating the rate produces fewer words and a talk that finishes early, which is nearly free, while over-estimating produces a talk that overruns, which is the expensive failure with this committee."
+    }
   },
   "untested_and_owed": [
     "The deck has never been rehearsed or timed. The 18 minute target is a design assumption, not a measured fact. Only the presenter can close this.",
