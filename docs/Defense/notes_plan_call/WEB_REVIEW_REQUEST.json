@@ -1,0 +1,95 @@
+{
+  "request_id": "f1d-speaker-notes-process-design-v1",
+
+  "objective": "Design the production process for the speaker notes of a 13 slide master's thesis defense. Design the process. Do not write the notes.",
+
+  "why_this_call": "The operator can write notes. What he cannot do reliably is see, from inside the work, which dimensions of a spoken defense he is failing to check. A process is a set of checks made explicit in advance, and the value of an outside designer is that it is not the person who will later grade his own output against it. The immediately preceding call in this project was an adversarial audit of the deck. It returned nine findings on work its author had already declared airtight, two of which were real errors of judgement. That is the base rate this call is measured against.",
+
+  "the_deliverable_is_a_process_not_a_document": "The output is an executable production plan: ordered phases, the specific work inside each phase, which units of work are independent and can therefore run concurrently, what each unit receives, what each unit returns, and how the phase's output is checked before the next phase consumes it. A prose essay about good presenting is not the deliverable and will be treated as a failed response.",
+
+  "CRITICAL_anti_anchoring_instruction": {
+    "what_was_deliberately_withheld": "The operator has his own intuitions about which dimensions of the notes matter. He gave two or three of them aloud as illustrations of what he means by the word 'dimension', and then explicitly instructed that they must NOT be passed to you, because a named example becomes an anchor and an anchored designer returns the requester's own list back to him with better formatting.",
+    "what_this_means_for_you": "No dimension list appears anywhere in these materials. Derive the dimensions yourself, from the supplied artifact and from what actually goes wrong when a nervous graduate student narrates a quantitative deck to a committee. If you find yourself producing a generic list that would fit any thesis defense in any field, you have failed the instruction, because it means you generated from a template rather than from this deck.",
+    "the_test_you_must_pass": "Every dimension you propose must be justified by naming a specific failure it prevents IN THIS DECK, with a quotation from a supplied file as evidence that the failure is live rather than hypothetical. A dimension you cannot ground in a quotation is a dimension you are guessing at, and you must either drop it or mark it explicitly as ungrounded."
+  },
+
+  "authority_hierarchy": [
+    "thesis_flat.tex and thesis_tables.tex and thesis_robustness_tables.tex. The thesis is submitted and approved. It is the sole authority on every number, every result and every claim. Nothing in the notes may exceed it.",
+    "rev22_deck.pdf and rev22_slide_text.md. The deck is locked and will not be changed. The notes narrate it as it is.",
+    "SPEAKER_NOTES_BUDGET.md. The measured word budget. It constrains length absolutely.",
+    "DEFENSE_LEDGER.md. Committee composition, prepared examiner questions, and defensive assets already present in the thesis.",
+    "rev22audit_response.json and audit_findings.md. The preceding adversarial audit of the deck, including two findings about what may and may not be claimed aloud.",
+    "REV22_CHANGE_LOG.md and SPEAKING_RATE_TEST.md. Provenance for the deck edits and for the timing measurement."
+  ],
+
+  "the_situation": {
+    "event": "Master's thesis defense. One presenter, one committee, 13 slides, roughly 18 minutes of talk followed by examiner questions.",
+    "deck_status": "Locked at REV22 and independently audited. It is not in scope and must not be redesigned.",
+    "thesis_status": "Submitted and approved. Not in scope and must not be revised.",
+    "what_is_missing": "The spoken layer. There are no speaker notes at all. Nothing has been drafted.",
+    "note_form_already_decided": "Full spoken scripts, complete sentences, written to be spoken aloud and rehearsed until internalised, not read from the page. This was decided because the word budget was measured on rehearsed reading of familiar text, which makes the budget valid exactly under this model. It is settled. Design the process for producing scripts of this kind.",
+    "presenter_state": "The presenter is exhausted and time constrained. A process that is more thorough than he can finish is worse than a shorter one he completes, because an unfinished process leaves the last slides unwritten, and the last slides are the contribution and the limitations."
+  },
+
+  "hard_constraints_any_process_must_respect": [
+    "Total spoken length is approximately 2110 words plus or minus 180 across the 13 slides, allocated per slide in SPEAKER_NOTES_BUDGET.md. Length is not negotiable; it is a measurement.",
+    "No em dashes and no en dashes anywhere in anything the presenter will read or say. This is a standing constraint on all audience facing text in this project.",
+    "Every number, every quoted result and every academic claim in the notes must trace to an exact location in the thesis. Where the thesis is silent, the notes must say so rather than fill the gap.",
+    "The notes may explain what is visible on the slide. They may not introduce a result, a mechanism, a causal claim or an appendix only analysis that the slide does not show.",
+    "One committee member is documented as preferring defenses that finish promptly. Running long is the expensive failure. Finishing early is nearly free.",
+    "The exchange protocol for every call in the process you design is exactly two files up, one prompt and one zip, and exactly two files down, one JSON and one zip. Any process you propose has to be executable inside that constraint."
+  ],
+
+  "known_open_items_the_process_must_account_for": [
+    "The two conditional rebuttals. The preceding audit established that the attenuation argument may only be stated conditionally, because contamination onset is unobserved and the direction of the bias therefore cannot be signed, and that the flat pre-announcement quarter is an absence of detected elevation rather than a demonstration that no pre-trend exists. A budget revision has already placed both in the question and answer preparation rather than in the podium notes. Assess whether that placement is correct.",
+    "Two ledger questions are marked NEEDS-VERIFY and remain unresolved: the accuracy of speaker attribution in the transcript source, and the rationale for the sample ending when it does. The thesis states no rationale for the latter.",
+    "Three findings from the deck audit were recorded and deliberately not applied, concerning wording on the limitations slide and one word in a box heading. They are visible in the audit response.",
+    "The delivery discount inside the word budget is a judgement, not a measurement, and is unverified until a timed rehearsal happens.",
+    "Filler words were never counted. The rate test asked for recordings so filler could be heard; the recordings were made but no count was reported. Filler consumes time that no word budget sees."
+  ],
+
+  "scope": {
+    "included": [
+      "The full production process for the 13 podium note scripts, from whatever precedes drafting through to whatever signs them off.",
+      "Which units of work are genuinely independent and may run concurrently, and which have real dependencies that forbid it. Justify every dependency; a false dependency costs wall clock time and a missed one corrupts a later phase.",
+      "For each unit of work: its exact assignment, the input files it needs, what it returns, and how its output is checked.",
+      "The dimensions the process examines, derived and justified per the anti-anchoring instruction above.",
+      "Dimensions you considered and rejected, with the reason. A list with no rejections was not pruned.",
+      "Total number of calls, rough sequencing, and a named minimum viable subset that still produces usable notes if the presenter runs out of time partway through.",
+      "Where the process is most likely to fail, and what would detect that failure."
+    ],
+    "excluded": [
+      "Writing any speaker note, or drafting sample note text for any slide. Producing sample notes is the single most likely way to fail this assignment, because it substitutes an appealing artifact for the thing that was asked for.",
+      "Redesigning the deck. It is locked.",
+      "Revising the thesis. It is submitted.",
+      "Advice on delivery mechanics such as breathing, posture, dress or slide remotes, unless it changes the process for producing the written notes.",
+      "Recommending that the word budget be raised because the content will not fit. If content does not fit, the process must include a stage that decides what is cut."
+    ]
+  },
+
+  "questions_to_answer_explicitly": {
+    "q1": "What is the ordered phase structure, and what is the falsifiable reason each phase exists? For each phase, name what goes wrong if it is skipped.",
+    "q2": "Which dimensions does the process examine? Ground each one in a quotation from a supplied file showing the failure is live in this specific deck.",
+    "q3": "Which dimensions did you consider and reject, and why?",
+    "q4": "Which units of work are independent enough to run concurrently, and where is a dependency real rather than assumed?",
+    "q5": "How does the process reconcile full accuracy against the thesis with language plain enough to hold a listener's attention, when those two pull in opposite directions? Where in the process is that tension resolved rather than deferred?",
+    "q6": "How does the process enforce the word budget without producing notes that read as compressed and lifeless? What is the mechanism, not the aspiration?",
+    "q7": "How does the process handle the transition between slides, which is where a talk audibly falls apart and which no per slide budget covers?",
+    "q8": "Are the two conditional rebuttals correctly placed in the question and answer pack rather than the podium notes? Argue it. If they belong on the podium, say which slide and what it costs.",
+    "q9": "What does the final sign off consist of, and what specifically would cause it to fail rather than pass?",
+    "q10": "What is the minimum viable subset of this process, if the presenter can only complete part of it?",
+    "q11": "What does this process not check, that you believe still matters?",
+    "q12": "If you had to name the single most likely reason this defense goes badly despite good notes, what is it, and does your process touch it at all?"
+  },
+
+  "web_research": {
+    "allowed": false,
+    "rules": "Everything needed is supplied. Do not cite outside sources. A claim about how thesis defenses generally go is acceptable as reasoning, but it may not be dressed as a citation."
+  },
+
+  "response_contract": {
+    "files": "Exactly two downloadable files: notesplan_response.json and notesplan_outputs.zip. Every additional file goes inside the archive, never beside it.",
+    "inventory_first": "Extract the input archive and echo an inventory of every extracted file with its byte size before reasoning about any of them. Attached files are read directly; archived files get extracted, glanced at, and answered from. A thin inventory means the archive was skimmed and the response is rejected on that alone.",
+    "partial_is_acceptable": "If something cannot be read or a question cannot be answered, return status PARTIAL and name the gap. A partial design that admits its gaps is useful. A complete looking design built on a skim is worse than nothing, because it will be believed and then followed."
+  }
+}

@@ -50,13 +50,33 @@ and a talk that finishes early, which costs almost nothing. Over-estimating
 yields a talk that overruns, which is the expensive failure with a committee
 member who prefers defenses that finish promptly.
 
-| Register | Warm wpm | Budget wpm |
-|---|---|---|
-| Narrative | 154 | 131 |
-| Numbers | 145 | 123 |
-| Method | 143 | 122 |
-| Hedged rebuttal | 129 | 110 |
-| Chart walking | not usable | 122 plus pauses |
+| Register | Warm wpm | Budget wpm | Applies to |
+|---|---|---|---|
+| Narrative | 154 | 131 | Slides 1 to 4 |
+| Method | 143 | 122 | Slides 5 to 7 and 11 to 13 |
+| Numbers | 145 | 123 | Result figures quoted anywhere |
+| Chart walking | not usable | 122 plus pauses | Slides 8 to 10 |
+| Hedged rebuttal | 129 | 110 | Q&A only, never the podium |
+
+## The hedged register is a Q&A rate, not a slide rate
+
+An earlier version of this file mapped slides 11 to 13 to the hedged register
+and produced a budget that could not be met. Slide 12 was allocated 110 words
+while the same file required the two conditional rebuttals to appear there, and
+those rebuttals take 129 words to state. A budget that assigns 110 words to a
+strict superset of 129 words is not tight, it is impossible.
+
+The error was conflating two different things. Narrating a limitations slide is
+ordinary exposition and runs at the method rate. Sounding careful because an
+examiner is pressing you is a different act, and that is what passage 5
+measured. So the hedged rate governs Q&A and nothing else.
+
+The consequence is a placement rule, not just a number. **The full conditional
+rebuttals live in the Q&A preparation, not in the podium notes.** Slide 12 names
+its four limitations and moves on. If an examiner picks one up, the prepared
+answer is waiting. Delivering the full hedge unprompted spends podium time
+defending an attack nobody made, in front of a committee member who prefers
+defenses that finish promptly.
 
 ## The budget
 
@@ -67,19 +87,19 @@ pauses and navigation. Sections follow the agreed 5:10:3 split across slides
 | Slide | Register | Seconds | Pause allowance | Words |
 |---|---|---|---|---|
 | 1 | Narrative | 30 | 0 | 65 |
-| 2 | Narrative | 70 | 0 | 152 |
-| 3 | Narrative | 70 | 0 | 152 |
-| 4 | Narrative | 70 | 0 | 152 |
-| 5 | Method | 60 | 0 | 130 |
-| 6 | Method | 90 | 0 | 183 |
-| 7 | Method | 90 | 0 | 183 |
-| 8 | Chart | 150 | 20 | 264 |
-| 9 | Chart | 150 | 20 | 264 |
-| 10 | Chart | 120 | 15 | 213 |
-| 11 | Hedged | 70 | 0 | 128 |
-| 12 | Hedged | 60 | 0 | 110 |
-| 13 | Hedged | 50 | 0 | 92 |
-| **Total** | | **1020 s** | **55 s** | **2088** |
+| 2 | Narrative | 70 | 0 | 150 |
+| 3 | Narrative | 70 | 0 | 150 |
+| 4 | Narrative | 70 | 0 | 150 |
+| 5 | Method | 60 | 0 | 120 |
+| 6 | Method | 90 | 0 | 185 |
+| 7 | Method | 90 | 0 | 185 |
+| 8 | Chart | 150 | 20 | 265 |
+| 9 | Chart | 150 | 20 | 265 |
+| 10 | Chart | 120 | 15 | 215 |
+| 11 | Method | 70 | 0 | 140 |
+| 12 | Method | 60 | 0 | 120 |
+| 13 | Method | 50 | 0 | 100 |
+| **Total** | | **1020 s** | **55 s** | **2110** |
 
 The pause allowance on slides 8, 9 and 10 is roughly three seconds per pointing
 beat: naming the axes, naming the marker, naming the confidence bar, then one
@@ -87,22 +107,40 @@ beat per feature walked. It is deducted from that slide's speaking time before
 words are computed, which is why the chart slides carry fewer words than their
 generous time allocation suggests.
 
+### These are bands, not integers
+
+Every input time was read off a stopwatch by hand and reported to the nearest
+five seconds. On reads of 45 to 70 seconds that is roughly ten percent, which is
+the same magnitude as the delivery discount itself. So the honest total is
+**2110 words plus or minus about 180**, and a per-slide figure of 265 means
+somewhere near 265, not exactly 265. Counts are rounded to the nearest five to
+stop the table from claiming precision the stopwatch never had.
+
 ## How to use this when writing
 
 1. Write each slide's note to its word count, not to what feels complete.
 2. Overrunning a slide's count is not a rounding error. It is time taken from a
    later slide, and the later slides are the limitations and contribution, which
    are the ones that must not be rushed.
-3. The hedged register is the slowest and the least forgiving. Slides 11 to 13
-   have the smallest word budgets in the deck for that reason, so those notes
-   have to be the most compressed writing in the set.
-4. Two rebuttals must appear in their safe conditional form, and both cost words:
-   attenuation cannot be signed because onset is unobserved, and the flat
-   quarter two before the announcement is an absence of detected elevation
-   rather than a demonstration that no pre-trend exists.
+3. Slides 11 to 13 carry the smallest budgets in the deck, so those notes have
+   to be the most compressed writing in the set. They are also the last thing
+   the committee hears, which is the argument for compressing rather than cutting.
+4. The two rebuttals in their safe conditional form belong to the Q&A pack, not
+   the podium notes: attenuation cannot be signed because onset is unobserved,
+   and the flat quarter two before the announcement is an absence of detected
+   elevation rather than a demonstration that no pre-trend exists. Passage 5 is
+   already close to the wording both should use, and it runs about 129 words at
+   110 wpm, so budget roughly seventy seconds for the pair if both are asked.
 
 ## What this budget still does not know
 
-The delivery discount is unverified. The only thing that verifies it is a full
-rehearsal against a clock with the actual notes and the actual deck. Until that
-happens, treat 2088 words as a ceiling rather than a target.
+Two things.
+
+The delivery discount is unverified. Only a full rehearsal against a clock, with
+the real notes and the real deck, tests it. Until that happens, treat 2110 as a
+ceiling rather than a target.
+
+Filler words were never counted. The rate test asked for a recording so that
+filler could be heard, and the recordings were made, but no filler count came
+back. Every "um" and "so" costs time that no word budget sees. If rehearsal
+comes in long and the word counts were respected, filler is the first suspect.

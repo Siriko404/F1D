@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "F1D speaker notes process design response",
+  "type": "object",
+  "required": ["request_id", "status", "results", "artifacts_manifest", "limitations", "delivery"],
+  "additionalProperties": true,
+  "properties": {
+    "request_id": { "const": "f1d-speaker-notes-process-design-v1" },
+    "status": { "enum": ["COMPLETE", "PARTIAL", "BLOCKED"] },
+
+    "results": {
+      "type": "object",
+      "required": ["inventory", "dimensions", "rejected_dimensions", "phases", "concurrency", "minimum_viable_subset", "answers", "failure_analysis", "what_this_process_does_not_check"],
+      "properties": {
+
+        "inventory": {
+          "type": "array",
+          "description": "Every file extracted from the input archive, produced before any reasoning. A short list means the archive was skimmed.",
+          "minItems": 9,
+          "items": {
+            "type": "object",
+            "required": ["filename", "bytes", "read_in_full"],
+            "properties": {
+              "filename": { "type": "string" },
+              "bytes": { "type": "integer" },
+              "pages": { "type": "integer", "description": "PDFs only." },
+              "read_in_full": { "type": "boolean" }
+            }
+          }
+        },
+
+        "dimensions": {
+          "type": "array",
+          "description": "The dimensions the process examines. Derived, not inherited. Each must be grounded in a quotation from a supplied file.",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name", "what_it_checks", "failure_it_prevents", "grounding_quote", "grounding_file", "grounded"],
+            "properties": {
+              "name": { "type": "string" },
+              "what_it_checks": { "type": "string" },
+              "failure_it_prevents": { "type": "string", "description": "Concrete, in this deck. Not 'the talk could be unclear'." },
+              "grounding_quote": { "type": "string", "description": "Verbatim from a supplied file, showing the failure is live here." },
+              "grounding_file": { "type": "string" },
+              "grounded": { "type": "boolean", "description": "False means you could not find evidence in the supplied files and are proposing it on general reasoning. Say so honestly rather than inventing a quote." },
+              "which_phase": { "type": "string" }
+            }
+          }
+        },
+
+        "rejected_dimensions": {
+          "type": "array",
+          "description": "Dimensions considered and dropped. An empty array asserts nothing was pruned.",
+          "items": {
+            "type": "object",
+            "required": ["name", "why_rejected"],
+            "properties": {
+              "name": { "type": "string" },
+              "why_rejected": { "type": "string" }
+            }
+          }
+        },
+
+        "phases": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["order", "name", "purpose", "what_goes_wrong_if_skipped", "units_of_work", "phase_exit_check"],
+            "properties": {
+              "order": { "type": "integer" },
+              "name": { "type": "string" },
+              "purpose": { "type": "string" },
+              "what_goes_wrong_if_skipped": { "type": "string", "description": "Falsifiable. Name the concrete damage." },
+              "depends_on_phases": { "type": "array", "items": { "type": "integer" } },
+              "units_of_work": {
+                "type": "array",
+                "description": "One entry per separately dispatched call in this phase.",
+                "items": {
+                  "type": "object",
+                  "required": ["unit_id", "assignment", "input_files_needed", "returns", "how_output_is_checked"],
+                  "properties": {
+                    "unit_id": { "type": "string" },
+                    "assignment": { "type": "string", "description": "Specific enough to dispatch verbatim." },
+                    "input_files_needed": { "type": "array", "items": { "type": "string" } },
+                    "returns": { "type": "string" },
+                    "how_output_is_checked": { "type": "string" },
+                    "can_run_concurrently_with": { "type": "array", "items": { "type": "string" } }
+                  }
+                }
+              },
+              "phase_exit_check": { "type": "string", "description": "What must be true before the next phase may consume this one's output." }
+            }
+          }
+        },
+
+        "concurrency": {
+          "type": "object",
+          "required": ["parallel_groups", "real_dependencies", "total_calls", "rough_sequencing"],
+          "properties": {
+            "parallel_groups": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["group", "unit_ids", "why_independent"],
+                "properties": {
+                  "group": { "type": "string" },
+                  "unit_ids": { "type": "array", "items": { "type": "string" } },
+                  "why_independent": { "type": "string" }
+                }
+              }
+            },
+            "real_dependencies": {
+              "type": "array",
+              "description": "Dependencies that genuinely forbid parallelism. Justify each; a false dependency costs wall clock.",
+              "items": {
+                "type": "object",
+                "required": ["from_unit", "to_unit", "why_it_is_real"],
+                "properties": {
+                  "from_unit": { "type": "string" },
+                  "to_unit": { "type": "string" },
+                  "why_it_is_real": { "type": "string" }
+                }
+              }
+            },
+            "total_calls": { "type": "integer" },
+            "rough_sequencing": { "type": "string" }
+          }
+        },
+
+        "minimum_viable_subset": {
+          "type": "object",
+          "required": ["unit_ids", "what_you_give_up", "still_usable"],
+          "properties": {
+            "unit_ids": { "type": "array", "items": { "type": "string" } },
+            "what_you_give_up": { "type": "string" },
+            "still_usable": { "type": "boolean" }
+          }
+        },
+
+        "answers": {
+          "type": "object",
+          "required": ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10", "q11", "q12"],
+          "additionalProperties": false,
+          "patternProperties": { "^q([1-9]|1[0-2])$": { "type": "string", "minLength": 80 } }
+        },
+
+        "failure_analysis": {
+          "type": "object",
+          "required": ["most_likely_failure_of_this_process", "what_would_detect_it", "single_biggest_risk_to_the_defense", "does_this_process_touch_it"],
+          "properties": {
+            "most_likely_failure_of_this_process": { "type": "string" },
+            "what_would_detect_it": { "type": "string" },
+            "single_biggest_risk_to_the_defense": { "type": "string" },
+            "does_this_process_touch_it": { "type": "boolean" }
+          }
+        },
+
+        "what_this_process_does_not_check": {
+          "type": "array",
+          "description": "Things that matter but fall outside the design. An empty array asserts the process is complete, which is a strong claim.",
+          "items": { "type": "string" }
+        },
+
+        "anchoring_self_report": {
+          "type": "object",
+          "description": "Honest self assessment against the anti anchoring instruction.",
+          "required": ["would_this_list_fit_any_defense", "which_dimensions_are_specific_to_this_deck"],
+          "properties": {
+            "would_this_list_fit_any_defense": { "type": "boolean" },
+            "which_dimensions_are_specific_to_this_deck": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+
+    "artifacts_manifest": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "description": "Exactly one archive. Do not list the main JSON here; it cannot contain a hash of itself.",
+      "items": {
+        "type": "object",
+        "required": ["filename", "status", "media_type", "size", "sha256"],
+        "properties": {
+          "filename": { "const": "notesplan_outputs.zip" },
+          "status": { "enum": ["CREATED", "OMITTED"] },
+          "media_type": { "const": "application/zip" },
+          "size": { "type": "integer" },
+          "sha256": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" },
+          "contains": {
+            "type": "array",
+            "description": "process_design.md, phase_table.csv, dispatch_briefs.md.",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "limitations": {
+      "type": "array",
+      "description": "What you could not check or could not answer, and why. An empty array asserts you covered everything asked.",
+      "items": { "type": "string" }
+    },
+
+    "delivery": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": { "enum": ["notesplan_response.json", "notesplan_outputs.zip"] }
+    }
+  }
+}
