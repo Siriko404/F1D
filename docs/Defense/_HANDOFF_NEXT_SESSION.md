@@ -1,4 +1,4 @@
-# HANDOFF — Thesis defense (rewritten 2026-07-21)
+# HANDOFF, thesis defense (rewritten 2026-07-21)
 
 Read this file, then `_SESSION_STATE.json` beside it. Between them they carry the
 whole state. You do not need the previous conversation.
