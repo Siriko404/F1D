@@ -253,3 +253,45 @@ for this than the local agent extending its own list. Its output merges into the
 drafting contract alongside this ledger. Until that merge happens, this ledger
 must not be treated as the complete permitted-claim surface, and no drafting may
 begin from it alone.
+
+## 6. Design parameters, all verified
+
+Checked because two of them were nearly lost. `50%` and `-3` were excluded from
+the numeral sweep by hand as decoration, and both turned out to be load-bearing:
+one defines the treatment arms, the other the omitted baseline. A number excluded
+by eye is a number no check ever sees.
+
+| Deck says | Thesis says | Status |
+|---|---|---|
+| Cash arm at least 50% cash, stock at least 50% stock | "the cash arm, deals that are at least half cash, and the stock comparison arm, deals that are at least half stock" | Confirmed |
+| Omitted baseline e <= -3 plus never-acquirers | "The omitted baseline is the set of quarters three or more before the announcement ($e \leq -3$) together with the never-acquirers" | Confirmed |
+| POST after completion, 4 quarters or fewer | "We cap the post-window at four quarters" | Confirmed |
+| Deal value at least $1 million | "keeping only deals with a transaction value of at least \$1~million" | Confirmed |
+| Residual needs repeated calls | "We drop any CEO with fewer than five calls, because with so few calls we cannot estimate a speaking style" | Confirmed |
+
+## 7. One thing that does not reconcile, deliberately left open
+
+Slide 10 shows GAP and POST bins for the cash and stock panels. The thesis, when
+describing the cash and stock arms, says:
+
+> "For treated firms we drop the quarters after the announcement, so the design
+> sees only the run-up into the deal."
+
+Those two statements cannot both describe the same regression.
+
+The likely resolution is that slide 10 carries two different things, which its
+own text supports: a descriptive side-by-side event study with all four bins, and
+a separate formal pooled test. The sample sizes point the same way, since 29,535
+and 39,819 belong to the "Disclosure-window event study estimated separately for
+cash and stock" while 25,600 and 1,191 belong to the "Pooled cash-specificity
+test".
+
+**This is not being resolved here, on purpose.** Deciding which specification
+produced which panel is exactly the judgement that the examiner map and the
+evidence audit exist to make independently, and a local guess recorded as fact
+would contaminate both. It is recorded as an open row so both web calls see it.
+
+The examiner question it implies is direct: your slide shows post-announcement
+bins for cash and stock, and your thesis says that design drops post-announcement
+quarters, so which is it. The presenter needs an answer that does not begin with
+hesitation.
