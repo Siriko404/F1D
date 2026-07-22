@@ -1,0 +1,347 @@
+{
+  "protocol_version": "2.0",
+  "request_id": "web-call-assistant-system-design-2026-07-14-v1",
+  "created_at": "2026-07-14T13:15:15-04:00",
+  "reasoning_heavy_assessment": {
+    "is_reasoning_heavy": true,
+    "triggers": [
+      "Planning and architecture",
+      "Investigation of an existing workflow and competing implementation approaches",
+      "Consequential technical and security trade-offs",
+      "Synthesis across a substantial product brief, protocol, schemas, and operational examples",
+      "Creation of substantial design and implementation-planning artifacts"
+    ],
+    "justification": "The task is to convert a product vision and an existing manual protocol into a reliable human-in-the-loop system design, requiring independent architectural judgment, web research, risk analysis, migration planning, and test design."
+  },
+  "task_type": "architecture_review_and_implementation_planning",
+  "title": "Design the upgraded ChatGPT Web Call Assistant from the existing protocol",
+  "objective": "Independently analyze the supplied product brief and the current working ChatGPT Web-call protocol, then produce a concrete, implementation-ready design for a user-controlled system that preserves the existing exchange history and reliability principles while adding the proposed Chrome-extension-assisted Go/Done workflow, durable state tracking, validation, recovery, and whole-project completion management.",
+  "scope": {
+    "in_scope": [
+      "Read every uploaded file completely and reconstruct how the current manual system works end to end.",
+      "Distinguish explicit product requirements, current authoritative behavior, examples, assumptions, recommendations, and unresolved choices.",
+      "Evaluate at least three feasible implementation architectures and recommend one using an explicit decision matrix.",
+      "Design responsibilities and boundaries for Codex, the local orchestration layer, the Chrome extension, ChatGPT Web, the filesystem exchange folders, and the user.",
+      "Design the complete Go-to-Done workflow, including preparation, user confirmation, submission, response readiness, collection, validation, revision, acceptance, integration, pause, retry, and failure recovery.",
+      "Design a durable state machine and machine-readable data contracts that remain compatible with or deliberately migrate the existing timestamped request/response exchange layout.",
+      "Address safe request packaging, exact file disclosure, response-to-call association, download handling, browser/session uncertainty, idempotency, resumability, traceability, logging, privacy, least privilege, and protection against collecting unrelated page content.",
+      "Define what can and cannot be reliably automated in a changing ChatGPT Web UI while preserving a clear user-authorized action boundary.",
+      "Provide a phased implementation roadmap with verification gates and a comprehensive test strategy, including mocked tests, browser integration tests, failure injection, manual user-acceptance tests, and rollback criteria.",
+      "Identify the smallest coherent first implementation slice that proves the architecture without pretending the entire product is complete.",
+      "Use current web research where necessary to verify browser-extension platform constraints and relevant ChatGPT/OpenAI product constraints."
+    ],
+    "out_of_scope": [
+      "Writing or modifying repository code in this call",
+      "Returning a finished Chrome extension or executable implementation",
+      "Changing the supplied product requirements, protocol files, schemas, examples, or repository instructions",
+      "Using or requesting secrets, credentials, API keys, browser cookies, or authentication exports",
+      "Analyzing the thesis or defense content contained incidentally in the operational example beyond understanding the call mechanics",
+      "Claiming literal 100 percent reliability in conditions outside the system's control",
+      "Designing hidden, unattended, or user-bypassing automation"
+    ]
+  },
+  "source_authority": [
+    {
+      "rank": 1,
+      "source": "chatgpt_web_call_assistant_brief.txt",
+      "role": "Primary product intent and user-experience requirements",
+      "allowed_uses": [
+        "Determine the target product behavior, role boundaries, human-control requirements, reliability ambition, and completion model",
+        "Identify requirements that the proposed design must satisfy"
+      ],
+      "prohibited_uses": [
+        "Treating deliberately unspecified technical choices as already decided",
+        "Weakening the explicit user-control and no-hidden-automation requirements"
+      ]
+    },
+    {
+      "rank": 2,
+      "source": "F1D_AGENTS.md and CHATGPT_WEB_PROTOCOL.json",
+      "role": "Authoritative current repository gate and manual Web-call protocol",
+      "allowed_uses": [
+        "Reconstruct current triage, exchange-folder, transport, output, authority, and validation rules",
+        "Define backward-compatibility and migration requirements"
+      ],
+      "prohibited_uses": [
+        "Assuming the current manual transport is the required final architecture",
+        "Overriding the product brief where the brief explicitly upgrades the system"
+      ]
+    },
+    {
+      "rank": 3,
+      "source": "WEB_REQUEST_SCHEMA.json, WEB_RESPONSE_SCHEMA.json, EXAMPLE_EXCHANGE_MANIFEST.json, EXAMPLE_WEB_REVIEW_REQUEST.json, and EXAMPLE_WEB_RESPONSE.json",
+      "role": "Current data-contract definitions and evidence of one completed operational exchange",
+      "allowed_uses": [
+        "Assess strengths, omissions, compatibility constraints, status semantics, and validation behavior",
+        "Use the examples to distinguish written protocol from demonstrated practice"
+      ],
+      "prohibited_uses": [
+        "Treating thesis-specific content in the example as relevant product requirements",
+        "Assuming an example field is universally correct merely because it appears once"
+      ]
+    },
+    {
+      "rank": 4,
+      "source": "Current official web documentation and, when necessary, mature primary open-source project documentation",
+      "role": "Evidence for browser-extension, download, storage, messaging, automation, security, and ChatGPT product constraints",
+      "allowed_uses": [
+        "Verify time-sensitive technical constraints and support architecture decisions",
+        "Identify what is robust, brittle, prohibited, or user-mediated in current platforms"
+      ],
+      "prohibited_uses": [
+        "Inventing undocumented ChatGPT APIs or capabilities",
+        "Using marketing claims as proof of reliability",
+        "Allowing external sources to override explicit user requirements"
+      ]
+    }
+  ],
+  "web_research": {
+    "enabled": true,
+    "objectives": [
+      "Verify current Chrome Manifest V3 capabilities and restrictions relevant to user gestures, tabs, downloads, content scripts, storage, native messaging, and local communication",
+      "Verify current official OpenAI or ChatGPT constraints relevant to browser interaction, file upload/download, authentication, automation, and acceptable use",
+      "Identify mature primary-source patterns for resumable, idempotent, human-in-the-loop browser workflows and robust local orchestration"
+    ],
+    "source_requirements": [
+      "Prefer official Chrome/Chromium, MDN, W3C, and OpenAI documentation for platform claims",
+      "Use mature open-source project documentation or repositories only as corroborative implementation evidence",
+      "Record the direct URL, page title, access date, and the exact design claim each source supports",
+      "Separate documented facts from architectural inference",
+      "Do not cite search-result snippets or unverified summaries"
+    ],
+    "citation_required": true
+  },
+  "context": {
+    "current_state": "A functioning manual protocol already exists. Codex creates one timestamped exchange with request and response folders plus a manifest; Sina manually uploads request files and returns downloaded outputs; Web returns only a schema-valid JSON attachment and declared artifacts; Codex validates and integrates. No implemented extension or orchestration service is supplied in this package. The active_request object in CHATGPT_WEB_PROTOCOL.json identifies this system-design exchange; the EXAMPLE_* files document the prior completed exchange.",
+    "desired_state": "A productized, human-authorized orchestration system in which Codex remains the durable project manager, ChatGPT Web performs bounded intellectual work, a Chrome extension reduces manual transfer through explicit Go and Done actions, and every call remains traceable, recoverable, validated, and linked to project completion.",
+    "decision_posture": "Recommend a design, but explicitly expose trade-offs, confidence, dependencies, assumptions, and decisions that require Sina's approval. Preserve useful parts of the existing system unless a justified migration is safer.",
+    "implementation_owner": "Codex will independently inspect the returned design, verify load-bearing claims, decide what to adopt, and perform later implementation and testing only after approval."
+  },
+  "inputs": [
+    {
+      "file": "chatgpt_web_call_assistant_brief.txt",
+      "purpose": "Primary product brief for the upgraded system"
+    },
+    {
+      "file": "F1D_AGENTS.md",
+      "purpose": "Current repository-level universal reasoning gate and operational constraints"
+    },
+    {
+      "file": "CHATGPT_WEB_PROTOCOL.json",
+      "purpose": "Current authoritative manual Web-call protocol"
+    },
+    {
+      "file": "WEB_REQUEST_SCHEMA.json",
+      "purpose": "Current machine-readable work-request contract"
+    },
+    {
+      "file": "WEB_RESPONSE_SCHEMA.json",
+      "purpose": "Current machine-readable Web-response contract"
+    },
+    {
+      "file": "EXAMPLE_EXCHANGE_MANIFEST.json",
+      "purpose": "Operational example of a completed exchange manifest"
+    },
+    {
+      "file": "EXAMPLE_WEB_REVIEW_REQUEST.json",
+      "purpose": "Operational example of a submitted request"
+    },
+    {
+      "file": "EXAMPLE_WEB_RESPONSE.json",
+      "purpose": "Operational example of a validated main JSON response"
+    },
+    {
+      "file": "PASTE_THIS_PROMPT.txt",
+      "purpose": "Current file-only delivery instruction used to initiate a Web call"
+    }
+  ],
+  "requested_work": [
+    {
+      "id": "W1",
+      "action": "Reconstruct and audit the current manual Web-call system from the supplied authoritative files and operational example.",
+      "deliverable": "A concise current-state model and prioritized gap analysis relative to the product brief.",
+      "acceptance_criteria": [
+        "Separates documented behavior from inference",
+        "Identifies which current elements should be retained, extended, migrated, or retired",
+        "Calls out contradictions, ambiguous authority, missing state, weak validation, and reliability risks",
+        "Does not confuse incidental thesis content with system requirements"
+      ]
+    },
+    {
+      "id": "W2",
+      "action": "Develop and compare at least three technically feasible architectures for the upgraded system.",
+      "deliverable": "An explicit decision matrix and one recommended architecture with component boundaries and justified technology choices.",
+      "acceptance_criteria": [
+        "Includes a minimal-extension approach, a local-companion or bridge approach, and at least one credible alternative",
+        "Scores reliability, security, maintainability, UI brittleness, portability, effort, testability, and user control",
+        "States assumptions and platform constraints with citations",
+        "Does not rely on an undocumented private ChatGPT API"
+      ]
+    },
+    {
+      "id": "W3",
+      "action": "Design the end-to-end user workflow, durable state machine, data model, and compatibility/migration strategy.",
+      "deliverable": "A precise lifecycle from call preparation through validated integration, including every normal and exceptional transition.",
+      "acceptance_criteria": [
+        "Defines state ownership, transition initiator, preconditions, side effects, persisted evidence, retry semantics, and terminal conditions",
+        "Handles pause, rejection, revision, duplicate actions, browser restarts, lost tabs, partial downloads, wrong files, stale calls, and concurrent projects",
+        "Explains how Go and Done remain explicit user-authorized actions",
+        "Preserves existing exchange history and provides a safe migration path"
+      ]
+    },
+    {
+      "id": "W4",
+      "action": "Design validation, completion tracking, observability, security, privacy, and recovery controls.",
+      "deliverable": "Concrete validation gates, threat model, failure taxonomy, audit-trail requirements, and recovery playbooks.",
+      "acceptance_criteria": [
+        "Covers request immutability, hashes, schema checks, artifact accounting, provenance, path safety, secret exclusion, least privilege, and unrelated-page-content protection",
+        "Distinguishes call completion, artifact acceptance, integration, and whole-project completion",
+        "Defines safe behavior when the Web UI or model output is ambiguous",
+        "Avoids presenting an aspiration as an absolute reliability guarantee"
+      ]
+    },
+    {
+      "id": "W5",
+      "action": "Produce a phased implementation and verification roadmap suitable for Codex to execute after user approval.",
+      "deliverable": "A dependency-ordered roadmap with a smallest coherent first slice, testing strategy, acceptance gates, rollback points, and deferred capabilities.",
+      "acceptance_criteria": [
+        "Each phase has objective, inputs, outputs, dependencies, risks, tests, exit criteria, and rollback approach",
+        "The first slice demonstrates end-to-end value without requiring the final full product",
+        "Testing includes deterministic unit tests, contract tests, extension tests, local integration tests, failure injection, manual UAT, and regression coverage for the old protocol",
+        "Lists unresolved decisions that must be answered before implementation"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "question": "What exactly does the current system already accomplish, and where does it fail to satisfy the upgraded brief?",
+      "evaluation_criteria": [
+        "Faithfulness to supplied files",
+        "Prioritized rather than generic gaps",
+        "Clear distinction between missing feature and defective feature"
+      ],
+      "required_evidence": "Citations to uploaded filenames and exact fields or sections."
+    },
+    {
+      "id": "Q2",
+      "question": "Which architecture best balances user control, reliability, security, maintainability, and resistance to ChatGPT Web UI changes?",
+      "evaluation_criteria": [
+        "Comparison against credible alternatives",
+        "Platform-feasible component boundaries",
+        "Explicit trade-offs and failure modes"
+      ],
+      "required_evidence": "Decision matrix supported by uploaded requirements and current primary-source web documentation."
+    },
+    {
+      "id": "Q3",
+      "question": "What should the extension automate, what should the local orchestration layer own, and what must remain a direct user action?",
+      "evaluation_criteria": [
+        "Least privilege",
+        "Clear human authorization boundary",
+        "Minimized dependence on fragile DOM automation"
+      ],
+      "required_evidence": "Role-boundary table tied to platform constraints and the product brief."
+    },
+    {
+      "id": "Q4",
+      "question": "What durable state machine and data contracts are required to make calls resumable, idempotent, auditable, and correctly associated?",
+      "evaluation_criteria": [
+        "Complete transition coverage",
+        "Crash and duplicate-action recovery",
+        "Backward compatibility with existing exchanges"
+      ],
+      "required_evidence": "State-transition specification and proposed persisted records."
+    },
+    {
+      "id": "Q5",
+      "question": "How can response collection be made reliable without silently collecting unrelated ChatGPT page content or assuming an undocumented API?",
+      "evaluation_criteria": [
+        "Explicit user review and Done action",
+        "Strong response-to-request binding",
+        "Safe handling of downloads and partial outputs"
+      ],
+      "required_evidence": "Concrete collection workflow, platform citations, and failure/recovery cases."
+    },
+    {
+      "id": "Q6",
+      "question": "What validation and completion rules prevent incomplete or incorrect model output from being silently accepted?",
+      "evaluation_criteria": [
+        "Layered automated and human checks",
+        "Clear correction-call behavior",
+        "Separation of produced, collected, accepted, and integrated"
+      ],
+      "required_evidence": "Validation pipeline and completion invariants."
+    },
+    {
+      "id": "Q7",
+      "question": "What are the principal security, privacy, and operational threats, and which controls are mandatory before first use?",
+      "evaluation_criteria": [
+        "Threats specific to extensions, local filesystem access, browser sessions, and AI outputs",
+        "Actionable mitigations",
+        "Residual-risk disclosure"
+      ],
+      "required_evidence": "Threat model with severity, likelihood, mitigation, detection, and residual risk."
+    },
+    {
+      "id": "Q8",
+      "question": "What should Codex implement and test first, and what evidence is required before expanding automation?",
+      "evaluation_criteria": [
+        "Small but end-to-end slice",
+        "Objective exit criteria",
+        "Safe rollback and preservation of the manual workflow"
+      ],
+      "required_evidence": "Phased roadmap and test matrix."
+    },
+    {
+      "id": "Q9",
+      "question": "Which consequential product and technical decisions remain unresolved and require Sina's explicit approval?",
+      "evaluation_criteria": [
+        "Decision is genuinely consequential",
+        "Options and recommendation are stated",
+        "Default assumptions are not silently converted into requirements"
+      ],
+      "required_evidence": "Prioritized decision register with recommended defaults and consequences."
+    }
+  ],
+  "requested_artifacts": [
+    {
+      "id": "A1",
+      "filename": "CHATGPT_WEB_CALL_ASSISTANT_SYSTEM_DESIGN.md",
+      "media_type": "text/markdown",
+      "purpose": "Authoritative candidate design for review by Sina and Codex before implementation",
+      "required": true,
+      "acceptance_criteria": [
+        "Contains current-state audit, requirements traceability, architecture alternatives and decision matrix, recommended architecture, component contracts, end-to-end sequence, state machine, data model, compatibility/migration, validation pipeline, threat model, failure recovery, observability, and unresolved decisions",
+        "Every normative requirement uses clear MUST/SHOULD/MAY wording or an equally unambiguous convention",
+        "Clearly labels documented facts, recommendations, assumptions, and open decisions",
+        "Includes direct citations for time-sensitive platform claims",
+        "Is detailed enough to support an implementation plan without inventing missing architecture"
+      ]
+    },
+    {
+      "id": "A2",
+      "filename": "CHATGPT_WEB_CALL_ASSISTANT_IMPLEMENTATION_ROADMAP.md",
+      "media_type": "text/markdown",
+      "purpose": "Phased execution and verification roadmap for later Codex implementation",
+      "required": true,
+      "acceptance_criteria": [
+        "Defines a dependency-ordered sequence beginning with a smallest coherent end-to-end slice",
+        "For every phase lists scope, deliverables, affected components, prerequisites, risks, automated tests, manual tests, acceptance evidence, rollback, and deferred work",
+        "Includes a test matrix for normal operation and failure injection",
+        "Preserves the working manual protocol as a fallback until replacement behavior is proven",
+        "Does not falsely claim implementation has occurred"
+      ]
+    }
+  ],
+  "response_contract": {
+    "main_json_filename": "2026-07-14_web_call_assistant_design_review.json",
+    "media_type": "application/json",
+    "schema_file": "WEB_RESPONSE_SCHEMA.json",
+    "actual_downloadable_file_required": true,
+    "additional_artifact_files_allowed": true,
+    "chat_silence_required": true,
+    "only_file_attachments": true
+  },
+  "stop_condition": "Stop only after every uploaded file has been read completely; all W1-W5 work items and Q1-Q9 questions are fully accounted for; current platform claims have been researched and cited; both required artifacts are created as real downloadable files; and the main JSON validates against WEB_RESPONSE_SCHEMA.json and accurately lists every attachment. If any requirement cannot be completed, return only the schema-valid main JSON with status PARTIAL or BLOCKED and record the precise limitation; do not emit chat text."
+}

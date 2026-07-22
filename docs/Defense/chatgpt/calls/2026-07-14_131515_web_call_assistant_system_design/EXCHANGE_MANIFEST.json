@@ -1,0 +1,98 @@
+{
+  "exchange_format_version": "1.0",
+  "exchange_id": "2026-07-14_131515_web_call_assistant_system_design",
+  "created_at": "2026-07-14T13:15:15-04:00",
+  "subject": "ChatGPT Web Call Assistant system design",
+  "request_id": "web-call-assistant-system-design-2026-07-14-v1",
+  "request_directory": "request",
+  "response_directory": "response",
+  "request_status": "SUBMITTED",
+  "response_status": "VALIDATED",
+  "received_at": "2026-07-14T13:48:59-04:00",
+  "validated_at": "2026-07-14T13:48:59-04:00",
+  "expected_response_files": [
+    "2026-07-14_web_call_assistant_design_review.json",
+    "CHATGPT_WEB_CALL_ASSISTANT_SYSTEM_DESIGN.md",
+    "CHATGPT_WEB_CALL_ASSISTANT_IMPLEMENTATION_ROADMAP.md"
+  ],
+  "request_files": [
+    {
+      "filename": "chatgpt_web_call_assistant_brief.txt",
+      "bytes": 25958,
+      "sha256": "521B4DF56037FFE5B36B723EB8902219D801A3300301842596FAA3EA1E4451DF"
+    },
+    {
+      "filename": "CHATGPT_WEB_PROTOCOL.json",
+      "bytes": 6416,
+      "sha256": "0DEBCC343CDD84A870F19E1F11146005D22E0AC25FD001377FB6B35C55218FD6"
+    },
+    {
+      "filename": "EXAMPLE_EXCHANGE_MANIFEST.json",
+      "bytes": 1487,
+      "sha256": "7C53E2F18721BA0766C44185336460081655DDD35405E376393AE1016BCF9AC3"
+    },
+    {
+      "filename": "EXAMPLE_WEB_RESPONSE.json",
+      "bytes": 25784,
+      "sha256": "EAAF1A010D6AA5D3F971BE5601AC8322A03E36BCDA2E531D920712D48B870F6D"
+    },
+    {
+      "filename": "EXAMPLE_WEB_REVIEW_REQUEST.json",
+      "bytes": 16007,
+      "sha256": "26BBFC79181B2BC70E29687845EF5D8FEFA89634AF175EB3A0127273FC9EC6EE"
+    },
+    {
+      "filename": "F1D_AGENTS.md",
+      "bytes": 5538,
+      "sha256": "4028AEDC7A99565ED8A9D2F91994CF351D535A2F1E0220A9714623443850627F"
+    },
+    {
+      "filename": "PASTE_THIS_PROMPT.txt",
+      "bytes": 1454,
+      "sha256": "F6697B008CB46FA004BAE2C45103B78893323EB82A82E08CD3844C4CE290E6CA"
+    },
+    {
+      "filename": "WEB_REQUEST_SCHEMA.json",
+      "bytes": 6081,
+      "sha256": "044889EA731E8066A5FA6AA0D1A66CB82F6B266172C9EFD2A25D5463BEBF5F1F"
+    },
+    {
+      "filename": "WEB_RESPONSE_SCHEMA.json",
+      "bytes": 5779,
+      "sha256": "4DD078CF1A0D56FA6EBED0A5B1CAF6A377505D08E035646C6835C8DC0EE54B59"
+    },
+    {
+      "filename": "WEB_REVIEW_REQUEST.json",
+      "bytes": 21148,
+      "sha256": "B60E65AEFB2E4787804AA35E51A2E7EFEAB802B4E745FA63380CAA3F42CBA00E"
+    }
+  ],
+  "validation": {
+    "request_json_syntax_valid": true,
+    "request_schema_errors": 0,
+    "request_files_hashed": true,
+    "response_schema_errors": 0,
+    "request_id_match": true,
+    "main_filename_match": true,
+    "response_status_complete": true,
+    "response_verdict": "APPROVE",
+    "delivery_chat_text_emitted": false,
+    "artifact_manifest_entry_count": 2,
+    "artifact_sha256_match": true,
+    "all_requested_artifacts_accounted_for": true,
+    "independent_openai_terms_check": "PASSED",
+    "independent_chrome_architecture_spot_check": "PASSED",
+    "semantic_disposition": "ACCEPTED_AS_CANDIDATE_PENDING_USER_DECISIONS",
+    "local_override": "For every future exchange, replace the design's historical PASTE_THIS_PROMPT.txt references with PROMPT_YYYY-MM-DD_HHMMSS.txt using the exact exchange timestamp.",
+    "response_sha256": "7892337715CBBA9B8356D8C4F059E3902F61BADF48EB727DB8A5B6347AE7FBC4",
+    "system_design_sha256": "F2C8ECE0092D0B7873C218534BF5B924E5A52A0B701E14712F5425777DED1E36",
+    "implementation_roadmap_sha256": "6A4E89DA453416D2E70746218986F1BDB757E4F38116016783A6FAE2611FC335"
+  },
+  "rules": [
+    "The request directory contains every file uploaded to ChatGPT Web for this exchange.",
+    "The response directory receives every file returned by ChatGPT Web for this exchange.",
+    "Do not mix files from different Web calls in one exchange folder.",
+    "The request snapshot becomes immutable when submitted.",
+    "Retain the complete exchange after validation and integration."
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "exchange_format_version": "1.0",
+  "exchange_id": "2026-07-14_135714_global_standalone_architecture",
+  "created_at": "2026-07-14T13:57:14-04:00",
+  "subject": "Global standalone GptWebCall architecture",
+  "request_id": "global-gpt-web-call-standalone-architecture-2026-07-14-v1",
+  "request_directory": "request",
+  "response_directory": "response",
+  "request_status": "CANCELLED_BEFORE_SUBMISSION",
+  "response_status": "NOT_REQUESTED",
+  "cancelled_at": "2026-07-14T14:00:35-04:00",
+  "cancellation_reason": "Sina explicitly required that the standalone global-system design and implementation not be delegated. No files from this exchange were submitted to ChatGPT Web.",
+  "expected_response_files": [
+    "2026-07-14_global_standalone_architecture_review.json",
+    "GLOBAL_GPT_WEB_CALL_SYSTEM_SPEC.md",
+    "GLOBAL_GPT_WEB_CALL_IMPLEMENTATION_PLAN.md"
+  ],
+  "validation": {
+    "request_json_syntax_valid": null,
+    "request_schema_errors": null,
+    "request_files_hashed": false,
+    "response_schema_errors": null,
+    "request_id_match": null,
+    "main_filename_match": null,
+    "all_requested_artifacts_accounted_for": null
+  },
+  "rules": [
+    "The request directory contains every file uploaded for this exchange.",
+    "The response directory receives every returned file for this exchange.",
+    "Do not mix files between exchanges.",
+    "The request snapshot becomes immutable when submitted.",
+    "The timestamped prompt filename exactly matches the exchange timestamp."
+  ]
+}

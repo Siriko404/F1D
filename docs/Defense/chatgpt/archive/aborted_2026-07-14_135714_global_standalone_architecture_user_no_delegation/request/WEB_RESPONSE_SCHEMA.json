@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "universal-web-work-response.schema.json",
+  "title": "Universal ChatGPT Web Work Response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "request_id",
+    "status",
+    "verdict",
+    "executive_summary",
+    "work_performed",
+    "question_responses",
+    "findings",
+    "recommendations",
+    "sources_consulted",
+    "artifacts_manifest",
+    "limitations",
+    "next_actions",
+    "provenance",
+    "delivery_contract"
+  ],
+  "properties": {
+    "protocol_version": { "type": "string", "const": "2.0" },
+    "request_id": { "type": "string", "minLength": 1 },
+    "status": { "type": "string", "enum": ["COMPLETE", "PARTIAL", "BLOCKED"] },
+    "verdict": { "type": "string", "enum": ["APPROVE", "REVISE", "REJECT", "NOT_APPLICABLE"] },
+    "executive_summary": { "type": "string", "minLength": 1 },
+    "work_performed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["work_id", "status", "summary"],
+        "properties": {
+          "work_id": { "type": "string", "pattern": "^W[0-9]+$" },
+          "status": { "type": "string", "enum": ["COMPLETE", "PARTIAL", "BLOCKED"] },
+          "summary": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "question_responses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["question_id", "judgment", "answer", "reasoning_summary", "evidence", "required_changes"],
+        "properties": {
+          "question_id": { "type": "string", "pattern": "^Q[0-9]+$" },
+          "judgment": { "type": "string", "enum": ["SUPPORTED", "PARTIALLY_SUPPORTED", "UNSUPPORTED", "NOT_APPLICABLE"] },
+          "answer": { "type": "string", "minLength": 1 },
+          "reasoning_summary": { "type": "string", "minLength": 1 },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["source", "location", "support"],
+              "properties": {
+                "source": { "type": "string", "minLength": 1 },
+                "location": { "type": "string", "minLength": 1 },
+                "support": { "type": "string", "minLength": 1 }
+              }
+            }
+          },
+          "required_changes": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["priority", "severity", "category", "finding", "why_it_matters", "recommended_action"],
+        "properties": {
+          "priority": { "type": "integer", "minimum": 1 },
+          "severity": { "type": "string", "enum": ["CRITICAL", "MAJOR", "MINOR", "INFORMATIONAL"] },
+          "category": { "type": "string", "minLength": 1 },
+          "finding": { "type": "string", "minLength": 1 },
+          "why_it_matters": { "type": "string", "minLength": 1 },
+          "recommended_action": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "recommendations": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "sources_consulted": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source", "source_type", "purpose"],
+        "properties": {
+          "source": { "type": "string", "minLength": 1 },
+          "source_type": { "type": "string", "enum": ["UPLOADED_FILE", "WEB", "OTHER"] },
+          "purpose": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "artifacts_manifest": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["artifact_id", "filename", "media_type", "purpose", "status", "sha256", "validation_summary"],
+        "properties": {
+          "artifact_id": { "type": "string", "pattern": "^A[0-9]+$" },
+          "filename": { "type": "string", "minLength": 1 },
+          "media_type": { "type": "string", "minLength": 1 },
+          "purpose": { "type": "string", "minLength": 1 },
+          "status": { "type": "string", "enum": ["CREATED", "PARTIAL", "BLOCKED"] },
+          "sha256": {
+            "oneOf": [
+              { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+              { "type": "null" }
+            ]
+          },
+          "validation_summary": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "limitations": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "next_actions": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["response_origin", "generated_by_chatgpt_web"],
+      "properties": {
+        "response_origin": { "type": "string", "const": "CHATGPT_WEB_DOWNLOAD" },
+        "generated_by_chatgpt_web": { "type": "boolean", "const": true }
+      }
+    },
+    "delivery_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["main_json_filename", "chat_text_emitted", "attached_files", "all_requested_artifacts_accounted_for"],
+      "properties": {
+        "main_json_filename": { "type": "string", "pattern": "^[A-Za-z0-9._-]+\\.json$" },
+        "chat_text_emitted": { "type": "boolean", "const": false },
+        "attached_files": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "all_requested_artifacts_accounted_for": { "type": "boolean" }
+      }
+    }
+  }
+}

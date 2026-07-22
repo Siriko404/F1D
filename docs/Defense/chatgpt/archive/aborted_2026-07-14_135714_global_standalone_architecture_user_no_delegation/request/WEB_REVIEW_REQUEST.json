@@ -1,0 +1,191 @@
+{
+  "protocol_version": "2.0",
+  "request_id": "global-gpt-web-call-standalone-architecture-2026-07-14-v1",
+  "created_at": "2026-07-14T13:57:14-04:00",
+  "reasoning_heavy_assessment": {
+    "is_reasoning_heavy": true,
+    "triggers": [
+      "Global cross-client architecture",
+      "Consequential state, storage, security, and migration decisions",
+      "Synthesis of a prior system design with superseding requirements",
+      "OneDrive transactional-state risk",
+      "Creation of an implementation-ready standalone repository plan"
+    ],
+    "justification": "The target has changed from a repository-local wrapper to a global standalone system shared by Codex and Claude Code, with all code and durable state under a synchronized Windows directory. This requires a focused independent architecture delta before implementation."
+  },
+  "task_type": "architecture_delta_and_repository_plan",
+  "title": "Convert the Web Call Assistant into a global standalone Codex and Claude Code system",
+  "objective": "Revise the prior candidate architecture into a precise, implementation-ready standalone product whose entire codebase, global state, project registry, exchange evidence, extension, companion, documentation, tests, and installers live under C:\\Users\\sinas\\OneDrive\\Desktop\\Projects\\GptWebCall and which any Codex or Claude Code session can invoke by reading one canonical Markdown protocol file.",
+  "scope": {
+    "in_scope": [
+      "Treat GLOBAL_REQUIREMENTS.md as binding and explicitly reconcile every prior-design assumption that it changes.",
+      "Define the exact standalone repository layout under the canonical root, with clear ownership for every top-level directory and important file.",
+      "Define a single canonical client-neutral WEB_CALL_PROTOCOL.md that can be referenced from any Codex or Claude Code session.",
+      "Define minimal Codex and Claude Code adapter instructions without duplicating the core protocol or state.",
+      "Design the global project registry, external-project registration, approved-root policy, context snapshotting, multi-project isolation, call lineage, and explicit integration boundary.",
+      "Preserve the deterministic timestamped JSON/folder evidence model while locating all new calls and state under the standalone root.",
+      "Resolve the global SQLite/filesystem/event-store architecture under OneDrive, including locking, WAL/sync behavior, conflict detection, backups, restore, crash recovery, and host assumptions.",
+      "Specify exact CLI commands and machine-readable contracts that Codex and Claude Code will use to classify, register, prepare, authorize, collect, validate, accept, integrate, resume, and inspect work.",
+      "Specify how the Chrome extension and native host discover and communicate with the standalone installation without repository-local dependencies.",
+      "Provide a migration strategy that imports or indexes legacy F1D exchanges read-only without rewriting them.",
+      "Produce a dependency-ordered implementation plan with TDD, exact files, verification gates, and a smallest coherent global vertical slice.",
+      "Research current official Codex, Claude Code, Chrome, Windows/OneDrive, SQLite, and filesystem constraints only where needed to support time-sensitive claims."
+    ],
+    "out_of_scope": [
+      "Writing implementation code in this Web call",
+      "Modifying any uploaded file",
+      "Requiring infrastructure inside F1D or another external project",
+      "Duplicating global operational state separately for Codex and Claude Code",
+      "Automatic ChatGPT Send, response scraping, private endpoints, cookie/session access, or automatic/programmatic Output extraction",
+      "Silently modifying external project repositories",
+      "Claiming that a OneDrive-synchronized database is safe without a concrete operating model and recovery controls"
+    ]
+  },
+  "source_authority": [
+    {
+      "rank": 1,
+      "source": "GLOBAL_REQUIREMENTS.md",
+      "role": "Binding superseding requirements for placement, invocation, state, user boundary, naming, and OneDrive",
+      "allowed_uses": ["Determine every mandatory property of the revised system", "Override repository-local assumptions in prior artifacts"],
+      "prohibited_uses": ["Weakening the canonical-root requirement", "Moving permanent infrastructure back into F1D", "Changing the approved manual Send/download and Done-picker boundary"]
+    },
+    {
+      "rank": 2,
+      "source": "chatgpt_web_call_assistant_brief.txt",
+      "role": "Original product intent and human-in-the-loop workflow",
+      "allowed_uses": ["Preserve product roles, bounded context, user authorization, validation, recovery, and completion intent"],
+      "prohibited_uses": ["Override the newer global placement and invocation requirements"]
+    },
+    {
+      "rank": 3,
+      "source": "PRIOR_SYSTEM_DESIGN.md and PRIOR_IMPLEMENTATION_ROADMAP.md",
+      "role": "Previously validated candidate architecture and test roadmap",
+      "allowed_uses": ["Reuse sound state, security, native messaging, validation, migration, and testing decisions", "Identify precise deltas caused by the global requirement"],
+      "prohibited_uses": ["Treat repository-local paths or PASTE_THIS_PROMPT.txt as current", "Assume every prior recommendation remains optimal under OneDrive and cross-client use"]
+    },
+    {
+      "rank": 4,
+      "source": "CURRENT_MANUAL_PROTOCOL.json and CURRENT_CODEX_AGENTS.md",
+      "role": "Current manual fallback and existing Codex invocation evidence",
+      "allowed_uses": ["Preserve proven deterministic behavior and identify migration/adaptation needs"],
+      "prohibited_uses": ["Hard-code new infrastructure under docs/Defense", "Treat the current singleton active_request as the final global authority"]
+    },
+    {
+      "rank": 5,
+      "source": "Current official primary web documentation",
+      "role": "Evidence for time-sensitive client, browser, storage, Windows, OneDrive, SQLite, and security constraints",
+      "allowed_uses": ["Verify feasibility and support design decisions"],
+      "prohibited_uses": ["Use unofficial summaries when primary documentation exists", "Override binding user requirements", "Invent unsupported Codex, Claude Code, ChatGPT, or browser APIs"]
+    }
+  ],
+  "web_research": {
+    "enabled": true,
+    "objectives": [
+      "Verify current supported mechanisms for durable instructions and external CLI invocation in Codex and Claude Code",
+      "Verify Chrome native messaging installation/discovery constraints for a standalone Windows product",
+      "Verify SQLite and OneDrive/synchronized-folder risks and identify a defensible single-host operating model",
+      "Verify Windows atomic file, locking, and path constraints relevant to the proposed layout"
+    ],
+    "source_requirements": [
+      "Use official OpenAI documentation for Codex claims",
+      "Use official Anthropic documentation for Claude Code claims",
+      "Use official Chrome/Chromium, Microsoft/OneDrive, SQLite, Windows, standards, or primary project documentation",
+      "Record direct URL, page title, access date, exact supported claim, and fact-versus-inference",
+      "State bounded uncertainty when official documentation does not establish a claim"
+    ],
+    "citation_required": true
+  },
+  "context": {
+    "superseding_change": "The user stopped the repository-local implementation before production code was written and requires the final product to be a standalone global installation under C:\\Users\\sinas\\OneDrive\\Desktop\\Projects\\GptWebCall.",
+    "approved_baseline": [
+      "Deterministic JSON/folder exchanges remain durable evidence",
+      "Thin Chrome MV3 side panel plus local native companion",
+      "Manual ChatGPT attachment, Send, review, and download",
+      "Done uses explicit native file selection",
+      "No response scraping or automatic/programmatic Output extraction",
+      "Manual fallback remains permanent",
+      "New prompts use PROMPT_YYYY-MM-DD_HHMMSS.txt"
+    ],
+    "implementation_owner": "Codex will independently validate the response and personally implement the accepted system test-first; no delegated agents will be used."
+  },
+  "inputs": [
+    {"file": "GLOBAL_REQUIREMENTS.md", "purpose": "Binding superseding system requirements"},
+    {"file": "chatgpt_web_call_assistant_brief.txt", "purpose": "Original product brief"},
+    {"file": "PRIOR_SYSTEM_DESIGN.md", "purpose": "Prior candidate architecture"},
+    {"file": "PRIOR_IMPLEMENTATION_ROADMAP.md", "purpose": "Prior phased implementation and testing roadmap"},
+    {"file": "CURRENT_MANUAL_PROTOCOL.json", "purpose": "Current deterministic manual protocol"},
+    {"file": "CURRENT_CODEX_AGENTS.md", "purpose": "Current Codex reasoning-gate example"},
+    {"file": "WEB_REQUEST_SCHEMA.json", "purpose": "Request contract used for this call"},
+    {"file": "WEB_RESPONSE_SCHEMA.json", "purpose": "Mandatory response contract"},
+    {"file": "PROMPT_2026-07-14_135714.txt", "purpose": "Timestamped silent file-only Web instruction"}
+  ],
+  "requested_work": [
+    {
+      "id": "W1",
+      "action": "Produce a requirement-by-requirement delta from the prior candidate architecture to the new global standalone system.",
+      "deliverable": "A traceable disposition of every changed assumption and any prior recommendation that must be retained, revised, or rejected.",
+      "acceptance_criteria": ["No binding global requirement is omitted", "Every repository-local path and prompt-name assumption is corrected", "Facts, recommendations, assumptions, and open decisions are labeled"]
+    },
+    {
+      "id": "W2",
+      "action": "Design the exact standalone architecture, repository layout, global state model, cross-client invocation contract, and external-project boundary.",
+      "deliverable": "An implementation-ready global system specification with exact paths, components, interfaces, commands, and data ownership.",
+      "acceptance_criteria": ["All durable product material lives under the canonical root", "Codex and Claude Code share one protocol and state", "External projects remain external and are modified only through explicit integration", "Multi-project isolation and resume behavior are precise"]
+    },
+    {
+      "id": "W3",
+      "action": "Resolve OneDrive, SQLite, locking, atomicity, backup, and recovery constraints for the canonical root.",
+      "deliverable": "A concrete supported operating model and failure/recovery design with evidence and explicit residual risks.",
+      "acceptance_criteria": ["Does not ignore synchronized-folder hazards", "Defines single-host or multi-host behavior", "Defines authoritative records and rebuild strategy", "Defines safe backup/restore and sync-conflict handling"]
+    },
+    {
+      "id": "W4",
+      "action": "Define the canonical WEB_CALL_PROTOCOL.md and CLI/native/extension interfaces used by both clients.",
+      "deliverable": "A complete protocol outline plus exact command surface and interaction sequences for prepare, Go, Done, validation, correction, integration, resume, and fallback.",
+      "acceptance_criteria": ["A fresh Codex or Claude Code session can operate the system from the single Markdown entry point", "Client-specific text is minimal and isolated", "Every command is idempotent or has explicit retry semantics", "No hidden browser automation is introduced"]
+    },
+    {
+      "id": "W5",
+      "action": "Create a dependency-ordered, test-first implementation plan for the standalone repository.",
+      "deliverable": "An exact file-level plan from repository initialization through core, native host, extension, cross-client workflows, migration, security, packaging, and final UAT.",
+      "acceptance_criteria": ["Begins with a smallest coherent global vertical slice", "Names exact files and commands", "Uses red-green-refactor for production behavior", "Includes failure injection, OneDrive cases, manual fallback, migration, and cross-client UAT", "Defines checkpoints and rollback"]
+    }
+  ],
+  "questions": [
+    {"id": "Q1", "question": "What exact architecture and repository layout best satisfies the single canonical root while keeping external projects isolated?", "evaluation_criteria": ["Clear ownership", "No repository-local infrastructure", "Multi-project safety", "Maintainability"], "required_evidence": "Binding requirements, prior-design delta, and primary platform constraints."},
+    {"id": "Q2", "question": "What must WEB_CALL_PROTOCOL.md contain so both Codex and Claude Code can invoke and resume the same global system reliably?", "evaluation_criteria": ["Fresh-session sufficiency", "Client neutrality", "Compaction safety", "Minimal duplication"], "required_evidence": "Exact protocol outline, commands, state discovery, and client-specific adapter boundaries."},
+    {"id": "Q3", "question": "How should global project registration and context snapshotting work without copying or moving entire external projects into GptWebCall?", "evaluation_criteria": ["Least context", "Approved roots", "Immutable snapshots", "Explicit integration"], "required_evidence": "Data model, command flow, path-safety rules, and example project/call layout."},
+    {"id": "Q4", "question": "Can SQLite safely serve as the operational index under the required OneDrive root, and under what exact operating and recovery model?", "evaluation_criteria": ["Primary evidence", "Lock/sync/crash analysis", "No hand-waving", "Recoverability"], "required_evidence": "Supported configuration, prohibited scenarios, authoritative evidence hierarchy, backup/restore, and alternatives if necessary."},
+    {"id": "Q5", "question": "How should the standalone extension and native host locate, authenticate, and communicate with the installation?", "evaluation_criteria": ["Least privilege", "Exact install discovery", "No repository dependency", "Testability"], "required_evidence": "Chrome/Windows constraints and exact handshake/discovery design."},
+    {"id": "Q6", "question": "What is the smallest end-to-end implementation slice that proves global Codex and Claude Code use without building premature orchestration?", "evaluation_criteria": ["End-to-end value", "TDD feasibility", "Manual fallback", "Objective exit gate"], "required_evidence": "Exact files, commands, tests, UAT, and rollback."},
+    {"id": "Q7", "question": "Which prior roadmap features should be deferred, changed, or removed to avoid overengineering the first usable release?", "evaluation_criteria": ["YAGNI", "Risk reduction", "Preservation of final-system path", "Clear deferral triggers"], "required_evidence": "Feature-by-feature disposition with consequences."}
+  ],
+  "requested_artifacts": [
+    {
+      "id": "A1",
+      "filename": "GLOBAL_GPT_WEB_CALL_SYSTEM_SPEC.md",
+      "media_type": "text/markdown",
+      "purpose": "Candidate authoritative standalone specification for Codex implementation",
+      "required": true,
+      "acceptance_criteria": ["Contains architecture delta, exact root layout, component boundaries, client-neutral protocol design, global data model, project/call layout, CLI and native interfaces, OneDrive operating model, security/recovery, migration, requirements traceability, and unresolved decisions", "Uses unambiguous normative language", "Includes direct citations for time-sensitive claims", "Applies PROMPT_YYYY-MM-DD_HHMMSS.txt everywhere"]
+    },
+    {
+      "id": "A2",
+      "filename": "GLOBAL_GPT_WEB_CALL_IMPLEMENTATION_PLAN.md",
+      "media_type": "text/markdown",
+      "purpose": "File-level test-first execution plan for building the standalone system",
+      "required": true,
+      "acceptance_criteria": ["Defines exact repository files and responsibilities", "Provides dependency-ordered phases beginning with one coherent global vertical slice", "Includes red-green-refactor steps and exact verification commands", "Covers Codex and Claude Code UAT, OneDrive failure cases, extension/native host, migration, packaging, security, and rollback", "Does not claim code was implemented"]
+    }
+  ],
+  "response_contract": {
+    "main_json_filename": "2026-07-14_global_standalone_architecture_review.json",
+    "media_type": "application/json",
+    "schema_file": "WEB_RESPONSE_SCHEMA.json",
+    "actual_downloadable_file_required": true,
+    "additional_artifact_files_allowed": true,
+    "chat_silence_required": true,
+    "only_file_attachments": true
+  },
+  "stop_condition": "Stop only after reading every upload completely, accounting for W1-W5 and Q1-Q7, researching and citing every load-bearing current platform claim, resolving the OneDrive operating model without evasion, producing both required downloadable artifacts, and validating the main JSON against WEB_RESPONSE_SCHEMA.json. If blocked, return only the schema-valid main JSON with PARTIAL or BLOCKED status and no chat text."
+}

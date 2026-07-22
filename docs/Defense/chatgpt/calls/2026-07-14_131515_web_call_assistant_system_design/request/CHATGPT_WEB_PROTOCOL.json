@@ -42,7 +42,6 @@
     "request": "Each exchange has request/ containing every file Sina uploads for that call and no response files.",
     "response": "Each exchange has response/ where Sina places every file ChatGPT Web returns for that call and no files from another exchange.",
     "manifest": "Each exchange root contains EXCHANGE_MANIFEST.json linking its request ID, subject, request directory, response directory, status, and expected outputs.",
-    "prompt_filename": "Every new request instruction file is named PROMPT_YYYY-MM-DD_HHMMSS.txt, using the exact local creation timestamp in the exchange-folder name. Do not create new PASTE_THIS_PROMPT.txt files.",
     "persistence": "The complete exchange folder remains in place after validation. Completed calls are not split into global upload and received directories.",
     "legacy_archive": "Pre-exchange-layout packages and protocols are preserved under archive without deletion."
   },
@@ -51,9 +50,9 @@
     "For a reasoning-heavy task, Codex gathers only the necessary inputs and creates WEB_REVIEW_REQUEST.json.",
     "The request encodes objective, scope, source authority, research permissions, requested work, questions, artifact requirements, acceptance criteria, and stop condition.",
     "Codex creates one timestamped subject exchange folder under calls/, with request/ and response/ subfolders plus EXCHANGE_MANIFEST.json.",
-    "Codex places the request, relevant input files, WEB_RESPONSE_SCHEMA.json, and PROMPT_YYYY-MM-DD_HHMMSS.txt in that exchange's request/ folder; the prompt timestamp exactly matches the exchange-folder timestamp.",
+    "Codex places the request, relevant input files, WEB_RESPONSE_SCHEMA.json, and PASTE_THIS_PROMPT.txt in that exchange's request/ folder.",
     "Codex validates JSON syntax and schemas, verifies source hashes and package contents, updates continuity records, and tells Sina the package is ready.",
-    "Sina uploads every file in the exchange's request/ folder and pastes its timestamped PROMPT_YYYY-MM-DD_HHMMSS.txt into ChatGPT Web.",
+    "Sina uploads every file in the exchange's request/ folder and pastes its PASTE_THIS_PROMPT.txt into ChatGPT Web.",
     "ChatGPT Web performs the authorized work and returns only file attachments: the required main JSON response plus any requested artifacts.",
     "Sina saves every downloaded file into the same exchange's response/ folder and tells Codex they are ready.",
     "Codex validates the main JSON against WEB_RESPONSE_SCHEMA.json, checks the artifact manifest against the returned files and acceptance criteria, independently verifies important claims, and integrates only warranted conclusions.",
@@ -74,7 +73,7 @@
     "response_directory": "docs/Defense/chatgpt/calls/2026-07-14_131515_web_call_assistant_system_design/response",
     "request_id": "web-call-assistant-system-design-2026-07-14-v1",
     "request_file": "docs/Defense/chatgpt/calls/2026-07-14_131515_web_call_assistant_system_design/request/WEB_REVIEW_REQUEST.json",
-    "status": "VALIDATED_AWAITING_USER_ARCHITECTURE_DECISIONS",
+    "status": "PREPARED_AWAITING_WEB_RESPONSE",
     "expected_main_response": "2026-07-14_web_call_assistant_design_review.json",
     "required_artifacts": [
       "CHATGPT_WEB_CALL_ASSISTANT_SYSTEM_DESIGN.md",

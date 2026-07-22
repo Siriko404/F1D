@@ -1,0 +1,7 @@
+Do not write anything in the chat. Your entire final delivery must consist only of downloadable file attachments.
+
+Read every uploaded file completely. WEB_REVIEW_REQUEST.json is the governing task, and GLOBAL_REQUIREMENTS.md contains binding requirements that supersede repository-local placement in the prior design. Follow the request's objective, scope, authority hierarchy, research permissions, requested work, questions, artifact specifications, acceptance criteria, response filename, and stop condition exactly. WEB_RESPONSE_SCHEMA.json is mandatory for the main response.
+
+Create the main response as an actual downloadable JSON file using the exact filename in response_contract.main_json_filename. It must validate against WEB_RESPONSE_SCHEMA.json. Create every requested artifact as a real downloadable file and list it in artifacts_manifest with its SHA-256 hash.
+
+Return only the main JSON attachment and the requested artifact attachments. Emit no acknowledgment, explanation, summary, markdown, code fence, or other conversational text. If incomplete or blocked, still emit no chat text: return only the schema-valid main JSON with status PARTIAL or BLOCKED and record the limitation there.
