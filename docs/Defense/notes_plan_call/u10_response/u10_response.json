@@ -1,0 +1,440 @@
+{
+  "request_id": "f1d-notes-u10-evidence-audit-v1",
+  "status": "COMPLETE",
+  "results": {
+    "inventory": [
+      {
+        "filename": "PROMPT_2026-07-22_142032.md",
+        "bytes": 4268,
+        "read_in_full": true
+      },
+      {
+        "filename": "speaker_notes_evidence_audit_u10_inputs.zip",
+        "bytes": 282955,
+        "read_in_full": true
+      },
+      {
+        "filename": "DEFENSE_LEDGER.md",
+        "bytes": 25898,
+        "read_in_full": true
+      },
+      {
+        "filename": "rev22_deck.pdf",
+        "bytes": 190140,
+        "read_in_full": true,
+        "pages": 13
+      },
+      {
+        "filename": "rev22_slide_text.md",
+        "bytes": 16035,
+        "read_in_full": true
+      },
+      {
+        "filename": "SPEAKER_NOTES.md",
+        "bytes": 12507,
+        "read_in_full": true
+      },
+      {
+        "filename": "SPEAKER_NOTES_BUDGET.md",
+        "bytes": 7290,
+        "read_in_full": true
+      },
+      {
+        "filename": "thesis_flat.tex",
+        "bytes": 162954,
+        "read_in_full": true
+      },
+      {
+        "filename": "thesis_robustness_tables.tex",
+        "bytes": 13671,
+        "read_in_full": true
+      },
+      {
+        "filename": "thesis_tables.tex",
+        "bytes": 39922,
+        "read_in_full": true
+      },
+      {
+        "filename": "u01_claim_ledger.md",
+        "bytes": 14294,
+        "read_in_full": true
+      },
+      {
+        "filename": "u03_response.json",
+        "bytes": 28611,
+        "read_in_full": true
+      },
+      {
+        "filename": "u03_risk_report.md",
+        "bytes": 22704,
+        "read_in_full": true
+      },
+      {
+        "filename": "WEB_RESPONSE_SCHEMA.json",
+        "bytes": 8850,
+        "read_in_full": true
+      },
+      {
+        "filename": "WEB_REVIEW_REQUEST.json",
+        "bytes": 7640,
+        "read_in_full": true
+      }
+    ],
+    "slides_audited": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "sentence_census": {
+      "total_sentences": 209,
+      "by_type": {
+        "thesis_fact": 43,
+        "slide_explanation": 33,
+        "result": 14,
+        "limitation": 47,
+        "transition": 35,
+        "interpretation": 23,
+        "number": 14
+      },
+      "unclassifiable": []
+    },
+    "findings": [
+      {
+        "id": "U10-F01",
+        "slide": 1,
+        "severity": "MINOR",
+        "spoken_sentence": "Not the prepared script: the unrehearsed part.",
+        "what_is_wrong": "Calling the Q&A “unrehearsed” is stronger than the thesis. The thesis distinguishes it from the prepared script but says it is less scripted and cannot be fully prepared, not that executives do no rehearsal or preparation.",
+        "what_the_source_supports": "The Q&A is less scripted than prepared remarks and cannot be fully staged in advance.",
+        "supporting_quote": "its question-and-answer (Q&A) session is far less scripted than the prepared remarks that open it.",
+        "source_file": "thesis_flat.tex",
+        "safe_replacement": "Not the prepared script: the less-scripted Q&A.",
+        "word_delta": 1,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F02",
+        "slide": 2,
+        "severity": "MAJOR",
+        "spoken_sentence": "In the United States there is no rule forcing it to announce merger talks.",
+        "what_is_wrong": "“No rule” is an absolute legal claim. The thesis deliberately states the narrower proposition that there is no general duty to disclose confidential merger talks.",
+        "what_the_source_supports": "A firm generally may remain silent about confidential merger talks, but speaking triggers the duty not to mislead.",
+        "supporting_quote": "A firm has no general duty to disclose confidential merger talks, so staying silent is permitted; but once it speaks, it may not mislead",
+        "source_file": "thesis_flat.tex",
+        "safe_replacement": "In the United States there is generally no duty to announce confidential merger talks.",
+        "word_delta": 0,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F03",
+        "slide": 2,
+        "severity": "MAJOR",
+        "spoken_sentence": "The only move left is to answer around the question.",
+        "what_is_wrong": "The sentence makes deflection the only available response and omits the ordinary option of declining to comment or remaining silent. That omission is especially exposed because the thesis itself treats silence and non-answers as deliberate, informative choices.",
+        "what_the_source_supports": "The firm may stay silent. If it chooses to answer, it cannot confirm the undisclosed deal or make a misleading denial; deflection is one possible response, not the only one.",
+        "supporting_quote": "managers make deliberate disclosure-and-silence choices during conference calls, and ... a non-answer or a silence is itself informative to the market",
+        "source_file": "thesis_flat.tex",
+        "safe_replacement": "It may decline comment; if it answers, it cannot confirm or mislead.",
+        "word_delta": 2,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F04",
+        "slide": 5,
+        "severity": "MINOR",
+        "spoken_sentence": "One distinction runs through all of it.",
+        "what_is_wrong": "The absolute claim that answers are not written in advance exceeds the construct boundary. Executives can prepare likely Q&A topics and talking points even though the exchange is not a prepared script.",
+        "what_the_source_supports": "The analyst discussion is less scripted than the prepared presentation and cannot be fully prepared in advance.",
+        "supporting_quote": "the unscripted Q&A, the call segment managers cannot fully prepare in advance",
+        "source_file": "thesis_flat.tex",
+        "safe_replacement": "The answers are less scripted, and the answers are where I look.",
+        "word_delta": 5,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F05",
+        "slide": 5,
+        "severity": "MAJOR",
+        "spoken_sentence": "What I did not find was work reading the uncertainty in a chief executive's unscripted answers, in the specific window when an acquisition is agreed but not yet announced.",
+        "what_is_wrong": "The sentence presents the observed pre-announcement quarter as a verified period in which the acquisition is already agreed. The data observe announcement-relative quarters, not agreement, negotiation, materiality, or CEO-knowledge onset.",
+        "what_the_source_supports": "The study examines an announcement-anchored anticipatory window before the deal becomes public; actual negotiation or agreement onset is unobserved.",
+        "supporting_quote": "The data mark the announcement date, not when negotiations began.",
+        "source_file": "rev22_slide_text.md",
+        "safe_replacement": "What I did not find was work reading uncertainty in a chief executive's less-scripted answers in the announcement-anchored window before an acquisition becomes public.",
+        "word_delta": -5,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F06",
+        "slide": 6,
+        "severity": "MINOR",
+        "spoken_sentence": "What survives tilts toward larger, better-covered firms with stable leadership.",
+        "what_is_wrong": "“Stable leadership” is not an established sample characteristic. The five-call rule establishes repeated observations for a CEO, not a validated construct of leadership stability.",
+        "what_the_source_supports": "The residual sample skews toward larger, better-covered firms and requires CEOs with at least five calls.",
+        "supporting_quote": "We drop any CEO with fewer than five calls, because with so few calls we cannot estimate a speaking style",
+        "source_file": "thesis_flat.tex",
+        "safe_replacement": "What survives tilts toward larger, better-covered firms and CEOs with repeated calls.",
+        "word_delta": 2,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F07",
+        "slide": 6,
+        "severity": "MINOR",
+        "spoken_sentence": "The smallest firms are not in here at all.",
+        "what_is_wrong": "The categorical statement that the smallest firms are entirely absent is not demonstrated by the thesis. Execucomp coverage is described as roughly the S&P 1500, and the thesis states a generalizability boundary rather than a verified zero count for every smallest-firm category.",
+        "what_the_source_supports": "The sample may not extend to smaller firms outside the better-covered sample.",
+        "supporting_quote": "the sample ... approximately the S&P 1500, may not extend to ... the smaller firms outside it.",
+        "source_file": "thesis_flat.tex",
+        "safe_replacement": "Many smaller firms fall outside this sample.",
+        "word_delta": -2,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F08",
+        "slide": 7,
+        "severity": "MINOR",
+        "spoken_sentence": "The problem is that people differ.",
+        "what_is_wrong": "The sentence creates a false dichotomy: persistent speaking style can affect the word count, but the thesis does not establish that such variation is purely personality and contains no information.",
+        "what_the_source_supports": "Some observed uncertainty reflects persistent personal speaking style, which must be separated from call-varying language.",
+        "supporting_quote": "Some of the uncertainty in how a manager speaks is simply persistent personal style.",
+        "source_file": "thesis_flat.tex",
+        "safe_replacement": "That can reflect persistent style rather than call-specific information.",
+        "word_delta": 3,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F09",
+        "slide": 7,
+        "severity": "MINOR",
+        "spoken_sentence": "If I compare across people, I am mostly measuring personality.",
+        "what_is_wrong": "“Mostly” is a quantitative dominance claim that the thesis does not estimate here. The comparison would mix persistent style with call-specific variation, but the share attributable to each is not established in the talk.",
+        "what_the_source_supports": "Cross-person comparisons confound call-specific uncertainty with persistent executive speaking style.",
+        "supporting_quote": "Call language is no exception. ... [there is] a persistent, manager-specific component ... and a time-varying, call-level residual",
+        "source_file": "thesis_flat.tex",
+        "safe_replacement": "Comparing across people would mix call-specific uncertainty with persistent speaking style.",
+        "word_delta": 1,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F10",
+        "slide": 7,
+        "severity": "MAJOR",
+        "spoken_sentence": "What remains is the residual: the part of this call's uncertainty that the speaker's usual style does not account for.",
+        "what_is_wrong": "The definition makes the residual sound style-only. The first-stage residual also removes prepared-presentation uncertainty, analyst-question uncertainty, call negativity, firm-performance variables, market returns, and year effects. Since the slide says everything downstream depends on the measure, this omission materially misdefines the estimand.",
+        "what_the_source_supports": "UncResCEO is answer uncertainty left unexplained by CEO fixed effects, other call-language measures, firm-performance and return controls, and year effects.",
+        "supporting_quote": "It nets out two things at once: the persistent style ... and observable call-level factors -- the prepared-presentation uncertainty, the analysts' question uncertainty, call negativity, contemporaneous performance, and the year.",
+        "source_file": "thesis_flat.tex",
+        "safe_replacement": "What remains is answer uncertainty unexplained by modeled speaking style, call language, performance, returns, and year.",
+        "word_delta": -4,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F11",
+        "slide": 9,
+        "severity": "MAJOR",
+        "spoken_sentence": "Cash does not fall at announcement.",
+        "what_is_wrong": "This repeats the exact null-versus-absence error the script correctly avoids for residual uncertainty. The PRE1-minus-GAP cash contrast is small and statistically insignificant; that supports no detected decline, not proof that cash does not fall.",
+        "what_the_source_supports": "No statistically significant cash decline is detected between PRE1 and GAP; the significant cash decline occurs from GAP to POST.",
+        "supporting_quote": "Drop: PRE1 - GAP ... 0.0006 ... (0.0039); Drop: GAP - POST ... 0.0210 ... (0.0042)",
+        "source_file": "thesis_tables.tex",
+        "safe_replacement": "No cash decline is statistically detected at announcement.",
+        "word_delta": 2,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F12",
+        "slide": 9,
+        "severity": "MINOR",
+        "spoken_sentence": "Information settles when it becomes public.",
+        "what_is_wrong": "The measured object is residual answer language, not “information” itself. The wording silently upgrades a language estimate into a statement about the latent information state.",
+        "what_the_source_supports": "The residual language estimate declines after public announcement; the study does not directly measure whether information has settled.",
+        "supporting_quote": "the language moves with the information and settles when the information comes out.",
+        "source_file": "thesis_flat.tex",
+        "safe_replacement": "The residual language estimate falls when the deal becomes public.",
+        "word_delta": 4,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F13",
+        "slide": 11,
+        "severity": "MAJOR",
+        "spoken_sentence": "This puts a residual uncertainty measure inside the specific window where a deal is agreed and not yet public.",
+        "what_is_wrong": "The contribution statement again treats agreement as observed inside the focal quarter. This conflicts with slide 12's correct admission that negotiation onset is unknown.",
+        "what_the_source_supports": "The contribution places residual uncertainty in an announcement-anchored pre-public window, not in a verified post-agreement interval.",
+        "supporting_quote": "Event time is announcement-anchored. Negotiation onset, materiality onset, and CEO-knowledge onset are not observed",
+        "source_file": "u03_risk_report.md",
+        "safe_replacement": "This puts a residual uncertainty measure in the announcement-anchored quarter before a deal becomes public.",
+        "word_delta": -4,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F14",
+        "slide": 12,
+        "severity": "MINOR",
+        "spoken_sentence": "The second is who it describes.",
+        "what_is_wrong": "The limitation slide repeats the unsupported “stable leadership” characterization. Repetition does not convert the five-call construction rule into evidence of leadership stability.",
+        "what_the_source_supports": "The evidence describes larger, better-covered firms and CEOs observed on enough calls to estimate a speaking style.",
+        "supporting_quote": "the residual is estimated only for chief executives with enough calls to fix a speaking style, which skews the language sample toward larger, more heavily covered firms",
+        "source_file": "thesis_flat.tex",
+        "safe_replacement": "Larger, better-covered firms and CEOs with repeated calls, in one country and one period.",
+        "word_delta": 8,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F15",
+        "slide": 13,
+        "severity": "MAJOR",
+        "spoken_sentence": "When an acquisition moves from private to public, the unscripted part of the earnings call carries a trace of it, and that trace is readable.",
+        "what_is_wrong": "The closing converts an aggregate, hedged empirical interpretation into a categorical statement about what happens when an acquisition moves public. It drops the thesis's load-bearing “patterns suggest” qualifier and can be heard as a per-deal trace.",
+        "what_the_source_supports": "Taken together, the estimated patterns suggest an aggregate, readable anticipatory language trace around the private-to-public transition.",
+        "supporting_quote": "Taken together, these patterns suggest that the unscripted language of earnings calls carries a readable, anticipatory trace of a deal's passage from private to public",
+        "source_file": "thesis_flat.tex",
+        "safe_replacement": "These patterns suggest that less-scripted earnings-call answers carry a readable trace around a deal's move from private to public.",
+        "word_delta": -6,
+        "confidence": "HIGH"
+      },
+      {
+        "id": "U10-F16",
+        "slide": 13,
+        "severity": "MAJOR",
+        "spoken_sentence": "It is not a mechanism, and it is not something anyone could trade on.",
+        "what_is_wrong": "The thesis does not test whether anyone could trade on the pattern. “No prescription” and a correlational design do not establish non-tradability; the sentence makes an impossibility claim beyond the evidence.",
+        "what_the_source_supports": "The thesis offers no investor prescription and does not evaluate the pattern as a tradable signal.",
+        "supporting_quote": "We draw no prescription for investors, managers, or regulators ... the contribution is to characterize a regularity, not to recommend acting on it.",
+        "source_file": "thesis_flat.tex",
+        "safe_replacement": "It is not a mechanism, and it is not tested here as a tradable signal.",
+        "word_delta": 1,
+        "confidence": "HIGH"
+      }
+    ],
+    "cross_slide_checks": [
+      {
+        "from_slide": 9,
+        "claim_about": "The PRE1 rise is qualitatively the same pattern as slide 8 but is a different estimate from a matched sample and specification.",
+        "holds": true,
+        "explanation": "Sentences 9.9–9.10 explicitly correct the prior error: they say “same rise,” not same coefficient, and identify the 28,102 matched firm-quarter sample."
+      },
+      {
+        "from_slide": 9,
+        "claim_about": "The detection-versus-absence discipline applied to residual uncertainty is also applied to cash.",
+        "holds": false,
+        "explanation": "Slide 9 correctly says a nonsignificant language estimate is a failure to detect, then says categorically that cash “does not fall” despite a nonsignificant PRE1–GAP cash contrast. This is U10-F11."
+      },
+      {
+        "from_slide": 11,
+        "claim_about": "The focal quarter is a known interval after agreement and before publicity.",
+        "holds": false,
+        "explanation": "Slide 11 says the deal is agreed in the window, while slide 12 correctly says negotiation onset is unknown and the quarter is only an announcement-anchored proxy. This is U10-F13."
+      },
+      {
+        "from_slide": 10,
+        "claim_about": "The cash-versus-stock conclusion is based on a direct pooled difference rather than significance on one side only.",
+        "holds": true,
+        "explanation": "The narration accurately distinguishes the direct Wald test from comparing separate significance labels and preserves the “concentration, not cash-only” ceiling."
+      },
+      {
+        "from_slide": 12,
+        "claim_about": "The stock comparison limitation refers back to the payment-choice cautions on slide 3.",
+        "holds": true,
+        "explanation": "Slide 3 says payment choice is nonrandom and the comparison motivates rather than identifies; slide 12's reference is consistent with that boundary."
+      },
+      {
+        "from_slide": 13,
+        "claim_about": "The closing detection sentence is consistent with slide 9's null-versus-equivalence boundary.",
+        "holds": true,
+        "explanation": "“No longer detectable” states a statistical detection boundary rather than asserting that the underlying trace is absent or exactly zero."
+      },
+      {
+        "from_slide": 13,
+        "claim_about": "The closing cash-versus-stock statement stays inside slide 10's direct-comparison result.",
+        "holds": true,
+        "explanation": "“Stronger for cash deals than for stock deals” is supported by the significant direct cash-minus-stock Wald contrast and does not say cash-only."
+      }
+    ],
+    "slide13_closing": {
+      "survives_challenge": true,
+      "reasoning": "Yes. “It is no longer detectable” is already the safe statistical form: it describes what the design fails to distinguish from baseline after announcement and does not equate nondetection with absence. An examiner can still ask about power or equivalence, but the sentence itself concedes that boundary. The problem in the closing is the separate tradability sentence, not this one.",
+      "better_wording": "It is not statistically detectable after the deal becomes public."
+    },
+    "slide2_no_comment": {
+      "defeats_the_argument": false,
+      "reasoning": "A standing no-comment policy defeats the script's claim that deflection is the only available move, but it does not defeat the empirical premise. The thesis itself allows silence and strategic reticence, treats a non-answer as informative, and does not require a legal duty to answer every question. The prediction is best understood conditionally: when the firm proceeds with the routine call and the executive engages, constrained or strategic withholding may appear in answer language. The study tests an aggregate language pattern, not whether every CEO is forced to answer a deal rumor.",
+      "hole_in_argument_or_only_narration": "NARRATION",
+      "what_to_say_if_asked": "A no-comment policy is a real alternative, so I should not say deflection is the only move. The firm may remain silent or refuse the premise. My prediction is conditional on the routine call continuing and the executive engaging: once the firm speaks, it cannot confirm the confidential deal or mislead, and silence or a non-answer is itself part of the withholding behavior. The evidence tests the aggregate language pattern, not a legal necessity to answer every rumor."
+    },
+    "answers": {
+      "q1": "Sentence 13.7 is most likely to lose marks: “It is not a mechanism, and it is not something anyone could trade on.” The thesis never tests tradability, so an examiner can defeat the claim with one question—where is that test? Replace the second clause with “it is not tested here as a tradable signal.”",
+      "q2": "Yes. The notes say, “It is not a mechanism, and it is not something anyone could trade on.” The thesis says only, “We draw no prescription for investors, managers, or regulators ... the contribution is to characterize a regularity, not to recommend acting on it.” No prescription is not evidence of non-tradability. The categorical smallest-firm and stable-leadership statements also exceed the supplied source.",
+      "q3": "Yes. Slide 11 says the measure sits in a window “where a deal is agreed and not yet public,” but slide 12 correctly says the data do not reveal when talks began and PRE1 is only a proxy window. Slide 9 also contradicts its own detection discipline: it refuses to infer absence from a nonsignificant language estimate, then says cash “does not fall” on a nonsignificant cash contrast. The slide 9 versus slide 8 estimate identity, slide 10 direct comparison, and slide 13 detection wording otherwise reconcile.",
+      "q4": "Yes. “It is no longer detectable once the deal is public” survives because it states a detection result, not that the underlying phenomenon is absent or exactly zero. The same-length, even more explicit form is: “It is not statistically detectable after the deal becomes public.”",
+      "q5": "No. A no-comment policy breaks slide 2's “only move” narration, not the whole empirical argument. The firm may remain silent, and the thesis explicitly treats silence and non-answers as informative choices. The defensible premise is conditional: when the call proceeds and the executive engages, the firm cannot confirm the confidential deal or make a misleading denial, and the resulting withholding may appear in answer language.",
+      "q6": "Yes, the full attenuation and PRE2 rebuttals should remain in Q&A. The podium already uses the correct minimal forms—PRE2 is “no detected elevation,” and PRE1 is a proxy because onset is unobserved. The longer bias-direction and power arguments would consume the limitation slide and invite side disputes before anyone raises them. One podium correction is still required: cash must also be described as “no detected decline” at announcement.",
+      "q7": "The defensive voice is strongest in “this is the one I would push on if I were you,” “Be careful how I say,” “I would rather state it now than defend it later,” and “I will not claim one.” Some defense is useful because it marks real inferential ceilings, but the examiner-role play and anticipated combat make the presenter sound as though he is litigating objections before explaining the evidence. Keep the substantive boundaries; cut the adversarial framing first when rehearsing for time.",
+      "q8": "Delete exactly the 100 words in sentences 8.3, 8.4, and 8.12–8.17: the spoken coefficient/standard-error definitions, the confidence-interval explanation and derivation, and the sample-count sentence. The slide already displays those items, while the remaining script still states the result, p-value, effect size, clustering, within-firm comparison, and causal boundary. What breaks is oral provenance for the derived interval and verbal repetition of the estimate, standard error, and sample size; nothing load-bearing in the substantive argument breaks."
+    },
+    "clean_dimensions": [
+      {
+        "dimension": "Slide 9 versus slide 8 estimate identity",
+        "what_was_checked": "Every sentence referring back to slide 8 was checked against MA1 and MA2. The notes now correctly say the qualitative rise is similar but the coefficient, sample, and specification are different."
+      },
+      {
+        "dimension": "Cash-versus-stock inferential form",
+        "what_was_checked": "Slides 3, 4, 10, 12, and 13 were checked for payment-choice endogeneity, separate-significance fallacy, direct Wald testing, and cash-only wording. Apart from the unrelated sample-language findings, the direct-comparison narrative stays within the thesis."
+      },
+      {
+        "dimension": "Causal and mechanism boundaries",
+        "what_was_checked": "All thirteen scripts were searched sentence by sentence for causal verbs, mechanism claims, and war-chest claims. The talk repeatedly states descriptive scope and no identified mechanism; no war-chest mechanism is introduced."
+      },
+      {
+        "dimension": "Slide 13 detection-versus-absence wording",
+        "what_was_checked": "The exact closing sentence was compared with the PRE1–GAP result, the prior examiner audit, and every nearby paraphrase. It says nondetection rather than disappearance or equivalence and is clean."
+      },
+      {
+        "dimension": "Appendix-only analysis leakage",
+        "what_was_checked": "Every substantive sentence was checked for robustness, scrutiny, bid-ask, withdrawal, stacked-deal, logit, or other appendix results not displayed in the main deck. None is introduced as a podium result."
+      },
+      {
+        "dimension": "Numerical surface",
+        "what_was_checked": "Not re-audited by design. The request states that all deck numerals, coefficient/standard-error pairs, and spoken-number-to-slide traces already passed deterministic checks; this audit checked only what each number was said to mean."
+      }
+    ],
+    "verdict": {
+      "present_as_is": false,
+      "reason": "16 meaning-level defects remain, including an unsupported legal absolute, an omitted no-comment option, a cash null narrated as absence, unobserved agreement timing, an incomplete residual definition, and an untested tradability claim."
+    }
+  },
+  "artifacts_manifest": [
+    {
+      "filename": "u10_outputs.zip",
+      "status": "CREATED",
+      "media_type": "application/zip",
+      "size": 20152,
+      "sha256": "0d7f67c9a20b6ab3ab1c21f3353b48e478be28d18b59869fb0e3f431dee9b1d7",
+      "contains": [
+        "audit_findings.md",
+        "sentence_census.csv",
+        "safe_wordings.csv"
+      ]
+    }
+  ],
+  "limitations": [
+    "The audit used only the supplied attachments; web research was prohibited.",
+    "Numerical correctness, word budgets, sentence-length gates, jargon glossing, and forbidden phrasing were not recomputed because the request states that deterministic checks already passed.",
+    "The classification assigns one primary type to each sentence even where a sentence could plausibly carry a secondary rhetorical function."
+  ],
+  "delivery": [
+    "u10_response.json",
+    "u10_outputs.zip"
+  ]
+}
