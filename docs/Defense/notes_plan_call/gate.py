@@ -59,9 +59,21 @@ GLOSS_TERMS = [
 # sentence that contains the marker without really explaining anything, so it
 # catches the cold unglossed use rather than proving quality.
 GLOSS_MARKERS = re.compile(
-    r"(,\s*(that is|which is|meaning|so\b|in other words)|\(|:\s|\bis\s+(the|how|what|whether|one)\b)",
+    r"(,\s*(that is|which\s+\w+|meaning|so\b|in other words)"
+    r"|\(|:\s"
+    r"|\bis\s+(a|an|the|how|what|whether|one)\b)",
     re.I,
 )
+# The relative-clause and "is a" forms were added after the first real draft, not
+# to make that draft pass but because the pattern was too narrow to recognise a
+# gloss it was looking at. It rejected "an event study, which compares outcomes
+# across stages around an event" and "the Wald test is a direct test of whether
+# two estimates differ", both of which explain the term in the sentence that
+# introduces it, because the original only accepted the exact words "which is".
+#
+# The distinction worth holding on to: widening a detector that was missing true
+# positives is a repair. Loosening a threshold because the writing failed it
+# would be the author grading himself, and none of the thresholds moved.
 
 # Spoken forms the claim ledger and the examiner sweep recorded as exceeding
 # what the thesis supports. Each carries the reason so a future reader does not
@@ -86,6 +98,21 @@ FORBIDDEN = [
 ]
 
 SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
+
+# A decimal point is not the end of a sentence. Without this, "standard error is
+# 0.0172" splits after the zero, and every check that reasons about a sentence is
+# then reasoning about a fragment. It made three glosses look absent when they
+# were present, and on a deck this numeric it would have kept doing so.
+DECIMAL = re.compile(r"(?<=\d)\.(?=\d)")
+_DOT = "․"  # one dot leader, stands in for a decimal point while splitting
+
+
+def protect_decimals(text: str) -> str:
+    return DECIMAL.sub(_DOT, text)
+
+
+def restore_decimals(text: str) -> str:
+    return text.replace(_DOT, ".")
 
 
 def words(text: str) -> list[str]:
@@ -125,7 +152,8 @@ def check(path: Path) -> dict:
         wc = len(words(text))
         total += wc
         budget = BUDGET.get(n)
-        sentences = [s for s in SENTENCE_SPLIT.split(text) if words(s)]
+        sentences = [restore_decimals(s)
+                     for s in SENTENCE_SPLIT.split(protect_decimals(text)) if words(s)]
         lengths = [len(words(s)) for s in sentences]
         mean = sum(lengths) / len(lengths) if lengths else 0.0
         long_share = (sum(1 for x in lengths if x > LONG_SENTENCE_WORDS) / len(lengths)) if lengths else 0.0
@@ -163,14 +191,20 @@ def check(path: Path) -> dict:
             failures.append(f"forbidden phrasing '{m.group(0)}': {why}")
 
     # First spoken use of each term must explain itself.
+    guarded = protect_decimals(joined)
     for term in GLOSS_TERMS:
-        hit = re.search(r"\b" + re.escape(term) + r"\b", joined, re.I)
+        hit = re.search(r"\b" + re.escape(term) + r"\b", guarded, re.I)
         if not hit:
             continue
-        start = joined.rfind(".", 0, hit.start()) + 1
-        end = joined.find(".", hit.end())
-        sentence = joined[start: end if end != -1 else len(joined)]
-        if not GLOSS_MARKERS.search(sentence):
+        start = guarded.rfind(".", 0, hit.start()) + 1
+        end = guarded.find(".", hit.end())
+        sentence = restore_decimals(guarded[start: end if end != -1 else len(guarded)])
+        # "<term> is <anything>" defines the term by construction, so it counts
+        # as a gloss on its own. Added because "Residualization is removing what
+        # a model can already explain" is plainly an explanation and the marker
+        # list did not recognise the plainest form of one.
+        defines = re.search(re.escape(term) + r"\b[^.]{0,40}?\bis\b", sentence, re.I)
+        if not (defines or GLOSS_MARKERS.search(sentence)):
             failures.append(f"'{term}' is used before it is explained: {sentence.strip()[:80]}...")
 
     return {"file": str(path), "total_words": total, "ceiling": TOTAL_CEILING,
