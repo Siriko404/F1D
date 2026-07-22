@@ -23,11 +23,14 @@ finished, approved, and production-locked.
 
 - **Deliverable 1, audit the deck: DONE.** No blocker, no major defect. Every
   finding is applied in REV22.
-- **Deliverable 2, speaker notes for all 13 slides: NOT STARTED.** This is next.
-  One step gates it and only Sina can do it: the speaking-rate measurement in
-  `SPEAKING_RATE_TEST.md`. See section 5.
+- **Deliverable 2, speaker notes for all 13 slides: DONE, 2026-07-22.** Written,
+  independently audited, corrected, and passing every deterministic check.
+  `SPEAKER_NOTES.md`, 2108 words. **See section 5a, which supersedes section 5.**
 - Deliverable 3, the indexed Q&A appendix: architecture approved, content not
-  designed, out of scope until the notes exist.
+  designed. Now the next piece of writing work.
+
+**What is actually left is not writing.** It is a timed rehearsal, which has
+never happened, and two questions the thesis cannot answer. Section 5a.
 
 ## 2. Read this before trusting the REV21 ledger
 
@@ -151,7 +154,81 @@ One trap is encoded in that script and worth knowing: **slide 8 must be measured
 against the drawn axis ticks, never the tick labels.** Text centres sit about two
 points below the rules they annotate, which looks exactly like a real defect.
 
-## 5. The next action, concretely
+## 5a. The next action, concretely. This supersedes section 5.
+
+The notes exist. `SPEAKER_NOTES.md`, 2108 words, every slide inside its measured
+budget. Section 5 below is kept only as the record of how they were planned.
+
+**Before editing a single word of them, run the gate.**
+
+```
+cd docs/Defense/notes_plan_call
+python gate.py ../SPEAKER_NOTES.md
+```
+
+It checks length against the measured budget, sentence complexity, dashes,
+first-use glossing of technical terms, sixteen forbidden phrasings, and that
+every number spoken on a slide is visible on that slide.
+
+**A green gate does not mean the notes are correct.** It means they are worth
+auditing. An independent audit found sixteen meaning-level defects in a draft
+that passed every one of these checks. The gate is a floor, never a ceiling.
+
+### The mistake this project keeps making
+
+Four times now, in different clothes: treating a statistically insignificant
+result as evidence the thing is absent.
+
+It appeared as "no pre-trend" from a flat PRE2 coefficient. It appeared in the
+attenuation argument, where an unsigned bias was called conservative. It appeared
+as "indistinguishable from baseline" on slide 9. And it appeared in the first
+draft of these notes, where the script explained the discipline carefully and
+then, two paragraphs later, said flatly that cash does not fall at announcement.
+
+**If you edit any sentence about a null result, check it against this first.**
+The correct form is "no detected decline", never "no decline".
+
+### What is genuinely left
+
+**A timed rehearsal.** Never done. The budget contains a fifteen percent delivery
+discount that is a judgement, not a measurement, and only a rehearsal against a
+clock tests it. Until then 2108 words is a ceiling, not a target. Count filler
+while doing it: the rate test asked for recordings so filler could be heard, the
+recordings were made, and no count ever came back.
+
+**Two questions the thesis cannot answer.** Both confirmed by reading it.
+
+1. Why the sample ends in 2018. The thesis states the window repeatedly and never
+   justifies the endpoint. Only Sina knows the real reason.
+2. How accurate the speaker attribution is. The thesis says transcripts are
+   parsed to identify speaker role and never quantifies error. **Do not answer
+   that misattribution just adds noise.** That is the unsigned-bias error above
+   wearing another hat.
+
+**The Q&A pack.** The two conditional rebuttals live there rather than on the
+podium, because slide 12 has about 120 words and the pair costs about 129.
+Passage 5 of `SPEAKING_RATE_TEST.md` is close to the wording both should use.
+
+### Where the supporting work lives
+
+| Path | What it holds |
+|---|---|
+| `notes_plan_call/u01_claim_ledger.md` | What may and may not be said, every ceiling quoted from a verified source |
+| `notes_plan_call/u02_response/` | Script architecture, twelve transitions, thirty six plain-language framings with word costs |
+| `notes_plan_call/u03_response/` | Examiner attack map across all thirteen slides |
+| `notes_plan_call/u10_response/` | Audit of the finished scripts, sixteen findings, all applied |
+| `notes_plan_call/EXECUTION_ALLOCATION.md` | Which work runs locally, which needs an outside reader, and why difficulty is the wrong criterion |
+
+### One thing about the tooling
+
+`GptWebCall` used to report an honest `PARTIAL` response as an **invalid file**,
+sending the reader to repair something that was perfectly fine. Prompts here
+explicitly ask for `PARTIAL`, so the system punished the behaviour it requested.
+Fixed 2026-07-22 with five regression tests; delivery integrity and work
+completeness are now separate fields. If the watcher says `READY (PARTIAL)`,
+**read it**: the files are intact and the responder has named its own gaps.
+
+## 5. How the notes were planned. History only, superseded by 5a.
 
 Write speaker notes for all 13 slides, against **REV22**. Slides 5, 8, 11, 12 and
 13 were reworded, so quote REV22 and never REV21.

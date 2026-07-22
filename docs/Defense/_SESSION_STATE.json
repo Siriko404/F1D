@@ -1,16 +1,15 @@
 {
   "schema_version": 1,
-  "written_on": "2026-07-21",
-  "written_by": "Claude Code session, F1D working tree",
+  "written_on": "2026-07-22",
+  "written_by": "Claude Code session ac163a89, continued",
   "purpose": "Machine-readable state of the thesis defense work. Written so that a session which loses its conversation history can resume without asking the user to reconstruct anything. Read _HANDOFF_NEXT_SESSION.md first; this file is the precise companion to it.",
   "read_order_for_a_fresh_session": [
-    "docs/Defense/_HANDOFF_NEXT_SESSION.md",
-    "docs/Defense/_SESSION_STATE.json",
-    "docs/Defense/SPEAKING_RATE_TEST.md",
-    "docs/Defense/REV22/REV22_CHANGE_LOG.md",
-    "docs/Defense/_DEFENSE_LEDGER.md",
-    "docs/Defense/audit/AUDIT_REGISTER.md",
-    "docs/Defense/REV21/THESIS_DEFENSE_CONTINUITY_LEDGER_REV21.json"
+    "docs/Defense/SPEAKER_NOTES.md, the actual scripts to deliver.",
+    "docs/Defense/SPEAKER_NOTES_BUDGET.md, why each slide is the length it is.",
+    "docs/Defense/notes_plan_call/EXECUTION_ALLOCATION.md, which work is local and which is a web call, and why.",
+    "docs/Defense/notes_plan_call/u01_claim_ledger.md, what may and may not be said, with verified ceilings.",
+    "docs/Defense/notes_plan_call/u10_response/audit_findings.md, the sixteen defects found in the notes and fixed.",
+    "This file, for machine state."
   ],
   "the_deck_to_present": {
     "path": "docs/Defense/REV22/production/thesis_defense_main_deck_slides_01-13_rev22.pdf",
@@ -23,22 +22,7 @@
     "still_authoritative_for": "The operating contract, the 38 approved decisions, the visual system, the production and QA workflow, the do-not-repeat lessons, and the appendix architecture for when the appendix work resumes.",
     "not_authoritative_for": "current_state.next_action, and the identity of the production deck, which is now REV22"
   },
-  "current_state": {
-    "stage": "Main-deck audit complete. All findings applied as REV22. Speaker notes not started.",
-    "next_action": "Write speaker notes for all 13 main-deck slides, against REV22.",
-    "next_action_is_blocked_by": "One step only Sina can do: the speaking-rate measurement in docs/Defense/SPEAKING_RATE_TEST.md. Until speaker_notes_brief_when_that_work_starts.measured_speaking_rate is filled in, every per-slide word budget would be invented.",
-    "deliverable_1_deck_audit": "complete, and the four open wording items are fixed in REV22",
-    "deliverable_2_speaker_notes": "not started, gated on the speaking-rate measurement",
-    "deliverable_3_qa_appendix": "architecture approved in REV21, content not designed, out of scope until the notes are done",
-    "slides_that_differ_from_rev21": [
-      5,
-      8,
-      11,
-      12,
-      13
-    ],
-    "total_edits": 11
-  },
+  "current_state": "The deck is locked at REV22 and the speaker notes for all thirteen slides are written, audited by an independent pass, corrected, and passing every deterministic check. The remaining work is not writing. It is rehearsal against a clock, and two questions only the presenter can answer.",
   "open_decisions": [],
   "closed_decisions": [
     {
@@ -194,13 +178,18 @@
       "familiarity_ratio_used": 1.15,
       "delivery_discount_used": 0.85,
       "delivery_discount_is_a_judgement_not_a_measurement": "Reading familiar text at a desk has no slide changes, no eye contact, no thinking on your feet and no examiner in the room. I applied a 15 percent discount to every warm rate to cover that. It is not measured and cannot be from this test. The direction is deliberate: under-estimating the rate produces fewer words and a talk that finishes early, which is nearly free, while over-estimating produces a talk that overruns, which is the expensive failure with this committee."
-    }
+    },
+    "status": "DONE, 2026-07-22. All thirteen scripts written, audited and corrected."
   },
-  "untested_and_owed": [
-    "The deck has never been rehearsed or timed. The 18 minute target is a design assumption, not a measured fact. Only the presenter can close this.",
-    "No adversarial second reviewer ran over the claims and examiner passes, so their completeness rests on a single read each. The mechanical dimensions do not share this limitation.",
-    "The thesis itself was not audited. It is submitted and approved and out of scope. A faithful deck reproducing a thesis error would pass every check here."
-  ],
+  "untested_and_owed": {
+    "rehearsal": "Never done. The delivery discount inside the word budget is a judgement, not a measurement, and only a timed full-deck rehearsal tests it. Treat 2108 words as a ceiling rather than a target until that happens.",
+    "filler_words": "Never counted. The rate test asked for recordings so filler could be heard. The recordings were made and no count came back. If rehearsal runs long while the word counts were respected, filler is the first suspect.",
+    "two_questions_only_the_presenter_can_answer": [
+      "Why the sample ends in 2018. The thesis states the window repeatedly and never justifies the endpoint. Confirmed by reading it, not assumed.",
+      "How accurate the speaker attribution is. The thesis asserts transcripts are parsed to identify speaker role and never quantifies error. Do not answer that misattribution merely adds noise; that is the unsigned-bias error this project has already made."
+    ],
+    "qa_pack": "Not written. The two conditional rebuttals belong here rather than on the podium: attenuation cannot be signed because onset is unobserved, and the flat quarter two before the announcement is an absence of detected elevation. Passage 5 of SPEAKING_RATE_TEST.md is close to the wording both should use and runs about seventy seconds for the pair."
+  },
   "web_call_infrastructure": {
     "root": "C:/Users/sinas/OneDrive/Desktop/Projects/GptWebCall",
     "protocol": "WEB_CALL_PROTOCOL.md at that root, read it before preparing any call",
@@ -279,5 +268,29 @@
     "path": "C:/Users/sinas/OneDrive/Desktop/DEFENSE_DECK_REV22.pdf",
     "sha256": "ae433f9ebe5add99dbd2a9ba132bb719f5325ce5d290fefc76453cae4889e882",
     "note": "A copy of the production deck on the Desktop, made only because it is easier to open. The file under REV22/production is the authority. If the two ever disagree, the Desktop copy is stale."
-  }
+  },
+  "speaker_notes": {
+    "file": "docs/Defense/SPEAKER_NOTES.md",
+    "total_words": 2108,
+    "ceiling": 2110,
+    "form": "Full spoken scripts, complete sentences, to be rehearsed until internalised rather than read aloud from the page.",
+    "gate": "docs/Defense/notes_plan_call/gate.py. Run it after any edit: python gate.py ../SPEAKER_NOTES.md",
+    "what_the_gate_checks": "Per-slide and total length against the measured budget, mean sentence length, long-sentence share, a hard per-sentence ceiling, em and en dashes, first-use glossing of twenty three technical terms, sixteen forbidden phrasings, and a trace requiring every number spoken on a slide to be visible on that slide.",
+    "what_the_gate_cannot_check": "Whether a sentence is true, whether it lands, or whether it belongs on its slide. A green gate means the draft is worth auditing, never that it is correct. That is why the independent audit exists and why it found sixteen things the gate could not see.",
+    "audit": "docs/Defense/notes_plan_call/u10_response/. Sixteen findings, verdict do not present as is, all sixteen applied.",
+    "the_error_worth_remembering": "The script explained that a small estimate with a wide error bar is a failure to detect rather than a demonstration of absence, and then two paragraphs later said flatly that cash does not fall at announcement. The discipline was stated and broken inside the same slide. That is the fourth appearance of this error class in this project. If any sentence is edited later, check it against this pattern first."
+  },
+  "what_was_done_this_session": [
+    "Measured the presenter's speaking rate across five registers, twice each, and derived the per-slide word budget.",
+    "Verified every number on the deck against the thesis: 90 numerals and all 25 coefficient and standard error pairs. Nobody had done this, because the earlier audit was never given the thesis tables.",
+    "Ran two parallel web calls, one for script architecture and a lay framing bank, one sweeping all thirteen slides for attackable claims.",
+    "Resolved the slide 10 specification question that had been logged as unreconciled, and confirmed the resolution against the thesis.",
+    "Wrote all thirteen scripts, built the deterministic gate before writing them, and ran an independent audit that found sixteen defects, all applied.",
+    "Fixed a validator bug in GptWebCall that reported honest PARTIAL responses as invalid files, and added five regression tests."
+  ],
+  "known_gate_limitations": [
+    "The gloss detector is a heuristic. It catches a term used cold and cannot prove an explanation is any good.",
+    "Back-references such as 'the result from the previous slide' are surfaced as warnings because code cannot verify them. One such claim was false and is fixed; check any new one by hand.",
+    "The number trace proves a figure is visible on its slide. It does not prove the sentence around it describes that figure correctly."
+  ]
 }
