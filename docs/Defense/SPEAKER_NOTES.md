@@ -184,9 +184,13 @@ event. Four stages: two quarters before announcement, the quarter immediately
 before, the window after announcement but before closing, and after closing.
 
 Take the language first. Two quarters out, the estimate is 0.0068 with a standard
-error of 0.0178. Nothing detected. One quarter out, it is 0.0473, and that is the
-result from the previous slide. Then in the announced-but-not-closed window it
-falls to 0.0018.
+error of 0.0178. Nothing detected. One quarter out, it is 0.0473.
+
+Say that carefully. It is the same rise as the previous slide, but it is not the
+same number. This is a second estimate, on a matched sample of 28,102
+firm-quarters, so it lands close to the first without being identical.
+
+Then in the announced-but-not-closed window it falls to 0.0018.
 
 Be careful how I say what happens next, because there are two different claims
 here and only one of them is supported.

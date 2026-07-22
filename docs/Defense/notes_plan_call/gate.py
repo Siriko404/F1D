@@ -27,6 +27,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+SLIDE_TEXT = HERE.parent / "REV22" / "rev22_slide_text.md"
 
 # From SPEAKER_NOTES_BUDGET.md. Measured, not chosen.
 BUDGET = {1: 65, 2: 150, 3: 150, 4: 150, 5: 120, 6: 185, 7: 185,
@@ -180,7 +181,16 @@ def check(path: Path) -> dict:
     if total < TOTAL_FLOOR:
         warnings.append(f"total {total} words is below {TOTAL_FLOOR}, the talk may run short")
 
-    joined = "\n".join(notes[n] for n in sorted(notes))
+    # Collapse every run of whitespace before any phrase-level check.
+    #
+    # Without this a forbidden phrase escapes simply by falling across a line
+    # break. This file is wrapped at eighty characters, so "clean counterfactual"
+    # with the wrap between the two words was not matched, and the check reported
+    # clean. Verified: a two-line sample containing the phrase scored zero hits
+    # before this line existed. The most important check in the gate could be
+    # bypassed by where a paragraph happened to wrap, which is silent and depends
+    # on nothing the author would ever notice.
+    joined = re.sub(r"\s+", " ", " ".join(notes[n] for n in sorted(notes)))
 
     for ch, name in (("—", "em dash"), ("–", "en dash")):
         if ch in joined:
@@ -207,9 +217,83 @@ def check(path: Path) -> dict:
         if not (defines or GLOSS_MARKERS.search(sentence)):
             failures.append(f"'{term}' is used before it is explained: {sentence.strip()[:80]}...")
 
+    failures += trace_numbers(notes)
+    warnings += flag_back_references(notes)
+
     return {"file": str(path), "total_words": total, "ceiling": TOTAL_CEILING,
             "per_slide": per_slide, "failures": failures, "warnings": warnings,
             "passed": not failures}
+
+
+# Numbers spoken aloud that the slide does not show. Each needs a reason, because
+# an unexplained exception here is how a wrong figure gets said in a room.
+SPOKEN_NUMBER_EXCEPTIONS = {
+    "0.301": "slide 8 prints 0.3010; trailing zero only",
+    "15.3": "slide 8 prints the derivation 0.0461 / 0.3010 = 15.3%",
+    "95": "the interval label on slides 8, 9 and 10",
+    "5": "the five-call minimum, shown on slide 6 as 'five calls'",
+    "3": "slide 3 is named aloud when pointing back to the stock comparison",
+    "0.039": "slide 10 prints the same p-value in leading-dot form, as P .039",
+}
+
+NUMERAL = re.compile(r"(?<![\w.])\d[\d,]*(?:\.\d+)?")
+
+
+def trace_numbers(notes: dict[int, str]) -> list[str]:
+    """Every number spoken on a slide must be visible on that slide.
+
+    The gate checked length, sentence shape, jargon and banned phrasings, and
+    checked nothing at all about whether a figure was right. That is the failure
+    this project keeps meeting: a check that passes while the property it names
+    is false. The deck's numbers were verified against the thesis, but the notes
+    are new prose with figures re-keyed by hand, and nothing had traced them.
+
+    It caught a real one on first run. The draft said the quarter-before estimate
+    on slide 9 'is the result from the previous slide'. Slide 8 reports 0.0461 on
+    27,622 firm-quarters; slide 9 reports 0.0473 on 28,102. Different estimate,
+    different sample, different specification.
+    """
+    slide_text = SLIDE_TEXT.read_text(encoding="utf-8")
+    parts = re.split(r"^## Slide (\d+)\s*$", slide_text, flags=re.M)
+    visible = {int(parts[i]): parts[i + 1] for i in range(1, len(parts), 2)}
+
+    problems = []
+    for n in sorted(notes):
+        shown = set(NUMERAL.findall(visible.get(n, "")))
+        shown |= {x.replace(",", "") for x in shown}
+        for token in NUMERAL.findall(notes[n]):
+            if token in shown or token.replace(",", "") in shown:
+                continue
+            if token in SPOKEN_NUMBER_EXCEPTIONS:
+                continue
+            problems.append(
+                f"slide {n}: says '{token}' but slide {n} does not show it; "
+                f"trace it or add it to SPOKEN_NUMBER_EXCEPTIONS with a reason"
+            )
+    return problems
+
+
+# Claims of the form "same as before" are not computable, but they are exactly
+# where a figure gets attached to the wrong result. Surfaced for a human and for
+# the independent audit rather than guessed at.
+BACK_REFERENCE = re.compile(
+    r"(the (result|number|estimate|figure) from the (previous|last) slide"
+    r"|same (result|number|estimate|figure) as"
+    r"|as (I|we) (said|showed)"
+    r"|earlier slide)",
+    re.I,
+)
+
+
+def flag_back_references(notes: dict[int, str]) -> list[str]:
+    flagged = []
+    for n in sorted(notes):
+        for m in BACK_REFERENCE.finditer(notes[n]):
+            flagged.append(
+                f"slide {n}: back-reference '{m.group(0)}' must be checked by hand; "
+                f"this phrasing is where a number gets attached to the wrong result"
+            )
+    return flagged
 
 
 def main() -> int:
