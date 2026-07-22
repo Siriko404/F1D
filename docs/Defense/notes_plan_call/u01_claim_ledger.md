@@ -44,15 +44,63 @@ computation. They are nonetheless **the deck's own derivation, not a thesis
 result.** The thesis reports coefficients and standard errors and does not print
 these confidence intervals anywhere.
 
+**Correction to this section, made after checking the deck rather than assuming.**
+The first version of this entry treated the derived intervals as a live risk. They
+are not, because the deck already says so on screen. Slide 8 carries "Approximate
+95% CI derived from the reported estimate and SE" and slide 10 carries
+"Approximate 95% CIs derived from reported SEs."
+
+So the deck is already honest and the risk is not that the audience is misled by
+the slide. The risk is that the **note upgrades what the slide downgrades**, by
+saying the thesis reports an interval when the slide behind the presenter says it
+was derived.
+
 **Permitted wording.** The approximate 95 percent interval implied by the
 estimate and its standard error runs from about 0.012 to about 0.080.
 
-**Forbidden wording.** The thesis reports a confidence interval of. It does not.
+**Forbidden wording.** The thesis reports a confidence interval of. It does not,
+and the slide says as much.
 
 An examiner who asks where that interval is printed must get the honest answer
 that it is computed from the reported estimate and standard error, given
-immediately and without hesitation. Hesitating on a question with a clean answer
-costs more than the question does.
+immediately and without hesitation. Hesitating on a question the slide already
+answers costs more than the question does.
+
+## 1b. Coefficient and standard error pairs
+
+Matching a number one at a time proves only that the string occurs somewhere in
+the thesis. It does not prove it is the same quantity from the same
+specification. A coefficient could match a number in an unrelated table and the
+check would pass while the property it names is false, which is the same failure
+that made the first substring pass unreliable.
+
+The stronger test pairs each coefficient with its own standard error, as the deck
+prints them, and requires the two to occur **together** in the thesis within a
+short window. A spurious single match will not survive it, because an unrelated
+table would have to contain both numbers side by side.
+
+Twenty-five coefficient and standard error pairs were parsed from the structure
+of slides 8, 9 and 10.
+
+| Result | Count |
+|---|---|
+| Structured coefficient and SE pairs on the deck | 25 |
+| Confirmed co-occurring in the thesis | **25** |
+| Not confirmed | 0 |
+
+That covers every statistical result the deck displays, including all four event
+study bins on both clocks, both adjacent-stage Wald tests, the cash lag, the
+cash-minus-stock Wald difference and every cash and stock subsample coefficient.
+
+**This is the check the previous audit could not run.** Its own limitations
+recorded that the thesis tables were absent from the archive it was given, so the
+deck's numbers had never been verified against the thesis by anyone until now.
+The tables were packaged for this call specifically to close that gap.
+
+A worked example of why the pairing matters: the deck's 15.3 percent on slide 8
+matches the thesis not as a loose coincidence but as an explicit derivation, since
+the thesis itself writes "roughly 15.3\%, taking $0.0461$ against the all-universe
+standard deviation of $0.3010$".
 
 ## 2. Source silence register
 
@@ -183,3 +231,25 @@ the CEO's answers, not raw uncertainty and not a timestamp.
 Both web calls receive this. The original design ran the architecture and the
 examiner map without it, which would have had both reasoning about claims whose
 support had never been checked.
+
+## 5. What this ledger does not cover
+
+Stated plainly rather than left for someone to discover.
+
+**Numbers are complete. Prose claims are not.** Every numeral and every
+coefficient and standard error pair on the deck has been checked. The unit
+specification also asked for every academic claim and interpretation on all
+thirteen slides to be laddered with a permitted ceiling, and that was done for
+the six sentences already known to be dangerous, not for the full surface.
+
+The gap is therefore the ordinary interpretive sentence on a slide nobody has
+flagged. That is precisely the shape of the last error caught in this project,
+where slide 5 carried an overclaim for a long time because it had never been
+re-read after the slides around it were edited.
+
+**How it is closed.** The examiner map, run as a web call, sweeps all thirteen
+slides for attackable oral claims with fresh eyes, which is a better instrument
+for this than the local agent extending its own list. Its output merges into the
+drafting contract alongside this ledger. Until that merge happens, this ledger
+must not be treated as the complete permitted-claim surface, and no drafting may
+begin from it alone.
