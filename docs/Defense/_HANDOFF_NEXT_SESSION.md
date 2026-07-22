@@ -79,13 +79,20 @@ concession. That was too defeatist. Two real rebuttals exist and belong in the
 speaker notes:
 
 1. Misflagged quarters dilute a binary treatment indicator, which drags the
-   estimate toward zero. The effect was found anyway, so the flaw is
-   conservative. Sina already owns this sentence for the generated-regressand
-   question, ratified 2026-07-09: *"The error is random and unrelated to deal
-   timing. It can't create a pre-deal pattern, only blur one. The run-up survived
-   that blur."*
-2. The event study shows the signal is tightly timed with no pre-trend. `PRE2` is
-   flat at 0.0068 and insignificant; `PRE1` is 0.0473 at the one-percent level.
+   estimate toward zero. **State this conditionally, never flatly.** An
+   adversarial audit rated the flat version MAJOR: attenuation requires the
+   misclassification to be nondifferential, and onset is unobserved, so the bias
+   cannot be signed. The safe sentence is *"Under classical nondifferential
+   contamination it would attenuate, but onset is unobserved, so I cannot sign
+   the bias. The coefficient is an announcement-anchored average association, not
+   an identified effect of negotiation exposure."*
+2. The event study shows the signal is concentrated. `PRE2` is 0.0068 and
+   insignificant; `PRE1` is 0.0473 at the one-percent level. **Say "no
+   statistically detected elevation at PRE2", never "no pre-trend".** PRE2's
+   approximate interval runs from about -0.028 to 0.042, which is wide enough to
+   contain real earlier drift, and the same audit rated the certainty claim
+   MAJOR. The thesis avoids this trap elsewhere by calling its scrutiny rule-out
+   *"a failure to find, not a powered equivalence test"*.
 
 **Do not confuse the two.** The onset can be wrong in two directions and `PRE2`
 only catches one of them:
@@ -110,10 +117,17 @@ in the notes.
 
 Full detail: `audit/AUDIT_REGISTER.md`. Raw pass outputs: `audit/findings/`.
 
+REV22 was then audited adversarially in its own right; that response is at
+`REV22/audit_call/response/`. It reproduced the PDF diff independently and found
+the artifact clean, but it caught one overclaim the first audit missed. Slide 5
+had asserted *"No prior work occupies this exact cell"* where the thesis says
+*"To our knowledge..."* and calls it a positioning claim. Fixed as `R22-11`. The
+lesson generalises: slide 5 was never edited, so nobody re-read it.
+
 ## 4. Reproduce everything instead of believing it
 
 ```
-python docs/Defense/REV22/verify_rev22.py          # 21 checks, the deck you present
+python docs/Defense/REV22/verify_rev22.py          # 23 checks, the deck you present
 python docs/Defense/audit/scripts/verify_deck.py   # 13 checks, the audited REV21
 ```
 
@@ -123,8 +137,9 @@ No model is involved in either. Exit code 0 means every check reproduced.
 machine render like the machine that built the locked deck? It renders a
 byte-identical copy of the REV21 source and compares all 13 slides against the
 locked PDF; the answer is yes, 538 spans, 0.0000 pt drift. Second, did the edit
-touch only what it should? Exactly slides 8, 11, 12 and 13 differ, no drawing
-moved anywhere, and nothing overflows its page.
+touch only what it should? Exactly slides 5, 8, 11, 12 and 13 differ, the charts
+on slides 8, 9 and 10 are untouched, no drawing moved on any slide the edits did
+not reach, and nothing overflows its page.
 
 `verify_deck.py` targets REV21 and still expects the two dash constructions REV22
 removed. That is correct. It checks the audited artifact, not the deck to be

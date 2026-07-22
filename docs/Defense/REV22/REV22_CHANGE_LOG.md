@@ -11,7 +11,7 @@ Deck to present:
 
 ## 1. What changed
 
-Ten string replacements in the deck source HTML. The first five close the items
+Eleven string replacements in the deck source HTML. The first five close the items
 the audit left open as `D-OPEN-1`. The sixth is explained in section 4. The last
 three add a limitation the audit found and the thesis never states, and are
 explained in section 5.
@@ -28,6 +28,7 @@ explained in section 5.
 | R22-08 | 12 | box 4 `A perfect comparison` | `Imperfect instruments`, absorbing the old box 3 proxy point |
 | R22-09 | 12 | footer cited the Conclusion only | footer also cites the event-study design, Section 2.4 |
 | R22-10 | 12 | box 3 carried a `PRE2` guard clause | guard removed; it defended the wrong direction, see section 5 |
+| R22-11 | 5 | `No prior work occupies this exact cell.` | `To our knowledge, no prior work occupies this exact cell.` |
 
 ### Why each one
 
@@ -60,8 +61,15 @@ and a fourth would overflow. The rendered slide confirms it.
 ### What did not change
 
 No coefficient, standard error, p-value, confidence interval, event-stage label,
-Wald contrast, chart point, citation, or page geometry. No CSS. No font. Slides
-1 to 7, 9 and 10 are identical to REV21, span for span.
+Wald contrast, or chart point. No CSS. No font. Slides 1 to 4, 6, 7, 9 and 10
+are identical to REV21, span for span, and the chart geometry on slides 8, 9 and
+10 is untouched.
+
+An earlier version of this paragraph also claimed that no citation changed. That
+was false and an adversarial audit caught it: `R22-09`, recorded in this same
+document, expanded slide 12's source footer. The claim is corrected rather than
+quietly deleted, because a change log that a reviewer trusts enough to skip
+source verification has to be right about exactly this.
 
 ## 2. How REV22 was rendered
 
@@ -271,3 +279,33 @@ and the `PRE2` bin actually live.
 The rebuttal. The attenuation argument, the `PRE2` reasoning and the
 `Basic v. Levinson` grounding belong in the speaker notes, not on screen. The
 slide states the boundary; the presenter supplies the answer.
+
+## 6. R22-11, the overclaim on a slide nobody re-read
+
+An independent adversarial audit of REV22 found this, and it is the most useful
+thing that audit produced.
+
+Slide 5 asserted `No prior work occupies this exact cell.` The thesis, in
+`_intro_body.tex`, says *"To our knowledge no prior work reads uncertainty
+language in the unscripted question-and-answer session in the anticipatory window
+before a withheld deal; we offer this as a positioning claim about where the
+contribution sits, not as a tested mechanism."* The deck dropped the
+qualification and turned a positioning claim into a universal one.
+
+It is the same defect as slide 13's missing hedge, fixed as `R22-05`. The
+difference is that slide 13 was on the audit's list and slide 5 was not, because
+no edit had touched slide 5, so nobody re-read it. The original audit had
+recorded no overclaim anywhere in the deck.
+
+An examiner who knows an adjacent paper can ask the candidate to prove exhaustive
+novelty. Three words remove that exposure at no cost.
+
+The audit also found a hole in `verify_rev22.py` worth recording. The drawing
+check compared only the *number* of drawing objects on each page, while its own
+comment claimed it caught anything that "appears, vanishes, or moves". A chart
+point could have moved anywhere on the page and the count would not have changed.
+It now compares position, colour and stroke width, and it distinguishes two cases
+that were wrongly treated as one: on slides 8, 9 and 10 the vector objects are
+the charts and must never move at all, while elsewhere they are boxes and rules
+that size themselves around text and are supposed to move when approved text
+changes.

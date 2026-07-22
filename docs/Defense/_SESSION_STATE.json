@@ -13,7 +13,7 @@
   ],
   "the_deck_to_present": {
     "path": "docs/Defense/REV22/production/thesis_defense_main_deck_slides_01-13_rev22.pdf",
-    "sha256": "550c820c04ee9982b56d804b61f3a9619fd999f5d94b71e5e6b3e48488af78c4",
+    "sha256": "ae433f9ebe5add99dbd2a9ba132bb719f5325ce5d290fefc76453cae4889e882",
     "note": "REV22 supersedes REV21 as the deck to present. 13 pages, 1152 x 648 points. REV21 remains untouched as the provenance record and as the fidelity reference."
   },
   "stale_authority_warning": {
@@ -63,7 +63,7 @@
   "verification": {
     "rev22_render": {
       "command": "python docs/Defense/REV22/verify_rev22.py",
-      "checks": 21,
+      "checks": 23,
       "last_run": "2026-07-21, all passed, exit code 0",
       "what_it_proves": "Two separate things. First, that this rendering environment reproduces the locked REV21 deck span for span, which is what makes the edited render trustworthy. Second, that the edit changed exactly slides 8, 11, 12 and 13 and nothing else, that no drawing moved on any slide, that the five approved strings landed, that no em or en dash remains, and that every span sits inside its page. It also scans the PDF metadata for em and en dashes, which the page-text scan could not see and which the shipped REV21 title violated."
     },
@@ -166,5 +166,29 @@
       "A fourth, inverted, at Q12: if media rumor had made deals effectively public, the PRE1 to GAP contrast would be blunted rather than sharp. Here it is the absence of attenuation that helps."
     ],
     "condition_on_all_of_them": "They hold only while the noise is unrelated to deal timing. Noise that systematically tracks the pre-announcement window is a confound, not noise, and it runs the other way. The thesis claims no mechanism, which is what limits the damage."
+  },
+  "adversarial_audit_of_rev22": {
+    "ran": "2026-07-21, via GptWebCall exchange 2026-07-21_201058_rev22_adversarial_audit",
+    "recorded_at": "docs/Defense/REV22/audit_call/response/",
+    "verdict": "The artifact is clean. The reasoning prepared around it was not.",
+    "confirmed_independently": "A 160 dpi per-page pixel diff plus span comparison of both PDFs found exactly slides 8, 11, 12 and 13 changed, no undeclared difference, and no declared edit missing. All ten edits at that point checked out against the thesis. Nine dimensions were reported clean with a statement of what was checked.",
+    "findings_applied": [
+      "F05, now R22-11. Slide 5 asserted 'No prior work occupies this exact cell' while the thesis qualifies it with 'To our knowledge' and calls it a positioning claim. Fixed. Slide 5 had never been edited, so nobody re-read it, and the original audit had recorded no overclaim anywhere.",
+      "F07. The verifier's drawing check compared only the count of drawing objects while claiming to catch movement. It now compares position, colour and stroke width, and separates the chart slides, where nothing may move, from the text slides, where rules are supposed to reflow.",
+      "F09. The change log claimed no citation changed while R22-09 in the same document had expanded slide 12's footer. Corrected in place."
+    ],
+    "findings_that_change_what_to_say_not_what_to_show": {
+      "F01": "The attenuation rebuttal was stated flatly. Misclassification attenuates only when it is nondifferential, and negotiation onset is unobserved, so the bias cannot be signed. Safe form: 'Under classical nondifferential contamination it would attenuate, but onset is unobserved, so I cannot sign the bias. The coefficient is an announcement-anchored average association, not an identified effect of negotiation exposure.'",
+      "F02": "'No pre-trend' was inferred from one insignificant PRE2 coefficient whose approximate interval runs from about -0.028 to 0.042. Safe form: 'no statistically detected elevation at PRE2', which is consistent with a concentrated PRE1 pattern without proving the absence of earlier drift.",
+      "where_these_go": "The speaker notes. Both must be written in the safe form and never in the flat form."
+    },
+    "findings_not_applied": [
+      "F03 and F06, wording of slide 12's box 3 and left panel. Real but marginal, and reopening box 3 a fourth time carries its own risk.",
+      "F04, the word 'instruments' in the slide 12 box 4 heading, on the ground that the thesis uses no instrumental-variable design. Judged a low-risk reading; revisit only if the presenter dislikes it."
+    ],
+    "audit_own_limitations": [
+      "The thesis tables and the deck source HTML were not in the archive, so slide 7's decomposition inputs could not be independently checked. They are unchanged between REV21 and REV22.",
+      "verify_rev22.py could not be rerun because the locked PDF and the control render were not packed. Its logic was audited in full instead."
+    ]
   }
 }

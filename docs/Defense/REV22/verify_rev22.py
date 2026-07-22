@@ -11,8 +11,9 @@ that must not be confused with each other.
      be trusted either, no matter how good it looks.
 
   2. Did the edit do only what it was supposed to do?
-     Compare the EDITED render against the CONTROL. Exactly four slides may
-     differ: 8, 11, 12 and 13. Every other slide must match span for span.
+     Compare the EDITED render against the CONTROL. Exactly five slides may
+     differ: 5, 8, 11, 12 and 13. Every other slide must match span for span,
+     and no chart may move anywhere.
 
 The audit's own verify_deck.py checks slides 8, 9 and 10 only. That is not
 enough here. A layout engine that shapes text differently can reflow any slide,
@@ -43,8 +44,8 @@ EDITED = HERE / "production" / "thesis_defense_main_deck_slides_01-13_rev22.pdf"
 
 LOCKED_SHA256 = "b1f396191295e320019d8123fe9cd588088e80f992c46150c5fd270f8e6aa94b"
 
-# The only slides the five approved edits may touch.
-EDITED_SLIDES = {8, 11, 12, 13}
+# The only slides the approved edits may touch.
+EDITED_SLIDES = {5, 8, 11, 12, 13}
 
 # A span is "moved" if any corner shifts by more than this. Same engine and
 # same version should be exact; a hundredth of a point absorbs float noise
@@ -97,8 +98,30 @@ def compare_page(left, right, number: int) -> list[str]:
     return problems
 
 
-def drawing_count(page) -> int:
-    return len(page.get_drawings())
+def drawing_signature(page) -> list[tuple]:
+    """Every drawn object's position and colour, sorted.
+
+    This used to count drawings and compare the counts, which an adversarial
+    audit correctly called a check that passes while the property it names is
+    false: a chart point could move anywhere on the page, or change colour, and
+    the count would not budge. The charts are the part of this deck that must
+    not move, so the comparison is on geometry.
+    """
+    signature = []
+    for item in page.get_drawings():
+        rect = item["rect"]
+        signature.append(
+            (
+                round(rect.x0, 3),
+                round(rect.y0, 3),
+                round(rect.x1, 3),
+                round(rect.y1, 3),
+                str(item.get("fill")),
+                str(item.get("color")),
+                round(item.get("width") or 0, 3),
+            )
+        )
+    return sorted(signature)
 
 
 def verify_files_present() -> bool:
@@ -147,7 +170,7 @@ def verify_environment(locked, control) -> None:
 
 
 def verify_edit_scope(control, edited) -> None:
-    """Question 2. Did the edit touch only the four intended slides?"""
+    """Question 2. Did the edit touch only the intended slides?"""
     print("\n-- edit scope: edited render against the control render --")
     check("edited deck has 13 pages", edited.page_count == 13)
     if edited.page_count != 13:
@@ -165,7 +188,7 @@ def verify_edit_scope(control, edited) -> None:
             changed.add(number)
 
     check(
-        "only the four intended slides changed",
+        "only the intended slides changed",
         changed == EDITED_SLIDES,
         f"changed {sorted(changed)}, expected {sorted(EDITED_SLIDES)}",
     )
@@ -177,19 +200,38 @@ def verify_edit_scope(control, edited) -> None:
     if missing:
         print(f"        no change reached slides {sorted(missing)}")
 
-    # Vector content carries the charts. The edits are pure text, so no drawing
-    # anywhere may appear, vanish, or move.
-    for number in range(1, 14):
-        before = drawing_count(control[number - 1])
-        after = drawing_count(edited[number - 1])
-        if before != after:
-            check(f"slide {number} keeps its drawing count", False,
-                  f"{before} against {after}")
+    # Vector objects are two different things in this deck and must not be
+    # checked as one. On slides 8, 9 and 10 they are the charts, and a chart
+    # point that moves is a falsified figure. Everywhere else they are boxes and
+    # rules that size themselves around text, so an approved text edit is
+    # supposed to move them.
+    moved_elsewhere = [
+        number
+        for number in range(1, 14)
+        if number not in EDITED_SLIDES
+        and drawing_signature(control[number - 1]) != drawing_signature(edited[number - 1])
+    ]
+    check(
+        "no drawing moved on any slide the edits did not touch",
+        not moved_elsewhere,
+        "" if not moved_elsewhere else f"drawings differ on slides {moved_elsewhere}",
+    )
+
+    moved_charts = [
+        number
+        for number in (8, 9, 10)
+        if drawing_signature(control[number - 1]) != drawing_signature(edited[number - 1])
+    ]
+    check(
+        "every plotted point, whisker and axis on slides 8, 9 and 10 is untouched",
+        not moved_charts,
+        "" if not moved_charts else f"chart geometry changed on slides {moved_charts}",
+    )
 
 
 def verify_edits_landed(edited) -> None:
-    """The five approved strings are present and the old ones are gone."""
-    print("\n-- the five approved edits --")
+    """The approved strings are present and the old ones are gone."""
+    print("\n-- the approved edits --")
     text = {n: " ".join(edited[n - 1].get_text("text").split()) for n in range(1, 14)}
 
     expected = [
@@ -216,6 +258,11 @@ def verify_edits_landed(edited) -> None:
          "Imperfect instruments", "A perfect comparison"),
         ("R22-09 slide 12 footer names the event-study design", 12,
          "event-study design, Section 2.4", None),
+        # Found by an adversarial audit on a slide no edit had touched, which is
+        # why nobody re-read it. The thesis calls this a positioning claim and
+        # qualifies it; the deck had asserted it flat.
+        ("R22-11 slide 5 restores the positioning qualifier", 5,
+         "To our knowledge, no prior work occupies", None),
     ]
     for label, number, present, absent in expected:
         ok = present in text[number]
