@@ -157,6 +157,13 @@ Slides 8, 11, 12 and 13 were reworded, so quote REV22 and never REV21.
 The full notes plan is in `audit/DECK_AUDIT_PLAN.md` under "Speaker-notes
 production plan". The essentials:
 
+**Step one, before drafting anything: `SPEAKING_RATE_TEST.md` beside this file.**
+It holds two timed passages for Sina to read aloud, one prose and one
+number-heavy, because his rate differs between them and the lower one is what to
+budget on. Until `_SESSION_STATE.json` carries
+`speaker_notes_brief_when_that_work_starts.measured_speaking_rate`, the
+measurement has not happened and every per-slide word count would be invented.
+
 - 18 minutes with a 2 minute buffer, split 5 minutes for slides 1 to 5,
   10 minutes for 6 to 10, 3 minutes for 11 to 13.
 - Do not invent per-slide times. Measure Sina's own speaking rate first.
@@ -219,16 +226,31 @@ extracts cleanly, so only the eye catches overflow.
 ## 8. If you need another ChatGPT web call
 
 Read `C:\Users\sinas\OneDrive\Desktop\Projects\GptWebCall\WEB_CALL_PROTOCOL.md`
-first. Calls can now run in parallel, each bound to its own tab, and a delivery
-that fails validation can be repaired inside the same conversation.
+first. It is the authority; this is only orientation.
 
-Two filenames may never collide across calls that can still receive files;
-`prepare` enforces this and will refuse the second one.
+**Every exchange is two files each way.** Up: the generated `PROMPT_<time>.md`
+and one `<subject>_inputs.zip` holding everything else, both built by the
+companion from the ordinary `input_files` list. Down: the main JSON and one
+`<pass>_outputs.zip`. `expected_artifacts` must be either empty or a single
+`.zip`, and `prepare` refuses anything else.
+
+One cost of that rule, and it matters whenever thoroughness is the point:
+natively attached files are read directly, while an archive has to be extracted
+first, and a model that extracts carelessly skims. **Require an inventory** in
+the prompt, every extracted filename with its byte size, echoed before any
+answer. The REV22 audit did this, and its inventory is what proves it actually
+read the archive rather than glancing at it.
+
+Calls can run in parallel, each bound to its own tab, and a delivery that fails
+validation can be repaired inside the same conversation. Two deliverable
+filenames may never collide across calls that can still receive files.
 
 **Download every returned file before clicking Done and validate.** Done stops
-monitoring and anything arriving afterwards is not collected. If that happens,
-copy the files into the exchange's `response/` directory and run
-`validate --exchange <id>`.
+monitoring and anything arriving afterwards is not collected. The side panel now
+guards this: each running call shows its expected files as a checklist, ticked
+with a size as they land, and Done stays disabled until they all have. Forcing it
+takes a second, deliberate click. If files are missed anyway, copy them into the
+exchange's `response/` directory and run `validate --exchange <id>`.
 
 ## 9. Superseded, do not use
 
