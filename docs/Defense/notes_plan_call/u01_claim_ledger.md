@@ -121,10 +121,22 @@ window as a boundary on generality rather than as a choice it defends:
 > "the sample, United States public firms from 2002 to 2018, approximately the
 > S&P 1500, may not extend to other periods, other markets, or the smaller"
 
-**Ceiling.** No note may invent a reason. If asked, the only honest answers are
-the ones the presenter actually knows, such as data licensing or coverage, and
-the presenter is the only person who can supply that. This is not a writing
-problem and cannot be solved by drafting.
+**Ceiling.** No note may invent a reason. The thesis gives none, so nothing may
+be read into it.
+
+**ANSWERED BY THE PRESENTER, 2026-07-22.** The window is a data-availability
+boundary, not a design choice. The Capital IQ transcript data was accessed
+through the school's finance lab, and 2002 to 2018 is the coverage that
+subscription provided.
+
+That is a clean answer and it should be given plainly and without apology. Data
+access boundaries are ordinary and every empirical committee has met them. The
+only way to lose marks here is to sound as though the endpoint were a choice
+being defended, because that invites the follow-up about what happens after 2018.
+
+If pressed on whether the period is unrepresentative, the honest position is the
+one already on slide 12: it is a limit on generalisation, and the thesis claims
+nothing about other periods.
 
 ### 2.2 How accurate the speaker attribution is
 
@@ -147,6 +159,54 @@ would just add noise and therefore work against finding anything. That is the
 same unsigned-bias error caught on the attenuation argument, and it fails for the
 same reason: it holds only if misattribution is unrelated to the thing being
 measured, and nothing in the thesis establishes that.
+
+**ANSWERED BY THE PRESENTER, 2026-07-22, then corrected against the code.**
+
+Sina's answer was that attribution comes from the speaker labels in the Capital
+IQ data, so the study relies on Capital IQ's data quality. That is true but
+incomplete, and the incomplete version is weaker than the real one. **Do not give
+it in that form.**
+
+The code was read directly. `src/f1d/text/build_linguistic_variables.py` lines
+486 to 495:
+
+```python
+is_ceo_exact = (speaker_lower == df["ceo_name_lower"]) | (
+    speaker_lower == df["prev_ceo_name_lower"]
+)
+is_ceo_last = (speaker_last == df["ceo_last"]) | (
+    speaker_last == df["prev_ceo_last"]
+)
+df["is_ceo"] = is_ceo_exact | is_ceo_last
+```
+
+So the procedure is a **two-source join, not a label lookup**. Capital IQ supplies
+the speaker's name. Execucomp supplies who the chief executive was at that firm
+in that period, through `ceoann` and `becameceo` in `build_tenure_map.py`. A turn
+counts as the chief executive's when the Capital IQ name matches the Execucomp
+name, with the previous chief executive included to cover turnover.
+
+**Say that instead.** It is a stronger answer because it does not rest on one
+vendor's labelling. It rests on agreement between two independent sources, and an
+examiner who distrusts Capital IQ's labels still has to explain why the
+Execucomp name would agree with them wrongly.
+
+**The one real weakness, and it should be conceded before it is found.** The
+match is tiered: an exact full-name match, or failing that a **surname-only**
+match. A surname match misfires when two people with the same surname speak on
+the same call, which family firms and coincidence both produce. The thesis
+quantifies no rate for this, and no note may invent one.
+
+The honest concession: the fallback trades a small amount of precision for
+coverage, the direction of any resulting error is not established, and it is not
+argued to be harmless.
+
+**Verified and not a defect.** The parallel chief financial officer branch below
+it carries an explicit empty-value guard that the chief executive branch lacks.
+That asymmetry is safe rather than a bug: the CFO comparison applies `fillna("")`
+and therefore needs protection against an empty string matching an empty string,
+while `ceo_last` stays missing when absent and a missing value never matches.
+Checked so that nobody re-raises it as a finding later.
 
 ### 2.3 The confidence intervals
 

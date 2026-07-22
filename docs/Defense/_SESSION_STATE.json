@@ -182,11 +182,11 @@
     "status": "DONE, 2026-07-22. All thirteen scripts written, audited and corrected."
   },
   "untested_and_owed": {
-    "rehearsal": "Never done. The delivery discount inside the word budget is a judgement, not a measurement, and only a timed full-deck rehearsal tests it. Treat 2108 words as a ceiling rather than a target until that happens.",
+    "rehearsal": "STILL OWED and now the only remaining item. Sina will run it and report back. The delivery discount inside the word budget is a judgement, not a measurement, and only a timed full-deck rehearsal tests it. Treat 2108 words as a ceiling until then.",
     "filler_words": "Never counted. The rate test asked for recordings so filler could be heard. The recordings were made and no count came back. If rehearsal runs long while the word counts were respected, filler is the first suspect.",
     "two_questions_only_the_presenter_can_answer": [
-      "Why the sample ends in 2018. The thesis states the window repeatedly and never justifies the endpoint. Confirmed by reading it, not assumed.",
-      "How accurate the speaker attribution is. The thesis asserts transcripts are parsed to identify speaker role and never quantifies error. Do not answer that misattribution merely adds noise; that is the unsigned-bias error this project has already made."
+      "ANSWERED 2026-07-22. Why the sample ends in 2018: a data-availability boundary. Capital IQ transcripts were accessed through the school's finance lab and 2002 to 2018 is the coverage that subscription provided. Give it plainly. It is not a design choice being defended.",
+      "ANSWERED 2026-07-22 and corrected against the code. Speaker attribution is NOT a Capital IQ label lookup. It is a join: Capital IQ supplies the speaker name, Execucomp supplies who the chief executive was via ceoann and becameceo, and a turn counts when the names match, previous CEO included. The weakness to concede is the surname-only fallback, which misfires when two people share a surname on one call. See section 2.2 of u01_claim_ledger.md for the code and the wording."
     ],
     "qa_pack": "Not written. The two conditional rebuttals belong here rather than on the podium: attenuation cannot be signed because onset is unobserved, and the flat quarter two before the announcement is an absence of detected elevation. Passage 5 of SPEAKING_RATE_TEST.md is close to the wording both should use and runs about seventy seconds for the pair."
   },
