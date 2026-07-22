@@ -1,0 +1,67 @@
+{
+  "request_id": "f1d-notes-u03-examiner-map-v1",
+  "objective": "Sweep all 13 slides for oral claims an examiner can attack, and decide for each whether it belongs in the podium notes or is held for Q&A. Do not write speaker notes or prepared answer prose.",
+
+  "why_this_call": "Two reasons, both structural. The local agent has been defending this material all session and cannot search adversarially against its own commitments. And the claim ledger it just produced is complete on numbers and incomplete on prose: it laddered the six claims already known to be dangerous and did not sweep the remaining interpretive sentences across thirteen slides. That gap has a known shape in this project. The last error found here was an overclaim on slide 5 that survived because nobody re-read a slide that had not been edited. Closing it is the main job of this call.",
+
+  "the_base_rate_to_beat": "The immediately preceding audit of this deck returned nine findings on work its author had declared airtight, two of which were real errors of judgement. Praise is not a deliverable.",
+
+  "authority_hierarchy": [
+    "thesis_flat.tex, thesis_tables.tex, thesis_robustness_tables.tex. Submitted and approved. Sole authority on every result.",
+    "u01_claim_ledger.md. Verified ceilings and confirmed silences. Its section 7 records one open discrepancy addressed to you directly.",
+    "rev22_deck.pdf, rev22_slide_text.md. Locked.",
+    "rev22audit_response.json, audit_findings.md. The prior audit, including three findings deliberately not applied.",
+    "DEFENSE_LEDGER.md. Committee dossiers and sixteen prepared questions."
+  ],
+
+  "job_1_sweep_all_thirteen_slides": {
+    "what": "Every slide, including the ones nobody has flagged. For each attackable claim: the slide, the exact visible text, the oral overstatement a presenter would naturally drift into, what the thesis actually supports with a quotation, and the safe spoken form.",
+    "do_not_only_revisit_known_items": "The six ceilings in the ledger are already handled. Findings that merely restate them are of low value. The value of this call is what nobody has looked at.",
+    "severity": "BLOCKER, MAJOR, MINOR, NIT. Top two sparingly and only with a quotation."
+  },
+
+  "job_2_podium_versus_qa": {
+    "what": "For each risk, decide whether the podium notes must address it or whether it is held for Q&A.",
+    "the_tradeoff": "Addressing a risk on the podium spends words from a fixed 2110 word budget and pre-empts an attack that may never come, in front of a committee member documented as preferring defenses that finish promptly. Holding it means the presenter must have the answer ready cold. Neither is free. Decide, and say what the decision costs.",
+    "already_decided_but_open_to_challenge": "The attenuation and PRE2 rebuttals were moved off the podium into the Q&A pack, because slide 12 has roughly 120 words and the two rebuttals take about 129. Argue whether that placement is right. If either belongs on the podium, say which slide and what element it displaces."
+  },
+
+  "job_3_the_open_discrepancy": {
+    "what": "Section 7 of u01_claim_ledger.md records one thing that does not reconcile and was deliberately left unresolved so a local guess would not contaminate this call.",
+    "the_facts": "Slide 10 displays GAP and POST bins for the cash and stock panels. The thesis, describing the cash and stock arms, says: 'For treated firms we drop the quarters after the announcement, so the design sees only the run-up into the deal.' Both cannot describe the same regression.",
+    "what_to_do": "Resolve it against the thesis and the tables. Say which specification produced which panel on slide 10, quoting what settles it. If it cannot be settled from the supplied files, say so plainly rather than guessing, and say what would settle it.",
+    "why_it_matters": "The examiner question is direct and the presenter needs an answer that does not begin with hesitation."
+  },
+
+  "job_4_the_two_unanswerable_questions": {
+    "what": "The ledger confirms the thesis is silent on why the sample ends in 2018 and on how accurate speaker attribution is. Neither can be fixed by writing.",
+    "what_to_do": "Give the best honest answer available for each, one that concedes the silence without collapsing. Then say what an examiner does with that answer next, so the presenter is not surprised by the follow-up.",
+    "the_trap": "For attribution error the instinct is to say misattribution just adds noise and works against finding anything. That is the same unsigned-bias error already caught on attenuation. Do not reproduce it."
+  },
+
+  "scope": {
+    "included": ["The thirteen slide sweep, podium versus Q&A placement, the open discrepancy, the two silences."],
+    "excluded": [
+      "Writing speaker notes or prepared answer prose. Return the safe claim form and the boundary, not the script.",
+      "Redesigning the deck or revising the thesis. Both are locked.",
+      "Restating the six ledger ceilings as though they were new findings."
+    ]
+  },
+
+  "questions_to_answer_explicitly": {
+    "q1": "Which slide carries the most dangerous unexamined claim, and why did it survive this long?",
+    "q2": "What is the single question most likely to be asked that nothing in the thesis or the ledger answers?",
+    "q3": "Are the attenuation and PRE2 rebuttals correctly held for Q&A rather than spoken from the podium?",
+    "q4": "How does slide 10 reconcile, or what would settle it?",
+    "q5": "The prior audit left three findings deliberately unapplied. Does any of them become dangerous once the deck is narrated aloud rather than only shown?",
+    "q6": "Which of the sixteen prepared questions in the defense ledger is answered worst by the current material?"
+  },
+
+  "web_research": { "allowed": false, "rules": "Everything needed is supplied." },
+
+  "response_contract": {
+    "files": "Exactly two downloadable files: u03_response.json and u03_outputs.zip. Every additional file goes inside the archive.",
+    "inventory_first": "Extract the input archive and echo an inventory of every extracted file with its byte size before reasoning about any of them. A thin inventory means the archive was skimmed and the response is rejected on that alone.",
+    "partial_is_acceptable": "If something cannot be settled, return PARTIAL and name the gap. A partial map that admits its gaps is useful. A complete looking map built on a skim is worse than nothing, because it will be believed and then relied on in a room."
+  }
+}

@@ -1,0 +1,281 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "F1D U03 examiner attack map",
+  "type": "object",
+  "required": [
+    "request_id",
+    "status",
+    "results",
+    "artifacts_manifest",
+    "limitations",
+    "delivery"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "request_id": {
+      "const": "f1d-notes-u03-examiner-map-v1"
+    },
+    "status": {
+      "enum": [
+        "COMPLETE",
+        "PARTIAL",
+        "BLOCKED"
+      ]
+    },
+    "results": {
+      "type": "object",
+      "required": [
+        "inventory",
+        "slides_swept",
+        "findings",
+        "podium_vs_qa",
+        "slide10_discrepancy",
+        "unanswerable_questions",
+        "answers"
+      ],
+      "properties": {
+        "inventory": {
+          "type": "array",
+          "minItems": 8,
+          "items": {
+            "type": "object",
+            "required": [
+              "filename",
+              "bytes",
+              "read_in_full"
+            ],
+            "properties": {
+              "filename": {
+                "type": "string"
+              },
+              "bytes": {
+                "type": "integer"
+              },
+              "read_in_full": {
+                "type": "boolean"
+              },
+              "pages": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "slides_swept": {
+          "type": "array",
+          "minItems": 13,
+          "maxItems": 13,
+          "items": {
+            "type": "integer"
+          },
+          "description": "Every slide must appear, including those with no finding."
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "slide",
+              "severity",
+              "visible_text",
+              "oral_overstatement",
+              "what_thesis_supports",
+              "supporting_quote",
+              "safe_spoken_form",
+              "is_new"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "slide": {
+                "type": "integer"
+              },
+              "severity": {
+                "enum": [
+                  "BLOCKER",
+                  "MAJOR",
+                  "MINOR",
+                  "NIT"
+                ]
+              },
+              "visible_text": {
+                "type": "string"
+              },
+              "oral_overstatement": {
+                "type": "string"
+              },
+              "what_thesis_supports": {
+                "type": "string"
+              },
+              "supporting_quote": {
+                "type": "string",
+                "description": "Verbatim from a supplied file. Name it."
+              },
+              "source_file": {
+                "type": "string"
+              },
+              "safe_spoken_form": {
+                "type": "string"
+              },
+              "is_new": {
+                "type": "boolean",
+                "description": "False if it restates one of the six ledger ceilings."
+              }
+            }
+          }
+        },
+        "podium_vs_qa": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "risk",
+              "placement",
+              "what_it_costs"
+            ],
+            "properties": {
+              "risk": {
+                "type": "string"
+              },
+              "placement": {
+                "enum": [
+                  "PODIUM",
+                  "QA",
+                  "BOTH"
+                ]
+              },
+              "what_it_costs": {
+                "type": "string"
+              },
+              "displaces": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "slide10_discrepancy": {
+          "type": "object",
+          "required": [
+            "resolved",
+            "explanation"
+          ],
+          "properties": {
+            "resolved": {
+              "type": "boolean"
+            },
+            "explanation": {
+              "type": "string"
+            },
+            "settling_quote": {
+              "type": "string"
+            },
+            "what_would_settle_it": {
+              "type": "string"
+            }
+          }
+        },
+        "unanswerable_questions": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": [
+              "question",
+              "best_honest_answer",
+              "examiner_follow_up"
+            ],
+            "properties": {
+              "question": {
+                "type": "string"
+              },
+              "best_honest_answer": {
+                "type": "string"
+              },
+              "examiner_follow_up": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "answers": {
+          "type": "object",
+          "required": [
+            "q1",
+            "q2",
+            "q3",
+            "q4",
+            "q5",
+            "q6"
+          ],
+          "additionalProperties": false,
+          "patternProperties": {
+            "^q[1-6]$": {
+              "type": "string",
+              "minLength": 60
+            }
+          }
+        }
+      }
+    },
+    "artifacts_manifest": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "filename",
+          "status",
+          "media_type",
+          "size",
+          "sha256"
+        ],
+        "properties": {
+          "filename": {
+            "const": "u03_outputs.zip"
+          },
+          "status": {
+            "enum": [
+              "CREATED",
+              "OMITTED"
+            ]
+          },
+          "media_type": {
+            "const": "application/zip"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{64}$"
+          },
+          "contains": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "delivery": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "enum": [
+          "u03_response.json",
+          "u03_outputs.zip"
+        ]
+      }
+    }
+  }
+}

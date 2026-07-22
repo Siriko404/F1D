@@ -1,0 +1,61 @@
+{
+  "request_id": "f1d-notes-u02-architecture-v1",
+  "objective": "Design the architecture of 13 speaker-note scripts, and write the lay framing bank the drafter will use for every technical idea in the deck. Do not write the scripts.",
+
+  "why_this_call": "The person who will draft these scripts has spent a very long session inside this material and is therefore the worst available judge of what a listener hears for the first time. In that same session he was told four separate times that his prose was too dense to follow. Plain language is the thing the presenter cares about most, so the first articulation of every hard idea is being taken out of the drafter's hands and given to a reader who is meeting the material cold.",
+
+  "authority_hierarchy": [
+    "u01_claim_ledger.md. What may and may not be said. Nothing you write may exceed a ceiling recorded there.",
+    "thesis_flat.tex, thesis_tables.tex. The thesis is submitted and approved and is the authority on every result.",
+    "rev22_deck.pdf, rev22_slide_text.md. The deck is locked and will not change.",
+    "SPEAKER_NOTES_BUDGET.md. The measured per-slide word budget. Binding.",
+    "DEFENSE_LEDGER.md. Committee context and presenter preferences."
+  ],
+
+  "deliverable_1_architecture": {
+    "what": "For each of the 13 slides: the one job that slide does for the listener, the content that must land, the content that may be cut first when the slide runs long, and the interface to the next slide.",
+    "one_job_rule": "One slide, one job, stated in a single plain sentence. If a slide seems to have two jobs, say so, because that is a finding about the talk.",
+    "cut_hierarchy": "Rank every element on each slide from must-say down to cut-first. The drafter will be over budget somewhere and needs to know what goes without asking.",
+    "transitions": "There are 12 boundaries. For each, specify what the last sentence of the earlier slide must have set up and what the first sentence of the next must pick up. Transitions are where a talk audibly falls apart and no per-slide budget covers them."
+  },
+
+  "deliverable_2_lay_framing_bank": {
+    "what": "For every technical idea in this deck, the sentence a non-specialist understands, without losing accuracy.",
+    "the_standard": "Explaining it to an intelligent person who does not work in finance or econometrics. Concrete before abstract. No unexplained jargon. No analogy that would break under an examiner's follow-up, because an analogy that has to be retracted is worse than the plain statement it replaced.",
+    "accuracy_is_not_negotiable": "A framing that is simple but overstates is a failure, not a tradeoff. Every framing must sit inside the ceilings in u01_claim_ledger.md. Where the ledger records a forbidden phrasing, your framing must not be a softer version of the same overstatement.",
+    "CRITICAL_word_economy": "Every framing costs words against a fixed budget of about 2110 for the whole talk, and there are roughly fifteen terms that need glossing. At five words each that is seventy five words, which is most of an entire slide. So framings must be word cheap. Give the shortest form that is still honest, and give a word count for each. A beautiful twenty word gloss the drafter cannot afford is not usable.",
+    "terms_that_need_glossing": "At minimum: attenuation, estimand, residual, endogeneity, fixed effects, clustered standard errors, confidence interval, coefficient, event study, counterfactual, identification, parallel trends, nondifferential, Wald test, Tobin's Q. Add any you judge necessary and say why. These are not banned words. A defense that refuses to say coefficient is not a defense. The requirement is that the first spoken use carries its own explanation."
+  },
+
+  "deliverable_3_the_precedence_question": {
+    "the_conflict": "Two rules collide and nothing currently says which wins. Rule one: every technical term must be glossed on first use. Rule two: each slide has a hard word count and the total is a measurement, not a preference.",
+    "what_to_answer": "When a slide is at its word ceiling and still owes a gloss, what gives? Answer with a rule the drafter can apply without judgement, not with a principle. Consider at least: moving the gloss to an earlier slide with slack, shortening the gloss, dropping a cut-first element to pay for it, or accepting the term ungloss on that slide because it was glossed earlier.",
+    "why_you_and_not_the_drafter": "The drafter would resolve this in favour of whichever rule is easier to satisfy while writing, and would not notice doing it."
+  },
+
+  "scope": {
+    "included": ["Architecture, cut hierarchy, transitions, lay framings, the precedence rule."],
+    "excluded": [
+      "Writing the speaker notes. Producing a sample script for any slide is the most likely way to fail this call.",
+      "Redesigning the deck. It is locked.",
+      "Revising the thesis. It is submitted.",
+      "Any framing that exceeds a ceiling in u01_claim_ledger.md."
+    ]
+  },
+
+  "questions_to_answer_explicitly": {
+    "q1": "Which slide has the weakest one job, and what would you cut to fix it, given the deck cannot change?",
+    "q2": "Which of the 12 transitions is hardest, and what makes it hard?",
+    "q3": "Which technical idea in this deck is hardest to say plainly without overstating, and what is your shortest honest framing of it?",
+    "q4": "What is the precedence rule for glosses against the word ceiling?",
+    "q5": "Where does the deck's own order work against a listener, and what does the narration have to do to compensate, given the order cannot change?",
+    "q6": "Which slide is most likely to run long in practice, and which element in your cut hierarchy pays for it?"
+  },
+
+  "web_research": { "allowed": false, "rules": "Everything needed is supplied." },
+
+  "response_contract": {
+    "files": "Exactly two downloadable files: u02_response.json and u02_outputs.zip. Every additional file goes inside the archive.",
+    "inventory_first": "Extract the input archive and echo an inventory of every extracted file with its byte size before reasoning about any of them. A thin inventory means the archive was skimmed and the response is rejected on that alone."
+  }
+}
